@@ -1,0 +1,51 @@
+name: HeptaBao offline development tools
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  tools:
+    if: github.head_ref == 'codex/runtime-deepening-20260907'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Install declared public Rust release
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose > "$RUNNER_TEMP/rust-version.txt"
+          tar -cJf "$RUNNER_TEMP/rust-1.98.0-linux-x64.tar.xz" -C "$(rustc +1.98.0 --print sysroot)" .
+      - name: Install matching Python interpreter
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - name: Download and verify pinned syntax-parser wheels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/inventory-wheels"
+          python -m pip download --disable-pip-version-check --only-binary=:all: --no-deps --dest "$RUNNER_TEMP/inventory-wheels" tree-sitter==0.25.2 tree-sitter-rust==0.24.0
+          cd "$RUNNER_TEMP/inventory-wheels"
+          printf '%s  %s\n' \
+            b878e296e63661c8e124177cc3084b041ba3f5936b43076d57c487822426f614 tree_sitter-0.25.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl \
+            bf2c1f4b87df568352a9e523600af7cb32c5748dc75275f4794d6f811ab13dfe tree_sitter_rust-0.24.0-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl > SHA256SUMS
+          sha256sum --check SHA256SUMS
+          tar -czf "$RUNNER_TEMP/inventory-wheels.tar.gz" .
+          cd "$RUNNER_TEMP"
+          sha256sum rust-1.98.0-linux-x64.tar.xz inventory-wheels.tar.gz > offline-tools.sha256
+      - name: Retain public compiler and parser distribution bytes only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-offline-development-tools-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/rust-1.98.0-linux-x64.tar.xz
+            ${{ runner.temp }}/rust-version.txt
+            ${{ runner.temp }}/inventory-wheels.tar.gz
+            ${{ runner.temp }}/offline-tools.sha256
+          if-no-files-found: error
+          retention-days: 3
