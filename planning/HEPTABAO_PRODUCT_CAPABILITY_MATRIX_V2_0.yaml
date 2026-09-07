@@ -3,155 +3,35 @@ plan_id: HEPTABAO-PLAN-2026-09-07-V2.0
 revision: 2.0.0
 status: ACTIVE
 modules:
-- crate: heptabao-authbus-contracts
-  domain: authentication contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-authbus-contracts/src/lib.rs
-  guide: docs/modules/heptabao-authbus-contracts.md
-- crate: heptabao-barrier-api
-  domain: barrier contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-barrier-api/src/lib.rs
-  guide: docs/modules/heptabao-barrier-api.md
-- crate: heptabao-domain
-  domain: shared bounded domain values
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-domain/src/lib.rs
-  guide: docs/modules/heptabao-domain.md
-- crate: heptabao-durable-core
-  domain: durable commit contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-durable-core/src/lib.rs
-  guide: docs/modules/heptabao-durable-core.md
-- crate: heptabao-filesystem-guard
-  domain: local filesystem fencing
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-filesystem-guard/src/lib.rs
-  guide: docs/modules/heptabao-filesystem-guard.md
-- crate: heptabao-governance
-  domain: qualification and authority contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-governance/src/lib.rs
-  guide: docs/modules/heptabao-governance.md
-- crate: heptabao-identity
-  domain: entity alias and group resolution
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-identity/src/lib.rs
-  guide: docs/modules/heptabao-identity.md
-- crate: heptabao-journal-api
-  domain: journal contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-journal-api/src/lib.rs
-  guide: docs/modules/heptabao-journal-api.md
-- crate: heptabao-journaled-core
-  domain: journaled durable composition
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-journaled-core/src/lib.rs
-  guide: docs/modules/heptabao-journaled-core.md
-- crate: heptabao-key-lifecycle
-  domain: key lifecycle contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-key-lifecycle/src/lib.rs
-  guide: docs/modules/heptabao-key-lifecycle.md
-- crate: heptabao-lease
-  domain: lease lifecycle
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-lease/src/lib.rs
-  guide: docs/modules/heptabao-lease.md
-- crate: heptabao-operation-ledger
-  domain: operation reconciliation ledger
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-operation-ledger/src/lib.rs
-  guide: docs/modules/heptabao-operation-ledger.md
-- crate: heptabao-oracle-observer
-  domain: clean-room observation contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-oracle-observer/src/lib.rs
-  guide: docs/modules/heptabao-oracle-observer.md
-- crate: heptabao-p0-server
-  domain: loopback memory server
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-p0-server/src/lib.rs
-  guide: docs/modules/heptabao-p0-server.md
-- crate: heptabao-platform-bakeoff
-  domain: dependency bakeoff contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-platform-bakeoff/src/lib.rs
-  guide: docs/modules/heptabao-platform-bakeoff.md
-- crate: heptabao-platform-contracts
-  domain: runtime TLS and Raft provider contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-platform-contracts/src/lib.rs
-  guide: docs/modules/heptabao-platform-contracts.md
-- crate: heptabao-policy
-  domain: default-deny path authorization
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-policy/src/lib.rs
-  guide: docs/modules/heptabao-policy.md
-- crate: heptabao-protocol
-  domain: protocol and request contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-protocol/src/lib.rs
-  guide: docs/modules/heptabao-protocol.md
-- crate: heptabao-recovery-core
-  domain: authoritative recovery
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-recovery-core/src/lib.rs
-  guide: docs/modules/heptabao-recovery-core.md
-- crate: heptabao-rollback-anchor
-  domain: rollback anchor fencing
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-rollback-anchor/src/lib.rs
-  guide: docs/modules/heptabao-rollback-anchor.md
-- crate: heptabao-single-node-journal
-  domain: local durable journal
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-single-node-journal/src/lib.rs
-  guide: docs/modules/heptabao-single-node-journal.md
-- crate: heptabao-single-node-store
-  domain: local durable store
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-single-node-store/src/lib.rs
-  guide: docs/modules/heptabao-single-node-store.md
-- crate: heptabao-storage-api
-  domain: storage contracts
-  state: INHERITED_IMPLEMENTED
-  documentation_standard: V2
-  source: crates/heptabao-storage-api/src/lib.rs
-  guide: docs/modules/heptabao-storage-api.md
-- crate: heptabao-token
-  domain: token lifecycle
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-token/src/lib.rs
-  guide: docs/modules/heptabao-token.md
+- {crate: heptabao-authbus-contracts, domain: authentication contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-authbus-contracts/src/lib.rs, guide: docs/modules/heptabao-authbus-contracts.md}
+- {crate: heptabao-barrier-api, domain: barrier contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-barrier-api/src/lib.rs, guide: docs/modules/heptabao-barrier-api.md}
+- {crate: heptabao-domain, domain: shared bounded domain values, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-domain/src/lib.rs, guide: docs/modules/heptabao-domain.md}
+- {crate: heptabao-durable-core, domain: durable commit contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-durable-core/src/lib.rs, guide: docs/modules/heptabao-durable-core.md}
+- {crate: heptabao-filesystem-guard, domain: local filesystem fencing, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-filesystem-guard/src/lib.rs, guide: docs/modules/heptabao-filesystem-guard.md}
+- {crate: heptabao-governance, domain: qualification and authority contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-governance/src/lib.rs, guide: docs/modules/heptabao-governance.md}
+- {crate: heptabao-identity, domain: entity alias and group resolution, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-identity/src/lib.rs, guide: docs/modules/heptabao-identity.md}
+- {crate: heptabao-journal-api, domain: journal contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-journal-api/src/lib.rs, guide: docs/modules/heptabao-journal-api.md}
+- {crate: heptabao-journaled-core, domain: journaled durable composition, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-journaled-core/src/lib.rs, guide: docs/modules/heptabao-journaled-core.md}
+- {crate: heptabao-key-lifecycle, domain: key lifecycle contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-key-lifecycle/src/lib.rs, guide: docs/modules/heptabao-key-lifecycle.md}
+- {crate: heptabao-kv-engine, domain: versioned KV secrets engine, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-kv-engine/src/lib.rs, guide: docs/modules/heptabao-kv-engine.md}
+- {crate: heptabao-lease, domain: lease lifecycle, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-lease/src/lib.rs, guide: docs/modules/heptabao-lease.md}
+- {crate: heptabao-mount-router, domain: namespace scoped mount routing, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-mount-router/src/lib.rs, guide: docs/modules/heptabao-mount-router.md}
+- {crate: heptabao-namespace, domain: hierarchical namespace isolation, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-namespace/src/lib.rs, guide: docs/modules/heptabao-namespace.md}
+- {crate: heptabao-operation-ledger, domain: operation reconciliation ledger, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-operation-ledger/src/lib.rs, guide: docs/modules/heptabao-operation-ledger.md}
+- {crate: heptabao-oracle-observer, domain: clean-room observation contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-oracle-observer/src/lib.rs, guide: docs/modules/heptabao-oracle-observer.md}
+- {crate: heptabao-p0-server, domain: loopback memory server, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-p0-server/src/lib.rs, guide: docs/modules/heptabao-p0-server.md}
+- {crate: heptabao-platform-bakeoff, domain: dependency bakeoff contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-platform-bakeoff/src/lib.rs, guide: docs/modules/heptabao-platform-bakeoff.md}
+- {crate: heptabao-platform-contracts, domain: runtime TLS and Raft provider contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-platform-contracts/src/lib.rs, guide: docs/modules/heptabao-platform-contracts.md}
+- {crate: heptabao-plugin-contracts, domain: plugin lifecycle and outcome contracts, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-plugin-contracts/src/lib.rs, guide: docs/modules/heptabao-plugin-contracts.md}
+- {crate: heptabao-policy, domain: default deny path authorization, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-policy/src/lib.rs, guide: docs/modules/heptabao-policy.md}
+- {crate: heptabao-protocol, domain: protocol and request contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-protocol/src/lib.rs, guide: docs/modules/heptabao-protocol.md}
+- {crate: heptabao-recovery-core, domain: authoritative recovery, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-recovery-core/src/lib.rs, guide: docs/modules/heptabao-recovery-core.md}
+- {crate: heptabao-rollback-anchor, domain: rollback anchor fencing, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-rollback-anchor/src/lib.rs, guide: docs/modules/heptabao-rollback-anchor.md}
+- {crate: heptabao-single-node-journal, domain: local durable journal, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-single-node-journal/src/lib.rs, guide: docs/modules/heptabao-single-node-journal.md}
+- {crate: heptabao-single-node-store, domain: local durable store, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-single-node-store/src/lib.rs, guide: docs/modules/heptabao-single-node-store.md}
+- {crate: heptabao-storage-api, domain: storage contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-storage-api/src/lib.rs, guide: docs/modules/heptabao-storage-api.md}
+- {crate: heptabao-token, domain: token lifecycle, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-token/src/lib.rs, guide: docs/modules/heptabao-token.md}
 planned_modules:
-- heptabao-namespace
-- heptabao-mount-router
-- heptabao-plugin-contracts
-- heptabao-kv-engine
 - heptabao-service-core
 - heptabao-operator-api
 - heptabao-telemetry
@@ -163,8 +43,4 @@ planned_modules:
 - heptabao-proxy
 - heptabao-kms-contracts
 - heptabao-compatibility
-claims:
-  qualification: false
-  compatibility_claim: false
-  production_authority: false
-  release_authority: false
+claims: {qualification: false, compatibility_claim: false, production_authority: false, release_authority: false}

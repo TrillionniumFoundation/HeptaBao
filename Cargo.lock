@@ -69,7 +69,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-kv-engine"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
+
+[[package]]
 name = "heptabao-lease"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
+
+[[package]]
+name = "heptabao-mount-router"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
+
+[[package]]
+name = "heptabao-namespace"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
@@ -101,6 +122,13 @@ version = "0.1.0"
 [[package]]
 name = "heptabao-platform-contracts"
 version = "0.1.0"
+
+[[package]]
+name = "heptabao-plugin-contracts"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
 
 [[package]]
 name = "heptabao-policy"

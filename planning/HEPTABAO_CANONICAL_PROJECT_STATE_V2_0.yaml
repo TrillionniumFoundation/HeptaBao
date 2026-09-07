@@ -15,15 +15,9 @@ current_documents:
   repository_validator: scripts/validate_repository_v2.py
 workstreams:
   G0_repository_truth: IMPLEMENTED_REVIEW_REQUIRED
-  G1_control_plane: IN_PROGRESS
+  G1_control_plane: IMPLEMENTED_REVIEW_REQUIRED
   G2_service_composition: NOT_YET_COMMITTED
   G3_operations: NOT_YET_COMMITTED
   G4_ha_migration_client_compatibility: NOT_YET_COMMITTED
   G5_external_authority: EXTERNAL_COMPLETION_REQUIRED
-claims:
-  qualification: false
-  compatibility_claim: false
-  production_authority: false
-  migration_authority: false
-  release_authority: false
-  authority_effect: NONE
+claims: {qualification: false, compatibility_claim: false, production_authority: false, migration_authority: false, release_authority: false, authority_effect: NONE}
