@@ -1,0 +1,128 @@
+name: HeptaBao V2 current review fix materializer
+
+on:
+  push:
+    branches:
+      - codex/v2.0-product-closure-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-current-review-fix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: "${{ github.event.head_commit.message == 'ci(v2): apply atomicity and scoped admission fixes' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact staging commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify baseline and apply reviewed overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "TrillionniumFoundation/HeptaBao"
+          test "$GITHUB_REF" = "refs/heads/codex/v2.0-product-closure-20260907"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          read -r commit parent extra <<<"$(git rev-list --parents -n 1 HEAD)"
+          test "$commit" = "$GITHUB_SHA"
+          test "$parent" = "503f63708529185f21eecc411e6a937e5120b9f3"
+          test -z "${extra:-}"
+
+          cat > "$RUNNER_TEMP/baseline.sha256" <<'EOF'
+          9070804ffb3572da77652a232eeb46125ebb332c0c1a0e489fc2c02c7020fe60  crates/heptabao-kv-engine/src/lib.rs
+          640e0003f6a0a55b34ad25a431fff48021f9f06e6664828776d6cf03be81e0da  crates/heptabao-service-core/src/lib.rs
+          423b706092b1c045f7288fcf2f78f85cdec8647d1dbcc6e8af5b87a81da67efd  crates/heptabao-operator-api/src/lib.rs
+          dfa43b1b38c7b25de62e4b5fb4c76eac34d092767dfc5f24ef6eb17f06ac5da5  docs/modules/heptabao-kv-engine.md
+          7e60182fc71c703d773a10596e8ae7195b1fb9cab69daaf8bee943de31010b8f  docs/modules/heptabao-service-core.md
+          fd9a0de54a50aa33a9a823349d64c3239adece3c859218b1bc37fce758955b28  docs/modules/heptabao-operator-api.md
+          ac0f0110a5686bd7de1cee2f8dc9e3fca28ea50ae6155494a154d318d35a4806  planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/baseline.sha256"
+          sha256sum --check "$RUNNER_TEMP/baseline.sha256"
+
+          cat \
+            .exec/v2-review-fix.part-00 \
+            .exec/v2-review-fix.part-01 \
+            .exec/v2-review-fix.part-02 \
+            .exec/v2-review-fix.part-03 \
+            .exec/v2-review-fix.part-04 \
+            .exec/v2-review-fix.part-05 \
+            | tr -d '\r\n' > "$RUNNER_TEMP/review-fix.b64"
+          test "$(sha256sum "$RUNNER_TEMP/review-fix.b64" | awk '{print $1}')" = \
+            "342e85fa49d772dac4489d5d29b5e7cc79cb54d826684e21f9185a4c4b38dd80"
+          base64 --decode "$RUNNER_TEMP/review-fix.b64" > "$RUNNER_TEMP/review-fix.tar.gz"
+          test "$(sha256sum "$RUNNER_TEMP/review-fix.tar.gz" | awk '{print $1}')" = \
+            "65638af71722c2ac8b6690f7bdc3c67358b02e2e89b2e3f745db027d3bbb4dbe"
+
+          cat > "$RUNNER_TEMP/expected-paths.txt" <<'EOF'
+          crates/heptabao-kv-engine/src/lib.rs
+          crates/heptabao-operator-api/src/lib.rs
+          crates/heptabao-service-core/src/lib.rs
+          docs/modules/heptabao-kv-engine.md
+          docs/modules/heptabao-operator-api.md
+          docs/modules/heptabao-service-core.md
+          planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/expected-paths.txt"
+          tar --list --gzip --file "$RUNNER_TEMP/review-fix.tar.gz" | LC_ALL=C sort > "$RUNNER_TEMP/actual-paths.txt"
+          LC_ALL=C sort -o "$RUNNER_TEMP/expected-paths.txt" "$RUNNER_TEMP/expected-paths.txt"
+          cmp "$RUNNER_TEMP/expected-paths.txt" "$RUNNER_TEMP/actual-paths.txt"
+
+          tar --extract --gzip --file "$RUNNER_TEMP/review-fix.tar.gz" \
+            --directory . --no-same-owner --no-same-permissions
+          rm -f .exec/v2-review-fix.part-*
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+
+      - name: Install validation toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Validate repository, documentation, platform and Oracle gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+
+      - name: Validate complete Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+
+      - name: Commit verified source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .exec/v2-review-fix.part-00
+          git config user.name "HeptaBao convergence controller"
+          git config user.email "heptabao-convergence@users.noreply.github.com"
+          git add --all
+          git commit -m "fix(v2): make KV rejection atomic and scope request admission"
+          git push origin HEAD:codex/v2.0-product-closure-20260907
