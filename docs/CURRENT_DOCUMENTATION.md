@@ -1,57 +1,103 @@
-# HeptaBao Current Documentation
+# HeptaBao current documentation
 
-This page is the single current-entry portal. A newer row supersedes an older row only for the named subject; historical documents remain immutable evidence and are not silently rewritten.
+Status: `V2.0 / REPOSITORY PRODUCT CANDIDATE UNDER REVIEW`
 
-## Current normative set
+Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.0`
 
-| Subject | Current document |
-|---|---|
-| active plan | `docs/plan/HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md` |
-| current status | `planning/HEPTABAO_V1_4_7_POST_MERGE_TRUTH_STATUS.yaml` |
-| blocker register | `planning/HEPTABAO_BLOCKER_REGISTER_V1_4_7.yaml` |
-| normative manifest | `planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml` |
-| post-merge V1.4.6 closure receipt | `planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml` |
-| module documentation standard | `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` |
-| module index | `docs/modules/README.md` |
-| machine-bound module source truth | `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml` |
-| external completion admission protocol | `docs/governance/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_PROTOCOL_V1.md` |
-| external completion admission catalog | `planning/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_V1.yaml` |
-| current exact-head/merge gate | `.github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml` |
+This page is the current documentation entry for the exact Git commit under review. It does not grant compatibility, production, migration or release authority. Historical V1.x material remains source-bound evidence only.
 
-## Inherited immutable set
+## Canonical current truth
 
-| Subject | Inherited document |
-|---|---|
-| V1.4.6 plan | `docs/plan/HEPTABAO_PLAN_V1_4_6_AUTHORITATIVE_RECOVERY_CLOSURE.md` |
-| V1.4.6 status | `planning/HEPTABAO_V1_4_6_AUTHORITATIVE_RECOVERY_STATUS.yaml` |
-| V1.4.6 blocker register | `planning/HEPTABAO_BLOCKER_REGISTER_V1_4_6.yaml` |
-| V1.4.6 normative manifest | `planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_6.yaml` |
-| V1.4.6 authoritative recovery protocol | `docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md` |
-| V1.4.6 recovery gate | `.github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml` |
-| V1.4.5 security regression gate | `.github/workflows/plan-v1.4.5-security-invariant-closure.yml` |
-| V1.4.4 module existence gate | `.github/workflows/plan-v1.4.4-module-documentation.yml` |
+Read these artifacts together, in this order:
 
-## Supersession chain
+1. `planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml` — selected plan, current workstreams, current document pointers and fail-closed claims.
+2. `planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml` — all 40 workspace packages, domains, source paths, guides and implementation states.
+3. `planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml` — repository-controlled and external completion blockers.
+4. `docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md` — G0–G5 delivery and closure rules.
+5. `scripts/validate_repository_v2.py` and `tests/repository/test_repository_v2.py` — executable agreement checks.
+
+The exact Git commit and tree always outrank a generated or hand-written status statement.
+
+## Current architecture and contracts
+
+- `docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md`
+- `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
+- `docs/architecture/HEPTABAO_AUTHORITATIVE_DATA_OWNERSHIP_AND_TRANSACTION_MAP_V1.md`
+- `docs/architecture/HEPTABAO_REQUEST_PIPELINE_HAPPENS_BEFORE_V1.md`
+- `specs/HEPTABAO_REQUEST_PIPELINE_STATE_MACHINE_V1.yaml`
+- `specs/HEPTABAO_OPERATION_REGISTRY_V1.yaml`
+- `specs/HEPTABAO_MIGRATION_AUTHORITY_STATE_MACHINE_V1.yaml`
+- `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
+
+The V2 mandatory pipeline joins the new product/control-plane contracts to inherited safety foundations. The present `heptabao-service-core` path is still an in-memory composition; complete journal/ledger/barrier-backed runtime integration is tracked as a repository-controlled closure item.
+
+## Module documentation
+
+- `docs/modules/README.md` — complete 40-package current index.
+- `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — semantic standard for current/new packages.
+- `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited source-bound standard for the 19 V1.4.7 packages.
+- `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared failure, security, concurrency, documentation and change rules.
+
+Every workspace package has exactly one `docs/modules/<package>.md` guide. The repository validator checks the package, lockfile, source, guide and test surfaces as one set.
+
+## Operations, recovery and security
+
+- `docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md`
+- `docs/operations/HEPTABAO_OBSERVABILITY_CATALOG_V1.md`
+- `docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md`
+- `docs/recovery/HEPTABAO_ANCHORED_RECOVERY_CONTRACT_V1.md`
+- `docs/storage/HEPTABAO_DURABILITY_AND_CRASH_CONSISTENCY_CONTRACT_V1.md`
+- `docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md`
+- `docs/security/HEPTABAO_THREAT_MODEL_V1.md`
+- `docs/security/HEPTABAO_V1_3_THREAT_MODEL_DELTA.md`
+- `docs/security/HEPTABAO_SECURITY_INVARIANT_CLOSURE_V1.md`
+- `SECURITY.md`
+
+Operator and security documentation describes fail-closed actions. It is not a substitute for production provider qualification, incident staffing, external audit or supported-version admission.
+
+## Compatibility and clean-room evidence
+
+- `docs/compatibility/HEPTABAO_ORACLE_COMPATIBILITY_MATRIX_SPEC_V1.md`
+- `oracle/README.md`
+- `oracle/normalization/HEPTABAO_ORACLE_NORMALIZATION_POLICY_V1.yaml`
+- `planning/HEPTABAO_CLEAN_ROOM_ACCESS_POLICY_V1.yaml`
+- `planning/HEPTABAO_UPSTREAM_COMPATIBILITY_TRAINS_V1.yaml`
+- `LICENSE-PLANNING.md`
+
+The repository contains differential and admission contracts, but `compatibility_claim=false`. Restricted Oracle-lane control, legal disposition and independent admission remain external blockers.
+
+## Current validation commands
 
 ```text
-V1.4.2 anchored recovery foundation
-  → V1.4.3 descriptor anchoring/writer fencing
-  → V1.4.4 complete current-crate documentation
-  → V1.4.5 security invariant closure
-  → V1.4.6 authoritative recovery closure
-  → V1.4.7 post-merge truth and external admission
+python scripts/validate_repository_v2.py
+python -m unittest discover -s tests/repository -p 'test_*.py' -v
+cargo +1.98.0 fmt --all -- --check
+cargo +1.98.0 test --locked --workspace --all-targets
+cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.98.0 doc --locked --workspace --no-deps
 ```
 
-## V1.4.6 post-merge disposition
+A current exact-head run is required. Historical green checks, local output and checks bound to another commit are not current admission evidence.
 
-V1.4.6 exact head `837668cb879683bc60808584d2ebdedd42a397aa` and prospective merge `54d524214df443752a2ecaeff6d4a05625bf52c7` passed their required repository gates. The same exact head received a current GitHub approval, and the signed GitHub merge has tree `c22288f561fdd711e908ce8a70c0116601d519e5`. The V1.4.7 post-merge receipt therefore closes only `HB-BLK-REPO-049` through `HB-BLK-REPO-058` in repository-controlled scope. It does not create an accountable role receipt or close any control/external blocker.
+## Historical documentation chain
 
-## V1.4.7 reading rule
+The following plans remain immutable historical evidence and are not selected as current truth:
 
-Each current Cargo workspace crate has one module guide. Public lexical declarations, workspace-internal dependencies, source-file digests and discovered test functions are generated from the exact candidate source and bound in `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`. Generated tables are source truth for the exact candidate; they do not promise API stability, compatibility or production support.
+- `docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V1_1.md`
+- `docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V1_2.md`
+- `docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V1_3.md`
+- `docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V1_4.md`
+- V1.4.1 through V1.4.7 plan addenda, status files, receipts and exact-source manifests.
 
-External completion documents are admitted only through the strict V1.4.7 envelope and validator. Templates are deliberately `UNEXECUTED` and are prohibited from closing a blocker. A green repository workflow cannot manufacture legal advice, independent identities, 24x7 operation, isolated key custody, restricted Oracle transfer, destructive power-cut evidence or separately controlled reproduction.
+The V1.4.4 coverage manifest still describes its frozen 19-package baseline. It must not be interpreted as the current V2 package count.
 
-## Open authority boundary
+## Authority boundary
 
-`HB-BLK-CTRL-001` and `HB-BLK-EXT-001` through `HB-BLK-EXT-007` remain open until live, current, independently verifiable completion objects are admitted. Product composition, compatibility, platform qualification, provider selection, migration, production and release authority remain false.
+```text
+qualification=false
+compatibility_claim=false
+production_authority=false
+migration_authority=false
+release_authority=false
+authority_effect=NONE
+```

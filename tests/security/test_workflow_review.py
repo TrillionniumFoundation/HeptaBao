@@ -258,9 +258,15 @@ class WorkflowReviewTests(unittest.TestCase):
             self.assertEqual("heptabao.workflow-trust-check.v2", result["schema"])
 
     def test_current_installed_workflows_pass_without_running_them(self):
-        result = policy.validate_directory(ROOT / ".github/workflows")
+        directory = ROOT / ".github/workflows"
+        result = policy.validate_directory(directory)
         self.assertEqual("PASS", result["result"], result["failures"])
-        self.assertEqual(36, len(result["checked"]))
+        expected = sorted(
+            path.name
+            for path in directory.iterdir()
+            if path.is_file() and path.suffix.lower() in {".yml", ".yaml"}
+        )
+        self.assertEqual(expected, result["checked"])
 
 
 if __name__ == "__main__":
