@@ -1,0 +1,123 @@
+name: HeptaBao V2 controller cleanup v9
+
+on:
+  push:
+    branches:
+      - exec/v2-controller-cleanup-v9-20260907
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  PR_NUMBER: '71'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    steps:
+      - name: Wait for terminal V2 controller receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$RUNNER_TEMP/v2-cleanup"
+          terminal=false
+          verdict=unknown
+          for attempt in $(seq 1 180); do
+            gh api "/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments?per_page=100" > "$RUNNER_TEMP/v2-cleanup/comments.json"
+            set +e
+            verdict="$(python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          comments = json.loads(Path(os.environ['RUNNER_TEMP'] + '/v2-cleanup/comments.json').read_text())
+          bodies = [comment.get('body') or '' for comment in comments]
+          if any('<!-- heptabao-v2-exact-head-admission:v7c -->' in body for body in bodies):
+              print('exact-head-pass')
+              raise SystemExit(0)
+          if any('<!-- heptabao-v2-exact-head-admission:v7c-failure -->' in body for body in bodies):
+              print('exact-head-blocked')
+              raise SystemExit(0)
+          if any('<!-- heptabao-v2-convergence:v8-failure -->' in body for body in bodies):
+              print('repository-blocked')
+              raise SystemExit(0)
+          raise SystemExit(1)
+          PY
+          )"
+            rc=$?
+            set -e
+            if test "$rc" -eq 0; then terminal=true; break; fi
+            sleep 30
+          done
+          test "$terminal" = true
+          printf 'verdict=%s\n' "$verdict" | tee "$RUNNER_TEMP/v2-cleanup/verdict.txt"
+
+      - name: Remove bounded temporary controller refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cat > "$RUNNER_TEMP/v2-cleanup/branches.txt" <<'EOF'
+          exec/v2-final-materialize-20260907
+          exec/v2-final-materialize-v2-20260907
+          exec/v2-final-materialize-v3-20260907
+          exec/v2-final-materialize-v4-20260907
+          exec/v2-final-materialize-v4-diagnostics
+          exec/v2-final-converge-v5-20260907
+          exec/v2-final-cross-platform-v6-20260907
+          exec/v2-final-cross-platform-v6b-20260907
+          exec/v2-final-admission-watch-v7-20260907
+          exec/v2-final-admission-watch-v7b-20260907
+          exec/v2-authoritative-converge-v8-20260907
+          exec/v2-cross-platform-v6c-20260907
+          exec/v2-final-admission-v7c-20260907
+          EOF
+          : > "$RUNNER_TEMP/v2-cleanup/deleted.txt"
+          while IFS= read -r branch; do
+            test -n "$branch" || continue
+            if gh api "/repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" >/dev/null 2>&1; then
+              gh api --method DELETE "/repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"
+              printf '%s\n' "$branch" >> "$RUNNER_TEMP/v2-cleanup/deleted.txt"
+            fi
+          done < "$RUNNER_TEMP/v2-cleanup/branches.txt"
+
+      - name: Record cleanup receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP']) / 'v2-cleanup'
+          verdict = (root / 'verdict.txt').read_text().strip().split('=', 1)[-1]
+          deleted = (root / 'deleted.txt').read_text().splitlines()
+          rows = '\n'.join(f'- `{branch}`' for branch in deleted) or '- no temporary refs remained'
+          body = f"""<!-- heptabao-v2-controller-cleanup:v9 -->
+          ## V2 temporary controller cleanup: COMPLETE
+
+          - terminal verdict: `{verdict}`
+          - removed temporary refs:
+          {rows}
+          - candidate branch and PR #71 were not deleted or merged
+          - workflow artifacts and PR evidence remain available under their retention contracts
+          """
+          Path('/tmp/cleanup-comment.json').write_text(json.dumps({'body': body}))
+          PY
+          gh api --method POST "/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --input /tmp/cleanup-comment.json
+
+      - name: Delete cleanup controller ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          gh api --method DELETE "/repos/$GITHUB_REPOSITORY/git/refs/heads/exec/v2-controller-cleanup-v9-20260907"
