@@ -1,0 +1,138 @@
+name: HeptaBao V2.1 PR75 admission monitor
+
+on:
+  push:
+    branches:
+      - exec/v2.1-pr75-admission-monitor-20260908
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: v2-1-pr75-admission-monitor
+  cancel-in-progress: true
+
+jobs:
+  observe-and-request-review:
+    if: github.event.head_commit.message == 'chore(exec): install PR75 admission monitor'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/HeptaBao
+      PR_NUMBER: '75'
+      CANDIDATE_BRANCH: codex/v2.1-main-convergence-durable-runtime-20260907
+    steps:
+      - name: Wait for a complete validated 53-package candidate
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          head=''
+          for attempt in $(seq 1 180); do
+            head=$(gh api "repos/$REPOSITORY/git/ref/heads/$CANDIDATE_BRANCH" --jq '.object.sha')
+            count=$(gh api "repos/$REPOSITORY/git/trees/$head?recursive=1" --jq '[.tree[] | select(.type == "blob" and (.path | test("^crates/heptabao-[^/]+/Cargo.toml$")))] | length')
+            status_path=$(gh api "repos/$REPOSITORY/git/trees/$head?recursive=1" --jq '[.tree[] | select(.path == "planning/HEPTABAO_V2_1_WORKSPACE_NORMALIZATION_STATUS.yaml")] | length')
+            if test "$count" = 53 && test "$status_path" = 1; then
+              break
+            fi
+            sleep 10
+          done
+          test -n "$head"
+          count=$(gh api "repos/$REPOSITORY/git/trees/$head?recursive=1" --jq '[.tree[] | select(.type == "blob" and (.path | test("^crates/heptabao-[^/]+/Cargo.toml$")))] | length')
+          if test "$count" != 53; then
+            gh api "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="## V2.1 admission monitor: repository convergence still blocked
+
+The candidate did not reach the required 53-package validated source state within the bounded observation window. No review request, merge, authority or external-completion transition was made.
+
+\`qualification=false\`
+\`production_authority=false\`
+\`release_authority=false\`"
+            exit 1
+          fi
+          pr_head=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
+          test "$pr_head" = "$head"
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for exact-head and prospective-main-merge evidence
+        id: checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          head='${{ steps.candidate.outputs.head }}'
+          convergence_id=''
+          exact_merge_id=''
+          for attempt in $(seq 1 180); do
+            current=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
+            test "$current" = "$head"
+            runs=$(gh api "repos/$REPOSITORY/actions/runs?head_sha=$head&per_page=100")
+            convergence_id=$(jq -r '[.workflow_runs[] | select(.name == "HeptaBao V2.1 main convergence")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")
+            exact_merge_id=$(jq -r '[.workflow_runs[] | select(.name == "HeptaBao V2.1 exact head and prospective main merge")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")
+            if test -n "$convergence_id" && test -n "$exact_merge_id"; then
+              convergence_state=$(gh api "repos/$REPOSITORY/actions/runs/$convergence_id" --jq '[.status,.conclusion] | @tsv')
+              exact_state=$(gh api "repos/$REPOSITORY/actions/runs/$exact_merge_id" --jq '[.status,.conclusion] | @tsv')
+              if test "$convergence_state" = $'completed\tsuccess' && test "$exact_state" = $'completed\tsuccess'; then
+                break
+              fi
+              if grep -Eq $'completed\t(failure|cancelled|timed_out|action_required|stale)' <<<"$convergence_state$exact_state"; then
+                gh api "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="## V2.1 admission monitor: current-head gate failed
+
+Exact candidate: \`$head\`
+
+- main-convergence run: \`$convergence_id\` — \`$convergence_state\`
+- exact/prospective-main-merge run: \`$exact_merge_id\` — \`$exact_state\`
+
+No review request, merge or authority transition was made. Repair must occur on a new exact head."
+                exit 1
+              fi
+            fi
+            sleep 10
+          done
+          test -n "$convergence_id"
+          test -n "$exact_merge_id"
+          test "$(gh api "repos/$REPOSITORY/actions/runs/$convergence_id" --jq '.conclusion')" = success
+          test "$(gh api "repos/$REPOSITORY/actions/runs/$exact_merge_id" --jq '.conclusion')" = success
+          jobs=$(gh api "repos/$REPOSITORY/actions/runs/$exact_merge_id/jobs?per_page=100")
+          test "$(jq -r '[.jobs[] | select(.name == "exact-head" and .conclusion == "success")] | length' <<<"$jobs")" = 1
+          test "$(jq -r '[.jobs[] | select(.name == "prospective-main-merge" and .conclusion == "success")] | length' <<<"$jobs")" = 1
+          echo "convergence_id=$convergence_id" >> "$GITHUB_OUTPUT"
+          echo "exact_merge_id=$exact_merge_id" >> "$GITHUB_OUTPUT"
+
+      - name: Publish exact review packet and request independent review
+        shell: bash
+        run: |
+          set -euo pipefail
+          head='${{ steps.candidate.outputs.head }}'
+          convergence='${{ steps.checks.outputs.convergence_id }}'
+          exact_merge='${{ steps.checks.outputs.exact_merge_id }}'
+          current=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')
+          test "$current" = "$head"
+          gh api "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="## V2.1 current-head repository packet ready for independent review
+
+Exact head: \`$head\`
+Workspace: **53 packages**
+
+Terminal-success evidence:
+
+- V2.1 main convergence: run \`$convergence\`
+- V2.1 exact head and prospective main merge: run \`$exact_merge\`
+- both \`exact-head\` and \`prospective-main-merge\` jobs are non-empty terminal successes
+
+The packet covers repository truth, module documentation, workflow/security regressions, platform and Oracle suites, Rust 1.98 locked all-target tests, warnings-denied Clippy and rustdoc. Please review this unchanged head; no old review is inherited.
+
+This packet does not grant legal, product-security, 24×7 operations, signer/KMS/HSM custody, destructive-platform, independent-reproduction, compatibility, production, migration or release authority.
+
+\`qualification=false\`
+\`compatibility_claim=false\`
+\`production_authority=false\`
+\`migration_authority=false\`
+\`release_authority=false\`
+\`authority_effect=NONE\`"
+          node_id=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.node_id')
+          is_draft=$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.draft')
+          if test "$is_draft" = true; then
+            gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}' -f id="$node_id" >/dev/null
+          fi
+          gh api "repos/$REPOSITORY/pulls/$PR_NUMBER/requested_reviewers" -f 'reviewers[]=Tomasrgbsf' -f 'reviewers[]=Franksudoman' >/dev/null
