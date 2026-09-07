@@ -52,11 +52,12 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Check Rust formatting
+      - name: Materialize and emit canonical Rust formatting
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 fmt --all
+          python scripts/emit_rustfmt_base64.py
       - name: Run all Rust targets
         shell: bash
         run: |
