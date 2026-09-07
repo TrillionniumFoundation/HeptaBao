@@ -86,19 +86,27 @@ jobs:
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
           python -m unittest discover -s tests/security -p 'test_*.py' -v
           python scripts/validate_workflow_trust.py
-      - name: Preserve inherited current-source gates
+      - name: Preserve generation-appropriate current-source gates
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/validate_plan_v1_4_7.py
-          python scripts/validate_plan_v1_4_6.py
-          python scripts/validate_plan_v1_4_5.py
-          python scripts/validate_module_documentation_v1_4_4.py
-          python -m unittest discover -s tests/plan -p 'test_*v1_4_7.py' -v
-          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
-          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_6.py' -v
-          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
-          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          if [[ -f planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml ]]; then
+            python scripts/validate_repository_v2.py
+            python -m unittest discover -s tests/repository -p 'test_*.py' -v
+            python scripts/validate_module_documentation_v1_4_4.py
+            python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+            python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          else
+            python scripts/validate_plan_v1_4_7.py
+            python scripts/validate_plan_v1_4_6.py
+            python scripts/validate_plan_v1_4_5.py
+            python scripts/validate_module_documentation_v1_4_4.py
+            python -m unittest discover -s tests/plan -p 'test_*v1_4_7.py' -v
+            python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+            python -m unittest discover -s tests/plan -p 'test_plan_v1_4_6.py' -v
+            python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
+            python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          fi
           python -m unittest discover -s tests/platform -p 'test_*.py' -v
           python -m unittest discover -s tests/oracle -p 'test_*.py' -v
       - name: Install declared Rust toolchain

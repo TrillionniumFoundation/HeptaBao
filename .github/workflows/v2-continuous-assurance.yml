@@ -11,7 +11,7 @@ on:
       - codex/v2.0-product-closure-20260907
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: v2-assurance-${{ github.workflow }}-${{ github.ref }}
@@ -22,12 +22,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Checkout current branch source
+      - name: Checkout immutable source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
       - name: Install Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
@@ -54,61 +54,12 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Materialize canonical formatting and known lint correction
+      - name: Validate unchanged Rust workspace
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all
-          python - <<'PY'
-          from pathlib import Path
-          path = Path("crates/heptabao-kv-engine/src/lib.rs")
-          source = path.read_text(encoding="utf-8")
-          old = """        if let Some(expected) = cas {\n            if expected != current {\n                return Err(KvError::CasMismatch);\n            }\n        }\n"""
-          new = """        if let Some(expected) = cas\n            && expected != current\n        {\n            return Err(KvError::CasMismatch);\n        }\n"""
-          if old in source:
-              path.write_text(source.replace(old, new, 1), encoding="utf-8")
-          elif new not in source:
-              raise SystemExit("known Clippy correction pattern was not found")
-          PY
-          cargo +1.98.0 fmt --all
-          cat > "$RUNNER_TEMP/expected-rustfmt-files.txt" <<'EOF'
-          crates/heptabao-domain/src/lib.rs
-          crates/heptabao-identity/src/lib.rs
-          crates/heptabao-kv-engine/src/lib.rs
-          crates/heptabao-lease/src/lib.rs
-          crates/heptabao-mount-router/src/lib.rs
-          crates/heptabao-namespace/src/lib.rs
-          crates/heptabao-plugin-contracts/src/lib.rs
-          crates/heptabao-retention/src/lib.rs
-          crates/heptabao-service-core/src/lib.rs
-          crates/heptabao-token/src/lib.rs
-          EOF
-          git diff --name-only --diff-filter=AM -- '*.rs' | sort > "$RUNNER_TEMP/actual-rustfmt-files.txt"
-          diff -u "$RUNNER_TEMP/expected-rustfmt-files.txt" "$RUNNER_TEMP/actual-rustfmt-files.txt"
-      - name: Commit canonical formatting to the current convergence branch
-        if: github.event_name == 'push'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "heptabao-ci"
-          git config user.email "heptabao-ci@users.noreply.github.com"
-          git add -- '*.rs'
-          if ! git diff --cached --quiet; then
-            git commit -m "style(v2): materialize rustfmt and lint correction"
-            git push origin HEAD:codex/v2.0-product-closure-20260907
-          fi
-      - name: Run all Rust targets
-        shell: bash
-        run: |
-          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
           cargo +1.98.0 test --locked --workspace --all-targets
-      - name: Run strict Rust lint
-        shell: bash
-        run: |
-          set -euo pipefail
           cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
-      - name: Build Rust documentation
-        shell: bash
-        run: |
-          set -euo pipefail
           cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --exit-code
