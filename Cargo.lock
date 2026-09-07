@@ -3,43 +3,26 @@
 version = 4
 
 [[package]]
-name = "heptabao-agent"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
 name = "heptabao-authbus-contracts"
 version = "0.1.0"
-dependencies = ["heptabao-protocol"]
+dependencies = [
+ "heptabao-protocol",
+]
 
 [[package]]
 name = "heptabao-barrier-api"
 version = "0.1.0"
-dependencies = ["heptabao-storage-api"]
-
-[[package]]
-name = "heptabao-cli-contracts"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-client-contracts"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-compatibility"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-domain"
-version = "0.1.0"
+dependencies = [
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-durable-core"
 version = "0.1.0"
-dependencies = ["heptabao-barrier-api", "heptabao-storage-api"]
+dependencies = [
+ "heptabao-barrier-api",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-filesystem-guard"
@@ -50,68 +33,37 @@ name = "heptabao-governance"
 version = "0.1.0"
 
 [[package]]
-name = "heptabao-ha-contracts"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-identity"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
 name = "heptabao-journal-api"
 version = "0.1.0"
 
 [[package]]
 name = "heptabao-journaled-core"
 version = "0.1.0"
-dependencies = ["heptabao-barrier-api", "heptabao-durable-core", "heptabao-journal-api", "heptabao-operation-ledger", "heptabao-single-node-journal", "heptabao-single-node-store", "heptabao-storage-api"]
+dependencies = [
+ "heptabao-barrier-api",
+ "heptabao-durable-core",
+ "heptabao-journal-api",
+ "heptabao-operation-ledger",
+ "heptabao-single-node-journal",
+ "heptabao-single-node-store",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-key-lifecycle"
 version = "0.1.0"
-dependencies = ["heptabao-barrier-api", "heptabao-journal-api"]
-
-[[package]]
-name = "heptabao-kms-contracts"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-kv-engine"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-lease"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-migration"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-mount-router"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-namespace"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
+dependencies = [
+ "heptabao-barrier-api",
+ "heptabao-journal-api",
+]
 
 [[package]]
 name = "heptabao-operation-ledger"
 version = "0.1.0"
-dependencies = ["heptabao-journal-api", "heptabao-storage-api"]
-
-[[package]]
-name = "heptabao-operator-api"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
+dependencies = [
+ "heptabao-journal-api",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-oracle-observer"
@@ -120,7 +72,9 @@ version = "0.1.0"
 [[package]]
 name = "heptabao-p0-server"
 version = "0.1.0"
-dependencies = ["heptabao-protocol"]
+dependencies = [
+ "heptabao-protocol",
+]
 
 [[package]]
 name = "heptabao-platform-bakeoff"
@@ -131,64 +85,44 @@ name = "heptabao-platform-contracts"
 version = "0.1.0"
 
 [[package]]
-name = "heptabao-plugin-contracts"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-policy"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
 name = "heptabao-protocol"
 version = "0.1.0"
 
 [[package]]
-name = "heptabao-proxy"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
 name = "heptabao-recovery-core"
 version = "0.1.0"
-dependencies = ["heptabao-barrier-api", "heptabao-journal-api", "heptabao-rollback-anchor", "heptabao-storage-api"]
-
-[[package]]
-name = "heptabao-retention"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
+dependencies = [
+ "heptabao-barrier-api",
+ "heptabao-journal-api",
+ "heptabao-rollback-anchor",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-rollback-anchor"
 version = "0.1.0"
-dependencies = ["heptabao-barrier-api", "heptabao-journal-api", "heptabao-storage-api"]
-
-[[package]]
-name = "heptabao-service-core"
-version = "0.1.0"
-dependencies = ["heptabao-domain", "heptabao-identity", "heptabao-kv-engine", "heptabao-mount-router", "heptabao-namespace", "heptabao-operator-api", "heptabao-policy", "heptabao-telemetry", "heptabao-token"]
+dependencies = [
+ "heptabao-barrier-api",
+ "heptabao-journal-api",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-single-node-journal"
 version = "0.1.0"
-dependencies = ["heptabao-filesystem-guard", "heptabao-journal-api"]
+dependencies = [
+ "heptabao-filesystem-guard",
+ "heptabao-journal-api",
+]
 
 [[package]]
 name = "heptabao-single-node-store"
 version = "0.1.0"
-dependencies = ["heptabao-filesystem-guard", "heptabao-storage-api"]
+dependencies = [
+ "heptabao-filesystem-guard",
+ "heptabao-storage-api",
+]
 
 [[package]]
 name = "heptabao-storage-api"
 version = "0.1.0"
-
-[[package]]
-name = "heptabao-telemetry"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]
-
-[[package]]
-name = "heptabao-token"
-version = "0.1.0"
-dependencies = ["heptabao-domain"]

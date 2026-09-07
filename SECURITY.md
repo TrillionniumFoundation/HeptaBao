@@ -2,20 +2,20 @@
 
 ## Current status
 
-HeptaBao is a `V2.0 repository product candidate under review`. It contains safety and product-domain contracts but is **not** a supported production secrets server, has no compatibility claim and has no production, migration, release or mixed-cluster authority.
+HeptaBao is in `H00 / planning and governance implementation`. It is **not** a production secrets server, has no compatibility claim and has no production, migration, release or mixed-cluster authority.
 
 Do not deploy this repository to protect real secrets. Do not place real tokens, unseal shares, recovery keys, root tokens, private keys or production snapshots in issues, pull requests, CI, fixtures or ordinary development environments.
 
 ## Private reporting
 
-A dedicated private disclosure channel and 24/7 incident owner are required by external blocker `HB-BLK-EXT-003` but are not yet qualified. Until that channel is operational:
+A dedicated private disclosure channel and 24/7 incident owner are required by `H00-WP07` but are not yet qualified. Until that channel is operational:
 
 1. Do not open a public issue for a suspected vulnerability.
 2. Use GitHub's private security-advisory mechanism for this repository when available.
 3. Otherwise contact the repository owner through an already established private channel and share only the minimum reproduction metadata.
 4. Never transmit live credentials or real customer secret material.
 
-The absence of a qualified disclosure channel is an external release blocker; it is not permission to disclose publicly.
+The absence of a qualified disclosure channel is an H00 release blocker; it is not permission to disclose publicly.
 
 ## What to include
 

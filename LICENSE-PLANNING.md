@@ -1,13 +1,13 @@
 # HeptaBao Licensing and Clean-Room Status
 
-Status: `V2.0 / HB-BLK-EXT-001 / NO FINAL OUTBOUND LICENSE SELECTED`
+Status: `H00 / NO FINAL OUTBOUND LICENSE SELECTED`
 
 This repository is not an OpenBao source-translation fork. HeptaBao is planned as an independent Rust implementation driven by approved public specifications, standards and versioned black-box Oracle observations.
 
 ## Current restrictions
 
 - No final outbound license has been approved for HeptaBao implementation files.
-- Do not redistribute or publish a release based on this repository until `HB-BLK-EXT-001` has an authentic signed legal disposition.
+- Do not redistribute or publish a release based on this repository until `H00-WP06` has a signed legal disposition.
 - Do not copy, mechanically translate, model-translate or lightly rewrite OpenBao source files into HeptaBao implementation crates.
 - Do not copy upstream tests, generated protocol files, snapshots or fixtures into the clean-room implementation lane without source classification and license review.
 - OpenBao source used by the Oracle/specification lane remains subject to its own MPL-2.0 notices and obligations.
@@ -21,7 +21,7 @@ This repository is not an OpenBao source-translation fork. HeptaBao is planned a
 
 No person or automation may move material between lanes without a recorded source classification, digest, reviewer and disposition.
 
-## Required external legal outputs
+## Required H00 legal outputs
 
 - outbound implementation and documentation license decision;
 - MPL-2.0 and interop-exception handling rules;
