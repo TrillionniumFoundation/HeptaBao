@@ -1,38 +1,5 @@
 [workspace]
-members = [
-    "crates/heptabao-authbus-contracts",
-    "crates/heptabao-barrier-api",
-    "crates/heptabao-domain",
-    "crates/heptabao-durable-core",
-    "crates/heptabao-filesystem-guard",
-    "crates/heptabao-governance",
-    "crates/heptabao-identity",
-    "crates/heptabao-journal-api",
-    "crates/heptabao-journaled-core",
-    "crates/heptabao-key-lifecycle",
-    "crates/heptabao-kv-engine",
-    "crates/heptabao-lease",
-    "crates/heptabao-mount-router",
-    "crates/heptabao-namespace",
-    "crates/heptabao-operation-ledger",
-    "crates/heptabao-operator-api",
-    "crates/heptabao-oracle-observer",
-    "crates/heptabao-p0-server",
-    "crates/heptabao-platform-bakeoff",
-    "crates/heptabao-platform-contracts",
-    "crates/heptabao-plugin-contracts",
-    "crates/heptabao-policy",
-    "crates/heptabao-protocol",
-    "crates/heptabao-recovery-core",
-    "crates/heptabao-retention",
-    "crates/heptabao-rollback-anchor",
-    "crates/heptabao-service-core",
-    "crates/heptabao-single-node-journal",
-    "crates/heptabao-single-node-store",
-    "crates/heptabao-storage-api",
-    "crates/heptabao-telemetry",
-    "crates/heptabao-token",
-]
+members = ["crates/*"]
 resolver = "3"
 
 [workspace.package]

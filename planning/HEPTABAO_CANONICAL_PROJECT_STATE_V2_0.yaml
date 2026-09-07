@@ -13,5 +13,5 @@ current_documents:
   request_pipeline: docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md
   operator_runbook: docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md
   observability_catalog: docs/operations/HEPTABAO_OBSERVABILITY_CATALOG_V1.md
-workstreams: {G0_repository_truth: IMPLEMENTED_REVIEW_REQUIRED, G1_control_plane: IMPLEMENTED_REVIEW_REQUIRED, G2_service_composition: IMPLEMENTED_REVIEW_REQUIRED, G3_operations: IMPLEMENTED_REVIEW_REQUIRED, G4_ha_migration_client_compatibility: NOT_YET_COMMITTED, G5_external_authority: EXTERNAL_COMPLETION_REQUIRED}
+workstreams: {G0_repository_truth: IMPLEMENTED_REVIEW_REQUIRED, G1_control_plane: IMPLEMENTED_REVIEW_REQUIRED, G2_service_composition: IMPLEMENTED_REVIEW_REQUIRED, G3_operations: IMPLEMENTED_REVIEW_REQUIRED, G4_ha_migration_client_compatibility: IN_PROGRESS, G5_external_authority: EXTERNAL_COMPLETION_REQUIRED}
 claims: {qualification: false, compatibility_claim: false, production_authority: false, migration_authority: false, release_authority: false, authority_effect: NONE}
