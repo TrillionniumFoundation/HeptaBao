@@ -1,6 +1,6 @@
 # HeptaBao Licensing and Clean-Room Status
 
-Status: `V2.0 / HB-BLK-EXT-001 / NO FINAL OUTBOUND LICENSE SELECTED`
+Status: `V2.1 / HB-BLK-EXT-001 / NO FINAL OUTBOUND LICENSE SELECTED`
 
 This repository is not an OpenBao source-translation fork. HeptaBao is planned as an independent Rust implementation driven by approved public specifications, standards and versioned black-box Oracle observations.
 
@@ -20,6 +20,8 @@ This repository is not an OpenBao source-translation fork. HeptaBao is planned a
 3. **Interop-exception lane** — handles protocols or formats that cannot be determined reasonably by black-box behavior; requires file-level provenance, legal review, license classification and explicit containment.
 
 No person or automation may move material between lanes without a recorded source classification, digest, reviewer and disposition.
+
+Historical work package `H00-WP06`, retained by the main-line legal policy, maps to current external blocker `HB-BLK-EXT-001`. This mapping preserves the signed-disposition requirement and grants no redistribution or release authority.
 
 ## Required external legal outputs
 

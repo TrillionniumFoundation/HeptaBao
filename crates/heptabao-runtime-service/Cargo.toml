@@ -7,6 +7,7 @@ publish = false
 
 [dependencies]
 sha2 = "=0.10.9"
+zeroize = "=1.8.1"
 heptabao-durable-service = { path = "../heptabao-durable-service" }
 
 [lib]

@@ -5,8 +5,6 @@ on:
     branches:
       - codex/plan-v1.4.4-module-documentation-closure-v1
   pull_request:
-    branches-ignore:
-      - codex/ci-trust-boundary-closure-20260907
     paths:
       - 'Cargo.toml'
       - 'crates/**'

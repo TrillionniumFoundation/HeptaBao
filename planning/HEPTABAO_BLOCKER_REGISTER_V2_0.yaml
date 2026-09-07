@@ -1,6 +1,6 @@
 schema: heptabao.blocker-register.v2
 plan_id: HEPTABAO-PLAN-2026-09-07-V2.1
-revision: 2.1.1
+revision: 2.1.2
 status: ACTIVE_FAIL_CLOSED
 inherits:
 - planning/HEPTABAO_BLOCKER_REGISTER_V1_4_7.yaml
@@ -172,6 +172,10 @@ repository_blockers:
   title: bounded production TLS network and operator query surface is incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - crates/heptabao-server/src/http.rs
+  - crates/heptabao-server/src/service.rs
+  - docs/modules/heptabao-server.md
+  - qa/single-node/smoke.py
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - implement and test bounded-tls-network-service
@@ -183,6 +187,8 @@ repository_blockers:
   title: persistent identity authentication MFA and token administration are incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - crates/heptabao-server/src/auth.rs
+  - docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - implement and test persistent-identity-and-auth-methods
@@ -205,6 +211,8 @@ repository_blockers:
   title: real persisted-format migration and interruption recovery are incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - qa/openbao-acceptance/migrate_kv2.py
+  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - implement and test interruption-safe-format-migration
@@ -227,6 +235,8 @@ repository_blockers:
   title: complete independently observed OpenBao compatibility corpus is incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - qa/openbao-acceptance/acceptance.py
+  - docs/compatibility/HEPTABAO_SINGLE_NODE_ACCEPTANCE.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - implement and test complete-compatibility-corpus

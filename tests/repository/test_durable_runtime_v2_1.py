@@ -62,15 +62,24 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         ):
             self.assertIn(required, source)
 
-        execute = source[source.index("fn execute(") : source.index("fn append_event(")]
+        execute = source[source.index("fn execute(") : source.index("fn append_frame(")]
+        # Cryptographic serialization and terminal-record capacity reservation
+        # happen before the first I/O attempt. Afterwards every failure must
+        # retain OutcomeUnknown, including genuine append/snapshot/ledger errors.
+        entry = execute.index("self.unresolved = true")
+        for serialization in ("sealed_snapshot", "sealed_ledger", "sealed_journal_record"):
+            self.assertLess(execute.index(serialization), entry)
+        self.assertLess(execute.index("JournalCapacityExhausted"), entry)
+        admitted = execute[entry:]
         positions = [
-            execute.index("JournalEvent::Intent"),
-            execute.index("persist_snapshot"),
-            execute.index("JournalEvent::Commit"),
-            execute.index("persist_ledger"),
-            execute.index("MutationOutcome::Committed"),
+            admitted.index("self.append_frame(&intent)"),
+            admitted.index("snapshot_path(&self.root)"),
+            admitted.index("self.append_frame(&commit)"),
+            admitted.index("ledger_path(&self.root)"),
+            admitted.index("MutationOutcome::Committed"),
         ]
         self.assertEqual(sorted(positions), positions)
+        self.assertIn("ServiceError::OutcomeUnknown { recovery_reference }", admitted)
 
         architecture = ARCHITECTURE.read_text(encoding="utf-8")
         self.assertIn("intent journal", architecture.lower())
@@ -96,7 +105,7 @@ class DurableRuntimeV21Tests(unittest.TestCase):
 
     def test_all_persisted_payloads_cross_the_barrier(self) -> None:
         source = (CRATE / "src" / "lib.rs").read_text(encoding="utf-8")
-        for function in ("persist_snapshot", "append_journal_record", "persist_ledger"):
+        for function in ("sealed_snapshot", "sealed_journal_record", "sealed_ledger"):
             start = source.index(f"fn {function}")
             next_function = source.find("\nfn ", start + 4)
             body = source[start : next_function if next_function != -1 else None]
@@ -126,6 +135,23 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             "corruption_and_wrong_barrier_fail_closed",
         }
         self.assertTrue(required.issubset(tests), sorted(required - tests))
+        for regression in (
+            "ambiguous_namespace_resource_pairs_are_isolated_across_restart_and_delete",
+            "legacy_schema_is_rejected_without_rewriting_it",
+            "genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference",
+            "failed_append_does_not_consume_sequence_and_reopen_recovers",
+            "authenticated_old_snapshot_and_contradictory_ledger_fail_closed",
+            "journal_budget_reserves_terminal_record_before_entry",
+            "actual_sigkill_releases_writer_and_recovers_pending_publication",
+            "real_partial_write_efbig_tail_is_recovered",
+        ):
+            self.assertIn(f"fn {regression}()", source)
+        self.assertIn("child.kill()", source)
+        self.assertIn("ulimit -f 1", source)
+        self.assertIn("ExclusiveDirectory::open(root)", source)
+        self.assertIn('b"HBS2"', source)
+        self.assertNotIn('format!("{namespace}/{resource}")', source)
+
 
     def test_current_workflow_is_read_only_and_main_bound(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8")

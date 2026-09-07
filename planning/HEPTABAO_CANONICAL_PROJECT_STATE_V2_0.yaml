@@ -1,7 +1,7 @@
 schema: heptabao.canonical-project-state.v2
 plan_id: HEPTABAO-PLAN-2026-09-07-V2.1
-revision: 2.1.1
-status: V2_1_DURABLE_VERTICAL_SLICE_REVIEW_REQUIRED
+revision: 2.1.2
+status: V2_1_RUNNABLE_SINGLE_NODE_REVIEW_REQUIRED
 source_baseline:
   commit: 89012e7d7991e084104e7030e4f8485c5667592e
   tree: 81819977bcdc5755f484af46a27305c7c7223fa0
@@ -19,6 +19,8 @@ current_documents:
   control_plane_pipeline: docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md
   durable_pipeline: docs/architecture/HEPTABAO_V2_1_DURABLE_RUNTIME_PIPELINE.md
   authorized_durable_pipeline: docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md
+  single_node_service: docs/modules/heptabao-server.md
+  single_node_execution: docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md
   operator_runbook: docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md
   observability_catalog: docs/operations/HEPTABAO_OBSERVABILITY_CATALOG_V1.md
   repository_validator: scripts/validate_repository_v2.py

@@ -1,0 +1,19 @@
+[package]
+name = "heptabao-server"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+heptabao-durable-service = { path = "../heptabao-durable-service" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+ring = "=0.17.14"
+base64 = "=0.22.1"
+rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
+rustls-pemfile = "=2.2.0"
+zeroize = "=1.8.1"
+
+[lints]
+workspace = true

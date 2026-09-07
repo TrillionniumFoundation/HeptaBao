@@ -11,7 +11,11 @@
 //! Callers must supply a [`Barrier`] implementation that provides confidentiality and
 //! authenticity for every persisted payload.
 
+use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
 use sha2::{Digest, Sha256};
+#[cfg(target_os = "linux")]
+use std::os::unix::fs::OpenOptionsExt;
+use zeroize::{Zeroize, Zeroizing};
 
 use std::collections::BTreeMap;
 use std::fmt;
@@ -19,11 +23,11 @@ use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
-const SNAPSHOT_MAGIC: &[u8; 4] = b"HBS1";
-const SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP1";
-const JOURNAL_MAGIC: &[u8; 4] = b"HBJ1";
-const LEDGER_MAGIC: &[u8; 4] = b"HBL1";
-const LEDGER_PLAINTEXT_MAGIC: &[u8; 4] = b"HBC1";
+const SNAPSHOT_MAGIC: &[u8; 4] = b"HBS2";
+const SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP2";
+const JOURNAL_MAGIC: &[u8; 4] = b"HBJ2";
+const LEDGER_MAGIC: &[u8; 4] = b"HBL2";
+const LEDGER_PLAINTEXT_MAGIC: &[u8; 4] = b"HBC2";
 const MAX_FILE_BYTES: usize = 64 * 1024 * 1024;
 const MAX_STRING_BYTES: usize = 4 * 1024;
 const MAX_SECRET_BYTES: usize = 1024 * 1024;
@@ -51,6 +55,12 @@ pub trait Barrier {
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Secret(Vec<u8>);
+
+impl Drop for Secret {
+    fn drop(&mut self) {
+        self.0.zeroize();
+    }
+}
 
 impl Secret {
     pub fn new(bytes: Vec<u8>) -> Result<Self, ServiceError> {
@@ -217,6 +227,10 @@ pub enum ServiceError {
     InvalidRoot,
     RootNotEmpty,
     WriterLocked,
+    UnsupportedProfile,
+    LegacySchema,
+    RecoveryRequired,
+    JournalCapacityExhausted,
     InvalidIdentifier,
     InvalidNamespace,
     InvalidResource,
@@ -236,6 +250,18 @@ impl fmt::Display for ServiceError {
         match self {
             Self::InvalidRoot => formatter.write_str("invalid durable-service root"),
             Self::RootNotEmpty => formatter.write_str("durable-service root is not empty"),
+            Self::UnsupportedProfile => {
+                formatter.write_str("Linux descriptor-bound storage is required")
+            }
+            Self::LegacySchema => {
+                formatter.write_str("legacy HBS1 state requires an explicit offline migration")
+            }
+            Self::RecoveryRequired => {
+                formatter.write_str("reopen and reconcile before further access")
+            }
+            Self::JournalCapacityExhausted => {
+                formatter.write_str("journal retention limit reached before entry")
+            }
             Self::WriterLocked => formatter.write_str("durable-service writer is already active"),
             Self::InvalidIdentifier => formatter.write_str("invalid bounded identifier"),
             Self::InvalidNamespace => formatter.write_str("invalid namespace"),
@@ -310,8 +336,8 @@ impl Binding {
         digest32(b"heptabao.durable-service.binding.v1", &bytes)
     }
 
-    fn storage_key(&self) -> String {
-        format!("{}/{}", self.key.namespace, self.resource)
+    fn storage_key(&self) -> (String, String) {
+        (self.key.namespace.clone(), self.resource.clone())
     }
 }
 
@@ -333,7 +359,7 @@ struct LedgerRecord {
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct Snapshot {
     generation: u64,
-    entries: BTreeMap<String, Vec<u8>>,
+    entries: BTreeMap<(String, String), Secret>,
     last_commit: Option<CommitMarker>,
 }
 
@@ -346,12 +372,14 @@ enum JournalEvent {
 
 pub struct DurableService<B: Barrier> {
     root: PathBuf,
-    lock_path: PathBuf,
+    directory: ExclusiveDirectory,
     barrier: B,
     snapshot: Snapshot,
     ledger: BTreeMap<RequestKey, LedgerRecord>,
     reconciliation: BTreeMap<String, ReconciliationStatus>,
     journal_sequence: u64,
+    journal_bytes: usize,
+    journal_limit: usize,
     max_retained_requests: usize,
     unresolved: bool,
 }
@@ -385,33 +413,35 @@ impl<B: Barrier> DurableService<B> {
         } else {
             fs::create_dir_all(&root)?;
         }
-        let lock_path = acquire_writer_lock(&root)?;
+        let directory = acquire_writer_lock(&root)?;
+        let root = directory.access_path().to_path_buf();
+        // Recheck under the acquired process fence: concurrent creators cannot
+        // initialize an already-populated directory.
+        if fs::read_dir(&root)?.next().transpose()?.is_some() {
+            return Err(ServiceError::RootNotEmpty);
+        }
         let snapshot = Snapshot {
             generation: 0,
             entries: BTreeMap::new(),
             last_commit: None,
         };
         let ledger = BTreeMap::new();
-        let result = (|| {
-            persist_snapshot(&root, &barrier, &snapshot)?;
-            initialize_journal(&root)?;
-            persist_ledger(&root, &barrier, 0, &ledger)?;
-            Ok(Self {
-                root,
-                lock_path: lock_path.clone(),
-                barrier,
-                snapshot,
-                ledger,
-                reconciliation: BTreeMap::new(),
-                journal_sequence: 0,
-                max_retained_requests,
-                unresolved: false,
-            })
-        })();
-        if result.is_err() {
-            let _ = fs::remove_file(&lock_path);
-        }
-        result
+        persist_snapshot(&root, &barrier, &snapshot)?;
+        initialize_journal(&root)?;
+        persist_ledger(&root, &barrier, 0, &ledger)?;
+        Ok(Self {
+            root,
+            directory,
+            barrier,
+            snapshot,
+            ledger,
+            reconciliation: BTreeMap::new(),
+            journal_sequence: 0,
+            journal_bytes: JOURNAL_MAGIC.len(),
+            journal_limit: MAX_FILE_BYTES,
+            max_retained_requests,
+            unresolved: false,
+        })
     }
 
     pub fn reopen(
@@ -421,29 +451,27 @@ impl<B: Barrier> DurableService<B> {
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
         let root = validate_root(root.as_ref(), false)?;
-        let lock_path = acquire_writer_lock(&root)?;
-        let result = (|| {
-            let snapshot = load_snapshot(&root, &barrier)?;
-            let (journal_sequence, events) = load_journal(&root, &barrier)?;
-            let ledger = load_ledger(&root, &barrier)?;
-            let mut service = Self {
-                root,
-                lock_path: lock_path.clone(),
-                barrier,
-                snapshot,
-                ledger,
-                reconciliation: BTreeMap::new(),
-                journal_sequence,
-                max_retained_requests,
-                unresolved: false,
-            };
-            service.recover(events)?;
-            Ok(service)
-        })();
-        if result.is_err() {
-            let _ = fs::remove_file(&lock_path);
-        }
-        result
+        let directory = acquire_writer_lock(&root)?;
+        let root = directory.access_path().to_path_buf();
+        let snapshot = load_snapshot(&root, &barrier)?;
+        let (journal_sequence, events, journal_bytes, incomplete_tail) =
+            load_journal(&root, &barrier)?;
+        let (ledger_generation, ledger) = load_ledger(&root, &barrier)?;
+        let mut service = Self {
+            root,
+            directory,
+            barrier,
+            snapshot,
+            ledger,
+            reconciliation: BTreeMap::new(),
+            journal_sequence,
+            journal_bytes,
+            journal_limit: MAX_FILE_BYTES,
+            max_retained_requests,
+            unresolved: false,
+        };
+        service.recover(events, ledger_generation, incomplete_tail)?;
+        Ok(service)
     }
 
     pub fn put(&mut self, request: PutRequest) -> Result<MutationOutcome, ServiceError> {
@@ -452,7 +480,7 @@ impl<B: Barrier> DurableService<B> {
 
     pub fn put_with_failpoint(
         &mut self,
-        request: PutRequest,
+        mut request: PutRequest,
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
         request.validate()?;
@@ -468,7 +496,11 @@ impl<B: Barrier> DurableService<B> {
             authorization_digest: request.authorization_digest,
             value_digest,
         };
-        self.execute(binding, Some(request.value.0), failpoint)
+        self.execute(
+            binding,
+            Some(std::mem::take(&mut request.value.0)),
+            failpoint,
+        )
     }
 
     pub fn delete(&mut self, request: DeleteRequest) -> Result<MutationOutcome, ServiceError> {
@@ -498,8 +530,47 @@ impl<B: Barrier> DurableService<B> {
     pub fn get(&self, namespace: &str, resource: &str) -> Result<Option<Secret>, ServiceError> {
         validate_namespace(namespace)?;
         validate_resource(resource)?;
-        let key = format!("{namespace}/{resource}");
-        Ok(self.snapshot.entries.get(&key).cloned().map(Secret))
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        let key = (namespace.to_owned(), resource.to_owned());
+        Ok(self.snapshot.entries.get(&key).cloned())
+    }
+
+    /// Return immediate child names in exactly one namespace. A trailing slash
+    /// on a result denotes a child directory. Empty prefix lists the namespace.
+    pub fn list(&self, namespace: &str, prefix: &str) -> Result<Vec<String>, ServiceError> {
+        validate_namespace(namespace)?;
+        let prefix = prefix.strip_suffix('/').unwrap_or(prefix);
+        if !prefix.is_empty() {
+            validate_resource(prefix)?;
+        }
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        let prefix = if prefix.is_empty() {
+            String::new()
+        } else {
+            format!("{prefix}/")
+        };
+        let mut children = std::collections::BTreeSet::new();
+        for (entry_namespace, resource) in self.snapshot.entries.keys() {
+            if entry_namespace == namespace
+                && let Some(suffix) = resource.strip_prefix(&prefix)
+            {
+                if let Some((child, _)) = suffix.split_once('/') {
+                    children.insert(format!("{child}/"));
+                } else if !suffix.is_empty() {
+                    children.insert(suffix.to_owned());
+                }
+            }
+        }
+        Ok(children.into_iter().collect())
+    }
+
+    #[must_use]
+    pub const fn recovery_required(&self) -> bool {
+        self.unresolved
     }
 
     #[must_use]
@@ -526,9 +597,11 @@ impl<B: Barrier> DurableService<B> {
         value: Option<Vec<u8>>,
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
+        let value = value.map(Zeroizing::new);
         if self.unresolved {
-            return Err(ServiceError::RequestCapacityExhausted);
+            return Err(ServiceError::RecoveryRequired);
         }
+        self.directory.verify().map_err(map_guard_error)?;
         let binding_digest = binding.digest();
         if let Some(existing) = self.ledger.get(&binding.key) {
             if existing.binding_digest != binding_digest {
@@ -551,58 +624,89 @@ impl<B: Barrier> DurableService<B> {
             .journal_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
+        let terminal_sequence = intent_sequence
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?;
         let recovery_reference = recovery_reference(&binding_digest, generation, intent_sequence);
-        if self.reconciliation.contains_key(&recovery_reference) {
-            return Err(ServiceError::RequestBindingConflict);
-        }
         let marker = CommitMarker {
             key: binding.key.clone(),
             binding_digest,
             recovery_reference: recovery_reference.clone(),
             generation,
         };
-        self.append_event(&JournalEvent::Intent(marker.clone()))?;
-        self.unresolved = true;
-        if failpoint == Failpoint::AfterIntent {
-            return Err(ServiceError::OutcomeUnknown { recovery_reference });
-        }
-
         let mut candidate = self.snapshot.clone();
         candidate.generation = generation;
         candidate.last_commit = Some(marker.clone());
-        let storage_key = binding.storage_key();
         match binding.kind {
             MutationKind::Put => {
-                let secret = value.ok_or(ServiceError::InvalidSecret)?;
-                candidate.entries.insert(storage_key, secret);
+                let mut value = value.ok_or(ServiceError::InvalidSecret)?;
+                candidate
+                    .entries
+                    .insert(binding.storage_key(), Secret(std::mem::take(&mut *value)));
             }
             MutationKind::Delete => {
-                candidate.entries.remove(&storage_key);
+                candidate.entries.remove(&binding.storage_key());
             }
         }
-        persist_snapshot(&self.root, &self.barrier, &candidate)?;
-        self.snapshot = candidate;
-        if failpoint == Failpoint::AfterSnapshotPublication {
-            return Err(ServiceError::OutcomeUnknown { recovery_reference });
-        }
-
-        self.append_event(&JournalEvent::Commit(marker.clone()))?;
-        if failpoint == Failpoint::AfterCommitJournal {
-            return Err(ServiceError::OutcomeUnknown { recovery_reference });
-        }
-
-        let record = LedgerRecord {
-            binding_digest,
-            recovery_reference: recovery_reference.clone(),
-            generation,
-        };
-        self.ledger.insert(binding.key, record);
-        persist_ledger(
-            &self.root,
+        let mut candidate_ledger = self.ledger.clone();
+        candidate_ledger.insert(
+            binding.key,
+            LedgerRecord {
+                binding_digest,
+                recovery_reference: recovery_reference.clone(),
+                generation,
+            },
+        );
+        // Seal every payload and reserve BOTH journal records before durable
+        // entry. Capacity failure can therefore never strand an admitted intent.
+        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
+        let ledger_bytes = sealed_ledger(&self.barrier, generation, &candidate_ledger)?;
+        let intent = sealed_journal_record(
             &self.barrier,
-            self.snapshot.generation,
-            &self.ledger,
+            intent_sequence,
+            &JournalEvent::Intent(marker.clone()),
         )?;
+        let commit = sealed_journal_record(
+            &self.barrier,
+            terminal_sequence,
+            &JournalEvent::Commit(marker),
+        )?;
+        if snapshot_bytes.len() > MAX_FILE_BYTES || ledger_bytes.len() > MAX_FILE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        if terminal_sequence > MAX_RECORDS as u64
+            || self
+                .journal_bytes
+                .checked_add(intent.len())
+                .and_then(|n| n.checked_add(commit.len()))
+                .is_none_or(|n| n > self.journal_limit)
+        {
+            return Err(ServiceError::JournalCapacityExhausted);
+        }
+        // Even write_all/sync_all failures can have published bytes. Poison the
+        // live instance before the first attempted append and preserve its ref.
+        self.unresolved = true;
+        let result = (|| {
+            self.append_frame(&intent)?;
+            if failpoint == Failpoint::AfterIntent {
+                return Err(ServiceError::RecoveryRequired);
+            }
+            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+            self.snapshot = candidate;
+            if failpoint == Failpoint::AfterSnapshotPublication {
+                return Err(ServiceError::RecoveryRequired);
+            }
+            self.append_frame(&commit)?;
+            if failpoint == Failpoint::AfterCommitJournal {
+                return Err(ServiceError::RecoveryRequired);
+            }
+            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
+            self.ledger = candidate_ledger;
+            Ok(())
+        })();
+        if result.is_err() {
+            return Err(ServiceError::OutcomeUnknown { recovery_reference });
+        }
         self.reconciliation.insert(
             recovery_reference.clone(),
             ReconciliationStatus::Committed { generation },
@@ -614,126 +718,168 @@ impl<B: Barrier> DurableService<B> {
         })
     }
 
-    fn append_event(&mut self, event: &JournalEvent) -> Result<(), ServiceError> {
-        self.journal_sequence = self
+    fn append_frame(&mut self, frame: &[u8]) -> Result<(), ServiceError> {
+        let next = self
             .journal_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
-        append_journal_record(&self.root, &self.barrier, self.journal_sequence, event)
+        let size = self
+            .journal_bytes
+            .checked_add(frame.len())
+            .ok_or(ServiceError::JournalCapacityExhausted)?;
+        if size > self.journal_limit || next > MAX_RECORDS as u64 {
+            return Err(ServiceError::JournalCapacityExhausted);
+        }
+        append_journal_frame(&self.root, frame)?;
+        // Never consume a sequence in memory on a failed append.
+        self.journal_sequence = next;
+        self.journal_bytes = size;
+        Ok(())
     }
 
-    fn recover(&mut self, events: Vec<JournalEvent>) -> Result<(), ServiceError> {
-        let mut pending: BTreeMap<RequestKey, CommitMarker> = BTreeMap::new();
+    fn append_event(&mut self, event: &JournalEvent) -> Result<(), ServiceError> {
+        let sequence = self
+            .journal_sequence
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?;
+        let frame = sealed_journal_record(&self.barrier, sequence, event)?;
+        self.append_frame(&frame)
+    }
+
+    fn recover(
+        &mut self,
+        events: Vec<JournalEvent>,
+        ledger_generation: u64,
+        incomplete_tail: bool,
+    ) -> Result<(), ServiceError> {
+        let mut pending: Option<CommitMarker> = None;
         let mut committed: BTreeMap<RequestKey, CommitMarker> = BTreeMap::new();
-        for event in events {
+        let mut last_commit: Option<CommitMarker> = None;
+        let mut committed_generation = 0_u64;
+        let mut references = std::collections::BTreeSet::new();
+        for (offset, event) in events.into_iter().enumerate() {
             match event {
                 JournalEvent::Intent(marker) => {
                     validate_marker(&marker)?;
-                    if let Some(previous) = pending.get(&marker.key)
-                        && previous != &marker
+                    if pending.is_some()
+                        || committed.contains_key(&marker.key)
+                        || marker.generation
+                            != committed_generation
+                                .checked_add(1)
+                                .ok_or(ServiceError::GenerationOverflow)?
+                        || marker.recovery_reference
+                            != recovery_reference(
+                                &marker.binding_digest,
+                                marker.generation,
+                                offset as u64 + 1,
+                            )
+                        || !references.insert(marker.recovery_reference.clone())
                     {
                         return Err(ServiceError::CorruptState);
                     }
-                    pending.insert(marker.key.clone(), marker);
+                    pending = Some(marker);
                 }
                 JournalEvent::Commit(marker) => {
-                    validate_marker(&marker)?;
-                    let Some(intent) = pending.get(&marker.key) else {
-                        return Err(ServiceError::CorruptState);
-                    };
-                    if intent != &marker {
+                    if pending.as_ref() != Some(&marker) {
                         return Err(ServiceError::CorruptState);
                     }
-                    committed.insert(marker.key.clone(), marker.clone());
-                    pending.remove(&marker.key);
+                    pending = None;
+                    committed_generation = marker.generation;
+                    last_commit = Some(marker.clone());
+                    committed.insert(marker.key.clone(), marker);
                 }
                 JournalEvent::Abort(marker) => {
-                    validate_marker(&marker)?;
-                    let Some(intent) = pending.get(&marker.key) else {
-                        return Err(ServiceError::CorruptState);
-                    };
-                    if intent != &marker {
+                    if pending.as_ref() != Some(&marker) {
                         return Err(ServiceError::CorruptState);
                     }
-                    self.reconciliation.insert(
-                        marker.recovery_reference.clone(),
-                        ReconciliationStatus::Aborted,
-                    );
-                    pending.remove(&marker.key);
+                    pending = None;
+                    self.reconciliation
+                        .insert(marker.recovery_reference, ReconciliationStatus::Aborted);
                 }
             }
         }
-
-        for (key, record) in &self.ledger {
-            let Some(marker) = committed.get(key) else {
-                return Err(ServiceError::CorruptState);
-            };
-            if marker.binding_digest != record.binding_digest
-                || marker.generation != record.generation
-                || marker.recovery_reference != record.recovery_reference
-            {
+        // The snapshot must be precisely the journal's committed frontier, or
+        // the sole pending intent's publication. A valid older snapshot is a
+        // rollback, not a reason to acknowledge the newer ledger.
+        let published_pending = pending.as_ref().is_some_and(|marker| {
+            self.snapshot.generation == marker.generation
+                && self.snapshot.last_commit.as_ref() == Some(marker)
+        });
+        if !published_pending
+            && (self.snapshot.generation != committed_generation
+                || self.snapshot.last_commit != last_commit)
+        {
+            return Err(ServiceError::CorruptState);
+        }
+        if self.snapshot.generation == 0
+            && (!self.snapshot.entries.is_empty() || self.snapshot.last_commit.is_some())
+        {
+            return Err(ServiceError::CorruptState);
+        }
+        // A ledger is an authenticated complete prefix of commits. Header and
+        // records cannot independently drift forward, backwards or develop gaps.
+        if ledger_generation > committed_generation
+            || ledger_generation.saturating_add(1) < committed_generation
+            || self.ledger.len() as u64 != ledger_generation
+        {
+            return Err(ServiceError::CorruptState);
+        }
+        for (key, marker) in &committed {
+            if marker.generation <= ledger_generation {
+                let record = self.ledger.get(key).ok_or(ServiceError::CorruptState)?;
+                if marker.binding_digest != record.binding_digest
+                    || marker.generation != record.generation
+                    || marker.recovery_reference != record.recovery_reference
+                {
+                    return Err(ServiceError::CorruptState);
+                }
+            } else if self.ledger.contains_key(key) {
                 return Err(ServiceError::CorruptState);
             }
-            self.reconciliation.insert(
-                record.recovery_reference.clone(),
-                ReconciliationStatus::Committed {
-                    generation: record.generation,
-                },
-            );
         }
-
-        let missing_ledger: Vec<CommitMarker> = committed
-            .into_iter()
-            .filter_map(|(key, marker)| (!self.ledger.contains_key(&key)).then_some(marker))
-            .collect();
-        for marker in missing_ledger {
-            if marker.generation > self.snapshot.generation {
+        for key in self.ledger.keys() {
+            if !committed.contains_key(key) {
                 return Err(ServiceError::CorruptState);
             }
-            self.ledger.insert(
-                marker.key.clone(),
-                LedgerRecord {
-                    binding_digest: marker.binding_digest,
-                    recovery_reference: marker.recovery_reference.clone(),
-                    generation: marker.generation,
-                },
-            );
-            self.reconciliation.insert(
-                marker.recovery_reference,
-                ReconciliationStatus::Committed {
-                    generation: marker.generation,
-                },
-            );
         }
-
-        let pending_markers: Vec<CommitMarker> = pending.into_values().collect();
-        for marker in pending_markers {
-            let published = self.snapshot.last_commit.as_ref() == Some(&marker)
-                && self.snapshot.generation == marker.generation;
-            if published {
+        if committed.len() + usize::from(published_pending) > self.max_retained_requests {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        // Only a physically incomplete tail is repairable. Fully framed bad
+        // checksums, sequence gaps and authentication failures fail closed.
+        if incomplete_tail {
+            let file = nofollow_options()
+                .write(true)
+                .open(journal_path(&self.root))?;
+            file.set_len(self.journal_bytes as u64)?;
+            file.sync_all()?;
+        }
+        if let Some(marker) = pending {
+            if published_pending {
                 self.append_event(&JournalEvent::Commit(marker.clone()))?;
-                self.ledger.insert(
-                    marker.key.clone(),
-                    LedgerRecord {
-                        binding_digest: marker.binding_digest,
-                        recovery_reference: marker.recovery_reference.clone(),
-                        generation: marker.generation,
-                    },
-                );
-                self.reconciliation.insert(
-                    marker.recovery_reference,
-                    ReconciliationStatus::Committed {
-                        generation: marker.generation,
-                    },
-                );
+                committed.insert(marker.key.clone(), marker);
             } else {
                 self.append_event(&JournalEvent::Abort(marker.clone()))?;
                 self.reconciliation
                     .insert(marker.recovery_reference, ReconciliationStatus::Aborted);
             }
         }
-        if self.ledger.len() > self.max_retained_requests {
-            return Err(ServiceError::RequestCapacityExhausted);
+        self.ledger.clear();
+        for (key, marker) in committed {
+            self.reconciliation.insert(
+                marker.recovery_reference.clone(),
+                ReconciliationStatus::Committed {
+                    generation: marker.generation,
+                },
+            );
+            self.ledger.insert(
+                key,
+                LedgerRecord {
+                    binding_digest: marker.binding_digest,
+                    recovery_reference: marker.recovery_reference,
+                    generation: marker.generation,
+                },
+            );
         }
         persist_ledger(
             &self.root,
@@ -743,12 +889,6 @@ impl<B: Barrier> DurableService<B> {
         )?;
         self.unresolved = false;
         Ok(())
-    }
-}
-
-impl<B: Barrier> Drop for DurableService<B> {
-    fn drop(&mut self) {
-        let _ = fs::remove_file(&self.lock_path);
     }
 }
 
@@ -816,19 +956,25 @@ fn validate_root(root: &Path, create: bool) -> Result<PathBuf, ServiceError> {
     Ok(root.to_path_buf())
 }
 
-fn acquire_writer_lock(root: &Path) -> Result<PathBuf, ServiceError> {
-    let path = root.join("writer.lock");
-    match OpenOptions::new().write(true).create_new(true).open(&path) {
-        Ok(mut file) => {
-            file.write_all(b"heptabao-durable-service-writer-v1\n")?;
-            file.sync_all()?;
-            Ok(path)
-        }
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            Err(ServiceError::WriterLocked)
-        }
-        Err(error) => Err(ServiceError::Io(error)),
+fn acquire_writer_lock(root: &Path) -> Result<ExclusiveDirectory, ServiceError> {
+    ExclusiveDirectory::open(root).map_err(map_guard_error)
+}
+
+fn map_guard_error(error: DirectoryGuardError) -> ServiceError {
+    match error {
+        DirectoryGuardError::WriterBusy => ServiceError::WriterLocked,
+        DirectoryGuardError::UnsupportedPlatform
+        | DirectoryGuardError::DescriptorPathUnavailable => ServiceError::UnsupportedProfile,
+        DirectoryGuardError::Io(error) => ServiceError::Io(error),
+        _ => ServiceError::InvalidRoot,
     }
+}
+
+fn nofollow_options() -> OpenOptions {
+    let mut options = OpenOptions::new();
+    #[cfg(target_os = "linux")]
+    options.custom_flags(0o400000 | 0o2000000); // O_NOFOLLOW | O_CLOEXEC
+    options
 }
 
 fn snapshot_path(root: &Path) -> PathBuf {
@@ -848,7 +994,12 @@ fn persist_snapshot<B: Barrier>(
     barrier: &B,
     snapshot: &Snapshot,
 ) -> Result<(), ServiceError> {
-    let plaintext = encode_snapshot(snapshot)?;
+    let encoded = sealed_snapshot(barrier, snapshot)?;
+    atomic_write(root, &snapshot_path(root), &encoded)
+}
+
+fn sealed_snapshot<B: Barrier>(barrier: &B, snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
+    let plaintext = Zeroizing::new(encode_snapshot(snapshot)?);
     let context = snapshot_context(snapshot.generation);
     let protected = barrier
         .seal(&context, &plaintext)
@@ -857,13 +1008,16 @@ fn persist_snapshot<B: Barrier>(
     encoded.extend_from_slice(SNAPSHOT_MAGIC);
     write_u64(&mut encoded, snapshot.generation);
     write_bytes(&mut encoded, &protected)?;
-    let checksum = digest32(b"heptabao.durable-service.snapshot-frame.v1", &encoded);
+    let checksum = digest32(b"heptabao.durable-service.snapshot-frame.v2", &encoded);
     encoded.extend_from_slice(&checksum);
-    atomic_write(root, &snapshot_path(root), &encoded)
+    Ok(encoded)
 }
 
 fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, ServiceError> {
     let encoded = read_bounded(&snapshot_path(root))?;
+    if encoded.starts_with(b"HBS1") {
+        return Err(ServiceError::LegacySchema);
+    }
     if encoded.len() < 4 + 8 + 4 + 32 || &encoded[..4] != SNAPSHOT_MAGIC {
         return Err(ServiceError::CorruptState);
     }
@@ -872,7 +1026,7 @@ fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, Servi
         .checked_sub(32)
         .ok_or(ServiceError::CorruptState)?;
     let expected = digest32(
-        b"heptabao.durable-service.snapshot-frame.v1",
+        b"heptabao.durable-service.snapshot-frame.v2",
         &encoded[..frame_len],
     );
     if !constant_time_eq(&expected, &encoded[frame_len..]) {
@@ -885,6 +1039,7 @@ fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, Servi
     let plaintext = barrier
         .open(&snapshot_context(generation), protected)
         .map_err(|_| ServiceError::BarrierFailure)?;
+    let plaintext = Zeroizing::new(plaintext);
     let snapshot = decode_snapshot(&plaintext)?;
     if snapshot.generation != generation {
         return Err(ServiceError::CorruptState);
@@ -894,7 +1049,7 @@ fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, Servi
 
 fn initialize_journal(root: &Path) -> Result<(), ServiceError> {
     let path = journal_path(root);
-    let mut file = OpenOptions::new()
+    let mut file = nofollow_options()
         .write(true)
         .create_new(true)
         .open(&path)?;
@@ -903,12 +1058,11 @@ fn initialize_journal(root: &Path) -> Result<(), ServiceError> {
     sync_parent(root)
 }
 
-fn append_journal_record<B: Barrier>(
-    root: &Path,
+fn sealed_journal_record<B: Barrier>(
     barrier: &B,
     sequence: u64,
     event: &JournalEvent,
-) -> Result<(), ServiceError> {
+) -> Result<Vec<u8>, ServiceError> {
     let plaintext = encode_journal_event(event)?;
     let protected = barrier
         .seal(&journal_context(sequence), &plaintext)
@@ -916,13 +1070,21 @@ fn append_journal_record<B: Barrier>(
     let mut frame = Vec::new();
     write_u64(&mut frame, sequence);
     write_bytes(&mut frame, &protected)?;
-    let checksum = digest32(b"heptabao.durable-service.journal-frame.v1", &frame);
+    let checksum = digest32(b"heptabao.durable-service.journal-frame.v2", &frame);
     frame.extend_from_slice(&checksum);
     let frame_len = u32::try_from(frame.len()).map_err(|_| ServiceError::CorruptState)?;
-    let path = journal_path(root);
-    let mut file = OpenOptions::new().append(true).open(path)?;
-    file.write_all(&frame_len.to_le_bytes())?;
-    file.write_all(&frame)?;
+    let mut encoded = Vec::with_capacity(frame.len() + 4);
+    write_u32(&mut encoded, frame_len);
+    encoded.extend_from_slice(&frame);
+    Ok(encoded)
+}
+
+fn append_journal_frame(root: &Path, frame: &[u8]) -> Result<(), ServiceError> {
+    let mut file = nofollow_options().append(true).open(journal_path(root))?;
+    if !file.metadata()?.is_file() {
+        return Err(ServiceError::CorruptState);
+    }
+    file.write_all(frame)?;
     file.sync_all()?;
     Ok(())
 }
@@ -930,26 +1092,34 @@ fn append_journal_record<B: Barrier>(
 fn load_journal<B: Barrier>(
     root: &Path,
     barrier: &B,
-) -> Result<(u64, Vec<JournalEvent>), ServiceError> {
+) -> Result<(u64, Vec<JournalEvent>, usize, bool), ServiceError> {
     let encoded = read_bounded(&journal_path(root))?;
-    if encoded.len() < JOURNAL_MAGIC.len() || &encoded[..4] != JOURNAL_MAGIC {
+    if !encoded.starts_with(JOURNAL_MAGIC) {
         return Err(ServiceError::CorruptState);
     }
     let mut cursor = Cursor::new(&encoded[4..]);
     let mut expected_sequence = 1_u64;
     let mut events = Vec::new();
+    let mut verified_bytes = 4;
+    let mut incomplete_tail = false;
     while !cursor.is_finished() {
-        let frame_len =
-            usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
+        let remaining = cursor.bytes.len() - cursor.position;
+        if remaining < 4 {
+            incomplete_tail = true;
+            break;
+        }
+        let frame_len = cursor.read_u32()? as usize;
         if !(8 + 4 + 32..=MAX_FILE_BYTES).contains(&frame_len) {
             return Err(ServiceError::CorruptState);
         }
+        if cursor.bytes.len() - cursor.position < frame_len {
+            incomplete_tail = true;
+            break;
+        }
         let frame = cursor.read_exact(frame_len)?;
-        let payload_len = frame_len
-            .checked_sub(32)
-            .ok_or(ServiceError::CorruptState)?;
+        let payload_len = frame_len - 32;
         let expected = digest32(
-            b"heptabao.durable-service.journal-frame.v1",
+            b"heptabao.durable-service.journal-frame.v2",
             &frame[..payload_len],
         );
         if !constant_time_eq(&expected, &frame[payload_len..]) {
@@ -972,8 +1142,14 @@ fn load_journal<B: Barrier>(
         if events.len() > MAX_RECORDS {
             return Err(ServiceError::CorruptState);
         }
+        verified_bytes = cursor.position + 4;
     }
-    Ok((expected_sequence.saturating_sub(1), events))
+    Ok((
+        expected_sequence - 1,
+        events,
+        verified_bytes,
+        incomplete_tail,
+    ))
 }
 
 fn persist_ledger<B: Barrier>(
@@ -982,7 +1158,16 @@ fn persist_ledger<B: Barrier>(
     generation: u64,
     ledger: &BTreeMap<RequestKey, LedgerRecord>,
 ) -> Result<(), ServiceError> {
-    let plaintext = encode_ledger(ledger)?;
+    let encoded = sealed_ledger(barrier, generation, ledger)?;
+    atomic_write(root, &ledger_path(root), &encoded)
+}
+
+fn sealed_ledger<B: Barrier>(
+    barrier: &B,
+    generation: u64,
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+) -> Result<Vec<u8>, ServiceError> {
+    let plaintext = Zeroizing::new(encode_ledger(ledger)?);
     let protected = barrier
         .seal(&ledger_context(generation), &plaintext)
         .map_err(|_| ServiceError::BarrierFailure)?;
@@ -990,15 +1175,15 @@ fn persist_ledger<B: Barrier>(
     encoded.extend_from_slice(LEDGER_MAGIC);
     write_u64(&mut encoded, generation);
     write_bytes(&mut encoded, &protected)?;
-    let checksum = digest32(b"heptabao.durable-service.ledger-frame.v1", &encoded);
+    let checksum = digest32(b"heptabao.durable-service.ledger-frame.v2", &encoded);
     encoded.extend_from_slice(&checksum);
-    atomic_write(root, &ledger_path(root), &encoded)
+    Ok(encoded)
 }
 
 fn load_ledger<B: Barrier>(
     root: &Path,
     barrier: &B,
-) -> Result<BTreeMap<RequestKey, LedgerRecord>, ServiceError> {
+) -> Result<(u64, BTreeMap<RequestKey, LedgerRecord>), ServiceError> {
     let encoded = read_bounded(&ledger_path(root))?;
     if encoded.len() < 4 + 8 + 4 + 32 || &encoded[..4] != LEDGER_MAGIC {
         return Err(ServiceError::CorruptState);
@@ -1008,7 +1193,7 @@ fn load_ledger<B: Barrier>(
         .checked_sub(32)
         .ok_or(ServiceError::CorruptState)?;
     let expected = digest32(
-        b"heptabao.durable-service.ledger-frame.v1",
+        b"heptabao.durable-service.ledger-frame.v2",
         &encoded[..frame_len],
     );
     if !constant_time_eq(&expected, &encoded[frame_len..]) {
@@ -1021,7 +1206,8 @@ fn load_ledger<B: Barrier>(
     let plaintext = barrier
         .open(&ledger_context(generation), protected)
         .map_err(|_| ServiceError::BarrierFailure)?;
-    decode_ledger(&plaintext)
+    let plaintext = Zeroizing::new(plaintext);
+    Ok((generation, decode_ledger(&plaintext)?))
 }
 
 fn atomic_write(root: &Path, target: &Path, bytes: &[u8]) -> Result<(), ServiceError> {
@@ -1029,7 +1215,7 @@ fn atomic_write(root: &Path, target: &Path, bytes: &[u8]) -> Result<(), ServiceE
         return Err(ServiceError::CorruptState);
     }
     let temporary = target.with_extension("tmp");
-    let mut file = OpenOptions::new()
+    let mut file = nofollow_options()
         .write(true)
         .create(true)
         .truncate(true)
@@ -1055,7 +1241,11 @@ fn read_bounded(path: &Path) -> Result<Vec<u8>, ServiceError> {
         return Err(ServiceError::CorruptState);
     }
     let mut bytes = Vec::with_capacity(length);
-    File::open(path)?.read_to_end(&mut bytes)?;
+    nofollow_options()
+        .read(true)
+        .open(path)?
+        .take((MAX_FILE_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)?;
     if bytes.len() != length {
         return Err(ServiceError::CorruptState);
     }
@@ -1077,9 +1267,10 @@ fn encode_snapshot(snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
         &mut bytes,
         u32::try_from(snapshot.entries.len()).map_err(|_| ServiceError::CorruptState)?,
     );
-    for (key, value) in &snapshot.entries {
-        encode_string_checked(&mut bytes, key)?;
-        write_bytes(&mut bytes, value)?;
+    for ((namespace, resource), value) in &snapshot.entries {
+        encode_string_checked(&mut bytes, namespace)?;
+        encode_string_checked(&mut bytes, resource)?;
+        write_bytes(&mut bytes, value.expose())?;
     }
     Ok(bytes)
 }
@@ -1101,9 +1292,16 @@ fn decode_snapshot(bytes: &[u8]) -> Result<Snapshot, ServiceError> {
     }
     let mut entries = BTreeMap::new();
     for _ in 0..count {
-        let key = cursor.read_string(MAX_STRING_BYTES * 2)?;
+        let namespace = cursor.read_string(1024)?;
+        let resource = cursor.read_string(MAX_STRING_BYTES)?;
+        validate_namespace(&namespace)?;
+        validate_resource(&resource)?;
+        let key = (namespace, resource);
         let value = cursor.read_bytes(MAX_SECRET_BYTES)?.to_vec();
-        if entries.insert(key, value).is_some() {
+        if value.is_empty() {
+            return Err(ServiceError::CorruptState);
+        }
+        if entries.insert(key, Secret(value)).is_some() {
             return Err(ServiceError::CorruptState);
         }
     }
@@ -1352,15 +1550,15 @@ impl<'a> Cursor<'a> {
 }
 
 fn snapshot_context(generation: u64) -> Vec<u8> {
-    context_with_u64(b"heptabao.durable-service.snapshot.v1", generation)
+    context_with_u64(b"heptabao.durable-service.snapshot.v2", generation)
 }
 
 fn journal_context(sequence: u64) -> Vec<u8> {
-    context_with_u64(b"heptabao.durable-service.journal.v1", sequence)
+    context_with_u64(b"heptabao.durable-service.journal.v2", sequence)
 }
 
 fn ledger_context(generation: u64) -> Vec<u8> {
-    context_with_u64(b"heptabao.durable-service.ledger.v1", generation)
+    context_with_u64(b"heptabao.durable-service.ledger.v2", generation)
 }
 
 fn context_with_u64(domain: &[u8], value: u64) -> Vec<u8> {
@@ -1413,6 +1611,16 @@ mod tests {
     use std::sync::atomic::{AtomicU64, Ordering};
 
     static TEMP_COUNTER: AtomicU64 = AtomicU64::new(1);
+    // fork+exec transiently inherits descriptors from every thread, even those
+    // marked CLOEXEC. Serialize process-spawning tests with all writer owners.
+    static TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+    fn serial_test() -> std::sync::MutexGuard<'static, ()> {
+        match TEST_SERIAL.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        }
+    }
 
     #[derive(Clone)]
     struct TestBarrier {
@@ -1508,6 +1716,7 @@ mod tests {
 
     #[test]
     fn put_restart_read_and_duplicate_are_durable() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("restart")?;
         let barrier = TestBarrier::new();
         let request = put_request("request-1", b"top-secret-value")?;
@@ -1534,6 +1743,7 @@ mod tests {
 
     #[test]
     fn published_snapshot_is_reconciled_after_restart() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("published")?;
         let barrier = TestBarrier::new();
         let request = put_request("request-2", b"committed-before-reply")?;
@@ -1557,6 +1767,7 @@ mod tests {
 
     #[test]
     fn intent_without_publication_is_aborted_and_retryable() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("intent")?;
         let barrier = TestBarrier::new();
         let request = put_request("request-3", b"not-yet-published")?;
@@ -1588,6 +1799,7 @@ mod tests {
 
     #[test]
     fn commit_journal_rebuilds_missing_ledger() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("ledger")?;
         let barrier = TestBarrier::new();
         let request = put_request("request-4", b"ledger-rebuild")?;
@@ -1611,6 +1823,7 @@ mod tests {
 
     #[test]
     fn namespace_keys_do_not_collide() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("namespace")?;
         let barrier = TestBarrier::new();
         let mut service = DurableService::create_new(&root.0, barrier, 16)?;
@@ -1649,6 +1862,7 @@ mod tests {
 
     #[test]
     fn capacity_never_evicts_committed_request_identity() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("capacity")?;
         let barrier = TestBarrier::new();
         let first = put_request("request-old", b"first")?;
@@ -1669,6 +1883,7 @@ mod tests {
 
     #[test]
     fn request_identity_is_exact_operation_bound() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("binding")?;
         let barrier = TestBarrier::new();
         let mut service = DurableService::create_new(&root.0, barrier, 4)?;
@@ -1682,6 +1897,7 @@ mod tests {
 
     #[test]
     fn writer_fence_and_secret_redaction_hold() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("fence")?;
         let barrier = TestBarrier::new();
         let mut service = DurableService::create_new(&root.0, barrier.clone(), 4)?;
@@ -1698,6 +1914,7 @@ mod tests {
 
     #[test]
     fn persisted_files_do_not_contain_plaintext_secret() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("sealed")?;
         let barrier = TestBarrier::new();
         let secret = b"plaintext-must-not-appear";
@@ -1712,6 +1929,7 @@ mod tests {
 
     #[test]
     fn corruption_and_wrong_barrier_fail_closed() -> Result<(), ServiceError> {
+        let _serial = serial_test();
         let root = TestRoot::new("corruption")?;
         let barrier = TestBarrier::new();
         let mut service = DurableService::create_new(&root.0, barrier.clone(), 4)?;
@@ -1729,6 +1947,298 @@ mod tests {
             DurableService::reopen(&root.0, barrier, 4),
             Err(ServiceError::CorruptState | ServiceError::BarrierFailure)
         ));
+        Ok(())
+    }
+    #[test]
+    fn ambiguous_namespace_resource_pairs_are_isolated_across_restart_and_delete()
+    -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("tuple-key")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        for (namespace, resource, id, value) in [
+            ("a", "b/c", "one", b"first".as_slice()),
+            ("a/b", "c", "two", b"second".as_slice()),
+        ] {
+            service.put(PutRequest::new(
+                "p",
+                namespace,
+                id,
+                resource,
+                digest(1),
+                Secret::new(value.to_vec())?,
+            )?)?;
+        }
+        drop(service);
+        let mut service = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        assert_eq!(
+            service.get("a", "b/c")?.map(|s| s.expose().to_vec()),
+            Some(b"first".to_vec())
+        );
+        assert_eq!(
+            service.get("a/b", "c")?.map(|s| s.expose().to_vec()),
+            Some(b"second".to_vec())
+        );
+        assert_eq!(service.list("a", "")?, vec!["b/"]);
+        assert_eq!(service.list("a/b", "")?, vec!["c"]);
+        service.delete(DeleteRequest::new("p", "a", "delete", "b/c", digest(1))?)?;
+        drop(service);
+        let service = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        assert_eq!(service.get("a", "b/c")?, None);
+        assert_eq!(
+            service.get("a/b", "c")?.map(|s| s.expose().to_vec()),
+            Some(b"second".to_vec())
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_schema_is_rejected_without_rewriting_it() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("legacy-schema")?;
+        let service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        drop(service);
+        let mut encoded = fs::read(snapshot_path(&root.0))?;
+        encoded[..4].copy_from_slice(b"HBS1");
+        fs::write(snapshot_path(&root.0), &encoded)?;
+        assert!(matches!(
+            DurableService::reopen(&root.0, TestBarrier::new(), 16),
+            Err(ServiceError::LegacySchema)
+        ));
+        assert_eq!(fs::read(snapshot_path(&root.0))?, encoded);
+        Ok(())
+    }
+
+    #[test]
+    fn genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference()
+    -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        for (blocked, expected) in [
+            ("state.tmp", ReconciliationStatus::Aborted),
+            (
+                "ledger.tmp",
+                ReconciliationStatus::Committed { generation: 1 },
+            ),
+        ] {
+            let root = TestRoot::new(blocked)?;
+            let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+            fs::create_dir(root.0.join(blocked))?; // Actual EISDIR from the persistence open.
+            let reference = recovery_from_result(service.put(put_request("io-fault", b"secret")?))?;
+            assert!(service.recovery_required());
+            assert!(matches!(
+                service.get("root/team-a", "secret/application"),
+                Err(ServiceError::RecoveryRequired)
+            ));
+            assert!(matches!(
+                service.put(put_request("next", b"next")?),
+                Err(ServiceError::RecoveryRequired)
+            ));
+            drop(service);
+            fs::remove_dir(root.0.join(blocked))?;
+            let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+            assert_eq!(reopened.reconcile(&reference), expected);
+            reopened.put(put_request("next", b"next")?)?;
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn failed_append_does_not_consume_sequence_and_reopen_recovers() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("append-io")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        fs::rename(journal_path(&root.0), root.0.join("journal.saved"))?;
+        fs::create_dir(journal_path(&root.0))?;
+        let _reference =
+            recovery_from_result(service.put(put_request("failed-append", b"secret")?))?;
+        assert_eq!(service.journal_sequence, 0);
+        assert!(service.recovery_required());
+        drop(service);
+        fs::remove_dir(journal_path(&root.0))?;
+        fs::rename(root.0.join("journal.saved"), journal_path(&root.0))?;
+        let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        reopened.put(put_request("successful-append", b"secret")?)?;
+        drop(reopened);
+        assert_eq!(
+            DurableService::reopen(&root.0, TestBarrier::new(), 16)?.generation(),
+            1
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn authenticated_old_snapshot_and_contradictory_ledger_fail_closed() -> Result<(), ServiceError>
+    {
+        let _serial = serial_test();
+        let root = TestRoot::new("snapshot-rollback")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        service.put(put_request("one", b"one")?)?;
+        let old_snapshot = fs::read(snapshot_path(&root.0))?;
+        service.put(put_request("two", b"two")?)?;
+        let current_snapshot = fs::read(snapshot_path(&root.0))?;
+        let ledger = service.ledger.clone();
+        drop(service);
+        fs::write(snapshot_path(&root.0), old_snapshot)?;
+        assert!(matches!(
+            DurableService::reopen(&root.0, TestBarrier::new(), 16),
+            Err(ServiceError::CorruptState)
+        ));
+        fs::write(snapshot_path(&root.0), current_snapshot)?;
+        persist_ledger(&root.0, &TestBarrier::new(), 1, &ledger)?;
+        assert!(matches!(
+            DurableService::reopen(&root.0, TestBarrier::new(), 16),
+            Err(ServiceError::CorruptState)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn journal_budget_reserves_terminal_record_before_entry() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("journal-budget")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        service.journal_limit = JOURNAL_MAGIC.len() + 1;
+        assert!(matches!(
+            service.put(put_request("full", b"value")?),
+            Err(ServiceError::JournalCapacityExhausted)
+        ));
+        assert_eq!(
+            fs::metadata(journal_path(&root.0))?.len(),
+            JOURNAL_MAGIC.len() as u64
+        );
+        assert!(!service.recovery_required());
+        service.journal_limit = MAX_FILE_BYTES;
+        service.put(put_request("accepted", b"value")?)?;
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn actual_sigkill_releases_writer_and_recovers_pending_publication()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let _serial = serial_test();
+        use std::io::{BufRead, BufReader};
+        use std::process::{Command, Stdio};
+        const MODE: &str = "HEPTABAO_DURABLE_SIGKILL_ROOT";
+        const TEST: &str = "tests::actual_sigkill_releases_writer_and_recovers_pending_publication";
+        if let Some(root) = std::env::var_os(MODE) {
+            let mut service =
+                DurableService::create_new(PathBuf::from(root), TestBarrier::new(), 16)?;
+            let reference = recovery_from_result(service.put_with_failpoint(
+                put_request("killed", b"survives-kill")?,
+                Failpoint::AfterSnapshotPublication,
+            ))?;
+            println!("READY:{reference}");
+            std::io::stdout().flush()?;
+            loop {
+                std::thread::park();
+            }
+        }
+        let root = TestRoot::new("actual-sigkill")?;
+        let mut child = Command::new(std::env::current_exe()?)
+            .args(["--exact", TEST, "--nocapture"])
+            .env(MODE, &root.0)
+            .stdout(Stdio::piped())
+            .spawn()?;
+        let stdout = child
+            .stdout
+            .take()
+            .ok_or_else(|| std::io::Error::other("missing child stdout"))?;
+        let mut reference = None;
+        for line in BufReader::new(stdout).lines() {
+            let line = line?;
+            if let Some(value) = line.strip_prefix("READY:") {
+                reference = Some(value.to_owned());
+                break;
+            }
+        }
+        assert!(reference.is_some());
+        assert!(matches!(
+            DurableService::reopen(&root.0, TestBarrier::new(), 16),
+            Err(ServiceError::WriterLocked)
+        ));
+        child.kill()?; // SIGKILL: no Rust destructor or cooperative cleanup.
+        let status = child.wait()?;
+        assert!(!status.success());
+        let mut service = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        assert_eq!(
+            service.reconcile(reference.as_deref().ok_or(ServiceError::CorruptState)?),
+            ReconciliationStatus::Committed { generation: 1 }
+        );
+        assert_eq!(
+            service
+                .get("root/team-a", "secret/application")?
+                .map(|s| s.expose().to_vec()),
+            Some(b"survives-kill".to_vec())
+        );
+        service.put(put_request("after-kill", b"live")?)?;
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn real_partial_write_efbig_tail_is_recovered() -> Result<(), Box<dyn std::error::Error>> {
+        let _serial = serial_test();
+        use std::process::Command;
+        const MODE: &str = "HEPTABAO_DURABLE_EFBIG_ROOT";
+        const TEST: &str = "tests::real_partial_write_efbig_tail_is_recovered";
+        if let Some(root) = std::env::var_os(MODE) {
+            let root = PathBuf::from(root);
+            let mut service = DurableService::create_new(&root, TestBarrier::new(), 16)?;
+            for number in 0..16 {
+                let before = fs::metadata(journal_path(&root))?.len();
+                match service.put(put_request(&format!("limited-{number}"), b"value")?) {
+                    Ok(_) => {}
+                    Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+                        let after = fs::metadata(journal_path(&root))?.len();
+                        // Linux RLIMIT_FSIZE makes write_all partially write the
+                        // last frame then return EFBIG, without simulated hooks.
+                        assert_eq!(after, 1024);
+                        assert!(after > before);
+                        assert!(service.journal_bytes as u64 >= before);
+                        assert!((service.journal_bytes as u64) < after);
+                        fs::write(root.join("failure-reference"), recovery_reference)?;
+                        return Ok(());
+                    }
+                    Err(error) => return Err(error.into()),
+                }
+            }
+            return Err(
+                std::io::Error::other("file size limit did not cause a write failure").into(),
+            );
+        }
+        let root = TestRoot::new("actual-efbig")?;
+        // The size limit applies to EVERY regular file, including stdout when
+        // the parent suite redirects it to a log larger than 1024 bytes. Capture
+        // child output through pipes so libtest reporting cannot fail with EFBIG
+        // before the actual storage experiment starts.
+        let output = Command::new("bash")
+            .args([
+                "-c",
+                "ulimit -f 1; trap '' XFSZ; exec \"$@\"",
+                "heptabao-efbig",
+            ])
+            .arg(std::env::current_exe()?)
+            .args(["--exact", TEST, "--nocapture"])
+            .env(MODE, &root.0)
+            .output()?;
+        assert!(
+            output.status.success(),
+            "EFBIG subprocess status={}; stdout={}; stderr={}",
+            output.status,
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let _reference = fs::read_to_string(root.0.join("failure-reference"))?;
+        let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        reopened.put(put_request("after-efbig", b"restored")?)?;
+        drop(reopened);
+        let reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+        assert_eq!(
+            reopened
+                .get("root/team-a", "secret/application")?
+                .map(|s| s.expose().to_vec()),
+            Some(b"restored".to_vec())
+        );
         Ok(())
     }
 }

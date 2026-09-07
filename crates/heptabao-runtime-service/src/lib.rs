@@ -8,6 +8,7 @@
 //! happened, failure is never translated into an automatic retry signal.
 
 use sha2::{Digest, Sha256};
+use zeroize::Zeroize;
 
 use std::fmt;
 
@@ -21,6 +22,12 @@ const MAX_FIELD_BYTES: usize = 4 * 1024;
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Credential(Vec<u8>);
+
+impl Drop for Credential {
+    fn drop(&mut self) {
+        self.0.zeroize();
+    }
+}
 
 impl Credential {
     pub fn new(bytes: Vec<u8>) -> Result<Self, RuntimeError> {
@@ -46,6 +53,8 @@ impl fmt::Debug for Credential {
 pub enum OperationKind {
     Put,
     Delete,
+    Read,
+    List,
 }
 
 #[derive(Clone, Eq, PartialEq)]
@@ -199,6 +208,8 @@ pub enum AuditStage {
     Committed,
     Duplicate,
     OutcomeUnknown,
+    ReadCompleted,
+    ListCompleted,
 }
 
 #[derive(Clone, Eq, PartialEq)]
@@ -209,6 +220,12 @@ pub struct AuditEvent {
 }
 
 impl AuditEvent {
+    /// Stable binary fingerprint for a controlled, durable audit sink.
+    #[must_use]
+    pub const fn request_fingerprint(&self) -> &[u8; 32] {
+        &self.request_fingerprint
+    }
+
     #[must_use]
     pub const fn stage(&self) -> AuditStage {
         self.stage
@@ -253,6 +270,8 @@ pub enum RuntimeError {
     AuthenticationDenied,
     AuthorizationDenied,
     AuditUnavailableBeforeEntry,
+    AuditUnavailableAfterRead,
+    RecoveryRequired,
     OutcomeUnknown { recovery_reference: String },
     DurableRejected,
     DurableCorrupt,
@@ -266,6 +285,12 @@ impl fmt::Display for RuntimeError {
             Self::AuthorizationDenied => formatter.write_str("authorization denied"),
             Self::AuditUnavailableBeforeEntry => {
                 formatter.write_str("pre-entry audit is unavailable")
+            }
+            Self::AuditUnavailableAfterRead => {
+                formatter.write_str("read result audit is unavailable")
+            }
+            Self::RecoveryRequired => {
+                formatter.write_str("durable service requires reopen and reconciliation")
             }
             Self::OutcomeUnknown { .. } => formatter.write_str("mutation outcome is unknown"),
             Self::DurableRejected => formatter.write_str("durable mutation rejected"),
@@ -452,6 +477,109 @@ where
         }
     }
 
+    /// Read through the same mandatory authentication, authorization and audit
+    /// boundary as mutations. Secret bytes leave only after result audit succeeds.
+    pub fn read(
+        &mut self,
+        credential: &Credential,
+        namespace: &str,
+        resource: &str,
+        request_id: &str,
+    ) -> Result<Option<Secret>, RuntimeError> {
+        let fingerprint = self.admit_query(
+            credential,
+            namespace,
+            resource,
+            request_id,
+            OperationKind::Read,
+        )?;
+        let value = self
+            .durable
+            .get(namespace, resource)
+            .map_err(map_durable_error)?;
+        self.audit
+            .append(&AuditEvent {
+                stage: AuditStage::ReadCompleted,
+                request_fingerprint: fingerprint,
+                generation: Some(self.durable.generation()),
+            })
+            .map_err(|_| RuntimeError::AuditUnavailableAfterRead)?;
+        Ok(value)
+    }
+
+    pub fn list(
+        &mut self,
+        credential: &Credential,
+        namespace: &str,
+        prefix: &str,
+        request_id: &str,
+    ) -> Result<Vec<String>, RuntimeError> {
+        // Empty prefix denotes namespace root; authorizers see it explicitly.
+        let fingerprint = self.admit_query(
+            credential,
+            namespace,
+            prefix,
+            request_id,
+            OperationKind::List,
+        )?;
+        let keys = self
+            .durable
+            .list(namespace, prefix)
+            .map_err(map_durable_error)?;
+        self.audit
+            .append(&AuditEvent {
+                stage: AuditStage::ListCompleted,
+                request_fingerprint: fingerprint,
+                generation: Some(self.durable.generation()),
+            })
+            .map_err(|_| RuntimeError::AuditUnavailableAfterRead)?;
+        Ok(keys)
+    }
+
+    fn admit_query(
+        &mut self,
+        credential: &Credential,
+        namespace: &str,
+        resource: &str,
+        request_id: &str,
+        operation: OperationKind,
+    ) -> Result<[u8; 32], RuntimeError> {
+        validate_field(namespace)?;
+        validate_field(request_id)?;
+        if !resource.is_empty() {
+            validate_field(resource)?;
+        }
+        let principal = self
+            .authenticator
+            .authenticate(credential)
+            .map_err(|_| RuntimeError::AuthenticationDenied)?;
+        let authorization = self
+            .authorizer
+            .authorize(&principal, namespace, resource, operation)
+            .map_err(|_| RuntimeError::AuthorizationDenied)?;
+        let fingerprint = request_fingerprint(
+            &principal,
+            namespace,
+            request_id,
+            resource,
+            operation,
+            authorization,
+        );
+        self.audit
+            .append(&AuditEvent {
+                stage: AuditStage::AcceptedBeforeEntry,
+                request_fingerprint: fingerprint,
+                generation: None,
+            })
+            .map_err(|_| RuntimeError::AuditUnavailableBeforeEntry)?;
+        Ok(fingerprint)
+    }
+
+    #[must_use]
+    pub const fn recovery_required(&self) -> bool {
+        self.durable.recovery_required()
+    }
+
     #[must_use]
     pub fn reconcile(&self, recovery_reference: &str) -> ReconciliationStatus {
         self.durable.reconcile(recovery_reference)
@@ -492,7 +620,10 @@ fn map_durable_error(error: ServiceError) -> RuntimeError {
         ServiceError::OutcomeUnknown { recovery_reference } => {
             RuntimeError::OutcomeUnknown { recovery_reference }
         }
-        ServiceError::CorruptState | ServiceError::BarrierFailure => RuntimeError::DurableCorrupt,
+        ServiceError::CorruptState | ServiceError::BarrierFailure | ServiceError::LegacySchema => {
+            RuntimeError::DurableCorrupt
+        }
+        ServiceError::RecoveryRequired => RuntimeError::RecoveryRequired,
         ServiceError::InvalidIdentifier
         | ServiceError::InvalidNamespace
         | ServiceError::InvalidResource
@@ -504,6 +635,8 @@ fn map_durable_error(error: ServiceError) -> RuntimeError {
         | ServiceError::InvalidRoot
         | ServiceError::RootNotEmpty
         | ServiceError::WriterLocked
+        | ServiceError::UnsupportedProfile
+        | ServiceError::JournalCapacityExhausted
         | ServiceError::Io(_) => RuntimeError::DurableRejected,
     }
 }
@@ -524,6 +657,8 @@ fn request_fingerprint(
     material.push(match operation {
         OperationKind::Put => 1,
         OperationKind::Delete => 2,
+        OperationKind::Read => 3,
+        OperationKind::List => 4,
     });
     material.extend_from_slice(&authorization.into_inner());
     digest32(b"heptabao.runtime-service.request.v1", &material)
@@ -869,6 +1004,91 @@ mod tests {
         ] {
             assert!(!rendered.contains(secret));
         }
+        Ok(())
+    }
+    #[test]
+    fn actual_io_failure_is_never_mapped_to_rejection() -> Result<(), RuntimeError> {
+        let root = Root::new("actual-io")?;
+        let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;
+        fs::create_dir(root.0.join("ledger.tmp")).map_err(|_| RuntimeError::DurableRejected)?;
+        let reference =
+            match runtime.handle(inbound(b"token-a", "request-io", "secret/app", b"secret")?) {
+                Err(RuntimeError::OutcomeUnknown { recovery_reference }) => recovery_reference,
+                _ => return Err(RuntimeError::DurableRejected),
+            };
+        assert!(runtime.recovery_required());
+        assert_eq!(
+            runtime.read(
+                &Credential::new(b"token-a".to_vec())?,
+                "root/team-a",
+                "secret/app",
+                "read-unknown"
+            ),
+            Err(RuntimeError::RecoveryRequired)
+        );
+        assert!(
+            runtime
+                .audit
+                .events
+                .iter()
+                .any(|e| e.stage() == AuditStage::OutcomeUnknown)
+        );
+        drop(runtime);
+        fs::remove_dir(root.0.join("ledger.tmp")).map_err(|_| RuntimeError::DurableRejected)?;
+        let durable =
+            DurableService::reopen(&root.0, TestBarrier::new(), 32).map_err(map_durable_error)?;
+        assert_eq!(
+            durable.reconcile(&reference),
+            ReconciliationStatus::Committed { generation: 1 }
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn read_and_list_require_admission_and_result_audit() -> Result<(), RuntimeError> {
+        let root = Root::new("query-admission")?;
+        let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;
+        runtime.handle(inbound(b"token-a", "seed", "secret/app", b"secret")?)?;
+        let valid = Credential::new(b"token-a".to_vec())?;
+        let invalid = Credential::new(b"invalid".to_vec())?;
+        assert_eq!(
+            runtime.read(&invalid, "root/team-a", "secret/app", "denied-read"),
+            Err(RuntimeError::AuthenticationDenied)
+        );
+        assert_eq!(
+            runtime.list(&invalid, "root/team-a", "secret/", "denied-list"),
+            Err(RuntimeError::AuthenticationDenied)
+        );
+        runtime.authorizer.allow = false;
+        assert_eq!(
+            runtime.read(&valid, "root/team-a", "secret/app", "policy-read"),
+            Err(RuntimeError::AuthorizationDenied)
+        );
+        runtime.authorizer.allow = true;
+        assert_eq!(
+            runtime
+                .read(&valid, "root/team-a", "secret/app", "read")?
+                .map(|s| s.expose().to_vec()),
+            Some(b"secret".to_vec())
+        );
+        assert_eq!(
+            runtime.list(&valid, "root/team-a", "secret/", "list")?,
+            vec!["app"]
+        );
+        let event = runtime
+            .audit
+            .events
+            .last()
+            .ok_or(RuntimeError::DurableRejected)?;
+        assert_eq!(event.stage(), AuditStage::ListCompleted);
+        assert_ne!(event.request_fingerprint(), &[0; 32]);
+        assert!(!format!("{event:?}").contains(&format!("{:?}", event.request_fingerprint())));
+        runtime.audit.fail_on_call = Some(runtime.audit.calls + 2);
+        assert_eq!(
+            runtime.read(&valid, "root/team-a", "secret/app", "no-release"),
+            Err(RuntimeError::AuditUnavailableAfterRead)
+        );
+        assert_eq!(runtime.generation(), 1);
         Ok(())
     }
 }

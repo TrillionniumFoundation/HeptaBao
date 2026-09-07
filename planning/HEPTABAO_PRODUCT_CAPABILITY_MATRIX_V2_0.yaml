@@ -1,6 +1,6 @@
 schema: heptabao.product-capability-matrix.v2
 plan_id: HEPTABAO-PLAN-2026-09-07-V2.1
-revision: 2.1.1
+revision: 2.1.2
 status: ACTIVE
 modules:
 - crate: heptabao-agent
@@ -255,11 +255,17 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-token/src/lib.rs
   guide: docs/modules/heptabao-token.md
+- crate: heptabao-server
+  domain: runnable TLS single-node encrypted secrets service
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-server/src/lib.rs
+  guide: docs/modules/heptabao-server.md
 planned_modules:
 - production-barrier-and-kms-provider
 - production-storage-journal-anchor-conformance
-- bounded-tls-network-service
-- persistent-identity-and-auth-methods
+- complete-network-operator-surface-and-rate-limiting
+- complete-identity-mfa-and-external-auth-methods
 - raft-ha-runtime
 - interruption-safe-format-migration
 - sandboxed-plugin-host-and-dynamic-secrets

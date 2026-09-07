@@ -1,14 +1,16 @@
 # HeptaBao
 
-HeptaBao is an independent Rust secrets-management implementation project. The current source of truth is the **V2.1 durable vertical-slice candidate under review** (`HEPTABAO-PLAN-2026-09-07-V2.1`). It is not a supported production server, does not claim OpenBao compatibility, and has no production, migration or release authority.
+HeptaBao is an independent Rust secrets-management implementation project. The current source of truth is the **V2.1 runnable single-node candidate under review** (`HEPTABAO-PLAN-2026-09-07-V2.1`). It is not a supported production server, does not claim OpenBao compatibility, and has no production, migration or release authority.
 
 Do not use this source to protect real secrets. Do not place live credentials, unseal shares, recovery keys, private keys, KMS material or production snapshots in issues, pull requests, CI or ordinary development environments.
 
 ## Current repository state
 
-The current workspace contains **42 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **43 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
-The current candidate still lacks production provider qualification, a bounded TLS network service, complete persistent identity/auth methods, production Raft/HA, real format migration, a sandboxed dynamic-secrets plugin runtime, a complete independently observed compatibility corpus and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
+
+The current candidate still lacks production provider qualification, the complete network/operator surface, complete identity/MFA/external-auth methods, production Raft/HA, real format migration, a sandboxed dynamic-secrets plugin runtime, a complete independently observed compatibility corpus and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
 ## Current source of truth
 

@@ -1,6 +1,6 @@
 # HeptaBao module documentation index
 
-Current status: `V2.1 / 42 WORKSPACE PACKAGES`
+Current status: `V2.1 / 43 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -46,6 +46,7 @@ The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`
 | `heptabao-retention` | retention and backup lifecycle | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-retention.md` |
 | `heptabao-rollback-anchor` | rollback anchor fencing | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-rollback-anchor.md` |
 | `heptabao-runtime-service` | authorized audit-to-durable mutation adapter | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-runtime-service.md` |
+| `heptabao-server` | runnable TLS single-node encrypted secrets service | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-server.md` |
 | `heptabao-service-core` | mandatory end to end service composition | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-service-core.md` |
 | `heptabao-single-node-journal` | local durable journal | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-single-node-journal.md` |
 | `heptabao-single-node-store` | local durable store | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-single-node-store.md` |

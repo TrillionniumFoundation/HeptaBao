@@ -1,10 +1,10 @@
 # HeptaBao current documentation
 
-Status: `V2.1 / DURABLE VERTICAL-SLICE CANDIDATE UNDER REVIEW`
+Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 42 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current entry point for all 43 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 ## Canonical current truth
 
@@ -25,16 +25,25 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. Production provider, network, HA, migration and compatibility qualification remain separate blockers.
+The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. Complete provider, network/operator, HA, migration and compatibility qualification remain separate blockers.
 
 ## Module documentation
 
-- `docs/modules/README.md` — complete index for all 42 workspace packages.
+- `docs/modules/README.md` — complete index for all 43 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited standard for historical V1.4.7 packages.
 - `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared engineering contracts.
 
 Every package has exactly one guide. The validator checks package, lockfile, source, guide, matrix and test surfaces as one set.
+
+## Runnable single-node increment
+
+- `docs/modules/heptabao-server.md`
+- `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md`
+- `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`
+- `docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md`
+- `docs/compatibility/HEPTABAO_SINGLE_NODE_ACCEPTANCE.md`
+- `docs/migration/HEPTABAO_OPENBAO_MIGRATION.md`
 
 ## Operations, security and compatibility
 
@@ -72,3 +81,7 @@ migration_authority: false
 release_authority: false
 authority_effect: NONE
 ```
+
+## Main-line reconciliation
+
+`docs/operations/HEPTABAO_MAIN_RECONCILIATION_2026_09_08.md` records reconciliation with main `92894aa52de06f2f4ba7d5f234a0a55f93314474`: current 43-package implementation and mandatory validation remain intact; inherited legal/security obligations and the historical V1.4.6 recovery baseline remain applicable within their original scope. Archived runner-probe material is historical evidence and is not an admitted workflow.

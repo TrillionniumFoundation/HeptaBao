@@ -6,6 +6,8 @@ HeptaBao is a `V2.1 durable vertical-slice candidate under review`. It contains 
 
 Do not deploy this repository to protect real secrets. Do not place real tokens, unseal shares, recovery keys, root tokens, private keys or production snapshots in issues, pull requests, CI, fixtures or ordinary development environments.
 
+The current implementation includes a runnable single-node TLS server. That implementation status does not change the unsupported and unqualified security posture above.
+
 ## Private reporting
 
 A dedicated private disclosure channel and 24/7 incident owner are required by external blocker `HB-BLK-EXT-003` but are not yet qualified. Until that channel is operational:
@@ -14,6 +16,8 @@ A dedicated private disclosure channel and 24/7 incident owner are required by e
 2. Use GitHub's private security-advisory mechanism for this repository when available.
 3. Otherwise contact the repository owner through an already established private channel and share only the minimum reproduction metadata.
 4. Never transmit live credentials or real customer secret material.
+
+Historical work package `H00-WP07`, retained by the main-line security policy, maps to current external blocker `HB-BLK-EXT-003`; the private-reporting and 24/7 ownership obligations remain unchanged.
 
 The absence of a qualified disclosure channel is an external release blocker; it is not permission to disclose publicly.
 
