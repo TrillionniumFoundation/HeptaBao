@@ -1,0 +1,45 @@
+name: HeptaBao V2.1 PR75 post-G0 exact-source export
+
+on:
+  push:
+    branches:
+      - exec/v2.1-pr75-post-g0-source-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: 19b7633b1cd05796d0e7409a4eea66eaa472e3df
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and bundle exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-pr75-post-g0-export"
+          mkdir -p "$output"
+          git tag -f heptabao-pr75-post-g0-export "$SOURCE_SHA"
+          git bundle create "$output/heptabao-pr75-post-g0-exact.bundle" refs/tags/heptabao-pr75-post-g0-export
+          git tag -d heptabao-pr75-post-g0-export
+          git bundle verify "$output/heptabao-pr75-post-g0-exact.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$SOURCE_SHA" "$(git rev-parse "$SOURCE_SHA^{tree}")" > "$output/source-binding.txt"
+          (cd "$output" && sha256sum heptabao-pr75-post-g0-exact.bundle > heptabao-pr75-post-g0-exact.bundle.sha256)
+      - name: Upload bounded exact-source artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-pr75-post-g0-19b7633b
+          path: ${{ runner.temp }}/heptabao-pr75-post-g0-export/
+          if-no-files-found: error
+          retention-days: 3
