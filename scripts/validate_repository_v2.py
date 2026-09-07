@@ -2,6 +2,7 @@
 """Validate the current V2 repository truth without rewriting source files."""
 from __future__ import annotations
 
+import glob
 import re
 import sys
 import tomllib
@@ -44,12 +45,36 @@ def read_yaml(path: Path) -> dict[str, Any]:
     return value
 
 
-def workspace_members() -> list[str]:
+def workspace_member_patterns() -> list[str]:
     value = tomllib.loads((ROOT / "Cargo.toml").read_text(encoding="utf-8"))
     members = value.get("workspace", {}).get("members", [])
     if not isinstance(members, list) or not all(isinstance(item, str) for item in members):
         raise ValueError("Cargo.toml workspace.members must be a string list")
     return members
+
+
+def workspace_members() -> list[str]:
+    expanded: list[str] = []
+    for pattern in workspace_member_patterns():
+        if Path(pattern).is_absolute() or ".." in Path(pattern).parts:
+            raise ValueError(f"workspace member pattern is outside the repository: {pattern}")
+        if glob.has_magic(pattern):
+            matches = sorted(
+                path
+                for path in ROOT.glob(pattern)
+                if path.is_dir() and (path / "Cargo.toml").is_file()
+            )
+            if not matches:
+                raise ValueError(f"workspace member glob matched no crates: {pattern}")
+            expanded.extend(path.relative_to(ROOT).as_posix() for path in matches)
+        else:
+            path = ROOT / pattern
+            if not path.is_dir() or not (path / "Cargo.toml").is_file():
+                raise ValueError(f"workspace member is not a crate directory: {pattern}")
+            expanded.append(Path(pattern).as_posix())
+    if len(expanded) != len(set(expanded)):
+        raise ValueError("Cargo workspace patterns expand to duplicate members")
+    return sorted(expanded)
 
 
 def package_name(manifest: Path) -> str:
@@ -114,16 +139,11 @@ def validate() -> list[str]:
         errors.append("current state, capability matrix and blocker register must share one plan_id")
 
     members = workspace_members()
-    if len(members) != len(set(members)):
-        errors.append("Cargo workspace contains duplicate members")
     names: list[str] = []
     lock_names = lockfile_names()
     for member in members:
         root = ROOT / member
         manifest = root / "Cargo.toml"
-        if not manifest.is_file():
-            errors.append(f"missing manifest: {display_path(manifest)}")
-            continue
         name = package_name(manifest)
         names.append(name)
         if root.name != name:
@@ -170,6 +190,12 @@ def validate() -> list[str]:
         source_root = ROOT / "crates" / name
         if source_root.is_dir() and discovered_tests(source_root) == 0:
             errors.append(f"{name} has no discovered Rust tests")
+
+    planned = matrix.get("planned_modules", [])
+    if not isinstance(planned, list) or not all(isinstance(item, str) for item in planned):
+        errors.append("capability matrix planned_modules must be a string list")
+    elif set(planned) & set(names):
+        errors.append("capability matrix cannot list implemented packages as planned")
 
     entries = blockers.get("repository_blockers", [])
     if not isinstance(entries, list):

@@ -30,6 +30,12 @@ class RepositoryV2Tests(unittest.TestCase):
             errors = VALIDATOR.validate_v3_guide(path)
             self.assertGreaterEqual(len(errors), len(VALIDATOR.V3_HEADINGS))
 
+    def test_workspace_glob_expands_to_real_crates(self) -> None:
+        members = VALIDATOR.workspace_members()
+        self.assertGreaterEqual(len(members), 30)
+        self.assertTrue(all("*" not in member for member in members))
+        self.assertTrue(all((ROOT / member / "Cargo.toml").is_file() for member in members))
+
     def test_workspace_and_matrix_use_one_package_set(self) -> None:
         matrix = VALIDATOR.read_yaml(VALIDATOR.MATRIX_PATH)
         matrix_names = {item["crate"] for item in matrix["modules"]}
