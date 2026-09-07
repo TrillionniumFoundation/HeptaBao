@@ -1,0 +1,51 @@
+name: HeptaBao V2.1 Rust 1.98 toolchain export
+
+on:
+  push:
+    branches:
+      - exec/v2.1-rust-1.98-toolchain-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Archive exact sysroot
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/heptabao-rust-1.98"
+          mkdir -p "$output"
+          sysroot="$(rustc +1.98.0 --print sysroot)"
+          parent="$(dirname "$sysroot")"
+          name="$(basename "$sysroot")"
+          tar --create --gzip --file "$output/rust-1.98.0-x86_64-unknown-linux-gnu.tar.gz" --directory "$parent" "$name"
+          printf 'sysroot_name=%s\nrustc=%s\ncargo=%s\n' "$name" "$(rustc +1.98.0 --version)" "$(cargo +1.98.0 --version)" > "$output/toolchain-binding.txt"
+          (cd "$output" && sha256sum rust-1.98.0-x86_64-unknown-linux-gnu.tar.gz > rust-1.98.0-x86_64-unknown-linux-gnu.tar.gz.sha256)
+
+      - name: Upload bounded toolchain artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-rust-1.98.0-linux-x86_64
+          path: ${{ runner.temp }}/heptabao-rust-1.98/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
