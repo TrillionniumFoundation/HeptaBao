@@ -1,0 +1,130 @@
+name: HeptaBao V2 durable and G4 materializer
+
+on:
+  push:
+    branches:
+      - exec/v2-durable-g4-materialize-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-durable-g4-materializer
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 51910408b51a74a22ba99a6862cf57a98282db6b
+  EXPECTED_TREE: af00ce51a2595388b9daf5f1bd9cf54c2371fae6
+  ARCHIVE_SHA256: ea3e531331eb3e42a18a84b86bd7a55163d07f31cde035e3fb4c431d037b1d2c
+  TARGET_BRANCH: codex/v2.0-product-closure-20260907
+  VALIDATED_BRANCH: exec/v2-durable-g4-validated-20260907
+
+jobs:
+  materialize-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout immutable controller source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - name: Reconstruct and verify exact candidate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat .exec/v2-materializer/v2-files.tar.gz.b64.part-* \
+            | base64 --decode > "$RUNNER_TEMP/v2-files.tar.gz"
+          observed="$(sha256sum "$RUNNER_TEMP/v2-files.tar.gz" | awk '{print $1}')"
+          test "$observed" = "$ARCHIVE_SHA256"
+          tar -tzf "$RUNNER_TEMP/v2-files.tar.gz" > "$RUNNER_TEMP/v2-files.list"
+          test "$(wc -l < "$RUNNER_TEMP/v2-files.list")" -eq 34
+          git switch --detach "$BASE_SHA"
+          git switch -C "$TARGET_BRANCH"
+          rm -f .exec/v2-g4-overlay.part-*
+          tar -xzf "$RUNNER_TEMP/v2-files.tar.gz"
+          git add --all
+          observed_tree="$(git write-tree)"
+          test "$observed_tree" = "$EXPECTED_TREE"
+          git diff --cached --check
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+      - name: Install exact validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Materialize canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          git add --all
+          git diff --cached --check
+      - name: Run current repository and inherited gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python scripts/validate_workflow_trust.py
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          python scripts/validate_plan_v1_4_7.py
+          python scripts/validate_plan_v1_4_6.py
+          python scripts/validate_plan_v1_4_5.py
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_*v1_4_7.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_6.py' -v
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+      - name: Run exact Rust workspace gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --cached --check
+      - name: Publish validated candidate to isolated handoff branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git config user.name "HeptaBao V2 materializer"
+          git config user.email "heptabao-v2-materializer@users.noreply.github.com"
+          git commit -m "feat(v2): materialize G4 contracts and durable service slice"
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          remote_sha="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_sha" = "$BASE_SHA"
+          if git ls-remote --exit-code --heads origin "refs/heads/$VALIDATED_BRANCH" >/dev/null 2>&1; then
+            echo "validated handoff branch already exists" >&2
+            exit 1
+          fi
+          git push origin "HEAD:refs/heads/$VALIDATED_BRANCH"
+          {
+            echo '## V2 durable and G4 candidate validated for external ref handoff'
+            echo "- commit: \`$candidate_sha\`"
+            echo "- tree: \`$candidate_tree\`"
+            echo '- workspace packages: 41'
+            echo "- handoff branch: \`$VALIDATED_BRANCH\`"
+            echo '- target branch not changed by this workflow'
+            echo '- repository implementation: review required'
+            echo '- external blockers: completion required'
+            echo '- authority effect: NONE'
+          } >> "$GITHUB_STEP_SUMMARY"
