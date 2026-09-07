@@ -33,6 +33,7 @@ impl fmt::Debug for VersionRecord {
     }
 }
 
+#[derive(Eq, PartialEq)]
 pub struct KvRead<'a> {
     pub metadata: KvMetadata,
     pub value: &'a [u8],
@@ -276,7 +277,7 @@ mod tests {
             )?;
         }
         store.write(
-            other.clone(),
+            other,
             SecretValue::new(b"other".to_vec())?,
             Tick::new(4),
             None,
