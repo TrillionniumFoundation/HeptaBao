@@ -71,21 +71,27 @@ if source.count(old) != 1:
 source = source.replace(old, new, 1)
 
 old = '''        let recovery_reference = recovery_reference(&binding_digest, generation);\n'''
-new = '''        let intent_sequence = self\n            .journal_sequence\n            .checked_add(1)\n            .ok_or(ServiceError::GenerationOverflow)?;\n        let recovery_reference =\n            recovery_reference(&binding_digest, generation, intent_sequence);\n'''
+new = '''        let intent_sequence = self\n            .journal_sequence\n            .checked_add(1)\n            .ok_or(ServiceEror::GenerationOverflow)?;\n        let recovery_reference =\n            recovery_reference(&binding_digest, generation, intent_sequence);\n"''
 if source.count(old) != 1:
     raise SystemExit(f'attempt sequence anchor count={source.count(old)}')
 source = source.replace(old, new, 1)
 
-old = '''fn recovery_reference(binding_digest: &[u8; 32], generation: u64) -> String {\n    let mut bytes = Vec::with_capacity(40);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    let digest = digest32(b"heptabao.durable-service.recovery.v1", &bytes);\n'''
-new = '''fn recovery_reference(\n    binding_digest: &[u8; 32],\n    generation: u64,\n    intent_sequence: u64,\n) -> String {\n    let mut bytes = Vec::with_capacity(48);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    bytes.extend_from_slice(&intent_sequence.to_le_bytes());\n    let digest = digest32(b"heptabao.durable-service.recovery.v2", &bytes);\n'''
+old = '''fn recovery_reference(binding_digest: &[u8; 32], generation: u64) -> String {\n    let mut bytes = Vec::with_capacity(40);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    let digest = digest32(bheptabao.durable-service.recovery.v1", &bytes);\n"''
+new = '''fn recovery_reference(\n    binding_digest: &[u8; 32],\n    generation: u64,\n    intent_sequence: u64,\n) -> String {\n    let mut bytes = Vec::with_capacity(48);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    bytes.extend_from_slice(&intent_sequence.to_le_bytes());\n    let digest = digest32(b"heptabao.durable-service.recovery.v2", &bytes);\n"''
 if source.count(old) != 1:
     raise SystemExit(f'recovery reference anchor count={source.count(old)}')
 source = source.replace(old, new, 1)
 
-old = '''        assert!(matches!(\n            reopened.put(request)?,\n            MutationOutcome::Committed { generation: 1, .. }\n        ));\n        Ok(())\n'''
-new = '''        let retry_recovery_reference = match reopened.put(request)? {\n            MutationOutcome::Committed {\n                generation: 1,\n                recovery_reference,\n            } => recovery_reference,\n            _ => return Err(ServiceError::CorruptState),\n        };\n        assert_ne!(recovery_reference, retry_recovery_reference);\n        assert_eq!(\n            reopened.reconcile(&recovery_reference),\n            ReconciliationStatus::Aborted\n        );\n        Ok(())\n'''
+old = '''        assert!(matches!(\n            reopened.put(request)?,\n            MutationOutcome::Committed { generation: 1, .. }\n        ));\n        Ok(()\n"''
+new = '''        let retry_recovery_reference = match reopened.put(request)? {\n            MutationOutcome::Committed {\n                generation: 1,\n                recovery_reference,\n            } => recovery_reference,\n            _ => return Err(ServiceError::CorruptState),\n        };\n        assert_ne!(recovery_reference, retry_recovery_reference);\n        assert_eq!(\n            reopened.reconcile(&recovery_reference),\n            ReconciliationStatus::Aborted\n        );\n        Ok(()\n"'''
 if source.count(old) != 1:
     raise SystemExit(f'aborted retry regression anchor count={source.count(old)}')
+source = source.replace(old, new, 1)
+
+old = '        if frame_len < 8 + 4 + 32 || frame_len > MAX_FILE_BYTES {\n'
+new = '        if !(8 + 4 + 32..=MAX_FILE_BYTES).contains(&frame_len) {\n'
+if source.count(old) != 1:
+    raise SystemExit(f'frame range lint repair anchor count={source.count(old)}')
 source = source.replace(old, new, 1)
 path.write_text(source, encoding='utf-8')
 PY
