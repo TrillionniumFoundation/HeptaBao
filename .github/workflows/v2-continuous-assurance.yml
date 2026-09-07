@@ -52,12 +52,21 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Materialize and emit canonical Rust formatting
+      - name: Materialize canonical Rust formatting
         shell: bash
         run: |
           set -euo pipefail
           cargo +1.98.0 fmt --all
-          python scripts/emit_rustfmt_base64.py
+          git diff --name-only --diff-filter=AM -- '*.rs' > "$RUNNER_TEMP/v2-rustfmt-files.txt"
+          test -s "$RUNNER_TEMP/v2-rustfmt-files.txt"
+          tar --create --file "$RUNNER_TEMP/v2-rustfmt-source.tar" --files-from "$RUNNER_TEMP/v2-rustfmt-files.txt"
+      - name: Export canonical formatting for repository materialization
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v2-rustfmt-source-${{ github.sha }}
+          path: ${{ runner.temp }}/v2-rustfmt-source.tar
+          if-no-files-found: error
+          retention-days: 1
       - name: Run all Rust targets
         shell: bash
         run: |
