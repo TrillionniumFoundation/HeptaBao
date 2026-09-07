@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      SOURCE_SHA: ff8ff379509baa95f54744f0b931810d1f115211
+      SOURCE_SHA: 19b7633b1cd05796d0e7409a4eea66eaa472e3df
     steps:
       - name: Checkout exact PR head without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -41,7 +41,7 @@ jobs:
       - name: Upload bounded exact-source artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: heptabao-pr75-exact-ff8ff379
+          name: heptabao-pr75-exact-19b7633b
           path: ${{ runner.temp }}/heptabao-pr75-export/
           if-no-files-found: error
           retention-days: 3
