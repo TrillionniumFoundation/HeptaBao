@@ -1,0 +1,115 @@
+name: HeptaBao V2.1 PR75 G0 remediation fallback
+
+on:
+  push:
+    branches:
+      - exec/v2.1-pr75-g0-remediation-v2-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-1-pr75-g0-remediation-fallback
+  cancel-in-progress: false
+
+jobs:
+  idempotent-remediation:
+    if: github.event.head_commit.message == 'chore(exec): install idempotent PR75 G0 fallback'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_BRANCH: codex/v2.1-main-convergence-durable-runtime-20260907
+      ORIGINAL_HEAD: ff8ff379509baa95f54744f0b931810d1f115211
+      CONTROLLER_BRANCH: exec/v2.1-pr75-g0-remediation-20260908
+    steps:
+      - name: Checkout current candidate with bounded credential
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.CANDIDATE_BRANCH }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind current candidate and recover immutable controller script
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git -C candidate status --porcelain=v1 --untracked-files=all)"
+          git -C candidate fetch --quiet origin "+refs/heads/$CONTROLLER_BRANCH:refs/remotes/origin/$CONTROLLER_BRANCH"
+          git -C candidate show "refs/remotes/origin/$CONTROLLER_BRANCH:tools/remediate_pr75_g0.py" > "$RUNNER_TEMP/remediate_pr75_g0.py"
+          test -s "$RUNNER_TEMP/remediate_pr75_g0.py"
+          head=$(git -C candidate rev-parse HEAD)
+          remote=$(git -C candidate ls-remote origin "refs/heads/$CANDIDATE_BRANCH" | awk '{print $1}')
+          test "$head" = "$remote"
+          if test "$head" != "$ORIGINAL_HEAD"; then
+            git -C candidate cat-file -e "$head:planning/HEPTABAO_V2_1_G0_REMEDIATION_STATUS.yaml"
+          fi
+          echo "BOUND_HEAD=$head" >> "$GITHUB_ENV"
+
+      - name: Install exact Python dependencies
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: candidate/requirements-plan.txt
+
+      - name: Apply remediation only to the original exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement candidate/requirements-plan.txt
+          if test "$BOUND_HEAD" = "$ORIGINAL_HEAD"; then
+            python "$RUNNER_TEMP/remediate_pr75_g0.py" candidate
+          fi
+
+      - name: Install declared Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Normalize formatting and lockfile, then execute all gates
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 generate-lockfile
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          python scripts/validate_workflow_trust.py
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+          test "$(find crates -mindepth 1 -maxdepth 1 -type d -name 'heptabao-*' | wc -l)" -ge 42
+
+      - name: Fast-forward only when this run produced a bounded validated delta
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -z "$(git status --porcelain=v1 --untracked-files=all)"; then
+            echo 'candidate already satisfies G0; no commit required' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          test "$BOUND_HEAD" = "$ORIGINAL_HEAD"
+          test -z "$(git diff --name-only | grep -E '^(\.github/workflows/|\.exec/|tools/)' || true)"
+          git config user.name 'HeptaBao V2.1 convergence controller'
+          git config user.email 'heptabao-v2-1@users.noreply.github.com'
+          git add --all
+          git commit -m 'fix(v2.1): align current truth, secure hashes and exact lockfile'
+          test "$(git rev-parse HEAD^)" = "$BOUND_HEAD"
+          git push --force-with-lease="refs/heads/$CANDIDATE_BRANCH:$BOUND_HEAD" origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          echo "published_head=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo 'qualification=false' >> "$GITHUB_STEP_SUMMARY"
+          echo 'production_authority=false' >> "$GITHUB_STEP_SUMMARY"
+          echo 'release_authority=false' >> "$GITHUB_STEP_SUMMARY"
