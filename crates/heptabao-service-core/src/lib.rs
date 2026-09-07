@@ -3,7 +3,7 @@
 
 //! Mandatory request composition for the V2 single-process product candidate.
 
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
 
@@ -119,7 +119,6 @@ struct RequestRegistry {
     pending: BTreeMap<RequestKey, RequestBinding>,
     unresolved: BTreeMap<RequestKey, RequestBinding>,
     resolved: BTreeSet<RequestKey>,
-    resolved_order: VecDeque<RequestKey>,
 }
 
 impl RequestRegistry {
@@ -132,7 +131,6 @@ impl RequestRegistry {
             pending: BTreeMap::new(),
             unresolved: BTreeMap::new(),
             resolved: BTreeSet::new(),
-            resolved_order: VecDeque::new(),
         })
     }
 
@@ -164,25 +162,12 @@ impl RequestRegistry {
                 Err(ServiceError::RequestBindingMismatch)
             };
         }
-        if self.retained_len() >= self.capacity && self.resolved.is_empty() {
+        if self.retained_len() >= self.capacity {
             return Err(ServiceError::RequestRegistrySaturated);
         }
         let previous = self.pending.insert(key, binding);
         if previous.is_some() {
             return Err(ServiceError::RequestRegistryInvariant);
-        }
-        Ok(())
-    }
-
-    fn make_retained_slot(&mut self) -> Result<(), ServiceError> {
-        while self.retained_len() >= self.capacity {
-            let evicted = self
-                .resolved_order
-                .pop_front()
-                .ok_or(ServiceError::RequestRegistryInvariant)?;
-            if !self.resolved.remove(&evicted) {
-                return Err(ServiceError::RequestRegistryInvariant);
-            }
         }
         Ok(())
     }
@@ -195,16 +180,13 @@ impl RequestRegistry {
     }
 
     fn mark_resolved(&mut self, key: &RequestKey) -> Result<(), ServiceError> {
-        self.make_retained_slot()?;
         if self.pending.remove(key).is_none() || !self.resolved.insert(key.clone()) {
             return Err(ServiceError::RequestRegistryInvariant);
         }
-        self.resolved_order.push_back(key.clone());
         Ok(())
     }
 
     fn mark_unresolved(&mut self, key: &RequestKey) -> Result<(), ServiceError> {
-        self.make_retained_slot()?;
         let binding = self
             .pending
             .remove(key)
@@ -224,7 +206,6 @@ impl RequestRegistry {
         if !self.resolved.insert(key.clone()) {
             return Err(ServiceError::RequestRegistryInvariant);
         }
-        self.resolved_order.push_back(key.clone());
         Ok(())
     }
 }
@@ -412,16 +393,16 @@ impl<H: PostCommitHook> ServiceCore<H> {
             .effective_policy_ids(&principal_id)
             .map_err(ServiceError::Identity)?;
         effective.extend(token.policy_ids);
-        if !self
-            .policies
-            .authorize(&effective, request.operation.capability(), &request.path)
-        {
-            return Err(ServiceError::Unauthorized);
-        }
-        let _qualified_path = self
+        let qualified_path = self
             .namespaces
             .qualify(&request.namespace_id, &request.path)
             .map_err(ServiceError::Namespace)?;
+        if !self
+            .policies
+            .authorize(&effective, request.operation.capability(), &qualified_path)
+        {
+            return Err(ServiceError::Unauthorized);
+        }
         let route = self
             .mounts
             .route(&request.namespace_id, &request.path)
@@ -760,9 +741,10 @@ mod tests {
     }
 
     #[test]
-    fn resolved_request_retention_is_finite_and_fifo() -> Result<(), Box<dyn Error>> {
+    fn completed_request_ids_are_non_evicting_and_capacity_fails_closed()
+    -> Result<(), Box<dyn Error>> {
         let (mut service, token) = configured_with_capacity(NoopPostCommitHook, 2)?;
-        for index in 0..3 {
+        for index in 0..2 {
             service.handle(
                 ServiceRequest {
                     request_id: Id::parse(format!("resolved_{index}"))?,
@@ -777,8 +759,56 @@ mod tests {
                 Tick::new(u64::from(index)),
             )?;
         }
+
+        let saturated = service.handle(
+            ServiceRequest {
+                request_id: Id::parse("resolved_2")?,
+                token_id: token.clone(),
+                namespace_id: Id::parse("root")?,
+                path: CanonicalPath::parse("/secret/resolved_2")?,
+                operation: ServiceOperation::KvWrite {
+                    value: SecretValue::new(b"must-not-commit".to_vec())?,
+                    cas: Some(0),
+                },
+            },
+            Tick::new(2),
+        );
+        assert_eq!(Err(ServiceError::RequestRegistrySaturated), saturated);
+
+        let replay = service.handle(
+            ServiceRequest {
+                request_id: Id::parse("resolved_0")?,
+                token_id: token,
+                namespace_id: Id::parse("root")?,
+                path: CanonicalPath::parse("/secret/resolved_0")?,
+                operation: ServiceOperation::KvWrite {
+                    value: SecretValue::new(b"a".to_vec())?,
+                    cas: Some(0),
+                },
+            },
+            Tick::new(3),
+        );
+        assert_eq!(Err(ServiceError::DuplicateRequest), replay);
         assert_eq!(2, service.request_registry_counts().resolved);
         assert_eq!(2, service.request_registry_counts().total());
+        assert_eq!(
+            1,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/root/root_secret/resolved_0")?)
+        );
+        assert_eq!(
+            1,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/root/root_secret/resolved_1")?)
+        );
+        assert_eq!(
+            0,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/root/root_secret/resolved_2")?)
+        );
         Ok(())
     }
 
@@ -905,7 +935,7 @@ mod tests {
 
     #[test]
     fn rejected_mutation_does_not_evict_a_resolved_request_id() -> Result<(), Box<dyn Error>> {
-        let (mut service, token) = configured_with_capacity(NoopPostCommitHook, 1)?;
+        let (mut service, token) = configured_with_capacity(NoopPostCommitHook, 2)?;
         let retained_id = Id::parse("retained_request")?;
         service.handle(
             ServiceRequest {
@@ -1135,7 +1165,8 @@ mod tests {
     }
 
     #[test]
-    fn namespace_storage_keys_are_isolated() -> Result<(), Box<dyn Error>> {
+    fn namespace_storage_keys_are_isolated_with_explicit_namespace_policy()
+    -> Result<(), Box<dyn Error>> {
         let (mut service, token) = configured(NoopPostCommitHook)?;
         let root = Id::parse("root")?;
         let team = Id::parse("team")?;
@@ -1146,6 +1177,26 @@ mod tests {
             CanonicalPath::parse("/secret")?,
             Backend::Kv,
         )?;
+        let capabilities = [
+            Capability::Read,
+            Capability::Update,
+            Capability::Delete,
+            Capability::List,
+        ]
+        .into_iter()
+        .collect();
+        let team_policy = Id::parse("team_rw")?;
+        service.policies_mut().insert(Policy::new(
+            team_policy.clone(),
+            vec![PolicyRule::new(
+                CanonicalPath::parse("/team/secret")?,
+                capabilities,
+            )?],
+        )?)?;
+        service
+            .identities_mut()
+            .attach_policy(&Id::parse("alice")?, team_policy)?;
+
         for (request_id, namespace_id, value) in [
             ("write_root", root, &b"root-value"[..]),
             ("write_team", team.clone(), &b"team-value"[..]),
@@ -1180,6 +1231,100 @@ mod tests {
             }
             _ => return Err("unexpected service response".into()),
         }
+        assert_eq!(
+            1,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/root/root_secret/app")?)
+        );
+        assert_eq!(
+            1,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/team/team_secret/app")?)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn qualified_namespace_policy_denies_cross_principal_access() -> Result<(), Box<dyn Error>> {
+        let (mut service, root_token) = configured(NoopPostCommitHook)?;
+        let root = Id::parse("root")?;
+        let team = Id::parse("team")?;
+        service.namespaces_mut().create(team.clone(), &root)?;
+        service.mounts_mut().mount(
+            Id::parse("team_secret")?,
+            team.clone(),
+            CanonicalPath::parse("/secret")?,
+            Backend::Kv,
+        )?;
+
+        let capabilities = [Capability::Read, Capability::Update].into_iter().collect();
+        let team_policy = Id::parse("team_only")?;
+        service.policies_mut().insert(Policy::new(
+            team_policy.clone(),
+            vec![PolicyRule::new(
+                CanonicalPath::parse("/team/secret")?,
+                capabilities,
+            )?],
+        )?)?;
+        let team_user = Id::parse("team_user")?;
+        service.identities_mut().create_entity(team_user.clone())?;
+        service
+            .identities_mut()
+            .attach_policy(&team_user, team_policy)?;
+        let team_token = TokenId::parse("token_team_user")?;
+        service.tokens_mut().issue(
+            team_token.clone(),
+            team_user,
+            BTreeSet::new(),
+            Tick::new(0),
+            1000,
+            true,
+        )?;
+
+        let root_into_team = service.handle(
+            ServiceRequest {
+                request_id: Id::parse("root_into_team")?,
+                token_id: root_token,
+                namespace_id: team,
+                path: CanonicalPath::parse("/secret/cross")?,
+                operation: ServiceOperation::KvWrite {
+                    value: SecretValue::new(b"denied-root".to_vec())?,
+                    cas: Some(0),
+                },
+            },
+            Tick::new(1),
+        );
+        assert_eq!(Err(ServiceError::Unauthorized), root_into_team);
+
+        let team_into_root = service.handle(
+            ServiceRequest {
+                request_id: Id::parse("team_into_root")?,
+                token_id: team_token,
+                namespace_id: root,
+                path: CanonicalPath::parse("/secret/cross")?,
+                operation: ServiceOperation::KvWrite {
+                    value: SecretValue::new(b"denied-team".to_vec())?,
+                    cas: Some(0),
+                },
+            },
+            Tick::new(1),
+        );
+        assert_eq!(Err(ServiceError::Unauthorized), team_into_root);
+        assert_eq!(0, service.request_registry_counts().total());
+        assert_eq!(
+            0,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/team/team_secret/cross")?)
+        );
+        assert_eq!(
+            0,
+            service
+                .kv()
+                .current_version(&CanonicalPath::parse("/root/root_secret/cross")?)
+        );
         Ok(())
     }
 
