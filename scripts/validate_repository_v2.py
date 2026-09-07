@@ -15,6 +15,12 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_PATH = ROOT / "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml"
 MATRIX_PATH = ROOT / "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml"
 BLOCKERS_PATH = ROOT / "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml"
+README_PATH = ROOT / "README.md"
+CURRENT_DOCUMENTATION_PATH = ROOT / "docs/CURRENT_DOCUMENTATION.md"
+MODULE_INDEX_PATH = ROOT / "docs/modules/README.md"
+SECURITY_PATH = ROOT / "SECURITY.md"
+LICENSE_PLANNING_PATH = ROOT / "LICENSE-PLANNING.md"
+
 V3_HEADINGS = (
     "Purpose and non-goals",
     "Public API and ownership",
@@ -29,6 +35,28 @@ V3_HEADINGS = (
     "Tests and executable evidence",
     "Evolution and open boundaries",
 )
+
+G4_PACKAGES = {
+    "heptabao-agent",
+    "heptabao-cli-contracts",
+    "heptabao-client-contracts",
+    "heptabao-compatibility",
+    "heptabao-ha-contracts",
+    "heptabao-kms-contracts",
+    "heptabao-migration",
+    "heptabao-proxy",
+}
+
+FALSE_CLAIMS = {
+    "qualification": False,
+    "compatibility_claim": False,
+    "production_authority": False,
+    "migration_authority": False,
+    "release_authority": False,
+    "authority_effect": "NONE",
+}
+
+CURRENT_DOCUMENTS = (README_PATH, CURRENT_DOCUMENTATION_PATH, MODULE_INDEX_PATH)
 
 
 def display_path(path: Path) -> str:
@@ -123,9 +151,125 @@ def validate_v3_guide(path: Path) -> list[str]:
     return errors
 
 
+def validate_claims(label: str, claims: Any) -> list[str]:
+    if not isinstance(claims, dict):
+        return [f"{label} claims must be a mapping"]
+    errors: list[str] = []
+    for key, expected in FALSE_CLAIMS.items():
+        if claims.get(key) != expected:
+            errors.append(f"{label} must keep {key}={expected!r}")
+    return errors
+
+
+def validate_current_documentation(plan_id: str, package_names: set[str]) -> list[str]:
+    errors: list[str] = []
+    count = len(package_names)
+    for path in CURRENT_DOCUMENTS:
+        if not path.is_file():
+            errors.append(f"missing current documentation entry: {display_path(path)}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if plan_id not in text:
+            errors.append(f"{display_path(path)} does not identify current plan {plan_id}")
+        if "V1.4.7 / CURRENT" in text or "H00 / planning and governance implementation" in text:
+            errors.append(f"{display_path(path)} contains a stale current-status claim")
+
+    if README_PATH.is_file():
+        readme = README_PATH.read_text(encoding="utf-8")
+        if f"**{count} packages**" not in readme:
+            errors.append(f"README.md must state the exact current package count ({count})")
+        for command in (
+            "python scripts/validate_repository_v2.py",
+            "cargo +1.98.0 fmt --all -- --check",
+            "cargo +1.98.0 test --locked --workspace --all-targets",
+            "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+            "cargo +1.98.0 doc --locked --workspace --no-deps",
+        ):
+            if command not in readme:
+                errors.append(f"README.md is missing current validation command: {command}")
+
+    if CURRENT_DOCUMENTATION_PATH.is_file():
+        portal = CURRENT_DOCUMENTATION_PATH.read_text(encoding="utf-8")
+        if f"all {count} workspace packages" not in portal:
+            errors.append(
+                "docs/CURRENT_DOCUMENTATION.md must state the exact current workspace count"
+            )
+        for current in (
+            "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml",
+            "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml",
+            "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml",
+            "docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md",
+            "docs/modules/README.md",
+        ):
+            if current not in portal:
+                errors.append(f"current documentation portal is missing {current}")
+
+    if MODULE_INDEX_PATH.is_file():
+        index = MODULE_INDEX_PATH.read_text(encoding="utf-8")
+        if f"40 WORKSPACE PACKAGES" not in index or count != 40:
+            errors.append("module index package-count banner must match the 40-package V2 scope")
+        indexed = set(
+            re.findall(r"(?m)^\| `(heptabao-[^`]+)` \|", index)
+        )
+        if indexed != package_names:
+            missing = sorted(package_names - indexed)
+            stale = sorted(indexed - package_names)
+            if missing:
+                errors.append("module index missing packages: " + ", ".join(missing))
+            if stale:
+                errors.append("module index contains stale packages: " + ", ".join(stale))
+        for name in package_names:
+            row = f"| `{name}` |"
+            if index.count(row) != 1:
+                errors.append(f"module index must contain exactly one row for {name}")
+    return errors
+
+
+def validate_g4_contracts(
+    package_names: set[str], matrix_by_name: dict[str, dict[str, Any]], planned: list[str]
+) -> list[str]:
+    errors: list[str] = []
+    missing = sorted(G4_PACKAGES - package_names)
+    if missing:
+        errors.append("G4 contract packages are missing: " + ", ".join(missing))
+    if planned:
+        errors.append("V2 G4 planned_modules must be empty after contract implementation")
+    for name in sorted(G4_PACKAGES & package_names):
+        item = matrix_by_name.get(name, {})
+        if item.get("documentation_standard") != "V3":
+            errors.append(f"{name} must use module documentation standard V3")
+        if item.get("state") != "IMPLEMENTED_REVIEW_REQUIRED":
+            errors.append(f"{name} must be IMPLEMENTED_REVIEW_REQUIRED")
+
+    semantic_markers = {
+        "heptabao-agent": ("mark_outcome_unknown_after_entry", "FailedClosed"),
+        "heptabao-cli-contracts": ("SecretInArguments", "--secret-stdin"),
+        "heptabao-proxy": ("connection_nominations", "authorization_value"),
+        "heptabao-kms-contracts": ("OutcomeUnknownAfterEntry", "ReconcileOnly"),
+    }
+    for name, markers in semantic_markers.items():
+        path = ROOT / "crates" / name / "src/lib.rs"
+        if not path.is_file():
+            continue
+        source = path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in source:
+                errors.append(f"{name} is missing required semantic marker {marker!r}")
+    return errors
+
+
 def validate() -> list[str]:
     errors: list[str] = []
-    required = (STATE_PATH, MATRIX_PATH, BLOCKERS_PATH)
+    required = (
+        STATE_PATH,
+        MATRIX_PATH,
+        BLOCKERS_PATH,
+        README_PATH,
+        CURRENT_DOCUMENTATION_PATH,
+        MODULE_INDEX_PATH,
+        SECURITY_PATH,
+        LICENSE_PLANNING_PATH,
+    )
     for path in required:
         if not path.is_file():
             errors.append(f"missing current file: {display_path(path)}")
@@ -135,8 +279,16 @@ def validate() -> list[str]:
     state = read_yaml(STATE_PATH)
     matrix = read_yaml(MATRIX_PATH)
     blockers = read_yaml(BLOCKERS_PATH)
-    if state.get("plan_id") != matrix.get("plan_id") or state.get("plan_id") != blockers.get("plan_id"):
+    plan_id = state.get("plan_id")
+    if not isinstance(plan_id, str) or not plan_id:
+        errors.append("canonical state must declare a nonempty plan_id")
+        plan_id = ""
+    if plan_id != matrix.get("plan_id") or plan_id != blockers.get("plan_id"):
         errors.append("current state, capability matrix and blocker register must share one plan_id")
+
+    errors.extend(validate_claims("canonical state", state.get("claims")))
+    errors.extend(validate_claims("blocker register", blockers.get("claims")))
+    errors.extend(validate_claims("capability matrix", matrix.get("claims")))
 
     members = workspace_members()
     names: list[str] = []
@@ -161,6 +313,15 @@ def validate() -> list[str]:
 
     if len(names) != len(set(names)):
         errors.append("workspace contains duplicate package names")
+    package_names = set(names)
+    guide_names = {path.stem for path in (ROOT / "docs/modules").glob("heptabao-*.md")}
+    if guide_names != package_names:
+        missing = sorted(package_names - guide_names)
+        stale = sorted(guide_names - package_names)
+        if missing:
+            errors.append("module guide set missing packages: " + ", ".join(missing))
+        if stale:
+            errors.append("module guide set contains non-workspace packages: " + ", ".join(stale))
 
     modules = matrix.get("modules", [])
     if not isinstance(modules, list):
@@ -171,9 +332,11 @@ def validate() -> list[str]:
         for item in modules
         if isinstance(item, dict) and isinstance(item.get("crate"), str)
     }
-    if set(names) != set(by_name):
-        missing = sorted(set(names) - set(by_name))
-        stale = sorted(set(by_name) - set(names))
+    if len(by_name) != len(modules):
+        errors.append("capability matrix has duplicate or invalid module entries")
+    if package_names != set(by_name):
+        missing = sorted(package_names - set(by_name))
+        stale = sorted(set(by_name) - package_names)
         if missing:
             errors.append("capability matrix missing workspace packages: " + ", ".join(missing))
         if stale:
@@ -181,6 +344,12 @@ def validate() -> list[str]:
     for name, item in by_name.items():
         source = ROOT / str(item.get("source", ""))
         guide = ROOT / str(item.get("guide", ""))
+        expected_source = ROOT / "crates" / name / "src/lib.rs"
+        expected_guide = ROOT / "docs/modules" / f"{name}.md"
+        if source != expected_source:
+            errors.append(f"matrix source for {name} is not canonical: {display_path(source)}")
+        if guide != expected_guide:
+            errors.append(f"matrix guide for {name} is not canonical: {display_path(guide)}")
         if not source.is_file():
             errors.append(f"matrix source missing for {name}: {display_path(source)}")
         if not guide.is_file():
@@ -191,11 +360,18 @@ def validate() -> list[str]:
         if source_root.is_dir() and discovered_tests(source_root) == 0:
             errors.append(f"{name} has no discovered Rust tests")
 
-    planned = matrix.get("planned_modules", [])
-    if not isinstance(planned, list) or not all(isinstance(item, str) for item in planned):
+    planned_value = matrix.get("planned_modules", [])
+    if not isinstance(planned_value, list) or not all(
+        isinstance(item, str) for item in planned_value
+    ):
         errors.append("capability matrix planned_modules must be a string list")
-    elif set(planned) & set(names):
-        errors.append("capability matrix cannot list implemented packages as planned")
+        planned: list[str] = []
+    else:
+        planned = planned_value
+        if set(planned) & package_names:
+            errors.append("capability matrix cannot list implemented packages as planned")
+    errors.extend(validate_g4_contracts(package_names, by_name, planned))
+    errors.extend(validate_current_documentation(plan_id, package_names))
 
     entries = blockers.get("repository_blockers", [])
     if not isinstance(entries, list):
@@ -204,27 +380,54 @@ def validate() -> list[str]:
     ids = [item.get("id") for item in entries if isinstance(item, dict)]
     if len(ids) != len(set(ids)):
         errors.append("repository blocker IDs must be unique")
+    by_blocker = {
+        item.get("id"): item
+        for item in entries
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
     for item in entries:
         if not isinstance(item, dict):
             errors.append("repository blocker entry must be a mapping")
             continue
-        if item.get("state") == "CLOSED_REPOSITORY_SCOPE":
+        state_value = item.get("state")
+        if state_value not in {
+            "IMPLEMENTATION_IN_PROGRESS",
+            "IMPLEMENTED_REVIEW_REQUIRED",
+            "CLOSED_REPOSITORY_SCOPE",
+        }:
+            errors.append(f"repository blocker {item.get('id')} has invalid state {state_value!r}")
+        if state_value in {"IMPLEMENTED_REVIEW_REQUIRED", "CLOSED_REPOSITORY_SCOPE"}:
             evidence = item.get("evidence", [])
             if not isinstance(evidence, list) or not evidence:
-                errors.append(f"closed blocker {item.get('id')} has no evidence")
+                errors.append(f"implemented blocker {item.get('id')} has no evidence")
                 continue
             for value in evidence:
                 path = ROOT / str(value)
                 if not path.exists():
-                    errors.append(f"closed blocker {item.get('id')} evidence is missing: {value}")
+                    errors.append(
+                        f"implemented blocker {item.get('id')} evidence is missing: {value}"
+                    )
+    rep006 = by_blocker.get("HB-V2-REP-006", {})
+    if rep006.get("state") != "IMPLEMENTED_REVIEW_REQUIRED":
+        errors.append("HB-V2-REP-006 must be IMPLEMENTED_REVIEW_REQUIRED after G4 source closure")
+    rep006_evidence = set(rep006.get("evidence", [])) if isinstance(rep006, dict) else set()
+    for name in ("heptabao-agent", "heptabao-cli-contracts", "heptabao-proxy", "heptabao-kms-contracts"):
+        source = f"crates/{name}/src/lib.rs"
+        guide = f"docs/modules/{name}.md"
+        if source not in rep006_evidence or guide not in rep006_evidence:
+            errors.append(f"HB-V2-REP-006 evidence must bind source and guide for {name}")
 
     external = blockers.get("external_blockers", [])
     if not isinstance(external, list):
         errors.append("external_blockers must be a list")
         external = []
     for item in external:
-        if isinstance(item, dict) and item.get("state") == "CLOSED_REPOSITORY_SCOPE":
-            errors.append(f"external blocker {item.get('id')} cannot be repository-closed")
+        if not isinstance(item, dict):
+            errors.append("external blocker entry must be a mapping")
+        elif item.get("state") != "EXTERNAL_COMPLETION_REQUIRED":
+            errors.append(
+                f"external blocker {item.get('id')} must remain EXTERNAL_COMPLETION_REQUIRED"
+            )
 
     current = state.get("current_documents", {})
     if not isinstance(current, dict):
@@ -234,6 +437,18 @@ def validate() -> list[str]:
             path = ROOT / str(value)
             if not path.is_file():
                 errors.append(f"current document {label} is missing: {value}")
+    workstreams = state.get("workstreams", {})
+    if not isinstance(workstreams, dict):
+        errors.append("canonical state workstreams must be a mapping")
+    elif workstreams.get("G4_ha_migration_client_compatibility") != "IMPLEMENTED_REVIEW_REQUIRED":
+        errors.append("canonical G4 workstream must be IMPLEMENTED_REVIEW_REQUIRED")
+
+    security = SECURITY_PATH.read_text(encoding="utf-8")
+    if "V2.0 repository product candidate under review" not in security:
+        errors.append("SECURITY.md does not describe the current V2.0 repository status")
+    licensing = LICENSE_PLANNING_PATH.read_text(encoding="utf-8")
+    if "HB-BLK-EXT-001" not in licensing or "NO FINAL OUTBOUND LICENSE SELECTED" not in licensing:
+        errors.append("LICENSE-PLANNING.md must keep the unresolved external legal blocker explicit")
     return errors
 
 

@@ -23,6 +23,17 @@ pub enum LeaseState {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseIssue {
+    pub id: Id,
+    pub owner_entity: Id,
+    pub scope: CanonicalPath,
+    pub kind: LeaseKind,
+    pub issued_at: Tick,
+    pub ttl: u64,
+    pub renewable: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LeaseView {
     pub id: Id,
     pub owner_entity: Id,
@@ -70,38 +81,30 @@ pub struct LeaseStore {
 }
 
 impl LeaseStore {
-    pub fn issue(
-        &mut self,
-        id: Id,
-        owner_entity: Id,
-        scope: CanonicalPath,
-        kind: LeaseKind,
-        issued_at: Tick,
-        ttl: u64,
-        renewable: bool,
-    ) -> Result<LeaseView, LeaseError> {
-        if ttl == 0 {
+    pub fn issue(&mut self, command: LeaseIssue) -> Result<LeaseView, LeaseError> {
+        if command.ttl == 0 {
             return Err(LeaseError::InvalidTtl);
         }
-        if self.leases.contains_key(&id) {
+        if self.leases.contains_key(&command.id) {
             return Err(LeaseError::DuplicateLease);
         }
-        let expires_at = issued_at
-            .checked_add(ttl)
+        let expires_at = command
+            .issued_at
+            .checked_add(command.ttl)
             .map_err(|_| LeaseError::InvalidTtl)?;
         let record = LeaseRecord {
-            id: id.clone(),
-            owner_entity,
-            scope,
-            kind,
+            id: command.id.clone(),
+            owner_entity: command.owner_entity,
+            scope: command.scope,
+            kind: command.kind,
             state: LeaseState::Active,
-            issued_at,
+            issued_at: command.issued_at,
             expires_at,
-            renewable,
+            renewable: command.renewable,
             generation: 1,
         };
         let view = record.view();
-        self.leases.insert(id, record);
+        self.leases.insert(command.id, record);
         Ok(view)
     }
 
@@ -200,15 +203,15 @@ mod tests {
         let owner = Id::parse("alice")?;
         let scope = CanonicalPath::parse("/secret/app")?;
         let mut store = LeaseStore::default();
-        store.issue(
-            lease.clone(),
-            owner,
+        store.issue(LeaseIssue {
+            id: lease.clone(),
+            owner_entity: owner,
             scope,
-            LeaseKind::Secret,
-            Tick::new(5),
-            10,
-            true,
-        )?;
+            kind: LeaseKind::Secret,
+            issued_at: Tick::new(5),
+            ttl: 10,
+            renewable: true,
+        })?;
         assert!(store.validate(&lease, Tick::new(10)).is_ok());
         let renewed = store.renew(&lease, Tick::new(10), 20)?;
         assert_eq!(Tick::new(30), renewed.expires_at);
@@ -223,24 +226,24 @@ mod tests {
     #[test]
     fn prefix_revocation_respects_path_boundaries() -> Result<(), Box<dyn Error>> {
         let mut store = LeaseStore::default();
-        store.issue(
-            Id::parse("lease_app")?,
-            Id::parse("alice")?,
-            CanonicalPath::parse("/secret/app/config")?,
-            LeaseKind::Secret,
-            Tick::new(0),
-            100,
-            false,
-        )?;
-        store.issue(
-            Id::parse("lease_application")?,
-            Id::parse("bob")?,
-            CanonicalPath::parse("/secret/application")?,
-            LeaseKind::Secret,
-            Tick::new(0),
-            100,
-            false,
-        )?;
+        store.issue(LeaseIssue {
+            id: Id::parse("lease_app")?,
+            owner_entity: Id::parse("alice")?,
+            scope: CanonicalPath::parse("/secret/app/config")?,
+            kind: LeaseKind::Secret,
+            issued_at: Tick::new(0),
+            ttl: 100,
+            renewable: false,
+        })?;
+        store.issue(LeaseIssue {
+            id: Id::parse("lease_application")?,
+            owner_entity: Id::parse("bob")?,
+            scope: CanonicalPath::parse("/secret/application")?,
+            kind: LeaseKind::Secret,
+            issued_at: Tick::new(0),
+            ttl: 100,
+            renewable: false,
+        })?;
         assert_eq!(
             1,
             store.revoke_prefix(&CanonicalPath::parse("/secret/app")?)

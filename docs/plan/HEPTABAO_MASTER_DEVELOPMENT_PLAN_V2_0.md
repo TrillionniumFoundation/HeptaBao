@@ -115,6 +115,7 @@ Deliverables:
 - HA term, role, membership and writer-fence contracts;
 - migration state machine prohibiting source/target writer overlap;
 - client retry classification;
+- CLI invocation contracts that prohibit secret-bearing process arguments;
 - agent auto-auth state machine;
 - proxy header-sanitization and forwarding policy;
 - KMS/HSM custody and rotation contracts without inventing cryptography;
@@ -123,6 +124,7 @@ Deliverables:
 Definition of done:
 
 - contracts compile and have transition tests;
+- CLI accepts secret input only through explicit indirect sources and never through `argv`;
 - the repository states clearly that contracts are not production providers or external qualification;
 - compatibility remains false until an independently attributable endpoint and side-effect matrix is admitted.
 

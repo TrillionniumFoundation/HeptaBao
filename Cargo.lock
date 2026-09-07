@@ -3,6 +3,11 @@
 version = 4
 
 [[package]]
+name = "heptabao-agent"
+version = "0.1.0"
+dependencies = ["heptabao-domain"]
+
+[[package]]
 name = "heptabao-authbus-contracts"
 version = "0.1.0"
 dependencies = ["heptabao-protocol"]
@@ -11,6 +16,11 @@ dependencies = ["heptabao-protocol"]
 name = "heptabao-barrier-api"
 version = "0.1.0"
 dependencies = ["heptabao-storage-api"]
+
+[[package]]
+name = "heptabao-cli-contracts"
+version = "0.1.0"
+dependencies = ["heptabao-domain"]
 
 [[package]]
 name = "heptabao-client-contracts"
@@ -62,6 +72,11 @@ dependencies = ["heptabao-barrier-api", "heptabao-durable-core", "heptabao-journ
 name = "heptabao-key-lifecycle"
 version = "0.1.0"
 dependencies = ["heptabao-barrier-api", "heptabao-journal-api"]
+
+[[package]]
+name = "heptabao-kms-contracts"
+version = "0.1.0"
+dependencies = ["heptabao-domain"]
 
 [[package]]
 name = "heptabao-kv-engine"
@@ -128,6 +143,11 @@ dependencies = ["heptabao-domain"]
 [[package]]
 name = "heptabao-protocol"
 version = "0.1.0"
+
+[[package]]
+name = "heptabao-proxy"
+version = "0.1.0"
+dependencies = ["heptabao-domain"]
 
 [[package]]
 name = "heptabao-recovery-core"

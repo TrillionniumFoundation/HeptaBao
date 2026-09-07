@@ -8,7 +8,7 @@ This package owns lease issue, renewal, expiration and revocation state for secr
 
 ## Public API and ownership
 
-`LeaseStore` owns lease records keyed by bounded identifiers. `LeaseView` exposes scope, owner, kind, state, lifetime, renewable flag and generation.
+`LeaseIssue` is the single auditable command object for identifier, owner, scope, kind, issue tick, TTL and renewable flag. `LeaseStore` owns records keyed by bounded identifiers, while `LeaseView` exposes the accepted state and generation.
 
 ## State and data model
 
@@ -44,7 +44,7 @@ Operators can revoke one lease or a canonical prefix. Production operation still
 
 ## Tests and executable evidence
 
-`cargo test -p heptabao-lease` covers issue, renewal, revocation, expiration and segment-safe prefix revocation. The current CI compiles all targets and documentation.
+`cargo test -p heptabao-lease` covers command-object issue, renewal, revocation, expiration and segment-safe prefix revocation. The current CI compiles all targets, rejects excessive function arguments through strict Clippy and builds documentation.
 
 ## Evolution and open boundaries
 
