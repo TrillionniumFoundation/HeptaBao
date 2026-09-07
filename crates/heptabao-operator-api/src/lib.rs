@@ -99,27 +99,28 @@ pub struct ReconciliationStore {
 
 impl ReconciliationStore {
     pub fn record(&mut self, record: OutcomeRecord) -> Result<(), OperatorError> {
-        if self.records.contains_key(&record.request_id) {
+        let key = record
+            .recovery_reference
+            .as_ref()
+            .unwrap_or(&record.request_id)
+            .clone();
+        if self.records.contains_key(&key) {
             return Err(OperatorError::DuplicateRequest);
         }
-        self.records.insert(record.request_id.clone(), record);
+        self.records.insert(key, record);
         Ok(())
     }
 
-    pub fn get(&self, request_id: &Id) -> Result<&OutcomeRecord, OperatorError> {
+    pub fn get(&self, reference: &Id) -> Result<&OutcomeRecord, OperatorError> {
         self.records
-            .get(request_id)
+            .get(reference)
             .ok_or(OperatorError::MissingRecord)
     }
 
-    pub fn resolve(
-        &mut self,
-        request_id: &Id,
-        resolution: Resolution,
-    ) -> Result<(), OperatorError> {
+    pub fn resolve(&mut self, reference: &Id, resolution: Resolution) -> Result<(), OperatorError> {
         let record = self
             .records
-            .get_mut(request_id)
+            .get_mut(reference)
             .ok_or(OperatorError::MissingRecord)?;
         if record.resolution.is_some() {
             return Err(OperatorError::AlreadyResolved);
@@ -161,6 +162,32 @@ mod tests {
         store.record(record)?;
         store.resolve(&request, Resolution::ConfirmedCommitted)?;
         assert_eq!(OperatorAction::DoNotRetry, store.get(&request)?.action());
+        Ok(())
+    }
+
+    #[test]
+    fn distinct_recovery_references_disambiguate_the_same_external_request_id()
+    -> Result<(), Box<dyn Error>> {
+        let request = Id::parse("shared_request")?;
+        let first_reference = Id::parse("recovery_one")?;
+        let second_reference = Id::parse("recovery_two")?;
+        let mut store = ReconciliationStore::default();
+        store.record(OutcomeRecord::unknown_after_entry(
+            request.clone(),
+            first_reference.clone(),
+        ))?;
+        store.record(OutcomeRecord::unknown_after_entry(
+            request,
+            second_reference.clone(),
+        ))?;
+        assert_eq!(
+            Some(&first_reference),
+            store.get(&first_reference)?.recovery_reference.as_ref()
+        );
+        assert_eq!(
+            Some(&second_reference),
+            store.get(&second_reference)?.recovery_reference.as_ref()
+        );
         Ok(())
     }
 

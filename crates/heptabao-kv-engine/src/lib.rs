@@ -81,8 +81,11 @@ impl KvStore {
         now: Tick,
         cas: Option<u64>,
     ) -> Result<KvMetadata, KvError> {
-        let history = self.entries.entry(path).or_default();
-        let current = history.last().map_or(0, |record| record.metadata.version);
+        let current = self
+            .entries
+            .get(&path)
+            .and_then(|history| history.last())
+            .map_or(0, |record| record.metadata.version);
         if let Some(expected) = cas
             && expected != current
         {
@@ -95,6 +98,7 @@ impl KvStore {
             deleted: false,
             destroyed: false,
         };
+        let history = self.entries.entry(path).or_default();
         history.push(VersionRecord {
             metadata: metadata.clone(),
             value: Some(value),
@@ -160,13 +164,23 @@ impl KvStore {
         if versions.is_empty() {
             return Err(KvError::MissingVersion);
         }
+        let history = self.entries.get(path).ok_or(KvError::MissingKey)?;
+        if versions.iter().any(|version| {
+            !history
+                .iter()
+                .any(|record| record.metadata.version == *version)
+        }) {
+            return Err(KvError::MissingVersion);
+        }
         let history = self.entries.get_mut(path).ok_or(KvError::MissingKey)?;
         let mut changed = 0;
         for version in versions {
-            let record = history
+            let Some(record) = history
                 .iter_mut()
                 .find(|record| record.metadata.version == *version)
-                .ok_or(KvError::MissingVersion)?;
+            else {
+                return Err(KvError::MissingVersion);
+            };
             if !record.metadata.destroyed {
                 record.value = None;
                 record.metadata.destroyed = true;
@@ -255,6 +269,70 @@ mod tests {
             Err(KvError::Destroyed),
             store.read(&path, Some(first.version))
         );
+        Ok(())
+    }
+
+    #[test]
+    fn rejected_first_write_cas_does_not_publish_a_ghost_key() -> Result<(), Box<dyn Error>> {
+        let path = CanonicalPath::parse("/app/ghost")?;
+        let prefix = CanonicalPath::parse("/app")?;
+        let mut store = KvStore::new(3)?;
+
+        assert_eq!(
+            Err(KvError::CasMismatch),
+            store.write(
+                path.clone(),
+                SecretValue::new(b"must-not-appear".to_vec())?,
+                Tick::new(1),
+                Some(1),
+            )
+        );
+        assert_eq!(0, store.current_version(&path));
+        assert_eq!(Err(KvError::MissingKey), store.read(&path, None));
+        assert!(store.list(&prefix).is_empty());
+        Ok(())
+    }
+
+    #[test]
+    fn rejected_multi_version_destroy_is_atomic_in_both_orders() -> Result<(), Box<dyn Error>> {
+        for versions in [[1_u64, 999_u64], [999_u64, 1_u64]] {
+            let path = CanonicalPath::parse("/app/atomic")?;
+            let mut store = KvStore::new(3)?;
+            let metadata = store.write(
+                path.clone(),
+                SecretValue::new(b"preserved".to_vec())?,
+                Tick::new(1),
+                Some(0),
+            )?;
+            let before_value = store.read(&path, Some(1))?.value.to_vec();
+            let before_metadata = store.read(&path, Some(1))?.metadata;
+
+            assert_eq!(
+                Err(KvError::MissingVersion),
+                store.destroy(&path, &versions)
+            );
+            let after = store.read(&path, Some(1))?;
+            assert_eq!(before_value, after.value);
+            assert_eq!(before_metadata, after.metadata);
+            assert_eq!(metadata, after.metadata);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn duplicate_destroy_versions_are_idempotent_and_count_once() -> Result<(), Box<dyn Error>> {
+        let path = CanonicalPath::parse("/app/idempotent")?;
+        let mut store = KvStore::new(3)?;
+        store.write(
+            path.clone(),
+            SecretValue::new(b"destroy-once".to_vec())?,
+            Tick::new(1),
+            Some(0),
+        )?;
+
+        assert_eq!(1, store.destroy(&path, &[1, 1])?);
+        assert_eq!(0, store.destroy(&path, &[1, 1])?);
+        assert_eq!(Err(KvError::Destroyed), store.read(&path, Some(1)));
         Ok(())
     }
 
