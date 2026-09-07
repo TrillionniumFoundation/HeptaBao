@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   materialize-validate-publish:
-    if: github.event.head_commit.message == 'ci(v2.1): materialize exact G0 remediation'
+    if: "${{ github.event.head_commit.message == 'ci(v2.1): materialize exact G0 remediation' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
@@ -134,7 +134,8 @@ jobs:
           sort -u "$RUNNER_TEMP/allowed-final-paths.txt" -o "$RUNNER_TEMP/allowed-final-paths.txt"
           git status --porcelain=v1 --untracked-files=all | sed -E 's/^...//' | sort -u > "$RUNNER_TEMP/actual-final-paths.txt"
           diff -u "$RUNNER_TEMP/allowed-final-paths.txt" "$RUNNER_TEMP/actual-final-paths.txt"
-          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          remote_sha="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$remote_sha" = "$SOURCE_SHA"
           git config user.name 'HeptaBao G0 convergence controller'
           git config user.email 'heptabao-g0@users.noreply.github.com'
           git add --all
