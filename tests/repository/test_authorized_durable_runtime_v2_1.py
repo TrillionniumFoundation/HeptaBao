@@ -4,6 +4,8 @@ import pathlib
 import re
 import unittest
 
+import yaml
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CRATE = ROOT / "crates" / "heptabao-runtime-service"
@@ -48,16 +50,16 @@ class AuthorizedDurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("source: crates/heptabao-runtime-service/src/lib.rs", matrix)
         self.assertIn("guide: docs/modules/heptabao-runtime-service.md", matrix)
 
-        register = REGISTER.read_text(encoding="utf-8")
-        self.assertEqual(1, register.count("id: HB-V2-REP-009"))
-        self.assertIn(
-            "id: HB-V2-REP-009, class: REPOSITORY_CONTROLLED, severity: CRITICAL",
-            register,
-        )
-        rep009 = next(
-            line for line in register.splitlines() if "id: HB-V2-REP-009" in line
-        )
-        self.assertIn("state: IMPLEMENTED_REVIEW_REQUIRED", rep009)
+        register = yaml.safe_load(REGISTER.read_text(encoding="utf-8"))
+        matches = [
+            item
+            for item in register["repository_blockers"]
+            if item["id"] == "HB-V2-REP-009"
+        ]
+        self.assertEqual(1, len(matches))
+        self.assertEqual("REPOSITORY_CONTROLLED", matches[0]["class"])
+        self.assertEqual("CRITICAL", matches[0]["severity"])
+        self.assertEqual("IMPLEMENTED_REVIEW_REQUIRED", matches[0]["state"])
 
     def test_admission_happens_before_durable_dispatch(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")

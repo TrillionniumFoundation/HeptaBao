@@ -7,6 +7,8 @@
 //! before it can enter the durable intent journal. Once durable entry may have
 //! happened, failure is never translated into an automatic retry signal.
 
+use sha2::{Digest, Sha256};
+
 use std::fmt;
 
 use heptabao_durable_service::{
@@ -36,10 +38,7 @@ impl Credential {
 
 impl fmt::Debug for Credential {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct("Credential")
-            .field("bytes", &"[REDACTED]")
-            .finish()
+        formatter.write_str("Credential([REDACTED])")
     }
 }
 
@@ -537,24 +536,14 @@ fn append_length_prefixed(output: &mut Vec<u8>, value: &[u8]) {
 }
 
 fn digest32(domain: &[u8], bytes: &[u8]) -> [u8; 32] {
-    let seeds = [
-        0xcbf2_9ce4_8422_2325_u64,
-        0x8422_2325_cbf2_9ce4_u64,
-        0x9e37_79b9_7f4a_7c15_u64,
-        0x517c_c1b7_2722_0a95_u64,
-    ];
-    let mut output = [0_u8; 32];
-    for (index, seed) in seeds.into_iter().enumerate() {
-        let mut state = seed;
-        for byte in domain.iter().chain(bytes) {
-            state ^= u64::from(*byte);
-            state = state.wrapping_mul(0x0000_0100_0000_01b3);
-            state ^= state.rotate_left(17);
-        }
-        let start = index * 8;
-        output[start..start + 8].copy_from_slice(&state.to_le_bytes());
-    }
-    output
+    let domain_len = u64::try_from(domain.len()).unwrap_or(u64::MAX);
+    let bytes_len = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
+    let mut hasher = Sha256::new();
+    hasher.update(domain_len.to_le_bytes());
+    hasher.update(domain);
+    hasher.update(bytes_len.to_le_bytes());
+    hasher.update(bytes);
+    hasher.finalize().into()
 }
 
 #[cfg(test)]
@@ -641,8 +630,12 @@ mod tests {
             credential: &Credential,
         ) -> Result<AuthenticatedPrincipal, AuthenticationFailure> {
             match credential.expose() {
-                b"token-a" => AuthenticatedPrincipal::new("principal-a").map_err(|_| AuthenticationFailure),
-                b"token-b" => AuthenticatedPrincipal::new("principal-b").map_err(|_| AuthenticationFailure),
+                b"token-a" => {
+                    AuthenticatedPrincipal::new("principal-a").map_err(|_| AuthenticationFailure)
+                }
+                b"token-b" => {
+                    AuthenticatedPrincipal::new("principal-b").map_err(|_| AuthenticationFailure)
+                }
                 _ => Err(AuthenticationFailure),
             }
         }
@@ -698,9 +691,7 @@ mod tests {
             "root/team-a",
             request_id,
             resource,
-            InboundOperation::Put(
-                Secret::new(value.to_vec()).map_err(map_durable_error)?,
-            ),
+            InboundOperation::Put(Secret::new(value.to_vec()).map_err(map_durable_error)?),
         )
     }
 
@@ -708,8 +699,10 @@ mod tests {
         root: &Root,
         authorizer: TestAuthorizer,
         audit: TestAudit,
-    ) -> Result<RuntimeService<TestAuthenticator, TestAuthorizer, TestAudit, TestBarrier>, RuntimeError>
-    {
+    ) -> Result<
+        RuntimeService<TestAuthenticator, TestAuthorizer, TestAudit, TestBarrier>,
+        RuntimeError,
+    > {
         let durable = DurableService::create_new(&root.0, TestBarrier::new(), 32)
             .map_err(map_durable_error)?;
         Ok(RuntimeService::new(
@@ -783,7 +776,12 @@ mod tests {
         };
         let mut runtime = service(&root, TestAuthorizer { allow: true }, audit)?;
         assert_eq!(
-            runtime.handle(inbound(b"token-a", "request-audit", "secret/app", b"value")?),
+            runtime.handle(inbound(
+                b"token-a",
+                "request-audit",
+                "secret/app",
+                b"value"
+            )?),
             Err(RuntimeError::AuditUnavailableBeforeEntry)
         );
         assert_eq!(runtime.generation(), 0);
@@ -819,8 +817,8 @@ mod tests {
     fn durable_unknown_survives_restart_and_reconciles() -> Result<(), RuntimeError> {
         let root = Root::new("restart")?;
         let barrier = TestBarrier::new();
-        let durable = DurableService::create_new(&root.0, barrier.clone(), 32)
-            .map_err(map_durable_error)?;
+        let durable =
+            DurableService::create_new(&root.0, barrier.clone(), 32).map_err(map_durable_error)?;
         let request = inbound(b"token-a", "request-restart", "secret/app", b"value")?;
         let mut runtime = RuntimeService::new(
             TestAuthenticator,
@@ -828,10 +826,9 @@ mod tests {
             TestAudit::default(),
             durable,
         );
-        let recovery_reference = match runtime.handle_with_failpoint(
-            request.clone(),
-            Failpoint::AfterSnapshotPublication,
-        ) {
+        let recovery_reference = match runtime
+            .handle_with_failpoint(request.clone(), Failpoint::AfterSnapshotPublication)
+        {
             Err(RuntimeError::OutcomeUnknown { recovery_reference }) => recovery_reference,
             other => return other.map(|_| ()).and(Err(RuntimeError::DurableRejected)),
         };
@@ -864,7 +861,12 @@ mod tests {
             b"never-print-me",
         )?;
         let rendered = format!("{request:?}");
-        for secret in ["token-a", "request-redacted", "secret/high-value", "never-print-me"] {
+        for secret in [
+            "token-a",
+            "request-redacted",
+            "secret/high-value",
+            "never-print-me",
+        ] {
             assert!(!rendered.contains(secret));
         }
         Ok(())

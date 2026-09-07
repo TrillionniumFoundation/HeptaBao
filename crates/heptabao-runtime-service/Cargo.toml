@@ -6,6 +6,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+sha2 = "=0.10.9"
 heptabao-durable-service = { path = "../heptabao-durable-service" }
 
 [lib]

@@ -198,7 +198,7 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
             "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml",
             "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml",
             "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml",
-            "docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md",
+            "docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md",
             "docs/modules/README.md",
         ):
             if current not in portal:
@@ -206,8 +206,8 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
 
     if MODULE_INDEX_PATH.is_file():
         index = MODULE_INDEX_PATH.read_text(encoding="utf-8")
-        if f"40 WORKSPACE PACKAGES" not in index or count != 40:
-            errors.append("module index package-count banner must match the 40-package V2 scope")
+        if f"{count} WORKSPACE PACKAGES" not in index:
+            errors.append(f"module index package-count banner must match current scope ({count})")
         indexed = set(
             re.findall(r"(?m)^\| `(heptabao-[^`]+)` \|", index)
         )
@@ -232,8 +232,9 @@ def validate_g4_contracts(
     missing = sorted(G4_PACKAGES - package_names)
     if missing:
         errors.append("G4 contract packages are missing: " + ", ".join(missing))
-    if planned:
-        errors.append("V2 G4 planned_modules must be empty after contract implementation")
+    planned_g4 = sorted(set(planned) & G4_PACKAGES)
+    if planned_g4:
+        errors.append("implemented G4 packages cannot remain planned: " + ", ".join(planned_g4))
     for name in sorted(G4_PACKAGES & package_names):
         item = matrix_by_name.get(name, {})
         if item.get("documentation_standard") != "V3":
@@ -440,12 +441,22 @@ def validate() -> list[str]:
     workstreams = state.get("workstreams", {})
     if not isinstance(workstreams, dict):
         errors.append("canonical state workstreams must be a mapping")
-    elif workstreams.get("G4_ha_migration_client_compatibility") != "IMPLEMENTED_REVIEW_REQUIRED":
-        errors.append("canonical G4 workstream must be IMPLEMENTED_REVIEW_REQUIRED")
+    else:
+        required_workstreams = {
+            "G0_repository_truth",
+            "G1_durable_vertical_slice",
+            "G2_authenticated_service_adapter",
+            "G3_provider_and_destructive_qualification",
+            "G4_ha_migration_compatibility_release",
+            "G5_external_authority",
+        }
+        missing_workstreams = sorted(required_workstreams - set(workstreams))
+        if missing_workstreams:
+            errors.append("canonical state is missing V2.1 workstreams: " + ", ".join(missing_workstreams))
 
     security = SECURITY_PATH.read_text(encoding="utf-8")
-    if "V2.0 repository product candidate under review" not in security:
-        errors.append("SECURITY.md does not describe the current V2.0 repository status")
+    if "V2.1 durable vertical-slice candidate under review" not in security:
+        errors.append("SECURITY.md does not describe the current V2.1 repository status")
     licensing = LICENSE_PLANNING_PATH.read_text(encoding="utf-8")
     if "HB-BLK-EXT-001" not in licensing or "NO FINAL OUTBOUND LICENSE SELECTED" not in licensing:
         errors.append("LICENSE-PLANNING.md must keep the unresolved external legal blocker explicit")

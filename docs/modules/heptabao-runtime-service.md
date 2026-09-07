@@ -1,143 +1,60 @@
-# `heptabao-runtime-service`
+# heptabao-runtime-service
 
-Documentation standard: V3  
-Maturity: repository candidate; production authority is not granted.
+Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. Shared rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
-## Purpose and ownership
+## Purpose and non-goals
 
-`heptabao-runtime-service` owns the admission boundary between an inbound mutation and `heptabao-durable-service`. The runtime service privately owns its durable writer and exposes no mutable accessor. A mutation reaches durable intent only after bounded input validation, authentication, namespace/resource authorization, and a successful pre-entry audit append.
+This crate is the mandatory admission adapter from an inbound mutation to the private durable writer. It authenticates, authorizes, records accepted-before-entry audit evidence, constructs the immutable durable envelope and classifies the result. It does not implement a network listener, credential protocol, persistent identity database, production audit provider or KMS/HSM.
 
-This module does not implement a network listener, a production token format, the full HeptaBao identity/policy data model, a production audit sink, a production Barrier, HA/Raft, or release admission. The `Authenticator`, `Authorizer`, and `AuditSink` traits are explicit integration seams whose production implementations require separate qualification.
+## Public API and ownership
 
-## Trust boundary and non-goals
+`RuntimeService<A,Z,U,B>` privately owns the authenticator, authorizer, audit sink and `DurableService<B>` and exposes no durable-writer accessor. `InboundMutation` carries only an opaque credential and caller request fields; callers cannot supply `AuthenticatedPrincipal` or `AuthorizationDigest`. `RuntimeOutcome` and `RuntimeError` are bounded result classes, while `reconcile` delegates read-only recovery lookup.
 
-Untrusted inputs are the credential, namespace, request identifier, resource, operation, and secret value. An untrusted caller cannot choose the authenticated principal or authorization digest; those are created only by the injected authenticator and authorizer after validation.
+## State and data model
 
-The module does not reserve durable replay identity before authentication or authorization. It does not reinterpret timeout, cancellation, response loss, post-commit audit failure, or a durable post-entry error as a definite abort. It does not grant compatibility, migration, production, or release authority.
+The adapter itself has no separate persisted database. It derives one request fingerprint and one authorization digest from authenticated, canonical inputs, then transfers principal, namespace, request ID, resource, operation and value into the durable envelope. Audit events carry only stage, redacted fingerprint and optional generation; durable request identity is allocated only after admission succeeds.
 
-## Inputs, outputs, and dependencies
+## Invariants and authorization
 
-Inputs:
+Authentication precedes authorization; authorization binds principal, namespace, resource and operation. `AcceptedBeforeEntry` audit must succeed before durable dispatch. Inbound values cannot replace the derived identity or decision digest. Invalid credentials, denied policy, malformed inputs and pre-entry audit failure allocate no replay identity and produce no state generation.
 
-- `InboundMutation`, containing a bounded credential, namespace, request ID, resource, and put/delete operation;
-- an `Authenticator` that returns a validated `AuthenticatedPrincipal` or denies;
-- an `Authorizer` that binds principal, namespace, resource, and operation to a non-zero `AuthorizationDigest` or denies;
-- an `AuditSink` that can durably append stage-classified audit events;
-- a privately owned `DurableService<B>` using an injected `Barrier`.
+## Failure, retry and reconciliation
 
-Outputs:
+Pre-entry failures are definite and may be retried only after correcting their cause. Once durable entry may have happened, the result is `OutcomeUnknown` with a service-generated recovery reference: never blind retry. A post-commit audit failure also returns outcome unknown rather than falsely acknowledging success. Reconciliation reports committed, aborted or unknown; an exact committed resubmission is a duplicate, not a second effect.
 
-- `RuntimeOutcome::Committed` only after durable-service acknowledgement and successful committed audit append;
-- `RuntimeOutcome::Duplicate` only for the same exact durable binding and successful duplicate audit append;
-- pre-entry denial classes that guarantee no durable request identity was allocated;
-- `RuntimeError::OutcomeUnknown` with a recovery reference whenever durable entry or committed state may exist but a safe response cannot be proven;
-- read-only reconciliation through the owned durable service.
+## Concurrency and ordering
 
-## State machine and invariants
+The adapter uses the durable service's exclusive mutable ownership and writer fence. The fixed order is request validation, authenticate, authorize, accepted-before-entry audit, durable envelope construction, durable dispatch, result audit and response. There is no replay identity allocated before admission. Cancellation between durable dispatch and response is treated as post-entry uncertainty.
+
+## Security and privacy
+
+Request fingerprints and decision bindings use domain-separated SHA-256 with explicit length prefixes. The digest is not a signature and cannot replace a trusted policy engine, audit authenticator or Barrier. `Credential`, principal, authorization digest, namespace, request ID, resource, secret operation and audit fingerprint have redacted Debug implementations. Error display never includes secret or identity bytes.
+
+## Persistence and compatibility
+
+Persistence belongs to `heptabao-durable-service`; this crate must not introduce a second write path. The injected Barrier protects durable state below the adapter. Compatibility is not inferred from matching function names: request, response, error and side-effect behavior require the independent compatibility/Oracle process. Any adapter format or API change must preserve exact request binding and recovery semantics.
+
+## Observability
+
+Safe metrics are authentication denied, authorization denied, pre-entry audit unavailable, durable committed, duplicate, outcome unknown, durable rejected and durable corrupt. High-cardinality identities and secret-bearing fields are forbidden labels. Operators correlate an outcome only through controlled recovery-reference lookup, not by logging the reference or credential in general telemetry.
+
+## Operations
+
+Assembly must construct exactly one durable root in a sealed composition boundary, install a production authenticator/authorizer/audit provider, and prevent unrelated code from constructing a bypass writer. On post-entry failure, withhold normal success and direct the authenticated operator to reconciliation. On audit or durable corruption, stop admission and preserve evidence.
+
+## Tests and executable evidence
+
+Rust tests prove invalid credentials and denied policy cannot preempt request identity, principal scoping holds, pre-entry audit failure prevents dispatch, post-commit audit failure is reconcile-only, durable unknown survives restart, exact replay is duplicate and Debug is redacted. Repository tests bind mandatory ordering, private ownership, truth files, read-only CI and the SHA-256 boundary.
+
+## Evolution and open boundaries
+
+Repository completion requires current exact-head/prospective-main-merge success and independent review. Production completion needs persistent identity and token administration, MFA/auth methods, append-only authenticated audit, TLS/HTTP transport, operator lookup authorization, concrete Barrier/KMS custody, destructive fault evidence, HA, compatibility admission, incident operations and release authority.
 
 ```text
-Inbound
-  -> InputValidated
-  -> Authenticated
-  -> Authorized
-  -> PreEntryAuditDurable
-  -> DurableIntentMayExist
-  -> DurableCommittedOrDuplicate
-  -> PostResultAuditDurable
-  -> Response
+qualification: false
+compatibility_claim: false
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE
 ```
-
-Load-bearing invariants:
-
-1. authentication precedes authorization;
-2. authorization precedes pre-entry audit;
-3. pre-entry audit precedes any durable-service call;
-4. failed authentication, authorization, or pre-entry audit leaves durable generation and retained-request count unchanged;
-5. authenticated principal is created by the authenticator and cannot be supplied by the inbound caller;
-6. authorization digest is created by the authorizer and binds the admitted operation;
-7. durable replay identity is principal- and namespace-scoped and exact-operation bound by `heptabao-durable-service`;
-8. a post-commit audit failure is returned as outcome unknown, not a definite failure or retryable response;
-9. an outcome-unknown durable error remains outcome unknown and carries the same recovery reference;
-10. no public method exposes mutable access to the internally owned durable writer.
-
-## Data ownership and persisted formats
-
-This crate owns no additional persistent file format. Durable state, journal, replay ledger, generation, and recovery classification belong to `heptabao-durable-service`. Audit persistence belongs to the injected `AuditSink` implementation.
-
-The service creates a bounded request fingerprint from authenticated principal, namespace, request ID, resource, operation kind, and authorization digest. The fingerprint is an audit correlation value, not a secret, credential, replay key, cryptographic signature, or replacement for the durable binding.
-
-## API contracts
-
-`RuntimeService::new` consumes the authenticator, authorizer, audit sink, and durable service. Ownership prevents an adapter caller from reaching that specific durable writer through a second mutable path.
-
-`handle` performs the full ordinary admission sequence. `handle_with_failpoint` exists for deterministic crash-boundary testing and delegates the failpoint only after admission. `reconcile` is read-only and returns the durable service's authoritative classification. `generation` and `retained_request_count` are bounded diagnostic facts and do not expose secret data.
-
-`Credential`, `InboundMutation`, `AuthenticatedPrincipal`, `AuthorizationDigest`, and audit event debug output redact sensitive fields. Credentials and secrets never appear in public error strings.
-
-## Error, retry, and reconciliation semantics
-
-| Result | Durable entry possible | Retry rule |
-|---|---:|---|
-| `InvalidRequest` | No | Correct the input; do not retry unchanged input. |
-| `AuthenticationDenied` | No | Obtain valid credentials; the request ID was not reserved. |
-| `AuthorizationDenied` | No | Change policy or operation; the request ID was not reserved. |
-| `AuditUnavailableBeforeEntry` | No | Restore the audit sink before resubmission. |
-| `DurableRejected` | Depends on the mapped durable class, but never carries a safe success claim | Operator classifies the storage/admission condition; do not invent success. |
-| `DurableCorrupt` | Unknown historical state | Quarantine and recover; never bypass. |
-| `OutcomeUnknown { recovery_reference }` | Yes | Never blind retry; query reconciliation and replay only after an authoritative `Aborted`. |
-| `Committed` / `Duplicate` | Yes, committed | The operation is complete; a duplicate causes no second effect. |
-
-A post-commit audit failure intentionally returns `OutcomeUnknown`, even though durable readback will classify it as committed. This prevents a client from repeating an already committed mutation merely because the final audit acknowledgement was unavailable.
-
-## Concurrency, ordering, and cancellation
-
-The current adapter is synchronous and uses exclusive `&mut self` mutation dispatch. The internally owned durable service provides its own single-writer generation and journal ordering. Authentication, authorization, and audit implementations must not call back into the same runtime service or create a second writer for the same root.
-
-Cancellation before durable entry is a pre-entry failure only when the caller can prove the durable call was never invoked. Cancellation at or after durable dispatch is outcome unknown until recovery/readback classifies the recovery reference.
-
-## Security model
-
-Assets include credentials, secret values, principal identity, namespace/resource names, authorization decisions, request IDs, audit correlation, and recovery references. Debug implementations redact credentials, inbound paths, request IDs, principals, authorization digests, fingerprints, and put payloads.
-
-Threats addressed include pre-authentication replay-store exhaustion, cross-principal request-ID preemption, authorization-to-storage rebinding, audit bypass before mutation, duplicate effects after response loss, secret-bearing diagnostics, and unsafe conversion of post-entry uncertainty into retry.
-
-This crate does not prove that an injected authenticator, authorizer, audit sink, Barrier, filesystem, KMS/HSM, or network adapter is production secure. Those components require separate conformance, fault, custody, and independent-review evidence.
-
-## Observability and operator actions
-
-Audit stages are `AcceptedBeforeEntry`, `Committed`, `Duplicate`, and `OutcomeUnknown`. Operators may aggregate bounded counts by stage and stable low-cardinality outcome class. They must not label metrics with credentials, principals, namespaces, request IDs, resources, fingerprints, recovery references, ciphertexts, or secret values.
-
-An `OutcomeUnknown` response must be preserved in operator tooling with its recovery reference. `Committed` readback closes the incident without replay; `Aborted` permits the exact operation to be resubmitted; `Unknown` requires further storage/recovery investigation.
-
-## Test and verification evidence
-
-Crate tests cover:
-
-- invalid credentials cannot allocate durable replay identity;
-- authorization denial cannot preempt a later authorized use of the same inbound request ID;
-- the same request ID is independently scoped across authenticated principals;
-- pre-entry audit failure leaves generation and retained-request count unchanged;
-- post-commit audit failure becomes outcome unknown and reconciles to committed;
-- a durable post-snapshot failure survives process restart and returns duplicate after authoritative recovery;
-- credential, request ID, path, and secret debug redaction.
-
-Repository regression `tests/repository/test_authorized_durable_runtime_v2_1.py` binds source, manifest, module guide, architecture, blocker state, capability matrix, and the main-targeted read-only CI lane.
-
-## Compatibility, migration, and versioning
-
-This crate owns integration contracts, not OpenBao wire compatibility. Trait changes, audit-stage changes, request-fingerprint domain changes, or durable error-mapping changes require semver review and end-to-end regression updates.
-
-A future network adapter must preserve the same ordering and uncertainty semantics. A migration must never expose two mutable writers for one durable root and must preserve principal/namespace/request bindings and recovery references.
-
-## Known gaps and acceptance criteria
-
-Repository-controlled acceptance requires:
-
-- source, module guide, architecture, repository regression, and capability/blocker truth in one exact tree;
-- Rust 1.98 locked workspace tests, warnings-denied Clippy, rustdoc, repository and hostile workflow gates;
-- exact-head and real prospective merge into `main` terminal success;
-- eligible independent current-head review.
-
-Production acceptance additionally requires concrete implementations of the authentication, identity/policy authorization, audit, Barrier/KMS/HSM, storage, network/TLS, recovery-anchor, and HA boundaries; destructive fault qualification; SLOs and 24×7 ownership; complete compatibility evidence; legal disposition; independent security assessment; independent reproduction; and release signatures.
-
-Until those objects exist, `qualification`, `compatibility_claim`, `production_authority`, `migration_authority`, and `release_authority` remain false, and `authority_effect` remains `NONE`.

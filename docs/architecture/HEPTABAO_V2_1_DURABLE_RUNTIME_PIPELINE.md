@@ -19,6 +19,8 @@ A caller may enter the durable mutation runtime only after the outer service has
 
 The durable runtime does not reimplement policy. It persists the authenticated principal, namespace, request identifier, operation kind, resource, authorization digest, and value digest as one exact idempotency binding.
 
+The phrase **sealed state publication** denotes the atomic Barrier-protected snapshot step.
+
 ## Persist and acknowledge order
 
 For each accepted mutation the required happens-before chain is:
@@ -33,7 +35,7 @@ validate bounded request and retained-capacity preconditions
   -> return committed acknowledgement
 ```
 
-No successful acknowledgement may precede replay-ledger persistence. A write failure before intent persistence is a definite failure. A failure after intent persistence is reported as `OutcomeUnknown` with a service-generated recovery reference and must not be blindly retried.
+No successful acknowledgement may precede replay-ledger persistence. A write failure before intent persistence is a definite failure. A failure after intent persistence is reported as `OutcomeUnknown` with a service-generated recovery reference. The rule is **never blind retry**; reconcile from durable evidence instead.
 
 ## Recovery classification
 
@@ -95,3 +97,6 @@ This implementation closes a repository-controlled durability composition gap. I
 - legal, incident-response, independent security-review, migration, or release authority.
 
 Those gates remain independently fail-closed until their real completion evidence is admitted.
+## Cryptographic binding boundary
+
+All request, value, frame and recovery bindings use domain-separated SHA-256 with explicit length prefixes. The digest is not a signature. Confidentiality and authenticated persistence remain the responsibility of the injected Barrier and its separately qualified key custody.

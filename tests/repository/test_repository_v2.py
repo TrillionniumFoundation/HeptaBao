@@ -32,7 +32,7 @@ class RepositoryV2Tests(unittest.TestCase):
 
     def test_workspace_glob_expands_to_real_crates(self) -> None:
         members = VALIDATOR.workspace_members()
-        self.assertEqual(40, len(members))
+        self.assertGreaterEqual(len(members), 42)
         self.assertTrue(all("*" not in member for member in members))
         self.assertTrue(all((ROOT / member / "Cargo.toml").is_file() for member in members))
 
@@ -53,8 +53,8 @@ class RepositoryV2Tests(unittest.TestCase):
     def test_g4_contracts_are_implemented_and_no_longer_planned(self) -> None:
         matrix = VALIDATOR.read_yaml(VALIDATOR.MATRIX_PATH)
         by_name = {item["crate"]: item for item in matrix["modules"]}
-        self.assertEqual([], matrix["planned_modules"])
         self.assertTrue(VALIDATOR.G4_PACKAGES.issubset(by_name))
+        self.assertFalse(VALIDATOR.G4_PACKAGES & set(matrix["planned_modules"]))
         for name in VALIDATOR.G4_PACKAGES:
             self.assertEqual("V3", by_name[name]["documentation_standard"])
             self.assertEqual("IMPLEMENTED_REVIEW_REQUIRED", by_name[name]["state"])

@@ -11,6 +11,8 @@
 //! Callers must supply a [`Barrier`] implementation that provides confidentiality and
 //! authenticity for every persisted payload.
 
+use sha2::{Digest, Sha256};
+
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs::{self, File, OpenOptions};
@@ -239,9 +241,7 @@ impl fmt::Display for ServiceError {
             Self::InvalidNamespace => formatter.write_str("invalid namespace"),
             Self::InvalidResource => formatter.write_str("invalid canonical resource"),
             Self::InvalidSecret => formatter.write_str("invalid secret payload"),
-            Self::InvalidAuthorizationDigest => {
-                formatter.write_str("invalid authorization digest")
-            }
+            Self::InvalidAuthorizationDigest => formatter.write_str("invalid authorization digest"),
             Self::RequestBindingConflict => {
                 formatter.write_str("request identity is bound to a different operation")
             }
@@ -398,7 +398,7 @@ impl<B: Barrier> DurableService<B> {
             persist_ledger(&root, &barrier, 0, &ledger)?;
             Ok(Self {
                 root,
-                lock_path,
+                lock_path: lock_path.clone(),
                 barrier,
                 snapshot,
                 ledger,
@@ -456,10 +456,7 @@ impl<B: Barrier> DurableService<B> {
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
         request.validate()?;
-        let value_digest = digest32(
-            b"heptabao.durable-service.value.v1",
-            request.value.expose(),
-        );
+        let value_digest = digest32(b"heptabao.durable-service.value.v1", request.value.expose());
         let binding = Binding {
             key: RequestKey {
                 principal: request.principal,
@@ -550,7 +547,11 @@ impl<B: Barrier> DurableService<B> {
             .generation
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
-        let recovery_reference = recovery_reference(&binding_digest, generation);
+        let intent_sequence = self
+            .journal_sequence
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?;
+        let recovery_reference = recovery_reference(&binding_digest, generation, intent_sequence);
         if self.reconciliation.contains_key(&recovery_reference) {
             return Err(ServiceError::RequestBindingConflict);
         }
@@ -618,12 +619,7 @@ impl<B: Barrier> DurableService<B> {
             .journal_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
-        append_journal_record(
-            &self.root,
-            &self.barrier,
-            self.journal_sequence,
-            event,
-        )
+        append_journal_record(&self.root, &self.barrier, self.journal_sequence, event)
     }
 
     fn recover(&mut self, events: Vec<JournalEvent>) -> Result<(), ServiceError> {
@@ -898,7 +894,10 @@ fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, Servi
 
 fn initialize_journal(root: &Path) -> Result<(), ServiceError> {
     let path = journal_path(root);
-    let mut file = OpenOptions::new().write(true).create_new(true).open(&path)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&path)?;
     file.write_all(JOURNAL_MAGIC)?;
     file.sync_all()?;
     sync_parent(root)
@@ -942,7 +941,7 @@ fn load_journal<B: Barrier>(
     while !cursor.is_finished() {
         let frame_len =
             usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
-        if frame_len < 8 + 4 + 32 || frame_len > MAX_FILE_BYTES {
+        if !(8 + 4 + 32..=MAX_FILE_BYTES).contains(&frame_len) {
             return Err(ServiceError::CorruptState);
         }
         let frame = cursor.read_exact(frame_len)?;
@@ -1330,8 +1329,7 @@ impl<'a> Cursor<'a> {
     }
 
     fn read_bytes(&mut self, maximum: usize) -> Result<&'a [u8], ServiceError> {
-        let length =
-            usize::try_from(self.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
+        let length = usize::try_from(self.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
         if length > maximum {
             return Err(ServiceError::CorruptState);
         }
@@ -1372,11 +1370,12 @@ fn context_with_u64(domain: &[u8], value: u64) -> Vec<u8> {
     context
 }
 
-fn recovery_reference(binding_digest: &[u8; 32], generation: u64) -> String {
-    let mut bytes = Vec::with_capacity(40);
+fn recovery_reference(binding_digest: &[u8; 32], generation: u64, intent_sequence: u64) -> String {
+    let mut bytes = Vec::with_capacity(48);
     bytes.extend_from_slice(binding_digest);
     bytes.extend_from_slice(&generation.to_le_bytes());
-    let digest = digest32(b"heptabao.durable-service.recovery.v1", &bytes);
+    bytes.extend_from_slice(&intent_sequence.to_le_bytes());
+    let digest = digest32(b"heptabao.durable-service.recovery.v2", &bytes);
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut reference = String::with_capacity(32);
     for byte in &digest[..16] {
@@ -1387,24 +1386,14 @@ fn recovery_reference(binding_digest: &[u8; 32], generation: u64) -> String {
 }
 
 fn digest32(domain: &[u8], bytes: &[u8]) -> [u8; 32] {
-    let seeds = [
-        0xcbf2_9ce4_8422_2325_u64,
-        0x8422_2325_cbf2_9ce4_u64,
-        0x9e37_79b9_7f4a_7c15_u64,
-        0x517c_c1b7_2722_0a95_u64,
-    ];
-    let mut output = [0_u8; 32];
-    for (index, seed) in seeds.into_iter().enumerate() {
-        let mut state = seed;
-        for byte in domain.iter().chain(bytes) {
-            state ^= u64::from(*byte);
-            state = state.wrapping_mul(0x0000_0100_0000_01b3);
-            state ^= state.rotate_left(17);
-        }
-        let start = index * 8;
-        output[start..start + 8].copy_from_slice(&state.to_le_bytes());
-    }
-    output
+    let domain_len = u64::try_from(domain.len()).unwrap_or(u64::MAX);
+    let bytes_len = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
+    let mut hasher = Sha256::new();
+    hasher.update(domain_len.to_le_bytes());
+    hasher.update(domain);
+    hasher.update(bytes_len.to_le_bytes());
+    hasher.update(bytes);
+    hasher.finalize().into()
 }
 
 fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
@@ -1582,10 +1571,18 @@ mod tests {
             reopened.reconcile(&recovery_reference),
             ReconciliationStatus::Aborted
         );
-        assert!(matches!(
-            reopened.put(request)?,
-            MutationOutcome::Committed { generation: 1, .. }
-        ));
+        let retry_recovery_reference = match reopened.put(request)? {
+            MutationOutcome::Committed {
+                generation: 1,
+                recovery_reference,
+            } => recovery_reference,
+            _ => return Err(ServiceError::CorruptState),
+        };
+        assert_ne!(recovery_reference, retry_recovery_reference);
+        assert_eq!(
+            reopened.reconcile(&recovery_reference),
+            ReconciliationStatus::Aborted
+        );
         Ok(())
     }
 

@@ -1,16 +1,10 @@
 # HeptaBao module documentation index
 
-Status: `V2.0 CURRENT / 40 WORKSPACE PACKAGES`
+Current status: `V2.1 / 42 WORKSPACE PACKAGES`
 
-Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.0`
+Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-The current package set is derived from `Cargo.toml` and must exactly match `planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml`, `Cargo.lock`, source roots and this guide set. The exact Git commit remains the highest source of truth.
-
-## Documentation model
-
-Current and newly introduced packages use `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md`. Cross-cutting failure, retry, concurrency, security, observability and change rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` instead of being copied into every guide.
-
-The 19 inherited V1.4.7 packages retain source-bound V2 guides. `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml` is a frozen historical coverage baseline, not the current V2 package inventory.
+The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`, `planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml`, source roots and this guide set. Shared rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`; V3 guides follow `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md`.
 
 ## Current package index
 
@@ -24,6 +18,7 @@ The 19 inherited V1.4.7 packages retain source-bound V2 guides. `planning/HEPTAB
 | `heptabao-compatibility` | differential compatibility admission | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-compatibility.md` |
 | `heptabao-domain` | shared bounded domain values | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-domain.md` |
 | `heptabao-durable-core` | durable commit contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-durable-core.md` |
+| `heptabao-durable-service` | restart-safe sealed durable mutation runtime | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-durable-service.md` |
 | `heptabao-filesystem-guard` | local filesystem fencing | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-filesystem-guard.md` |
 | `heptabao-governance` | qualification and authority contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-governance.md` |
 | `heptabao-ha-contracts` | HA term membership and writer fences | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-contracts.md` |
@@ -50,6 +45,7 @@ The 19 inherited V1.4.7 packages retain source-bound V2 guides. `planning/HEPTAB
 | `heptabao-recovery-core` | authoritative recovery | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-recovery-core.md` |
 | `heptabao-retention` | retention and backup lifecycle | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-retention.md` |
 | `heptabao-rollback-anchor` | rollback anchor fencing | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-rollback-anchor.md` |
+| `heptabao-runtime-service` | authorized audit-to-durable mutation adapter | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-runtime-service.md` |
 | `heptabao-service-core` | mandatory end to end service composition | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-service-core.md` |
 | `heptabao-single-node-journal` | local durable journal | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-single-node-journal.md` |
 | `heptabao-single-node-store` | local durable store | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-single-node-store.md` |
@@ -59,8 +55,6 @@ The 19 inherited V1.4.7 packages retain source-bound V2 guides. `planning/HEPTAB
 
 ## Validation
 
-The current repository gate executes:
-
 ```text
 python scripts/validate_repository_v2.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
@@ -69,8 +63,4 @@ cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
 cargo +1.98.0 doc --locked --workspace --no-deps
 ```
 
-A package change must update source, tests, its guide, the capability matrix and blocker evidence in the same change stack. The validator rejects missing guides, missing lockfile packages, missing tests, non-substantive V3 sections and implemented packages left in `planned_modules`.
-
-## Product and authority boundary
-
-Guide coverage proves that repository documentation exists and agrees structurally with the current package set. It does not prove production provider qualification, compatibility, legal disposition, independent security review or operational authority. Those claims remain false until eligible external evidence is admitted.
+A package change updates source, tests, guide, capability matrix and blocker evidence together. Documentation coverage is not production qualification or compatibility admission.

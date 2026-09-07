@@ -2,7 +2,7 @@
 
 ## Current status
 
-HeptaBao is a `V2.0 repository product candidate under review`. It contains safety and product-domain contracts but is **not** a supported production secrets server, has no compatibility claim and has no production, migration, release or mixed-cluster authority.
+HeptaBao is a `V2.1 durable vertical-slice candidate under review`. It contains safety and product-domain contracts but is **not** a supported production secrets server, has no compatibility claim and has no production, migration, release or mixed-cluster authority.
 
 Do not deploy this repository to protect real secrets. Do not place real tokens, unseal shares, recovery keys, root tokens, private keys or production snapshots in issues, pull requests, CI, fixtures or ordinary development environments.
 

@@ -40,6 +40,9 @@ The adapter carries these fields into durable intent without allowing the inboun
 
 The durable runtime uses the principal, namespace, and request identifier as the replay key and binds that key to the exact remaining fields. Reusing the key for a different value, resource, operation, or authorization digest is rejected before mutation.
 
+
+The operational retry rule is **never blind retry** after durable entry. Authentication or authorization rejection means **no replay identity allocated**. A **post-commit audit failure** withholds normal success and is reconciled from durable state.
+
 ## Failure classification
 
 | Failure point | Durable effect possible | Response |
@@ -108,3 +111,6 @@ The pipeline addresses ordering, replay, rebinding, pre-authentication allocatio
 - legal, operational, independent-security, migration, or release authority.
 
 Those remain separate fail-closed blockers.
+## Cryptographic binding boundary
+
+All request, value, frame and recovery bindings use domain-separated SHA-256 with explicit length prefixes. The digest is not a signature. Confidentiality and authenticated persistence remain the responsibility of the injected Barrier and its separately qualified key custody.
