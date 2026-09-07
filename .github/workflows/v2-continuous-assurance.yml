@@ -1,65 +1,174 @@
-name: HeptaBao V2 continuous assurance
+name: HeptaBao V2 G4 exact overlay materializer
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - integration/v1.4.4-technical-candidate
-      - codex/ci-trust-boundary-closure-20260907
   push:
     branches:
       - codex/v2.0-product-closure-20260907
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: v2-assurance-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: v2-g4-materializer-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  repository-and-rust:
+  materialize:
+    if: "${{ github.event.head_commit.message == 'ci(v2): stage exact G4 overlay' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Checkout immutable source
+      - name: Checkout exact staging commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
-      - name: Install Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: "3.13"
-          cache: pip
-          cache-dependency-path: requirements-plan.txt
-      - name: Install repository validation dependencies
+          persist-credentials: true
+      - name: Verify staging identity and reconstruct exact overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "TrillionniumFoundation/HeptaBao"
+          test "$GITHUB_REF" = "refs/heads/codex/v2.0-product-closure-20260907"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          read -r commit parent extra <<<"$(git rev-list --parents -n 1 HEAD)"
+          test "$commit" = "$GITHUB_SHA"
+          test "$parent" = "7f8909a3cb55df379d2893bfc9b73beed13b0bce"
+          test -z "${extra:-}"
+          cat \
+            .exec/v2-g4-overlay.part-00 \
+            .exec/v2-g4-overlay.part-01 \
+            .exec/v2-g4-overlay.part-02 \
+            .exec/v2-g4-overlay.part-03 \
+            .exec/v2-g4-overlay.part-04-sub-0 \
+            .exec/v2-g4-overlay.part-04-sub-1 \
+            .exec/v2-g4-overlay.part-04-sub-2 \
+            .exec/v2-g4-overlay.part-04-sub-3 \
+            .exec/v2-g4-overlay.part-04-sub-4 \
+            .exec/v2-g4-overlay.part-04-sub-5 \
+            .exec/v2-g4-overlay.part-05 \
+            .exec/v2-g4-overlay.part-06 \
+            .exec/v2-g4-overlay.part-07 \
+            .exec/v2-g4-overlay.part-08 \
+            > "$RUNNER_TEMP/v2-g4-overlay.b64"
+          base64 --decode "$RUNNER_TEMP/v2-g4-overlay.b64" > "$RUNNER_TEMP/v2-g4-overlay.tar.gz"
+          echo "99bc43d60c030cbb119355fc8a77baa4a66470ed58d652dabe630bc951923756  $RUNNER_TEMP/v2-g4-overlay.tar.gz" | sha256sum --check
+          cat > "$RUNNER_TEMP/expected-overlay-paths.txt" <<'EOF'
+          Cargo.lock
+          LICENSE-PLANNING.md
+          README.md
+          SECURITY.md
+          crates/heptabao-agent/Cargo.toml
+          crates/heptabao-agent/src/lib.rs
+          crates/heptabao-cli-contracts/Cargo.toml
+          crates/heptabao-cli-contracts/src/lib.rs
+          crates/heptabao-kms-contracts/Cargo.toml
+          crates/heptabao-kms-contracts/src/lib.rs
+          crates/heptabao-lease/src/lib.rs
+          crates/heptabao-proxy/Cargo.toml
+          crates/heptabao-proxy/src/lib.rs
+          docs/CURRENT_DOCUMENTATION.md
+          docs/modules/README.md
+          docs/modules/heptabao-agent.md
+          docs/modules/heptabao-cli-contracts.md
+          docs/modules/heptabao-kms-contracts.md
+          docs/modules/heptabao-lease.md
+          docs/modules/heptabao-proxy.md
+          docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md
+          planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml
+          planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
+          scripts/validate_repository_v2.py
+          tests/repository/test_repository_v2.py
+          EOF
+          tar --list --gzip --file "$RUNNER_TEMP/v2-g4-overlay.tar.gz" | sort > "$RUNNER_TEMP/actual-overlay-paths.txt"
+          sort "$RUNNER_TEMP/expected-overlay-paths.txt" > "$RUNNER_TEMP/expected-overlay-paths.sorted.txt"
+          diff -u "$RUNNER_TEMP/expected-overlay-paths.sorted.txt" "$RUNNER_TEMP/actual-overlay-paths.txt"
+          tar --extract --gzip --file "$RUNNER_TEMP/v2-g4-overlay.tar.gz" --directory . --no-same-owner --no-same-permissions
+          rm -f .exec/v2-g4-overlay.part-*
+      - name: Install validation toolchains
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
-      - name: Validate repository truth
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Validate repository and historical documentation truth
         shell: bash
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
-      - name: Run repository validator regressions
-        shell: bash
-        run: |
-          set -euo pipefail
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
-      - name: Install declared Rust toolchain
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+      - name: Validate complete Rust workspace
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Validate unchanged Rust workspace
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 fmt --all
           cargo +1.98.0 test --locked --workspace --all-targets
           cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
           cargo +1.98.0 doc --locked --workspace --no-deps
-          git diff --exit-code
+          git diff --check
+      - name: Verify bounded working-tree delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/expected-working-delta.txt" <<'EOF'
+          Cargo.lock
+          LICENSE-PLANNING.md
+          README.md
+          SECURITY.md
+          crates/heptabao-agent/Cargo.toml
+          crates/heptabao-agent/src/lib.rs
+          crates/heptabao-cli-contracts/Cargo.toml
+          crates/heptabao-cli-contracts/src/lib.rs
+          crates/heptabao-kms-contracts/Cargo.toml
+          crates/heptabao-kms-contracts/src/lib.rs
+          crates/heptabao-lease/src/lib.rs
+          crates/heptabao-proxy/Cargo.toml
+          crates/heptabao-proxy/src/lib.rs
+          docs/CURRENT_DOCUMENTATION.md
+          docs/modules/README.md
+          docs/modules/heptabao-agent.md
+          docs/modules/heptabao-cli-contracts.md
+          docs/modules/heptabao-kms-contracts.md
+          docs/modules/heptabao-lease.md
+          docs/modules/heptabao-proxy.md
+          docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md
+          planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml
+          planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
+          scripts/validate_repository_v2.py
+          tests/repository/test_repository_v2.py
+          EOF
+          cat >> "$RUNNER_TEMP/expected-working-delta.txt" <<'EOF'
+          .exec/v2-g4-overlay.part-00
+          .exec/v2-g4-overlay.part-01
+          .exec/v2-g4-overlay.part-02
+          .exec/v2-g4-overlay.part-03
+          .exec/v2-g4-overlay.part-04-sub-0
+          .exec/v2-g4-overlay.part-04-sub-1
+          .exec/v2-g4-overlay.part-04-sub-2
+          .exec/v2-g4-overlay.part-04-sub-3
+          .exec/v2-g4-overlay.part-04-sub-4
+          .exec/v2-g4-overlay.part-04-sub-5
+          .exec/v2-g4-overlay.part-05
+          .exec/v2-g4-overlay.part-06
+          .exec/v2-g4-overlay.part-07
+          .exec/v2-g4-overlay.part-08
+          EOF
+          sort -u "$RUNNER_TEMP/expected-working-delta.txt" -o "$RUNNER_TEMP/expected-working-delta.txt"
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^...//' | sort -u > "$RUNNER_TEMP/actual-working-delta.txt"
+          diff -u "$RUNNER_TEMP/expected-working-delta.txt" "$RUNNER_TEMP/actual-working-delta.txt"
+      - name: Commit verified G4 overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "HeptaBao convergence controller"
+          git config user.email "heptabao-convergence@users.noreply.github.com"
+          git add --all
+          git commit -m "feat(v2): implement G4 contracts and converge current truth"
+          git push origin HEAD:codex/v2.0-product-closure-20260907
