@@ -76,6 +76,15 @@ jobs:
           git checkout --detach "$SOURCE_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           tar --extract --gzip --file "$RUNNER_TEMP/v21-g0-overlay.tar.gz" --directory . --no-same-owner --no-same-permissions
+          python - <<'PY'
+          from pathlib import Path
+          for name in (
+              'docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md',
+              'docs/architecture/HEPTABAO_V2_1_DURABLE_RUNTIME_PIPELINE.md',
+          ):
+              path = Path(name)
+              path.write_text(path.read_text(encoding='utf-8').rstrip() + '\n', encoding='utf-8')
+          PY
           git diff --check
 
       - name: Install Python
