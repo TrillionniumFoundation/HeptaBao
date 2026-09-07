@@ -68,7 +68,26 @@ old = '''            Ok(Self {\n                root,\n                lock_path
 new = '''            Ok(Self {\n                root,\n                lock_path: lock_path.clone(),\n                barrier,\n'''
 if source.count(old) != 1:
     raise SystemExit(f'writer-lock ownership repair anchor count={source.count(old)}')
-path.write_text(source.replace(old, new, 1), encoding='utf-8')
+source = source.replace(old, new, 1)
+
+old = '''        let recovery_reference = recovery_reference(&binding_digest, generation);\n'''
+new = '''        let intent_sequence = self\n            .journal_sequence\n            .checked_add(1)\n            .ok_or(ServiceError::GenerationOverflow)?;\n        let recovery_reference =\n            recovery_reference(&binding_digest, generation, intent_sequence);\n'''
+if source.count(old) != 1:
+    raise SystemExit(f'attempt sequence anchor count={source.count(old)}')
+source = source.replace(old, new, 1)
+
+old = '''fn recovery_reference(binding_digest: &[u8; 32], generation: u64) -> String {\n    let mut bytes = Vec::with_capacity(40);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    let digest = digest32(b"heptabao.durable-service.recovery.v1", &bytes);\n'''
+new = '''fn recovery_reference(\n    binding_digest: &[u8; 32],\n    generation: u64,\n    intent_sequence: u64,\n) -> String {\n    let mut bytes = Vec::with_capacity(48);\n    bytes.extend_from_slice(binding_digest);\n    bytes.extend_from_slice(&generation.to_le_bytes());\n    bytes.extend_from_slice(&intent_sequence.to_le_bytes());\n    let digest = digest32(b"heptabao.durable-service.recovery.v2", &bytes);\n'''
+if source.count(old) != 1:
+    raise SystemExit(f'recovery reference anchor count={source.count(old)}')
+source = source.replace(old, new, 1)
+
+old = '''        assert!(matches!(\n            reopened.put(request)?,\n            MutationOutcome::Committed { generation: 1, .. }\n        ));\n        Ok(())\n'''
+new = '''        let retry_recovery_reference = match reopened.put(request)? {\n            MutationOutcome::Committed {\n                generation: 1,\n                recovery_reference,\n            } => recovery_reference,\n            _ => return Err(ServiceError::CorruptState),\n        };\n        assert_ne!(recovery_reference, retry_recovery_reference);\n        assert_eq!(\n            reopened.reconcile(&recovery_reference),\n            ReconciliationStatus::Aborted\n        );\n        Ok(())\n'''
+if source.count(old) != 1:
+    raise SystemExit(f'aborted retry regression anchor count={source.count(old)}')
+source = source.replace(old, new, 1)
+path.write_text(source, encoding='utf-8')
 PY
 
 git diff --check
