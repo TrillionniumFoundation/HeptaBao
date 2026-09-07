@@ -1,0 +1,44 @@
+name: HeptaBao V2 one-shot cleanup
+
+on:
+  push:
+    branches:
+      - codex/v2.0-product-closure-20260907
+    paths:
+      - '.github/workflows/v2-one-shot-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Remove transport-only trigger and this one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "codex/v2.0-product-closure-20260907"
+          rm -f docs/plan/V2_G4_MATERIALIZATION_TRIGGER_20260907.md
+          rm -f .github/workflows/v2-one-shot-cleanup.yml
+          ! grep -R -n -E '^\s*contents:\s*write\s*$' .github/workflows
+          ! find .exec -maxdepth 1 -type f -name 'v2-g4-overlay*' -print -quit | grep -q .
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          git diff --check
+      - name: Publish the clean reviewable tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "HeptaBao V2 convergence controller"
+          git config user.email "heptabao-v2-convergence@users.noreply.github.com"
+          git add --all
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(v2): remove one-shot materialization transport"
+          git push origin HEAD:refs/heads/codex/v2.0-product-closure-20260907
