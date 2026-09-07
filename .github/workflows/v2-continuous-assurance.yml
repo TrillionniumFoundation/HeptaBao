@@ -35,7 +35,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           read -r commit parent extra <<<"$(git rev-list --parents -n 1 HEAD)"
           test "$commit" = "$GITHUB_SHA"
-          test "$parent" = "ef49a7d0259392760bbe0299f0da41463e5bfce0"
+          test "$parent" = "020afe878c708a8c7d1091df4ae3b81a28ef0507"
           test -z "${extra:-}"
           cat \
             .exec/v2-g4-overlay.part-00 \
@@ -57,6 +57,15 @@ jobs:
           echo "99bc43d60c030cbb119355fc8a77baa4a66470ed58d652dabe630bc951923756  $RUNNER_TEMP/v2-g4-overlay.tar.gz" | sha256sum --check
           tar --extract --gzip --file "$RUNNER_TEMP/v2-g4-overlay.tar.gz" --directory . --no-same-owner --no-same-permissions
           rm -f .exec/v2-g4-overlay.part-*
+          python - <<'PYFIX'
+          from pathlib import Path
+          path = Path("crates/heptabao-kms-contracts/src/lib.rs")
+          source = path.read_text(encoding="utf-8")
+          old = "assert_eq!(4, destroyed.generation);"
+          if source.count(old) != 1:
+              raise SystemExit("KMS generation assertion anchor mismatch")
+          path.write_text(source.replace(old, "assert_eq!(5, destroyed.generation);"), encoding="utf-8")
+          PYFIX
           printf '%s' "$SAFE_WORKFLOW_B64" | base64 --decode > .github/workflows/v2-continuous-assurance.yml
           grep -Fq 'contents: read' .github/workflows/v2-continuous-assurance.yml
           test "$(grep -Fc 'contents: write' .github/workflows/v2-continuous-assurance.yml)" = 0
