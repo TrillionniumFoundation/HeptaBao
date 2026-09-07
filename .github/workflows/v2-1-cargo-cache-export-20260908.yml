@@ -1,0 +1,66 @@
+name: HeptaBao V2.1 cargo cache export
+
+on:
+  push:
+    branches:
+      - exec/v2.1-cargo-cache-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 19b7633b1cd05796d0e7409a4eea66eaa472e3df
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal
+
+      - name: Fetch bounded dependency family
+        shell: bash
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/heptabao-dependency-cache"
+          mkdir -p "$scratch/src"
+          cat > "$scratch/Cargo.toml" <<'EOF'
+          [package]
+          name = "heptabao-dependency-cache"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          sha2 = "=0.10.9"
+          hmac = "=0.12.1"
+          chacha20poly1305 = { version = "=0.10.1", features = ["std"] }
+          getrandom = "=0.3.3"
+          zeroize = "=1.8.1"
+          rustls = { version = "=0.23.32", default-features = false, features = ["ring", "std"] }
+          EOF
+          printf 'fn main() {}\n' > "$scratch/src/main.rs"
+          cargo +1.98.0 fetch --manifest-path "$scratch/Cargo.toml"
+          cargo +1.98.0 metadata --manifest-path "$scratch/Cargo.toml" --format-version 1 --locked > "$scratch/metadata.json"
+          output="$RUNNER_TEMP/heptabao-cargo-cache-output"
+          mkdir -p "$output"
+          tar --create --gzip --file "$output/cargo-home-registry.tar.gz" --directory "$HOME/.cargo" registry
+          cp "$scratch/Cargo.lock" "$output/dependency-family.Cargo.lock"
+          cp "$scratch/metadata.json" "$output/dependency-family.metadata.json"
+          (cd "$output" && sha256sum cargo-home-registry.tar.gz dependency-family.Cargo.lock dependency-family.metadata.json > SHA256SUMS)
+
+      - name: Upload bounded cargo cache artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v2.1-cargo-registry-cache
+          path: ${{ runner.temp }}/heptabao-cargo-cache-output/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
