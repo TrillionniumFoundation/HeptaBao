@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.h01-h02-next-foundation-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h01-h02-next-foundation",
+  "stack_base_branch": "codex/h01-oracle-foundation",
+  "program_authority_gate": "H00",
+  "implementation": {
+    "status": "IMPLEMENTED_PENDING_EXECUTABLE_EVIDENCE",
+    "rust_crates_added": [
+      "heptabao-oracle-observer",
+      "heptabao-platform-bakeoff"
+    ],
+    "h01": {
+      "configuration_seed_items": 52,
+      "cli_command_families": 30,
+      "regression_entries": 21,
+      "synthetic_side_effect_contracts": 1,
+      "black_box_oracle_captures": 0,
+      "signed_provenance_transfers": 0
+    },
+    "h02": {
+      "candidate_count": 25,
+      "capability_count": 16,
+      "official_metadata_captured_unreviewed": 3,
+      "official_metadata_candidates": [
+        "HB-DEP-ASYNC-TOKIO-0001",
+        "HB-DEP-TLS-RUSTLS-0001",
+        "HB-DEP-RAFT-OPENRAFT"
+      ],
+      "evidence_collecting": 0,
+      "eligible_for_bakeoff": 0,
+      "selected_for_prototype": 0,
+      "selection_receipts": 0
+    },
+    "validators": [
+      "scripts/validate_h01_h02_next_v1.py",
+      "scripts/validate_dependency_bakeoff_v1.py",
+      "scripts/validate_dependency_research_captures_v1.py",
+      "scripts/oracle_side_effect_diff_v1.py",
+      "scripts/yaml12_loader.py"
+    ],
+    "workflow": ".github/workflows/h01-h02-next-foundation.yml"
+  },
+  "remote_execution_observation": {
+    "workflow_run_id": 33149830759,
+    "head_sha": "3bda019065d527d7c0bdb89a29aee39d220a1d4c",
+    "job_id": 98779007404,
+    "labels": ["ubuntu-latest"],
+    "runner_id": 0,
+    "runner_name": "",
+    "steps": [],
+    "github_conclusion": "failure",
+    "classified_status": "INFRASTRUCTURE_UNEXECUTED",
+    "interpretation": "The job never acquired a runner and executed no steps. It is neither passing evidence nor a code-test failure. Later source commits remain unexecuted as well unless a new job records a nonzero runner and real steps."
+  },
+  "qualification": {
+    "h01": "NOT_QUALIFIED",
+    "h02": "NOT_QUALIFIED",
+    "qualification_receipt": null,
+    "compatibility_claim": null,
+    "authority_grant": null
+  },
+  "authority_flags": {
+    "compatibility_claim": false,
+    "production_authority": false,
+    "migration_authority": false,
+    "release_authority": false,
+    "dependency_prototype_selection": false,
+    "dependency_production_selection": false,
+    "crypto_implementation_authority": false,
+    "raft_implementation_authority": false,
+    "real_secret_fixture_allowed": false,
+    "root_token_fixture_allowed": false,
+    "black_box_capture_interpretable_as_compatibility": false
+  },
+  "authority_effect": "NONE",
+  "next_blockers": [
+    "Acquire an executable hosted or attested self-hosted runner and execute all required Python/Rust lanes",
+    "Perform the first restricted, signed, non-secret OpenBao black-box capture under H00 clean-room controls",
+    "Hash the release source archives and crates.io packages for captured H02 candidates",
+    "Complete security-advisory, unsafe/native/build-script, effective-MSRV, deterministic-test and benchmark evidence",
+    "Obtain independent compatibility, platform, TLS/crypto and distributed-systems reviews",
+    "Keep H01/H02 qualification, dependency selection and every operational authority false until signed receipts exist"
+  ]
+}

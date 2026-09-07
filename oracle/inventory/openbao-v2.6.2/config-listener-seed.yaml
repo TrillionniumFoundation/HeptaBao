@@ -1,0 +1,208 @@
+schema: heptabao.oracle-config-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-CONFIG-OPENBAO-V2_6_2-LISTENER-SEED01
+status: SEED
+entries:
+  - id: HB-CONFIG-ITEM-LISTENER-ADDRESS
+    key_path: listener.tcp.address
+    surface: LISTENER
+    value_shape: ADDRESS
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/address
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Public bind address and wildcard exposure behavior.
+  - id: HB-CONFIG-ITEM-LISTENER-CLUSTER
+    key_path: listener.tcp.cluster_address
+    surface: LISTENER
+    value_shape: ADDRESS
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H21-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/cluster_address
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Cluster bind address and separation from public API traffic.
+  - id: HB-CONFIG-ITEM-TLS-DISABLE
+    key_path: listener.tcp.tls_disable
+    surface: LISTENER
+    value_shape: BOOLEAN
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_disable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Development-only exception; production profiles must reject unsafe disablement.
+  - id: HB-CONFIG-ITEM-TLS-CERT
+    key_path: listener.tcp.tls_cert_file
+    surface: LISTENER
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_cert_file
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Certificate reference, permissions and atomic reload behavior.
+  - id: HB-CONFIG-ITEM-TLS-KEY
+    key_path: listener.tcp.tls_key_file
+    surface: LISTENER
+    value_shape: PATH
+    criticality: CRYPTO_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_key_file
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Private-key reference; raw key material is forbidden from inventory and fixtures.
+  - id: HB-CONFIG-ITEM-TLS-CLIENT-CA
+    key_path: listener.tcp.tls_client_ca_file
+    surface: LISTENER
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H16-WP04, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_client_ca_file
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: mTLS trust anchor and reload semantics.
+  - id: HB-CONFIG-ITEM-TLS-MIN
+    key_path: listener.tcp.tls_min_version
+    surface: LISTENER
+    value_shape: ENUM
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_min_version
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Unknown and legacy protocol versions must fail closed.
+  - id: HB-CONFIG-ITEM-TLS-MAX
+    key_path: listener.tcp.tls_max_version
+    surface: LISTENER
+    value_shape: ENUM
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_max_version
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Protocol cap and compatibility behavior.
+  - id: HB-CONFIG-ITEM-TLS-CIPHERS
+    key_path: listener.tcp.tls_cipher_suites
+    surface: LISTENER
+    value_shape: LIST
+    criticality: CRYPTO_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H02-WP02, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/tls_cipher_suites
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Cipher allowlist, crypto-provider support and invalid-entry behavior.
+  - id: HB-CONFIG-ITEM-READ-HEADER-TIMEOUT
+    key_path: listener.tcp.http_read_header_timeout
+    surface: LISTENER
+    value_shape: DURATION
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP02]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/http_read_header_timeout
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Slowloris and request-header resource bounds.
+  - id: HB-CONFIG-ITEM-READ-TIMEOUT
+    key_path: listener.tcp.http_read_timeout
+    surface: LISTENER
+    value_shape: DURATION
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: DEGRADED_NO_AUTHORITY_WIDENING
+    owner_work_packages: [H01-WP03, H22-WP02]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/http_read_timeout
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Request deadline behavior and cancellation boundary.
+  - id: HB-CONFIG-ITEM-WRITE-TIMEOUT
+    key_path: listener.tcp.http_write_timeout
+    surface: LISTENER
+    value_shape: DURATION
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: DEGRADED_NO_AUTHORITY_WIDENING
+    owner_work_packages: [H01-WP03, H22-WP02]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/http_write_timeout
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Timeout after a durable mutation must not imply rollback or retry authority.
+  - id: HB-CONFIG-ITEM-PROXY-PROTOCOL
+    key_path: listener.tcp.proxy_protocol_behavior
+    surface: LISTENER
+    value_shape: ENUM
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/proxy_protocol_behavior
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Untrusted forwarded identity must not be accepted.
+  - id: HB-CONFIG-ITEM-XFF-AUTHORIZED
+    key_path: listener.tcp.x_forwarded_for_authorized_addrs
+    surface: LISTENER
+    value_shape: LIST
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/x_forwarded_for_authorized_addrs
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Trusted proxy CIDR allowlist.
+  - id: HB-CONFIG-ITEM-XFF-HOPS
+    key_path: listener.tcp.x_forwarded_for_hop_skips
+    surface: LISTENER
+    value_shape: INTEGER
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/listener/tcp/x_forwarded_for_hop_skips
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Proxy-chain parsing and spoof resistance.
+coverage:
+  total_seeded: 15
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unknown_semantics: 15
+  unowned_critical: 0
+authority_effect: NONE

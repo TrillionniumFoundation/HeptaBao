@@ -1,0 +1,982 @@
+schema: heptabao.oracle-endpoint-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-ENDPOINTS-OPENBAO-V2_6_2-SEED
+status: SEED
+entries:
+  - id: HB-ENDPOINT-SYS-HEALTH
+    path_template: /v1/sys/health
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: OPERATOR_CRITICAL
+    authentication_mode: OPTIONAL
+    policy_capability: none
+    request_audit: PROFILE_DEPENDENT
+    response_audit: PROFILE_DEPENDENT
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H07-WP05, H21-WP09, H23-WP09]
+    source_reference: public-docs://api/system-backend/health
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Status-code matrix for initialized, sealed, standby, performance standby and recovery states remains to capture.
+  - id: HB-ENDPOINT-SYS-SEAL-STATUS
+    path_template: /v1/sys/seal-status
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: OPTIONAL
+    policy_capability: none
+    request_audit: PROFILE_DEPENDENT
+    response_audit: PROFILE_DEPENDENT
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H06-WP03, H06-WP04, H07-WP05]
+    source_reference: public-docs://api/system-backend/seal-status
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Must preserve no key/share disclosure and namespace-seal context.
+  - id: HB-ENDPOINT-SYS-INIT-STATUS
+    path_template: /v1/sys/init
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H06-WP01]
+    source_reference: public-docs://api/system-backend/init-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Initialization status only; no unseal or recovery material.
+  - id: HB-ENDPOINT-SYS-INIT
+    path_template: /v1/sys/init
+    methods: [PUT]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, SEAL_STATE]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H06-WP01, H06-WP02]
+    source_reference: public-docs://api/system-backend/init
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Fixture must replace generated shares/keys with typed placeholders and record threshold behavior.
+  - id: HB-ENDPOINT-SYS-UNSEAL
+    path_template: /v1/sys/unseal
+    methods: [PUT]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, SEAL_STATE, CLUSTER]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H06-WP03, H06-WP04, H06-WP10]
+    source_reference: public-docs://api/system-backend/unseal
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Same share must never count twice after response loss.
+  - id: HB-ENDPOINT-SYS-SEAL
+    path_template: /v1/sys/seal
+    methods: [PUT]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [SEAL_STATE, CLUSTER, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H06-WP03, H07-WP08, H13-WP06, H21-WP08]
+    source_reference: public-docs://api/system-backend/seal
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Must fence active workers/plugins and zeroize keys.
+  - id: HB-ENDPOINT-SYS-REKEY-INIT-READ
+    path_template: /v1/sys/rekey/init
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H06-WP05]
+    source_reference: public-docs://api/system-backend/rekey-init-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Ceremony status only.
+  - id: HB-ENDPOINT-SYS-REKEY-INIT-WRITE
+    path_template: /v1/sys/rekey/init
+    methods: [PUT, DELETE]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, SEAL_STATE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H06-WP05]
+    source_reference: public-docs://api/system-backend/rekey-init
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Start/cancel semantics require crash and concurrent-caller fixtures.
+  - id: HB-ENDPOINT-SYS-REKEY-UPDATE
+    path_template: /v1/sys/rekey/update
+    methods: [PUT]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: CRYPTO_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, SEAL_STATE]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H06-WP05]
+    source_reference: public-docs://api/system-backend/rekey-update
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Generated new shares must remain outside implementation fixtures.
+  - id: HB-ENDPOINT-SYS-GENERATE-ROOT-ATTEMPT
+    path_template: /v1/sys/generate-root/attempt
+    methods: [GET, PUT, DELETE]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, TOKEN]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H10-WP10]
+    source_reference: public-docs://api/system-backend/generate-root-attempt
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Root generation live window and cancellation require explicit evidence.
+  - id: HB-ENDPOINT-SYS-GENERATE-ROOT-UPDATE
+    path_template: /v1/sys/generate-root/update
+    methods: [PUT]
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    request_audit: CEREMONY_REQUIRED
+    response_audit: CEREMONY_REQUIRED
+    side_effects: [STORAGE, TOKEN]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: CEREMONY_RESUME
+    owner_work_packages: [H10-WP10]
+    source_reference: public-docs://api/system-backend/generate-root-update
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Encoded root output must use a secret placeholder; no real root token fixture.
+  - id: HB-ENDPOINT-SYS-LEADER
+    path_template: /v1/sys/leader
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H21-WP04, H21-WP09]
+    source_reference: public-docs://api/system-backend/leader
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Address/cluster information classification and standby behavior require capture.
+  - id: HB-ENDPOINT-SYS-STEP-DOWN
+    path_template: /v1/sys/step-down
+    methods: [PUT]
+    operation_class: CLUSTER_OPERATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [CLUSTER, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CONSENSUS_OBSERVE
+    owner_work_packages: [H21-WP08, H21-WP10]
+    source_reference: public-docs://api/system-backend/step-down
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Old-owner effect fencing is the primary invariant.
+  - id: HB-ENDPOINT-SYS-MOUNTS-READ
+    path_template: /v1/sys/mounts
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read-or-sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H07-WP04, H07-WP05]
+    source_reference: public-docs://api/system-backend/mounts-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Redaction and namespace visibility require policy fixtures.
+  - id: HB-ENDPOINT-SYS-MOUNT-ENABLE
+    path_template: /v1/sys/mounts/{path}
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H13-WP05, H13-WP06]
+    source_reference: public-docs://api/system-backend/mount-enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Mount type/config validation and plugin process ordering.
+  - id: HB-ENDPOINT-SYS-MOUNT-DISABLE
+    path_template: /v1/sys/mounts/{path}
+    methods: [DELETE]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, LEASE, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H11-WP05, H13-WP06]
+    source_reference: public-docs://api/system-backend/mount-disable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Disable must revoke leases and terminate plugins without stale callbacks.
+  - id: HB-ENDPOINT-SYS-MOUNT-TUNE-READ
+    path_template: /v1/sys/mounts/{path}/tune
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: COMPATIBILITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read-or-sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H07-WP04]
+    source_reference: public-docs://api/system-backend/mount-tune-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Tune field/default inventory remains to capture.
+  - id: HB-ENDPOINT-SYS-MOUNT-TUNE-WRITE
+    path_template: /v1/sys/mounts/{path}/tune
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo-or-update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, LEASE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H11-WP01]
+    source_reference: public-docs://api/system-backend/mount-tune-write
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: TTL and listing-visibility changes affect authorization and leases.
+  - id: HB-ENDPOINT-SYS-REMOUNT
+    path_template: /v1/sys/remount
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, LEASE, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H07-WP07, H11-WP01, H13-WP06]
+    source_reference: public-docs://api/system-backend/remount
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Crash, namespace, cache and plugin lifecycle behavior are critical.
+  - id: HB-ENDPOINT-SYS-AUTH-READ
+    path_template: /v1/sys/auth
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read-or-sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H07-WP04, H16-WP10]
+    source_reference: public-docs://api/system-backend/auth-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Auth mount visibility and tune metadata require policy fixtures.
+  - id: HB-ENDPOINT-SYS-AUTH-ENABLE
+    path_template: /v1/sys/auth/{path}
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H13-WP05, H16-WP10]
+    source_reference: public-docs://api/system-backend/auth-enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Unknown/auth plugin type rejected; no hidden default token.
+  - id: HB-ENDPOINT-SYS-AUTH-DISABLE
+    path_template: /v1/sys/auth/{path}
+    methods: [DELETE]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H07-WP04, H10-WP04, H13-WP06, H16-WP10]
+    source_reference: public-docs://api/system-backend/auth-disable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Associated auth state/tokens and plugin lifecycle require capture.
+  - id: HB-ENDPOINT-SYS-POLICIES-LIST
+    path_template: /v1/sys/policies/acl
+    methods: [LIST]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: list
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H08-WP01, H08-WP02, H08-WP09]
+    source_reference: public-docs://api/system-backend/policies-list
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: LIST/SCAN/pagination policy behavior must not widen visibility.
+  - id: HB-ENDPOINT-SYS-POLICY-READ
+    path_template: /v1/sys/policies/acl/{name}
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H08-WP01, H08-WP02, H08-WP09]
+    source_reference: public-docs://api/system-backend/policy-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Policy text and metadata redaction/normalization require capture.
+  - id: HB-ENDPOINT-SYS-POLICY-WRITE
+    path_template: /v1/sys/policies/acl/{name}
+    methods: [PUT]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: create-or-update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H08-WP01, H08-WP02, H08-WP10]
+    source_reference: public-docs://api/system-backend/policy-write
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Cache invalidation must precede acceptance under stale policy.
+  - id: HB-ENDPOINT-SYS-POLICY-DELETE
+    path_template: /v1/sys/policies/acl/{name}
+    methods: [DELETE]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: delete
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H08-WP01, H08-WP02, H08-WP10]
+    source_reference: public-docs://api/system-backend/policy-delete
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Existing tokens, identity templates and cache behavior require explicit observation.
+  - id: HB-ENDPOINT-SYS-AUDIT-LIST
+    path_template: /v1/sys/audit
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H12-WP01, H12-WP04]
+    source_reference: public-docs://api/system-backend/audit-list
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Device configuration and sensitive options require redaction classification.
+  - id: HB-ENDPOINT-SYS-AUDIT-ENABLE
+    path_template: /v1/sys/audit/{path}
+    methods: [PUT]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, AUDIT_CONFIG]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H12-WP04, H12-WP05, H12-WP06, H12-WP07, H12-WP08]
+    source_reference: public-docs://api/system-backend/audit-enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Device must be validated before authority and cannot create SSRF/path bypass.
+  - id: HB-ENDPOINT-SYS-AUDIT-DISABLE
+    path_template: /v1/sys/audit/{path}
+    methods: [DELETE]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, AUDIT_CONFIG]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H12-WP04, H12-WP10]
+    source_reference: public-docs://api/system-backend/audit-disable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Last-device behavior and auditing of the disable operation require exact evidence.
+  - id: HB-ENDPOINT-SYS-PLUGIN-CATALOG-LIST
+    path_template: /v1/sys/plugins/catalog
+    methods: [LIST]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H13-WP05]
+    source_reference: public-docs://api/system-backend/plugin-catalog-list
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Type/name/version/digest identity and visibility.
+  - id: HB-ENDPOINT-SYS-PLUGIN-CATALOG-REGISTER
+    path_template: /v1/sys/plugins/catalog/{type}/{name}
+    methods: [PUT, DELETE]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, PLUGIN_PROCESS]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H13-WP04, H13-WP05, H13-WP06, H13-WP07]
+    source_reference: public-docs://api/system-backend/plugin-catalog-register
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Digest/signature/OCI/command/args and active instance transitions.
+  - id: HB-ENDPOINT-SYS-LEASE-LOOKUP
+    path_template: /v1/sys/leases/lookup
+    methods: [PUT]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo-or-update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H11-WP01, H11-WP02]
+    source_reference: public-docs://api/system-backend/lease-lookup
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Uses PUT but is logically lookup; demonstrates method is not operation class.
+  - id: HB-ENDPOINT-SYS-LEASE-RENEW
+    path_template: /v1/sys/leases/renew
+    methods: [PUT]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, LEASE, EXTERNAL_SYSTEM]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    owner_work_packages: [H11-WP04, H11-WP06, H11-WP07]
+    source_reference: public-docs://api/system-backend/lease-renew
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Provider/plugin renewal may be externally side effecting.
+  - id: HB-ENDPOINT-SYS-LEASE-REVOKE
+    path_template: /v1/sys/leases/revoke
+    methods: [PUT]
+    operation_class: EXTERNAL_EFFECT
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, LEASE, EXTERNAL_SYSTEM]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    owner_work_packages: [H11-WP05, H11-WP06, H11-WP07, H11-WP09]
+    source_reference: public-docs://api/system-backend/lease-revoke
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Revoke timeout cannot be reported as proven success.
+  - id: HB-ENDPOINT-SYS-WRAPPING-LOOKUP
+    path_template: /v1/sys/wrapping/lookup
+    methods: [POST]
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: WRAPPING_TOKEN
+    policy_capability: wrapping-token-only
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H10-WP08]
+    source_reference: public-docs://api/system-backend/wrapping-lookup
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Lookup must not consume the wrapping token.
+  - id: HB-ENDPOINT-SYS-WRAPPING-UNWRAP
+    path_template: /v1/sys/wrapping/unwrap
+    methods: [POST]
+    operation_class: TOKEN_ISSUE
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: WRAPPING_TOKEN
+    policy_capability: wrapping-token-only
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, TOKEN]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H10-WP08]
+    source_reference: public-docs://api/system-backend/wrapping-unwrap
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Single-use race and active/standby response loss require dedicated fixtures.
+  - id: HB-ENDPOINT-SYS-WRAPPING-REWRAP
+    path_template: /v1/sys/wrapping/rewrap
+    methods: [POST]
+    operation_class: TOKEN_ISSUE
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: WRAPPING_TOKEN
+    policy_capability: wrapping-token-only
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, TOKEN]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H10-WP08]
+    source_reference: public-docs://api/system-backend/wrapping-rewrap
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Old/new token consumption and timeout semantics must be captured.
+  - id: HB-ENDPOINT-AUTH-TOKEN-CREATE
+    path_template: /v1/auth/token/create
+    methods: [POST]
+    operation_class: TOKEN_ISSUE
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: update-or-sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, TOKEN]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H10-WP01, H10-WP03, H10-WP04, H16-WP01]
+    source_reference: public-docs://api/auth/token-create
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Generated token must be a secret placeholder; parent/orphan and role constraints captured.
+  - id: HB-ENDPOINT-AUTH-TOKEN-LOOKUP-SELF
+    path_template: /v1/auth/token/lookup-self
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: self
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H10-WP01, H10-WP03, H16-WP01]
+    source_reference: public-docs://api/auth/token-lookup-self
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Accessor and token metadata redaction/classification required.
+  - id: HB-ENDPOINT-AUTH-TOKEN-RENEW-SELF
+    path_template: /v1/auth/token/renew-self
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: self
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN, LEASE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H10-WP05, H11-WP04, H16-WP01]
+    source_reference: public-docs://api/auth/token-renew-self
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Expired/revoked/max-TTL token cannot renew.
+  - id: HB-ENDPOINT-AUTH-TOKEN-REVOKE-SELF
+    path_template: /v1/auth/token/revoke-self
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: self
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN, LEASE, EXTERNAL_SYSTEM]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    owner_work_packages: [H10-WP04, H11-WP05, H16-WP01]
+    source_reference: public-docs://api/auth/token-revoke-self
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Descendant tokens and leases require graph/effect evidence.
+  - id: HB-ENDPOINT-IDENTITY-ENTITY-LIST
+    path_template: /v1/identity/entity/id
+    methods: [LIST]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: list
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: false
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H09-WP01, H09-WP06]
+    source_reference: public-docs://api/identity/entity-list
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Namespace visibility and pagination/list policy required.
+  - id: HB-ENDPOINT-IDENTITY-ENTITY-WRITE
+    path_template: /v1/identity/entity
+    methods: [POST]
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: create-or-update
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, TOKEN]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    owner_work_packages: [H09-WP01, H09-WP05, H09-WP06]
+    source_reference: public-docs://api/identity/entity-write
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Stable ID, revision, namespace and merge lineage.
+  - id: HB-ENDPOINT-RAFT-JOIN
+    path_template: /v1/sys/storage/raft/join
+    methods: [POST]
+    operation_class: CLUSTER_OPERATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    authentication_mode: JOIN_AND_CLUSTER_GUARD
+    policy_capability: membership-authority
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, CLUSTER]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: CONSENSUS_OBSERVE
+    owner_work_packages: [H20-WP07, H20-WP09, H21-WP01, H21-WP02, H21-WP03]
+    source_reference: public-docs://api/system-storage-raft-join
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Join challenge, cluster ID and node identity must be bound.
+  - id: HB-ENDPOINT-RAFT-CONFIGURATION
+    path_template: /v1/sys/storage/raft/configuration
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H20-WP07, H20-WP08, H21-WP11]
+    source_reference: public-docs://api/system-storage-raft-configuration
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Membership/non-voter/leader metadata and ordering normalization.
+  - id: HB-ENDPOINT-RAFT-SNAPSHOT-READ
+    path_template: /v1/sys/storage/raft/snapshot
+    methods: [GET]
+    operation_class: CLUSTER_OPERATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DATA_DURABILITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, CLUSTER]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: CONSENSUS_OBSERVE
+    owner_work_packages: [H20-WP06, H24-WP04]
+    source_reference: public-docs://api/system-storage-raft-snapshot-read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Snapshot is sensitive encrypted state; ordinary fixture storage forbidden.
+  - id: HB-ENDPOINT-RAFT-SNAPSHOT-WRITE
+    path_template: /v1/sys/storage/raft/snapshot
+    methods: [POST]
+    operation_class: CLUSTER_OPERATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DATA_DURABILITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, CLUSTER, TOKEN, LEASE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CONSENSUS_OBSERVE
+    owner_work_packages: [H20-WP06, H24-WP05]
+    source_reference: public-docs://api/system-storage-raft-snapshot-restore
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Authenticity, epoch/cluster binding, rollback and atomic install.
+  - id: HB-ENDPOINT-RAFT-REMOVE-PEER
+    path_template: /v1/sys/storage/raft/remove-peer
+    methods: [POST]
+    operation_class: CLUSTER_OPERATION
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [STORAGE, CLUSTER]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: CONSENSUS_OBSERVE
+    owner_work_packages: [H20-WP07, H21-WP11]
+    source_reference: public-docs://api/system-storage-raft-remove-peer
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Membership observation resolves timeout; no blind repeat.
+  - id: HB-ENDPOINT-RAFT-AUTOPILOT-STATE
+    path_template: /v1/sys/storage/raft/autopilot/state
+    methods: [GET]
+    operation_class: PURE_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: OPERATOR_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo
+    request_audit: REQUIRED
+    response_audit: REQUIRED
+    side_effects: [NONE]
+    secret_response: false
+    active_required: true
+    response_unknown_policy: SAFE_NOT_SENT
+    owner_work_packages: [H20-WP10, H21-WP11]
+    source_reference: public-docs://api/system-storage-raft-autopilot-state
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Runtime node IDs, timestamps and indexes require explicit normalization rules.
+  - id: HB-ENDPOINT-AUTH-GENERIC-LOGIN
+    path_template: /v1/auth/{mount}/login/{role}
+    methods: [POST]
+    operation_class: AUTH_LOGIN
+    exposure: PUBLIC_UNAUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: DECLARED_AUTH_METHOD
+    policy_capability: login-route-only
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, TOKEN, EXTERNAL_SYSTEM]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: MANUAL_HOLD
+    owner_work_packages: [H16-WP02, H16-WP03, H16-WP04, H16-WP05, H16-WP06, H16-WP07, H16-WP08, H16-WP09, H16-WP10]
+    source_reference: public-docs://api/auth/login-family
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Each auth method receives its own exact path/field/error inventory and real-service matrix.
+  - id: HB-ENDPOINT-SECRET-DYNAMIC-READ
+    path_template: /v1/{mount}/{operation}
+    methods: [GET, POST]
+    operation_class: LEASE_ISSUING_READ
+    exposure: PUBLIC_AUTHENTICATED
+    criticality: SECURITY_CRITICAL
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read-or-update
+    request_audit: REQUIRED
+    response_audit: REQUIRED_BEFORE_SECRET_RELEASE
+    side_effects: [STORAGE, LEASE, EXTERNAL_SYSTEM]
+    secret_response: true
+    active_required: true
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    owner_work_packages: [H11-WP06, H11-WP07, H19-WP01, H19-WP13]
+    source_reference: public-docs://api/dynamic-secret-family
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Each engine/provider requires exact operation inventory; this family entry is not sufficient for qualification.
+coverage:
+  total_seeded: 50
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unowned_critical: 0
+  unclassified: 0
+authority_effect: NONE

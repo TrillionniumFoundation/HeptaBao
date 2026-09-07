@@ -1,0 +1,60 @@
+schema: heptabao.test-execution-policy.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_EVIDENCE_POLICY
+execution_statuses:
+  PASS: runner executed every required step and all assertions passed
+  FAIL: runner executed and at least one required assertion failed
+  BLOCKED: a declared prerequisite prevented execution after the runner started
+  UNEXECUTED: no runner or no executable step was allocated
+  UNKNOWN: evidence cannot prove whether the required assertion ran
+rules:
+  - steps=[] or runner_id=0 is UNEXECUTED, never PASS and never a code FAIL.
+  - A GitHub conclusion string alone is insufficient; step and runner evidence must be present.
+  - Skipped required lanes count as UNKNOWN unless the exact profile declares them not applicable.
+  - Retry may repair infrastructure evidence but cannot erase an earlier code failure without a new source/evidence binding.
+  - Required lane artifacts bind exact source commit/tree, config, dependency lock, toolchain, runner image and test manifest.
+  - Tests may only contribute evidence; they cannot grant compatibility or operational authority.
+  - Critical lanes require zero failed and zero unknown assertions.
+required_lanes_by_class:
+  GOVERNANCE_CRITICAL: [semantic-plan, schema-negative, authority-default, independent-review]
+  SECURITY_CRITICAL: [positive, negative, adversarial, secret-canary, threat-invariant]
+  CRYPTO_CRITICAL: [KAT, tamper, nonce-AAD-key-lifecycle, memory-residue, external-crypto-review]
+  DATA_DURABILITY_CRITICAL: [transaction, fsync, kill-point, torn-write, corruption, reopen, restore]
+  DISTRIBUTED_SYSTEMS_CRITICAL: [model, deterministic-replay, partition, membership, snapshot, linearizability, long-chaos]
+  COMPATIBILITY_CRITICAL: [inventory, raw-fixture, normalized-differential, side-effect, deviation-review]
+  MIGRATION_CRITICAL: [inventory, rehearsal, freeze, final-delta, verification, overlap, rollback-or-forward-recovery]
+  OPERATOR_CRITICAL: [install, upgrade, rollback, SLO, game-day, diagnostic-redaction, long-soak]
+required_evidence_fields:
+  - lane_id
+  - manifest_id
+  - source_commit_sha
+  - source_tree_sha
+  - configuration_digest_sha256
+  - dependency_lock_sha256
+  - toolchain
+  - runner_image
+  - runner_id
+  - start_time_utc
+  - end_time_utc
+  - steps
+  - assertion_summary
+  - artifact_digests
+  - status
+infrastructure_profiles:
+  github_hosted:
+    executable_requires: [runner_id_nonzero, at_least_one_required_step, step_timestamps]
+  self_hosted_security_lab:
+    executable_requires: [runner_identity_attestation, image_digest, isolation_receipt, at_least_one_required_step]
+  offline_crypto_lab:
+    executable_requires: [operator_signed_manifest, hardware_profile, artifact_transfer_manifest]
+  distributed_chaos_lab:
+    executable_requires: [node_image_digests, network_fault_manifest, history_and_checker_artifacts]
+current_observation:
+  branch: codex/plan-v1.1-h00-execution
+  workflow: materialize-plan-v1-1
+  latest_observed_run_id: 33142657346
+  runner_id: 0
+  steps: []
+  classified_status: UNEXECUTED
+  qualification_effect: NONE

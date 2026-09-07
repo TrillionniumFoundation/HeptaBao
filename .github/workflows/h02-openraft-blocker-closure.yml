@@ -1,0 +1,223 @@
+name: h02-openraft-blocker-closure
+
+on:
+  push:
+    branches: ["codex/h02-os-durable-clock-supplychain-v1"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-openraft-blocker-closure-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-plan:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - run: python scripts/validate_h02_blocker_closure_v1.py
+      - run: python -m unittest tests/platform/test_h02_blocker_closure_evidence_v1.py -v
+
+  closure-sequential:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    needs: validate-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      TOOLCHAINS: "1.88.0 1.98.0"
+      SEEDS: "0x5eed20260828cafe 0x8badf00d12345678 0xd15ea5e5cafef00d"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Bind runner-local evidence roots
+        shell: bash
+        run: |
+          printf 'EVIDENCE_ROOT=%s\n' "$RUNNER_TEMP/h02-blocker-closure-evidence" >> "$GITHUB_ENV"
+          printf 'PROBE_ROOT=%s\n' "$RUNNER_TEMP/h02-blocker-closure-probes" >> "$GITHUB_ENV"
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal
+            rustup target add x86_64-unknown-linux-gnu --toolchain "$toolchain"
+            rustup run "$toolchain" rustc --version --verbose
+            rustup run "$toolchain" cargo --version --verbose
+          done
+      - name: Execute six OS, durable-WAL and clock entries serially
+        shell: bash
+        run: |
+          set -u
+          rm -rf "$EVIDENCE_ROOT" "$PROBE_ROOT"
+          mkdir -p "$EVIDENCE_ROOT" "$PROBE_ROOT"
+
+          for toolchain in $TOOLCHAINS; do
+            probe="$PROBE_ROOT/$toolchain"
+            mkdir -p "$probe"
+            cp -a probes/h02/openraft-tokio/. "$probe/"
+            manifest="$probe/Cargo.toml"
+            export CARGO_TARGET_DIR="$PROBE_ROOT/target-$toolchain"
+            build_status=0
+            rustup run "$toolchain" cargo generate-lockfile --manifest-path "$manifest" \
+              >"$EVIDENCE_ROOT/cargo-generate-lockfile-$toolchain.log" 2>&1 || build_status=$?
+            if [ "$build_status" -eq 0 ]; then
+              rustup run "$toolchain" cargo test --locked --all-targets --manifest-path "$manifest" \
+                >"$EVIDENCE_ROOT/cargo-test-$toolchain.log" 2>&1 || build_status=$?
+            fi
+
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$EVIDENCE_ROOT/$toolchain-$seed_name"
+              mkdir -p "$entry"
+              execution_status=125
+              if [ "$build_status" -eq 0 ]; then
+                execution_status=0
+                rustup run "$toolchain" cargo run --quiet --locked --manifest-path "$manifest" \
+                  --bin heptabao-h02-openraft-blocker-closure-lab -- \
+                  --mode all --seed "$seed" \
+                  >"$entry/result.json" 2>"$entry/stderr.log" || execution_status=$?
+              else
+                printf '{}\n' > "$entry/result.json"
+              fi
+              cp "$manifest" "$entry/Cargo.toml"
+              if [ -f "$probe/Cargo.lock" ]; then cp "$probe/Cargo.lock" "$entry/Cargo.lock"; else : > "$entry/Cargo.lock"; fi
+              printf '%s\n' "$build_status" > "$entry/build-exit-code.txt"
+              printf '%s\n' "$execution_status" > "$entry/execution-exit-code.txt"
+            done
+          done
+          exit 0
+      - name: Collect and schema-validate fail-closed evidence
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          clean_tree=false
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then clean_tree=true; fi
+
+          for toolchain in $TOOLCHAINS; do
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$EVIDENCE_ROOT/$toolchain-$seed_name"
+              clean_args=()
+              if [ "$clean_tree" = true ]; then clean_args=(--clean-tree); fi
+              python scripts/h02_blocker_closure_evidence_v1.py collect \
+                --result "$entry/result.json" \
+                --execution-exit-code "$(cat "$entry/execution-exit-code.txt")" \
+                --seed "$seed" \
+                --toolchain "$toolchain" \
+                --manifest "$entry/Cargo.toml" \
+                --cargo-lock "$entry/Cargo.lock" \
+                --source-commit "$source_commit" \
+                --source-tree "$source_tree" \
+                --branch "$branch" \
+                "${clean_args[@]}" \
+                --environment-id "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RUNNER_NAME}-${toolchain}-${seed}" \
+                --executor-kind github-hosted \
+                --runner-id github-api-enrichment-pending \
+                --runner-name "$RUNNER_NAME" \
+                --output "$entry/evidence.json" \
+                >"$entry/collector.log" 2>&1
+            done
+          done
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          from referencing import Registry, Resource
+
+          root = Path(os.environ['EVIDENCE_ROOT'])
+          result_schema = json.load(open('schemas/heptabao_h02_blocker_closure_result_v1.schema.json', encoding='utf-8'))
+          evidence_schema = json.load(open('schemas/heptabao_h02_blocker_closure_evidence_v1.schema.json', encoding='utf-8'))
+          registry = Registry().with_resource(result_schema['$id'], Resource.from_contents(result_schema))
+          result_validator = Draft202012Validator(result_schema)
+          evidence_validator = Draft202012Validator(evidence_schema, registry=registry)
+          entries = sorted(path for path in root.glob('*-*') if path.is_dir())
+          assert len(entries) == 6, [str(path) for path in entries]
+          failures = []
+          for entry in entries:
+              try:
+                  result = json.load((entry / 'result.json').open(encoding='utf-8'))
+                  evidence = json.load((entry / 'evidence.json').open(encoding='utf-8'))
+                  failures.extend(f'{entry}/result.json: {error.message}' for error in result_validator.iter_errors(result))
+                  failures.extend(f'{entry}/evidence.json: {error.message}' for error in evidence_validator.iter_errors(evidence))
+              except Exception as error:
+                  failures.append(f'{entry}: {error}')
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          print('all six blocker-closure result and evidence objects satisfy schemas')
+          PY
+      - name: Upload every outcome before final gate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-blocker-closure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require all six technical passes without authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          entries = sorted(path for path in Path(os.environ['EVIDENCE_ROOT']).glob('*-*') if path.is_dir())
+          assert len(entries) == 6, len(entries)
+          for entry in entries:
+              value = json.load((entry / 'evidence.json').open(encoding='utf-8'))
+              assert value['status'] == 'EXECUTED_PASS', (str(entry), value['status'])
+              assert value['technical_scope'] == {
+                  'os_suspend': True,
+                  'file_wal_faults': True,
+                  'real_openraft_clock_projection': True,
+              }
+              assert all(value['remaining_external_gaps'].values())
+              assert value['qualification'] is False
+              assert value['selection_effect'] == 'NONE'
+              assert value['authority_effect'] == 'NONE'
+          print('all six blocker-closure technical entries passed; external gaps and authority remain explicit')
+          PY
+
+  authority-sentinel:
+    needs: [validate-plan, closure-sequential]
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Keep selection and authority closed
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-plan.result }}
+          CLOSURE_RESULT: ${{ needs.closure-sequential.result }}
+        run: |
+          set -euo pipefail
+          printf 'validate=%s\nclosure=%s\n' "$VALIDATE_RESULT" "$CLOSURE_RESULT"
+          test "$VALIDATE_RESULT" = success
+          test "$CLOSURE_RESULT" = success
+          echo 'H02 OS/durable/clock technical evidence collected; qualification=false selection=0 authority=NONE.'

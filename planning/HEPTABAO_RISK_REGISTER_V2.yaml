@@ -1,0 +1,428 @@
+schema: heptabao.risk-register.v2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: ACTIVE_PLANNING_REGISTER
+scoring:
+  probability: [1, 2, 3, 4, 5]
+  impact: [1, 2, 3, 4, 5]
+  inherent_score: probability_x_impact
+  residual_acceptance:
+    critical_or_high: signed_and_expiring
+    security_critical_release: not_waivable
+risks:
+  - id: HB-RISK-001
+    category: legal-clean-room
+    event: Upstream-derived source or tests enter the independent implementation lane without classification.
+    impact: Copyright/license exposure and loss of clean-room credibility.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [lane ACLs, provenance registry, reviewer gate, interop-exception process]
+    KRI: unclassified_material_count
+    trigger: greater_than_zero
+    contingency: quarantine commits and artifacts; revoke affected evidence; legal review; reimplement from approved specs
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: legal
+    gates: [H00, H01, H13, H24]
+    status: OPEN
+  - id: HB-RISK-002
+    category: licensing
+    event: Outbound license, dependency license or source-offer obligations are incompatible with distribution.
+    impact: Release delay, forced redesign or distribution stop.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [dependency policy, cargo-deny, legal inventory, pre-release review]
+    KRI: unresolved_license_findings
+    trigger: any_before_public_release
+    contingency: remove/replace dependency or isolate covered file; block release
+    residual: {probability: 2, impact: 4, score: 8}
+    owner_role: legal
+    gates: [H00, H02, H27]
+    status: OPEN
+  - id: HB-RISK-003
+    category: requirements
+    event: Oracle inventory misses a security-critical endpoint, config key or side effect.
+    impact: False compatibility claim or unsafe migration.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [machine inventory, source/doc/black-box triangulation, advisory corpus, coverage by criticality]
+    KRI: unclassified_or_unowned_oracle_surface
+    trigger: greater_than_zero_for_claimed_profile
+    contingency: invalidate claim; add fixture and regression; narrow profile
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: compatibility
+    gates: [H01, H16, H17, H18, H19, H22]
+    status: OPEN
+  - id: HB-RISK-004
+    category: oracle-integrity
+    event: Oracle binary, config, fixture or normalization policy is tampered or mislabeled.
+    impact: Differential evidence becomes untrustworthy.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [artifact digests, signed provenance, raw and sanitized fixture hashes, independent review]
+    KRI: oracle_digest_or_signature_mismatch
+    trigger: any
+    contingency: quarantine evidence; recapture from verified artifact; revoke dependent receipts
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: compatibility
+    gates: [H01, H25, H27]
+    status: OPEN
+  - id: HB-RISK-005
+    category: dependency-supply-chain
+    event: A critical Rust dependency is compromised, abandoned, relicensed or unsound.
+    impact: Remote compromise, data loss, schedule shock or release stop.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [cargo-vet, deny/audit, source pinning, minimal dependencies, replacement seams]
+    KRI: critical_dependency_unreviewed_or_unmaintained
+    trigger: any
+    contingency: freeze affected profile; replace/fork under review; revoke releases if exploited
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H02, H25, H27]
+    status: OPEN
+  - id: HB-RISK-006
+    category: entropy
+    event: OS RNG, VM cloning or provider behavior causes weak or repeated randomness.
+    impact: Token, nonce, key or share compromise.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [approved RNG provider, startup health checks, clone tests, nonce model, entropy failure injection]
+    KRI: rng_health_or_nonce_collision
+    trigger: any
+    contingency: seal affected scope; rotate keys/tokens; invalidate snapshots and claims
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: crypto
+    gates: [H02, H05, H06, H10, H20]
+    status: OPEN
+  - id: HB-RISK-007
+    category: barrier-cryptography
+    event: Envelope, nonce, AAD or key-version error permits plaintext exposure, forgery or cross-object substitution.
+    impact: Full secret-store compromise.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [KAT, model, cross-provider tests, tamper corpus, external crypto review]
+    KRI: barrier_invariant_failure
+    trigger: any
+    contingency: seal; revoke artifacts/claims; emergency migration and key rotation after evidence
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: crypto
+    gates: [H05, H06, H14, H25]
+    status: OPEN
+  - id: HB-RISK-008
+    category: key-ceremony
+    event: Init, unseal, rekey, recovery or rotation partially completes or counts approvals/shares incorrectly.
+    impact: Permanent lockout or unauthorized unseal/root access.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [explicit state machines, share digest idempotency, multi-party approvals, crash tests]
+    KRI: ceremony_state_or_threshold_mismatch
+    trigger: any
+    contingency: safe seal/manual hold; recover from signed ceremony state; never guess completion
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: crypto
+    gates: [H06, H10, H25]
+    status: OPEN
+  - id: HB-RISK-009
+    category: kms-hsm
+    event: Auto-unseal KMS/HSM is unavailable, deletes a key, rolls back a version or returns inconsistent results.
+    impact: Cluster outage or irreversible loss of barrier access.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [provider identity binding, version pinning, backup/recovery ceremony, outage game day]
+    KRI: kms_key_version_or_availability_anomaly
+    trigger: any_key_mismatch_or_slo_breach
+    contingency: remain sealed; invoke qualified recovery; block key mutation and promotion
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: crypto
+    gates: [H06, H21, H23, H27]
+    status: OPEN
+  - id: HB-RISK-010
+    category: storage-durability
+    event: Fsync, transaction, torn-write or corruption behavior violates committed-write RPO=0.
+    impact: Secret, token, lease or authority loss/inconsistency.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [durability profile, kill-point testing, corruption detection, reopen determinism]
+    KRI: committed_state_loss_or_unexplained_replay
+    trigger: any
+    contingency: stop writes; preserve evidence; restore/forward recover; revoke profile
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: distributed-systems
+    gates: [H04, H20, H25]
+    status: OPEN
+  - id: HB-RISK-011
+    category: snapshot-rollback
+    event: An old or tampered snapshot is installed and revives revoked credentials or authority.
+    impact: Privilege resurrection and data rollback.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [cluster/epoch binding, signatures, monotonic metadata, restore authorization, rollback detection]
+    KRI: snapshot_epoch_or_signature_mismatch
+    trigger: any
+    contingency: reject install; seal cluster; revoke dependent artifacts and investigate
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: distributed-systems
+    gates: [H05, H20, H24, H27]
+    status: OPEN
+  - id: HB-RISK-012
+    category: raft-consensus
+    event: FSM nondeterminism, split brain, membership error or snapshot install violates linearizability.
+    impact: Multiple active writers, data loss or divergent authority.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [mature library, deterministic FSM, TLA+/Stateright, Jepsen-style chaos, single-active fence]
+    KRI: linearizability_or_single_active_violation
+    trigger: any
+    contingency: halt writes/seal; collect logs; recover quorum from verified snapshot; revoke HA profile
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: distributed-systems
+    gates: [H20, H21, H25, H26]
+    status: OPEN
+  - id: HB-RISK-013
+    category: clock
+    event: Clock rollback, skew or NTP compromise extends token/lease/MFA validity or breaks ordering.
+    impact: Unauthorized credential use or mass expiry/outage.
+    inherent: {probability: 4, impact: 4, score: 16}
+    controls: [monotonic time where possible, persisted deadlines, skew bounds, clock-fault tests]
+    KRI: clock_skew_or_deadline_regression
+    trigger: profile_bound_exceeded
+    contingency: fail closed for issuance/renewal; preserve existing conservative expiry; operator alert
+    residual: {probability: 2, impact: 4, score: 8}
+    owner_role: security
+    gates: [H09, H10, H11, H16, H21]
+    status: OPEN
+  - id: HB-RISK-014
+    category: policy
+    event: Path canonicalization, wildcard, template or parameter logic expands access.
+    impact: Unauthorized secret or system operation.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [single canonicalizer, deny monotonicity properties, advisory corpus, cache invalidation tests]
+    KRI: policy_more_permissive_than_oracle_or_invariant
+    trigger: any
+    contingency: block affected route/profile; invalidate cache; add regression and security review
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H03, H07, H08, H14, H25]
+    status: OPEN
+  - id: HB-RISK-015
+    category: identity-namespace
+    event: Entity, alias, group, OIDC or cache data crosses mount/namespace boundaries.
+    impact: Cross-tenant privilege or secret exposure.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [immutable namespace context, typed keys, noninterference fuzz, tombstones, cache epoch]
+    KRI: cross_namespace_reference_or_authorization
+    trigger: any
+    contingency: seal affected namespace; revoke tokens; invalidate caches; revoke profile
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: security
+    gates: [H09, H14, H16, H25]
+    status: OPEN
+  - id: HB-RISK-016
+    category: token-graph
+    event: Parent/orphan/periodic/num-use or revoke logic leaves valid descendants.
+    impact: Revoked authority remains usable.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [single token writer, graph model, million-node tests, renew/revoke races]
+    KRI: post_revoke_token_or_lease_acceptance
+    trigger: greater_than_zero
+    contingency: emergency epoch bump/revoke; stop issuance; rebuild graph from durable evidence
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H10, H11, H25]
+    status: OPEN
+  - id: HB-RISK-017
+    category: lease-external-effect
+    event: Lost provider response is blindly retried or revoke/rollback is falsely reported successful.
+    impact: Duplicate credentials, leaked authority or external inconsistency.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [durable intent, operation key, indeterminate state, lookup/reconcile/manual hold]
+    KRI: blind_retry_or_unproven_revoke_success
+    trigger: greater_than_zero
+    contingency: stop engine; quarantine operations; revoke/compensate with provider evidence
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H11, H13, H19, H25]
+    status: OPEN
+  - id: HB-RISK-018
+    category: audit
+    event: Audit outage, redaction error or device bypass exposes a secret or permits unaudited response.
+    impact: Undetected compromise and compliance failure.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [pre/post gates, per-device HMAC, fail-closed minimum success, canary scans]
+    KRI: secret_response_without_successful_audit
+    trigger: greater_than_zero
+    contingency: stop secret responses; revoke affected receipts; rotate exposed material
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: security
+    gates: [H12, H23, H25]
+    status: OPEN
+  - id: HB-RISK-019
+    category: plugin-sandbox
+    event: A malicious or compromised plugin escapes, impersonates another plugin or survives seal/stepdown.
+    impact: Host compromise, secret theft or stale external effects.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [digest identity, mTLS, supervisor, no-symlink catalog, OS sandbox, lifecycle fence]
+    KRI: plugin_identity_mismatch_or_orphan_process
+    trigger: any
+    contingency: kill/quarantine plugin; seal; revoke plugin profile and credentials; incident response
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H13, H19, H25]
+    status: OPEN
+  - id: HB-RISK-020
+    category: oci-supply-chain
+    event: Plugin OCI tag moves, digest/signature is invalid or oversized content exhausts resources.
+    impact: Malicious code execution or denial of service.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [digest pinning, signature/SBOM policy, size limits, offline verification]
+    KRI: oci_digest_signature_or_policy_failure
+    trigger: any
+    contingency: reject artifact; quarantine registry source; revoke affected plugin grants
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: security
+    gates: [H13, H27]
+    status: OPEN
+  - id: HB-RISK-021
+    category: pki
+    event: PKI/ACME/CRL/OCSP logic misissues certificates or fails revocation.
+    impact: Identity compromise across dependent systems.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [profile-limited algorithms, ASN.1 fuzz, external PKI review, issuance/revocation corpus]
+    KRI: unauthorized_or_unrevoked_certificate
+    trigger: any
+    contingency: stop issuance; revoke/rotate issuer; publish corrected CRL/OCSP; incident response
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H18, H25]
+    status: OPEN
+  - id: HB-RISK-022
+    category: external-auth
+    event: JWT/JWKS, cert forwarding, LDAP, RADIUS, Kerberos or Kubernetes trust confusion authenticates an attacker.
+    impact: Unauthorized token issuance.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [algorithm/issuer/audience binding, trusted-proxy model, escaping, replay and TLS tests]
+    KRI: auth_acceptance_outside_role_constraints
+    trigger: any
+    contingency: disable mount; revoke issued tokens; rotate trust material; add advisory fixture
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H16, H25]
+    status: OPEN
+  - id: HB-RISK-023
+    category: workflow-template
+    event: CEL/template/workflow enables injection, SSRF, secret echo, unbounded execution or internal operation construction.
+    impact: Privilege escalation, leak or denial of service.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [function allowlist, CPU/memory/depth limits, operation registry, auth attenuation]
+    KRI: workflow_internal_op_or_secret_echo
+    trigger: any
+    contingency: disable profile/workflow; revoke tokens; preserve trace; patch sandbox
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H15, H25]
+    status: OPEN
+  - id: HB-RISK-024
+    category: http-edge
+    event: Request smuggling, slowloris, header confusion, unsafe CORS, forwarded-cert spoof or redirect leaks authority.
+    impact: Authentication/policy bypass or token disclosure.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [strict parser, limits, trusted-proxy config, redirect allowlist, HTTP fuzz]
+    KRI: edge_parser_or_origin_violation
+    trigger: any
+    contingency: disable affected protocol/path; rotate tokens; patch and requalify edge profile
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H03, H21, H22, H25]
+    status: OPEN
+  - id: HB-RISK-025
+    category: telemetry-diagnostics
+    event: Logs, metrics, traces or debug bundles expose secrets or create unbounded cardinality/resource use.
+    impact: Data breach or outage.
+    inherent: {probability: 4, impact: 4, score: 16}
+    controls: [typed redaction, bounded labels, canary scans, deterministic manifests]
+    KRI: secret_canary_or_cardinality_budget_violation
+    trigger: any
+    contingency: disable exporter/bundle; rotate exposed material; revoke affected artifacts
+    residual: {probability: 2, impact: 4, score: 8}
+    owner_role: security
+    gates: [H12, H23, H25, H26]
+    status: OPEN
+  - id: HB-RISK-026
+    category: migration-dual-write
+    event: OpenBao and HeptaBao accept writes for the same migration domain.
+    impact: Divergence, credential duplication and unrecoverable authority ambiguity.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [writer freeze, epoch/fence, overlap detector, no-writer verification window]
+    KRI: source_and_target_write_acceptance_overlap
+    trigger: greater_than_zero
+    contingency: revoke both grants; stop writes; reconcile and choose signed forward recovery
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: migration
+    gates: [H24, H25, H27]
+    status: OPEN
+  - id: HB-RISK-027
+    category: migration-data
+    event: Logical/snapshot migration omits or alters policy, key, token, lease, PKI or engine semantics.
+    impact: Data loss, insecure access or unusable secrets after cutover.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [object counts/digests, behavior probes, three scale rehearsals, rollback point]
+    KRI: migration_count_digest_or_behavior_mismatch
+    trigger: any
+    contingency: remain frozen; do not grant target authority; repair/rehearse or abort
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: migration
+    gates: [H24, H25]
+    status: OPEN
+  - id: HB-RISK-028
+    category: availability
+    event: Audit, KMS, plugin, storage or leader failure cascades into prolonged outage.
+    impact: Inability to retrieve/renew secrets while maintaining fail-closed safety.
+    inherent: {probability: 4, impact: 4, score: 16}
+    controls: [SLO budgets, backpressure, circuit isolation, HA, restore and outage game days]
+    KRI: availability_slo_breach_or_unbounded_queue
+    trigger: profile_slo_breach
+    contingency: safe degradation by profile; stop issuance; restore/failover without widening authority
+    residual: {probability: 2, impact: 4, score: 8}
+    owner_role: operations
+    gates: [H11, H12, H20, H21, H23, H26]
+    status: OPEN
+  - id: HB-RISK-029
+    category: capacity-schedule
+    event: Staffing, review or external-audit capacity falls below the plan while scope remains full C5.
+    impact: Multi-year slip, quality erosion or unsafe shortcut pressure.
+    inherent: {probability: 5, impact: 4, score: 20}
+    controls: [capacity model, profile prioritization, quarterly reforecast, independent review budget]
+    KRI: dedicated_fte_or_review_capacity_variance
+    trigger: greater_than_10_percent_or_30_days
+    contingency: narrow profile, rebaseline dates, stop concurrent critical work rather than waive gates
+    residual: {probability: 3, impact: 3, score: 9}
+    owner_role: program
+    gates: [H00, H27]
+    status: OPEN
+  - id: HB-RISK-030
+    category: incident-response
+    event: A vulnerability occurs before private disclosure, signing revocation and 24/7 ownership are operational.
+    impact: Delayed containment and continued use of unsafe artifacts.
+    inherent: {probability: 3, impact: 5, score: 15}
+    controls: [H00 blocker, SECURITY.md, grant expiry, revocation schema, incident drills]
+    KRI: unsupported_release_or_unowned_incident
+    trigger: any
+    contingency: no production release; repository-owner emergency revocation and external incident support
+    residual: {probability: 2, impact: 5, score: 10}
+    owner_role: security
+    gates: [H00, H25, H27]
+    status: OPEN
+  - id: HB-RISK-031
+    category: release-provenance
+    event: Build, SBOM, signature or transparency evidence does not bind the exact source/config/toolchain.
+    impact: Supply-chain substitution or unverifiable release.
+    inherent: {probability: 4, impact: 5, score: 20}
+    controls: [hermetic build, reproducibility, signed attestations, transparency, two-person release]
+    KRI: artifact_or_attestation_digest_mismatch
+    trigger: any
+    contingency: revoke artifact/claim/grant; stop distribution; rebuild from clean source
+    residual: {probability: 1, impact: 5, score: 5}
+    owner_role: release
+    gates: [H25, H27]
+    status: OPEN
+  - id: HB-RISK-032
+    category: upstream-drift
+    event: New OpenBao release/advisory changes behavior or invalidates HeptaBao compatibility/security assumptions.
+    impact: Stale claims, migration failure or unpatched vulnerability.
+    inherent: {probability: 5, impact: 4, score: 20}
+    controls: [frozen Oracle baseline, current security baseline, 24h triage, isolated differential lane]
+    KRI: untriaged_upstream_release_or_advisory
+    trigger: older_than_24_hours
+    contingency: expire affected claims/grants; classify delta; patch/requalify or narrow support
+    residual: {probability: 2, impact: 4, score: 8}
+    owner_role: compatibility
+    gates: [H01, H25, H27]
+    status: OPEN

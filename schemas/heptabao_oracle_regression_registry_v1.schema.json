@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-regression-registry-v1.json",
+  "title": "HeptaBao OpenBao Oracle Regression Registry V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "baseline_id", "registry_id", "status", "latest_release_observation", "entries", "coverage", "authority_effect"],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-regression-registry.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "registry_id": {"pattern": "^HB-REG-[A-Z0-9._-]{8,200}$"},
+    "status": {"enum": ["SEED", "ACTIVE", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "latest_release_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checked_at_utc", "tag", "commit_sha", "published_at_utc", "source_reference"],
+      "properties": {
+        "checked_at_utc": {"type": "string", "format": "date-time"},
+        "tag": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "published_at_utc": {"type": "string", "format": "date-time"},
+        "source_reference": {"type": "string", "minLength": 1}
+      }
+    },
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entry"}},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identified", "fixture_planned", "fixture_implemented", "reviewed", "qualified", "unowned_critical", "unclassified"],
+      "properties": {
+        "identified": {"type": "integer", "minimum": 0},
+        "fixture_planned": {"type": "integer", "minimum": 0},
+        "fixture_implemented": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "qualified": {"type": "integer", "minimum": 0},
+        "unowned_critical": {"type": "integer", "minimum": 0},
+        "unclassified": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "upstream_version", "class", "component", "summary", "advisory_id", "source_reference", "criticality", "required_work_packages", "invariant_refs", "fixture_status", "review_status", "disposition", "authority_effect"],
+      "properties": {
+        "id": {"pattern": "^HB-REG-ITEM-[A-Z0-9._-]{4,200}$"},
+        "upstream_version": {"type": "string", "minLength": 1},
+        "class": {"enum": ["SECURITY", "BUG_FIX", "BEHAVIOR_CHANGE", "COMPATIBILITY_CHANGE", "DEPRECATION"]},
+        "component": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 8},
+        "advisory_id": {"type": ["string", "null"]},
+        "source_reference": {"type": "string", "minLength": 1},
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "required_work_packages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])-WP[0-9]{2,3}$"}},
+        "invariant_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "fixture_status": {"enum": ["NONE", "PLANNED", "IMPLEMENTED_SYNTHETIC", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED"]},
+        "review_status": {"enum": ["PENDING", "APPROVED", "REJECTED", "SUPERSEDED"]},
+        "disposition": {"enum": ["PENDING", "HEPTABAO_NOT_AFFECTED_WITH_EVIDENCE", "IMPLEMENTED_AND_REGRESSED", "STRICTER_DEVIATION", "SUPPORT_SCOPE_NARROWED", "BLOCKED"]},
+        "authority_effect": {"const": "NONE"}
+      }
+    }
+  }
+}

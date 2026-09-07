@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_normative_document_manifest_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "conflict_policy",
+    "current_plan",
+    "current_state_input",
+    "documents",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.normative-document-manifest.v1"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "revision": {
+      "const": "1.2"
+    },
+    "status": {
+      "const": "NORMATIVE_INDEX"
+    },
+    "conflict_policy": {
+      "const": "FAIL_CLOSED"
+    },
+    "current_plan": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_state_input": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "path",
+          "kind",
+          "owner_role",
+          "digest",
+          "effective_revision",
+          "supersedes",
+          "authority_effect"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^HB-[A-Z0-9][A-Z0-9_-]+$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "NORMATIVE",
+              "DERIVED",
+              "EVIDENCE",
+              "HISTORICAL"
+            ]
+          },
+          "owner_role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effective_revision": {
+            "const": "1.2"
+          },
+          "supersedes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authority_effect": {
+            "const": "NONE"
+          }
+        }
+      }
+    }
+  }
+}

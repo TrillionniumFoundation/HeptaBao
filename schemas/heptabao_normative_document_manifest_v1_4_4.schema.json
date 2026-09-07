@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.example/schemas/heptabao_normative_document_manifest_v1_4_4.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "inherits",
+    "source_binding",
+    "documents",
+    "claims"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.normative-document-manifest.v1_4_4"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "revision": {
+      "const": "1.4.4"
+    },
+    "status": {
+      "const": "ACTIVE_MODULE_DOCUMENTATION_CLOSURE"
+    },
+    "inherits": {
+      "const": "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_3.yaml"
+    },
+    "source_binding": {
+      "const": "RESOLVE_FROM_EXACT_SOURCE"
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 31,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "role",
+          "source_binding"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_binding": {
+            "const": "RESOLVE_FROM_EXACT_SOURCE"
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "object"
+    }
+  }
+}

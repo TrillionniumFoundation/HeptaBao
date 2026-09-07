@@ -1,0 +1,16 @@
+[package]
+name = "heptabao-barrier-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-storage-api = { path = "../heptabao-storage-api" }
+
+[lints]
+workspace = true

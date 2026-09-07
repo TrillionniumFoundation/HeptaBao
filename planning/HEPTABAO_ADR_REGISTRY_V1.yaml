@@ -1,0 +1,94 @@
+schema: heptabao.adr-registry.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_DECISION_INDEX
+rules:
+  - ADR IDs are unique, sequential and immutable.
+  - A superseded ADR remains in the registry with its successor.
+  - Security-critical ADRs require security plus domain/specialist approval.
+  - An ADR changes design authority only after its referenced plan amendment is accepted.
+adrs:
+  - id: ADR-0001
+    title: Independent clean-room implementation with controlled interop exceptions
+    status: ACCEPTED
+    gates: [H00, H01, H13, H24]
+    decision: Oracle/specification, independent implementation and interop-exception lanes are physically and procedurally separated.
+    consequences: [no mechanical source translation, file-level provenance for exceptions, legal gate before public release]
+    required_roles: [program, security, legal]
+  - id: ADR-0002
+    title: Program Gates aggregate qualification; Work Packages schedule implementation
+    status: ACCEPTED
+    gates: [H00]
+    decision: H00-H27 are evidence gates and at least 250 named Work Packages are parallel implementation units.
+    consequences: [work-start and qualification dependencies differ, code completion does not equal qualification]
+    required_roles: [program, security, domain]
+  - id: ADR-0003
+    title: Qualification, compatibility, authority and revocation are separate signed objects
+    status: ACCEPTED
+    gates: [H00, H27]
+    decision: Qualification and compatibility have authority_effect NONE; operational authority requires scoped expiring grant; revocation has highest precedence.
+    consequences: [green CI or merged PR cannot grant authority, all grants are revocable]
+    required_roles: [program, security, compatibility, release]
+  - id: ADR-0004
+    title: Operator behavior compatibility without default physical-format compatibility
+    status: ACCEPTED
+    gates: [H01, H24, H27]
+    decision: C5 targets API/config/CLI/side-effect/operator compatibility for exact profiles, not byte-for-byte barrier, raft.db or snapshot compatibility.
+    consequences: [logical migration is primary, mixed cluster and direct raft.db access require separate RFC and qualification]
+    required_roles: [compatibility, security, migration]
+  - id: ADR-0005
+    title: Use reviewed cryptographic primitives and a HeptaBao versioned authenticated envelope
+    status: ACCEPTED
+    gates: [H02, H05, H06, H14]
+    decision: HeptaBao does not invent cryptographic primitives; it owns envelope, key lifecycle, ceremony and provider integration.
+    consequences: [external crypto review, unknown algorithms fail closed, FIPS claims require actual certified modules/build]
+    required_roles: [crypto, security]
+  - id: ADR-0006
+    title: Use a mature Raft library with a deterministic HeptaBao FSM
+    status: ACCEPTED
+    gates: [H02, H20, H21]
+    decision: Consensus algorithm implementation is delegated to a reviewed library; storage semantics remain in a deterministic FSM.
+    consequences: [no clock/random/network/KMS/plugin I/O in FSM, library replacement seam and formal/chaos evidence]
+    required_roles: [distributed-systems, security]
+  - id: ADR-0007
+    title: Static Rust built-ins and versioned process protocol for external plugins
+    status: ACCEPTED
+    gates: [H13, H16, H17, H18, H19]
+    decision: Rust ABI is not an ecosystem contract; built-ins are statically registered and external plugins use process isolation, gRPC/mTLS, catalog identity and optional OS sandbox.
+    consequences: [no dynamic Rust ABI promise, plugin identity and lifecycle are security boundaries]
+    required_roles: [domain, security]
+  - id: ADR-0008
+    title: One authoritative request pipeline and operation registry
+    status: ACCEPTED
+    gates: [H03, H07, H08, H12]
+    decision: Every external/internal operation is registered and passes canonical context, auth/identity/policy/audit/intent/dispatch/response ordering.
+    consequences: [HTTP method is not safety class, unknown operation denied, internal operations are closed types]
+    required_roles: [security, domain]
+  - id: ADR-0009
+    title: One authoritative writer per durable domain
+    status: ACCEPTED
+    gates: [H04, H07, H09, H10, H11, H14, H20, H21, H24]
+    decision: Each durable domain has one writer; projections, caches, adapters, standbys, Oracle and shadow comparators never write.
+    consequences: [writer transitions require epoch/fence, shared writable backend and dual write forbidden]
+    required_roles: [security, distributed-systems, domain]
+  - id: ADR-0010
+    title: Audit, durable commit and external effect use explicit non-atomic ordering
+    status: ACCEPTED
+    gates: [H07, H11, H12, H19]
+    decision: Durable intent precedes external effects; response audit precedes secret release; ambiguous outcomes reconcile or hold and never blind retry.
+    consequences: [response-audit failure after effect uses revoke/retrieval/compensation/manual hold]
+    required_roles: [security, domain, operations]
+  - id: ADR-0011
+    title: OpenBao-to-HeptaBao migration enforces a no-writer verification window
+    status: ACCEPTED
+    gates: [H24, H27]
+    decision: Source freeze, final delta, verification, epoch/fence switch and target canary are distinct; unknown authority produces no writer.
+    consequences: [writer overlap zero, irreversible target effects require forward recovery]
+    required_roles: [migration, security, operations]
+  - id: ADR-0012
+    title: Compatibility is exact-profile scoped and critical evidence is 100 percent
+    status: ACCEPTED
+    gates: [H01, H16, H17, H18, H19, H20, H21, H22, H24, H27]
+    decision: Claims bind exact profile/version/Oracle/platform/config/deviation/exclusion; critical classes cannot be averaged or waived.
+    consequences: [unsupported behavior explicit, upstream security changes can invalidate claims]
+    required_roles: [compatibility, security, program]

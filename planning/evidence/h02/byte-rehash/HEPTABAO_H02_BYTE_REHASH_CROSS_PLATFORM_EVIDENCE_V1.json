@@ -1,0 +1,195 @@
+{
+  "applicability": {
+    "current_target_head": "cf3809a95ea4a12fb5ab1adbf1ea4ea7ef0b7397",
+    "requires_revalidation_if": [
+      "candidate ID changes",
+      "package/version changes",
+      "registry checksum changes",
+      "release commit changes",
+      "source archive URL or tag changes"
+    ],
+    "scope": "CANDIDATE_PACKAGE_AND_PUBLIC_SOURCE_IDENTITY_ONLY"
+  },
+  "authority_effect": "NONE",
+  "candidates": [
+    {
+      "candidate_id": "HB-DEP-ASYNC-TOKIO",
+      "executions": [
+        {
+          "crate_download_sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+          "crate_size_bytes": 920101,
+          "environment": "macos-15-arm64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "ARM64",
+          "runner_name": "GitHub Actions 1000035779",
+          "runner_os": "macOS",
+          "source_archive_sha256": "e16f5d8693a1027f016d959b6a9c02336bfac5b55e01430405c5959ed52ee517",
+          "source_archive_size_bytes": 1204411
+        },
+        {
+          "crate_download_sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+          "crate_size_bytes": 920101,
+          "environment": "windows-2025-x64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "X64",
+          "runner_name": "GitHub Actions 1000035807",
+          "runner_os": "Windows",
+          "source_archive_sha256": "e16f5d8693a1027f016d959b6a9c02336bfac5b55e01430405c5959ed52ee517",
+          "source_archive_size_bytes": 1204411
+        }
+      ],
+      "package": "tokio",
+      "package_vcs_commit_sha": "75fef53d0a8590c2d1dbb63672aa7b7d1ef51155",
+      "registry_checksum_sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+      "source_archive_digest_kind": "OBSERVED_GITHUB_GENERATED_ARCHIVE",
+      "source_archive_sha256": "e16f5d8693a1027f016d959b6a9c02336bfac5b55e01430405c5959ed52ee517",
+      "version": "1.53.1"
+    },
+    {
+      "candidate_id": "HB-DEP-RAFT-OPENRAFT",
+      "executions": [
+        {
+          "crate_download_sha256": "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8",
+          "crate_size_bytes": 494672,
+          "environment": "macos-15-arm64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "ARM64",
+          "runner_name": "GitHub Actions 1000035779",
+          "runner_os": "macOS",
+          "source_archive_sha256": "23b7662daf2b76f2a547eef1128baf02d08e4e476a57dc439a58fe3f886d78bf",
+          "source_archive_size_bytes": 1434319
+        },
+        {
+          "crate_download_sha256": "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8",
+          "crate_size_bytes": 494672,
+          "environment": "windows-2025-x64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "X64",
+          "runner_name": "GitHub Actions 1000035807",
+          "runner_os": "Windows",
+          "source_archive_sha256": "23b7662daf2b76f2a547eef1128baf02d08e4e476a57dc439a58fe3f886d78bf",
+          "source_archive_size_bytes": 1434319
+        }
+      ],
+      "package": "openraft",
+      "package_vcs_commit_sha": "2be3f99a23c0ec734aefc18d1c8e756b35567c35",
+      "registry_checksum_sha256": "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8",
+      "source_archive_digest_kind": "OBSERVED_GITHUB_GENERATED_ARCHIVE",
+      "source_archive_sha256": "23b7662daf2b76f2a547eef1128baf02d08e4e476a57dc439a58fe3f886d78bf",
+      "version": "0.10.0-alpha.33"
+    },
+    {
+      "candidate_id": "HB-DEP-TLS-RUSTLS",
+      "executions": [
+        {
+          "crate_download_sha256": "0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06",
+          "crate_size_bytes": 375868,
+          "environment": "macos-15-arm64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "ARM64",
+          "runner_name": "GitHub Actions 1000035779",
+          "runner_os": "macOS",
+          "source_archive_sha256": "0b2476d6633d286af5f860ec9e4e43d35ee989917da28a478e7945a350e234b5",
+          "source_archive_size_bytes": 3919044
+        },
+        {
+          "crate_download_sha256": "0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06",
+          "crate_size_bytes": 375868,
+          "environment": "windows-2025-x64",
+          "matches_registry_checksum": true,
+          "matches_release_commit": true,
+          "runner_arch": "X64",
+          "runner_name": "GitHub Actions 1000035807",
+          "runner_os": "Windows",
+          "source_archive_sha256": "0b2476d6633d286af5f860ec9e4e43d35ee989917da28a478e7945a350e234b5",
+          "source_archive_size_bytes": 3919044
+        }
+      ],
+      "package": "rustls",
+      "package_vcs_commit_sha": "fcf61cdbba30913cfd5b40aefa83989c6233812d",
+      "registry_checksum_sha256": "0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06",
+      "source_archive_digest_kind": "OBSERVED_GITHUB_GENERATED_ARCHIVE",
+      "source_archive_sha256": "0b2476d6633d286af5f860ec9e4e43d35ee989917da28a478e7945a350e234b5",
+      "version": "0.23.43"
+    }
+  ],
+  "closed_technical_gaps": [
+    "crate package bytes independently rehashed on two hosted platforms",
+    "crate package SHA-256 matches crates.io registry checksum for all three candidates",
+    "package VCS commit matches pinned release commit for all three candidates",
+    "GitHub-generated source archive digest independently observed equal on two hosted platforms"
+  ],
+  "independence": {
+    "architectures": [
+      "ARM64",
+      "X64"
+    ],
+    "classification": "TWO_GITHUB_HOSTED_PLATFORM_ENVIRONMENTS_NOT_HUMAN_REVIEW",
+    "environment_count": 2,
+    "operating_systems": [
+      "macOS",
+      "Windows"
+    ],
+    "runner_names": [
+      "GitHub Actions 1000035779",
+      "GitHub Actions 1000035807"
+    ],
+    "same_registry_and_source_digests": true
+  },
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "qualification": false,
+  "remaining_gaps": [
+    "license review",
+    "security advisory review",
+    "unsafe/FFI/native/build-script review",
+    "effective MSRV and behavioral profiles",
+    "specialist review",
+    "signed selection receipt"
+  ],
+  "review_status": "PENDING",
+  "revision": "1.1",
+  "schema": "heptabao.h02-byte-rehash-cross-platform-evidence.v1",
+  "selection_effect": "NONE",
+  "status": "INDEPENDENT_CROSS_PLATFORM_BYTE_REHASH_EXECUTED_PASS_UNREVIEWED",
+  "technical_source": {
+    "commit_sha": "540fc788697a3a195ab51225f59e55bb4ba1f298",
+    "repository": "ProfHepta/HeptaBao",
+    "workflow_branch": "codex/h02-byte-rehash-execution-v1",
+    "workflow_head_sha": "9d9363e28b0298703ae0e80e2bdb592ed4e9bb31"
+  },
+  "workflow": {
+    "artifacts": [
+      {
+        "artifact_id": 9710243470,
+        "name": "h02-byte-rehash-macos-15-33237110556",
+        "sha256": "2b6c589715271d0e3f196d6f5ae0e831ba8537de2b394c8f28be6e6b50ad8064"
+      },
+      {
+        "artifact_id": 9710271492,
+        "name": "h02-byte-rehash-windows-2025-33237110556",
+        "sha256": "69a948bb7bdbb4e77eff44421956ae77944e959a1a0f41983ad03bac0f0acc84"
+      }
+    ],
+    "conclusion": "success",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "environment": "macos-15-arm64",
+        "job_id": 99059893805
+      },
+      {
+        "conclusion": "success",
+        "environment": "windows-2025-x64",
+        "job_id": 99059893750
+      }
+    ],
+    "name": "h02-byte-rehash-cross-platform",
+    "run_attempt": 1,
+    "run_id": 33237110556
+  }
+}

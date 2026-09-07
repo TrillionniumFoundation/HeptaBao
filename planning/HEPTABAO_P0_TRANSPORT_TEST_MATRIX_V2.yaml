@@ -1,0 +1,125 @@
+schema: heptabao.p0-transport-test-matrix.v2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3.1'
+profile: HB-P0-DEV-MEMORY
+status: SPECIFIED_SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_REQUIRED
+cases:
+- id: P0-TRANSPORT-001
+  title: canonical loopback health request
+  vector: complete HTTP/1.1 request with exact bound Host
+  expected_status: 501
+  expected_audit: request accepted and response prepared
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-002
+  title: duplicate Host fails closed and is audited
+  vector: two case-variant Host fields
+  expected_status: 400
+  expected_detail_code: protocol-duplicate-header
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-003
+  title: Host/listener mismatch fails closed and is audited
+  vector: syntactically valid non-listener Host
+  expected_status: 400
+  expected_detail_code: host-listener-mismatch
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-004
+  title: byte trickling cannot extend total request read deadline
+  vector: partial request head retained past five-second absolute deadline
+  expected_status: 408
+  expected_detail_code: request-read-deadline-exceeded
+  maximum_observed_seconds: 8
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-005
+  title: request-ID replay is rejected
+  vector: two complete requests carrying the same X-HeptaBao-Request-Id
+  expected_first_status: 200
+  expected_second_status: 409
+  expected_detail_code: client-request-id-replayed
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-006
+  title: request-ID registry saturation fails closed
+  vector: more live identities than the declared bounded capacity
+  expected_status: 503
+  expected_detail_code: request-id-registry-saturated
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-007
+  title: concurrent connection saturation is bounded
+  vector: more than 32 simultaneously live request readers
+  expected_status: 429
+  expected_detail_code: connection-capacity-exhausted
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-008
+  title: HTTP 204 has no wire body
+  vector: successful authenticated KV write
+  expected_status: 204
+  expected_content_length: 0
+  expected_body_bytes: 0
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-009
+  title: malformed framing is audited before response
+  vector: Transfer-Encoding or noncanonical Content-Length
+  expected_status: 400
+  expected_detail_code: protocol-transfer-encoding-forbidden
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-010
+  title: response delivery failure preserves known commit disposition
+  vector: peer closes after dispatch before complete response delivery
+  expected: NO_RETRY_AND_AUDIT_DETAIL
+  expected_detail_codes:
+  - response-delivery-failed-before-commit
+  - response-delivery-failed-after-commit
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-011
+  title: every response has one absolute bounded write lifetime
+  vector: normal, capacity-rejection and parser-rejection responses use a remaining-time write loop
+  expected: PARTIAL_PROGRESS_CANNOT_RESET_DEADLINE
+  maximum_write_seconds: 5
+  evidence_class: EXACT_HEAD_COMPILED_SOURCE_BOUND
+  evidence_limit: exact-head compile, unit regression and source binding; not counted as runtime socket observation
+- id: P0-TRANSPORT-012
+  title: connection worker creation failure cannot panic or leak admission capacity
+  vector: fallible thread Builder spawn path
+  expected_status: CONNECTION_CLOSED_FAIL_CLOSED
+  expected_detail_code: connection-worker-spawn-failed
+  expected_capacity_release: true
+  evidence_class: EXACT_HEAD_COMPILED_SOURCE_BOUND
+  evidence_limit: exact-head compile, unit regression and source binding; deterministic spawn failure is not induced by the socket harness
+- id: P0-TRANSPORT-013
+  title: operation-specific body policy rejects ignored payloads
+  vector: body on health, seal status, seal, KV read, KV list or KV delete; non-exact init body
+  expected_status: 400
+  expected_detail_code: operation-body-forbidden
+  expected_dispatch: false
+  evidence_class: RUNTIME_SOCKET_OBSERVED
+- id: P0-TRANSPORT-014
+  title: canonical target and in-memory KV path use controlled owned lifetimes
+  vector: target/query and KV-path wrappers are redacted and overwritten on controlled drop
+  expected: BEST_EFFORT_CONTROLLED_PATH_OVERWRITE
+  evidence_class: BEST_EFFORT_CONTROLLED_DROP_SOURCE_BOUND
+  evidence_limit: source and unit semantics only; allocator, compiler, swap and post-drop memory inspection are not claimed
+  production_qualification_effect: NONE
+evidence_semantics:
+  runtime_socket_observed_case_count: 11
+  exact_head_compiled_source_bound_case_count: 2
+  best_effort_controlled_drop_source_bound_case_count: 1
+  source_presence_is_runtime_execution: false
+  aggregate_pass_must_preserve_classification: true
+resource_bounds:
+  total_request_timeout_seconds: 5
+  total_response_write_timeout_seconds: 5
+  maximum_concurrent_connections: 32
+  maximum_client_request_ids: 4096
+  client_request_id_ttl_seconds: 60
+  per_connection_worker_spawn: FALLIBLE_NO_PANIC
+  response_write_deadline_mode: ABSOLUTE_REMAINING_TIME_PER_WRITE_AND_FLUSH
+exact_head_requirements:
+  rust_toolchain: 1.98.0
+  fmt: true
+  tests: true
+  clippy_deny_warnings: true
+  socket_execution: true
+  audit_artifact_required: true
+  classified_evidence_v2_required: true
+qualification: false
+compatibility_claim: false
+authority_effect: NONE

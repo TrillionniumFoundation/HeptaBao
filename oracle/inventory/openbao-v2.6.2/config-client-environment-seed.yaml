@@ -1,0 +1,130 @@
+schema: heptabao.oracle-config-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-CONFIG-OPENBAO-V2_6_2-CLIENT-ENV-SEED01
+status: SEED
+entries:
+  - id: HB-CONFIG-ITEM-ENV-ADDR
+    key_path: BAO_ADDR
+    surface: ENVIRONMENT
+    value_shape: ADDRESS
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_ADDR
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Client target origin, redirect and token-forwarding boundary.
+  - id: HB-CONFIG-ITEM-ENV-CACERT
+    key_path: BAO_CACERT
+    surface: ENVIRONMENT
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_CACERT
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Client CA trust reference and missing-file behavior.
+  - id: HB-CONFIG-ITEM-ENV-CLIENT-CERT
+    key_path: BAO_CLIENT_CERT
+    surface: ENVIRONMENT
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_CLIENT_CERT
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: mTLS certificate reference.
+  - id: HB-CONFIG-ITEM-ENV-CLIENT-KEY
+    key_path: BAO_CLIENT_KEY
+    surface: ENVIRONMENT
+    value_shape: PATH
+    criticality: CRYPTO_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_CLIENT_KEY
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: mTLS private-key reference; raw key is forbidden from captures.
+  - id: HB-CONFIG-ITEM-ENV-NAMESPACE
+    key_path: BAO_NAMESPACE
+    surface: ENVIRONMENT
+    value_shape: STRING
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H14-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_NAMESPACE
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Namespace header/context binding and canonicalization.
+  - id: HB-CONFIG-ITEM-ENV-TOKEN
+    key_path: BAO_TOKEN
+    surface: ENVIRONMENT
+    value_shape: SECRET_REFERENCE
+    criticality: SECURITY_CRITICAL
+    secret_bearing: YES
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H10-WP01, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_TOKEN
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Raw token values are forbidden from repository fixtures, logs and reports.
+  - id: HB-CONFIG-ITEM-ENV-FORMAT
+    key_path: BAO_FORMAT
+    surface: ENVIRONMENT
+    value_shape: ENUM
+    criticality: COMPATIBILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: API_MANAGED
+    failure_policy: WARN_ONLY
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_FORMAT
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: CLI output mode and invalid-value behavior.
+  - id: HB-CONFIG-ITEM-ENV-TIMEOUT
+    key_path: BAO_CLIENT_TIMEOUT
+    surface: ENVIRONMENT
+    value_shape: DURATION
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: API_MANAGED
+    failure_policy: DEGRADED_NO_AUTHORITY_WIDENING
+    owner_work_packages: [H01-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_CLIENT_TIMEOUT
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Timeout after send is not proof that no mutation occurred.
+  - id: HB-CONFIG-ITEM-ENV-RETRIES
+    key_path: BAO_MAX_RETRIES
+    surface: ENVIRONMENT
+    value_shape: INTEGER
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: API_MANAGED
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H22-WP08]
+    source_reference: docs://openbao/v2.6.2/commands/environment/BAO_MAX_RETRIES
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Retries must respect operation class and response-unknown semantics.
+coverage:
+  total_seeded: 9
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unknown_semantics: 9
+  unowned_critical: 0
+authority_effect: NONE

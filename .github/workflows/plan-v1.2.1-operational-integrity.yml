@@ -1,0 +1,83 @@
+name: plan-v1.2.1-operational-integrity
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plan-v1.2.1-operational-integrity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  operational-contracts:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact immutable source
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf 'repository=%s\nref=%s\ncommit=%s\ntree=%s\n' \
+            "$GITHUB_REPOSITORY" "$GITHUB_REF" "$SOURCE_SHA" "$(git rev-parse 'HEAD^{tree}')" \
+            | tee "$RUNNER_TEMP/source-binding.txt"
+
+      - name: Install exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install validation dependencies
+        run: python3 -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Validate V1.2/V1.2.1 and exact-head execution contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/validate_plan_v1_2.py
+          python3 scripts/validate_plan_v1_2_1.py
+          python3 scripts/validate_h02_exact_head_matrix_contract_v1.py
+          python3 -m unittest \
+            tests/plan/test_plan_v1_2.py \
+            tests/plan/test_plan_v1_2_1.py \
+            tests/platform/test_h02_exact_head_matrix_v1.py \
+            -v
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload exact operational-contract evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: plan-v1.2.1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-binding.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  authority-sentinel:
+    needs: [operational-contracts]
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require operational contract validation and keep authority closed
+        env:
+          CONTRACTS: ${{ needs.operational-contracts.result }}
+        run: |
+          set -euo pipefail
+          test "$CONTRACTS" = success
+          echo "V1.2.1 operational contracts passed; qualification=false compatibility=false selection=0 authority=NONE"

@@ -1,0 +1,241 @@
+{
+  "$id": "https://heptabao.invalid/schemas/heptabao_v1_3_foundation_status_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "compatibility_claim": {
+      "const": false
+    },
+    "external_open_count": {
+      "const": 8
+    },
+    "external_open_ids": {
+      "items": {
+        "enum": [
+          "HB-BLK-CTRL-001",
+          "HB-BLK-EXT-001",
+          "HB-BLK-EXT-002",
+          "HB-BLK-EXT-003",
+          "HB-BLK-EXT-004",
+          "HB-BLK-EXT-005",
+          "HB-BLK-EXT-006",
+          "HB-BLK-EXT-007"
+        ]
+      },
+      "maxItems": 8,
+      "minItems": 8,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "foundation": {
+      "additionalProperties": true,
+      "properties": {
+        "effective_work_packages": {
+          "const": 306
+        },
+        "new_crates": {
+          "const": [
+            "heptabao-protocol",
+            "heptabao-authbus-contracts",
+            "heptabao-p0-server"
+          ]
+        },
+        "p0_production_supported": {
+          "const": false
+        },
+        "p0_profile": {
+          "const": "HB-P0-DEV-MEMORY"
+        },
+        "workspace_crates": {
+          "const": 7
+        }
+      },
+      "required": [
+        "workspace_crates",
+        "new_crates",
+        "effective_work_packages",
+        "p0_profile",
+        "p0_production_supported"
+      ],
+      "type": "object"
+    },
+    "local_evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "draft_2020_12_schemas_meta_validated": {
+          "const": 39
+        },
+        "json_documents_parsed": {
+          "const": 64
+        },
+        "oracle_tests": {
+          "const": "PASS_20_OF_20"
+        },
+        "plan_tests": {
+          "const": "PASS_36_OF_36"
+        },
+        "platform_tests": {
+          "const": "PASS_116_OF_116"
+        },
+        "rust_source_surface": {
+          "const": "PASS_LEXICAL_DEVELOPMENT_EVIDENCE_NOT_COMPILATION"
+        },
+        "total_python_tests": {
+          "const": "PASS_172_OF_172"
+        },
+        "validators": {
+          "const": "PASS_12_OF_12"
+        },
+        "yaml_workflow_documents_parsed": {
+          "const": 95
+        }
+      },
+      "required": [
+        "validators",
+        "oracle_tests",
+        "platform_tests",
+        "plan_tests",
+        "total_python_tests",
+        "json_documents_parsed",
+        "yaml_workflow_documents_parsed",
+        "draft_2020_12_schemas_meta_validated",
+        "rust_source_surface"
+      ],
+      "type": "object"
+    },
+    "migration_authority": {
+      "const": false
+    },
+    "oracle": {
+      "additionalProperties": false,
+      "properties": {
+        "claimed_local_vectors": {
+          "const": 4
+        },
+        "qualified_vectors": {
+          "const": 0
+        },
+        "repository_verifiable_transferred_vectors": {
+          "const": 0
+        }
+      },
+      "required": [
+        "claimed_local_vectors",
+        "repository_verifiable_transferred_vectors",
+        "qualified_vectors"
+      ],
+      "type": "object"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "production_authority": {
+      "const": false
+    },
+    "qualification": {
+      "const": false
+    },
+    "release_authority": {
+      "const": false
+    },
+    "repository_remediation": {
+      "additionalProperties": false,
+      "properties": {
+        "closure_receipts": {
+          "enum": [
+            "ABSENT",
+            "CURRENT_VERIFIED"
+          ]
+        },
+        "h02_exact_head_matrix": {
+          "enum": [
+            "UNEXECUTED_REMOTE_REQUIRED",
+            "EXECUTED_PASS"
+          ]
+        },
+        "implementation_state": {
+          "const": "IMPLEMENTED_LOCAL_UNQUALIFIED"
+        },
+        "independent_review": {
+          "enum": [
+            "ABSENT",
+            "CURRENT_PASS"
+          ]
+        },
+        "inherited_repository_blockers": {
+          "const": 13
+        },
+        "new_repository_blockers": {
+          "const": 4
+        },
+        "p0_socket_smoke": {
+          "enum": [
+            "UNEXECUTED_ENVIRONMENT_TOOLCHAIN_UNAVAILABLE",
+            "EXECUTED_PASS"
+          ]
+        },
+        "rust_fmt_test_clippy": {
+          "enum": [
+            "UNEXECUTED_ENVIRONMENT_TOOLCHAIN_UNAVAILABLE",
+            "EXECUTED_PASS"
+          ]
+        }
+      },
+      "required": [
+        "inherited_repository_blockers",
+        "new_repository_blockers",
+        "implementation_state",
+        "rust_fmt_test_clippy",
+        "p0_socket_smoke",
+        "h02_exact_head_matrix",
+        "independent_review",
+        "closure_receipts"
+      ],
+      "type": "object"
+    },
+    "revision": {
+      "const": "1.3"
+    },
+    "schema": {
+      "const": "heptabao.v1-3-foundation-status.v1"
+    },
+    "selected_candidates": {
+      "const": []
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "source": {
+      "type": "object"
+    },
+    "status": {
+      "const": "REPOSITORY_REMEDIATION_IMPLEMENTED_LOCAL_REMOTE_AND_EXTERNAL_CLOSURE_REQUIRED"
+    }
+  },
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "source",
+    "foundation",
+    "repository_remediation",
+    "local_evidence",
+    "oracle",
+    "external_open_count",
+    "external_open_ids",
+    "qualification",
+    "compatibility_claim",
+    "selected_candidates",
+    "selection_effect",
+    "production_authority",
+    "migration_authority",
+    "release_authority",
+    "authority_effect"
+  ],
+  "title": "HeptaBao V1.3 foundation status",
+  "type": "object"
+}

@@ -1,0 +1,129 @@
+schema: heptabao.clean-room-access-policy.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: POLICY_IMPLEMENTED_ACL_IDENTITIES_PENDING
+fail_closed: true
+lanes:
+  oracle_specification:
+    purpose: inspect approved public documents, binaries, source and black-box behavior; produce implementation-independent specifications
+    may_read:
+      - public OpenBao documentation and standards
+      - verified OpenBao release artifacts
+      - approved OpenBao source under MPL-2.0 in restricted research storage
+      - public security advisories and issue discussions
+    may_write:
+      - raw restricted observations
+      - sanitized behavior specifications
+      - endpoint/config/CLI inventories
+      - raw and sanitized fixtures with separate digests
+    may_not_write:
+      - implementation crate source
+      - implementation-ready source translations
+  independent_implementation:
+    purpose: implement HeptaBao from approved specifications, standards and sanitized fixtures
+    may_read:
+      - approved public standards
+      - approved implementation-independent specifications
+      - sanitized Oracle fixtures with provenance record
+      - public Rust dependency documentation and reviewed source
+    may_write:
+      - HeptaBao implementation and tests
+      - implementation threat models and ADRs
+    may_not_read:
+      - restricted upstream source research storage
+      - unreviewed copied upstream tests
+      - raw upstream-derived implementation notes
+      - mechanical or model-generated source translations
+  interop_exception:
+    purpose: implement a protocol or format not reasonably determinable by black-box behavior
+    entry_requires:
+      - written necessity analysis
+      - exact source/file/protocol scope
+      - legal/license disposition
+      - security and domain approval
+      - containment and downstream marking plan
+    may_write:
+      - isolated compatibility crate or parser
+      - file-level provenance and license notices
+      - sanitized contract exported to independent lane
+    may_not_write:
+      - unrelated core implementation
+      - unmarked source-derived files
+  public_specification:
+    purpose: publish approved non-confidential specifications and fixtures
+    may_read:
+      - reviewed sanitized outputs only
+    may_write:
+      - versioned specifications and public fixtures approved for release
+material_classes:
+  PUBLIC_STANDARD:
+    implementation_consumable: true
+    required_reviews: [domain]
+  PUBLIC_PRODUCT_DOCUMENTATION:
+    implementation_consumable: true
+    required_reviews: [compatibility]
+  BLACK_BOX_RAW_OBSERVATION:
+    implementation_consumable: false
+    required_reviews: [compatibility, security]
+  SANITIZED_ORACLE_FIXTURE:
+    implementation_consumable: conditional
+    required_reviews: [compatibility, security]
+  UPSTREAM_SOURCE_RESEARCH:
+    implementation_consumable: false
+    required_reviews: [legal, compatibility]
+  INTEROP_EXCEPTION_SOURCE:
+    implementation_consumable: conditional
+    required_reviews: [legal, security, domain]
+  HEPTABAO_ORIGINAL_IMPLEMENTATION:
+    implementation_consumable: true
+    required_reviews: [domain, security-when-critical]
+approved_flows:
+  - from: oracle_specification
+    to: independent_implementation
+    material: approved implementation-independent specification
+    requires: [source-provenance-record, sanitized-digest, compatibility-approval]
+  - from: oracle_specification
+    to: independent_implementation
+    material: SANITIZED_ORACLE_FIXTURE
+    requires: [raw-digest, sanitized-digest, normalization-policy, compatibility-approval, security-approval]
+  - from: interop_exception
+    to: independent_implementation
+    material: approved isolated compatibility contract
+    requires: [legal-disposition, file-level-provenance, license-notice, security-approval, domain-approval]
+forbidden_flows:
+  - upstream Go source to Rust implementation through manual translation
+  - upstream source to generative model with a request to rewrite or translate
+  - copied upstream tests to implementation lane without legal/source classification
+  - raw production secrets or customer snapshots to Oracle or implementation fixtures
+  - raw restricted observation to public specification without sanitization review
+  - material with missing/ambiguous provenance
+access_controls_required:
+  - separate repository, storage root or enforced ACL boundary for restricted Oracle material
+  - named identities and role assignment for each lane
+  - access logs retained and periodically reviewed
+  - no shared automation token spanning restricted Oracle and implementation write access
+  - artifact transfer only through signed provenance records
+  - emergency revocation and evidence quarantine procedure
+personnel_separation:
+  current_status: BLOCKED_NO_NAMED_IDENTITIES
+  required_before_h00_qualification:
+    - Oracle/specification owner
+    - independent implementation owner
+    - legal reviewer
+    - security reviewer
+    - compatibility reviewer
+  conflict_rule: a person with unrestricted upstream-source research access cannot be the sole author and sole approver of a clean-room critical implementation
+contamination_response:
+  - stop affected work package and dependent qualification
+  - quarantine commits, branches, artifacts, prompts and caches
+  - identify source, access and derivative lineage
+  - legal/security review and revocation of affected receipts/claims/grants
+  - remove or independently reimplement contaminated files
+  - rotate credentials if restricted systems were accessed improperly
+  - publish internal incident and prevention regression
+retention:
+  raw_restricted_material: restricted storage with legal retention policy
+  sanitized_fixtures: immutable versioned storage with raw/sanitized digests
+  provenance_records: retained for project lifetime plus applicable legal period
+  access_logs: minimum seven years or stricter legal requirement
+qualification_effect: NONE

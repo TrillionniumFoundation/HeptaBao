@@ -1,0 +1,655 @@
+schema: heptabao.traceability-requirements.v1_1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_TRACEABILITY_INPUT
+chain: source_observation -> specification -> requirement -> threat -> invariant -> ADR -> work_package -> test -> evidence -> qualification_receipt -> compatibility_claim -> authority_grant
+rules:
+  - Every profile-required behavior must resolve to named requirements and evidence.
+  - Security, crypto, durability, distributed-systems and operator-critical requirements are non-waivable.
+  - Missing source, owner, acceptance, test lane or evidence reference fails closed.
+  - Compatibility evidence and operational authority remain separate.
+gates:
+  H00:
+    - id: HB-REQ-H00-001
+      criticality: GOVERNANCE_CRITICAL
+      statement: Repository, plan, evidence and authority objects must have one normative precedence model and fail-closed defaults.
+      owner_domain: governance
+      source_refs: [HEPTABAO_PLAN_V1_1_AMENDMENT, audit:P0-execution-model]
+      invariant_refs: [HB-INV-AUTHORITY-DEFAULT-DENY]
+      work_packages: [H00-WP01, H00-WP02, H00-WP03, H00-WP04]
+      acceptance: [28 ordered Program Gates, at least 250 unique Work Packages, all authority false except implementation_started, semantic false-qualification test rejected]
+      test_lanes: [plan-semantic, governance-rust]
+      evidence_required: [validator-output, git-tree, schema-negative-test]
+      waiver_allowed: false
+    - id: HB-REQ-H00-002
+      criticality: SECURITY_CRITICAL
+      statement: Clean-room, legal, disclosure, signing, capacity and independent-review controls must be operational before H00 qualification.
+      owner_domain: governance
+      source_refs: [LICENSE-PLANNING, SECURITY]
+      invariant_refs: [HB-INV-CLEAN-ROOM, HB-INV-INDEPENDENT-APPROVAL]
+      work_packages: [H00-WP05, H00-WP06, H00-WP07, H00-WP08, H00-WP09, H00-WP10]
+      acceptance: [real ACL separation, signed legal disposition, private disclosure channel, signing/revocation ceremony, funded reviewer plan, independent approvals]
+      test_lanes: [governance-game-day, access-review]
+      evidence_required: [access-receipt, legal-receipt, incident-drill, signing-attestation, approval-signatures]
+      waiver_allowed: false
+  H01:
+    - id: HB-REQ-H01-001
+      criticality: COMPATIBILITY_CRITICAL
+      statement: The OpenBao Oracle inventory must enumerate every claimed HTTP, CLI, configuration, auth, secret, audit, plugin, storage and HA surface.
+      owner_domain: oracle
+      source_refs: [OpenBao-v2.6.2-binary, OpenBao-v2.6.2-docs]
+      invariant_refs: [HB-INV-NO-UNCLASSIFIED-SURFACE]
+      work_packages: [H01-WP01, H01-WP02, H01-WP03, H01-WP04, H01-WP05]
+      acceptance: [100-percent security/operator-critical inventory coverage, owner and classification for every entry]
+      test_lanes: [oracle-inventory, advisory-crosswalk]
+      evidence_required: [binary-digest, inventory-manifest, coverage-report]
+      waiver_allowed: false
+    - id: HB-REQ-H01-002
+      criticality: SECURITY_CRITICAL
+      statement: Raw and sanitized fixtures must retain distinct hashes and normalization must not erase security-relevant differences.
+      owner_domain: oracle
+      source_refs: [oracle-capture-policy]
+      invariant_refs: [HB-INV-ORACLE-INTEGRITY]
+      work_packages: [H01-WP06, H01-WP07, H01-WP08, H01-WP09, H01-WP10]
+      acceptance: [replayable raw capture, sanitized fixture provenance, reviewed ignored-field registry, side-effect observer]
+      test_lanes: [fixture-replay, normalization-negative]
+      evidence_required: [raw-digest, sanitized-digest, normalizer-version, reviewer-signature]
+      waiver_allowed: false
+  H02:
+    - id: HB-REQ-H02-001
+      criticality: SUPPLY_CHAIN_CRITICAL
+      statement: Runtime, TLS, crypto, storage, Raft, serialization and plugin dependencies require versioned bakeoff and replacement seams.
+      owner_domain: platform
+      source_refs: [dependency-bakeoff-policy]
+      invariant_refs: [HB-INV-DEPENDENCY-PROVENANCE]
+      work_packages: [H02-WP01, H02-WP02, H02-WP03, H02-WP04, H02-WP05, H02-WP06, H02-WP07, H02-WP08]
+      acceptance: [maintenance/security/license/unsafe/MSRV/performance/replacement assessment for each critical dependency]
+      test_lanes: [dependency-vet, license, unsafe-inventory]
+      evidence_required: [bakeoff-receipts, cargo-vet, SBOM]
+      waiver_allowed: false
+    - id: HB-REQ-H02-002
+      criticality: SECURITY_CRITICAL
+      statement: Fuzzing, model checking and dependency policy must be available before critical implementation gates begin.
+      owner_domain: qualification
+      source_refs: [H25-tooling-needs]
+      invariant_refs: [HB-INV-SECURITY-BY-CONSTRUCTION]
+      work_packages: [H02-WP09, H02-WP10]
+      acceptance: [repeatable fuzz/model harness, pinned tools, vulnerability and license policy]
+      test_lanes: [toolchain-reproducibility, negative-policy]
+      evidence_required: [tool-digests, harness-smoke, policy-output]
+      waiver_allowed: false
+  H03:
+    - id: HB-REQ-H03-001
+      criticality: SECURITY_CRITICAL
+      statement: Every route and internal action must resolve to one registered operation class before authentication, policy and dispatch decisions.
+      owner_domain: protocol
+      source_refs: [HEPTABAO_OPERATION_REGISTRY_V1]
+      invariant_refs: [HB-INV-UNKNOWN-OP-DENY, HB-INV-INTERNAL-OP-CLOSED]
+      work_packages: [H03-WP01, H03-WP02, H03-WP03, H03-WP07, H03-WP09]
+      acceptance: [unknown operation denied, external bytes cannot construct internal operation, version mismatch denied]
+      test_lanes: [operation-registry, parser-fuzz, compile-fail]
+      evidence_required: [registry-digest, negative-fixtures, type-tests]
+      waiver_allowed: false
+    - id: HB-REQ-H03-002
+      criticality: SECURITY_CRITICAL
+      statement: Canonicalization, secret-bearing types and response-unknown policies must prevent path confusion, raw-secret projection and blind retry.
+      owner_domain: protocol
+      source_refs: [HEPTABAO_REQUEST_PIPELINE_STATE_MACHINE_V1]
+      invariant_refs: [HB-INV-CANONICAL-CONTEXT, HB-INV-NO-BLIND-RETRY]
+      work_packages: [H03-WP04, H03-WP05, H03-WP06, H03-WP08, H03-WP10]
+      acceptance: [single canonical path, immutable namespace/mount context, nonserializable secret types, explicit deviation]
+      test_lanes: [canonicalization-fuzz, secret-trait-compile-fail, effect-model]
+      evidence_required: [fuzz-corpus, compile-fail-output, state-machine-traces]
+      waiver_allowed: false
+  H04:
+    - id: HB-REQ-H04-001
+      criticality: DATA_DURABILITY_CRITICAL
+      statement: Physical storage must expose explicit transaction, CAS, list/scan, lock, consistent-read, snapshot and restore semantics.
+      owner_domain: storage
+      source_refs: [storage-transaction-model]
+      invariant_refs: [HB-INV-STORAGE-CONTRACT]
+      work_packages: [H04-WP01, H04-WP02, H04-WP03, H04-WP04]
+      acceptance: [contract suite passes memory and PostgreSQL backends, no semantic fallback]
+      test_lanes: [storage-contract, cross-backend-differential]
+      evidence_required: [contract-results, backend-config-digests]
+      waiver_allowed: false
+    - id: HB-REQ-H04-002
+      criticality: DATA_DURABILITY_CRITICAL
+      statement: Committed state must survive crash, torn write, disk-full, corruption and schema migration with deterministic reopen or safe stop.
+      owner_domain: storage
+      source_refs: [durability-failure-model]
+      invariant_refs: [HB-INV-COMMITTED-RPO-ZERO]
+      work_packages: [H04-WP05, H04-WP06, H04-WP07, H04-WP08, H04-WP09]
+      acceptance: [physical fsync evidence, kill-point recovery, corruption rejection, restore verification]
+      test_lanes: [crash-injection, corruption, migration, backup-restore]
+      evidence_required: [fault-manifest, reopen-traces, restore-receipt]
+      waiver_allowed: false
+  H05:
+    - id: HB-REQ-H05-001
+      criticality: CRYPTO_CRITICAL
+      statement: Barrier ciphertext must use a versioned authenticated envelope bound to object, namespace, storage key, key version and cipher suite.
+      owner_domain: barrier
+      source_refs: [key-hierarchy-and-ceremony-spec]
+      invariant_refs: [HB-INV-AUTHENTICATED-CIPHERTEXT]
+      work_packages: [H05-WP01, H05-WP02, H05-WP04, H05-WP05]
+      acceptance: [cross-object/namespace substitution rejected, unknown format/algorithm rejected]
+      test_lanes: [KAT, tamper, cross-provider]
+      evidence_required: [known-answer-vectors, envelope-spec, external-review]
+      waiver_allowed: false
+    - id: HB-REQ-H05-002
+      criticality: CRYPTO_CRITICAL
+      statement: Nonce uniqueness, key rotation, cache zeroization, tamper and rollback detection must hold across crash and snapshot clone.
+      owner_domain: barrier
+      source_refs: [barrier-threat-model]
+      invariant_refs: [HB-INV-NONCE-UNIQUE, HB-INV-NO-PLAINTEXT-REMANENCE]
+      work_packages: [H05-WP03, H05-WP06, H05-WP07, H05-WP08, H05-WP09, H05-WP10]
+      acceptance: [no nonce collision, tamper rejected, rollback detected, external crypto review closes high/critical]
+      test_lanes: [nonce-model, crash, memory-canary, external-audit]
+      evidence_required: [model-output, crash-corpus, audit-report]
+      waiver_allowed: false
+  H06:
+    - id: HB-REQ-H06-001
+      criticality: CRYPTO_CRITICAL
+      statement: Init, Shamir, seal, unseal, rekey, recovery and barrier-key rotation are separate idempotent ceremonies.
+      owner_domain: seal
+      source_refs: [seal-state-machine]
+      invariant_refs: [HB-INV-SEALED-NO-SERVICE, HB-INV-CEREMONY-IDEMPOTENT]
+      work_packages: [H06-WP01, H06-WP02, H06-WP03, H06-WP04, H06-WP05, H06-WP06, H06-WP07]
+      acceptance: [share cannot count twice, partial ceremony safe, sealed scope rejects service]
+      test_lanes: [ceremony-model, crash, share-negative]
+      evidence_required: [state-traces, threshold-fixtures, memory-scan]
+      waiver_allowed: false
+    - id: HB-REQ-H06-002
+      criticality: CRYPTO_CRITICAL
+      statement: Auto-unseal providers must bind provider identity/key version and fail closed on outage, rollback or deletion.
+      owner_domain: seal
+      source_refs: [kms-hsm-failure-model]
+      invariant_refs: [HB-INV-AUTO-UNSEAL-BOUND]
+      work_packages: [H06-WP08, H06-WP09, H06-WP10]
+      acceptance: [wrong KMS identity/key rejected, outage remains sealed, recovery is explicit]
+      test_lanes: [kms-emulator, outage-game-day, memory-residue]
+      evidence_required: [provider-vectors, outage-receipt, residue-report]
+      waiver_allowed: false
+  H07:
+    - id: HB-REQ-H07-001
+      criticality: SECURITY_CRITICAL
+      statement: One authoritative pipeline must enforce context, operation, authentication, identity, policy, audit, intent, dispatch and response ordering.
+      owner_domain: core
+      source_refs: [HEPTABAO_REQUEST_PIPELINE_STATE_MACHINE_V1]
+      invariant_refs: [HB-INV-NO-BYPASS-PIPELINE]
+      work_packages: [H07-WP01, H07-WP02, H07-WP06, H07-WP10]
+      acceptance: [backend dispatch before policy/audit equals zero, cancellation semantics deterministic]
+      test_lanes: [pipeline-model, bypass-negative, cancellation]
+      evidence_required: [trace-replay, dispatch-counter, happens-before-proof]
+      waiver_allowed: false
+    - id: HB-REQ-H07-002
+      criticality: OPERATOR_CRITICAL
+      statement: Mount/system mutations, route precedence, cache invalidation and active-owner fencing must be revisioned and crash safe.
+      owner_domain: system
+      source_refs: [mount-registry-spec]
+      invariant_refs: [HB-INV-MOUNT-SINGLE-WRITER, HB-INV-STALE-CACHE-DENY]
+      work_packages: [H07-WP03, H07-WP04, H07-WP05, H07-WP07, H07-WP08, H07-WP09]
+      acceptance: [no mount shadow bypass, stale owner/caches reject, OpenAPI/help derives registry]
+      test_lanes: [mount-crash, route-differential, cache-epoch]
+      evidence_required: [registry-receipt, fault-traces, differential-report]
+      waiver_allowed: false
+  H08:
+    - id: HB-REQ-H08-001
+      criticality: SECURITY_CRITICAL
+      statement: ACL matching must be deterministic, default-deny and monotonic under added deny or narrowed policy.
+      owner_domain: policy
+      source_refs: [OpenBao-v2.6.2-policy-oracle]
+      invariant_refs: [HB-INV-POLICY-MONOTONIC]
+      work_packages: [H08-WP01, H08-WP02, H08-WP03, H08-WP04]
+      acceptance: [deny cannot be bypassed by glob/plus/star/slash/list/scan/pagination]
+      test_lanes: [property, oracle-differential, adversarial]
+      evidence_required: [policy-corpus, property-output, advisory-regressions]
+      waiver_allowed: false
+    - id: HB-REQ-H08-002
+      criticality: SECURITY_CRITICAL
+      statement: Parameter, template, wrapping, MFA/control-group and explain behavior must never widen capability or leak private metadata.
+      owner_domain: policy
+      source_refs: [policy-parameter-template-spec]
+      invariant_refs: [HB-INV-POLICY-PARAMETER-CONSTRAINT]
+      work_packages: [H08-WP05, H08-WP06, H08-WP07, H08-WP08, H08-WP09, H08-WP10]
+      acceptance: [template recanonicalized, required/denied parameters enforced, explain redacted, cache invalidation immediate]
+      test_lanes: [template-fuzz, parameter-negative, cache-race]
+      evidence_required: [fuzz-corpus, negative-vectors, cache-traces]
+      waiver_allowed: false
+  H09:
+    - id: HB-REQ-H09-001
+      criticality: SECURITY_CRITICAL
+      statement: Entity, alias and group state must be namespace/mount bound, revisioned and cycle safe.
+      owner_domain: identity
+      source_refs: [identity-oracle]
+      invariant_refs: [HB-INV-IDENTITY-NONINTERFERENCE]
+      work_packages: [H09-WP01, H09-WP02, H09-WP03, H09-WP04, H09-WP05, H09-WP06]
+      acceptance: [no cross-namespace alias reuse, merge lineage auditable, group expansion bounded]
+      test_lanes: [identity-differential, cycle-fuzz, merge-crash]
+      evidence_required: [object-vectors, lineage-receipt, noninterference-report]
+      waiver_allowed: false
+    - id: HB-REQ-H09-002
+      criticality: SECURITY_CRITICAL
+      statement: MFA and OIDC challenges/keys must bind request, identity, namespace, operation, nonce, TTL and cache epoch.
+      owner_domain: identity-oidc
+      source_refs: [mfa-oidc-spec]
+      invariant_refs: [HB-INV-MFA-NO-REPLAY, HB-INV-OIDC-KEY-ISOLATION]
+      work_packages: [H09-WP07, H09-WP08, H09-WP09, H09-WP10]
+      acceptance: [challenge replay rejected, wrong namespace key rejected, standby cannot use stale policy/key]
+      test_lanes: [replay, key-rotation, standby-cache]
+      evidence_required: [challenge-vectors, jwks-rotation-trace, cache-epoch-report]
+      waiver_allowed: false
+  H10:
+    - id: HB-REQ-H10-001
+      criticality: SECURITY_CRITICAL
+      statement: Service/batch token codecs, accessors and parent/orphan graph must enforce namespace, policy, TTL, uses and revocation semantics.
+      owner_domain: token
+      source_refs: [token-oracle]
+      invariant_refs: [HB-INV-PARENT-REVOKE, HB-INV-TOKEN-SECRET-NOT-STORED]
+      work_packages: [H10-WP01, H10-WP02, H10-WP03, H10-WP04, H10-WP05, H10-WP06, H10-WP11]
+      acceptance: [post-revoke descendant acceptance zero, token plaintext absent from storage/artifacts]
+      test_lanes: [graph-model, million-node, codec-tamper, renew-revoke-race]
+      evidence_required: [model-output, storage-scan, differential-report]
+      waiver_allowed: false
+    - id: HB-REQ-H10-002
+      criticality: SECURITY_CRITICAL
+      statement: Cubbyhole, wrapping, recovery and root ceremonies must be single-use, audited and minimally live.
+      owner_domain: token
+      source_refs: [wrapping-root-oracle]
+      invariant_refs: [HB-INV-WRAP-SINGLE-USE, HB-INV-ROOT-WINDOW-MINIMAL]
+      work_packages: [H10-WP07, H10-WP08, H10-WP09, H10-WP10]
+      acceptance: [wrap replay rejected, response loss reconciled, root/recovery ceremony multi-party and audited]
+      test_lanes: [wrapping-race, ceremony-model, active-standby-forward]
+      evidence_required: [race-traces, ceremony-receipt, audit-events]
+      waiver_allowed: false
+  H11:
+    - id: HB-REQ-H11-001
+      criticality: SECURITY_CRITICAL
+      statement: Lease expiry, renew and revoke state must persist across restart and bind issuing token, namespace, path, plugin and fence.
+      owner_domain: lease
+      source_refs: [lease-oracle]
+      invariant_refs: [HB-INV-EXPIRED-NOT-RENEWABLE, HB-INV-LEASE-SINGLE-WRITER]
+      work_packages: [H11-WP01, H11-WP02, H11-WP03, H11-WP04, H11-WP05, H11-WP10]
+      acceptance: [expired/revoked credential cannot renew, restart preserves deadlines, stale owner rejected]
+      test_lanes: [clock-fault, restart, renew-revoke-race]
+      evidence_required: [lease-traces, reopen-report, fence-report]
+      waiver_allowed: false
+    - id: HB-REQ-H11-002
+      criticality: SECURITY_CRITICAL
+      statement: External-effect WAL, reconciliation, rollback and irrevocable states must forbid blind retry and false success.
+      owner_domain: lease
+      source_refs: [HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1]
+      invariant_refs: [HB-INV-NO-BLIND-RETRY, HB-INV-REVOKE-EVIDENCE]
+      work_packages: [H11-WP06, H11-WP07, H11-WP08, H11-WP09, H11-WP11]
+      acceptance: [10000 fault points, unknown stays indeterminate/manual, revoke error explicit]
+      test_lanes: [fault-injection, provider-chaos, WAL-corruption]
+      evidence_required: [fault-manifest, reconcile-traces, irrevocable-report]
+      waiver_allowed: false
+  H12:
+    - id: HB-REQ-H12-001
+      criticality: SECURITY_CRITICAL
+      statement: Request/response audit gates must succeed according to profile before backend dispatch and secret release.
+      owner_domain: audit
+      source_refs: [HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1]
+      invariant_refs: [HB-INV-AUDIT-BEFORE-DISPATCH, HB-INV-AUDIT-BEFORE-SECRET]
+      work_packages: [H12-WP01, H12-WP02, H12-WP03, H12-WP04, H12-WP09]
+      acceptance: [unaudited backend dispatch zero, unaudited secret response zero, HMAC vectors pass]
+      test_lanes: [audit-ordering, HMAC-KAT, secret-canary]
+      evidence_required: [ordering-trace, KAT-output, canary-scan]
+      waiver_allowed: false
+    - id: HB-REQ-H12-002
+      criticality: OPERATOR_CRITICAL
+      statement: File/HTTP/socket/syslog devices must handle blockage, rotation, partial writes, SSRF and restart without silent bypass.
+      owner_domain: audit
+      source_refs: [audit-device-oracle]
+      invariant_refs: [HB-INV-AUDIT-DEVICE-FAIL-CLOSED]
+      work_packages: [H12-WP05, H12-WP06, H12-WP07, H12-WP08, H12-WP10, H12-WP11]
+      acceptance: [blocked-device game day, destination controls, no secret leak]
+      test_lanes: [disk-full, socket-block, HTTP-timeout, rotation, SSRF]
+      evidence_required: [game-day-receipt, device-differential, leak-scan]
+      waiver_allowed: false
+  H13:
+    - id: HB-REQ-H13-001
+      criticality: SECURITY_CRITICAL
+      statement: Plugin protocol and catalog must bind type, name, version, digest, command, args, runtime identity and cluster session.
+      owner_domain: plugin
+      source_refs: [OpenBao-v2.6.2-plugin-protocol]
+      invariant_refs: [HB-INV-PLUGIN-IDENTITY]
+      work_packages: [H13-WP01, H13-WP02, H13-WP03, H13-WP04, H13-WP05]
+      acceptance: [malformed/downgraded/mismatched plugin rejected, four plugin classes interoperate]
+      test_lanes: [Go-interop, protocol-fuzz, mTLS-negative]
+      evidence_required: [interop-vectors, protocol-digest, negative-report]
+      waiver_allowed: false
+    - id: HB-REQ-H13-002
+      criticality: SECURITY_CRITICAL
+      statement: OCI, supervisor and sandbox must prevent substitution, host privilege expansion and orphan processes after seal/stepdown.
+      owner_domain: plugin
+      source_refs: [plugin-sandbox-threat-model]
+      invariant_refs: [HB-INV-PLUGIN-NO-ESCAPE, HB-INV-NO-ORPHAN-PLUGIN]
+      work_packages: [H13-WP06, H13-WP07, H13-WP08, H13-WP09, H13-WP10, H13-WP11, H13-WP12, H13-WP13]
+      acceptance: [digest/signature enforced, crash/fork-bomb bounded, no orphan after lifecycle transition]
+      test_lanes: [sandbox-red-team, OCI-negative, lifecycle-chaos]
+      evidence_required: [sandbox-report, supply-chain-report, process-scan]
+      waiver_allowed: false
+  H14:
+    - id: HB-REQ-H14-001
+      criticality: SECURITY_CRITICAL
+      statement: Namespace context must bind every storage, cache, policy, identity, token, lease, audit, plugin and OIDC key.
+      owner_domain: namespace
+      source_refs: [namespace-context-spec]
+      invariant_refs: [HB-INV-NAMESPACE-NONINTERFERENCE]
+      work_packages: [H14-WP01, H14-WP02, H14-WP03, H14-WP04, H14-WP05, H14-WP06]
+      acceptance: [cross-namespace bleed zero, encoded parent escape rejected, cache key collision rejected]
+      test_lanes: [noninterference-fuzz, cache-collision, route-negative]
+      evidence_required: [fuzz-report, context-traces, differential-report]
+      waiver_allowed: false
+    - id: HB-REQ-H14-002
+      criticality: CRYPTO_CRITICAL
+      statement: Namespace keyrings, sealing, deletion, recreation and restore must preserve independent cryptographic authority and tombstones.
+      owner_domain: namespace
+      source_refs: [namespace-seal-oracle]
+      invariant_refs: [HB-INV-NAMESPACE-KEY-ISOLATION]
+      work_packages: [H14-WP07, H14-WP08, H14-WP09, H14-WP10]
+      acceptance: [sealed namespace raw/sys reads rejected, recreate cannot revive old state, external crypto review pass]
+      test_lanes: [seal-race, delete-recreate, restore, crypto-review]
+      evidence_required: [keyring-vectors, tombstone-trace, audit-report]
+      waiver_allowed: false
+  H15:
+    - id: HB-REQ-H15-001
+      criticality: SECURITY_CRITICAL
+      statement: Profile/CEL/template evaluation must be bounded, canonicalized and unable to construct unregistered internal operations.
+      owner_domain: profile
+      source_refs: [workflow-profile-oracle]
+      invariant_refs: [HB-INV-WORKFLOW-OP-ALLOWLIST]
+      work_packages: [H15-WP01, H15-WP02, H15-WP03, H15-WP04, H15-WP10]
+      acceptance: [CPU/memory/depth/output limits, SSRF/secret-echo/internal-op tests reject]
+      test_lanes: [template-fuzz, sandbox, cycle]
+      evidence_required: [resource-limit-report, adversarial-corpus]
+      waiver_allowed: false
+    - id: HB-REQ-H15-002
+      criticality: SECURITY_CRITICAL
+      statement: Workflow steps only attenuate authority; compensation and self-init are idempotent and transient root is always revoked.
+      owner_domain: workflow
+      source_refs: [self-init-workflow-oracle]
+      invariant_refs: [HB-INV-AUTH-ATTENUATION, HB-INV-TRANSIENT-ROOT-REVOKE]
+      work_packages: [H15-WP05, H15-WP06, H15-WP07, H15-WP08, H15-WP09]
+      acceptance: [no policy widening, crash-resume deterministic, root cleanup on success/failure]
+      test_lanes: [workflow-state, crash, root-cleanup]
+      evidence_required: [state-traces, audit-events, cleanup-receipt]
+      waiver_allowed: false
+  H16:
+    - id: HB-REQ-H16-001
+      criticality: SECURITY_CRITICAL
+      statement: Every built-in auth method must implement its exact role/config/login/renew/revoke/MFA/namespace/audit semantics through the central token issuer.
+      owner_domain: auth
+      source_refs: [OpenBao-v2.6.2-auth-inventory]
+      invariant_refs: [HB-INV-AUTH-NO-HIDDEN-TOKEN]
+      work_packages: [H16-WP01, H16-WP02, H16-WP03, H16-WP04, H16-WP05, H16-WP06, H16-WP07, H16-WP08, H16-WP09, H16-WP10]
+      acceptance: [100-percent critical endpoint coverage per method, auth failure produces no token]
+      test_lanes: [real-service, oracle-differential, protocol-security]
+      evidence_required: [method-receipts, service-matrix, security-review]
+      waiver_allowed: false
+    - id: HB-REQ-H16-002
+      criticality: SECURITY_CRITICAL
+      statement: JWT, cert, Kubernetes, LDAP, RADIUS and Kerberos trust inputs must resist algorithm, proxy, injection, replay and clock confusion.
+      owner_domain: auth
+      source_refs: [auth-threat-models]
+      invariant_refs: [HB-INV-AUTH-TRUST-BOUND]
+      work_packages: [H16-WP04, H16-WP05, H16-WP06, H16-WP07, H16-WP08, H16-WP09]
+      acceptance: [all named attacks rejected and audited]
+      test_lanes: [JWT-confusion, cert-proxy, LDAP-injection, replay, clock]
+      evidence_required: [attack-corpus, external-review]
+      waiver_allowed: false
+  H17:
+    - id: HB-REQ-H17-001
+      criticality: COMPATIBILITY_CRITICAL
+      statement: KV v1/v2 must implement CAS, versions, metadata, delete/undelete/destroy, list/scan and pagination semantics.
+      owner_domain: secrets-kv
+      source_refs: [OpenBao-v2.6.2-KV-oracle]
+      invariant_refs: [HB-INV-KV-CAS-NO-LOST-UPDATE]
+      work_packages: [H17-WP01, H17-WP02, H17-WP03, H17-WP04, H17-WP05, H17-WP06, H17-WP11]
+      acceptance: [100-percent critical KV differential, stale CAS never overwrites]
+      test_lanes: [oracle-differential, concurrency, crash]
+      evidence_required: [KV-vectors, CAS-traces, migration-vectors]
+      waiver_allowed: false
+    - id: HB-REQ-H17-002
+      criticality: CRYPTO_CRITICAL
+      statement: Transit and TOTP key lifecycle and cryptographic operations must use approved algorithms and strict version/context rules.
+      owner_domain: secrets-crypto
+      source_refs: [OpenBao-v2.6.2-Transit-TOTP-oracle]
+      invariant_refs: [HB-INV-TRANSIT-KEY-POLICY]
+      work_packages: [H17-WP07, H17-WP08, H17-WP09, H17-WP10]
+      acceptance: [KAT/interoperability pass, disabled/unknown algorithms rejected, key versions immutable]
+      test_lanes: [KAT, cross-provider, oracle-differential, fuzz]
+      evidence_required: [vectors, algorithm-matrix, crypto-review]
+      waiver_allowed: false
+  H18:
+    - id: HB-REQ-H18-001
+      criticality: SECURITY_CRITICAL
+      statement: PKI/PKIext must correctly govern roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy.
+      owner_domain: secrets-pki
+      source_refs: [OpenBao-v2.6.2-PKI-oracle]
+      invariant_refs: [HB-INV-PKI-NO-MISISSUANCE]
+      work_packages: [H18-WP01, H18-WP02, H18-WP03, H18-WP04, H18-WP05, H18-WP06]
+      acceptance: [unauthorized issuance zero, revoked cert status correct, ASN.1 fuzz stable]
+      test_lanes: [PKI-interop, ACME, CRL-OCSP, ASN1-fuzz, external-review]
+      evidence_required: [certificate-corpus, revocation-report, audit-report]
+      waiver_allowed: false
+    - id: HB-REQ-H18-002
+      criticality: SECURITY_CRITICAL
+      statement: SSH certificate and OTP issuance must enforce role, user, domain, TTL and single-use constraints.
+      owner_domain: secrets-ssh
+      source_refs: [OpenBao-v2.6.2-SSH-oracle]
+      invariant_refs: [HB-INV-SSH-ROLE-BOUND]
+      work_packages: [H18-WP07, H18-WP08, H18-WP09]
+      acceptance: [wrong principal/domain rejected, OTP replay rejected, renew/revoke semantics explicit]
+      test_lanes: [OpenSSH-interop, OTP-replay, oracle-differential]
+      evidence_required: [SSH-vectors, replay-report]
+      waiver_allowed: false
+  H19:
+    - id: HB-REQ-H19-001
+      criticality: SECURITY_CRITICAL
+      statement: Database static/dynamic roles, root rotation, statements, renew and revoke must be transactional or explicitly reconcilable.
+      owner_domain: secrets-database
+      source_refs: [OpenBao-v2.6.2-database-oracle]
+      invariant_refs: [HB-INV-DATABASE-EFFECT-RECONCILE]
+      work_packages: [H19-WP01, H19-WP02, H19-WP03, H19-WP04, H19-WP05, H19-WP06, H19-WP07, H19-WP08, H19-WP09, H19-WP13]
+      acceptance: [no blind retry, credential residue zero or explicit irrevocable, root rollback bounded]
+      test_lanes: [real-database, network-partition, rollback, fault-injection]
+      evidence_required: [provider-matrix, effect-traces, revoke-report]
+      waiver_allowed: false
+    - id: HB-REQ-H19-002
+      criticality: SECURITY_CRITICAL
+      statement: Kubernetes, OpenLDAP and RabbitMQ dynamic credentials must preserve external policy and lifecycle semantics.
+      owner_domain: secrets-dynamic
+      source_refs: [OpenBao-v2.6.2-dynamic-oracle]
+      invariant_refs: [HB-INV-DYNAMIC-CREDENTIAL-LIFECYCLE]
+      work_packages: [H19-WP10, H19-WP11, H19-WP12, H19-WP13]
+      acceptance: [expiry/revoke verified on real service, provider outage enters explicit state]
+      test_lanes: [real-service, outage, revoke]
+      evidence_required: [service-vectors, lifecycle-report]
+      waiver_allowed: false
+  H20:
+    - id: HB-REQ-H20-001
+      criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+      statement: Raft FSM must be deterministic and prohibit clock, randomness, network, KMS, plugin or external I/O.
+      owner_domain: raft
+      source_refs: [raft-fsm-spec]
+      invariant_refs: [HB-INV-RAFT-FSM-DETERMINISTIC]
+      work_packages: [H20-WP01, H20-WP02, H20-WP03, H20-WP04]
+      acceptance: [same log produces identical state/digest on all supported architectures]
+      test_lanes: [model-check, cross-arch-replay, deterministic-scheduler]
+      evidence_required: [FSM-traces, state-digests, model-output]
+      waiver_allowed: false
+    - id: HB-REQ-H20-002
+      criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+      statement: Snapshot, chunking, membership, non-voter, join and autopilot must preserve linearizability and committed RPO=0.
+      owner_domain: raft
+      source_refs: [integrated-storage-oracle]
+      invariant_refs: [HB-INV-RAFT-LINEARIZABLE, HB-INV-SNAPSHOT-AUTHENTIC]
+      work_packages: [H20-WP05, H20-WP06, H20-WP07, H20-WP08, H20-WP09, H20-WP10, H20-WP11, H20-WP12]
+      acceptance: [Jepsen-style pass, six-month chaos, atomic authenticated snapshot install]
+      test_lanes: [partition, membership-churn, snapshot, corruption, long-chaos]
+      evidence_required: [linearizability-history, chaos-receipt, external-review]
+      waiver_allowed: false
+  H21:
+    - id: HB-REQ-H21-001
+      criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+      statement: Cluster identity, mTLS, secure join, forwarding and redirect must prevent node impersonation and token leakage.
+      owner_domain: cluster
+      source_refs: [OpenBao-v2.6.2-cluster-oracle]
+      invariant_refs: [HB-INV-CLUSTER-IDENTITY]
+      work_packages: [H21-WP01, H21-WP02, H21-WP03, H21-WP04, H21-WP05]
+      acceptance: [wrong cluster/node/cert rejected, redirect origin allowlisted, wrap metadata preserved]
+      test_lanes: [mTLS-negative, join-replay, redirect-attack, forwarding-differential]
+      evidence_required: [cluster-vectors, packet-capture-scan, external-review]
+      waiver_allowed: false
+    - id: HB-REQ-H21-002
+      criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+      statement: Only one active owner may execute write side effects; read standby must prove applied-index freshness and route safety.
+      owner_domain: cluster
+      source_refs: [HA-read-standby-oracle]
+      invariant_refs: [HB-INV-SINGLE-ACTIVE, HB-INV-READ-STANDBY-NO-WRITE]
+      work_packages: [H21-WP06, H21-WP07, H21-WP08, H21-WP09, H21-WP10, H21-WP11]
+      acceptance: [split-brain write acceptance zero, dynamic-secret GET never executes on unsafe standby]
+      test_lanes: [failover-chaos, stale-read, route-classification, split-brain]
+      evidence_required: [active-fence-traces, freshness-report, chaos-receipt]
+      waiver_allowed: false
+  H22:
+    - id: HB-REQ-H22-001
+      criticality: SECURITY_CRITICAL
+      statement: HTTP/TLS listener and request limits must resist smuggling, slowloris, Host/CORS/header/cert spoof and unsafe redirect.
+      owner_domain: edge
+      source_refs: [HTTP-threat-model]
+      invariant_refs: [HB-INV-EDGE-CANONICAL-ORIGIN]
+      work_packages: [H22-WP01, H22-WP02, H22-WP11]
+      acceptance: [all named attacks rejected within resource bounds]
+      test_lanes: [HTTP-fuzz, protocol-compliance, DoS-resource]
+      evidence_required: [fuzz-report, attack-corpus, resource-profile]
+      waiver_allowed: false
+    - id: HB-REQ-H22-002
+      criticality: OPERATOR_CRITICAL
+      statement: Server, CLI, operator, Agent, Proxy, OpenAPI and UI adapter must match claimed commands and never leak stale secrets.
+      owner_domain: client-ops
+      source_refs: [OpenBao-v2.6.2-CLI-Agent-Proxy-oracle]
+      invariant_refs: [HB-INV-CLIENT-NO-SECRET-LEAK]
+      work_packages: [H22-WP03, H22-WP04, H22-WP05, H22-WP06, H22-WP07, H22-WP08, H22-WP09, H22-WP10]
+      acceptance: [100-percent operator-critical command coverage, unsupported explicit, sink permissions safe]
+      test_lanes: [CLI-differential, Agent-sink, Proxy-cancel, OpenAPI]
+      evidence_required: [command-matrix, sink-scan, API-report]
+      waiver_allowed: false
+  H23:
+    - id: HB-REQ-H23-001
+      criticality: SECURITY_CRITICAL
+      statement: Logging, metrics, tracing and debug bundles must enforce typed redaction and bounded cardinality.
+      owner_domain: telemetry
+      source_refs: [telemetry-redaction-spec]
+      invariant_refs: [HB-INV-NO-SECRET-OBSERVABILITY]
+      work_packages: [H23-WP01, H23-WP02, H23-WP03, H23-WP04, H23-WP07]
+      acceptance: [secret canary zero, labels within budget, bundle manifest deterministic]
+      test_lanes: [canary-scan, cardinality, bundle-negative]
+      evidence_required: [scan-report, budget-report, bundle-manifest]
+      waiver_allowed: false
+    - id: HB-REQ-H23-002
+      criticality: OPERATOR_CRITICAL
+      statement: Quotas, lockout, atomic reload, health, SLO and runbooks must not widen authority during failure.
+      owner_domain: operations
+      source_refs: [operations-profile]
+      invariant_refs: [HB-INV-OBSERVABILITY-FAILURE-NO-WIDEN]
+      work_packages: [H23-WP05, H23-WP06, H23-WP08, H23-WP09, H23-WP10, H23-WP11]
+      acceptance: [partial reload impossible, quota/lockout namespace safe, all core game days exercised]
+      test_lanes: [reload-fault, quota-race, lockout, game-day]
+      evidence_required: [atomic-swap-traces, SLO-receipts, runbook-receipts]
+      waiver_allowed: false
+  H24:
+    - id: HB-REQ-H24-001
+      criticality: MIGRATION_CRITICAL
+      statement: Export/import/snapshot conversion must preserve all claimed objects and behavior with dry-run, resume and immutable manifest.
+      owner_domain: migration
+      source_refs: [OpenBao-migration-source-matrix]
+      invariant_refs: [HB-INV-MIGRATION-COMPLETE]
+      work_packages: [H24-WP01, H24-WP02, H24-WP03, H24-WP04, H24-WP05, H24-WP06, H24-WP07]
+      acceptance: [count/digest/behavior match, corrupt or partial input safe, three production-scale rehearsals]
+      test_lanes: [multi-version, large-data, corrupt-input, resume]
+      evidence_required: [migration-manifest, behavior-probes, rehearsal-receipts]
+      waiver_allowed: false
+    - id: HB-REQ-H24-002
+      criticality: MIGRATION_CRITICAL
+      statement: Cutover must enforce freeze, no-writer verification, epoch/fence switch, overlap detection and safe rollback/forward recovery.
+      owner_domain: migration
+      source_refs: [HEPTABAO_MIGRATION_AUTHORITY_STATE_MACHINE_V1]
+      invariant_refs: [HB-INV-MIGRATION-SINGLE-WRITER]
+      work_packages: [H24-WP08, H24-WP09, H24-WP10, H24-WP11, H24-WP12, H24-WP13]
+      acceptance: [source write acceptance after freeze zero, writer overlap zero, irreversible effects force forward recovery]
+      test_lanes: [cutover-kill, overlap, rollback, forward-recovery]
+      evidence_required: [authority-traces, rejection-count, cutover-receipt]
+      waiver_allowed: false
+  H25:
+    - id: HB-REQ-H25-001
+      criticality: SECURITY_CRITICAL
+      statement: Formal models must cover seal/keyring, token graph, lease/effects, audit ordering, Raft FSM and migration authority.
+      owner_domain: qualification
+      source_refs: [security-invariant-registry]
+      invariant_refs: [HB-INV-MODEL-TRACE-CONSISTENT]
+      work_packages: [H25-WP01, H25-WP02, H25-WP03, H25-WP04, H25-WP05, H25-WP06]
+      acceptance: [models pass, implementation traces conform, counterexamples become tests]
+      test_lanes: [TLA, Stateright, Kani, trace-replay]
+      evidence_required: [model-output, trace-mapping, counterexample-registry]
+      waiver_allowed: false
+    - id: HB-REQ-H25-002
+      criticality: SECURITY_CRITICAL
+      statement: Continuous fuzz, memory/concurrency tools, external audits, red team and finding-class closure are release blockers.
+      owner_domain: qualification
+      source_refs: [release-security-policy]
+      invariant_refs: [HB-INV-NO-OPEN-HIGH-CRITICAL]
+      work_packages: [H25-WP07, H25-WP08, H25-WP09, H25-WP10, H25-WP11, H25-WP12]
+      acceptance: [90-day RC fuzz/chaos, critical/high zero, medium signed/expiring, all artifact canaries zero]
+      test_lanes: [continuous-fuzz, Miri/Loom/sanitizers, external-audit, red-team]
+      evidence_required: [fuzz-dashboard, audit-reports, finding-closure, chaos-receipt]
+      waiver_allowed: false
+  H26:
+    - id: HB-REQ-H26-001
+      criticality: OPERATOR_CRITICAL
+      statement: Reproducible benchmarks must compare equal hardware, TLS, audit, storage, durability and payload without weakening safety.
+      owner_domain: performance
+      source_refs: [benchmark-policy]
+      invariant_refs: [HB-INV-NO-UNSAFE-BENCHMARK]
+      work_packages: [H26-WP01, H26-WP02, H26-WP03, H26-WP04, H26-WP05, H26-WP07, H26-WP11]
+      acceptance: [hot-path p99 <=1.25x oracle and throughput >=0.9x or signed bounded exception]
+      test_lanes: [benchmark-repro, regression-bisect]
+      evidence_required: [environment-manifest, benchmark-results, exception-receipt]
+      waiver_allowed: false
+    - id: HB-REQ-H26-002
+      criticality: OPERATOR_CRITICAL
+      statement: Capacity and long soak must prove bounded memory/task/fd growth, HA RPO=0 and profile SLOs.
+      owner_domain: performance
+      source_refs: [capacity-model]
+      invariant_refs: [HB-INV-RESOURCE-BOUNDED]
+      work_packages: [H26-WP06, H26-WP08, H26-WP09, H26-WP10]
+      acceptance: [72h and 30d soak stable, failover under load, sizing guide]
+      test_lanes: [soak, load-chaos, capacity]
+      evidence_required: [soak-report, leak-profile, sizing-receipt]
+      waiver_allowed: false
+  H27:
+    - id: HB-REQ-H27-001
+      criticality: SUPPLY_CHAIN_CRITICAL
+      statement: Release artifacts must be hermetic, reproducible, signed, SBOM/provenance bound and transparency logged.
+      owner_domain: release
+      source_refs: [release-supply-chain-policy]
+      invariant_refs: [HB-INV-ARTIFACT-SOURCE-BINDING]
+      work_packages: [H27-WP01, H27-WP02, H27-WP03, H27-WP04, H27-WP05, H27-WP06]
+      acceptance: [independent rebuild matches, signatures/attestations bind exact tree/config/toolchain]
+      test_lanes: [reproducible-build, package-install, signature-verification]
+      evidence_required: [SBOM, provenance, signatures, transparency-entry]
+      waiver_allowed: false
+    - id: HB-REQ-H27-002
+      criticality: OPERATOR_CRITICAL
+      statement: C5 requires scoped grant issuance, 90-day canary, 24/7 support, upstream triage, backport and EOL operation.
+      owner_domain: release
+      source_refs: [C5-profile, authority-policy]
+      invariant_refs: [HB-INV-C5-EVIDENCE-CURRENT]
+      work_packages: [H27-WP07, H27-WP08, H27-WP09, H27-WP10, H27-WP11, H27-WP12]
+      acceptance: [90-day no Sev0/Sev1/bypass/data-loss/overlap, 24h upstream triage, signed C5 claim/grant]
+      test_lanes: [canary, incident-game-day, upstream-sync, restore]
+      evidence_required: [canary-receipt, support-roster, triage-dashboard, C5-attestation]
+      waiver_allowed: false

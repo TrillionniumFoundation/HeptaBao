@@ -1,0 +1,20 @@
+schema: heptabao.h02-bakeoff-coverage-correction.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: CANONICAL_COVERAGE_CORRECTION
+source_path: planning/HEPTABAO_H02_DEPENDENCY_BAKEOFF_V1.yaml
+source_blob_sha: f23cd4b6b705649f484164b0f8baf5dc06eec95b
+reason: The initial seed declared 24 candidates while the candidates array contains 25 unique entries.
+canonical_coverage:
+  capability_count: 16
+  candidate_count: 25
+  selected_for_prototype: 0
+  evidence_collecting: 0
+  identified: 25
+  rejected: 0
+  missing_capabilities: []
+rules:
+  - Validators must compute counts from candidate objects and compare them to this correction.
+  - This overlay changes no candidate state, evidence, score, selection or authority.
+  - The source catalog will be rewritten only in a reviewed compaction commit.
+authority_effect: NONE

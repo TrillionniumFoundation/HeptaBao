@@ -1,0 +1,101 @@
+{
+  "authority_effect": "NONE",
+  "candidate": {
+    "bound": false,
+    "candidate_id": null,
+    "feature_profile_sha256": null,
+    "version": null
+  },
+  "cases": [
+    {
+      "assertion_count": 1,
+      "case_id": "tls-version-policy-fail-closed",
+      "details_sha256": "df4a17c9caa825a42e4a2bd0f9a2b0b2331280b9afa5ac04c839414fcb4ac099",
+      "status": "PASS",
+      "trace_end": 1,
+      "trace_start": 0
+    },
+    {
+      "assertion_count": 3,
+      "case_id": "tls-mutual-auth-identity-and-expiry",
+      "details_sha256": "3efeaf245275592a9f2101c339b55c494b5c4f061dcb27e3af6082b3889765dd",
+      "status": "PASS",
+      "trace_end": 6,
+      "trace_start": 1
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "tls-malformed-ticket-length-no-panic",
+      "details_sha256": "f75ac4ca5d79531a8884bc3476da267969fb36325573b2dcaf8d66e3e8b85852",
+      "status": "PASS",
+      "trace_end": 7,
+      "trace_start": 6
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "tls-atomic-stage-activate-revoke",
+      "details_sha256": "cb7a75624d7fe13063fdd518abf00a52f2679cc7310eac1a253f5a3e3e807c36",
+      "status": "PASS",
+      "trace_end": 9,
+      "trace_start": 7
+    },
+    {
+      "assertion_count": 3,
+      "case_id": "tls-handshake-time-and-byte-bounds",
+      "details_sha256": "abc938da3260b51f88c01f3038fd1584e0e041c4f2a42541e482c81609c15230",
+      "status": "PASS",
+      "trace_end": 10,
+      "trace_start": 9
+    },
+    {
+      "assertion_count": 2,
+      "case_id": "tls-trace-secret-residue-zero",
+      "details_sha256": "40d942e8f2e03befb224c7810fd3ee66566fe3c3959284b16b5254dc193162ef",
+      "status": "PASS",
+      "trace_end": 10,
+      "trace_start": 10
+    }
+  ],
+  "domain": "TLS",
+  "environment": {
+    "architecture": "x86_64",
+    "attested": false,
+    "environment_id": "chatgpt-local-container-20260828-h02-behavior",
+    "executor_kind": "local-container",
+    "os": "Linux",
+    "python_version": "3.13.5",
+    "runner_id": null,
+    "runner_name": "chatgpt-container"
+  },
+  "execution_kind": "REFERENCE_MODEL",
+  "final_state_sha256": "b72582fc0e01763f7bd3df3c053efcbc1d1b8ec396fe105b03a1a49c3c5fce57",
+  "harness_version": "1.0.0",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "profile_id": "HB-H02-BEHAVIOR-TLS-REFERENCE",
+  "qualification": false,
+  "replay_command": "python scripts/h02_seeded_behavior_harness_v1.py replay --evidence <tls-6840158756763388670.json>",
+  "revision": "1.1",
+  "schema": "heptabao.h02-seeded-behavior-evidence.v1",
+  "seed": {
+    "decimal": 6840158756763388670,
+    "hex": "0x5eed20260828cafe"
+  },
+  "selection_effect": "NONE",
+  "source": {
+    "branch": "codex/h02-seeded-behavior-harnesses",
+    "clean_tree": true,
+    "commit_sha": "dc5f18bea2e039e2897cd89a3e502e96c4580b8d",
+    "repository": "ProfHepta/HeptaBao",
+    "tree_sha": "52cd4c67cda5984183bef11bae31e230512cd35a"
+  },
+  "status": "EXECUTED_PASS",
+  "summary": {
+    "blocked": 0,
+    "failed": 0,
+    "passed": 6,
+    "total": 6,
+    "unexecuted": 0,
+    "unknown": 0
+  },
+  "trace_sha256": "0705b82e40a550216693067c2fd3c77d26b6cae99a5fd9c9f327d1b8d775b9c0"
+}

@@ -1,0 +1,67 @@
+schema: heptabao.normative-document-manifest.v1_4_3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.3'
+status: ACTIVE_DESCRIPTOR_ANCHOR_AND_WRITER_FENCING
+inherits: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_2.yaml
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_3_DESCRIPTOR_ANCHOR_AND_WRITER_FENCING.md
+current_state: planning/HEPTABAO_V1_4_3_DESCRIPTOR_FENCING_STATUS.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_3.yaml
+source_binding: RESOLVE_FROM_EXACT_SOURCE
+documents:
+- path: docs/plan/HEPTABAO_PLAN_V1_4_3_DESCRIPTOR_ANCHOR_AND_WRITER_FENCING.md
+  role: PLAN
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md
+  role: FILESYSTEM_CONTRACT
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_V1_4_3_DESCRIPTOR_FENCING_STATUS.yaml
+  role: STATUS
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_3.yaml
+  role: BLOCKER_REGISTER
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_3.yaml
+  role: MANIFEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: schemas/heptabao_normative_document_manifest_v1_4_3.schema.json
+  role: SCHEMA
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-filesystem-guard/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-filesystem-guard/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-store/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-store/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-journal/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-journal/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_plan_v1_4_3.py
+  role: VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_v1_4_3_inherited_surface.py
+  role: VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: tests/plan/test_plan_v1_4_3.py
+  role: TEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: .github/workflows/plan-v1.4.3-descriptor-fencing.yml
+  role: WORKFLOW
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

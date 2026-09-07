@@ -1,0 +1,38 @@
+schema: heptabao.canonical-project-state.v1_3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: LOCAL_SOURCE_CANDIDATE_NOT_QUALIFIED
+truth_inputs:
+- planning/HEPTABAO_PLAN_V1_3_STATUS_V1.yaml
+- planning/HEPTABAO_BLOCKER_REGISTER_V1_3.yaml
+- planning/HEPTABAO_H01_ORACLE_EVIDENCE_RECONCILIATION_V1.yaml
+- planning/HEPTABAO_WORK_PACKAGE_EXTENSION_V1_3.yaml
+- planning/HEPTABAO_P0_WORK_PACKAGE_CONTRACTS_V1.yaml
+current_plan: '1.3'
+implementation:
+  governance_foundation: true
+  oracle_scaffolding: true
+  dependency_and_raft_probes: true
+  strict_protocol_foundation: true
+  authbus_contract_foundation: true
+  p0_memory_server: true
+  production_server: false
+execution:
+  local_python_validation: EXECUTED_PASS_UNATTESTED_172_TESTS
+  local_rust_execution: UNEXECUTED_TOOLCHAIN_UNAVAILABLE
+  upstream_lifecycle_materialization: EXECUTED_PASS_CD56D815
+  upstream_lifecycle_followup_checks: ACTION_REQUIRED_NOT_EXECUTED
+  remote_v1_3_exact_head: UNEXECUTED
+  independent_reproduction_count: 0
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+authority_flags:
+  prototype_selection: false
+  production_dependency: false
+  compatibility: false
+  production: false
+  migration: false
+  mixed_cluster: false
+  release: false
+authority_effect: NONE

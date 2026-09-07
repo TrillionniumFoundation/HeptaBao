@@ -1,0 +1,129 @@
+schema: heptabao.blocker-register-extension.v1_4
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4'
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_3.yaml
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  commit: a5b9739e46f4bed54dbb3edd0e32400481b3b12f
+  tree: 1727b9498258883b2504c53ac501c415a07218e2
+added_blockers:
+- id: HB-BLK-REPO-018
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: provider-neutral authoritative durable generation API was absent
+  owner_role: storage-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - non-zero checked generations and exact compare-and-swap are typed
+  - opaque state is bounded non-Clone and redacted
+  - lifecycle mode is explicit
+  - provider errors remain typed and fail closed
+  required_execution:
+  - plan-v1.4-durable-single-node/durable-single-node
+  evidence:
+  - crates/heptabao-storage-api/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-019
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: versioned barrier envelope and associated-data boundary was absent
+  owner_role: cryptography-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - envelope is strict versioned bounded and trailing-data rejecting
+  - context binds domain generation key epoch purpose and caller data
+  - plaintext and envelope diagnostics are redacted
+  - no production cryptographic implementation or key is embedded
+  required_execution:
+  - plan-v1.4-durable-single-node/durable-single-node
+  evidence:
+  - crates/heptabao-barrier-api/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-020
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: no fail-closed single-process durable generation implementation existed
+  owner_role: storage-distributed-systems
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - CreateNew ReopenExisting and AdoptLegacy are separate operations
+  - immutable bundles and CURRENT are persisted before in-memory publication
+  - initialized-state loss corruption symlinks and algorithm drift fail closed
+  - commit outcome uncertainty forbids blind retry
+  - focused recovery and corruption tests pass
+  required_execution:
+  - plan-v1.4-durable-single-node/durable-single-node
+  - plan-v1.3.1-head-and-merge-closure/full-technical-matrix
+  evidence:
+  - crates/heptabao-single-node-store/src/lib.rs
+  - docs/storage/HEPTABAO_SINGLE_NODE_DURABLE_STORE_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-021
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: plaintext-to-storage composition did not enforce barrier-before-publish ordering
+  owner_role: core-pipeline-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - stale generation is rejected before provider work
+  - plaintext is consumed by the barrier before the storage boundary
+  - generation and key epoch are associated-data bound
+  - commit receipt generation is checked exactly
+  - mismatched associated data rejects open
+  required_execution:
+  - plan-v1.4-durable-single-node/durable-single-node
+  evidence:
+  - crates/heptabao-durable-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-022
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.4 durable foundation lacked an exact-head semantic and Rust gate
+  owner_role: qualification-platform-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - V1.4 plan manifest status blockers and source agree
+  - exact Git delta proves no inherited V1.3.1 file was changed
+  - the complete historical suites pass in a detached frozen-baseline worktree
+  - current V1.4 mutation platform and Oracle regressions pass
+  - exact Rust 1.98 fmt workspace tests and strict Clippy pass
+  - a final designated-ratifier head and distinct merge retain P0 H02 and arbitration
+  - authority and qualification fields remain false
+  required_execution:
+  - plan-v1.4-durable-single-node/durable-single-node
+  - plan-v1.3.1-head-and-merge-closure/full-technical-matrix
+  - plan-v1.3.1-head-and-merge-closure/arbitrate-head-and-merge-evidence
+  evidence:
+  - scripts/validate_plan_v1_4.py
+  - scripts/validate_v1_4_inherited_surface.py
+  - tests/plan/test_plan_v1_4.py
+  - .github/workflows/plan-v1.4-durable-single-node.yml
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production cryptographic provider and key custody
+- descriptor-relative filesystem adapter and multi-process fencing
+- durable audit and request-effect reconciliation ledger
+- external rollback anchor
+- production database backend and backup restore
+- policy identity token lease namespace and plugin domains
+- Raft HA membership and standby integration
+- Oracle-derived compatibility implementation
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE

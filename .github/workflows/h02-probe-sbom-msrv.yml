@@ -1,0 +1,215 @@
+name: h02-probe-sbom-msrv
+
+on:
+  push:
+    branches: ["codex/h02-probes-sbom-msrv"]
+  workflow_dispatch:
+    inputs:
+      run_candidate_probes:
+        description: "Execute exact H02 candidate/toolchain probes"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-probe-sbom-msrv-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  validate-probe-contracts:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Validate exact probe matrix and negative semantics
+        run: |
+          python scripts/h02_dependency_probe_v1.py validate-matrix
+          python -m unittest tests/platform/test_h02_dependency_probe_v1.py -v
+      - name: Confirm no selection or authority
+        run: |
+          python - <<'PY'
+          import json, yaml
+          matrix = yaml.safe_load(open('planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V1.yaml', encoding='utf-8'))
+          status = json.load(open('qualifications/H02/H02-PROBE-SBOM-MSRV-IMPLEMENTATION-STATUS.json', encoding='utf-8'))
+          assert matrix['qualification'] is False
+          assert matrix['selection_effect'] == 'NONE' and matrix['authority_effect'] == 'NONE'
+          assert all(p['state'] == 'SPECIFIED_UNEXECUTED' and p['evidence_refs'] == [] for p in matrix['profiles'])
+          assert status['qualification']['status'] == 'NOT_QUALIFIED'
+          assert not any(status['authority_flags'].values())
+          print('H02 probe contracts remain unqualified and authority-free')
+          PY
+
+  candidate-probe:
+    needs: validate-probe-contracts
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (github.event_name == 'push' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_candidate_probes)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {profile: HB-H02-PROBE-TOKIO-MINIMAL-SERVER, probe_dir: probes/h02/tokio-minimal, package: tokio, version: 1.53.1, toolchain: 1.71.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-TOKIO-MINIMAL-SERVER, probe_dir: probes/h02/tokio-minimal, package: tokio, version: 1.53.1, toolchain: 1.98.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-RUSTLS-RING, probe_dir: probes/h02/rustls-ring, package: rustls, version: 0.23.43, toolchain: 1.71.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-RUSTLS-RING, probe_dir: probes/h02/rustls-ring, package: rustls, version: 0.23.43, toolchain: 1.98.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-RUSTLS-AWS-LC, probe_dir: probes/h02/rustls-aws-lc, package: rustls, version: 0.23.43, toolchain: 1.71.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-RUSTLS-AWS-LC, probe_dir: probes/h02/rustls-aws-lc, package: rustls, version: 0.23.43, toolchain: 1.98.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-OPENRAFT-TOKIO, probe_dir: probes/h02/openraft-tokio, package: openraft, version: 0.10.0-alpha.33, toolchain: 1.88.0, target: x86_64-unknown-linux-gnu}
+          - {profile: HB-H02-PROBE-OPENRAFT-TOKIO, probe_dir: probes/h02/openraft-tokio, package: openraft, version: 0.10.0-alpha.33, toolchain: 1.98.0, target: x86_64-unknown-linux-gnu}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Prepare isolated profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/probe" "$RUNNER_TEMP/evidence"
+          cp -a "${{ matrix.probe_dir }}/." "$RUNNER_TEMP/probe/"
+          cp probes/h02/rustls-public-fixtures.rs "$RUNNER_TEMP/rustls-public-fixtures.rs"
+          git rev-parse HEAD > "$RUNNER_TEMP/evidence/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/evidence/tree-sha.txt"
+          printf '%s\n' "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" > "$RUNNER_TEMP/evidence/source-branch.txt"
+          git diff --quiet && git diff --cached --quiet
+      - name: Execute mechanical Cargo and source probes without losing failures
+        shell: bash
+        env: {PROFILE_ID: "${{ matrix.profile }}", PACKAGE: "${{ matrix.package }}", VERSION: "${{ matrix.version }}", TOOLCHAIN: "${{ matrix.toolchain }}", TARGET: "${{ matrix.target }}"}
+        run: |
+          set +e
+          probe="$RUNNER_TEMP/probe/Cargo.toml"; ev="$RUNNER_TEMP/evidence"
+          rustup toolchain install "$TOOLCHAIN" --profile minimal >"$ev/toolchain.log" 2>&1; toolchain_rc=$?
+          if [ "$toolchain_rc" -eq 0 ]; then rustup target add --toolchain "$TOOLCHAIN" "$TARGET" >>"$ev/toolchain.log" 2>&1; toolchain_rc=$?; fi
+          : >"$ev/status.env"
+          if [ "$toolchain_rc" -ne 0 ]; then
+            printf 'LOCK_STATUS=BLOCKED\nMETADATA_STATUS=BLOCKED\nBUILD_STATUS=BLOCKED\nTEST_STATUS=BLOCKED\n' >>"$ev/status.env"
+            printf '{}\n' >"$ev/cargo-metadata.json"; : >"$ev/Cargo.lock"; : >"$ev/dependency-tree.txt"; : >"$ev/feature-tree.txt"; : >"$ev/build.log"; : >"$ev/test.log"
+          else
+            cargo +"$TOOLCHAIN" generate-lockfile --manifest-path "$probe" >"$ev/lock.log" 2>&1; rc=$?; [ "$rc" -eq 0 ] && echo LOCK_STATUS=PASS >>"$ev/status.env" || echo LOCK_STATUS=FAIL >>"$ev/status.env"
+            cp "$RUNNER_TEMP/probe/Cargo.lock" "$ev/Cargo.lock" 2>/dev/null || : >"$ev/Cargo.lock"
+            cargo +"$TOOLCHAIN" metadata --format-version 1 --locked --manifest-path "$probe" >"$ev/cargo-metadata.json" 2>"$ev/metadata.log"; rc=$?; [ "$rc" -eq 0 ] && echo METADATA_STATUS=PASS >>"$ev/status.env" || echo METADATA_STATUS=FAIL >>"$ev/status.env"
+            cargo +"$TOOLCHAIN" tree --locked --edges normal,build --manifest-path "$probe" >"$ev/dependency-tree.txt" 2>&1
+            cargo +"$TOOLCHAIN" tree --locked --edges features --manifest-path "$probe" >"$ev/feature-tree.txt" 2>&1
+            cargo +"$TOOLCHAIN" check --locked --all-targets --target "$TARGET" --manifest-path "$probe" >"$ev/build.log" 2>&1; rc=$?; [ "$rc" -eq 0 ] && echo BUILD_STATUS=PASS >>"$ev/status.env" || echo BUILD_STATUS=FAIL >>"$ev/status.env"
+            cargo +"$TOOLCHAIN" test --locked --all-targets --target "$TARGET" --manifest-path "$probe" >"$ev/test.log" 2>&1; rc=$?; [ "$rc" -eq 0 ] && echo TEST_STATUS=PASS >>"$ev/status.env" || echo TEST_STATUS=FAIL >>"$ev/status.env"
+          fi
+          rustc +"$TOOLCHAIN" --version >"$ev/rustc.txt" 2>/dev/null || true; cargo +"$TOOLCHAIN" --version >"$ev/cargo.txt" 2>/dev/null || true
+      - name: Bind package checksum, VCS commit and source root
+        shell: bash
+        env: {PROFILE_ID: "${{ matrix.profile }}", PACKAGE: "${{ matrix.package }}", VERSION: "${{ matrix.version }}"}
+        run: |
+          set +e; ev="$RUNNER_TEMP/evidence"
+          read expected_checksum expected_commit < <(python - "$PROFILE_ID" <<'PY'
+          import sys,yaml
+          p=next(p for p in yaml.safe_load(open('planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V1.yaml'))['profiles'] if p['profile_id']==sys.argv[1])
+          print(p['expected_registry_checksum_sha256'],p['expected_release_commit_sha'])
+          PY
+          )
+          crate="$(find "$HOME/.cargo/registry/cache" -type f -name "$PACKAGE-$VERSION.crate" -print -quit 2>/dev/null)"; source="$(find "$HOME/.cargo/registry/src" -type d -name "$PACKAGE-$VERSION" -print -quit 2>/dev/null)"
+          checksum=false; vcs=false
+          [ -n "$crate" ] && [ "$(sha256sum "$crate" | cut -d' ' -f1)" = "$expected_checksum" ] && checksum=true
+          if [ -n "$source" ] && [ -f "$source/.cargo_vcs_info.json" ]; then actual="$(python -c 'import json,sys;print(json.load(open(sys.argv[1]))["git"]["sha1"])' "$source/.cargo_vcs_info.json")"; [ "$actual" = "$expected_commit" ] && vcs=true; fi
+          printf 'PACKAGE_CHECKSUM_MATCH=%s\nPACKAGE_VCS_COMMIT_MATCH=%s\nSOURCE_ROOT=%s\n' "$checksum" "$vcs" "$source" >>"$ev/status.env"
+      - name: Mark behavioral cases explicitly unexecuted
+        shell: bash
+        env: {PROFILE_ID: "${{ matrix.profile }}"}
+        run: |
+          python - "$PROFILE_ID" "$RUNNER_TEMP/evidence/cases.json" <<'PY'
+          import json,sys,yaml
+          p=next(p for p in yaml.safe_load(open('planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V1.yaml'))['profiles'] if p['profile_id']==sys.argv[1])
+          json.dump([{'case_id':c,'status':'UNEXECUTED','evidence_ref':None} for c in p['required_cases']],open(sys.argv[2],'w'),indent=2)
+          PY
+      - name: Sanitize text artifacts before digesting
+        shell: bash
+        run: |
+          set -euo pipefail
+          ev="$RUNNER_TEMP/evidence"
+          python - "$ev" "$HOME" "$GITHUB_WORKSPACE" <<'PY'
+          import pathlib
+          import sys
+          root = pathlib.Path(sys.argv[1])
+          replacements = ((sys.argv[2], '<HOME>'), (sys.argv[3], '<WORKSPACE>'))
+          for path in list(root.glob('*.log')) + list(root.glob('*.txt')):
+              text = path.read_text(encoding='utf-8', errors='replace')
+              for original, replacement in replacements:
+                  text = text.replace(original, replacement)
+              path.write_text(text, encoding='utf-8')
+          PY
+          if grep -ERn '(gh[pousr]_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN .*PRIVATE KEY-----)' "$ev"; then exit 1; fi
+      - name: Collect sanitized fail-closed evidence
+        shell: bash
+        env: {PROFILE_ID: "${{ matrix.profile }}", TOOLCHAIN: "${{ matrix.toolchain }}", TARGET: "${{ matrix.target }}"}
+        run: |
+          set -euo pipefail; ev="$RUNNER_TEMP/evidence"; source "$ev/status.env"
+          checksum_arg=--no-package-checksum-match; [ "$PACKAGE_CHECKSUM_MATCH" = true ] && checksum_arg=--package-checksum-match
+          vcs_arg=--no-package-vcs-commit-match; [ "$PACKAGE_VCS_COMMIT_MATCH" = true ] && vcs_arg=--package-vcs-commit-match
+          python scripts/h02_dependency_probe_v1.py collect --profile-id "$PROFILE_ID" --evidence-id "HB-H02-PROBE-EVIDENCE-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${PROFILE_ID}-${TOOLCHAIN//./_}" --artifact-root "$ev" --source-root "${SOURCE_ROOT:-}" --case-results "$ev/cases.json" --execution-kind GITHUB_HOSTED --environment-id "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${PROFILE_ID}-${TOOLCHAIN}" --branch "$(cat "$ev/source-branch.txt")" --commit-sha "$(cat "$ev/source-sha.txt")" --tree-sha "$(cat "$ev/tree-sha.txt")" --clean-tree --os "$RUNNER_OS" --arch "$RUNNER_ARCH" --target "$TARGET" --toolchain "$TOOLCHAIN" --rustc "$(cat "$ev/rustc.txt" 2>/dev/null || true)" --cargo "$(cat "$ev/cargo.txt" 2>/dev/null || true)" --runner-name "$RUNNER_NAME" --lock-status "$LOCK_STATUS" --metadata-status "$METADATA_STATUS" --build-status "$BUILD_STATUS" --test-status "$TEST_STATUS" "$checksum_arg" "$vcs_arg" --output "$ev/evidence.json"
+          python - "$ev" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import sys
+          root = pathlib.Path(sys.argv[1])
+          evidence = json.loads((root / 'evidence.json').read_text(encoding='utf-8'))
+          for name, ref in evidence['artifacts'].items():
+              if ref is None:
+                  continue
+              path = root / ref['path']
+              payload = path.read_bytes()
+              assert len(payload) == ref['byte_length'], (name, 'byte_length')
+              assert hashlib.sha256(payload).hexdigest() == ref['sha256'], (name, 'sha256')
+          print('all uploaded artifact digests match sanitized immutable bytes')
+          PY
+      - name: Upload non-authoritative probe evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-probe-${{ matrix.profile }}-${{ matrix.toolchain }}
+          path: ${{ runner.temp }}/evidence
+          if-no-files-found: error
+          retention-days: 30
+      - name: Fail mechanical lane without discarding evidence
+        shell: bash
+        run: |
+          source "$RUNNER_TEMP/evidence/status.env"
+          test "$LOCK_STATUS" = PASS && test "$METADATA_STATUS" = PASS && test "$BUILD_STATUS" = PASS && test "$TEST_STATUS" = PASS && test "$PACKAGE_CHECKSUM_MATCH" = true && test "$PACKAGE_VCS_COMMIT_MATCH" = true

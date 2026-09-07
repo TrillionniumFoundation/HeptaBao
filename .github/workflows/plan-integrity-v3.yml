@@ -1,0 +1,86 @@
+name: plan-integrity-v3
+
+on:
+  push:
+    branches: ["main", "codex/plan-v1.1-h00-execution"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plan-integrity-v3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  executable-plan:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install pinned plan dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Validate core execution and evidence semantics
+        run: python scripts/validate_plan_v2.py
+
+      - name: Validate traceability and cross-document consistency
+        run: python scripts/validate_plan_v2_extensions.py
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component clippy,rustfmt
+          rustup override set 1.98.0
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Rust format
+        run: cargo fmt --all --check
+
+      - name: Rust test
+        run: cargo test --workspace --all-targets --locked
+
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Emit fail-closed summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import yaml
+          flags = yaml.safe_load(open('planning/AUTHORITY_FLAGS_V2.yaml', encoding='utf-8'))
+          status = json.load(open('qualifications/H00/H00-IMPLEMENTATION-STATUS.json', encoding='utf-8'))
+          enabled = [name for name, value in flags['flags'].items() if value and name != 'implementation_started']
+          if enabled:
+              raise SystemExit(f'unexpected authority flags: {enabled}')
+          if status['qualification']['status'] != 'NOT_QUALIFIED':
+              raise SystemExit('H00 must remain NOT_QUALIFIED until signed external evidence exists')
+          print('Plan V1.1 is internally consistent; H00 remains unqualified and authority remains false.')
+          PY

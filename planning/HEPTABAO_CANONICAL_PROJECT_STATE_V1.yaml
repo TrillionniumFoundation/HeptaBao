@@ -1,0 +1,41 @@
+schema: heptabao.canonical-project-state.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: IMPLEMENTATION_ACTIVE_NOT_QUALIFIED
+binding:
+  mode: SELF_RESOLVED_AT_VERIFICATION
+  repository: ProfHepta/HeptaBao
+  ref: SELF
+  commit: SELF
+  tree: SELF
+  clean_tree_required: true
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1.yaml
+execution_state_model: planning/HEPTABAO_EXECUTION_STATE_MODEL_V1.yaml
+work_package_catalog: planning/HEPTABAO_WORK_PACKAGE_CATALOG_V1_2.yaml
+blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1.yaml
+active_program_gate: H00
+active_engineering_streams:
+- H00-governance-closure
+- H01-oracle-foundation
+- H02-platform-bakeoff
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+authority_flags:
+  prototype_selection_authority: false
+  production_dependency_authority: false
+  crypto_implementation_authority: false
+  raft_implementation_authority: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  mixed_cluster_allowed: false
+  openbao_physical_storage_read_allowed: false
+  openbao_physical_storage_write_allowed: false
+evidence_maturity:
+  schema_valid: REQUIRES_EXACT_HEAD_VALIDATOR
+  semantically_consistent: REQUIRES_EXACT_HEAD_VALIDATOR
+  cryptographically_verified_and_current: false
+derived_outputs_are_non_normative: true
+authority_effect: NONE

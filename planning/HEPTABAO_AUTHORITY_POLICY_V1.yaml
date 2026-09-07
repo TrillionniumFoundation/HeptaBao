@@ -1,0 +1,54 @@
+schema: heptabao.authority-policy.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_FAIL_CLOSED
+default: DENY
+rules:
+  - Qualification receipts grant no operational, compatibility, migration or release authority.
+  - Grants must be signed, scoped, expiring, traceable and revocable.
+  - Missing, expired, revoked, signature-invalid, scope-mismatched or ambiguous grants deny.
+  - Branch names, issues, PR labels, prose, code merge and CI success do not grant authority.
+  - Critical authors cannot be the sole approvers of their own evidence.
+  - Revocation takes precedence over a claim or grant.
+  - A narrower valid scope never authorizes a broader environment, domain, operation or version.
+authority_kinds:
+  implementation_stage_promotion:
+    earliest_gate: H00
+    required_roles: [program, security, domain]
+    max_ttl_days: 90
+  compatibility_publication:
+    earliest_gate: H01
+    required_roles: [compatibility, security, program]
+    max_ttl_days: 180
+  migration_rehearsal:
+    earliest_gate: H24
+    required_roles: [migration, security, operations]
+    max_ttl_days: 30
+  migration_canary:
+    earliest_gate: H24
+    required_roles: [migration, security, operations, program]
+    max_ttl_days: 14
+  production_canary:
+    earliest_gate: H27
+    required_roles: [release, security, operations, program]
+    max_ttl_days: 14
+  general_availability:
+    earliest_gate: H27
+    required_roles: [release, security, compatibility, operations, program]
+    max_ttl_days: 365
+forbidden_without_separate_rfc_and_qualification:
+  - mixed OpenBao/HeptaBao Raft cluster
+  - direct OpenBao raft.db read or write
+  - shared writable physical backend
+  - byte-for-byte barrier or snapshot compatibility claim
+  - real production secret fixtures in ordinary CI
+  - root token fixtures in ordinary CI
+revocation_triggers:
+  - secret, token or key leak
+  - policy, identity, token, namespace, audit, seal or plugin bypass
+  - committed-write loss, split brain or unexplained consistency violation
+  - blind retry after ambiguous external effect
+  - writer authority overlap
+  - invalid source, signature, dependency or evidence
+  - newly confirmed critical or high security finding
+  - support scope, version, configuration or platform no longer matches

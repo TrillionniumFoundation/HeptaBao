@@ -1,0 +1,429 @@
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "sha40": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://heptabao.invalid/schemas/h02-seeded-behavior-evidence-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "execution_kind": {
+            "const": "REFERENCE_MODEL"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "candidate": {
+            "properties": {
+              "bound": {
+                "const": false
+              },
+              "candidate_id": {
+                "type": "null"
+              },
+              "feature_profile_sha256": {
+                "type": "null"
+              },
+              "version": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_kind": {
+            "const": "CANDIDATE_ADAPTER"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "candidate": {
+            "properties": {
+              "bound": {
+                "const": true
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "feature_profile_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "version": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "EXECUTED_PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cases": {
+            "items": {
+              "properties": {
+                "status": {
+                  "const": "PASS"
+                }
+              }
+            }
+          },
+          "source": {
+            "properties": {
+              "clean_tree": {
+                "const": true
+              }
+            }
+          },
+          "summary": {
+            "properties": {
+              "blocked": {
+                "const": 0
+              },
+              "failed": {
+                "const": 0
+              },
+              "unexecuted": {
+                "const": 0
+              },
+              "unknown": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "bound": {
+          "type": "boolean"
+        },
+        "candidate_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "feature_profile_sha256": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "bound",
+        "candidate_id",
+        "version",
+        "feature_profile_sha256"
+      ],
+      "type": "object"
+    },
+    "cases": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "assertion_count": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "case_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "details_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "UNEXECUTED",
+              "UNKNOWN"
+            ]
+          },
+          "trace_end": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "trace_start": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "case_id",
+          "status",
+          "assertion_count",
+          "trace_start",
+          "trace_end",
+          "details_sha256"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "domain": {
+      "enum": [
+        "RUNTIME",
+        "TLS",
+        "RAFT"
+      ]
+    },
+    "environment": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "attested": {
+          "type": "boolean"
+        },
+        "environment_id": {
+          "minLength": 8,
+          "type": "string"
+        },
+        "executor_kind": {
+          "enum": [
+            "local-container",
+            "github-hosted",
+            "self-hosted",
+            "offline-lab"
+          ]
+        },
+        "os": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "python_version": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "runner_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runner_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "environment_id",
+        "executor_kind",
+        "runner_id",
+        "runner_name",
+        "os",
+        "architecture",
+        "python_version",
+        "attested"
+      ],
+      "type": "object"
+    },
+    "execution_kind": {
+      "enum": [
+        "REFERENCE_MODEL",
+        "CANDIDATE_ADAPTER"
+      ]
+    },
+    "final_state_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "harness_version": {
+      "const": "1.0.0"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "profile_id": {
+      "pattern": "^HB-H02-BEHAVIOR-[A-Z0-9_-]+$"
+    },
+    "qualification": {
+      "const": false
+    },
+    "replay_command": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "revision": {
+      "const": "1.1"
+    },
+    "schema": {
+      "const": "heptabao.h02-seeded-behavior-evidence.v1"
+    },
+    "seed": {
+      "additionalProperties": false,
+      "properties": {
+        "decimal": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "hex": {
+          "pattern": "^0x[0-9a-f]{16}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decimal",
+        "hex"
+      ],
+      "type": "object"
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "branch": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "clean_tree": {
+          "type": "boolean"
+        },
+        "commit_sha": {
+          "$ref": "#/$defs/sha40"
+        },
+        "repository": {
+          "const": "ProfHepta/HeptaBao"
+        },
+        "tree_sha": {
+          "$ref": "#/$defs/sha40"
+        }
+      },
+      "required": [
+        "repository",
+        "commit_sha",
+        "tree_sha",
+        "branch",
+        "clean_tree"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "EXECUTED_PASS",
+        "EXECUTED_FAIL",
+        "BLOCKED",
+        "UNEXECUTED",
+        "UNKNOWN",
+        "INCOMPLETE_REPLAYABLE"
+      ]
+    },
+    "summary": {
+      "additionalProperties": false,
+      "properties": {
+        "blocked": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "failed": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "passed": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "unexecuted": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "unknown": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "passed",
+        "failed",
+        "blocked",
+        "unexecuted",
+        "unknown"
+      ],
+      "type": "object"
+    },
+    "trace_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "harness_version",
+    "execution_kind",
+    "profile_id",
+    "domain",
+    "source",
+    "environment",
+    "seed",
+    "candidate",
+    "status",
+    "cases",
+    "trace_sha256",
+    "final_state_sha256",
+    "replay_command",
+    "summary",
+    "qualification",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "title": "HeptaBao H02 Seeded Behavior Evidence V1",
+  "type": "object"
+}

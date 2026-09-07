@@ -1,0 +1,58 @@
+schema: heptabao.dependency-research-capture.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+plan_revision: '1.1'
+capture_id: HB-DEP-CAPTURE-TLS-RUSTLS-0001
+candidate_id: HB-DEP-TLS-RUSTLS
+capability: TLS
+capture_status: OFFICIAL_METADATA_CAPTURED_UNREVIEWED
+captured_at_utc: '2026-08-28T06:32:00Z'
+official_source:
+  repository: https://github.com/rustls/rustls
+  release_api: https://api.github.com/repos/rustls/rustls/releases/361887223
+  tag_ref_api: https://api.github.com/repos/rustls/rustls/git/refs/tags/v/0.23.43
+  manifest_path: rustls/Cargo.toml
+  manifest_ref: v/0.23.43
+release:
+  tag: v/0.23.43
+  version: 0.23.43
+  published_at_utc: '2026-07-29T16:13:50Z'
+  commit_sha: fcf61cdbba30913cfd5b40aefa83989c6233812d
+  tree_sha: 1e54feebaf4f88da54958096809fbd4649aa7ec1
+  commit_signature_status: UNSIGNED
+manifest_observation:
+  package_names: [rustls]
+  declared_license: Apache-2.0 OR ISC OR MIT
+  edition: '2021'
+  declared_rust_version: '1.71'
+  default_features: [aws_lc_rs, logging, prefer-post-quantum, std, tls12]
+  manifest_blob_sha: 030ebe7e3f86f4dd16b1aaf87aca74f1a62759a2
+source_integrity:
+  tag_resolves_to_commit: true
+  commit_tree_resolved: true
+  source_archive_sha256: null
+  crate_package_checksum: null
+  integrity_status: PARTIAL_OFFICIAL_GIT_METADATA_ONLY
+review_status:
+  license: CAPTURED_UNREVIEWED
+  maintenance: CAPTURED_UNREVIEWED
+  security_advisories: CAPTURED_UNREVIEWED
+  unsafe_inventory: PENDING
+  msrv_verification: DECLARED_NOT_EXECUTED
+  api_replacement_seam: DESIGNED_UNREVIEWED
+  deterministic_tests: IDENTIFIED_UNEXECUTED
+  benchmark: PENDING
+  qualification_plan: DRAFTED
+  independent_review: PENDING
+selection_state: IDENTIFIED
+authority_effect: NONE
+remaining_evidence:
+  - bind and verify the crates.io-index checksum in the separate registry evidence object
+  - download and hash the release source archive and crates.io package in an attested runner
+  - classify the pinned release's pre-authentication ticket panic and QUIC fixes against the HeptaBao threat model
+  - choose and independently review an exact crypto-provider and feature profile
+  - inventory unsafe code, provider FFI, build scripts and transitive native dependencies
+  - execute TLS protocol, malformed-record, resumption, mTLS, key-update, shutdown and memory-residue suites
+  - verify Rust 1.98.0 and declared-MSRV builds for the proposed feature profile
+  - benchmark equal-profile handshakes and data paths without weakening TLS or audit policy
+  - obtain TLS, crypto, platform and security approvals
+  - issue no prototype selection receipt until every mandatory field is complete

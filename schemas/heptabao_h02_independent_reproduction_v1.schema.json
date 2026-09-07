@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "sha40": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://heptabao.invalid/schemas/h02-independent-reproduction-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "bundle_id": {
+      "pattern": "^HB-H02-IR-[0-9a-f]{16}$"
+    },
+    "domain": {
+      "enum": [
+        "RUNTIME",
+        "TLS",
+        "RAFT"
+      ]
+    },
+    "final_state_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "input_evidence": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "attested": {
+            "const": true
+          },
+          "environment_id": {
+            "minLength": 8,
+            "type": "string"
+          },
+          "evidence_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "runner_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_sha256",
+          "environment_id",
+          "runner_id",
+          "attested"
+        ],
+        "type": "object"
+      },
+      "minItems": 2,
+      "type": "array"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "profile_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "qualification": {
+      "const": false
+    },
+    "review_status": {
+      "const": "PENDING"
+    },
+    "revision": {
+      "const": "1.1"
+    },
+    "schema": {
+      "const": "heptabao.h02-independent-reproduction-bundle.v1"
+    },
+    "seed": {
+      "additionalProperties": false,
+      "properties": {
+        "decimal": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "hex": {
+          "pattern": "^0x[0-9a-f]{16}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decimal",
+        "hex"
+      ],
+      "type": "object"
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "commit_sha": {
+          "$ref": "#/$defs/sha40"
+        },
+        "tree_sha": {
+          "$ref": "#/$defs/sha40"
+        }
+      },
+      "required": [
+        "commit_sha",
+        "tree_sha"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "const": "INDEPENDENTLY_REPRODUCED_UNREVIEWED"
+    },
+    "trace_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "bundle_id",
+    "status",
+    "profile_id",
+    "domain",
+    "source",
+    "seed",
+    "input_evidence",
+    "trace_sha256",
+    "final_state_sha256",
+    "review_status",
+    "qualification",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "title": "HeptaBao H02 Independent Reproduction Bundle V1",
+  "type": "object"
+}

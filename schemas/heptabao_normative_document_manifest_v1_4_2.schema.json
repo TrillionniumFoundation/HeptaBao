@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/heptabao_normative_document_manifest_v1_4_2.schema.json",
+  "title": "HeptaBao V1.4.2 normative document manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "inherits",
+    "current_plan",
+    "current_state",
+    "current_blocker_register",
+    "source_binding",
+    "documents",
+    "claims"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.normative-document-manifest.v1_4_2"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.4.2"},
+    "status": {"const": "ACTIVE_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY"},
+    "inherits": {"const": "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_1.yaml"},
+    "current_plan": {"const": "docs/plan/HEPTABAO_PLAN_V1_4_2_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY.md"},
+    "current_state": {"const": "planning/HEPTABAO_V1_4_2_ANCHORED_RECOVERY_STATUS.yaml"},
+    "current_blocker_register": {"const": "planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml"},
+    "source_binding": {"const": "RESOLVE_FROM_EXACT_SOURCE"},
+    "documents": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role", "source_binding"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._/-]+$"
+          },
+          "role": {
+            "enum": [
+              "PLAN",
+              "RECOVERY_CONTRACT",
+              "STATUS",
+              "BLOCKER_REGISTER",
+              "MANIFEST",
+              "SCHEMA",
+              "RUST_CRATE",
+              "VALIDATOR",
+              "TEST",
+              "WORKFLOW"
+            ]
+          },
+          "source_binding": {"const": "RESOLVE_FROM_EXACT_SOURCE"}
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualification",
+        "compatibility_claim",
+        "selected_candidates",
+        "selection_effect",
+        "production_authority",
+        "migration_authority",
+        "release_authority",
+        "authority_effect"
+      ],
+      "properties": {
+        "qualification": {"const": false},
+        "compatibility_claim": {"const": false},
+        "selected_candidates": {"type": "array", "maxItems": 0},
+        "selection_effect": {"const": "NONE"},
+        "production_authority": {"const": false},
+        "migration_authority": {"const": false},
+        "release_authority": {"const": false},
+        "authority_effect": {"const": "NONE"}
+      }
+    }
+  }
+}

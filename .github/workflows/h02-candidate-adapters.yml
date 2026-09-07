@@ -1,0 +1,290 @@
+name: h02-candidate-adapters
+
+on:
+  push:
+    branches: ["codex/h02-candidate-adapters-v1"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-candidate-adapters-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-adapters:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install pinned validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Validate plan, fixtures, schemas and authority boundaries
+        run: python scripts/validate_h02_candidate_adapters_v1.py
+
+      - name: Execute semantic and negative tests
+        run: python -m unittest tests/platform/test_h02_candidate_adapter_harness_v1.py -v
+
+  candidate-matrix:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    needs: validate-adapters
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        variant:
+          - tokio-1_71
+          - tokio-1_98
+          - rustls-ring-1_71
+          - rustls-ring-1_98
+          - rustls-aws-lc-1_71
+          - rustls-aws-lc-1_98
+          - openraft-1_88
+          - openraft-1_98
+        seed:
+          - "0x5eed20260828cafe"
+          - "0x8badf00d12345678"
+          - "0xd15ea5e5cafef00d"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install pinned validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Resolve exact candidate profile
+        id: profile
+        shell: bash
+        env:
+          VARIANT: ${{ matrix.variant }}
+        run: |
+          set -euo pipefail
+          case "$VARIANT" in
+            tokio-1_71)
+              profile=tokio; toolchain=1.71.0; subdir=tokio-minimal; domain=runtime; scope=FULL_REFERENCE_CASE_SET ;;
+            tokio-1_98)
+              profile=tokio; toolchain=1.98.0; subdir=tokio-minimal; domain=runtime; scope=FULL_REFERENCE_CASE_SET ;;
+            rustls-ring-1_71)
+              profile=rustls-ring; toolchain=1.71.0; subdir=rustls-ring; domain=tls; scope=FULL_REFERENCE_CASE_SET ;;
+            rustls-ring-1_98)
+              profile=rustls-ring; toolchain=1.98.0; subdir=rustls-ring; domain=tls; scope=FULL_REFERENCE_CASE_SET ;;
+            rustls-aws-lc-1_71)
+              profile=rustls-aws-lc; toolchain=1.71.0; subdir=rustls-aws-lc; domain=tls; scope=FULL_REFERENCE_CASE_SET ;;
+            rustls-aws-lc-1_98)
+              profile=rustls-aws-lc; toolchain=1.98.0; subdir=rustls-aws-lc; domain=tls; scope=FULL_REFERENCE_CASE_SET ;;
+            openraft-1_88)
+              profile=openraft; toolchain=1.88.0; subdir=openraft-tokio; domain=raft; scope=API_SEAM_AND_FAILURE_MODEL_PARTIAL ;;
+            openraft-1_98)
+              profile=openraft; toolchain=1.98.0; subdir=openraft-tokio; domain=raft; scope=API_SEAM_AND_FAILURE_MODEL_PARTIAL ;;
+            *) echo "unknown variant: $VARIANT" >&2; exit 2 ;;
+          esac
+          printf 'profile=%s\ntoolchain=%s\nsubdir=%s\ndomain=%s\nscope=%s\n' "$profile" "$toolchain" "$subdir" "$domain" "$scope" >> "$GITHUB_OUTPUT"
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        env:
+          TOOLCHAIN: ${{ steps.profile.outputs.toolchain }}
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$TOOLCHAIN" --profile minimal
+          rustup target add x86_64-unknown-linux-gnu --toolchain "$TOOLCHAIN"
+          rustup run "$TOOLCHAIN" rustc --version --verbose
+          rustup run "$TOOLCHAIN" cargo --version --verbose
+
+      - name: Execute exact candidate twice and preserve outcome
+        id: candidate
+        shell: bash
+        env:
+          PROFILE: ${{ steps.profile.outputs.profile }}
+          SUBDIR: ${{ steps.profile.outputs.subdir }}
+          TOOLCHAIN: ${{ steps.profile.outputs.toolchain }}
+          SEED: ${{ matrix.seed }}
+        run: |
+          set -u
+          mkdir -p evidence "$RUNNER_TEMP/h02-probes"
+          cp -a probes/h02/. "$RUNNER_TEMP/h02-probes/"
+          manifest="$RUNNER_TEMP/h02-probes/$SUBDIR/Cargo.toml"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/h02-target-${{ matrix.variant }}"
+          status=0
+          rustup run "$TOOLCHAIN" cargo generate-lockfile --manifest-path "$manifest" >evidence/cargo-generate-lockfile.log 2>&1 || status=$?
+          if [ "$status" -eq 0 ]; then
+            rustup run "$TOOLCHAIN" cargo test --locked --all-targets --manifest-path "$manifest" >evidence/cargo-test.log 2>&1 || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
+            rustup run "$TOOLCHAIN" cargo run --quiet --locked --manifest-path "$manifest" -- --seed "$SEED" >evidence/adapter-output.jsonl 2>evidence/adapter-stderr.log || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
+            rustup run "$TOOLCHAIN" cargo run --quiet --locked --manifest-path "$manifest" -- --seed "$SEED" >evidence/adapter-replay.jsonl 2>evidence/adapter-replay-stderr.log || status=$?
+          fi
+          printf '%s\n' "$status" > evidence/execution-exit-code.txt
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Produce reference, candidate and comparison evidence
+        shell: bash
+        env:
+          PROFILE: ${{ steps.profile.outputs.profile }}
+          DOMAIN: ${{ steps.profile.outputs.domain }}
+          TOOLCHAIN: ${{ steps.profile.outputs.toolchain }}
+          SCOPE: ${{ steps.profile.outputs.scope }}
+          SEED: ${{ matrix.seed }}
+          EXECUTION_EXIT_CODE: ${{ steps.candidate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          environment_id="github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RUNNER_NAME}-${{ matrix.variant }}-${SEED}"
+          mkdir -p evidence/reference
+          python scripts/h02_seeded_behavior_harness_v1.py run \
+            --domain "$DOMAIN" \
+            --seed "$SEED" \
+            --source-commit "$source_sha" \
+            --source-tree "$tree_sha" \
+            --branch "$branch" \
+            --environment-id "$environment_id-reference" \
+            --executor-kind github-hosted \
+            --runner-id github-api-enrichment-pending \
+            --runner-name "$RUNNER_NAME" \
+            --output-dir evidence/reference
+          reference="$(find evidence/reference -maxdepth 1 -name "${DOMAIN}-*.json" -print -quit)"
+          test -n "$reference"
+          replay_arg=()
+          if [ -f evidence/adapter-replay.jsonl ]; then
+            replay_arg=(--replay-output evidence/adapter-replay.jsonl)
+          fi
+          python scripts/h02_candidate_adapter_harness_v1.py collect \
+            --profile "$PROFILE" \
+            --adapter-output evidence/adapter-output.jsonl \
+            "${replay_arg[@]}" \
+            --execution-exit-code "$EXECUTION_EXIT_CODE" \
+            --seed "$SEED" \
+            --toolchain "$TOOLCHAIN" \
+            --target x86_64-unknown-linux-gnu \
+            --source-commit "$source_sha" \
+            --source-tree "$tree_sha" \
+            --branch "$branch" \
+            --clean-tree \
+            --environment-id "$environment_id-candidate" \
+            --executor-kind github-hosted \
+            --runner-id github-api-enrichment-pending \
+            --runner-name "$RUNNER_NAME" \
+            --output evidence/candidate.json \
+            --binding-output evidence/feature-profile-binding.json
+          python scripts/h02_candidate_adapter_harness_v1.py compare \
+            --reference "$reference" \
+            --candidate evidence/candidate.json \
+            --adapter-scope "$SCOPE" \
+            --output evidence/comparison.json
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          candidate = json.load(open('evidence/candidate.json', encoding='utf-8'))
+          comparison = json.load(open('evidence/comparison.json', encoding='utf-8'))
+          candidate_schema = json.load(open('schemas/heptabao_h02_seeded_behavior_evidence_v1.schema.json', encoding='utf-8'))
+          comparison_schema = json.load(open('schemas/heptabao_h02_candidate_comparison_v1.schema.json', encoding='utf-8'))
+          ce = list(Draft202012Validator(candidate_schema).iter_errors(candidate))
+          co = list(Draft202012Validator(comparison_schema).iter_errors(comparison))
+          if ce or co:
+              raise SystemExit([e.message for e in ce + co])
+          assert candidate['qualification'] is False
+          assert candidate['selection_effect'] == 'NONE'
+          assert candidate['authority_effect'] == 'NONE'
+          assert comparison['qualification'] is False
+          assert comparison['selection_effect'] == 'NONE'
+          assert comparison['authority_effect'] == 'NONE'
+          print(candidate['status'], comparison['result'])
+          PY
+
+      - name: Upload candidate evidence before final classification
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-candidate-${{ matrix.variant }}-${{ matrix.seed }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce expected evidence class without granting authority
+        shell: bash
+        env:
+          PROFILE: ${{ steps.profile.outputs.profile }}
+          EXECUTION_EXIT_CODE: ${{ steps.candidate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test "$EXECUTION_EXIT_CODE" = 0
+          python - <<'PY'
+          import json, os
+          candidate = json.load(open('evidence/candidate.json', encoding='utf-8'))
+          comparison = json.load(open('evidence/comparison.json', encoding='utf-8'))
+          assert candidate['status'] == 'EXECUTED_PASS'
+          expected = 'PARTIAL_ADAPTER_SCOPE_BLOCKS_PROMOTION' if os.environ['PROFILE'] == 'openraft' else 'INVARIANT_EQUIVALENT_UNREVIEWED'
+          assert comparison['result'] == expected, (comparison['result'], expected)
+          assert comparison['review_status'] == 'PENDING'
+          assert candidate['authority_effect'] == comparison['authority_effect'] == 'NONE'
+          print(f"candidate adapter executed: {expected}; selection and authority remain NONE")
+          PY
+
+  authority-sentinel:
+    needs: [validate-adapters, candidate-matrix]
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Classify aggregate result without selecting a candidate
+        shell: bash
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-adapters.result }}
+          MATRIX_RESULT: ${{ needs.candidate-matrix.result }}
+        run: |
+          set -euo pipefail
+          printf 'validate=%s\nmatrix=%s\n' "$VALIDATE_RESULT" "$MATRIX_RESULT"
+          test "$VALIDATE_RESULT" = success
+          test "$MATRIX_RESULT" = success
+          echo "Candidate adapters executed for evidence only; qualification=false selection=0 authority=NONE."

@@ -1,0 +1,76 @@
+schema: heptabao.h02-execution-profiles.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: SPECIFIED_UNEXECUTED
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+rules:
+  - Profiles compare candidates only through HeptaBao-owned contracts.
+  - Every run records seed, source/tree, dependency lock, feature set, runner image and artifact digests.
+  - A failed, skipped or unknown critical case blocks selection.
+  - Benchmark profiles never disable TLS, audit, durability, bounds or cancellation semantics.
+  - Evidence produced by one environment is insufficient for crypto, TLS or Raft critical selection.
+  - Profile completion does not grant production dependency authority.
+
+profiles:
+  - profile_id: HB-H02-PROFILE-RUNTIME-CORRECTNESS
+    class: RUNTIME_CORRECTNESS
+    state: SPECIFIED_UNEXECUTED
+    candidates: [HB-DEP-ASYNC-TOKIO, HB-DEP-ASYNC-SMOL]
+    required_toolchains: ['1.71', '1.98.0']
+    cases:
+      - {id: runtime-cancel-before-start, assertion: cancelled task cannot start, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: runtime-cancel-during-wait, assertion: cancellation releases waiter and resources, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: runtime-virtual-time-order, assertion: equal-deadline ordering is deterministic under recorded seed, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: runtime-task-panic-isolation, assertion: one task panic does not terminate the server process, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: runtime-blocking-saturation, assertion: bounded blocking work cannot starve authority workers, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: runtime-task-leak, assertion: task and timer count returns to baseline, failure_effect: FAIL_CLOSED_NO_SELECTION}
+    required_evidence: [feature manifest, MSRV logs, Rust-1.98 logs, seed and replay, task leak report, comparable benchmark]
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROFILE-TLS-SECURITY
+    class: TLS_SECURITY
+    state: SPECIFIED_UNEXECUTED
+    candidates: [HB-DEP-TLS-RUSTLS, HB-DEP-TLS-OPENSSL]
+    required_toolchains: ['1.71', '1.98.0']
+    cases:
+      - {id: tls12-tls13-policy, assertion: disabled protocol and cipher combinations are rejected, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: tls-mutual-auth, assertion: wrong CA identity and expired client cert are rejected, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: tls-ticket-length-regression, assertion: malformed stateless ticket never panics before authentication, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: tls-atomic-reload, assertion: config reload is atomic and old key is revoked, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: tls-slowloris-bounds, assertion: handshake deadline and byte limits are enforced, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: tls-secret-residue, assertion: private key and session material are absent from logs and artifacts, failure_effect: FAIL_CLOSED_NO_SELECTION}
+    required_evidence: [feature and crypto-provider manifest, malformed record corpus, mTLS matrix, reload trace, memory and artifact scan, comparable benchmark]
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROFILE-RAFT-CORRECTNESS
+    class: RAFT_CORRECTNESS
+    state: SPECIFIED_UNEXECUTED
+    candidates: [HB-DEP-RAFT-OPENRAFT, HB-DEP-RAFT-RAFT-RS]
+    required_toolchains: ['1.98.0']
+    cases:
+      - {id: raft-deterministic-apply, assertion: identical log yields identical state digest across restart and architecture, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: raft-committed-snapshot-conflict, assertion: snapshot conflicting with committed entry is rejected, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: raft-membership-transition, assertion: joint and node-only changes preserve single authority, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: raft-process-pause-partition, assertion: pause and partition cannot create two active writers, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: raft-quorum-loss, assertion: writes fail closed without quorum and committed state is not lost, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: raft-incomplete-run-diagnostics, assertion: every interrupted chaos run is classified and replayable, failure_effect: FAIL_CLOSED_NO_SELECTION}
+    required_evidence: [FSM trace corpus, cross-architecture digests, snapshot and membership histories, linearizability checker output, equal-durability benchmark, independent distributed-systems review]
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROFILE-ARTIFACT-PROVENANCE
+    class: ARTIFACT_PROVENANCE
+    state: SPECIFIED_UNEXECUTED
+    candidates: [HB-DEP-ASYNC-TOKIO, HB-DEP-TLS-RUSTLS, HB-DEP-RAFT-OPENRAFT]
+    required_toolchains: ['python-3.13']
+    cases:
+      - {id: artifact-source-object-binding, assertion: tag commit tree and manifest blob match the frozen capture, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: artifact-registry-checksum, assertion: downloaded crate SHA-256 equals crates.io-index checksum, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: artifact-vcs-commit, assertion: package VCS commit matches the pinned release commit, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: artifact-origin-allowlist, assertion: every redirect terminates at an approved HTTPS origin, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: artifact-stream-size-bound, assertion: oversized or empty download is rejected and partial file removed, failure_effect: FAIL_CLOSED_NO_SELECTION}
+      - {id: artifact-independent-reproduction, assertion: two environments reproduce package checksum and record source-archive observations, failure_effect: FAIL_CLOSED_NO_SELECTION}
+    required_evidence: [download manifest, final origins, byte lengths, SHA-256 files, VCS info, two runner attestations, reviewer signatures]
+    evidence_refs: []

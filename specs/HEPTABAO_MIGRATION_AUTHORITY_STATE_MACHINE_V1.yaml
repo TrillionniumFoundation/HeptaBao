@@ -1,0 +1,165 @@
+schema: heptabao.migration-authority-state-machine.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_FAIL_CLOSED
+initial_state: PLANNED
+terminal_states: [CUTOVER_COMPLETE, ROLLED_BACK, FORWARD_RECOVERY_COMPLETE, ABORTED]
+states:
+  PLANNED:
+    source_writer: true
+    target_writer: false
+    allowed: [inventory_start, abort]
+  INVENTORY:
+    source_writer: true
+    target_writer: false
+    allowed: [inventory_complete, inventory_failed, abort]
+  OBSERVING:
+    source_writer: true
+    target_writer: false
+    allowed: [observe_complete, divergence_detected, abort]
+  SHADOW_READING:
+    source_writer: true
+    target_writer: false
+    allowed: [shadow_complete, divergence_detected, abort]
+  OFFLINE_REHEARSING:
+    source_writer: true
+    target_writer: false
+    allowed: [rehearsal_qualified, rehearsal_failed, abort]
+  FREEZE_REQUESTED:
+    source_writer: true
+    target_writer: false
+    allowed: [source_frozen, freeze_failed, abort]
+  SOURCE_FROZEN:
+    source_writer: false
+    target_writer: false
+    allowed: [final_delta_start, unfreeze_source_before_cutover, abort]
+  FINAL_DELTA:
+    source_writer: false
+    target_writer: false
+    allowed: [final_delta_complete, final_delta_failed]
+  VERIFYING:
+    source_writer: false
+    target_writer: false
+    allowed: [verification_passed, verification_failed]
+  AUTHORITY_SWITCHING:
+    source_writer: false
+    target_writer: false
+    allowed: [target_grant_active, authority_switch_failed]
+  TARGET_CANARY:
+    source_writer: false
+    target_writer: true
+    allowed: [canary_passed, canary_failed_reversible, canary_failed_irreversible, authority_unknown]
+  CUTOVER_COMPLETE:
+    source_writer: false
+    target_writer: true
+    allowed: []
+  ROLLBACK_PREPARING:
+    source_writer: false
+    target_writer: false
+    allowed: [target_effects_reconciled, rollback_not_safe]
+  SOURCE_REENABLE:
+    source_writer: false
+    target_writer: false
+    allowed: [source_grant_active, source_reenable_failed]
+  ROLLED_BACK:
+    source_writer: true
+    target_writer: false
+    allowed: []
+  FORWARD_RECOVERY:
+    source_writer: false
+    target_writer: true
+    allowed: [forward_recovery_complete, forward_recovery_manual_hold]
+  FORWARD_RECOVERY_COMPLETE:
+    source_writer: false
+    target_writer: true
+    allowed: []
+  MANUAL_HOLD:
+    source_writer: false
+    target_writer: false
+    allowed: [evidence_supports_rollback, evidence_supports_forward_recovery, abort_without_writer]
+  ABORTED:
+    source_writer: false
+    target_writer: false
+    allowed: []
+transitions:
+  - [PLANNED, inventory_start, INVENTORY]
+  - [PLANNED, abort, ABORTED]
+  - [INVENTORY, inventory_complete, OBSERVING]
+  - [INVENTORY, inventory_failed, ABORTED]
+  - [INVENTORY, abort, ABORTED]
+  - [OBSERVING, observe_complete, SHADOW_READING]
+  - [OBSERVING, divergence_detected, ABORTED]
+  - [OBSERVING, abort, ABORTED]
+  - [SHADOW_READING, shadow_complete, OFFLINE_REHEARSING]
+  - [SHADOW_READING, divergence_detected, ABORTED]
+  - [SHADOW_READING, abort, ABORTED]
+  - [OFFLINE_REHEARSING, rehearsal_qualified, FREEZE_REQUESTED]
+  - [OFFLINE_REHEARSING, rehearsal_failed, ABORTED]
+  - [OFFLINE_REHEARSING, abort, ABORTED]
+  - [FREEZE_REQUESTED, source_frozen, SOURCE_FROZEN]
+  - [FREEZE_REQUESTED, freeze_failed, ABORTED]
+  - [FREEZE_REQUESTED, abort, ABORTED]
+  - [SOURCE_FROZEN, final_delta_start, FINAL_DELTA]
+  - [SOURCE_FROZEN, unfreeze_source_before_cutover, SOURCE_REENABLE]
+  - [SOURCE_FROZEN, abort, ABORTED]
+  - [FINAL_DELTA, final_delta_complete, VERIFYING]
+  - [FINAL_DELTA, final_delta_failed, MANUAL_HOLD]
+  - [VERIFYING, verification_passed, AUTHORITY_SWITCHING]
+  - [VERIFYING, verification_failed, SOURCE_REENABLE]
+  - [AUTHORITY_SWITCHING, target_grant_active, TARGET_CANARY]
+  - [AUTHORITY_SWITCHING, authority_switch_failed, MANUAL_HOLD]
+  - [TARGET_CANARY, canary_passed, CUTOVER_COMPLETE]
+  - [TARGET_CANARY, canary_failed_reversible, ROLLBACK_PREPARING]
+  - [TARGET_CANARY, canary_failed_irreversible, FORWARD_RECOVERY]
+  - [TARGET_CANARY, authority_unknown, MANUAL_HOLD]
+  - [ROLLBACK_PREPARING, target_effects_reconciled, SOURCE_REENABLE]
+  - [ROLLBACK_PREPARING, rollback_not_safe, FORWARD_RECOVERY]
+  - [SOURCE_REENABLE, source_grant_active, ROLLED_BACK]
+  - [SOURCE_REENABLE, source_reenable_failed, MANUAL_HOLD]
+  - [FORWARD_RECOVERY, forward_recovery_complete, FORWARD_RECOVERY_COMPLETE]
+  - [FORWARD_RECOVERY, forward_recovery_manual_hold, MANUAL_HOLD]
+  - [MANUAL_HOLD, evidence_supports_rollback, ROLLBACK_PREPARING]
+  - [MANUAL_HOLD, evidence_supports_forward_recovery, FORWARD_RECOVERY]
+  - [MANUAL_HOLD, abort_without_writer, ABORTED]
+required_bindings:
+  - migration_id
+  - migration_domain
+  - source_cluster_id
+  - source_version
+  - source_snapshot_or_export_digest
+  - target_cluster_id
+  - target_version
+  - compatibility_profile
+  - authority_epoch
+  - owner_epoch
+  - fencing_token_digest
+  - inventory_digest
+  - final_delta_digest
+  - verification_receipt_digest
+  - target_grant_id
+  - rollback_point_digest
+  - operation_deadline
+invariants:
+  - source_writer and target_writer are never true in the same state.
+  - Shadow and observe paths never execute a second dynamic-secret or provider effect.
+  - OpenBao and HeptaBao never share a writable physical backend.
+  - The source writer is frozen and independently verified before final delta.
+  - The target writer starts only after a scoped, current, signed authority grant becomes active.
+  - The source grant remains revoked while the target grant is active.
+  - Unknown authority state yields no writer and enters MANUAL_HOLD.
+  - Rollback is permitted only after target writes and external effects are proven reversible or reconciled.
+  - Irreversible target-only effects force forward recovery.
+  - Token, lease and dynamic credential state is reconciled or explicitly held; it is never silently cleared.
+  - Every transition is audited and bound to migration/domain/epoch/fence digests.
+  - Cutover completion requires source rejection count evidence, target canary evidence and signed receipt.
+negative_tests:
+  - source accepts a write after SOURCE_FROZEN
+  - target writes before target grant activation
+  - source and target grants overlap
+  - shadow creates a provider credential
+  - stale fence resumes final delta
+  - different payload reuses migration operation key
+  - rollback revives revoked credentials
+  - irreversible target effect chooses rollback
+  - unknown authority defaults to either writer
+  - shared writable physical backend is configured

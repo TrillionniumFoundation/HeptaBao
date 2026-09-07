@@ -1,0 +1,88 @@
+schema: heptabao.normative-document-manifest.v1_4_6
+plan_id: HEPTABAO-PLAN-2026-09-02
+revision: 1.4.6
+status: ACTIVE_AUTHORITATIVE_RECOVERY_CLOSURE
+inherits: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_5.yaml
+source_binding: RESOLVE_FROM_EXACT_SOURCE
+documents:
+- path: docs/plan/HEPTABAO_PLAN_V1_4_6_AUTHORITATIVE_RECOVERY_CLOSURE.md
+  role: PLAN
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md
+  role: AUTHORITATIVE_RECOVERY_PROTOCOL
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: docs/CURRENT_DOCUMENTATION.md
+  role: CURRENT_DOCUMENTATION_PORTAL
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_V1_4_6_AUTHORITATIVE_RECOVERY_STATUS.yaml
+  role: STATUS
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_6.yaml
+  role: BLOCKER_REGISTER
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_6.yaml
+  role: MANIFEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_plan_v1_4_6.py
+  role: SEMANTIC_VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: tests/plan/test_plan_v1_4_6.py
+  role: HOSTILE_VALIDATOR_TEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: .github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml
+  role: READ_ONLY_PR_EXACT_HEAD_AND_MERGE_WORKFLOW
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: .github/workflows/plan-v1.4.5-security-invariant-closure.yml
+  role: INHERITED_CHECKPOINT_BOUND_REGRESSION_WORKFLOW
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_plan_v1_4_5.py
+  role: INHERITED_GATE_SEMANTIC_VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: tests/plan/test_plan_v1_4_5.py
+  role: INHERITED_GATE_HOSTILE_VALIDATOR_TEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-filesystem-guard/src/lib.rs
+  role: FILESYSTEM_GUARD_TEST_ISOLATION_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: docs/modules/heptabao-filesystem-guard.md
+  role: FILESYSTEM_GUARD_FORK_EXEC_SEMANTICS
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-storage-api/src/lib.rs
+  role: STORAGE_RECOVERY_CONTRACT_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-store/src/lib.rs
+  role: FILE_STORE_RECOVERY_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-journal-api/src/lib.rs
+  role: JOURNAL_RECOVERY_CONTRACT_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-single-node-journal/src/lib.rs
+  role: FILE_JOURNAL_RECOVERY_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-operation-ledger/src/lib.rs
+  role: OPERATION_LEDGER_RECOVERY_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-durable-core/src/lib.rs
+  role: DURABLE_PREPARE_COMMIT_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-journaled-core/src/lib.rs
+  role: JOURNALED_RECOVERY_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+  role: FILE_PROVIDER_RECOVERY_INTEGRATION_TEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-rollback-anchor/src/lib.rs
+  role: ANCHOR_PUBLICATION_FENCE_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-recovery-core/src/lib.rs
+  role: RECOVERY_TARGET_AND_PUBLICATION_SOURCE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

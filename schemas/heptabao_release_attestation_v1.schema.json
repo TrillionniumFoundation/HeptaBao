@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/release-attestation-v1.json",
+  "title": "HeptaBao Release Attestation V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "attestation_id",
+    "plan_binding",
+    "release",
+    "source",
+    "build",
+    "artifacts",
+    "sbom",
+    "provenance",
+    "transparency_entries",
+    "qualification_receipts",
+    "compatibility_claims",
+    "authority_grants",
+    "revocation_check",
+    "canary",
+    "support",
+    "approvals",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.release-attestation.v1"},
+    "attestation_id": {"pattern": "^HB-RA-[A-Z0-9._-]{8,200}$"},
+    "plan_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "revision", "plan_digest_sha256"],
+      "properties": {
+        "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+        "revision": {"const": "1.1"},
+        "plan_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "channel", "profile_ids", "released_at_utc"],
+      "properties": {
+        "version": {"type": "string", "minLength": 1},
+        "channel": {"enum": ["development", "internal", "canary", "release-candidate", "general-availability", "lts"]},
+        "profile_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "released_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "tree_sha", "signed_tag", "clean_tree"],
+      "properties": {
+        "repository": {"const": "ProfHepta/HeptaBao"},
+        "commit_sha": {"$ref": "#/$defs/sha40"},
+        "tree_sha": {"$ref": "#/$defs/sha40"},
+        "signed_tag": {"type": "string", "minLength": 1},
+        "clean_tree": {"const": true}
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hermetic", "reproducible", "builder_identity", "runner_image_digest", "toolchain_digest", "dependency_lock_sha256", "configuration_digest_sha256"],
+      "properties": {
+        "hermetic": {"const": true},
+        "reproducible": {"const": true},
+        "builder_identity": {"type": "string", "minLength": 1},
+        "runner_image_digest": {"type": "string", "minLength": 1},
+        "toolchain_digest": {"type": "string", "minLength": 1},
+        "dependency_lock_sha256": {"$ref": "#/$defs/sha256"},
+        "configuration_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "platform", "sha256", "signature_ref"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "platform": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "sbom": {"$ref": "#/$defs/digest_ref"},
+    "provenance": {"$ref": "#/$defs/digest_ref"},
+    "transparency_entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 8}
+    },
+    "qualification_receipts": {"$ref": "#/$defs/digest_refs"},
+    "compatibility_claims": {"$ref": "#/$defs/digest_refs"},
+    "authority_grants": {"$ref": "#/$defs/digest_refs"},
+    "revocation_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checked_at_utc", "registry_digest_sha256", "active_revocations_affecting_release"],
+      "properties": {
+        "checked_at_utc": {"type": "string", "format": "date-time"},
+        "registry_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "active_revocations_affecting_release": {"const": 0}
+      }
+    },
+    "canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "completed", "duration_days", "sev0", "sev1", "security_bypass", "data_loss", "writer_overlap", "receipt_ref"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "completed": {"type": "boolean"},
+        "duration_days": {"type": "integer", "minimum": 0},
+        "sev0": {"const": 0},
+        "sev1": {"const": 0},
+        "security_bypass": {"const": 0},
+        "data_loss": {"const": 0},
+        "writer_overlap": {"const": 0},
+        "receipt_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on_call_24x7", "security_response", "backport_policy", "eol_policy", "restore_runbook_qualified"],
+      "properties": {
+        "on_call_24x7": {"type": "boolean"},
+        "security_response": {"type": "boolean"},
+        "backport_policy": {"type": "boolean"},
+        "eol_policy": {"type": "boolean"},
+        "restore_runbook_qualified": {"type": "boolean"}
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["program", "security", "compatibility", "operations", "release", "legal"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"const": "APPROVE"},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"release": {"properties": {"channel": {"enum": ["general-availability", "lts"]}}}}},
+      "then": {
+        "properties": {
+          "canary": {"properties": {"required": {"const": true}, "completed": {"const": true}, "duration_days": {"minimum": 90}}},
+          "support": {"properties": {"on_call_24x7": {"const": true}, "security_response": {"const": true}, "backport_policy": {"const": true}, "eol_policy": {"const": true}, "restore_runbook_qualified": {"const": true}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sha40": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "digest_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256"],
+      "properties": {"ref": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "digest_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/digest_ref"}}
+  }
+}

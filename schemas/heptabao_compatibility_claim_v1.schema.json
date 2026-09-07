@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/compatibility-claim-v1.json",
+  "title": "HeptaBao Compatibility Claim V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "claim_id",
+    "plan_binding",
+    "compatibility_level",
+    "profile_id",
+    "subject",
+    "oracle_baselines",
+    "scope",
+    "deviations",
+    "exclusions",
+    "qualification_receipts",
+    "issued_at_utc",
+    "valid_until_utc",
+    "approvals",
+    "signature",
+    "authority_effect",
+    "revocation_status"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.compatibility-claim.v1"},
+    "claim_id": {"pattern": "^HB-CC-[A-Z0-9._-]{8,200}$"},
+    "plan_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "revision", "plan_digest_sha256"],
+      "properties": {
+        "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+        "revision": {"const": "1.1"},
+        "plan_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "compatibility_level": {"enum": ["C0", "C1", "C2", "C3", "C4", "C5"]},
+    "profile_id": {"pattern": "^HB-P[0-9]+-[A-Z0-9_-]+$"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heptabao_version", "commit_sha", "tree_sha", "artifact_digests"],
+      "properties": {
+        "heptabao_version": {"type": "string", "minLength": 1},
+        "commit_sha": {"$ref": "#/$defs/sha40"},
+        "tree_sha": {"$ref": "#/$defs/sha40"},
+        "artifact_digests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "oracle_baselines": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["product", "version", "commit_sha", "artifact_sha256", "fixture_set_sha256"],
+        "properties": {
+          "product": {"const": "OpenBao"},
+          "version": {"type": "string", "minLength": 1},
+          "commit_sha": {"$ref": "#/$defs/sha40"},
+          "artifact_sha256": {"$ref": "#/$defs/sha256"},
+          "fixture_set_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operating_systems", "architectures", "storage_profiles", "seal_profiles", "enabled_capabilities", "configuration_digest_sha256"],
+      "properties": {
+        "operating_systems": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "architectures": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "storage_profiles": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "seal_profiles": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "enabled_capabilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "configuration_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "classification", "behavior", "operator_impact", "security_disposition"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "classification": {"enum": ["STRICTER", "INCOMPATIBLE", "UNSUPPORTED", "ORACLE_SECURITY_EXCEPTION"]},
+          "behavior": {"type": "string", "minLength": 1},
+          "operator_impact": {"type": "string", "minLength": 1},
+          "security_disposition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "exclusions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "qualification_receipts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["receipt_id", "sha256"],
+        "properties": {
+          "receipt_id": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "issued_at_utc": {"type": "string", "format": "date-time"},
+    "valid_until_utc": {"type": "string", "format": "date-time"},
+    "approvals": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["program", "security", "compatibility", "domain", "operations", "legal"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"const": "APPROVE"},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "authority_effect": {"const": "NONE"},
+    "revocation_status": {"enum": ["ACTIVE", "REVOKED", "EXPIRED", "SUPERSEDED"]},
+    "revocation_ref": {"type": ["string", "null"]}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sha40": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+  }
+}

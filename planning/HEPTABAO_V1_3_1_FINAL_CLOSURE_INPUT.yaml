@@ -1,0 +1,167 @@
+schema: heptabao.v1-3-1-final-closure-input.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3.1-final-closure'
+status: REPOSITORY_CONTROLLED_SOURCE_CLOSURE_IMPLEMENTED_EXACT_HEAD_AND_MERGE_EXECUTION_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_3_1_REPOSITORY_GAP_CLOSURE.md
+current_state: planning/HEPTABAO_V1_3_1_GAP_CLOSURE_STATUS.yaml
+current_state_input: planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3_1.yaml
+canonical_integration:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  repository_owner: TrillionniumFoundation
+  branch: codex/plan-v1.3-gap-closure-v2
+  pull_request: 45
+  source_identity: RESOLVE_FROM_EVENT_AND_GIT_NOT_FROM_STATIC_DOCUMENT
+  synthetic_merge_identity: RESOLVE_FROM_PULL_REQUEST_EVENT_AND_VERIFY_TWO_PARENTS
+ratification_authenticity:
+  source_of_truth: EXACT_HEAD_GIT_METADATA
+  required_subject: 'chore(provenance): owner-ratify V1.3.1 canonical source tree'
+  author_identity_policy: DESIGNATED_ACCOUNT_NON_AUTOMATION_IDENTITY
+  committer_identity_policy: DESIGNATED_ACCOUNT_NON_AUTOMATION_IDENTITY
+  designated_ratifier_login: ProfHepta
+  designated_ratifier_account_id: 102159240
+  repository_owner_may_differ_from_ratifier: true
+  forbidden_identity_fragments:
+  - github-actions
+  - '[bot]'
+  required_parent_count: 1
+  require_parent_tree_equality: true
+  verification: REQUIRED_EXACT_HEAD
+  static_commit_author_tree_claims: false
+  independent_review: false
+workflow_coverage:
+  canonical_workflow: .github/workflows/plan-v1.3.1-head-and-merge-closure.yml
+  pull_request_source_lanes:
+  - head
+  - merge
+  required_gate_groups:
+  - plan_python
+  - root_rust_1_98
+  - p0_classified
+  - h02_24_entry_matrix
+  required_validator_invocations:
+  - scripts/validate_plan_v2.py
+  - scripts/validate_plan_v2_extensions.py
+  - scripts/validate_plan_v1_2.py
+  - scripts/validate_plan_v1_2_1.py
+  - scripts/validate_plan_v1_2_2.py
+  - scripts/validate_plan_v1_3.py
+  - scripts/validate_plan_v1_3_1.py
+  - scripts/validate_v1_3_1_final_closure_v1.py
+  - scripts/validate_provenance_v1.py
+  - scripts/validate_evidence_objects_v1.py
+  - scripts/validate_oracle_foundation_v1.py
+  - scripts/validate_repository_identity_v1.py
+  - scripts/validate_dependency_bakeoff_v1.py
+  - scripts/validate_dependency_execution_profiles_v1.py
+  - scripts/validate_dependency_registry_evidence_v1.py
+  - scripts/validate_dependency_research_captures_v1.py
+  - scripts/validate_h01_h02_next_v1.py
+  - scripts/validate_h02_seeded_behavior_plan_v1.py
+  - scripts/validate_h02_candidate_adapters_v1.py
+  - scripts/validate_h02_openraft_inmemory_cluster_v1.py
+  - scripts/validate_h02_openraft_fault_lab_v1.py
+  - scripts/validate_h02_blocker_closure_v1.py
+  - scripts/validate_h02_exact_head_matrix_contract_v1.py
+  - scripts/validate_h02_pr40_reconciliation_v1.py
+  - scripts/validate_rust_source_surface_v1.py
+  - scripts/validate_v1_3_1_technical_completion_receipt_v1.py
+  - scripts/validate_p0_transport_evidence_v2.py
+  required_execution_invocations:
+  - scripts/p0_transport_exact_v1.py
+  - scripts/classify_p0_transport_evidence_v1.py
+  - scripts/h02_exact_head_matrix_v1.py
+  required_resolution_invocations:
+  - scripts/render_canonical_project_state_v1.py
+  required_arbitration_invocations:
+  - scripts/arbitrate_v1_3_1_lanes_v1.py
+  required_manifest_paths:
+  - planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3_1.yaml
+  - docs/plan/HEPTABAO_PLAN_V1_3_1_REPOSITORY_GAP_CLOSURE.md
+  - planning/HEPTABAO_V1_3_1_GAP_CLOSURE_STATUS.yaml
+  - planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml
+  - docs/execution/HEPTABAO_V1_3_1_FINAL_CLOSURE_PROTOCOL.md
+  - planning/HEPTABAO_P0_TRANSPORT_TEST_MATRIX_V2.yaml
+  - scripts/p0_transport_exact_v1.py
+  - scripts/p0_transport_exact_core_v1.py
+  - tests/plan/test_p0_transport_reset_tolerance.py
+  - scripts/classify_p0_transport_evidence_v1.py
+  - scripts/validate_p0_transport_evidence_v2.py
+  - scripts/h02_exact_head_matrix_v1.py
+  - schemas/heptabao_h02_exact_head_matrix_summary_v1.schema.json
+  - tests/platform/test_h02_exact_head_matrix_v1.py
+  - scripts/validate_v1_3_1_final_closure_v1.py
+  - scripts/validate_plan_v1_3_1_legacy.py
+  - tests/plan/test_p0_transport_evidence_classification_v2.py
+  - tests/plan/test_v1_3_1_final_closure.py
+  - .github/workflows/plan-v1.3.1-head-and-merge-closure.yml
+  - schemas/heptabao_v1_3_1_technical_completion_receipt_v1.schema.json
+  - scripts/validate_v1_3_1_technical_completion_receipt_v1.py
+  - tests/plan/test_v1_3_1_technical_completion_receipt.py
+  - schemas/heptabao_v1_3_1_lane_arbitration_v1.schema.json
+  - scripts/arbitrate_v1_3_1_lanes_v1.py
+  - tests/plan/test_v1_3_1_lane_arbitration.py
+  - schemas/heptabao_normative_document_manifest_v1_3_1.schema.json
+  - schemas/heptabao_github_actions_job_identity_v1.schema.json
+  - schemas/heptabao_github_actions_log_manifest_v1.schema.json
+  - scripts/collect_github_job_identity_v1.py
+  - scripts/render_canonical_project_state_v1.py
+  duplicate_arbitration:
+    run_key_components:
+    - pull_request_number
+    - head_sha
+    lane_key_component: source_kind
+    workflow_concurrency_epoch: v2
+    matrix_max_parallel: 1
+    cancelled_predecessor_aggregate: SKIP
+    newer_head_policy: CANCEL_OLDER_RUN_AND_RETAIN_HISTORY
+    ancestor_evidence: REJECT
+    duplicate_entry_ids: FAIL
+    lane_completion: REQUIRE_HEAD_AND_SYNTHETIC_MERGE
+repository_controlled_closure:
+  p0_runtime_vs_source_evidence_classification: IMPLEMENTED_SOURCE
+  p0_runtime_observed_cases: 11
+  p0_exact_head_compiled_source_bound_cases: 2
+  p0_best_effort_source_bound_cases: 1
+  h02_legacy_log_bytes_vote_commit_entries_membership_equivalence: IMPLEMENTED_SOURCE
+  h02_legacy_log_reopen_reader_replay: IMPLEMENTED_SOURCE
+  h02_legacy_state_applied_membership_reopen_equivalence: IMPLEMENTED_SOURCE
+  exact_head_and_distinct_synthetic_merge_workflow: IMPLEMENTED_SOURCE
+  machine_readable_technical_receipt: IMPLEMENTED_SOURCE
+  head_merge_lane_arbitration_aggregate: IMPLEMENTED_SOURCE
+  ordinary_owner_source_ratification: REQUIRED_FINAL_COMMIT
+execution_required:
+  exact_head_plan_python_root_rust_p0_h02: REQUIRED_EXACT_HEAD
+  distinct_synthetic_merge_plan_python_root_rust_p0_h02: REQUIRED_EXACT_HEAD
+  exact_head_p0_classified_evidence_v2: REQUIRED_EXACT_HEAD
+  synthetic_merge_p0_classified_evidence_v2: REQUIRED_EXACT_HEAD
+  exact_head_h02_24_entry_matrix: REQUIRED_EXACT_HEAD
+  synthetic_merge_h02_24_entry_matrix: REQUIRED_EXACT_HEAD
+  owner_ratification_commit_check: REQUIRED_EXACT_HEAD
+  independent_program_security_storage_review: REQUIRED_EXTERNAL_IDENTITY
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE
+closure_semantics:
+  source_presence_is_runtime_execution: false
+  source_bound_evidence_is_preserved_not_discarded: true
+  exact_head_success_is_independent_review: false
+  merge_candidate_success_is_qualification: false
+  qualification_is_authority: false
+  external_evidence_cannot_be_self_attested: true

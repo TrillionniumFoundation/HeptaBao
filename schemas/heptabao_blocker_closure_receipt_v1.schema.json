@@ -1,0 +1,542 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_blocker_closure_receipt_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "blocker_id",
+    "blocker_class",
+    "source_binding",
+    "plan_binding",
+    "execution",
+    "criteria",
+    "findings",
+    "independence",
+    "result",
+    "issued_at",
+    "expires_at",
+    "revocation_lookup_key",
+    "signatures",
+    "qualification",
+    "compatibility_claim",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.blocker-closure-receipt.v1"
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^HB-BCR-[A-Z0-9][A-Z0-9._-]{7,127}$"
+    },
+    "blocker_id": {
+      "type": "string",
+      "pattern": "^HB-BLK-[A-Z]+-[0-9]{3}$"
+    },
+    "blocker_class": {
+      "enum": [
+        "REPOSITORY_CONTROLLED",
+        "REPOSITORY_SETTING",
+        "EXTERNAL_GOVERNANCE",
+        "EXTERNAL_LEGAL",
+        "EXTERNAL_SECURITY",
+        "EXTERNAL_SIGNING",
+        "EXTERNAL_ORACLE",
+        "EXTERNAL_STORAGE_LAB",
+        "EXTERNAL_REPRODUCTION"
+      ]
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "ref",
+        "commit",
+        "tree",
+        "clean_tree"
+      ],
+      "properties": {
+        "repository": {
+          "const": "ProfHepta/HeptaBao"
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "clean_tree": {
+          "const": true
+        }
+      }
+    },
+    "plan_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_id",
+        "revision",
+        "normative_manifest_digest",
+        "blocker_register_digest",
+        "validator_digest",
+        "dependency_lock_digest"
+      ],
+      "properties": {
+        "plan_id": {
+          "const": "HEPTABAO-PLAN-2026-08-28"
+        },
+        "revision": {
+          "enum": [
+            "1.2",
+            "1.2.1"
+          ]
+        },
+        "normative_manifest_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "blocker_register_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "validator_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "dependency_lock_digest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "environment_id",
+        "operator_identity",
+        "credential_root_id",
+        "artifact_custody_id",
+        "started_at",
+        "completed_at",
+        "jobs",
+        "required_entry_count",
+        "executed_entry_count",
+        "failed",
+        "blocked",
+        "unknown",
+        "unexecuted",
+        "artifact_digests"
+      ],
+      "properties": {
+        "environment_id": {
+          "type": "string",
+          "minLength": 4
+        },
+        "operator_identity": {
+          "type": "string",
+          "minLength": 3
+        },
+        "credential_root_id": {
+          "type": "string",
+          "minLength": 3
+        },
+        "artifact_custody_id": {
+          "type": "string",
+          "minLength": 3
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "jobs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "workflow",
+              "run_id",
+              "attempt",
+              "job_id",
+              "runner_id",
+              "runner_name",
+              "os",
+              "arch",
+              "toolchain",
+              "target",
+              "seed",
+              "conclusion",
+              "exit_code",
+              "result_digest"
+            ],
+            "properties": {
+              "workflow": {
+                "type": "string",
+                "minLength": 1
+              },
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "attempt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "job_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "runner_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "runner_name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "os": {
+                "type": "string",
+                "minLength": 1
+              },
+              "arch": {
+                "type": "string",
+                "minLength": 1
+              },
+              "toolchain": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "target": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "seed": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "conclusion": {
+                "enum": [
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED",
+                  "UNKNOWN",
+                  "UNEXECUTED"
+                ]
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "result_digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "required_entry_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "executed_entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unexecuted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "artifact_digests": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "result",
+          "evidence_digests"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CRIT-[0-9]{2,3}$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 8
+          },
+          "result": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "UNKNOWN",
+              "UNEXECUTED"
+            ]
+          },
+          "evidence_digests": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical_open",
+        "high_open",
+        "unclassified"
+      ],
+      "properties": {
+        "critical_open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high_open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unclassified": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_required",
+        "author_identities",
+        "reviewer_identities",
+        "operator_separate_from_reviewer",
+        "credential_root_separate",
+        "artifact_custody_separate",
+        "conflict_dispositions"
+      ],
+      "properties": {
+        "review_required": {
+          "type": "boolean"
+        },
+        "author_identities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "reviewer_identities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "operator_separate_from_reviewer": {
+          "type": "boolean"
+        },
+        "credential_root_separate": {
+          "type": "boolean"
+        },
+        "artifact_custody_separate": {
+          "type": "boolean"
+        },
+        "conflict_dispositions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        }
+      }
+    },
+    "result": {
+      "enum": [
+        "EXACT_HEAD_EXECUTED",
+        "INDEPENDENTLY_REVIEWED",
+        "CLOSED",
+        "EXTERNAL_ACTION_REQUIRED",
+        "BLOCKED_UPSTREAM",
+        "BASE_DRIFT",
+        "REVOKED",
+        "RESUME_REQUIRED"
+      ]
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revocation_lookup_key": {
+      "type": "string",
+      "minLength": 8
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key_id",
+          "signer_identity",
+          "signer_role",
+          "algorithm",
+          "signature",
+          "transparency_reference"
+        ],
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "signer_identity": {
+            "type": "string",
+            "minLength": 3
+          },
+          "signer_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "algorithm": {
+            "type": "string",
+            "minLength": 3
+          },
+          "signature": {
+            "type": "string",
+            "minLength": 16
+          },
+          "transparency_reference": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "qualification": {
+      "const": false
+    },
+    "compatibility_claim": {
+      "const": false
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "result": {
+            "const": "CLOSED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "signatures": {
+            "minItems": 1
+          },
+          "execution": {
+            "properties": {
+              "failed": {
+                "const": 0
+              },
+              "blocked": {
+                "const": 0
+              },
+              "unknown": {
+                "const": 0
+              },
+              "unexecuted": {
+                "const": 0
+              }
+            }
+          },
+          "findings": {
+            "properties": {
+              "critical_open": {
+                "const": 0
+              },
+              "high_open": {
+                "const": 0
+              },
+              "unclassified": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

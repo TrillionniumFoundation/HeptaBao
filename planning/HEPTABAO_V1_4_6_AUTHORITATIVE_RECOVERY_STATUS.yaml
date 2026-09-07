@@ -1,0 +1,66 @@
+schema: heptabao.v1-4-6-authoritative-recovery-status.v1
+plan_id: HEPTABAO-PLAN-2026-09-02
+revision: 1.4.6
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_MERGE_AND_INDEPENDENT_REREVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_6_AUTHORITATIVE_RECOVERY_CLOSURE.md
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_6.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_6.yaml
+recovery_protocol: docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md
+current_documentation: docs/CURRENT_DOCUMENTATION.md
+source_baseline:
+  commit: 936cb5599d206cea895de2ae04a1289a0b3a0326
+  tree: 7c2ac2adc8eff42360950dcd425eb20e894c3c22
+implementation:
+  anchor_fence_across_publish: IMPLEMENTED_SOURCE
+  atomic_empty_target_staging: IMPLEMENTED_SOURCE
+  authoritative_store_commit_recovery: IMPLEMENTED_SOURCE
+  authoritative_journal_replay: IMPLEMENTED_SOURCE
+  persisted_then_error_hostile_evidence: IMPLEMENTED_SOURCE
+  owner_only_store_files: IMPLEMENTED_SOURCE
+  event_qualified_ci_contexts: IMPLEMENTED_SOURCE
+  inherited_v145_checkpoint_binding: IMPLEMENTED_SOURCE
+  filesystem_guard_fork_exec_test_isolation: IMPLEMENTED_SOURCE
+  phase_aware_anchor_fence_error: IMPLEMENTED_SOURCE
+  typed_anchor_contract_provider_and_authenticator_errors: IMPLEMENTED_SOURCE
+  post_entry_fence_uncertainty_hostile_test: IMPLEMENTED_SOURCE
+  rustfmt_stable_inherited_semantic_validation: IMPLEMENTED_SOURCE
+  clean_candidate_tree: IMPLEMENTED_SOURCE
+  recovery_protocol_and_module_addenda: IMPLEMENTED_SOURCE
+source_preflight:
+  source_commit: 8893cdaad4eec3c11f7b367c7bf0e57c20b6631a
+  source_tree: 5c551fa2665bc002113b39cec1b65afe02fe2b99
+  workflow_run: 33574894762
+  result: PASS_SOURCE_SUBSET_BEFORE_DOCUMENTATION_UPDATE
+  gates:
+  - V1.4.6 validator and hostile tests
+  - inherited V1.4.5 validator and hostile tests
+  - V1.4.4 module documentation validator and hostile tests
+  - platform and Oracle Python regressions
+  - Rust 1.98 formatting
+  - locked workspace all-target tests
+  - strict Clippy with warnings denied
+execution:
+  final_exact_head: REQUIRED
+  final_prospective_merge: REQUIRED
+  prior_independent_security_review:
+    source: 7b60a2f1913ea07c134845c451aa7e4bd6549c2e
+    result: CHANGES_REQUESTED
+    disposition: SOURCE_REMEDIATED_FINAL_EXACT_HEAD_REREVIEW_REQUIRED
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

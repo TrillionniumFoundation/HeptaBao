@@ -1,0 +1,190 @@
+schema: heptabao.h02-candidate-adapters.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: IMPLEMENTED_UNEXECUTED_NOT_QUALIFIED
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+purpose:
+  - Bind exact Tokio, rustls and OpenRaft candidate versions to the HeptaBao-owned seeded behavior harness.
+  - Execute the same case IDs and seeds as the candidate-neutral reference models.
+  - Classify invariant matches, incomplete evidence and deviations without requiring raw trace equality.
+  - Keep candidate-specific types inside isolated probe workspaces and outside HeptaBao domain contracts.
+  - Preserve compile, runtime, blocked and failed outcomes as evidence without promoting a candidate.
+
+rules:
+  - Candidate evidence uses execution_kind CANDIDATE_ADAPTER and candidate.bound=true.
+  - Every execution binds an exact manifest digest, feature set, toolchain, target, source commit and source tree.
+  - The feature_profile_sha256 includes the exact manifest, candidate features, complete allowlisted direct-dependency profile, toolchain and target; it is not reusable across dependency, feature, toolchain or target drift.
+  - Candidate output is executed twice with the same seed and must be byte-for-byte equivalent after JSON parsing.
+  - Reference and candidate evidence must have identical domain, seed and ordered case IDs.
+  - Candidate traces may differ from reference traces; comparison is by named invariant outcome and explicit adapter scope.
+  - FULL_REFERENCE_CASE_SET means only the six H02 reference cases were exercised, not production qualification.
+  - API_SEAM_AND_FAILURE_MODEL_PARTIAL can never support candidate promotion by itself.
+  - OpenRaft alpha.33 candidate execution starts at the proven effective Rust 1.88 floor; Rust 1.85 through 1.87 remain explicit expected-failure boundary evidence rather than adapter variants.
+  - A Rust panic, non-zero process exit, missing output or malformed output becomes BLOCKED/FAIL evidence, never missing evidence.
+  - Candidate evidence, comparison evidence and successful CI all retain qualification=false, selection_effect=NONE and authority_effect=NONE.
+
+seeds:
+  - '0x5eed20260828cafe'
+  - '0x8badf00d12345678'
+  - '0xd15ea5e5cafef00d'
+
+targets:
+  - x86_64-unknown-linux-gnu
+
+adapters:
+  - adapter_id: HB-H02-ADAPTER-TOKIO-1_53_1
+    profile_key: tokio
+    profile_id: HB-H02-BEHAVIOR-RUNTIME-TOKIO-1_53_1
+    reference_profile_id: HB-H02-BEHAVIOR-RUNTIME-REFERENCE
+    candidate_id: HB-DEP-ASYNC-TOKIO
+    package: tokio
+    version: 1.53.1
+    manifest: probes/h02/tokio-minimal/Cargo.toml
+    source: probes/h02/tokio-minimal/src/main.rs
+    domain: RUNTIME
+    adapter_scope: FULL_REFERENCE_CASE_SET
+    toolchains: ['1.71.0', '1.98.0']
+    cases:
+      - runtime-cancel-before-start
+      - runtime-cancel-during-wait
+      - runtime-equal-deadline-seed-replay
+      - runtime-task-panic-isolation
+      - runtime-bounded-blocking-saturation
+      - runtime-zero-task-resource-leak
+    candidate_specific_operations:
+      - JoinHandle abort and cancellation observation
+      - oneshot waiter cancellation
+      - equal-deadline task completion set normalization
+      - JoinError panic isolation
+      - Semaphore bounded concurrency and authority-task progress
+      - awaited task lifecycle counter
+    state: IMPLEMENTED_UNEXECUTED
+
+  - adapter_id: HB-H02-ADAPTER-RUSTLS-RING-0_23_43
+    profile_key: rustls-ring
+    profile_id: HB-H02-BEHAVIOR-TLS-RUSTLS-RING-0_23_43
+    reference_profile_id: HB-H02-BEHAVIOR-TLS-REFERENCE
+    candidate_id: HB-DEP-TLS-RUSTLS
+    package: rustls
+    version: 0.23.43
+    manifest: probes/h02/rustls-ring/Cargo.toml
+    source: probes/h02/rustls-ring/src/main.rs
+    domain: TLS
+    crypto_provider: ring
+    adapter_scope: FULL_REFERENCE_CASE_SET
+    toolchains: ['1.71.0', '1.98.0']
+    public_fixture_digests:
+      root_der_sha256: a25411462f6a04f4b6787d7d1198cc7a2e78b867100802dfd5dc138fe2d0053a
+      valid_client_der_sha256: 6f64c58577a9946e9d75969f95e9a32df08ed9645dcd37f6a810d323a107f1e3
+      expired_client_der_sha256: 87975f6e8cc8bc56bde21309475835b844f27314820acd02ea90f0baec0c7a20
+      private_keys_committed: false
+    cases:
+      - tls-version-policy-fail-closed
+      - tls-mutual-auth-identity-and-expiry
+      - tls-malformed-ticket-length-no-panic
+      - tls-atomic-stage-activate-revoke
+      - tls-handshake-time-and-byte-bounds
+      - tls-trace-secret-residue-zero
+    candidate_specific_operations:
+      - explicit ring CryptoProvider
+      - empty protocol version rejection
+      - WebPkiClientVerifier with synthetic public certificate chain
+      - ring Ticketer malformed ciphertext corpus under catch_unwind
+      - ClientConfig atomic Arc replacement
+    state: IMPLEMENTED_UNEXECUTED
+
+  - adapter_id: HB-H02-ADAPTER-RUSTLS-AWS_LC-0_23_43
+    profile_key: rustls-aws-lc
+    profile_id: HB-H02-BEHAVIOR-TLS-RUSTLS-AWS_LC-0_23_43
+    reference_profile_id: HB-H02-BEHAVIOR-TLS-REFERENCE
+    candidate_id: HB-DEP-TLS-RUSTLS
+    package: rustls
+    version: 0.23.43
+    manifest: probes/h02/rustls-aws-lc/Cargo.toml
+    source: probes/h02/rustls-aws-lc/src/main.rs
+    domain: TLS
+    crypto_provider: aws_lc_rs
+    adapter_scope: FULL_REFERENCE_CASE_SET
+    toolchains: ['1.71.0', '1.98.0']
+    public_fixture_digests:
+      root_der_sha256: a25411462f6a04f4b6787d7d1198cc7a2e78b867100802dfd5dc138fe2d0053a
+      valid_client_der_sha256: 6f64c58577a9946e9d75969f95e9a32df08ed9645dcd37f6a810d323a107f1e3
+      expired_client_der_sha256: 87975f6e8cc8bc56bde21309475835b844f27314820acd02ea90f0baec0c7a20
+      private_keys_committed: false
+    cases:
+      - tls-version-policy-fail-closed
+      - tls-mutual-auth-identity-and-expiry
+      - tls-malformed-ticket-length-no-panic
+      - tls-atomic-stage-activate-revoke
+      - tls-handshake-time-and-byte-bounds
+      - tls-trace-secret-residue-zero
+    candidate_specific_operations:
+      - explicit aws-lc-rs CryptoProvider
+      - empty protocol version rejection
+      - WebPkiClientVerifier with synthetic public certificate chain
+      - aws-lc-rs RFC5077 Ticketer malformed ciphertext corpus under catch_unwind
+      - ClientConfig atomic Arc replacement
+    state: IMPLEMENTED_UNEXECUTED
+
+  - adapter_id: HB-H02-ADAPTER-OPENRAFT-0_10_0_ALPHA_33
+    profile_key: openraft
+    profile_id: HB-H02-BEHAVIOR-RAFT-OPENRAFT-0_10_0_ALPHA_33
+    reference_profile_id: HB-H02-BEHAVIOR-RAFT-REFERENCE
+    candidate_id: HB-DEP-RAFT-OPENRAFT
+    package: openraft
+    version: 0.10.0-alpha.33
+    manifest: probes/h02/openraft-tokio/Cargo.toml
+    source: probes/h02/openraft-tokio/src/main.rs
+    domain: RAFT
+    adapter_scope: API_SEAM_AND_FAILURE_MODEL_PARTIAL
+    toolchains: ['1.88.0', '1.98.0']
+    cases:
+      - raft-deterministic-apply-and-restart
+      - raft-committed-snapshot-conflict-rejected
+      - raft-joint-membership-single-writer
+      - raft-process-pause-plus-partition
+      - raft-quorum-loss-fail-closed
+      - raft-incomplete-run-replay-diagnostics
+    candidate_specific_operations:
+      - OpenRaft Config validation
+      - SnapshotPolicy validation
+      - HeptaBao adapter guards for deterministic apply, snapshot conflict, joint quorum, partition and quorum loss
+    explicit_limitations:
+      - no OpenRaft Raft instance is started by this narrow candidate-adapter binary
+      - no network factory is implemented by this narrow candidate-adapter binary
+      - no log store or state machine store is implemented by this narrow candidate-adapter binary
+      - no OpenRaft membership transition is executed by this narrow candidate-adapter binary
+      - no linearizability or snapshot-install claim is permitted from this adapter alone
+    promotion_blocked_until:
+      - full in-memory network and storage adapter executes the same seeded cases
+      - deterministic FSM and snapshot installation traces are independently reproduced
+      - distributed-systems review signs the candidate-specific evidence
+    state: IMPLEMENTED_PARTIAL_UNEXECUTED
+
+comparison_results:
+  INVARIANT_EQUIVALENT_UNREVIEWED:
+    meaning: every named candidate case passed while the reference case passed and adapter scope is FULL_REFERENCE_CASE_SET
+    promotion_effect: NONE
+  PARTIAL_ADAPTER_SCOPE_BLOCKS_PROMOTION:
+    meaning: all named cases passed but the adapter explicitly covers only an API seam/failure model
+    promotion_effect: BLOCK
+  DEVIATION_OR_DEFECT_REVIEW_REQUIRED:
+    meaning: at least one candidate case failed while its reference case passed
+    promotion_effect: BLOCK
+  INCOMPLETE_BLOCKED:
+    meaning: candidate evidence contains blocked, unexecuted or unknown cases
+    promotion_effect: BLOCK
+
+current_state:
+  candidate_adapters_implemented: 4
+  full_reference_case_adapters: 3
+  partial_scope_adapters: 1
+  candidate_adapter_executions: 0
+  candidate_comparisons: 0
+  independent_reproductions: 0
+  candidates_selected: 0
+  qualification: false
+  authority_effect: NONE

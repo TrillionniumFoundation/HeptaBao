@@ -1,0 +1,20 @@
+{
+  "artifacts": [
+    {
+      "path": "runtime-5eed20260828cafe.json",
+      "sha256": "aa2ad54430e599f7c19cce7325a3985a4e669c513e3913aafe5da6968718afce"
+    },
+    {
+      "path": "tls-5eed20260828cafe.json",
+      "sha256": "8ae8af528f9503aa33ffb102c6e4313ac0aa46ea1b5cae2a2168395c223fc6ee"
+    },
+    {
+      "path": "raft-5eed20260828cafe.json",
+      "sha256": "35a0f0f9fe6b3bb9eb4c1631a01f59d0c881775a19694e40c9a04ad954c1cce5"
+    }
+  ],
+  "authority_effect": "NONE",
+  "qualification": false,
+  "schema": "heptabao.h02-seeded-behavior-manifest.v1",
+  "selection_effect": "NONE"
+}

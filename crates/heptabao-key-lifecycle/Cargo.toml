@@ -1,0 +1,17 @@
+[package]
+name = "heptabao-key-lifecycle"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-barrier-api = { path = "../heptabao-barrier-api" }
+heptabao-journal-api = { path = "../heptabao-journal-api" }
+
+[lints]
+workspace = true

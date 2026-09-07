@@ -1,0 +1,49 @@
+schema: heptabao.dependency-registry-evidence.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+evidence_id: HB-DEP-REGISTRY-ASYNC-TOKIO-0001
+candidate_id: HB-DEP-ASYNC-TOKIO
+capability: ASYNC_RUNTIME
+captured_at_utc: '2026-08-28T08:00:00Z'
+release_binding:
+  tag: tokio-1.53.1
+  commit_sha: 75fef53d0a8590c2d1dbb63672aa7b7d1ef51155
+  tree_sha: 26def82f663c2936cbd062e54c8cf8db81fc2a1c
+registry_source:
+  repository: https://github.com/rust-lang/crates.io-index
+  ref: refs/heads/master
+  commit_sha: 777d86659770fa5d3eac37c83f3772de7faf0a83
+  path: to/ki/tokio
+  blob_sha: b525c7ca48219b6d3f36ad4594b9df2004fa8281
+registry_entry:
+  package: tokio
+  version: 1.53.1
+  checksum_sha256: 202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed
+  yanked: false
+  rust_version: '1.71'
+  published_at_utc: '2026-07-20T17:06:09Z'
+  observed_features:
+  - default=[]
+  - rt
+  - rt-multi-thread
+  - sync
+  - time
+  - net
+  - signal
+  - macros
+byte_verification:
+  status: UNEXECUTED
+  crate_download_sha256: null
+  matches_registry_checksum: false
+  source_archive_sha256: null
+  source_archive_digest_kind: NOT_CAPTURED
+  package_vcs_commit_sha: null
+  independent_reproduction_count: 0
+review_status:
+  platform: PENDING
+  security: PENDING
+  license: PENDING
+  specialist: NOT_REQUIRED_OR_PENDING_PROFILE
+selection_state: IDENTIFIED
+qualification: false
+authority_effect: NONE

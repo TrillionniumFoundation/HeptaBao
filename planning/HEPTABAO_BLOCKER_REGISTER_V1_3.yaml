@@ -1,0 +1,87 @@
+schema: heptabao.blocker-register-extension.v1_3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1.yaml
+inherited_counts:
+  repository_controlled: 13
+  external_or_repository_setting: 8
+  total: 21
+added_blockers:
+- id: HB-BLK-REPO-014
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: automatic snapshot purge invalidated the in-memory replay test topology
+  owner_role: distributed-systems-qualification
+  state: REMEDIATION_IMPLEMENTED_LOCAL
+  closure_criteria:
+  - the replay topology retains logs until the fresh state machine catches up
+  - manual snapshot delivery remains tested
+  - Rust 1.88 and 1.98 exact-head matrix passes
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/inmemory_cluster/cluster.rs
+  - plan-v1.3-foundation/openraft-exact-head
+  closure_receipt_required: true
+- id: HB-BLK-REPO-015
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: OS resume validation assumed a fixed leader identity after a legal re-election
+  owner_role: distributed-systems-platform
+  state: REMEDIATION_IMPLEMENTED_LOCAL
+  closure_criteria:
+  - post-resume operations discover one bounded consensus leader
+  - writes and ReadIndex execute on the discovered leader
+  - SIGSTOP progress remains frozen and resumes afterward
+  - exact-head blocker matrix passes
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/os_clock.rs
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/os_clock_cluster.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-016
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: no executable H03 request and P0 server vertical slice existed
+  owner_role: protocol-request-pipeline-security
+  state: REMEDIATION_IMPLEMENTED_LOCAL
+  closure_criteria:
+  - strict protocol crate and operation registry compile without warnings
+  - loopback P0 socket smoke and all unit negatives pass
+  - audit ordering and post-commit recovery semantics pass
+  - independent security review is current
+  evidence:
+  - crates/heptabao-protocol
+  - crates/heptabao-p0-server
+  - docs/execution/HEPTABAO_P0_DEV_MEMORY_EXECUTION_CONTRACT_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-017
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: Authbus cross-process time request replay and authorization boundary was absent
+  owner_role: identity-protocol-security
+  state: REMEDIATION_IMPLEMENTED_LOCAL
+  closure_criteria:
+  - wire validity uses bounded Unix seconds not process-local monotonic ticks
+  - assertion binds request ID method target Host and body
+  - signature verifies before atomic replay record
+  - verified identity has authorization effect NONE
+  - production provider and HA qualification remain separately blocked
+  evidence:
+  - crates/heptabao-authbus-contracts
+  - docs/auth/HEPTABAO_AUTHBUS_INTEGRATION_CONTRACT_V1.md
+  - planning/HEPTABAO_WORK_PACKAGE_EXTENSION_V1_3.yaml
+  closure_receipt_required: true
+effective_counts:
+  repository_controlled: 17
+  external_or_repository_setting: 8
+  total: 25
+external_blockers_must_remain_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+qualification: false
+authority_effect: NONE

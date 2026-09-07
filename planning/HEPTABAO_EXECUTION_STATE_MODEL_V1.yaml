@@ -1,0 +1,71 @@
+schema: heptabao.execution-state-model.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+authority_effect: NONE
+maturity_order:
+- PLANNED
+- SPECIFIED
+- IMPLEMENTED
+- LOCALLY_EXECUTED
+- REMOTELY_EXECUTED
+- CROSS_PLATFORM_EXECUTED
+- INDEPENDENTLY_REPRODUCED
+- REVIEWED
+- QUALIFIED
+- CLAIMED
+- AUTHORIZED
+- RELEASED
+execution_outcomes:
+- PASS
+- FAIL
+- BLOCKED
+- UNEXECUTED
+- UNKNOWN
+terminal_interruptions:
+- BASE_DRIFT
+- BLOCKED_UPSTREAM
+- EXTERNAL_ACTION_REQUIRED
+- REVOKED
+- RESUME_REQUIRED
+rules:
+- maturity advancement requires immutable evidence for every skipped-prevention predecessor
+- CI may not advance beyond CROSS_PLATFORM_EXECUTED
+- reviewed requires accountable identities distinct from critical author where required
+- qualified has authority_effect NONE
+- claimed has authority_effect NONE
+- authorized requires a separate current scoped grant
+- missing ambiguous expired revoked or scope-mismatched evidence fails closed
+transitions:
+- from: PLANNED
+  to: SPECIFIED
+  required_evidence: planned-to-specified-receipt
+- from: SPECIFIED
+  to: IMPLEMENTED
+  required_evidence: specified-to-implemented-receipt
+- from: IMPLEMENTED
+  to: LOCALLY_EXECUTED
+  required_evidence: implemented-to-locally_executed-receipt
+- from: LOCALLY_EXECUTED
+  to: REMOTELY_EXECUTED
+  required_evidence: locally_executed-to-remotely_executed-receipt
+- from: REMOTELY_EXECUTED
+  to: CROSS_PLATFORM_EXECUTED
+  required_evidence: remotely_executed-to-cross_platform_executed-receipt
+- from: CROSS_PLATFORM_EXECUTED
+  to: INDEPENDENTLY_REPRODUCED
+  required_evidence: cross_platform_executed-to-independently_reproduced-receipt
+- from: INDEPENDENTLY_REPRODUCED
+  to: REVIEWED
+  required_evidence: independently_reproduced-to-reviewed-receipt
+- from: REVIEWED
+  to: QUALIFIED
+  required_evidence: reviewed-to-qualified-receipt
+- from: QUALIFIED
+  to: CLAIMED
+  required_evidence: qualified-to-claimed-receipt
+- from: CLAIMED
+  to: AUTHORIZED
+  required_evidence: claimed-to-authorized-receipt
+- from: AUTHORIZED
+  to: RELEASED
+  required_evidence: authorized-to-released-receipt

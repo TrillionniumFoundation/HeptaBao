@@ -1,0 +1,17 @@
+[package]
+name = "heptabao-operation-ledger"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-journal-api = { path = "../heptabao-journal-api" }
+heptabao-storage-api = { path = "../heptabao-storage-api" }
+
+[lints]
+workspace = true

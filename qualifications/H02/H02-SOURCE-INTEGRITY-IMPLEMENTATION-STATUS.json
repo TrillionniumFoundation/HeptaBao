@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.h02-source-integrity-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h02-source-integrity-evidence",
+  "stack_base_branch": "codex/h01-h02-next-foundation",
+  "program_authority_gate": "H00",
+  "status": "SOURCE_AND_REGISTRY_CONTRACTS_IMPLEMENTED_NOT_QUALIFIED",
+  "implemented": {
+    "canonical_candidate_id_correction": true,
+    "source_integrity_policy": true,
+    "registry_evidence_schema": true,
+    "registry_checksum_evidence_unreviewed": 3,
+    "byte_rehash_workflow": true,
+    "execution_profiles_specified": 4,
+    "execution_profiles_executed": 0,
+    "provider_neutral_platform_contracts": true,
+    "downloaded_packages_verified": 0,
+    "source_archives_observed": 0,
+    "independent_reproductions": 0,
+    "unsafe_inventory_complete": false,
+    "advisory_review_complete": false,
+    "effective_msrv_complete": false,
+    "specialist_reviews_complete": false
+  },
+  "candidates": [
+    {
+      "candidate_id": "HB-DEP-ASYNC-TOKIO",
+      "registry_checksum_sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+      "byte_verification": "UNEXECUTED",
+      "state": "IDENTIFIED"
+    },
+    {
+      "candidate_id": "HB-DEP-TLS-RUSTLS",
+      "registry_checksum_sha256": "0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06",
+      "byte_verification": "UNEXECUTED",
+      "state": "IDENTIFIED"
+    },
+    {
+      "candidate_id": "HB-DEP-RAFT-OPENRAFT",
+      "registry_checksum_sha256": "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8",
+      "byte_verification": "UNEXECUTED",
+      "state": "IDENTIFIED"
+    }
+  ],
+  "remote_execution": {
+    "status": "PENDING_NEW_WORKFLOW_RUN",
+    "runner_id": null,
+    "steps": [],
+    "interpretation": "No new executable runner evidence is claimed by this source commit."
+  },
+  "qualification": {
+    "status": "NOT_QUALIFIED",
+    "receipt": null,
+    "compatibility_claim": null,
+    "authority_grant": null
+  },
+  "authority_flags": {
+    "prototype_selection_authority": false,
+    "production_dependency_authority": false,
+    "crypto_implementation_authority": false,
+    "raft_implementation_authority": false,
+    "compatibility_claim": false,
+    "production_authority": false,
+    "migration_authority": false,
+    "release_authority": false
+  },
+  "authority_effect": "NONE",
+  "next_blockers": [
+    "Acquire an executable runner for validation and byte-rehash jobs",
+    "Reproduce every package checksum and source-archive observation in two independent environments",
+    "Complete transitive dependency, SBOM, unsafe/native/build-script and advisory review",
+    "Execute declared and effective MSRV plus Rust 1.98 profiles",
+    "Execute runtime, TLS, Raft and provenance profiles with replayable seeds",
+    "Obtain independent platform, security, license and distributed-systems approvals",
+    "Keep all candidates IDENTIFIED until a signed bounded prototype selection receipt exists"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_pr40_reconciliation_status_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "plan_id", "revision", "status", "source_input", "inherited",
+    "reconciled", "local_evidence", "external_gaps", "qualification",
+    "compatibility_claim", "selected_candidates", "selection_effect", "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.pr40-reconciliation-status.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.2.1-pr40-r1"},
+    "status": {"const": "PATCH_CANDIDATE_NOT_QUALIFIED"},
+    "source_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "pull_request", "branch", "commit", "tree"],
+      "properties": {
+        "repository": {"const": "ProfHepta/HeptaBao"},
+        "pull_request": {"const": 40},
+        "branch": {"const": "codex/plan-v1.2.1-final-gap-closure-v1"},
+        "commit": {"const": "cedb6c95a5323f7004551087d75e2f57a1ec484a"},
+        "tree": {"const": "e0032b54bad2048802cd61f6bbc7d6d1f9ce4003"}
+      }
+    },
+    "inherited": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_head_matrix_runner_hardened", "application_result_taxonomy_preserved",
+        "full_process_group_timeout", "source_rechecked_after_matrix"
+      ],
+      "properties": {
+        "exact_head_matrix_runner_hardened": {"const": true},
+        "application_result_taxonomy_preserved": {"const": true},
+        "full_process_group_timeout": {"const": true},
+        "source_rechecked_after_matrix": {"const": true}
+      }
+    },
+    "reconciled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initialized_generation_marker", "missing_initialized_generation_fails_closed",
+        "legacy_generation_adoption_requires_validation", "non_regular_or_symlinked_storage_rejected",
+        "guarded_snapshot_source_semantically_bound", "obsolete_unguarded_snapshot_helper_removed",
+        "strict_rust_lint_repairs_applied", "workflow_is_read_only"
+      ],
+      "properties": {
+        "initialized_generation_marker": {"const": true},
+        "missing_initialized_generation_fails_closed": {"const": true},
+        "legacy_generation_adoption_requires_validation": {"const": true},
+        "non_regular_or_symlinked_storage_rejected": {"const": true},
+        "guarded_snapshot_source_semantically_bound": {"const": true},
+        "obsolete_unguarded_snapshot_helper_removed": {"const": true},
+        "strict_rust_lint_repairs_applied": {"const": true},
+        "workflow_is_read_only": {"const": true}
+      }
+    },
+    "local_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "python_and_schema_validation", "rust_compile_test_clippy",
+        "exact_head_24_entry_matrix", "independent_reproduction"
+      ],
+      "properties": {
+        "python_and_schema_validation": {"enum": ["PASS", "FAIL", "UNEXECUTED"]},
+        "rust_compile_test_clippy": {"const": "UNEXECUTED"},
+        "exact_head_24_entry_matrix": {"const": "UNEXECUTED"},
+        "independent_reproduction": {"const": "UNEXECUTED"}
+      }
+    },
+    "external_gaps": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 3}
+    },
+    "qualification": {"const": false},
+    "compatibility_claim": {"const": false},
+    "selected_candidates": {"const": []},
+    "selection_effect": {"const": "NONE"},
+    "authority_effect": {"const": "NONE"}
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_blocker_closure_result_v1.schema.json",
+  "title": "HeptaBao H02 OS, durability and clock blocker closure result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "version",
+    "seed",
+    "status",
+    "components",
+    "scope",
+    "promotion_effect",
+    "qualification",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.h02-blocker-closure-result.v1"},
+    "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+    "version": {"const": "0.10.0-alpha.33"},
+    "seed": {"type": "string", "pattern": "^0x[0-9a-f]{16}$"},
+    "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]},
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os_suspend", "durable_faults", "clock_faults"],
+      "properties": {
+        "os_suspend": {"$ref": "#/$defs/component"},
+        "durable_faults": {"$ref": "#/$defs/component"},
+        "clock_faults": {"$ref": "#/$defs/component"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "os_process_suspend_executed",
+        "heptabao_file_wal_faults_executed",
+        "openraft_real_writes_and_readindex_under_wall_projection",
+        "openraft_durable_store_integrated",
+        "per_node_kernel_clock_skew",
+        "independent_external_approvals"
+      ],
+      "properties": {
+        "os_process_suspend_executed": {"type": "boolean"},
+        "heptabao_file_wal_faults_executed": {"type": "boolean"},
+        "openraft_real_writes_and_readindex_under_wall_projection": {"type": "boolean"},
+        "openraft_durable_store_integrated": {"type": "boolean"},
+        "per_node_kernel_clock_skew": {"type": "boolean"},
+        "independent_external_approvals": {"type": "boolean"}
+      }
+    },
+    "promotion_effect": {"const": "BLOCK_PENDING_OPENRAFT_DURABLE_STORE_INTEGRATION_PER_NODE_KERNEL_CLOCK_AND_EXTERNAL_APPROVALS"},
+    "qualification": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": ["status", "qualification", "selection_effect", "authority_effect"],
+      "properties": {
+        "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]},
+        "qualification": {"const": false},
+        "selection_effect": {"const": "NONE"},
+        "authority_effect": {"const": "NONE"}
+      }
+    }
+  }
+}

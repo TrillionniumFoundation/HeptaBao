@@ -1,0 +1,50 @@
+schema: heptabao.v1-4-4-module-documentation-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.4.4
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_AND_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_4_MODULE_DOCUMENTATION_CLOSURE.md
+coverage: planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_4.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_4.yaml
+source_baseline:
+  commit: 3582fda50cd9b03ca39713814cdd8229462bbbd2
+  tree: 123c99b71c7e33169bef6033eaefb71e386ed6ca
+implementation:
+  one_guide_per_workspace_crate: IMPLEMENTED_SOURCE
+  as_built_dependency_and_public_api_index: IMPLEMENTED_SOURCE
+  documentation_coverage_validator: IMPLEMENTED_SOURCE
+  readme_current_truth_refresh: IMPLEMENTED_SOURCE
+remaining_product_work:
+- heptabao-server
+- heptabao-core-pipeline
+- heptabao-policy
+- heptabao-identity
+- heptabao-token
+- heptabao-lease
+- heptabao-system
+- heptabao-namespace
+- heptabao-plugin-host
+- heptabao-storage-raft
+- heptabao-cluster
+- heptabao-migration
+- heptabao-cli
+- heptabao-agent
+- heptabao-proxy
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

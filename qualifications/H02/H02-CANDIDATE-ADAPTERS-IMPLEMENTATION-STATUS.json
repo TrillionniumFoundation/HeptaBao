@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.h02-candidate-adapters-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h02-candidate-adapters-v1",
+  "stack_base_branch": "codex/h02-seeded-behavior-harnesses",
+  "implementation_commit": "279796d728c04966f538d71aea77eaf57befea98",
+  "implementation_tree": "bf93e9549f5a306669a5be1c63e14894f0dfe489",
+  "status": "CANDIDATE_ADAPTERS_IMPLEMENTED_REMOTE_UNEXECUTED_NOT_QUALIFIED",
+  "implemented": {
+    "candidate_adapters": 4,
+    "full_reference_case_adapters": 3,
+    "partial_scope_adapters": 1,
+    "case_ids_per_adapter": 6,
+    "toolchain_seed_matrix_entries": 24,
+    "candidate_evidence_collector": true,
+    "reference_candidate_comparator": true,
+    "comparison_schema": true,
+    "synthetic_public_certificates": 3,
+    "private_keys_committed": false,
+    "semantic_negative_tests": 10,
+    "candidate_adapter_executions": 0,
+    "candidate_comparisons": 0,
+    "independent_reproductions": 0,
+    "candidates_selected": 0
+  },
+  "adapters": [
+    {
+      "profile": "tokio",
+      "candidate_id": "HB-DEP-ASYNC-TOKIO",
+      "version": "1.53.1",
+      "domain": "RUNTIME",
+      "scope": "FULL_REFERENCE_CASE_SET",
+      "toolchains": ["1.71.0", "1.98.0"],
+      "execution_status": "UNEXECUTED"
+    },
+    {
+      "profile": "rustls-ring",
+      "candidate_id": "HB-DEP-TLS-RUSTLS",
+      "version": "0.23.43",
+      "domain": "TLS",
+      "scope": "FULL_REFERENCE_CASE_SET",
+      "toolchains": ["1.71.0", "1.98.0"],
+      "execution_status": "UNEXECUTED"
+    },
+    {
+      "profile": "rustls-aws-lc",
+      "candidate_id": "HB-DEP-TLS-RUSTLS",
+      "version": "0.23.43",
+      "domain": "TLS",
+      "scope": "FULL_REFERENCE_CASE_SET",
+      "toolchains": ["1.71.0", "1.98.0"],
+      "execution_status": "UNEXECUTED"
+    },
+    {
+      "profile": "openraft",
+      "candidate_id": "HB-DEP-RAFT-OPENRAFT",
+      "version": "0.10.0-alpha.33",
+      "domain": "RAFT",
+      "scope": "API_SEAM_AND_FAILURE_MODEL_PARTIAL",
+      "toolchains": ["1.85.0", "1.98.0"],
+      "execution_status": "UNEXECUTED",
+      "promotion_blocked": true,
+      "limitations": [
+        "No OpenRaft Raft instance is started",
+        "No network factory or durable log/state-machine store is implemented",
+        "No real membership transition, snapshot installation or linearizability history is executed"
+      ]
+    }
+  ],
+  "local_validation": {
+    "status": "LOCAL_UNATTESTED_PYTHON_PASS_RUST_UNEXECUTED_NOT_QUALIFICATION",
+    "python_semantic_negative_tests": {"passed": 10, "failed": 0, "unknown": 0},
+    "python_syntax": "PASS",
+    "rust_candidate_compile": "UNEXECUTED_RUST_TOOLCHAIN_NOT_PRESENT_IN_LOCAL_CONTAINER",
+    "qualification_effect": "NONE",
+    "authority_effect": "NONE"
+  },
+  "remote_execution": {
+    "workflow": "h02-candidate-adapters",
+    "run_id": 33167998944,
+    "job_id": 98837933492,
+    "head_sha": "279796d728c04966f538d71aea77eaf57befea98",
+    "github_status": "queued",
+    "runner_id": null,
+    "runner_name": null,
+    "steps": [],
+    "status": "INFRASTRUCTURE_UNEXECUTED",
+    "interpretation": "No runner was assigned and no validation or candidate matrix step executed. This is neither passing evidence nor a code-test failure."
+  },
+  "qualification": {
+    "status": "NOT_QUALIFIED",
+    "receipt": null,
+    "compatibility_claim": null,
+    "authority_grant": null
+  },
+  "authority_flags": {
+    "prototype_selection_authority": false,
+    "production_dependency_authority": false,
+    "crypto_implementation_authority": false,
+    "raft_implementation_authority": false,
+    "compatibility_claim": false,
+    "production_authority": false,
+    "migration_authority": false,
+    "release_authority": false
+  },
+  "authority_effect": "NONE",
+  "next_blockers": [
+    "Acquire an executable attested runner and execute all 24 candidate/toolchain/seed entries",
+    "Fix any compile or runtime failures while retaining failed evidence",
+    "Post-run enrich evidence with numeric runner and job identity",
+    "Reproduce exact candidate evidence in a second independent attested environment",
+    "Complete exact package, locked graph, SBOM, advisory, license, unsafe/native/build-script and effective-MSRV reviews",
+    "Replace the partial OpenRaft seam with an in-memory network, log store and state-machine adapter before any Raft promotion",
+    "Obtain independent platform, security, crypto/license and distributed-systems approvals",
+    "Keep all candidates IDENTIFIED until a separate signed bounded prototype-selection receipt exists"
+  ]
+}

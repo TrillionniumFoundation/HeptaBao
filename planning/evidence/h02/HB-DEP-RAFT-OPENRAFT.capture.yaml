@@ -1,0 +1,60 @@
+schema: heptabao.dependency-research-capture.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+plan_revision: '1.1'
+capture_id: HB-DEP-CAPTURE-RAFT-OPENRAFT-0001
+candidate_id: HB-DEP-RAFT-OPENRAFT
+capability: RAFT
+capture_status: OFFICIAL_METADATA_CAPTURED_UNREVIEWED
+captured_at_utc: '2026-08-28T06:34:00Z'
+official_source:
+  repository: https://github.com/databendlabs/openraft
+  release_api: https://api.github.com/repos/databendlabs/openraft/releases/365438415
+  tag_ref_api: https://api.github.com/repos/databendlabs/openraft/git/refs/tags/v0.10.0-alpha.33
+  manifest_path: Cargo.toml
+  manifest_ref: v0.10.0-alpha.33
+release:
+  tag: v0.10.0-alpha.33
+  version: 0.10.0-alpha.33
+  published_at_utc: '2026-08-05T10:12:48Z'
+  commit_sha: 2be3f99a23c0ec734aefc18d1c8e756b35567c35
+  tree_sha: 84c2f86b6bdffb3f25ffbc7a9341ef7295a5ac28
+  commit_signature_status: UNSIGNED
+manifest_observation:
+  package_names: [openraft]
+  declared_license: MIT OR Apache-2.0
+  edition: '2024'
+  declared_rust_version: null
+  default_features: []
+  manifest_blob_sha: 4fa4ab541c8940cf324b94e950c8f1118433aa32
+source_integrity:
+  tag_resolves_to_commit: true
+  commit_tree_resolved: true
+  source_archive_sha256: null
+  crate_package_checksum: null
+  integrity_status: PARTIAL_OFFICIAL_GIT_METADATA_ONLY
+review_status:
+  license: CAPTURED_UNREVIEWED
+  maintenance: CAPTURED_UNREVIEWED
+  security_advisories: CAPTURED_UNREVIEWED
+  unsafe_inventory: PENDING
+  msrv_verification: PENDING
+  api_replacement_seam: DESIGNED_UNREVIEWED
+  deterministic_tests: IDENTIFIED_UNEXECUTED
+  benchmark: PENDING
+  qualification_plan: DRAFTED
+  independent_review: PENDING
+selection_state: IDENTIFIED
+authority_effect: NONE
+remaining_evidence:
+  - bind and verify the crates.io-index checksum in the separate registry evidence object
+  - download and hash the release source archive and crates.io package in an attested runner
+  - capture the crate-level feature manifest in addition to workspace metadata
+  - establish and execute the effective MSRV for the exact feature/profile graph
+  - review the alpha API-stability risk and breaking linearizable-read and snapshot-metadata changes
+  - inventory unsafe code and all storage, network and runtime transitive dependencies
+  - replay deterministic FSM traces across architectures and process restarts
+  - run snapshot-conflict, membership, process-pause, partition, quorum-loss and incomplete-run diagnostics
+  - run independent Jepsen-style linearizability qualification rather than relying on upstream claims
+  - benchmark an equal-durability profile behind the HeptaBao consensus, storage and network traits
+  - obtain distributed-systems, platform and security approvals
+  - issue no prototype selection receipt until every mandatory field is complete

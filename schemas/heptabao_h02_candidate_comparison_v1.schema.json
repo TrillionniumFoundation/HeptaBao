@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/h02-candidate-comparison-v1.json",
+  "title": "HeptaBao H02 Reference/Candidate Comparison V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "reference_evidence_sha256",
+    "candidate_evidence_sha256",
+    "candidate_id",
+    "version",
+    "profile_id",
+    "domain",
+    "seed",
+    "adapter_scope",
+    "case_pairs",
+    "result",
+    "review_status",
+    "qualification",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.h02-candidate-comparison.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.1"},
+    "reference_evidence_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_evidence_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_id": {"pattern": "^HB-DEP-[A-Z0-9_-]+$"},
+    "version": {"type": "string", "minLength": 1},
+    "profile_id": {"pattern": "^HB-H02-BEHAVIOR-[A-Z0-9_-]+$"},
+    "domain": {"enum": ["RUNTIME", "TLS", "RAFT"]},
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decimal", "hex"],
+      "properties": {
+        "decimal": {"type": "integer", "minimum": 0, "maximum": 18446744073709551615},
+        "hex": {"type": "string", "pattern": "^0x[0-9a-f]{16}$"}
+      }
+    },
+    "adapter_scope": {"enum": ["FULL_REFERENCE_CASE_SET", "API_SEAM_AND_FAILURE_MODEL_PARTIAL"]},
+    "case_pairs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "reference_status", "candidate_status", "classification"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "reference_status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNEXECUTED", "UNKNOWN"]},
+          "candidate_status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNEXECUTED", "UNKNOWN"]},
+          "classification": {"enum": ["INVARIANT_MATCH", "DEVIATION_OR_DEFECT", "INCOMPLETE", "REFERENCE_NOT_PASS"]}
+        }
+      }
+    },
+    "result": {
+      "enum": [
+        "INVARIANT_EQUIVALENT_UNREVIEWED",
+        "PARTIAL_ADAPTER_SCOPE_BLOCKS_PROMOTION",
+        "DEVIATION_OR_DEFECT_REVIEW_REQUIRED",
+        "INCOMPLETE_BLOCKED"
+      ]
+    },
+    "review_status": {"const": "PENDING"},
+    "qualification": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "authority_effect": {"const": "NONE"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"result": {"const": "INVARIANT_EQUIVALENT_UNREVIEWED"}}},
+      "then": {
+        "properties": {
+          "adapter_scope": {"const": "FULL_REFERENCE_CASE_SET"},
+          "case_pairs": {"items": {"properties": {"classification": {"const": "INVARIANT_MATCH"}}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"result": {"const": "PARTIAL_ADAPTER_SCOPE_BLOCKS_PROMOTION"}}},
+      "then": {
+        "properties": {
+          "adapter_scope": {"const": "API_SEAM_AND_FAILURE_MODEL_PARTIAL"},
+          "case_pairs": {"items": {"properties": {"classification": {"const": "INVARIANT_MATCH"}}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

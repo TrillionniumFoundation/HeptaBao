@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_blocker_closure_evidence_v1.schema.json",
+  "title": "HeptaBao H02 blocker closure evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "candidate",
+    "source",
+    "execution",
+    "result",
+    "result_sha256",
+    "technical_scope",
+    "remaining_external_gaps",
+    "review_status",
+    "qualification",
+    "selection_effect",
+    "promotion_effect",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.h02-blocker-closure-evidence.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.1"},
+    "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "version", "profile_id"],
+      "properties": {
+        "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+        "version": {"const": "0.10.0-alpha.33"},
+        "profile_id": {"const": "HB-H02-BLOCKER-CLOSURE-OPENRAFT-0_10_0_ALPHA_33"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "branch", "commit", "tree", "clean_tree", "manifest_sha256", "cargo_lock_sha256"],
+      "properties": {
+        "repository": {"const": "ProfHepta/HeptaBao"},
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "clean_tree": {"type": "boolean"},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "cargo_lock_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seed", "toolchain", "target", "exit_code", "environment_id", "executor_kind", "runner_id", "runner_name"],
+      "properties": {
+        "seed": {"type": "string", "pattern": "^0x[0-9a-f]{16}$"},
+        "toolchain": {"enum": ["1.88.0", "1.98.0"]},
+        "target": {"const": "x86_64-unknown-linux-gnu"},
+        "exit_code": {"type": "integer"},
+        "environment_id": {"type": "string", "minLength": 1},
+        "executor_kind": {"enum": ["github-hosted", "self-hosted", "local-unattested"]},
+        "runner_id": {"type": "string", "minLength": 1},
+        "runner_name": {"type": "string", "minLength": 1}
+      }
+    },
+    "result": {"$ref": "heptabao_h02_blocker_closure_result_v1.schema.json"},
+    "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "technical_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os_suspend", "file_wal_faults", "real_openraft_clock_projection"],
+      "properties": {
+        "os_suspend": {"type": "boolean"},
+        "file_wal_faults": {"type": "boolean"},
+        "real_openraft_clock_projection": {"type": "boolean"}
+      }
+    },
+    "remaining_external_gaps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openraft_durable_store_integration", "per_node_kernel_clock_skew", "second_independent_attested_environment", "independent_approvals", "signed_selection_receipt"],
+      "properties": {
+        "openraft_durable_store_integration": {"type": "boolean"},
+        "per_node_kernel_clock_skew": {"type": "boolean"},
+        "second_independent_attested_environment": {"type": "boolean"},
+        "independent_approvals": {"type": "boolean"},
+        "signed_selection_receipt": {"type": "boolean"}
+      }
+    },
+    "review_status": {"const": "PENDING"},
+    "qualification": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "promotion_effect": {"const": "BLOCK_PENDING_OPENRAFT_DURABLE_STORE_INTEGRATION_PER_NODE_KERNEL_CLOCK_AND_EXTERNAL_APPROVALS"},
+    "authority_effect": {"const": "NONE"}
+  }
+}

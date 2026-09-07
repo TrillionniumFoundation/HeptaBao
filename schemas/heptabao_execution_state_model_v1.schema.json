@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_execution_state_model_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "authority_effect",
+    "maturity_order",
+    "execution_outcomes",
+    "terminal_interruptions",
+    "rules",
+    "transitions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.execution-state-model.v1"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "revision": {
+      "const": "1.2"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "maturity_order": {
+      "type": "array",
+      "minItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "execution_outcomes": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true
+    },
+    "terminal_interruptions": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 5
+    },
+    "transitions": {
+      "type": "array",
+      "minItems": 11,
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "required_evidence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

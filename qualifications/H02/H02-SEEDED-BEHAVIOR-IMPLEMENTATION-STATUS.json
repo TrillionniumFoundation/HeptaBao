@@ -1,0 +1,100 @@
+{
+  "authority_effect": "NONE",
+  "authority_flags": {
+    "compatibility_claim": false,
+    "crypto_implementation_authority": false,
+    "migration_authority": false,
+    "production_authority": false,
+    "production_dependency_authority": false,
+    "prototype_selection_authority": false,
+    "raft_implementation_authority": false,
+    "release_authority": false
+  },
+  "implementation_commit": "dc5f18bea2e039e2897cd89a3e502e96c4580b8d",
+  "implementation_tree": "52cd4c67cda5984183bef11bae31e230512cd35a",
+  "implemented": {
+    "behavior_cases": 18,
+    "candidate_adapters_executed": 0,
+    "evidence_schema": true,
+    "github_seed_matrix_entries": 9,
+    "independent_reproduction_bundles": 0,
+    "independent_reproduction_merger": true,
+    "independent_reproduction_schema": true,
+    "reference_models": 3,
+    "replay_verification": true,
+    "semantic_negative_tests": 12
+  },
+  "local_execution": {
+    "attested": false,
+    "authority_effect": "NONE",
+    "environment_id": "chatgpt-local-container-20260828-h02-behavior",
+    "plan_validator": "PASS",
+    "python": "3.13.5",
+    "python_tests": {
+      "failed": 0,
+      "passed": 12,
+      "unknown": 0
+    },
+    "qualification_effect": "NONE",
+    "reference_models": [
+      {
+        "cases_passed": 6,
+        "domain": "RUNTIME",
+        "file_sha256": "e5ff33f9444632c9f544e7176aaf318c114358b4a64fe4433098bf86e93a5cc3",
+        "final_state_sha256": "0505150138836fa3d2e145ce2344913df49fe2176b0ad6a7abcc174424896670",
+        "trace_sha256": "fdcbe302910b97884f56ded87d094dde938e364b12a5e6ae281fe7832967b16a"
+      },
+      {
+        "cases_passed": 6,
+        "domain": "TLS",
+        "file_sha256": "8d504f27ed5f04eff00c7264ce3165560e597400663ab18f3810df704bb6733e",
+        "final_state_sha256": "b72582fc0e01763f7bd3df3c053efcbc1d1b8ec396fe105b03a1a49c3c5fce57",
+        "trace_sha256": "0705b82e40a550216693067c2fd3c77d26b6cae99a5fd9c9f327d1b8d775b9c0"
+      },
+      {
+        "cases_passed": 6,
+        "domain": "RAFT",
+        "file_sha256": "c5463972ffc8f6699ccbabd58b12254514127f0ab9637f5a883ba57003826b0d",
+        "final_state_sha256": "79114ed0d6cadd1617c5683f8d0a628dfa71986d39811aaddcfd5951c71c80a5",
+        "trace_sha256": "3e5adfbef64b94200120a60664696b0796cd77b6c987d306f14eb0c6548c7179"
+      }
+    ],
+    "seed": "0x5eed20260828cafe",
+    "status": "LOCAL_UNATTESTED_EXECUTED_PASS_NOT_QUALIFICATION"
+  },
+  "next_blockers": [
+    "Acquire an executable attested runner and execute the nine reference-model matrix entries",
+    "Enrich GitHub evidence with numeric runner/job identity before attestation",
+    "Run the same source/profile/seed in a second independent attested environment",
+    "Implement exact Tokio, rustls ring/aws-lc and OpenRaft candidate adapters",
+    "Execute candidate adapters with the exact H02 feature/toolchain profiles",
+    "Complete advisory, license, unsafe/native/build-script and effective-MSRV review",
+    "Obtain independent platform, security, crypto/license and distributed-systems approvals",
+    "Keep every candidate IDENTIFIED until a signed bounded prototype-selection receipt exists"
+  ],
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "qualification": {
+    "authority_grant": null,
+    "compatibility_claim": null,
+    "receipt": null,
+    "status": "NOT_QUALIFIED"
+  },
+  "remote_execution": {
+    "github_status": "queued",
+    "head_sha": "dc5f18bea2e039e2897cd89a3e502e96c4580b8d",
+    "interpretation": "No runner was assigned. This is neither passing evidence nor a code-test failure.",
+    "job_id": 98821929468,
+    "run_id": 33163071844,
+    "runner_id": null,
+    "runner_name": null,
+    "status": "INFRASTRUCTURE_UNEXECUTED",
+    "steps": [],
+    "workflow": "h02-seeded-behavior-harness"
+  },
+  "revision": "1.1",
+  "schema": "heptabao.h02-seeded-behavior-implementation-status.v1",
+  "source_branch": "codex/h02-seeded-behavior-harnesses",
+  "source_repository": "ProfHepta/HeptaBao",
+  "stack_base_branch": "codex/h02-probes-sbom-msrv",
+  "status": "REFERENCE_MODELS_IMPLEMENTED_LOCAL_UNATTESTED_NOT_QUALIFIED"
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_github_actions_log_manifest_v1.schema.json",
+  "title": "HeptaBao local GitHub Actions evidence log manifest",
+  "description": "Digest-only inventory of evidence files captured before technical receipt emission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "scope", "file_count", "files"],
+  "properties": {
+    "schema": {
+      "const": "heptabao.github-actions-log-manifest.v1"
+    },
+    "scope": {
+      "const": "runner-temp-evidence-before-technical-receipt"
+    },
+    "file_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "size", "digest"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)\\S+$"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

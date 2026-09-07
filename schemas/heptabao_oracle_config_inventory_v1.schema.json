@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-config-inventory-v1.json",
+  "title": "HeptaBao OpenBao Oracle Configuration Inventory V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "baseline_id", "inventory_id", "status", "entries", "coverage", "authority_effect"],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-config-inventory.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "inventory_id": {"pattern": "^HB-CONFIG-[A-Z0-9._-]{8,200}$"},
+    "status": {"enum": ["SEED", "IN_PROGRESS", "CAPTURED", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entry"}},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_seeded", "captured", "reviewed", "qualified", "unknown_semantics", "unowned_critical"],
+      "properties": {
+        "total_seeded": {"type": "integer", "minimum": 0},
+        "captured": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "qualified": {"type": "integer", "minimum": 0},
+        "unknown_semantics": {"type": "integer", "minimum": 0},
+        "unowned_critical": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "key_path",
+        "surface",
+        "value_shape",
+        "criticality",
+        "secret_bearing",
+        "restart_or_reload",
+        "failure_policy",
+        "owner_work_packages",
+        "source_reference",
+        "observation_status",
+        "fixture_status",
+        "notes"
+      ],
+      "properties": {
+        "id": {"pattern": "^HB-CONFIG-ITEM-[A-Z0-9._-]{4,200}$"},
+        "key_path": {"type": "string", "minLength": 1},
+        "surface": {"enum": ["TOP_LEVEL", "LISTENER", "STORAGE", "HA_STORAGE", "SEAL", "TELEMETRY", "SERVICE_REGISTRATION", "PLUGIN", "LOGGING", "CACHE_MLOCK", "LEASE_REQUEST", "NAMESPACE_WORKFLOW", "ENVIRONMENT"]},
+        "value_shape": {"enum": ["BLOCK", "STRING", "BOOLEAN", "INTEGER", "DURATION", "LIST", "MAP", "ENUM", "PATH", "ADDRESS", "SECRET_REFERENCE", "UNKNOWN"]},
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "secret_bearing": {"enum": ["NO", "YES", "REFERENCE_ONLY", "UNKNOWN"]},
+        "restart_or_reload": {"enum": ["STARTUP_ONLY", "SIGHUP_RELOAD", "API_MANAGED", "DYNAMIC_PROVIDER", "UNKNOWN"]},
+        "failure_policy": {"enum": ["FAIL_STARTUP", "FAIL_CLOSED", "DEGRADED_NO_AUTHORITY_WIDENING", "WARN_ONLY", "UNKNOWN"]},
+        "owner_work_packages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])-WP[0-9]{2,3}$"}},
+        "source_reference": {"type": "string", "minLength": 1},
+        "observation_status": {"enum": ["IDENTIFIED", "CAPTURED", "REVIEWED", "QUALIFIED", "UNSUPPORTED", "SUPERSEDED"]},
+        "fixture_status": {"enum": ["NONE", "PLANNED", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED"]},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

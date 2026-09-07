@@ -1,0 +1,45 @@
+schema: heptabao.dependency-registry-evidence.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+evidence_id: HB-DEP-REGISTRY-TLS-RUSTLS-0001
+candidate_id: HB-DEP-TLS-RUSTLS
+capability: TLS
+captured_at_utc: '2026-08-28T08:00:00Z'
+release_binding:
+  tag: v/0.23.43
+  commit_sha: fcf61cdbba30913cfd5b40aefa83989c6233812d
+  tree_sha: 1e54feebaf4f88da54958096809fbd4649aa7ec1
+registry_source:
+  repository: https://github.com/rust-lang/crates.io-index
+  ref: refs/heads/master
+  commit_sha: 777d86659770fa5d3eac37c83f3772de7faf0a83
+  path: ru/st/rustls
+  blob_sha: 1cdf91587227cdf12d253a0a8e8048c1fc1128fb
+registry_entry:
+  package: rustls
+  version: 0.23.43
+  checksum_sha256: 0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06
+  yanked: false
+  rust_version: '1.71'
+  published_at_utc: '2026-07-29T16:14:13Z'
+  observed_features:
+  - default=aws_lc_rs,logging,prefer-post-quantum,std,tls12
+  - ring
+  - fips
+  - custom-provider
+byte_verification:
+  status: UNEXECUTED
+  crate_download_sha256: null
+  matches_registry_checksum: false
+  source_archive_sha256: null
+  source_archive_digest_kind: NOT_CAPTURED
+  package_vcs_commit_sha: null
+  independent_reproduction_count: 0
+review_status:
+  platform: PENDING
+  security: PENDING
+  license: PENDING
+  specialist: NOT_REQUIRED_OR_PENDING_PROFILE
+selection_state: IDENTIFIED
+qualification: false
+authority_effect: NONE

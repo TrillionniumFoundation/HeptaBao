@@ -1,0 +1,433 @@
+schema: heptabao.p0-work-package-contracts.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+profile: HB-P0-DEV-MEMORY
+status: IMPLEMENTED_LOCAL_REMOTE_EXECUTION_REQUIRED_NOT_QUALIFIED
+contracts:
+- id: H03-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: operation-registry
+  objective: exact method/path operation classification
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H03-WP02
+  profile: HB-P0-DEV-MEMORY
+  slug: request-response-types
+  objective: bounded request response error and audit types
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H03-WP07
+  profile: HB-P0-DEV-MEMORY
+  slug: internal-operation-guard
+  objective: unknown and ambiguous operations fail closed
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H04-WP03
+  profile: HB-P0-DEV-MEMORY
+  slug: memory-backend
+  objective: single-process non-durable memory state
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H06-WP03
+  profile: HB-P0-DEV-MEMORY
+  slug: seal-state-machine
+  objective: sealed transitions and guards
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H06-WP04
+  profile: HB-P0-DEV-MEMORY
+  slug: unseal-state-machine
+  objective: development unseal input and fail-closed state
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H06-WP10
+  profile: HB-P0-DEV-MEMORY
+  slug: memory-residue-tests
+  objective: redacted and best-effort zeroized secret storage
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H07-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: request-context
+  objective: request ID monotonic receipt deadline and Host binding
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H07-WP06
+  profile: HB-P0-DEV-MEMORY
+  slug: authoritative-pipeline
+  objective: audit-before-dispatch and response outcome ordering
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H08-WP02
+  profile: HB-P0-DEV-MEMORY
+  slug: acl-matcher
+  objective: development root-token authentication boundary
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H10-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: service-token-codec
+  objective: bounded injected development token matching
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H12-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: audit-event-schema
+  objective: request operation phase commit and status event
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H12-WP04
+  profile: HB-P0-DEV-MEMORY
+  slug: audit-broker-ordering
+  objective: request and response audit happens-before rules
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H12-WP06
+  profile: HB-P0-DEV-MEMORY
+  slug: audit-file-device
+  objective: absolute create-new development file sink
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H16-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: auth-token
+  objective: development token adapter without production issuance
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H17-WP02
+  profile: HB-P0-DEV-MEMORY
+  slug: kv-v1
+  objective: bounded in-memory read write list and delete
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H22-WP01
+  profile: HB-P0-DEV-MEMORY
+  slug: http-listener
+  objective: loopback-only HTTP/1.1 listener
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H22-WP02
+  profile: HB-P0-DEV-MEMORY
+  slug: request-limits
+  objective: head body target header and deadline bounds
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+- id: H22-WP11
+  profile: HB-P0-DEV-MEMORY
+  slug: http-adversarial-tests
+  objective: smuggling canonicalization and framing negatives
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  inputs:
+  - exact-source-commit-tree
+  - heptabao-protocol-contract-v1
+  - p0-execution-contract-v1
+  outputs:
+  - source
+  - unit-and-negative-tests
+  - exact-head-execution-artifacts
+  acceptance:
+    functional: all named P0 cases PASS
+    negative: unknown ambiguous expired sealed unauthenticated and unaudited operations fail closed
+    authority: qualification=false compatibility=false authority=NONE
+  required_review_roles:
+  - program
+  - security
+  - domain-independent
+  authority_effect: NONE
+explicit_non_scope:
+- production-secrets
+- durability
+- ha
+- openbao-compatibility
+- migration
+- release
+qualification: false
+authority_effect: NONE

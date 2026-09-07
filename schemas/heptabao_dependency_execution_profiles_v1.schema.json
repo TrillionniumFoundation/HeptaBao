@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/dependency-execution-profiles-v1.json",
+  "title": "HeptaBao H02 Dependency Execution Profiles V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "plan_id", "revision", "status", "qualification", "selection_effect", "authority_effect", "rules", "profiles"],
+  "properties": {
+    "schema": {"const": "heptabao.h02-execution-profiles.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.1"},
+    "status": {"const": "SPECIFIED_UNEXECUTED"},
+    "qualification": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "authority_effect": {"const": "NONE"},
+    "rules": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "profiles": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["profile_id", "class", "state", "candidates", "required_toolchains", "cases", "required_evidence", "evidence_refs"],
+        "properties": {
+          "profile_id": {"pattern": "^HB-H02-PROFILE-[A-Z0-9-]+$"},
+          "class": {"enum": ["RUNTIME_CORRECTNESS", "TLS_SECURITY", "RAFT_CORRECTNESS", "ARTIFACT_PROVENANCE"]},
+          "state": {"const": "SPECIFIED_UNEXECUTED"},
+          "candidates": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"pattern": "^HB-DEP-[A-Z0-9-]+$"}},
+          "required_toolchains": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "cases": {
+            "type": "array",
+            "minItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "assertion", "failure_effect"],
+              "properties": {
+                "id": {"type": "string", "minLength": 4},
+                "assertion": {"type": "string", "minLength": 8},
+                "failure_effect": {"const": "FAIL_CLOSED_NO_SELECTION"}
+              }
+            }
+          },
+          "required_evidence": {"type": "array", "minItems": 5, "items": {"type": "string", "minLength": 1}},
+          "evidence_refs": {"const": []}
+        }
+      }
+    }
+  }
+}

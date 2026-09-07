@@ -1,0 +1,86 @@
+schema: heptabao.h02-source-integrity-policy.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_FAIL_CLOSED
+authority_effect: NONE
+selection_effect: NONE
+
+identity_layers:
+  source_identity:
+    required:
+      - release tag
+      - immutable commit SHA
+      - immutable tree SHA
+      - manifest blob SHA
+    rule: Git object identity is authoritative for source lineage; a mutable branch is never sufficient.
+  registry_identity:
+    required:
+      - package name and version
+      - crates.io-index commit SHA
+      - exact index path and blob SHA
+      - registry checksum
+      - yanked flag
+      - published timestamp
+      - declared rust-version when present
+    rule: A registry checksum is metadata evidence until downloaded package bytes are independently hashed.
+  byte_identity:
+    required:
+      - downloaded .crate SHA-256
+      - match against registry checksum
+      - downloaded source-archive SHA-256
+      - package VCS commit when present
+      - download URL and final origin
+      - capture environment and toolchain
+    rule: GitHub-generated source-archive hashes are observations, not publisher-signed canonical checksums.
+  review_identity:
+    required:
+      - platform review
+      - security review
+      - license review
+      - specialist review for crypto or Raft
+    rule: The author or capture automation cannot self-approve critical evidence.
+
+maturity:
+  OFFICIAL_GIT_METADATA_ONLY:
+    permits: [candidate identification, replacement-seam design]
+    forbids: [selection, scoring, implementation binding]
+  REGISTRY_CHECKSUM_CAPTURED:
+    permits: [download plan, checksum-bound byte reproduction]
+    forbids: [selection, scoring, implementation binding]
+  BYTES_REPRODUCED_ONCE:
+    permits: [unsafe and dependency inventory, MSRV execution, deterministic tests]
+    forbids: [prototype selection without independent reproduction and review]
+  BYTES_REPRODUCED_INDEPENDENTLY:
+    permits: [independent scoring and specialist review]
+    forbids: [selection without all mandatory evidence]
+  REVIEWED_ELIGIBLE_FOR_BAKEOFF:
+    permits: [bounded prototype selection receipt]
+    forbids: [production dependency authority]
+  PRODUCTION_QUALIFIED:
+    permits: [only the exact profile and release grant]
+    forbids: [implicit upgrades or broader authority]
+
+rules:
+  - Candidate IDs must match the canonical catalog ID exactly.
+  - Registry checksum capture never changes candidate state beyond IDENTIFIED.
+  - Downloaded .crate bytes must hash exactly to the registry checksum.
+  - Missing, mismatched, yanked, ambiguous or unreviewed evidence fails closed.
+  - Package VCS commit must equal the pinned release commit, or the mismatch requires a signed disposition.
+  - Source archives and package bytes are retained outside the implementation repository.
+  - Only digests, lengths, provenance and sanitized manifests may enter this repository.
+  - Every byte-reproduction run records source commit/tree, runner identity, URLs, final origins, lengths and SHA-256 values.
+  - A second environment must reproduce package and source observations before critical selection.
+  - Selection, qualification and operational authority remain separate signed objects.
+
+current_state:
+  canonical_candidates:
+    - HB-DEP-ASYNC-TOKIO
+    - HB-DEP-TLS-RUSTLS
+    - HB-DEP-RAFT-OPENRAFT
+  registry_checksums_captured_unreviewed: 3
+  downloaded_packages_verified: 0
+  downloaded_source_archives_observed: 0
+  independent_reproductions: 0
+  candidates_selected: 0
+  qualification: false
+  authority_effect: NONE

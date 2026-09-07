@@ -1,0 +1,73 @@
+schema: heptabao.v1-4-3-descriptor-fencing-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.3'
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_AND_INDEPENDENT_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_3_DESCRIPTOR_ANCHOR_AND_WRITER_FENCING.md
+current_state: planning/HEPTABAO_V1_4_3_DESCRIPTOR_FENCING_STATUS.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_3.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_3.yaml
+profile:
+  id: HB-P1-DEV-DESCRIPTOR-FENCED-SINGLE-NODE
+  operating_system: linux
+  local_filesystem_required: true
+  proc_self_fd_required: true
+  flat_root_namespace: true
+  descriptor_anchored: true
+  cooperating_multi_process_writer_fencing: true
+  network_filesystem_supported: false
+  production_supported: false
+  replicated: false
+  compatibility_supported: false
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  inherited_head: 34e8dc0caceb84288d4ef61f79cd7ca062718b63
+  inherited_tree: a1a0e7ab4e5ae8d4a2a5a7cde425eaf94a54b1d7
+  source_identity: RESOLVE_FROM_EXACT_GIT_HEAD
+implementation:
+  linux_directory_descriptor_identity_binding: IMPLEMENTED_SOURCE
+  proc_self_fd_same_inode_binding: IMPLEMENTED_SOURCE
+  exclusive_directory_writer_lock: IMPLEMENTED_SOURCE
+  bounded_flat_leaf_namespace: IMPLEMENTED_SOURCE
+  nofollow_opened_file_validation: IMPLEMENTED_SOURCE
+  descriptor_rooted_atomic_publication: IMPLEMENTED_SOURCE
+  descriptor_fenced_generation_store: IMPLEMENTED_SOURCE
+  descriptor_fenced_authenticated_journal: IMPLEMENTED_SOURCE
+  live_writer_conflict_tests: IMPLEMENTED_SOURCE
+  root_path_replacement_tests: IMPLEMENTED_SOURCE
+execution_required:
+  v1_4_3_plan_and_mutation_tests: REQUIRED_EXACT_HEAD
+  v1_4_3_inherited_surface_diff: REQUIRED_EXACT_HEAD
+  frozen_v1_4_2_baseline_replay: REQUIRED_EXACT_HEAD
+  current_platform_and_oracle_regressions: REQUIRED_EXACT_HEAD
+  rust_1_98_fmt_test_strict_clippy: REQUIRED_EXACT_HEAD
+  final_project_ratification: REQUIRED_DESIGNATED_RATIFIER_HEAD
+  independent_filesystem_storage_and_security_review: REQUIRED_EXTERNAL_IDENTITY
+remaining_product_work:
+  production_key_custody_and_rotation_ceremony: OPEN
+  production_external_rollback_anchor: OPEN
+  non_linux_and_network_filesystem_qualification: OPEN
+  retention_compaction_and_offsite_backup_custody: OPEN
+  replicated_audit_and_ha_recovery: OPEN
+  production_restore_drills_and_online_upgrade: OPEN
+  policy_identity_token_lease_namespace_plugins: OPEN
+  raft_ha_and_standby: OPEN
+  compatibility_oracle_implementation: OPEN
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

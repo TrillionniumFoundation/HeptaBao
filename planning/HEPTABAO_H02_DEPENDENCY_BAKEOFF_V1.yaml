@@ -1,0 +1,449 @@
+schema: heptabao.dependency-bakeoff.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: CANDIDATE_IDENTIFICATION_ACTIVE_NO_SELECTION
+candidate_schema: schemas/heptabao_dependency_candidate_v1.schema.json
+selection_receipt_schema: schemas/heptabao_dependency_selection_receipt_v1.schema.json
+selection_minimum_score: 38
+prototype_selection_receipts: []
+production_selection_authority: false
+authority_effect: NONE
+rules:
+  - Candidate identification is not a dependency selection.
+  - Exact release, commit and source digest are mandatory before selection.
+  - Every score remains null until evidence is captured and independently reviewed.
+  - Critical/high/unclassified findings block prototype selection.
+  - A selected prototype still grants no compatibility or operational authority.
+  - Runtime-facing code must depend on HeptaBao-owned traits so a selected library remains replaceable.
+  - Crypto and Raft candidates require independent specialist review before prototype selection.
+  - Unknown license, unsafe surface, MSRV or security history fails closed.
+criteria_scale:
+  0: unacceptable
+  1: severe weakness
+  2: material weakness
+  3: acceptable with mitigation
+  4: strong
+  5: preferred
+candidate_defaults: &candidate_defaults
+  state: IDENTIFIED
+  pin: {version: null, commit_sha: null, source_digest_sha256: null}
+  criteria:
+    maintenance: null
+    security_history: null
+    license_fit: null
+    unsafe_surface: null
+    api_stability: null
+    rust_version_fit: null
+    performance: null
+    replacement_seam: null
+    ecosystem_fit: null
+    qualification_cost: null
+  evidence:
+    source_and_release_pinned: false
+    license_reviewed: false
+    maintenance_reviewed: false
+    security_advisories_reviewed: false
+    unsafe_inventory_reviewed: false
+    minimum_rust_version_verified: false
+    api_and_replacement_seam_reviewed: false
+    deterministic_tests_available: false
+    benchmark_profile_available: false
+    qualification_plan_available: false
+    critical_findings_open: 0
+    high_findings_open: 0
+    unclassified_findings: 0
+    evidence_refs: []
+  authority_effect: NONE
+candidates:
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-ASYNC-TOKIO
+    capability: ASYNC_RUNTIME
+    project:
+      name: Tokio
+      upstream_repository: https://github.com/tokio-rs/tokio
+      package_names: [tokio]
+      license_status: PENDING
+    risks: [runtime lock-in, cancellation semantics, task and timer nondeterminism, feature-surface expansion]
+    replacement_seam: heptabao-runtime traits for task spawn, time, cancellation, signal and bounded blocking work
+    qualification:
+      required_work_packages: [H02-WP01, H02-WP10]
+      required_test_lanes: [cancellation, deterministic-time, task-leak, signal, benchmark, license, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-ASYNC-SMOL
+    capability: ASYNC_RUNTIME
+    project:
+      name: smol ecosystem
+      upstream_repository: https://github.com/smol-rs/smol
+      package_names: [smol, async-executor, async-io]
+      license_status: PENDING
+    risks: [ecosystem fragmentation, integration cost, operational tooling gap]
+    replacement_seam: same heptabao-runtime traits and deterministic runtime test harness
+    qualification:
+      required_work_packages: [H02-WP01, H02-WP10]
+      required_test_lanes: [cancellation, deterministic-time, task-leak, signal, benchmark, license, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-HTTP-HYPER
+    capability: HTTP_SERVER
+    project:
+      name: Hyper
+      upstream_repository: https://github.com/hyperium/hyper
+      package_names: [hyper, hyper-util, http, http-body]
+      license_status: PENDING
+    risks: [low-level integration burden, request-smuggling responsibility, HTTP2 complexity]
+    replacement_seam: heptabao-edge request/response/body and listener traits
+    qualification:
+      required_work_packages: [H02-WP02, H02-WP10]
+      required_test_lanes: [HTTP1, HTTP2, smuggling, slowloris, cancellation, benchmark, advisory, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-HTTP-AXUM
+    capability: HTTP_SERVER
+    project:
+      name: Axum
+      upstream_repository: https://github.com/tokio-rs/axum
+      package_names: [axum, tower, tower-http]
+      license_status: PENDING
+    risks: [framework extraction behavior, middleware ordering, tower backpressure complexity]
+    replacement_seam: heptabao-edge operation registry and middleware-independent authorization pipeline
+    qualification:
+      required_work_packages: [H02-WP02, H02-WP10]
+      required_test_lanes: [route-precedence, middleware-order, limits, cancellation, benchmark, license]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-HTTP-REQWEST
+    capability: HTTP_CLIENT
+    project:
+      name: Reqwest
+      upstream_repository: https://github.com/seanmonstar/reqwest
+      package_names: [reqwest]
+      license_status: PENDING
+    risks: [redirect credential leakage, proxy inheritance, feature/dependency expansion, body buffering]
+    replacement_seam: heptabao-http-client trait with origin allowlist, deadlines, bounded body and no ambient proxy
+    qualification:
+      required_work_packages: [H02-WP02, H02-WP10]
+      required_test_lanes: [redirect-origin, proxy-disabled, TLS, timeout-before-and-after-send, body-bounds, benchmark]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-TLS-RUSTLS
+    capability: TLS
+    project:
+      name: Rustls
+      upstream_repository: https://github.com/rustls/rustls
+      package_names: [rustls, tokio-rustls, rustls-pki-types]
+      license_status: PENDING
+    risks: [crypto-provider choice, certificate-validation compatibility, platform trust-store differences]
+    replacement_seam: heptabao-tls acceptor/connector/certificate-policy traits
+    qualification:
+      required_work_packages: [H02-WP02, H02-WP03, H02-WP10]
+      required_test_lanes: [TLS12, TLS13, mTLS, revocation-policy, SNI, reload, interop, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-TLS-OPENSSL
+    capability: TLS
+    project:
+      name: OpenSSL Rust bindings
+      upstream_repository: https://github.com/sfackler/rust-openssl
+      package_names: [openssl, tokio-openssl]
+      license_status: PENDING
+    risks: [C/FFI unsafe surface, system-library drift, packaging and FIPS operational complexity]
+    replacement_seam: same heptabao-tls traits; isolated build and runtime provider profile
+    qualification:
+      required_work_packages: [H02-WP02, H02-WP03, H02-WP10]
+      required_test_lanes: [FFI-audit, TLS-interop, FIPS-disposition, packaging, CVE-response, memory-safety]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-CRYPTO-AWS-LC-RS
+    capability: CRYPTO_PROVIDER
+    project:
+      name: AWS Libcrypto for Rust
+      upstream_repository: https://github.com/aws/aws-lc-rs
+      package_names: [aws-lc-rs, aws-lc-sys]
+      license_status: PENDING
+    risks: [C/assembly unsafe surface, provider lifecycle, FIPS profile divergence, build complexity]
+    replacement_seam: heptabao-crypto provider traits for AEAD, digest, HMAC, HKDF, signature and RNG
+    qualification:
+      required_work_packages: [H02-WP03, H02-WP10]
+      required_test_lanes: [KAT, cross-provider, unsafe-inventory, reproducible-build, FIPS-disposition, benchmark]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-CRYPTO-RUSTCRYPTO
+    capability: CRYPTO_PROVIDER
+    project:
+      name: RustCrypto primitives
+      upstream_repository: https://github.com/RustCrypto
+      package_names: [aes-gcm, chacha20poly1305, sha2, hmac, hkdf, subtle, rand_core]
+      license_status: PENDING
+    risks: [multi-crate coordination, algorithm/provider qualification scope, FIPS certification gap]
+    replacement_seam: same heptabao-crypto provider traits and cross-provider known-answer vectors
+    qualification:
+      required_work_packages: [H02-WP03, H02-WP10]
+      required_test_lanes: [KAT, cross-provider, constant-time-review, unsafe-inventory, benchmark, license]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-MEMORY-ZEROIZE-SECRECY
+    capability: SECURE_MEMORY
+    project:
+      name: zeroize and secrecy
+      upstream_repository: https://github.com/iqlusioninc/crates
+      package_names: [zeroize, secrecy]
+      license_status: PENDING
+    risks: [allocator copies, compiler/FFI copies, mlock limitations, panic and debug leakage]
+    replacement_seam: heptabao-secret-memory owned wrappers plus platform-specific guarded allocation adapter
+    qualification:
+      required_work_packages: [H02-WP04, H02-WP10]
+      required_test_lanes: [trait-compile-fail, drop-zeroization, panic-redaction, core-dump, allocator-copy-review]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-SERDE-JSON
+    capability: SERIALIZATION
+    project:
+      name: Serde and serde_json
+      upstream_repository: https://github.com/serde-rs/serde
+      package_names: [serde, serde_json]
+      license_status: PENDING
+    risks: [generic value secret projection, duplicate/unknown field handling, canonicalization assumptions]
+    replacement_seam: heptabao-protocol typed codecs and canonical-byte implementation independent from edge JSON
+    qualification:
+      required_work_packages: [H02-WP05, H02-WP10]
+      required_test_lanes: [deny-unknown, duplicate-field, depth-size, canonicalization, fuzz, license]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-HCL-HCL-RS
+    capability: HCL_PARSING
+    project:
+      name: hcl-rs
+      upstream_repository: https://github.com/martinohmann/hcl-rs
+      package_names: [hcl-rs]
+      license_status: PENDING
+    risks: [OpenBao HCL compatibility gaps, template/expression surface, parser ambiguity]
+    replacement_seam: heptabao-config AST and source-span contract; parser adapter isolated from config semantics
+    qualification:
+      required_work_packages: [H02-WP05, H02-WP10]
+      required_test_lanes: [OpenBao-config-corpus, parser-fuzz, duplicate-key, expression-policy, source-span]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-POSTGRES-TOKIO-POSTGRES
+    capability: POSTGRES
+    project:
+      name: tokio-postgres
+      upstream_repository: https://github.com/sfackler/rust-postgres
+      package_names: [tokio-postgres, postgres-types]
+      license_status: PENDING
+    risks: [runtime coupling, TLS adapter choice, transaction and cancellation semantics]
+    replacement_seam: heptabao-storage-postgres transaction/CAS/list/lock backend trait
+    qualification:
+      required_work_packages: [H02-WP06, H02-WP10]
+      required_test_lanes: [transaction, cancellation, TLS, failover, prepared-statement, benchmark, license]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-POSTGRES-SQLX
+    capability: POSTGRES
+    project:
+      name: SQLx
+      upstream_repository: https://github.com/launchbadge/sqlx
+      package_names: [sqlx, sqlx-postgres]
+      license_status: PENDING
+    risks: [large feature surface, compile-time metadata operations, pool behavior, runtime coupling]
+    replacement_seam: same storage-postgres trait; no SQLx types in storage API
+    qualification:
+      required_work_packages: [H02-WP06, H02-WP10]
+      required_test_lanes: [transaction, pool-failure, cancellation, TLS, offline-build, benchmark, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-RAFT-OPENRAFT
+    capability: RAFT
+    project:
+      name: OpenRaft
+      upstream_repository: https://github.com/databendlabs/openraft
+      package_names: [openraft]
+      license_status: PENDING
+    risks: [API evolution, storage/network integration semantics, snapshot/membership mismatch, operational maturity]
+    replacement_seam: deterministic heptabao-raft-fsm plus consensus/storage/network adapter traits
+    qualification:
+      required_work_packages: [H02-WP07, H02-WP09, H02-WP10]
+      required_test_lanes: [model, deterministic-replay, snapshot, membership, Jepsen-style, benchmark, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-RAFT-RAFT-RS
+    capability: RAFT
+    project:
+      name: raft-rs
+      upstream_repository: https://github.com/tikv/raft-rs
+      package_names: [raft, raft-proto]
+      license_status: PENDING
+    risks: [lower-level implementation burden, protobuf coupling, storage/snapshot integration, async adaptation]
+    replacement_seam: same deterministic FSM and consensus adapter traits
+    qualification:
+      required_work_packages: [H02-WP07, H02-WP09, H02-WP10]
+      required_test_lanes: [model, deterministic-replay, snapshot, membership, Jepsen-style, benchmark, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-GRPC-TONIC
+    capability: GRPC
+    project:
+      name: Tonic and Prost
+      upstream_repository: https://github.com/hyperium/tonic
+      package_names: [tonic, prost, tonic-build]
+      license_status: PENDING
+    risks: [code generation provenance, message size, streaming backpressure, transport/runtime coupling]
+    replacement_seam: versioned heptabao-plugin-proto messages and process transport adapter
+    qualification:
+      required_work_packages: [H02-WP08, H02-WP10]
+      required_test_lanes: [interop, malformed-message, size-limit, streaming, mTLS, codegen-reproducibility]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-TEMPLATE-MINIJINJA
+    capability: TEMPLATE_CEL
+    project:
+      name: MiniJinja
+      upstream_repository: https://github.com/mitsuhiko/minijinja
+      package_names: [minijinja]
+      license_status: PENDING
+    risks: [template injection, secret echo, resource exhaustion, semantic mismatch]
+    replacement_seam: heptabao-template bounded evaluator trait with function allowlist
+    qualification:
+      required_work_packages: [H02-WP05, H02-WP10]
+      required_test_lanes: [sandbox, resource-limit, secret-echo, injection, compatibility]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-CEL-INTERPRETER
+    capability: TEMPLATE_CEL
+    project:
+      name: CEL interpreter for Rust
+      upstream_repository: https://github.com/clarkmcc/cel-rust
+      package_names: [cel-interpreter]
+      license_status: PENDING
+    risks: [language compatibility, function escape, unbounded expression cost, maintenance maturity]
+    replacement_seam: heptabao-cel expression evaluator trait and bounded value model
+    qualification:
+      required_work_packages: [H02-WP05, H02-WP10]
+      required_test_lanes: [CEL-corpus, function-allowlist, cost-limit, fuzz, license]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-TELEMETRY-TRACING-OTEL
+    capability: TELEMETRY
+    project:
+      name: tracing and OpenTelemetry Rust
+      upstream_repository: https://github.com/tokio-rs/tracing
+      package_names: [tracing, tracing-subscriber, opentelemetry]
+      license_status: PENDING
+    risks: [secret field propagation, high-cardinality labels, async exporter backpressure, ecosystem version skew]
+    replacement_seam: heptabao-telemetry typed event/metric facade with redaction before exporter
+    qualification:
+      required_work_packages: [H02-WP10]
+      required_test_lanes: [secret-canary, cardinality, exporter-outage, backpressure, dependency-compatibility]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-CLI-CLAP
+    capability: CLI
+    project:
+      name: clap
+      upstream_repository: https://github.com/clap-rs/clap
+      package_names: [clap, clap_complete]
+      license_status: PENDING
+    risks: [OpenBao CLI compatibility shaping, shell-completion escaping, error/output differences]
+    replacement_seam: heptabao-cli command registry independent from parser framework
+    qualification:
+      required_work_packages: [H02-WP10]
+      required_test_lanes: [CLI-snapshot, exit-code, shell-completion, help, signal]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-SANDBOX-LANDLOCK
+    capability: LINUX_SANDBOX
+    project:
+      name: Landlock Rust
+      upstream_repository: https://github.com/landlock-lsm/rust-landlock
+      package_names: [landlock]
+      license_status: PENDING
+    risks: [kernel-version coverage, partial enforcement, unsupported-platform fallback]
+    replacement_seam: heptabao-sandbox capability profile with explicit kernel feature detection
+    qualification:
+      required_work_packages: [H02-WP10]
+      required_test_lanes: [kernel-matrix, fallback-fail-closed, filesystem-escape, unsafe-inventory]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-SANDBOX-LIBSECCOMP
+    capability: LINUX_SANDBOX
+    project:
+      name: libseccomp Rust bindings
+      upstream_repository: https://github.com/libseccomp-rs/libseccomp-rs
+      package_names: [libseccomp]
+      license_status: PENDING
+    risks: [C/FFI unsafe surface, syscall-policy portability, architecture drift]
+    replacement_seam: same sandbox capability profile and generated syscall allowlist
+    qualification:
+      required_work_packages: [H02-WP10]
+      required_test_lanes: [FFI-audit, architecture-matrix, syscall-negative, kernel-fallback]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-QUAL-CARGO-FUZZ-PROPTEST
+    capability: FUZZ_MODEL_TOOLING
+    project:
+      name: cargo-fuzz and proptest
+      upstream_repository: https://github.com/rust-fuzz/cargo-fuzz
+      package_names: [cargo-fuzz, libfuzzer-sys, proptest]
+      license_status: PENDING
+    risks: [toolchain drift, corpus nondeterminism, sanitizer/platform gaps]
+    replacement_seam: versioned test manifests and corpus format independent from one runner
+    qualification:
+      required_work_packages: [H02-WP09, H02-WP10]
+      required_test_lanes: [toolchain-reproducibility, corpus-replay, sanitizer, artifact-provenance]
+      selection_receipt: null
+  - <<: *candidate_defaults
+    schema: heptabao.dependency-candidate.v1
+    candidate_id: HB-DEP-QUAL-LOOM-KANI-STATERIGHT
+    capability: FUZZ_MODEL_TOOLING
+    project:
+      name: Loom, Kani and Stateright
+      upstream_repository: https://github.com/tokio-rs/loom
+      package_names: [loom, kani-verifier, stateright]
+      license_status: PENDING
+    risks: [model abstraction gaps, state explosion, toolchain coupling, false confidence]
+    replacement_seam: named invariants and implementation trace export independent from one verifier
+    qualification:
+      required_work_packages: [H02-WP09, H02-WP10]
+      required_test_lanes: [model-smoke, counterexample-replay, version-pin, resource-budget]
+      selection_receipt: null
+coverage:
+  capability_count: 16
+  candidate_count: 24
+  selected_for_prototype: 0
+  evidence_collecting: 0
+  identified: 24
+  rejected: 0
+  missing_capabilities: []
+next_actions:
+  - pin current releases/commits/source digests from primary upstream sources
+  - perform license and maintenance review
+  - inventory unsafe code and transitive dependencies
+  - verify Rust 1.98.0 compatibility and reproducible builds
+  - implement HeptaBao-owned replacement traits
+  - run deterministic correctness and security suites
+  - run equal-profile benchmarks
+  - issue no selection receipt until every critical field is complete

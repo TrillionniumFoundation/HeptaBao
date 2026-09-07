@@ -1,0 +1,2829 @@
+schema: heptabao.work-package-catalog.v1_2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: NORMATIVE_EXECUTION_INPUT
+package_count: 301
+authority_effect: NONE
+contract_defaults:
+  source_binding:
+  - repository
+  - ref
+  - commit
+  - tree
+  - clean_tree
+  - toolchain
+  - target
+  - dependency_lock_digest
+  deliverables:
+  - versioned-normative-spec
+  - implementation-or-policy
+  - positive-tests
+  - negative-or-adversarial-tests
+  - traceability-links
+  - evidence-index
+  required_outcomes:
+    failed: 0
+    unknown: 0
+    critical_findings: 0
+    high_findings: 0
+    unclassified_findings: 0
+  qualification_effect: NONE
+  missing_or_ambiguous: FAIL_CLOSED
+contract_profiles:
+  STANDARD:
+    required_tests:
+    - unit
+    - negative
+    - property
+    required_artifacts:
+    - normative-spec
+    - threat-model-delta
+    - api-or-schema
+    - test-manifest
+    - evidence-bundle
+    - rollback-or-supersession-note
+    durable_writer_rule: ONE_DECLARED_WRITER_OR_NOT_APPLICABLE
+    review_rule: DOMAIN_REVIEW
+    authority_effect: NONE
+  CRITICAL:
+    required_tests:
+    - unit
+    - negative
+    - property
+    - fault
+    - crash-or-adversarial
+    - secret-canary-or-integrity
+    required_artifacts:
+    - normative-spec
+    - threat-model-delta
+    - api-or-schema
+    - test-manifest
+    - evidence-bundle
+    - rollback-or-supersession-note
+    durable_writer_rule: ONE_DECLARED_WRITER_OR_NOT_APPLICABLE
+    review_rule: INDEPENDENT_REVIEW_REQUIRED
+    authority_effect: NONE
+  DISTRIBUTED_OR_SCALE_CRITICAL:
+    required_tests:
+    - unit
+    - negative
+    - property
+    - fault
+    - crash-or-adversarial
+    - secret-canary-or-integrity
+    - deterministic-replay
+    - cross-platform-or-scale
+    required_artifacts:
+    - normative-spec
+    - threat-model-delta
+    - api-or-schema
+    - test-manifest
+    - evidence-bundle
+    - rollback-or-supersession-note
+    durable_writer_rule: ONE_DECLARED_WRITER_OR_NOT_APPLICABLE
+    review_rule: INDEPENDENT_SPECIALIST_REVIEW_REQUIRED
+    authority_effect: NONE
+gates:
+  H00:
+    purpose: program governance, evidence semantics, clean-room controls and authority defaults
+    defaults:
+      owner_role: program
+      work_start_requires: []
+      qualification_requires:
+      - executable-ci
+      - independent-program-review
+      - independent-security-review
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - signed-h00-qualification-receipt
+      - scoped-authority-grant
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H00-WP01
+      slug: repository-governance
+      title: repository governance
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded repository-governance capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP02
+      slug: plan-v1-1-execution-model
+      title: plan v1 1 execution model
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded plan-v1-1-execution-model capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP03
+      slug: receipt-claim-grant-revocation-schemas
+      title: receipt claim grant revocation schemas
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded receipt-claim-grant-revocation-schemas capability defined by the H00 gate
+        contract.
+      authority_effect: NONE
+    - id: H00-WP04
+      slug: semantic-validators-and-ci
+      title: semantic validators and ci
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded semantic-validators-and-ci capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP05
+      slug: clean-room-access-separation
+      title: clean room access separation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded clean-room-access-separation capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP06
+      slug: license-trademark-patent-export-review
+      title: license trademark patent export review
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded license-trademark-patent-export-review capability defined by the H00 gate
+        contract.
+      authority_effect: NONE
+    - id: H00-WP07
+      slug: security-disclosure-and-incident-model
+      title: security disclosure and incident model
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded security-disclosure-and-incident-model capability defined by the H00 gate
+        contract.
+      authority_effect: NONE
+    - id: H00-WP08
+      slug: signing-provenance-and-transparency
+      title: signing provenance and transparency
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded signing-provenance-and-transparency capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP09
+      slug: capacity-budget-and-reviewer-plan
+      title: capacity budget and reviewer plan
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded capacity-budget-and-reviewer-plan capability defined by the H00 gate contract.
+      authority_effect: NONE
+    - id: H00-WP10
+      slug: h00-qualification
+      title: h00 qualification
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded h00-qualification capability defined by the H00 gate contract.
+      authority_effect: NONE
+  H01:
+    purpose: oracle inventory, normalized observations and compatibility evidence capture
+    defaults:
+      owner_role: compatibility
+      work_start_requires:
+      - H00
+      qualification_requires:
+      - H00
+      - reviewed-oracle-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H01
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H01-WP01
+      slug: oracle-image-provenance
+      title: oracle image provenance
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded oracle-image-provenance capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP02
+      slug: http-endpoint-inventory
+      title: http endpoint inventory
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded http-endpoint-inventory capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP03
+      slug: cli-inventory
+      title: cli inventory
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded cli-inventory capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP04
+      slug: config-env-header-inventory
+      title: config env header inventory
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded config-env-header-inventory capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP05
+      slug: auth-secret-audit-plugin-inventory
+      title: auth secret audit plugin inventory
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded auth-secret-audit-plugin-inventory capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP06
+      slug: raw-fixture-capture
+      title: raw fixture capture
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded raw-fixture-capture capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP07
+      slug: sanitized-fixture-capture
+      title: sanitized fixture capture
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded sanitized-fixture-capture capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP08
+      slug: normalization-policy
+      title: normalization policy
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded normalization-policy capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP09
+      slug: side-effect-observer
+      title: side effect observer
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded side-effect-observer capability defined by the H01 gate contract.
+      authority_effect: NONE
+    - id: H01-WP10
+      slug: advisory-regression-registry
+      title: advisory regression registry
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded advisory-regression-registry capability defined by the H01 gate contract.
+      authority_effect: NONE
+  H02:
+    purpose: dependency research, candidate bakeoff and bounded prototype selection
+    defaults:
+      owner_role: platform
+      work_start_requires:
+      - H00
+      qualification_requires:
+      - H00
+      - complete-candidate-evidence
+      - independent-platform-security-reviews
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H02
+      - signed-bounded-selection-receipt
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H02-WP01
+      slug: async-runtime
+      title: async runtime
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded async-runtime capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP02
+      slug: http-tls-stack
+      title: http tls stack
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded http-tls-stack capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP03
+      slug: crypto-provider
+      title: crypto provider
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded crypto-provider capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP04
+      slug: secure-memory
+      title: secure memory
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded secure-memory capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP05
+      slug: serialization-and-hcl
+      title: serialization and hcl
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded serialization-and-hcl capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP06
+      slug: postgres-client
+      title: postgres client
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded postgres-client capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP07
+      slug: raft-library
+      title: raft library
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded raft-library capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP08
+      slug: plugin-grpc
+      title: plugin grpc
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded plugin-grpc capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP09
+      slug: fuzz-model-tooling
+      title: fuzz model tooling
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded fuzz-model-tooling capability defined by the H02 gate contract.
+      authority_effect: NONE
+    - id: H02-WP10
+      slug: dependency-vet-policy
+      title: dependency vet policy
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded dependency-vet-policy capability defined by the H02 gate contract.
+      authority_effect: NONE
+  H03:
+    purpose: provider-neutral operation and request contracts
+    defaults:
+      owner_role: protocol
+      work_start_requires:
+      - H00
+      - H01
+      qualification_requires:
+      - H01
+      - contract-conformance
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H03
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H03-WP01
+      slug: operation-registry
+      title: operation registry
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded operation-registry capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP02
+      slug: request-response-types
+      title: request response types
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded request-response-types capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP03
+      slug: error-taxonomy
+      title: error taxonomy
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded error-taxonomy capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP04
+      slug: path-header-query-canonicalization
+      title: path header query canonicalization
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded path-header-query-canonicalization capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP05
+      slug: namespace-mount-context
+      title: namespace mount context
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded namespace-mount-context capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP06
+      slug: secret-bearing-types
+      title: secret bearing types
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded secret-bearing-types capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP07
+      slug: internal-operation-guard
+      title: internal operation guard
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded internal-operation-guard capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP08
+      slug: external-effect-model
+      title: external effect model
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded external-effect-model capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP09
+      slug: version-negotiation
+      title: version negotiation
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded version-negotiation capability defined by the H03 gate contract.
+      authority_effect: NONE
+    - id: H03-WP10
+      slug: deviation-model
+      title: deviation model
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded deviation-model capability defined by the H03 gate contract.
+      authority_effect: NONE
+  H04:
+    purpose: durable storage contracts and backends
+    defaults:
+      owner_role: storage
+      work_start_requires:
+      - H02
+      - H03
+      qualification_requires:
+      - durability-fault-evidence
+      - corruption-recovery-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H04
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H04-WP01
+      slug: storage-traits
+      title: storage traits
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded storage-traits capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP02
+      slug: transaction-cas
+      title: transaction cas
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded transaction-cas capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP03
+      slug: memory-backend
+      title: memory backend
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded memory-backend capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP04
+      slug: postgres-backend
+      title: postgres backend
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded postgres-backend capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP05
+      slug: fsync-durability
+      title: fsync durability
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded fsync-durability capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP06
+      slug: torn-write-model
+      title: torn write model
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded torn-write-model capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP07
+      slug: schema-migration
+      title: schema migration
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded schema-migration capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP08
+      slug: corruption-reopen
+      title: corruption reopen
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded corruption-reopen capability defined by the H04 gate contract.
+      authority_effect: NONE
+    - id: H04-WP09
+      slug: backup-restore-contract
+      title: backup restore contract
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded backup-restore-contract capability defined by the H04 gate contract.
+      authority_effect: NONE
+  H05:
+    purpose: barrier cryptography and ciphertext envelopes
+    defaults:
+      owner_role: crypto
+      work_start_requires:
+      - H02
+      - H03
+      - H04
+      qualification_requires:
+      - cryptographic-review
+      - cross-provider-known-answer-tests
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H05
+      - crypto-authority-grant
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H05-WP01
+      slug: ciphertext-envelope
+      title: ciphertext envelope
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded ciphertext-envelope capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP02
+      slug: keyring-versioning
+      title: keyring versioning
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded keyring-versioning capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP03
+      slug: nonce-discipline
+      title: nonce discipline
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded nonce-discipline capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP04
+      slug: aad-object-binding
+      title: aad object binding
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded aad-object-binding capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP05
+      slug: barrier-storage-view
+      title: barrier storage view
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded barrier-storage-view capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP06
+      slug: barrier-cache-zeroization
+      title: barrier cache zeroization
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded barrier-cache-zeroization capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP07
+      slug: tamper-detection
+      title: tamper detection
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded tamper-detection capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP08
+      slug: rollback-detection
+      title: rollback detection
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded rollback-detection capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP09
+      slug: kat-cross-provider
+      title: kat cross provider
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded kat-cross-provider capability defined by the H05 gate contract.
+      authority_effect: NONE
+    - id: H05-WP10
+      slug: external-crypto-review
+      title: external crypto review
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded external-crypto-review capability defined by the H05 gate contract.
+      authority_effect: NONE
+  H06:
+    purpose: initialization, seal, unseal and key lifecycle
+    defaults:
+      owner_role: crypto
+      work_start_requires:
+      - H05
+      qualification_requires:
+      - seal-state-machine-evidence
+      - memory-residue-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H06
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H06-WP01
+      slug: initialization
+      title: initialization
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded initialization capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP02
+      slug: shamir-shares
+      title: shamir shares
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded shamir-shares capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP03
+      slug: seal-state-machine
+      title: seal state machine
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded seal-state-machine capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP04
+      slug: unseal-state-machine
+      title: unseal state machine
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded unseal-state-machine capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP05
+      slug: rekey
+      title: rekey
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded rekey capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP06
+      slug: recovery-keys
+      title: recovery keys
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded recovery-keys capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP07
+      slug: barrier-key-rotation
+      title: barrier key rotation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded barrier-key-rotation capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP08
+      slug: auto-unseal-trait
+      title: auto unseal trait
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded auto-unseal-trait capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP09
+      slug: kms-hsm-failure-model
+      title: kms hsm failure model
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded kms-hsm-failure-model capability defined by the H06 gate contract.
+      authority_effect: NONE
+    - id: H06-WP10
+      slug: memory-residue-tests
+      title: memory residue tests
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded memory-residue-tests capability defined by the H06 gate contract.
+      authority_effect: NONE
+  H07:
+    purpose: authoritative request pipeline, router and mount system
+    defaults:
+      owner_role: core
+      work_start_requires:
+      - H03
+      - H04
+      - H06
+      qualification_requires:
+      - pipeline-fault-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H07
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H07-WP01
+      slug: request-context
+      title: request context
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded request-context capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP02
+      slug: deadline-cancellation
+      title: deadline cancellation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded deadline-cancellation capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP03
+      slug: router-precedence
+      title: router precedence
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded router-precedence capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP04
+      slug: mount-registry
+      title: mount registry
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded mount-registry capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP05
+      slug: system-backend
+      title: system backend
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded system-backend capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP06
+      slug: authoritative-pipeline
+      title: authoritative pipeline
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded authoritative-pipeline capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP07
+      slug: cache-invalidation
+      title: cache invalidation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded cache-invalidation capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP08
+      slug: active-context-fencing
+      title: active context fencing
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded active-context-fencing capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP09
+      slug: help-openapi-registry
+      title: help openapi registry
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded help-openapi-registry capability defined by the H07 gate contract.
+      authority_effect: NONE
+    - id: H07-WP10
+      slug: fault-happens-before
+      title: fault happens before
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded fault-happens-before capability defined by the H07 gate contract.
+      authority_effect: NONE
+  H08:
+    purpose: policy parsing and ACL enforcement
+    defaults:
+      owner_role: policy
+      work_start_requires:
+      - H03
+      - H07
+      qualification_requires:
+      - policy-conformance
+      - deny-precedence-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H08
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H08-WP01
+      slug: policy-parser
+      title: policy parser
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded policy-parser capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP02
+      slug: acl-matcher
+      title: acl matcher
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded acl-matcher capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP03
+      slug: specificity-and-deny
+      title: specificity and deny
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded specificity-and-deny capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP04
+      slug: glob-plus-star
+      title: glob plus star
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded glob-plus-star capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP05
+      slug: parameter-constraints
+      title: parameter constraints
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded parameter-constraints capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP06
+      slug: identity-templates
+      title: identity templates
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded identity-templates capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP07
+      slug: wrapping-ttl-hooks
+      title: wrapping ttl hooks
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded wrapping-ttl-hooks capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP08
+      slug: mfa-control-group-hooks
+      title: mfa control group hooks
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded mfa-control-group-hooks capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP09
+      slug: capabilities-explain
+      title: capabilities explain
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded capabilities-explain capability defined by the H08 gate contract.
+      authority_effect: NONE
+    - id: H08-WP10
+      slug: policy-cache-monotonicity
+      title: policy cache monotonicity
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded policy-cache-monotonicity capability defined by the H08 gate contract.
+      authority_effect: NONE
+  H09:
+    purpose: identity entities, aliases, groups, MFA and OIDC
+    defaults:
+      owner_role: identity
+      work_start_requires:
+      - H07
+      - H08
+      qualification_requires:
+      - identity-isolation-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H09
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H09-WP01
+      slug: entity-store
+      title: entity store
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded entity-store capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP02
+      slug: alias-store
+      title: alias store
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded alias-store capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP03
+      slug: group-store
+      title: group store
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded group-store capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP04
+      slug: nested-group-cycle-control
+      title: nested group cycle control
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded nested-group-cycle-control capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP05
+      slug: merge-dedupe-lineage
+      title: merge dedupe lineage
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded merge-dedupe-lineage capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP06
+      slug: identity-policy-projection
+      title: identity policy projection
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded identity-policy-projection capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP07
+      slug: mfa-framework
+      title: mfa framework
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded mfa-framework capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP08
+      slug: mfa-replay-fence
+      title: mfa replay fence
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded mfa-replay-fence capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP09
+      slug: oidc-provider-key-jwks
+      title: oidc provider key jwks
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded oidc-provider-key-jwks capability defined by the H09 gate contract.
+      authority_effect: NONE
+    - id: H09-WP10
+      slug: standby-cache-invalidation
+      title: standby cache invalidation
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded standby-cache-invalidation capability defined by the H09 gate contract.
+      authority_effect: NONE
+  H10:
+    purpose: token, accessor, wrapping and cubbyhole lifecycle
+    defaults:
+      owner_role: token
+      work_start_requires:
+      - H07
+      - H08
+      - H09
+      qualification_requires:
+      - token-lifecycle-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H10
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H10-WP01
+      slug: service-token-codec
+      title: service token codec
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded service-token-codec capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP02
+      slug: batch-token-codec
+      title: batch token codec
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded batch-token-codec capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP03
+      slug: accessor-index
+      title: accessor index
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded accessor-index capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP04
+      slug: parent-orphan-graph
+      title: parent orphan graph
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded parent-orphan-graph capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP05
+      slug: ttl-periodic-num-uses
+      title: ttl periodic num uses
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded ttl-periodic-num-uses capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP06
+      slug: cidr-role-semantics
+      title: cidr role semantics
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded cidr-role-semantics capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP07
+      slug: cubbyhole
+      title: cubbyhole
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded cubbyhole capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP08
+      slug: wrapping-lifecycle
+      title: wrapping lifecycle
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded wrapping-lifecycle capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP09
+      slug: recovery-token
+      title: recovery token
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded recovery-token capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP10
+      slug: root-generation
+      title: root generation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded root-generation capability defined by the H10 gate contract.
+      authority_effect: NONE
+    - id: H10-WP11
+      slug: million-node-revoke-model
+      title: million node revoke model
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded million-node-revoke-model capability defined by the H10 gate contract.
+      authority_effect: NONE
+  H11:
+    purpose: leases, expiration, renewal, revocation and effect reconciliation
+    defaults:
+      owner_role: lease
+      work_start_requires:
+      - H07
+      - H10
+      qualification_requires:
+      - lease-fault-evidence
+      - owner-epoch-fencing-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H11
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H11-WP01
+      slug: lease-record
+      title: lease record
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded lease-record capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP02
+      slug: expiration-index
+      title: expiration index
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded expiration-index capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP03
+      slug: persistent-scheduler
+      title: persistent scheduler
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded persistent-scheduler capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP04
+      slug: renew-state-machine
+      title: renew state machine
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded renew-state-machine capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP05
+      slug: revoke-tree
+      title: revoke tree
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded revoke-tree capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP06
+      slug: effect-intent-wal
+      title: effect intent wal
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded effect-intent-wal capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP07
+      slug: indeterminate-reconcile
+      title: indeterminate reconcile
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded indeterminate-reconcile capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP08
+      slug: rollback-manager
+      title: rollback manager
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded rollback-manager capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP09
+      slug: irrevocable-lease
+      title: irrevocable lease
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded irrevocable-lease capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP10
+      slug: owner-epoch-fence
+      title: owner epoch fence
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded owner-epoch-fence capability defined by the H11 gate contract.
+      authority_effect: NONE
+    - id: H11-WP11
+      slug: fault-injection-corpus
+      title: fault injection corpus
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded fault-injection-corpus capability defined by the H11 gate contract.
+      authority_effect: NONE
+  H12:
+    purpose: audit event ordering, redaction and device delivery
+    defaults:
+      owner_role: audit
+      work_start_requires:
+      - H03
+      - H05
+      - H07
+      qualification_requires:
+      - audit-blocking-game-day
+      - secret-canary-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H12
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H12-WP01
+      slug: audit-event-schema
+      title: audit event schema
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded audit-event-schema capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP02
+      slug: per-device-salt
+      title: per device salt
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded per-device-salt capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP03
+      slug: hmac-redaction
+      title: hmac redaction
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded hmac-redaction capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP04
+      slug: audit-broker-ordering
+      title: audit broker ordering
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded audit-broker-ordering capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP05
+      slug: file-device
+      title: file device
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded file-device capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP06
+      slug: http-device
+      title: http device
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded http-device capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP07
+      slug: socket-device
+      title: socket device
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded socket-device capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP08
+      slug: syslog-device
+      title: syslog device
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded syslog-device capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP09
+      slug: audit-hash
+      title: audit hash
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded audit-hash capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP10
+      slug: blocked-device-game-day
+      title: blocked device game day
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded blocked-device-game-day capability defined by the H12 gate contract.
+      authority_effect: NONE
+    - id: H12-WP11
+      slug: secret-canary
+      title: secret canary
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded secret-canary capability defined by the H12 gate contract.
+      authority_effect: NONE
+  H13:
+    purpose: plugin protocol, supervisor, verification and sandboxing
+    defaults:
+      owner_role: plugin-security
+      work_start_requires:
+      - H02
+      - H03
+      - H07
+      qualification_requires:
+      - plugin-interop
+      - sandbox-security-review
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H13
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H13-WP01
+      slug: plugin-wire-protocol
+      title: plugin wire protocol
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded plugin-wire-protocol capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP02
+      slug: version-negotiation
+      title: version negotiation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded version-negotiation capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP03
+      slug: automtls
+      title: automtls
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded automtls capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP04
+      slug: plugin-identity
+      title: plugin identity
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded plugin-identity capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP05
+      slug: catalog-version-digest
+      title: catalog version digest
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded catalog-version-digest capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP06
+      slug: process-supervisor
+      title: process supervisor
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded process-supervisor capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP07
+      slug: oci-verifier
+      title: oci verifier
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded oci-verifier capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP08
+      slug: linux-sandbox
+      title: linux sandbox
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded linux-sandbox capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP09
+      slug: auth-plugin-interop
+      title: auth plugin interop
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded auth-plugin-interop capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP10
+      slug: secret-plugin-interop
+      title: secret plugin interop
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded secret-plugin-interop capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP11
+      slug: database-plugin-interop
+      title: database plugin interop
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded database-plugin-interop capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP12
+      slug: kms-plugin-interop
+      title: kms plugin interop
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded kms-plugin-interop capability defined by the H13 gate contract.
+      authority_effect: NONE
+    - id: H13-WP13
+      slug: malformed-crash-hang-suite
+      title: malformed crash hang suite
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded malformed-crash-hang-suite capability defined by the H13 gate contract.
+      authority_effect: NONE
+  H14:
+    purpose: namespace isolation and namespace-scoped keying
+    defaults:
+      owner_role: namespace
+      work_start_requires:
+      - H07
+      - H08
+      - H09
+      - H10
+      - H11
+      - H12
+      qualification_requires:
+      - noninterference-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H14
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H14-WP01
+      slug: namespace-tree
+      title: namespace tree
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded namespace-tree capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP02
+      slug: namespace-id-tombstone
+      title: namespace id tombstone
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded namespace-id-tombstone capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP03
+      slug: path-header-canonicalization
+      title: path header canonicalization
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded path-header-canonicalization capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP04
+      slug: storage-cache-context
+      title: storage cache context
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded storage-cache-context capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP05
+      slug: policy-identity-token-lease-isolation
+      title: policy identity token lease isolation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded policy-identity-token-lease-isolation capability defined by the H14 gate
+        contract.
+      authority_effect: NONE
+    - id: H14-WP06
+      slug: audit-context
+      title: audit context
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded audit-context capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP07
+      slug: namespace-keyring
+      title: namespace keyring
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded namespace-keyring capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP08
+      slug: namespace-seal-api
+      title: namespace seal api
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded namespace-seal-api capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP09
+      slug: delete-recreate-restore
+      title: delete recreate restore
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded delete-recreate-restore capability defined by the H14 gate contract.
+      authority_effect: NONE
+    - id: H14-WP10
+      slug: noninterference-fuzz
+      title: noninterference fuzz
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded noninterference-fuzz capability defined by the H14 gate contract.
+      authority_effect: NONE
+  H15:
+    purpose: workflows, profiles and crash-resumable orchestration
+    defaults:
+      owner_role: workflow
+      work_start_requires:
+      - H07
+      - H08
+      - H10
+      - H11
+      qualification_requires:
+      - workflow-resume-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H15
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H15-WP01
+      slug: profile-schema
+      title: profile schema
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded profile-schema capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP02
+      slug: header-evaluation
+      title: header evaluation
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded header-evaluation capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP03
+      slug: cel-template-sandbox
+      title: cel template sandbox
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded cel-template-sandbox capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP04
+      slug: workflow-operation-allowlist
+      title: workflow operation allowlist
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded workflow-operation-allowlist capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP05
+      slug: step-auth-attenuation
+      title: step auth attenuation
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded step-auth-attenuation capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP06
+      slug: transaction-compensation
+      title: transaction compensation
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded transaction-compensation capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP07
+      slug: self-init-runner
+      title: self init runner
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded self-init-runner capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP08
+      slug: transient-root-revoke
+      title: transient root revoke
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded transient-root-revoke capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP09
+      slug: crash-resume
+      title: crash resume
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded crash-resume capability defined by the H15 gate contract.
+      authority_effect: NONE
+    - id: H15-WP10
+      slug: cycle-control
+      title: cycle control
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded cycle-control capability defined by the H15 gate contract.
+      authority_effect: NONE
+  H16:
+    purpose: authentication method compatibility families
+    defaults:
+      owner_role: auth
+      work_start_requires:
+      - H08
+      - H09
+      - H10
+      - H13
+      qualification_requires:
+      - auth-conformance
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H16
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H16-WP01
+      slug: auth-token
+      title: auth token
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded auth-token capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP02
+      slug: auth-userpass
+      title: auth userpass
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-userpass capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP03
+      slug: auth-approle
+      title: auth approle
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-approle capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP04
+      slug: auth-cert
+      title: auth cert
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-cert capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP05
+      slug: auth-jwt-oidc
+      title: auth jwt oidc
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-jwt-oidc capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP06
+      slug: auth-kubernetes
+      title: auth kubernetes
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-kubernetes capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP07
+      slug: auth-ldap
+      title: auth ldap
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-ldap capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP08
+      slug: auth-radius
+      title: auth radius
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-radius capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP09
+      slug: auth-kerberos
+      title: auth kerberos
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-kerberos capability defined by the H16 gate contract.
+      authority_effect: NONE
+    - id: H16-WP10
+      slug: auth-conformance-sdk
+      title: auth conformance sdk
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded auth-conformance-sdk capability defined by the H16 gate contract.
+      authority_effect: NONE
+  H17:
+    purpose: core secret engines and transit services
+    defaults:
+      owner_role: secrets
+      work_start_requires:
+      - H05
+      - H07
+      - H08
+      - H10
+      - H11
+      qualification_requires:
+      - engine-conformance
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H17
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H17-WP01
+      slug: internal-backends
+      title: internal backends
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded internal-backends capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP02
+      slug: kv-v1
+      title: kv v1
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kv-v1 capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP03
+      slug: kv-v2-data-cas
+      title: kv v2 data cas
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kv-v2-data-cas capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP04
+      slug: kv-v2-metadata
+      title: kv v2 metadata
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kv-v2-metadata capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP05
+      slug: kv-delete-undelete-destroy
+      title: kv delete undelete destroy
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kv-delete-undelete-destroy capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP06
+      slug: kv-list-scan-pagination
+      title: kv list scan pagination
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kv-list-scan-pagination capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP07
+      slug: transit-key-lifecycle
+      title: transit key lifecycle
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded transit-key-lifecycle capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP08
+      slug: transit-encrypt-decrypt-rewrap
+      title: transit encrypt decrypt rewrap
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded transit-encrypt-decrypt-rewrap capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP09
+      slug: transit-sign-verify-hmac-hash-random
+      title: transit sign verify hmac hash random
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded transit-sign-verify-hmac-hash-random capability defined by the H17 gate
+        contract.
+      authority_effect: NONE
+    - id: H17-WP10
+      slug: totp
+      title: totp
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded totp capability defined by the H17 gate contract.
+      authority_effect: NONE
+    - id: H17-WP11
+      slug: engine-conformance-sdk
+      title: engine conformance sdk
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded engine-conformance-sdk capability defined by the H17 gate contract.
+      authority_effect: NONE
+  H18:
+    purpose: PKI, SSH and certificate lifecycle services
+    defaults:
+      owner_role: pki-ssh
+      work_start_requires:
+      - H05
+      - H07
+      - H08
+      - H11
+      - H17
+      qualification_requires:
+      - pki-ssh-conformance
+      - external-crypto-review
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H18
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H18-WP01
+      slug: pki-key-issuer
+      title: pki key issuer
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded pki-key-issuer capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP02
+      slug: root-intermediate
+      title: root intermediate
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded root-intermediate capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP03
+      slug: roles-issuance
+      title: roles issuance
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded roles-issuance capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP04
+      slug: crl-ocsp-tidy
+      title: crl ocsp tidy
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded crl-ocsp-tidy capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP05
+      slug: acme
+      title: acme
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded acme capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP06
+      slug: pkiext
+      title: pkiext
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded pkiext capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP07
+      slug: ssh-ca-cert
+      title: ssh ca cert
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded ssh-ca-cert capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP08
+      slug: ssh-otp
+      title: ssh otp
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded ssh-otp capability defined by the H18 gate contract.
+      authority_effect: NONE
+    - id: H18-WP09
+      slug: pki-ssh-conformance
+      title: pki ssh conformance
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded pki-ssh-conformance capability defined by the H18 gate contract.
+      authority_effect: NONE
+  H19:
+    purpose: database and dynamic credential engines
+    defaults:
+      owner_role: dynamic-secrets
+      work_start_requires:
+      - H11
+      - H13
+      - H17
+      qualification_requires:
+      - database-plugin-conformance
+      - revocation-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H19
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H19-WP01
+      slug: database-engine-core
+      title: database engine core
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded database-engine-core capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP02
+      slug: static-roles
+      title: static roles
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded static-roles capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP03
+      slug: dynamic-roles
+      title: dynamic roles
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded dynamic-roles capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP04
+      slug: root-rotation-rollback
+      title: root rotation rollback
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded root-rotation-rollback capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP05
+      slug: postgres-provider
+      title: postgres provider
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded postgres-provider capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP06
+      slug: mysql-provider
+      title: mysql provider
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded mysql-provider capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP07
+      slug: cassandra-provider
+      title: cassandra provider
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded cassandra-provider capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP08
+      slug: influxdb-provider
+      title: influxdb provider
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded influxdb-provider capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP09
+      slug: valkey-provider
+      title: valkey provider
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded valkey-provider capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP10
+      slug: kubernetes-engine
+      title: kubernetes engine
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded kubernetes-engine capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP11
+      slug: openldap-engine
+      title: openldap engine
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded openldap-engine capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP12
+      slug: rabbitmq-engine
+      title: rabbitmq engine
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded rabbitmq-engine capability defined by the H19 gate contract.
+      authority_effect: NONE
+    - id: H19-WP13
+      slug: external-effect-chaos
+      title: external effect chaos
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded external-effect-chaos capability defined by the H19 gate contract.
+      authority_effect: NONE
+  H20:
+    purpose: cloud and infrastructure secret engines
+    defaults:
+      owner_role: distributed-systems
+      work_start_requires:
+      - H11
+      - H13
+      - H17
+      qualification_requires:
+      - provider-conformance
+      - external-effect-reconciliation
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H20
+      - compatibility-claim
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H20-WP01
+      slug: deterministic-fsm
+      title: deterministic fsm
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded deterministic-fsm capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP02
+      slug: raft-log-store
+      title: raft log store
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded raft-log-store capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP03
+      slug: transaction-entry
+      title: transaction entry
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded transaction-entry capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP04
+      slug: size-limits
+      title: size limits
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded size-limits capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP05
+      slug: chunking
+      title: chunking
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded chunking capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP06
+      slug: snapshot-create-install
+      title: snapshot create install
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded snapshot-create-install capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP07
+      slug: membership
+      title: membership
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded membership capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP08
+      slug: non-voter
+      title: non voter
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded non-voter capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP09
+      slug: retry-join-discovery
+      title: retry join discovery
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded retry-join-discovery capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP10
+      slug: autopilot-core
+      title: autopilot core
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded autopilot-core capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP11
+      slug: linearizability-harness
+      title: linearizability harness
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded linearizability-harness capability defined by the H20 gate contract.
+      authority_effect: NONE
+    - id: H20-WP12
+      slug: six-month-chaos
+      title: six month chaos
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded six-month-chaos capability defined by the H20 gate contract.
+      authority_effect: NONE
+  H21:
+    purpose: high availability, Raft integration and cluster lifecycle
+    defaults:
+      owner_role: cluster
+      work_start_requires:
+      - H02
+      - H04
+      - H07
+      - H11
+      - H12
+      qualification_requires:
+      - raft-safety
+      - durable-store
+      - os-disk-clock-faults
+      - linearizability
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H21
+      - raft-authority-grant
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H21-WP01
+      slug: cluster-pki
+      title: cluster pki
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded cluster-pki capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP02
+      slug: node-identity
+      title: node identity
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded node-identity capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP03
+      slug: secure-join
+      title: secure join
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded secure-join capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP04
+      slug: forwarding-protocol
+      title: forwarding protocol
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded forwarding-protocol capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP05
+      slug: redirect-origin-protection
+      title: redirect origin protection
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded redirect-origin-protection capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP06
+      slug: read-standby-freshness
+      title: read standby freshness
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded read-standby-freshness capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP07
+      slug: route-classification
+      title: route classification
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded route-classification capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP08
+      slug: stepdown-fencing
+      title: stepdown fencing
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded stepdown-fencing capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP09
+      slug: cache-wrap-namespace-propagation
+      title: cache wrap namespace propagation
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded cache-wrap-namespace-propagation capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP10
+      slug: failover-split-brain
+      title: failover split brain
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded failover-split-brain capability defined by the H21 gate contract.
+      authority_effect: NONE
+    - id: H21-WP11
+      slug: autopilot-reconcile
+      title: autopilot reconcile
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded autopilot-reconcile capability defined by the H21 gate contract.
+      authority_effect: NONE
+  H22:
+    purpose: performance, scale, backpressure and resource governance
+    defaults:
+      owner_role: edge-client
+      work_start_requires:
+      - H07
+      - H10
+      - H11
+      - H12
+      - H21
+      qualification_requires:
+      - capacity-evidence
+      - sustained-load-evidence
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H22
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H22-WP01
+      slug: http-tls-listener
+      title: http tls listener
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded http-tls-listener capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP02
+      slug: request-limits
+      title: request limits
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded request-limits capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP03
+      slug: server-command-config
+      title: server command config
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded server-command-config capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP04
+      slug: cli-compatibility
+      title: cli compatibility
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded cli-compatibility capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP05
+      slug: operator-commands
+      title: operator commands
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded operator-commands capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP06
+      slug: agent-auto-auth
+      title: agent auto auth
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded agent-auto-auth capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP07
+      slug: agent-cache-template-sinks
+      title: agent cache template sinks
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded agent-cache-template-sinks capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP08
+      slug: proxy-token-tls-retry
+      title: proxy token tls retry
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded proxy-token-tls-retry capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP09
+      slug: openapi
+      title: openapi
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded openapi capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP10
+      slug: ui-adapter
+      title: ui adapter
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded ui-adapter capability defined by the H22 gate contract.
+      authority_effect: NONE
+    - id: H22-WP11
+      slug: http-fuzz
+      title: http fuzz
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded http-fuzz capability defined by the H22 gate contract.
+      authority_effect: NONE
+  H23:
+    purpose: observability, telemetry, diagnostics and operator support
+    defaults:
+      owner_role: operations
+      work_start_requires:
+      - H07
+      - H11
+      - H12
+      - H21
+      qualification_requires:
+      - telemetry-safety
+      - diagnostic-redaction
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H23
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H23-WP01
+      slug: structured-logging
+      title: structured logging
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded structured-logging capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP02
+      slug: secret-redaction
+      title: secret redaction
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded secret-redaction capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP03
+      slug: metrics-cardinality
+      title: metrics cardinality
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded metrics-cardinality capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP04
+      slug: tracing-correlation
+      title: tracing correlation
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded tracing-correlation capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP05
+      slug: request-rate-lease-quotas
+      title: request rate lease quotas
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded request-rate-lease-quotas capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP06
+      slug: user-lockout
+      title: user lockout
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded user-lockout capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP07
+      slug: diagnose-debug-bundle
+      title: diagnose debug bundle
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded diagnose-debug-bundle capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP08
+      slug: atomic-config-reload
+      title: atomic config reload
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded atomic-config-reload capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP09
+      slug: service-registration-health
+      title: service registration health
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded service-registration-health capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP10
+      slug: slo-runbooks
+      title: slo runbooks
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded slo-runbooks capability defined by the H23 gate contract.
+      authority_effect: NONE
+    - id: H23-WP11
+      slug: game-days
+      title: game days
+      critical: false
+      contract_profile: STANDARD
+      objective: Implement and verify the bounded game-days capability defined by the H23 gate contract.
+      authority_effect: NONE
+  H24:
+    purpose: backup, restore, disaster recovery and operational game days
+    defaults:
+      owner_role: migration
+      work_start_requires:
+      - H04
+      - H05
+      - H06
+      - H11
+      - H21
+      qualification_requires:
+      - restore-evidence
+      - disaster-recovery-game-day
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H24
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H24-WP01
+      slug: logical-export
+      title: logical export
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded logical-export capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP02
+      slug: logical-import
+      title: logical import
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded logical-import capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP03
+      slug: dry-run-resume
+      title: dry run resume
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded dry-run-resume capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP04
+      slug: snapshot-inspector
+      title: snapshot inspector
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded snapshot-inspector capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP05
+      slug: snapshot-conversion
+      title: snapshot conversion
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded snapshot-conversion capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP06
+      slug: schema-upgrade-downgrade
+      title: schema upgrade downgrade
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded schema-upgrade-downgrade capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP07
+      slug: source-version-matrix
+      title: source version matrix
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded source-version-matrix capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP08
+      slug: shadow-comparator
+      title: shadow comparator
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded shadow-comparator capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP09
+      slug: writer-freeze-epoch-fence
+      title: writer freeze epoch fence
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded writer-freeze-epoch-fence capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP10
+      slug: overlap-detector
+      title: overlap detector
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded overlap-detector capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP11
+      slug: cutover-controller
+      title: cutover controller
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded cutover-controller capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP12
+      slug: rollback-forward-recovery
+      title: rollback forward recovery
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded rollback-forward-recovery capability defined by the H24 gate contract.
+      authority_effect: NONE
+    - id: H24-WP13
+      slug: three-scale-rehearsals
+      title: three scale rehearsals
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded three-scale-rehearsals capability defined by the H24 gate contract.
+      authority_effect: NONE
+  H25:
+    purpose: OpenBao compatibility suites, migration and mixed-version boundaries
+    defaults:
+      owner_role: qualification-security
+      work_start_requires:
+      - H01
+      - H16
+      - H17
+      - H18
+      - H19
+      - H20
+      - H21
+      qualification_requires:
+      - full-profile-conformance
+      - signed-compatibility-claim
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H25
+      - migration-authority-grant
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H25-WP01
+      slug: seal-keyring-model
+      title: seal keyring model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded seal-keyring-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP02
+      slug: token-graph-model
+      title: token graph model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded token-graph-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP03
+      slug: lease-effect-model
+      title: lease effect model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded lease-effect-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP04
+      slug: audit-ordering-model
+      title: audit ordering model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded audit-ordering-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP05
+      slug: raft-fsm-model
+      title: raft fsm model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded raft-fsm-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP06
+      slug: migration-authority-model
+      title: migration authority model
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded migration-authority-model capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP07
+      slug: continuous-fuzz
+      title: continuous fuzz
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded continuous-fuzz capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP08
+      slug: loom-miri-kani-sanitizers
+      title: loom miri kani sanitizers
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded loom-miri-kani-sanitizers capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP09
+      slug: external-audits
+      title: external audits
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded external-audits capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP10
+      slug: red-team
+      title: red team
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded red-team capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP11
+      slug: finding-class-closure
+      title: finding class closure
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded finding-class-closure capability defined by the H25 gate contract.
+      authority_effect: NONE
+    - id: H25-WP12
+      slug: ninety-day-rc-chaos
+      title: ninety day rc chaos
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded ninety-day-rc-chaos capability defined by the H25 gate contract.
+      authority_effect: NONE
+  H26:
+    purpose: security assurance, fuzzing, audits and release hardening
+    defaults:
+      owner_role: performance-reliability
+      work_start_requires:
+      - H05
+      - H08
+      - H12
+      - H13
+      - H21
+      - H25
+      qualification_requires:
+      - independent-security-audit
+      - zero-critical-high-open-findings
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - H26
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H26-WP01
+      slug: benchmark-lab
+      title: benchmark lab
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded benchmark-lab capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP02
+      slug: kv-token-policy-bench
+      title: kv token policy bench
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded kv-token-policy-bench capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP03
+      slug: transit-pki-plugin-bench
+      title: transit pki plugin bench
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded transit-pki-plugin-bench capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP04
+      slug: lease-audit-bench
+      title: lease audit bench
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded lease-audit-bench capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP05
+      slug: raft-failover-snapshot-bench
+      title: raft failover snapshot bench
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded raft-failover-snapshot-bench capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP06
+      slug: large-cardinality-capacity
+      title: large cardinality capacity
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded large-cardinality-capacity capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP07
+      slug: allocation-lock-copy-profile
+      title: allocation lock copy profile
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded allocation-lock-copy-profile capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP08
+      slug: 72h-soak
+      title: 72h soak
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded 72h-soak capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP09
+      slug: 30d-soak
+      title: 30d soak
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded 30d-soak capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP10
+      slug: hardware-sizing
+      title: hardware sizing
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded hardware-sizing capability defined by the H26 gate contract.
+      authority_effect: NONE
+    - id: H26-WP11
+      slug: regression-bisect
+      title: regression bisect
+      critical: true
+      contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+      objective: Implement and verify the bounded regression-bisect capability defined by the H26 gate contract.
+      authority_effect: NONE
+  H27:
+    purpose: release qualification, attestation, rollout and revocation readiness
+    defaults:
+      owner_role: release-supply-chain
+      work_start_requires:
+      - H00
+      - H01
+      - H02
+      - H03
+      - H04
+      - H05
+      - H06
+      - H07
+      - H08
+      - H09
+      - H10
+      - H11
+      - H12
+      - H13
+      - H14
+      - H15
+      - H16
+      - H17
+      - H18
+      - H19
+      - H20
+      - H21
+      - H22
+      - H23
+      - H24
+      - H25
+      - H26
+      qualification_requires:
+      - all-required-gates-qualified
+      - release-attestation
+      - independent-approvals
+      - exact-source-evidence
+      - traceability-closure
+      release_requires:
+      - signed-release-authority-grant
+      - revocation-ready
+      explicit_non_scope:
+      - compatibility claim
+      - production authority
+      - automatic promotion
+      authority_effect: NONE
+    packages:
+    - id: H27-WP01
+      slug: hermetic-build
+      title: hermetic build
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded hermetic-build capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP02
+      slug: reproducible-build
+      title: reproducible build
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded reproducible-build capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP03
+      slug: sbom-provenance-signatures
+      title: sbom provenance signatures
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded sbom-provenance-signatures capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP04
+      slug: transparency-log
+      title: transparency log
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded transparency-log capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP05
+      slug: multi-arch-artifacts
+      title: multi arch artifacts
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded multi-arch-artifacts capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP06
+      slug: install-upgrade-rollback
+      title: install upgrade rollback
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded install-upgrade-rollback capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP07
+      slug: canary-controller
+      title: canary controller
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded canary-controller capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP08
+      slug: claim-grant-issuance
+      title: claim grant issuance
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded claim-grant-issuance capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP09
+      slug: 90d-production-canary
+      title: 90d production canary
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded 90d-production-canary capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP10
+      slug: oncall-backport-eol
+      title: oncall backport eol
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded oncall-backport-eol capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP11
+      slug: upstream-sync-sla
+      title: upstream sync sla
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded upstream-sync-sla capability defined by the H27 gate contract.
+      authority_effect: NONE
+    - id: H27-WP12
+      slug: c5-ga-lts-receipt
+      title: c5 ga lts receipt
+      critical: true
+      contract_profile: CRITICAL
+      objective: Implement and verify the bounded c5-ga-lts-receipt capability defined by the H27 gate contract.
+      authority_effect: NONE

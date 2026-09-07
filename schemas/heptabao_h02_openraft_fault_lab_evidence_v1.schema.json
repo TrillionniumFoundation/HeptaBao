@@ -1,0 +1,143 @@
+{
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_openraft_fault_lab_evidence_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL"]}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "artifacts": {"required": ["manifest_sha256", "cargo_lock_sha256", "hostile_result_sha256", "history_sha256", "linearizability_result_sha256"]},
+          "source": {"properties": {"clean_tree": {"const": true}}}
+        },
+        "required": ["scope"]
+      }
+    }
+  ],
+  "properties": {
+    "artifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "cargo_lock_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+        "history_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+        "hostile_result_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+        "linearizability_result_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+        "manifest_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"}
+      },
+      "type": "object"
+    },
+    "authority_effect": {"const": "NONE"},
+    "candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+        "profile_id": {"const": "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33"},
+        "seed": {"pattern": "^0x[0-9a-f]{16}$", "type": "string"},
+        "target": {"const": "x86_64-unknown-linux-gnu"},
+        "toolchain": {"minLength": 1, "type": "string"},
+        "version": {"const": "0.10.0-alpha.33"}
+      },
+      "required": ["candidate_id", "version", "profile_id", "seed", "toolchain", "target"],
+      "type": "object"
+    },
+    "execution": {
+      "additionalProperties": false,
+      "properties": {
+        "build_exit_code": {"type": "integer"},
+        "checker_exit_code": {"type": "integer"},
+        "history_exit_code": {"type": "integer"},
+        "hostile_exit_code": {"type": "integer"}
+      },
+      "required": ["build_exit_code", "hostile_exit_code", "history_exit_code", "checker_exit_code"],
+      "type": "object"
+    },
+    "executor": {
+      "additionalProperties": false,
+      "properties": {
+        "environment_id": {"minLength": 1, "type": "string"},
+        "executor_kind": {"minLength": 1, "type": "string"},
+        "runner_id": {"minLength": 1, "type": "string"},
+        "runner_name": {"minLength": 1, "type": "string"}
+      },
+      "required": ["environment_id", "executor_kind", "runner_id", "runner_name"],
+      "type": "object"
+    },
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "promotion_effect": {"const": "BLOCK_PENDING_DURABLE_STORE_OS_DISK_CLOCK_AND_INDEPENDENT_REPRODUCTION"},
+    "qualification": {"const": false},
+    "reason": {"minLength": 1, "type": "string"},
+    "results": {
+      "additionalProperties": false,
+      "properties": {
+        "hostile_snapshot": {
+          "additionalProperties": false,
+          "properties": {
+            "child_exit_code": {"type": ["integer", "null"]},
+            "outcome": {"type": ["string", "null"]},
+            "phase_reached": {"type": ["boolean", "null"]},
+            "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]}
+          },
+          "required": ["status", "phase_reached", "outcome", "child_exit_code"],
+          "type": ["object", "null"]
+        },
+        "linearizability": {
+          "additionalProperties": false,
+          "properties": {
+            "explored_states": {"minimum": 0, "type": ["integer", "null"]},
+            "linearizable": {"type": ["boolean", "null"]},
+            "operation_count": {"maximum": 64, "minimum": 0, "type": ["integer", "null"]},
+            "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]},
+            "witness_order": {"items": {"type": "string"}, "maxItems": 64, "type": "array"}
+          },
+          "required": ["status", "linearizable", "operation_count", "witness_order", "explored_states"],
+          "type": ["object", "null"]
+        }
+      },
+      "required": ["hostile_snapshot", "linearizability"],
+      "type": "object"
+    },
+    "revision": {"const": "1.2"},
+    "schema": {"const": "heptabao.h02-openraft-fault-lab-evidence.v1"},
+    "scope": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_fault": {"const": false},
+        "disk_stall_torn_write_corruption": {"const": false},
+        "external_checker": {"const": true},
+        "independent_reproduction": {"const": false},
+        "isolated_hostile_snapshot_child": {"const": true},
+        "os_process_suspend": {"const": false},
+        "production_durable_storage": {"const": false},
+        "real_openraft_candidate": {"const": true},
+        "real_readindex_history": {"const": true},
+        "stale_committed_snapshot_injection": {"const": true}
+      },
+      "required": [
+        "real_openraft_candidate", "isolated_hostile_snapshot_child", "stale_committed_snapshot_injection",
+        "real_readindex_history", "external_checker", "production_durable_storage", "os_process_suspend",
+        "disk_stall_torn_write_corruption", "clock_fault", "independent_reproduction"
+      ],
+      "type": "object"
+    },
+    "selection_effect": {"const": "NONE"},
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "branch": {"minLength": 1, "type": "string"},
+        "clean_tree": {"type": "boolean"},
+        "commit": {"pattern": "^[0-9a-f]{40}$", "type": "string"},
+        "repository": {"const": "ProfHepta/HeptaBao"},
+        "tree": {"pattern": "^[0-9a-f]{40}$", "type": "string"}
+      },
+      "required": ["repository", "branch", "commit", "tree", "clean_tree"],
+      "type": "object"
+    },
+    "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]}
+  },
+  "required": [
+    "schema", "plan_id", "revision", "status", "candidate", "source", "executor", "artifacts",
+    "execution", "results", "reason", "qualification", "selection_effect", "promotion_effect", "authority_effect"
+  ],
+  "title": "HeptaBao H02 OpenRaft fault lab evidence v1",
+  "type": "object"
+}

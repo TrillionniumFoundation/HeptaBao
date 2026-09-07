@@ -1,0 +1,108 @@
+schema: heptabao.signing-and-transparency-policy.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: POLICY_IMPLEMENTED_KEYS_AND_OPERATIONS_PENDING
+objects:
+  source_tag:
+    signature_required: true
+    transparency_required: true
+  qualification_receipt:
+    signature_required: true
+    transparency_required: true
+    authority_effect: NONE
+  compatibility_claim:
+    signature_required: true
+    transparency_required: true
+    authority_effect: NONE
+  authority_grant:
+    signature_required: true
+    transparency_required: true
+    expiring: true
+    revocable: true
+  revocation:
+    signature_required: true
+    transparency_required: true
+    precedence: HIGHEST
+  release_attestation:
+    signature_required: true
+    transparency_required: true
+  release_artifact:
+    signature_required: true
+    transparency_required: true
+key_roles:
+  planning_and_qualification:
+    allowed_objects: [qualification_receipt]
+    may_grant_operational_authority: false
+  compatibility:
+    allowed_objects: [compatibility_claim]
+    may_grant_operational_authority: false
+  operational_authority:
+    allowed_objects: [authority_grant]
+    online_use: forbidden
+    quorum_required: true
+  emergency_revocation:
+    allowed_objects: [revocation]
+    availability: offline_and_break_glass
+    quorum_required: true
+  release:
+    allowed_objects: [source_tag, release_attestation, release_artifact]
+    builder_separation_required: true
+algorithm_policy:
+  initially_allowed: [sigstore-bundle, ed25519, ecdsa-p256-sha256]
+  unknown_algorithm: DENY
+  algorithm_change_requires: [ADR, security-review, interoperability-test, migration-plan]
+key_lifecycle:
+  generation:
+    requirements: [approved hardware or isolated environment, two-person ceremony, entropy evidence, key ID and public-key digest, recovery/revocation plan]
+  activation:
+    requirements: [role binding, not-before, expiration, transparency entry, verifier rollout]
+  use:
+    requirements: [canonical payload digest, scope, timestamp, signer identity, audit event]
+  rotation:
+    requirements: [overlap window bounded, old/new verifier support, no authority widening]
+  revocation:
+    requirements: [emergency path, effective time, affected-object inventory, transparency entry]
+  destruction:
+    requirements: [retention disposition, destruction evidence, backup accounting]
+canonical_payload:
+  encoding: deterministic canonical JSON or versioned canonical binary
+  binds:
+    - schema and semantic version
+    - object ID and type
+    - plan ID, revision and plan digest
+    - exact source commit/tree and artifact/config/toolchain/dependency digests
+    - scope and compatibility profile
+    - issue/not-before/expiration times
+    - referenced receipt/claim/grant digests
+    - revocation status or registry digest
+  forbidden:
+    - raw secret, token, unseal share, private key or provider body
+    - mutable branch-only reference without commit/tree binding
+    - unsigned external attachment
+transparency:
+  required_properties:
+    - append-only entry reference
+    - object payload digest
+    - signature bundle or public verification material
+    - inclusion or checkpoint evidence
+    - timestamp and log identity
+  unavailable_behavior: block new claim/grant/release; emergency revocation may use offline signed object and later log publication
+separation_of_duties:
+  - builder cannot be sole release approver
+  - object author cannot be sole qualification/claim/grant approver
+  - operational-authority and emergency-revocation keys are distinct
+  - CI write token cannot access offline authority/revocation private keys
+  - Oracle capture keys cannot sign implementation qualification
+current_state:
+  keys_generated: false
+  HSM_or_isolated_signer_selected: false
+  transparency_log_selected: false
+  emergency_revocation_drill_completed: false
+  production_signing_allowed: false
+qualification_effect: NONE
+blocking_conditions:
+  - no named signing custodians
+  - no two-person ceremony
+  - no selected transparency service or verified internal log
+  - no emergency revocation drill
+  - no signed verifier and key-rotation compatibility evidence

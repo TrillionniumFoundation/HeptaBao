@@ -1,0 +1,105 @@
+schema: heptabao.compatibility-profiles.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_CLAIM_BOUNDARY
+claim_shape:
+  required:
+    - compatibility_level
+    - profile_id
+    - heptabao_version
+    - oracle_versions
+    - operating_systems
+    - architectures
+    - storage_and_seal_profile
+    - enabled_capabilities
+    - deviations
+    - exclusions
+    - qualification_receipts
+    - valid_until
+  production_authority: false
+criticality_coverage:
+  SECURITY_CRITICAL: {required_percent: 100, waiver_allowed: false}
+  CRYPTO_CRITICAL: {required_percent: 100, waiver_allowed: false}
+  DATA_DURABILITY_CRITICAL: {required_percent: 100, waiver_allowed: false}
+  DISTRIBUTED_SYSTEMS_CRITICAL: {required_percent: 100, waiver_allowed: false}
+  OPERATOR_CRITICAL: {required_percent: 100, waiver_allowed: false}
+  COMPATIBILITY_CRITICAL: {required_percent: 100, waiver_allowed: false}
+rules:
+  - Compatibility claims never grant production authority.
+  - Unsupported behavior is explicit and fail closed.
+  - A profile is qualified only for the exact Oracle, platform, configuration and feature matrix in its claim.
+  - A new upstream security release invalidates affected claims until triaged and dispositioned.
+profiles:
+  HB-P0-DEV-MEMORY:
+    level: C0
+    capabilities: [memory storage, synthetic fixtures, governance and protocol development]
+    required_gates: [H00, H01, H02, H03]
+    production_supported: false
+  HB-P1-CORE-POSTGRES:
+    level: C2
+    capabilities: [single node, PostgreSQL, barrier, seal, policy, identity, token, lease, audit]
+    required_gates: [H04, H05, H06, H07, H08, H09, H10, H11, H12, H25, H26]
+    production_supported: false
+  HB-P2-RAFT-HA:
+    level: C4
+    capabilities: [Integrated Raft, transactions, snapshot, HA, forwarding, read standby, operations]
+    required_gates: [H20, H21, H23, H25, H26]
+    production_supported: false
+  HB-P3-AUTH-WAVE-A:
+    level: C3
+    capabilities: [token, userpass, AppRole, certificate auth]
+    required_work_packages: [H16-WP01, H16-WP02, H16-WP03, H16-WP04, H16-WP10]
+    production_supported: false
+  HB-P4-AUTH-WAVE-B:
+    level: C3
+    capabilities: [JWT/OIDC auth, Kubernetes auth]
+    required_work_packages: [H16-WP05, H16-WP06, H16-WP10]
+    production_supported: false
+  HB-P5-AUTH-WAVE-C:
+    level: C3
+    capabilities: [LDAP, RADIUS, Kerberos]
+    required_work_packages: [H16-WP07, H16-WP08, H16-WP09, H16-WP10]
+    production_supported: false
+  HB-P6-SECRETS-FOUNDATION:
+    level: C3
+    capabilities: [internal backends, KV v1, KV v2, Transit, TOTP]
+    required_gates: [H17, H25, H26]
+    production_supported: false
+  HB-P7-PKI-SSH:
+    level: C3
+    capabilities: [PKI, PKIext, ACME, CRL, OCSP, SSH CA, SSH OTP]
+    required_gates: [H18, H25, H26]
+    production_supported: false
+  HB-P8-DYNAMIC:
+    level: C3
+    capabilities: [database, PostgreSQL, MySQL, Cassandra, InfluxDB, Valkey, Kubernetes, OpenLDAP, RabbitMQ]
+    required_gates: [H19, H25, H26]
+    production_supported: false
+  HB-P9-NAMESPACE-WORKFLOW:
+    level: C3
+    capabilities: [nested namespace, namespace seal, profiles, CEL/template, workflows, self-init]
+    required_gates: [H14, H15, H25]
+    production_supported: false
+  HB-P10-CLIENT-OPS:
+    level: C4
+    capabilities: [HTTP edge, CLI, operator, Agent, Proxy, OpenAPI, diagnostics, quotas, reload]
+    required_gates: [H22, H23, H25, H26]
+    production_supported: false
+  HB-P11-MIGRATE-OPENBAO-2_6:
+    level: C4
+    capabilities: [logical export/import, shadow comparison, snapshot inspection, fenced cutover, rollback or forward recovery]
+    oracle_versions: [OpenBao v2.6.x]
+    required_gates: [H24, H25, H26]
+    production_supported: false
+  HB-P12-FULL-C5:
+    level: C5
+    capabilities: [all support-matrix capabilities, signed build, 90-day canary, 24/7 support, LTS]
+    required_gates: [H00, H01, H02, H03, H04, H05, H06, H07, H08, H09, H10, H11, H12, H13, H14, H15, H16, H17, H18, H19, H20, H21, H22, H23, H24, H25, H26, H27]
+    production_supported: false
+common_exclusions:
+  - mixed OpenBao/HeptaBao cluster
+  - direct OpenBao raft.db mutation
+  - future upstream features not in the matrix
+  - unregistered third-party plugins
+  - trademark or official endorsement
+  - unverified FIPS claim

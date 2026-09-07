@@ -1,0 +1,207 @@
+schema: heptabao.program-gate-matrix.v1_1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_EXECUTION_INPUT
+qualification: false
+compatibility_claim: false
+selection_effect: NONE
+authority_effect: NONE
+
+stage_resolution:
+  active_authority_gate: H00
+  active_work_packages: [H00-WP01, H00-WP02, H00-WP03, H00-WP04]
+  later_gate_work_status: PLANNED_NO_AUTHORITY
+  automatic_gate_promotion: FORBIDDEN
+  missing_evidence_policy: FAIL_CLOSED
+
+dependency_semantics:
+  work_start_requires: prerequisites required before implementation work may begin
+  qualification_requires: evidence and approvals required before a gate may be qualified
+  release_requires: evidence and authority required before release-affecting use
+  missing_or_ambiguous: FAIL_CLOSED
+  qualification_does_not_grant_authority: true
+  compatibility_claim_does_not_grant_authority: true
+
+phases:
+  H00:
+    state: ACTIVE
+    purpose: program governance, evidence semantics, clean-room controls and authority defaults
+    work_start_requires: []
+    qualification_requires: [executable-ci, independent-program-review, independent-security-review]
+    release_requires: [signed-h00-qualification-receipt, scoped-authority-grant]
+  H01:
+    state: PLANNED
+    purpose: oracle inventory, normalized observations and compatibility evidence capture
+    work_start_requires: [H00]
+    qualification_requires: [H00, reviewed-oracle-evidence]
+    release_requires: [H01, compatibility-claim]
+  H02:
+    state: PLANNED
+    purpose: dependency research, candidate bakeoff and bounded prototype selection
+    work_start_requires: [H00]
+    qualification_requires: [H00, complete-candidate-evidence, independent-platform-security-reviews]
+    release_requires: [H02, signed-bounded-selection-receipt]
+  H03:
+    state: PLANNED
+    purpose: provider-neutral operation and request contracts
+    work_start_requires: [H00, H01]
+    qualification_requires: [H01, contract-conformance]
+    release_requires: [H03]
+  H04:
+    state: PLANNED
+    purpose: durable storage contracts and backends
+    work_start_requires: [H02, H03]
+    qualification_requires: [durability-fault-evidence, corruption-recovery-evidence]
+    release_requires: [H04]
+  H05:
+    state: PLANNED
+    purpose: barrier cryptography and ciphertext envelopes
+    work_start_requires: [H02, H03, H04]
+    qualification_requires: [cryptographic-review, cross-provider-known-answer-tests]
+    release_requires: [H05, crypto-authority-grant]
+  H06:
+    state: PLANNED
+    purpose: initialization, seal, unseal and key lifecycle
+    work_start_requires: [H05]
+    qualification_requires: [seal-state-machine-evidence, memory-residue-evidence]
+    release_requires: [H06]
+  H07:
+    state: PLANNED
+    purpose: authoritative request pipeline, router and mount system
+    work_start_requires: [H03, H04, H06]
+    qualification_requires: [pipeline-fault-evidence]
+    release_requires: [H07]
+  H08:
+    state: PLANNED
+    purpose: policy parsing and ACL enforcement
+    work_start_requires: [H03, H07]
+    qualification_requires: [policy-conformance, deny-precedence-evidence]
+    release_requires: [H08]
+  H09:
+    state: PLANNED
+    purpose: identity entities, aliases, groups, MFA and OIDC
+    work_start_requires: [H07, H08]
+    qualification_requires: [identity-isolation-evidence]
+    release_requires: [H09]
+  H10:
+    state: PLANNED
+    purpose: token, accessor, wrapping and cubbyhole lifecycle
+    work_start_requires: [H07, H08, H09]
+    qualification_requires: [token-lifecycle-evidence]
+    release_requires: [H10]
+  H11:
+    state: PLANNED
+    purpose: leases, expiration, renewal, revocation and effect reconciliation
+    work_start_requires: [H07, H10]
+    qualification_requires: [lease-fault-evidence, owner-epoch-fencing-evidence]
+    release_requires: [H11]
+  H12:
+    state: PLANNED
+    purpose: audit event ordering, redaction and device delivery
+    work_start_requires: [H03, H05, H07]
+    qualification_requires: [audit-blocking-game-day, secret-canary-evidence]
+    release_requires: [H12]
+  H13:
+    state: PLANNED
+    purpose: plugin protocol, supervisor, verification and sandboxing
+    work_start_requires: [H02, H03, H07]
+    qualification_requires: [plugin-interop, sandbox-security-review]
+    release_requires: [H13]
+  H14:
+    state: PLANNED
+    purpose: namespace isolation and namespace-scoped keying
+    work_start_requires: [H07, H08, H09, H10, H11, H12]
+    qualification_requires: [noninterference-evidence]
+    release_requires: [H14]
+  H15:
+    state: PLANNED
+    purpose: workflows, profiles and crash-resumable orchestration
+    work_start_requires: [H07, H08, H10, H11]
+    qualification_requires: [workflow-resume-evidence]
+    release_requires: [H15]
+  H16:
+    state: PLANNED
+    purpose: authentication method compatibility families
+    work_start_requires: [H08, H09, H10, H13]
+    qualification_requires: [auth-conformance]
+    release_requires: [H16, compatibility-claim]
+  H17:
+    state: PLANNED
+    purpose: core secret engines and transit services
+    work_start_requires: [H05, H07, H08, H10, H11]
+    qualification_requires: [engine-conformance]
+    release_requires: [H17, compatibility-claim]
+  H18:
+    state: PLANNED
+    purpose: PKI, SSH and certificate lifecycle services
+    work_start_requires: [H05, H07, H08, H11, H17]
+    qualification_requires: [pki-ssh-conformance, external-crypto-review]
+    release_requires: [H18, compatibility-claim]
+  H19:
+    state: PLANNED
+    purpose: database and dynamic credential engines
+    work_start_requires: [H11, H13, H17]
+    qualification_requires: [database-plugin-conformance, revocation-evidence]
+    release_requires: [H19, compatibility-claim]
+  H20:
+    state: PLANNED
+    purpose: cloud and infrastructure secret engines
+    work_start_requires: [H11, H13, H17]
+    qualification_requires: [provider-conformance, external-effect-reconciliation]
+    release_requires: [H20, compatibility-claim]
+  H21:
+    state: PLANNED
+    purpose: high availability, Raft integration and cluster lifecycle
+    work_start_requires: [H02, H04, H07, H11, H12]
+    qualification_requires: [raft-safety, durable-store, os-disk-clock-faults, linearizability]
+    release_requires: [H21, raft-authority-grant]
+  H22:
+    state: PLANNED
+    purpose: performance, scale, backpressure and resource governance
+    work_start_requires: [H07, H10, H11, H12, H21]
+    qualification_requires: [capacity-evidence, sustained-load-evidence]
+    release_requires: [H22]
+  H23:
+    state: PLANNED
+    purpose: observability, telemetry, diagnostics and operator support
+    work_start_requires: [H07, H11, H12, H21]
+    qualification_requires: [telemetry-safety, diagnostic-redaction]
+    release_requires: [H23]
+  H24:
+    state: PLANNED
+    purpose: backup, restore, disaster recovery and operational game days
+    work_start_requires: [H04, H05, H06, H11, H21]
+    qualification_requires: [restore-evidence, disaster-recovery-game-day]
+    release_requires: [H24]
+  H25:
+    state: PLANNED
+    purpose: OpenBao compatibility suites, migration and mixed-version boundaries
+    work_start_requires: [H01, H16, H17, H18, H19, H20, H21]
+    qualification_requires: [full-profile-conformance, signed-compatibility-claim]
+    release_requires: [H25, migration-authority-grant]
+  H26:
+    state: PLANNED
+    purpose: security assurance, fuzzing, audits and release hardening
+    work_start_requires: [H05, H08, H12, H13, H21, H25]
+    qualification_requires: [independent-security-audit, zero-critical-high-open-findings]
+    release_requires: [H26]
+  H27:
+    state: PLANNED
+    purpose: release qualification, attestation, rollout and revocation readiness
+    work_start_requires: [H00, H01, H02, H03, H04, H05, H06, H07, H08, H09, H10, H11, H12, H13, H14, H15, H16, H17, H18, H19, H20, H21, H22, H23, H24, H25, H26]
+    qualification_requires: [all-required-gates-qualified, release-attestation, independent-approvals]
+    release_requires: [signed-release-authority-grant, revocation-ready]
+
+global_blockers:
+  - missing executable and attributable CI evidence
+  - missing independent reviewer identities or approvals
+  - missing signed qualification, compatibility, selection or authority objects
+  - failed, blocked, unknown or ambiguous critical test evidence
+  - unresolved Critical or High security findings
+  - incomplete clean-room provenance or source-material disposition
+  - incomplete dependency license, advisory, unsafe, native or build-script review
+  - incomplete durability, corruption, restart and disaster-recovery evidence
+  - incomplete compatibility, migration or rollback evidence
+  - unavailable signing, transparency or emergency revocation controls
+  - capacity, budget or owner assignments below the normative baseline
+  - any request to infer authority from implementation or qualification evidence

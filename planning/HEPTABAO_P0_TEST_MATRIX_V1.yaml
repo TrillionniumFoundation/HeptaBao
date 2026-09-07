@@ -1,0 +1,95 @@
+schema: heptabao.p0-test-matrix.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+profile: HB-P0-DEV-MEMORY
+status: SPECIFIED_IMPLEMENTED_LOCAL_EXECUTION_REQUIRED
+cases:
+  protocol:
+    - id: P0-PROTO-001
+      title: canonical health request
+      expected: PASS
+    - id: P0-PROTO-002
+      title: duplicate Host rejected
+      expected: FAIL_CLOSED
+    - id: P0-PROTO-003
+      title: Transfer-Encoding rejected
+      expected: FAIL_CLOSED
+    - id: P0-PROTO-004
+      title: noncanonical Content-Length and body overrun rejected
+      expected: FAIL_CLOSED
+    - id: P0-PROTO-005
+      title: duplicate slash dot segment backslash and encoded slash rejected
+      expected: FAIL_CLOSED
+    - id: P0-PROTO-006
+      title: expired and regressed monotonic request rejected before dispatch
+      expected: FAIL_CLOSED
+  state_and_auth:
+    - id: P0-STATE-001
+      title: fresh health is uninitialized and sealed
+      expected: PASS
+    - id: P0-STATE-002
+      title: init commits without returning credentials
+      expected: PASS
+    - id: P0-STATE-003
+      title: wrong unseal key rejected and correct key unseals
+      expected: PASS
+    - id: P0-AUTH-001
+      title: sealed and unauthenticated KV access rejected
+      expected: FAIL_CLOSED
+    - id: P0-KV-001
+      title: authenticated write read list and delete
+      expected: PASS
+  audit:
+    - id: P0-AUDIT-001
+      title: request audit precedes mutation
+      expected: PASS
+    - id: P0-AUDIT-002
+      title: request audit failure prevents mutation
+      expected: FAIL_CLOSED
+    - id: P0-AUDIT-003
+      title: rejection audit failure returns service unavailable
+      expected: FAIL_CLOSED
+    - id: P0-AUDIT-004
+      title: response audit failure after commit returns recovery reference
+      expected: OUTCOME_EXPLICIT
+    - id: P0-AUDIT-005
+      title: audit path must be absolute create-new and non-symlink
+      expected: FAIL_CLOSED
+  authbus_contract:
+    - id: P0-AUTHBUS-001
+      title: request-bound assertion verifies without authorization effect
+      expected: PASS
+    - id: P0-AUTHBUS-002
+      title: request digest mismatch rejected
+      expected: FAIL_CLOSED
+    - id: P0-AUTHBUS-003
+      title: nonce replay rejected atomically
+      expected: FAIL_CLOSED
+    - id: P0-AUTHBUS-004
+      title: expiry future skew issuer audience key and signature fail closed
+      expected: FAIL_CLOSED
+  h02_regressions:
+    - id: P0-H02-001
+      title: in-memory replay retains required logs until catch-up
+      expected: PASS_EXACT_HEAD_REQUIRED
+    - id: P0-H02-002
+      title: process resume discovers current consensus leader
+      expected: PASS_EXACT_HEAD_REQUIRED
+execution_requirements:
+  root_rust:
+    toolchain: 1.98.0
+    commands: [fmt, test, clippy]
+  socket_smoke:
+    bind: 127.0.0.1:0
+    real_secrets: forbidden
+  h02_matrix:
+    toolchains: [1.88.0, 1.98.0]
+    entries: 24
+    failed: 0
+    blocked: 0
+    unknown: 0
+    unexecuted: 0
+qualification: false
+compatibility_claim: false
+selection_effect: NONE
+authority_effect: NONE

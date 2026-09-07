@@ -1,0 +1,56 @@
+name: clean-room-provenance
+
+on:
+  push:
+    branches: ["main", "codex/plan-v1.1-h00-execution"]
+    paths:
+      - "planning/HEPTABAO_CLEAN_ROOM_ACCESS_POLICY_V1.yaml"
+      - "schemas/heptabao_source_provenance_record_v1.schema.json"
+      - "scripts/validate_provenance_v1.py"
+      - "provenance/**"
+      - "requirements-plan.txt"
+      - ".github/workflows/clean-room-provenance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-policy:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Validate provenance records and forbidden transfers
+        run: python scripts/validate_provenance_v1.py
+      - name: Confirm policy remains non-authoritative
+        run: |
+          python - <<'PY'
+          import yaml
+          policy = yaml.safe_load(open('planning/HEPTABAO_CLEAN_ROOM_ACCESS_POLICY_V1.yaml', encoding='utf-8'))
+          if policy['qualification_effect'] != 'NONE':
+              raise SystemExit('clean-room policy must not self-qualify')
+          if policy['personnel_separation']['current_status'] != 'BLOCKED_NO_NAMED_IDENTITIES':
+              raise SystemExit('personnel separation cannot be marked operational without signed evidence')
+          print('clean-room machinery is implemented; real ACL/personnel evidence remains blocked')
+          PY

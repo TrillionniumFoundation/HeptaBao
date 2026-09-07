@@ -1,0 +1,1672 @@
+schema: heptabao.active-work-package-contracts.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: NORMATIVE_NEAR_TERM_EXECUTION
+authority_effect: NONE
+contracts:
+- id: H00-WP01
+  title: repository governance
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded repository-governance capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP02
+  title: plan v1 1 execution model
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded plan-v1-1-execution-model capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP03
+  title: receipt claim grant revocation schemas
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded receipt-claim-grant-revocation-schemas capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP04
+  title: semantic validators and ci
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded semantic-validators-and-ci capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP05
+  title: clean room access separation
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded clean-room-access-separation capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP06
+  title: license trademark patent export review
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded license-trademark-patent-export-review capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP07
+  title: security disclosure and incident model
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded security-disclosure-and-incident-model capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP08
+  title: signing provenance and transparency
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded signing-provenance-and-transparency capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP09
+  title: capacity budget and reviewer plan
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded capacity-budget-and-reviewer-plan capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H00-WP10
+  title: h00 qualification
+  gate: H00
+  owner_role: program
+  critical: true
+  objective: Implement and verify the bounded h00-qualification capability defined by the H00 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP01
+  title: oracle image provenance
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded oracle-image-provenance capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP02
+  title: http endpoint inventory
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded http-endpoint-inventory capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP03
+  title: cli inventory
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded cli-inventory capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP04
+  title: config env header inventory
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded config-env-header-inventory capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP05
+  title: auth secret audit plugin inventory
+  gate: H01
+  owner_role: compatibility
+  critical: true
+  objective: Implement and verify the bounded auth-secret-audit-plugin-inventory capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP06
+  title: raw fixture capture
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded raw-fixture-capture capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP07
+  title: sanitized fixture capture
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded sanitized-fixture-capture capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP08
+  title: normalization policy
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded normalization-policy capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP09
+  title: side effect observer
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded side-effect-observer capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H01-WP10
+  title: advisory regression registry
+  gate: H01
+  owner_role: compatibility
+  critical: false
+  objective: Implement and verify the bounded advisory-regression-registry capability defined by the H01 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP01
+  title: async runtime
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded async-runtime capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP02
+  title: http tls stack
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded http-tls-stack capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP03
+  title: crypto provider
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded crypto-provider capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP04
+  title: secure memory
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded secure-memory capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP05
+  title: serialization and hcl
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded serialization-and-hcl capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP06
+  title: postgres client
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded postgres-client capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP07
+  title: raft library
+  gate: H02
+  owner_role: platform
+  critical: true
+  objective: Implement and verify the bounded raft-library capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP08
+  title: plugin grpc
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded plugin-grpc capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP09
+  title: fuzz model tooling
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded fuzz-model-tooling capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H02-WP10
+  title: dependency vet policy
+  gate: H02
+  owner_role: platform
+  critical: false
+  objective: Implement and verify the bounded dependency-vet-policy capability defined by the H02 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP01
+  title: operation registry
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded operation-registry capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP02
+  title: request response types
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded request-response-types capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP03
+  title: error taxonomy
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded error-taxonomy capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP04
+  title: path header query canonicalization
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded path-header-query-canonicalization capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP05
+  title: namespace mount context
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded namespace-mount-context capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP06
+  title: secret bearing types
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded secret-bearing-types capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP07
+  title: internal operation guard
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded internal-operation-guard capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP08
+  title: external effect model
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded external-effect-model capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP09
+  title: version negotiation
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded version-negotiation capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H03-WP10
+  title: deviation model
+  gate: H03
+  owner_role: protocol
+  critical: false
+  objective: Implement and verify the bounded deviation-model capability defined by the H03 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: domain review required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP01
+  title: storage traits
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded storage-traits capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP02
+  title: transaction cas
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded transaction-cas capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP03
+  title: memory backend
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded memory-backend capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP04
+  title: postgres backend
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded postgres-backend capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP05
+  title: fsync durability
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded fsync-durability capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP06
+  title: torn write model
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded torn-write-model capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP07
+  title: schema migration
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded schema-migration capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP08
+  title: corruption reopen
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded corruption-reopen capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE
+- id: H04-WP09
+  title: backup restore contract
+  gate: H04
+  owner_role: storage
+  critical: true
+  objective: Implement and verify the bounded backup-restore-contract capability defined by the H04 gate contract.
+  inputs:
+  - current normative manifest
+  - exact source binding
+  - upstream dependency/Oracle evidence when applicable
+  outputs:
+  - normative-spec
+  - threat-model-delta
+  - api-or-schema
+  - test-manifest
+  - evidence-bundle
+  - rollback-or-supersession-note
+  acceptance:
+    positive: all named functional cases PASS
+    negative: all forbidden/unknown/ambiguous cases fail closed
+    fault: all required fault/crash cases preserve safety and diagnostics
+    traceability: source → invariant → package → test → evidence closed
+    review: independent role required
+  evidence_binding:
+  - repository
+  - commit
+  - tree
+  - lock
+  - toolchain
+  - target
+  - config
+  - runner/job identity
+  rollback: supersede through a new version; never mutate an issued receipt
+  authority_effect: NONE

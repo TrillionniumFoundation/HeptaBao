@@ -1,0 +1,25 @@
+schema: heptabao.authority-flags.v2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2.1'
+status: IMPLEMENTATION_ACTIVE_FAIL_CLOSED
+active_authority_gate: H00
+active_work_packages: [H00-WP01, H00-WP02, H00-WP03, H00-WP04]
+flags:
+  implementation_started: true
+  h00_qualified: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  mixed_cluster_allowed: false
+  openbao_physical_storage_read_allowed: false
+  openbao_physical_storage_write_allowed: false
+  real_secret_fixture_allowed: false
+  root_token_fixture_allowed: false
+  automatic_stage_promotion: false
+active_grants: []
+fail_closed_reasons:
+  - H00 legal, clean-room, disclosure, signing, capacity and independent qualification evidence remain incomplete
+  - repository-controlled blockers remain at REMEDIATION_IMPLEMENTED until current exact-head execution and required independent review complete
+  - repository ruleset, reviewer identities, restricted Oracle transfer, independent power-cut evidence and independent reproduction remain EXTERNAL_ACTION_REQUIRED
+  - no signed qualification receipt, compatibility claim, dependency selection or authority grant exists

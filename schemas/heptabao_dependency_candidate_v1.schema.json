@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/dependency-candidate-v1.json",
+  "title": "HeptaBao H02 Dependency Candidate V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "capability",
+    "project",
+    "state",
+    "pin",
+    "criteria",
+    "evidence",
+    "risks",
+    "replacement_seam",
+    "qualification",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.dependency-candidate.v1"},
+    "candidate_id": {"pattern": "^HB-DEP-[A-Z0-9._-]{8,200}$"},
+    "capability": {
+      "enum": [
+        "ASYNC_RUNTIME",
+        "HTTP_SERVER",
+        "HTTP_CLIENT",
+        "TLS",
+        "CRYPTO_PROVIDER",
+        "SECURE_MEMORY",
+        "SERIALIZATION",
+        "HCL_PARSING",
+        "POSTGRES",
+        "RAFT",
+        "GRPC",
+        "TEMPLATE_CEL",
+        "TELEMETRY",
+        "CLI",
+        "LINUX_SANDBOX",
+        "FUZZ_MODEL_TOOLING"
+      ]
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "upstream_repository", "package_names", "license_status"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "upstream_repository": {"type": "string", "minLength": 1},
+        "package_names": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "license_status": {"enum": ["PENDING", "ACCEPTABLE", "CONDITIONAL", "REJECTED"]}
+      }
+    },
+    "state": {"enum": ["IDENTIFIED", "EVIDENCE_COLLECTING", "ELIGIBLE_FOR_BAKEOFF", "REJECTED", "SELECTED_FOR_PROTOTYPE"]},
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "commit_sha", "source_digest_sha256"],
+      "properties": {
+        "version": {"type": ["string", "null"]},
+        "commit_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "source_digest_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "criteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maintenance", "security_history", "license_fit", "unsafe_surface", "api_stability", "rust_version_fit", "performance", "replacement_seam", "ecosystem_fit", "qualification_cost"],
+      "properties": {
+        "maintenance": {"$ref": "#/$defs/score"},
+        "security_history": {"$ref": "#/$defs/score"},
+        "license_fit": {"$ref": "#/$defs/score"},
+        "unsafe_surface": {"$ref": "#/$defs/score"},
+        "api_stability": {"$ref": "#/$defs/score"},
+        "rust_version_fit": {"$ref": "#/$defs/score"},
+        "performance": {"$ref": "#/$defs/score"},
+        "replacement_seam": {"$ref": "#/$defs/score"},
+        "ecosystem_fit": {"$ref": "#/$defs/score"},
+        "qualification_cost": {"$ref": "#/$defs/score"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_and_release_pinned", "license_reviewed", "maintenance_reviewed", "security_advisories_reviewed", "unsafe_inventory_reviewed", "minimum_rust_version_verified", "api_and_replacement_seam_reviewed", "deterministic_tests_available", "benchmark_profile_available", "qualification_plan_available", "critical_findings_open", "high_findings_open", "unclassified_findings", "evidence_refs"],
+      "properties": {
+        "source_and_release_pinned": {"type": "boolean"},
+        "license_reviewed": {"type": "boolean"},
+        "maintenance_reviewed": {"type": "boolean"},
+        "security_advisories_reviewed": {"type": "boolean"},
+        "unsafe_inventory_reviewed": {"type": "boolean"},
+        "minimum_rust_version_verified": {"type": "boolean"},
+        "api_and_replacement_seam_reviewed": {"type": "boolean"},
+        "deterministic_tests_available": {"type": "boolean"},
+        "benchmark_profile_available": {"type": "boolean"},
+        "qualification_plan_available": {"type": "boolean"},
+        "critical_findings_open": {"type": "integer", "minimum": 0},
+        "high_findings_open": {"type": "integer", "minimum": 0},
+        "unclassified_findings": {"type": "integer", "minimum": 0},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "risks": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "replacement_seam": {"type": "string", "minLength": 1},
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_work_packages", "required_test_lanes", "selection_receipt"],
+      "properties": {
+        "required_work_packages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^H02-WP[0-9]{2,3}$"}},
+        "required_test_lanes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "selection_receipt": {"type": ["string", "null"]}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "SELECTED_FOR_PROTOTYPE"}}, "required": ["state"]},
+      "then": {
+        "properties": {
+          "pin": {
+            "properties": {
+              "version": {"type": "string", "minLength": 1},
+              "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "source_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            }
+          },
+          "project": {"properties": {"license_status": {"const": "ACCEPTABLE"}}},
+          "criteria": {
+            "properties": {
+              "maintenance": {"type": "integer", "minimum": 0, "maximum": 5},
+              "security_history": {"type": "integer", "minimum": 0, "maximum": 5},
+              "license_fit": {"type": "integer", "minimum": 0, "maximum": 5},
+              "unsafe_surface": {"type": "integer", "minimum": 0, "maximum": 5},
+              "api_stability": {"type": "integer", "minimum": 0, "maximum": 5},
+              "rust_version_fit": {"type": "integer", "minimum": 0, "maximum": 5},
+              "performance": {"type": "integer", "minimum": 0, "maximum": 5},
+              "replacement_seam": {"type": "integer", "minimum": 0, "maximum": 5},
+              "ecosystem_fit": {"type": "integer", "minimum": 0, "maximum": 5},
+              "qualification_cost": {"type": "integer", "minimum": 0, "maximum": 5}
+            }
+          },
+          "evidence": {
+            "properties": {
+              "source_and_release_pinned": {"const": true},
+              "license_reviewed": {"const": true},
+              "maintenance_reviewed": {"const": true},
+              "security_advisories_reviewed": {"const": true},
+              "unsafe_inventory_reviewed": {"const": true},
+              "minimum_rust_version_verified": {"const": true},
+              "api_and_replacement_seam_reviewed": {"const": true},
+              "deterministic_tests_available": {"const": true},
+              "benchmark_profile_available": {"const": true},
+              "qualification_plan_available": {"const": true},
+              "critical_findings_open": {"const": 0},
+              "high_findings_open": {"const": 0},
+              "unclassified_findings": {"const": 0},
+              "evidence_refs": {"minItems": 1}
+            }
+          },
+          "qualification": {"properties": {"selection_receipt": {"type": "string", "minLength": 1}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "score": {"type": ["integer", "null"], "minimum": 0, "maximum": 5}
+  }
+}

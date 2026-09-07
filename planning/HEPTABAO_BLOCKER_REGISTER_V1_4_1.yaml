@@ -1,0 +1,126 @@
+schema: heptabao.blocker-register-extension.v1_4_1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.1'
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4.yaml
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  commit: 33e1c14c3e417ea1c9ea181e2181751736c7bce5
+  tree: 7c49319a20ffbbe7a9b8b078e052da63dd6b636b
+added_blockers:
+- id: HB-BLK-REPO-023
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: provider-neutral authenticated append-only journal contract was absent
+  owner_role: audit-cryptography-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - checked non-zero sequence and tag types are enforced
+  - payload is bounded non-Clone redacted and controlled-drop cleared
+  - authenticator binds domain sequence previous tag and payload
+  - append receipt and replay APIs are provider-neutral
+  required_execution:
+  - plan-v1.4.1-durable-operation-ledger/journaled-single-node
+  evidence:
+  - crates/heptabao-journal-api/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-024
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: no strict single-node chained journal implementation existed
+  owner_role: storage-audit-distributed-systems
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - immutable entries persist before atomic tail publication
+  - entry and tail files are reread and authenticated before in-memory publication
+  - exactly one next orphan requires explicit authenticated reconciliation
+  - gaps extra futures symlinks non-regular paths and temporary artifacts fail closed
+  - append and initialization outcome uncertainty is explicit
+  required_execution:
+  - plan-v1.4.1-durable-operation-ledger/journaled-single-node
+  evidence:
+  - crates/heptabao-single-node-journal/src/lib.rs
+  - docs/audit/HEPTABAO_DURABLE_OPERATION_LEDGER_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-025
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: no durable request and external-effect reconciliation state machine existed
+  owner_role: core-audit-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - operation identity request digest and class are immutable
+  - strict event envelope rejects malformed truncated trailing and illegal fields
+  - replay and live append share one closed transition table
+  - retry directives distinguish lookup reconcile manual hold and new-operation retry
+  - consumed operation identity is never silently reusable
+  required_execution:
+  - plan-v1.4.1-durable-operation-ledger/journaled-single-node
+  evidence:
+  - crates/heptabao-operation-ledger/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-026
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable intent was not composed before state mutation and postcommit journal failure was ambiguous
+  owner_role: core-pipeline-storage-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - existing operation identity rejects before storage mutation
+  - Accepted and IntentCommitted journal appends precede barrier and storage commit
+  - StateCommitted binds exact generation and digest
+  - postcommit ledger failure returns StateCommittedLedgerIncomplete with commit receipt
+  - response audit and delivery outcomes are durable transitions
+  required_execution:
+  - plan-v1.4.1-durable-operation-ledger/journaled-single-node
+  evidence:
+  - crates/heptabao-journaled-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-027
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.4.1 journal and ledger extension lacked a version-aware exact-head gate
+  owner_role: qualification-platform-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - exact Git delta proves V1.4.1 changes only the closed 20-path extension surface
+  - frozen V1.4 validators regressions and Rust 1.98 gates pass in a detached worktree
+  - current V1.4.1 validators mutation tests platform Oracle and Rust gates pass
+  - no temporary source-export or write-capable materializer workflow remains
+  - qualification compatibility selection and all authority fields remain false
+  required_execution:
+  - plan-v1.4.1-durable-operation-ledger/journaled-single-node
+  evidence:
+  - scripts/validate_plan_v1_4_1.py
+  - scripts/validate_v1_4_1_inherited_surface.py
+  - tests/plan/test_plan_v1_4_1.py
+  - .github/workflows/plan-v1.4.1-durable-operation-ledger.yml
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production journal authenticator key custody rotation and revocation
+- descriptor-relative filesystem adapter and multi-process writer fencing
+- external rollback anchor and retention compaction policy
+- replicated audit and HA reconciliation
+- production external-effect provider integration
+- backup restore online upgrade and schema migration
+- policy identity token lease namespace and plugin domains
+- Raft HA membership snapshot and standby integration
+- Oracle-derived compatibility implementation
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE

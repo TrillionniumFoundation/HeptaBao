@@ -1,0 +1,17 @@
+[package]
+name = "heptabao-single-node-journal"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-filesystem-guard = { path = "../heptabao-filesystem-guard" }
+heptabao-journal-api = { path = "../heptabao-journal-api" }
+
+[lints]
+workspace = true

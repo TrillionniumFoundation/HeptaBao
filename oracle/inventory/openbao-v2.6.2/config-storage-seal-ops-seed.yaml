@@ -1,0 +1,247 @@
+schema: heptabao.oracle-config-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-CONFIG-OPENBAO-V2_6_2-STORAGE-SEAL-OPS-SEED01
+status: SEED
+entries:
+  - id: HB-CONFIG-ITEM-STORAGE-TYPE
+    key_path: storage.type
+    surface: STORAGE
+    value_shape: ENUM
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H04-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/storage
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Physical backend selection and unknown-backend behavior.
+  - id: HB-CONFIG-ITEM-STORAGE-RAFT-PATH
+    key_path: storage.raft.path
+    surface: STORAGE
+    value_shape: PATH
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H20-WP02]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/path
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Raft state path, filesystem, permission and symlink requirements.
+  - id: HB-CONFIG-ITEM-RAFT-NODE-ID
+    key_path: storage.raft.node_id
+    surface: STORAGE
+    value_shape: STRING
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H20-WP07]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/node_id
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Stable membership identity and duplicate-node behavior.
+  - id: HB-CONFIG-ITEM-RAFT-PERFORMANCE
+    key_path: storage.raft.performance_multiplier
+    surface: STORAGE
+    value_shape: INTEGER
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H20-WP02]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/performance_multiplier
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Timing/availability tuning cannot weaken consensus safety.
+  - id: HB-CONFIG-ITEM-RAFT-TRAILING-LOGS
+    key_path: storage.raft.trailing_logs
+    surface: STORAGE
+    value_shape: INTEGER
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H20-WP06]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/trailing_logs
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Log retention after snapshots and follower recovery behavior.
+  - id: HB-CONFIG-ITEM-RAFT-SNAPSHOT-THRESHOLD
+    key_path: storage.raft.snapshot_threshold
+    surface: STORAGE
+    value_shape: INTEGER
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H20-WP06]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/snapshot_threshold
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Snapshot trigger threshold and transaction interaction.
+  - id: HB-CONFIG-ITEM-RAFT-SNAPSHOT-INTERVAL
+    key_path: storage.raft.snapshot_interval
+    surface: STORAGE
+    value_shape: DURATION
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H20-WP06]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/snapshot_interval
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Snapshot scheduling, jitter and restart behavior.
+  - id: HB-CONFIG-ITEM-RAFT-MAX-ENTRY
+    key_path: storage.raft.max_entry_size
+    surface: STORAGE
+    value_shape: INTEGER
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H20-WP04]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/raft/max_entry_size
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Entry and chunking bounds; exact upstream key/semantics require capture.
+  - id: HB-CONFIG-ITEM-POSTGRES-CONNECTION
+    key_path: storage.postgresql.connection_url
+    surface: STORAGE
+    value_shape: SECRET_REFERENCE
+    criticality: DATA_DURABILITY_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H02-WP06, H04-WP04]
+    source_reference: docs://openbao/v2.6.2/configuration/storage/postgresql
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Database connection reference, TLS and credential-redaction behavior.
+  - id: HB-CONFIG-ITEM-HA-STORAGE-TYPE
+    key_path: ha_storage.type
+    surface: HA_STORAGE
+    value_shape: ENUM
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H21-WP10]
+    source_reference: docs://openbao/v2.6.2/configuration/ha_storage
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Separate HA backend behavior and single-active ownership.
+  - id: HB-CONFIG-ITEM-SEAL-TYPE
+    key_path: seal.type
+    surface: SEAL
+    value_shape: ENUM
+    criticality: CRYPTO_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H06-WP08]
+    source_reference: docs://openbao/v2.6.2/configuration/seal
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Seal provider selection and unknown-provider rejection.
+  - id: HB-CONFIG-ITEM-SEAL-KEY-REFERENCE
+    key_path: seal.provider.key_reference
+    surface: SEAL
+    value_shape: SECRET_REFERENCE
+    criticality: CRYPTO_CRITICAL
+    secret_bearing: REFERENCE_ONLY
+    restart_or_reload: DYNAMIC_PROVIDER
+    failure_policy: FAIL_CLOSED
+    owner_work_packages: [H01-WP03, H06-WP09]
+    source_reference: oracle-seed://seal-provider-key-reference
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Canonical seed entry pending provider-specific expansion; no raw credential is allowed.
+  - id: HB-CONFIG-ITEM-PLUGIN-DIRECTORY
+    key_path: plugin_directory
+    surface: PLUGIN
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H13-WP05]
+    source_reference: docs://openbao/v2.6.2/configuration/plugin_directory
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Ownership, symlink, digest and execution boundary.
+  - id: HB-CONFIG-ITEM-PLUGIN-TMPDIR
+    key_path: plugin_tmpdir
+    surface: PLUGIN
+    value_shape: PATH
+    criticality: SECURITY_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H13-WP06]
+    source_reference: docs://openbao/v2.6.2/configuration/plugin_tmpdir
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Temporary extraction/execution path controls.
+  - id: HB-CONFIG-ITEM-TELEMETRY-PROM-RETENTION
+    key_path: telemetry.prometheus_retention_time
+    surface: TELEMETRY
+    value_shape: DURATION
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: DEGRADED_NO_AUTHORITY_WIDENING
+    owner_work_packages: [H01-WP03, H23-WP03]
+    source_reference: docs://openbao/v2.6.2/configuration/telemetry/prometheus_retention_time
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Metric retention and memory bounds.
+  - id: HB-CONFIG-ITEM-SERVICE-REGISTRATION
+    key_path: service_registration.type
+    surface: SERVICE_REGISTRATION
+    value_shape: ENUM
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: DEGRADED_NO_AUTHORITY_WIDENING
+    owner_work_packages: [H01-WP03, H23-WP09]
+    source_reference: docs://openbao/v2.6.2/configuration/service_registration
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Discovery metadata must not become authorization or cluster identity.
+  - id: HB-CONFIG-ITEM-LOG-LEVEL
+    key_path: log_level
+    surface: LOGGING
+    value_shape: ENUM
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: SIGHUP_RELOAD
+    failure_policy: WARN_ONLY
+    owner_work_packages: [H01-WP03, H23-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/log_level
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Invalid level and redaction behavior.
+  - id: HB-CONFIG-ITEM-LOG-FORMAT
+    key_path: log_format
+    surface: LOGGING
+    value_shape: ENUM
+    criticality: OPERATOR_CRITICAL
+    secret_bearing: NO
+    restart_or_reload: STARTUP_ONLY
+    failure_policy: FAIL_STARTUP
+    owner_work_packages: [H01-WP03, H23-WP01]
+    source_reference: docs://openbao/v2.6.2/configuration/log_format
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: JSON/text output and field stability.
+coverage:
+  total_seeded: 18
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unknown_semantics: 18
+  unowned_critical: 0
+authority_effect: NONE

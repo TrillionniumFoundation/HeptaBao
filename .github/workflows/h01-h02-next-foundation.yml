@@ -1,0 +1,165 @@
+name: h01-h02-next-foundation
+
+on:
+  push:
+    branches: ["codex/h01-h02-next-foundation"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h01-h02-next-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  executable-foundation:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install pinned validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Validate inherited Plan V1.1 and H00 evidence semantics
+        run: |
+          python scripts/validate_plan_v2.py
+          python scripts/validate_plan_v2_extensions.py
+          python scripts/validate_provenance_v1.py
+          python scripts/validate_evidence_objects_v1.py
+
+      - name: Validate inherited H01 Oracle foundation
+        run: python scripts/validate_oracle_foundation_v1.py
+
+      - name: Validate H01 configuration, CLI, regression and side-effect extensions
+        run: python scripts/validate_h01_h02_next_v1.py
+
+      - name: Validate H02 dependency bakeoff and negative selection semantics
+        run: python scripts/validate_dependency_bakeoff_v1.py
+
+      - name: Validate H02 official metadata captures remain unreviewed and unselected
+        run: python scripts/validate_dependency_research_captures_v1.py
+
+      - name: Run Python Oracle and platform tests
+        run: |
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component clippy,rustfmt
+          rustup override set 1.98.0
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Rust format
+        run: cargo fmt --all --check
+
+      - name: Rust tests
+        run: cargo test --workspace --all-targets --locked
+
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Verify H01/H02 remain evidence-only and authority-free
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import yaml
+
+          h01 = json.load(open('qualifications/H01/H01-IMPLEMENTATION-STATUS.json', encoding='utf-8'))
+          h02 = json.load(open('qualifications/H02/H02-IMPLEMENTATION-STATUS.json', encoding='utf-8'))
+          catalog = yaml.safe_load(open('planning/HEPTABAO_H02_DEPENDENCY_BAKEOFF_V1.yaml', encoding='utf-8'))
+
+          for name, status in [('H01', h01), ('H02', h02)]:
+              if status['qualification']['status'] != 'NOT_QUALIFIED':
+                  raise SystemExit(f'{name} cannot self-qualify')
+              enabled = [flag for flag, value in status['authority_flags'].items() if value]
+              if enabled:
+                  raise SystemExit(f'{name} unexpected authority flags: {enabled}')
+              if status['authority_effect'] != 'NONE':
+                  raise SystemExit(f'{name} authority_effect must be NONE')
+
+          if catalog['prototype_selection_receipts']:
+              raise SystemExit('H02 has an unqualified prototype selection receipt')
+          if catalog['production_selection_authority'] is not False:
+              raise SystemExit('H02 production selection authority must remain false')
+          if any(candidate['state'] != 'IDENTIFIED' for candidate in catalog['candidates']):
+              raise SystemExit('H02 seed unexpectedly moved a candidate beyond IDENTIFIED')
+
+          print('H01/H02 evidence is internally consistent; qualification=false authority=NONE selection=0')
+          PY
+
+      - name: Emit execution-evidence metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import platform
+          import subprocess
+
+          def output(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          evidence = {
+              'schema': 'heptabao.ci-execution-evidence.v1',
+              'workflow': os.environ.get('GITHUB_WORKFLOW'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+              'runner_name': os.environ.get('RUNNER_NAME'),
+              'runner_os': os.environ.get('RUNNER_OS'),
+              'runner_arch': os.environ.get('RUNNER_ARCH'),
+              'source_ref': os.environ.get('GITHUB_HEAD_REF') or os.environ.get('GITHUB_REF_NAME') or os.environ.get('GITHUB_REF'),
+              'source_sha': output('git', 'rev-parse', 'HEAD'),
+              'event_sha': os.environ.get('GITHUB_SHA'),
+              'tree_sha': output('git', 'rev-parse', 'HEAD^{tree}'),
+              'clean_tree': output('git', 'status', '--porcelain') == '',
+              'cargo_lock_sha256': output('sha256sum', 'Cargo.lock').split()[0],
+              'python': platform.python_version(),
+              'rustc': output('rustc', '--version'),
+              'cargo': output('cargo', '--version'),
+              'qualification_effect': 'NONE',
+              'authority_effect': 'NONE',
+          }
+          with open('h01-h02-ci-evidence.json', 'w', encoding='utf-8') as handle:
+              json.dump(evidence, handle, indent=2, sort_keys=True)
+              handle.write('\n')
+          print(json.dumps(evidence, sort_keys=True))
+          PY
+
+      - name: Upload execution evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h01-h02-ci-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: h01-h02-ci-evidence.json
+          if-no-files-found: error
+          retention-days: 30

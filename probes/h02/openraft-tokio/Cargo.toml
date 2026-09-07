@@ -1,0 +1,51 @@
+[package]
+name = "heptabao-h02-probe-openraft-tokio"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+default-run = "heptabao-h02-probe-openraft-tokio"
+
+[[bin]]
+name = "heptabao-h02-probe-openraft-tokio"
+path = "src/main.rs"
+
+[[bin]]
+name = "heptabao-h02-openraft-inmemory-cluster"
+path = "src/bin/inmemory_cluster.rs"
+
+[[bin]]
+name = "heptabao-h02-openraft-fault-lab"
+path = "src/bin/openraft_fault_lab.rs"
+
+[[bin]]
+name = "heptabao-h02-openraft-blocker-closure-lab"
+path = "src/bin/blocker_closure_lab.rs"
+
+[[bin]]
+name = "heptabao-h02-openraft-durable-store-lab"
+path = "src/bin/durable_store_lab.rs"
+
+[dependencies]
+# OpenRaft alpha packages use pre-release-compatible requirements internally.
+# Pin the complete published family to the audited alpha.33 release so Cargo
+# cannot silently mix alpha.34 runtime/macros into an alpha.33 candidate.
+openraft = { version = "=0.10.0-alpha.33", default-features = false, features = ["serde", "tokio-rt", "type-alias"] }
+openraft-memstore = { version = "=0.10.0-alpha.33" }
+openraft-rt = "=0.10.0-alpha.33"
+openraft-rt-tokio = "=0.10.0-alpha.33"
+openraft-macros = "=0.10.0-alpha.33"
+futures = "=0.3.34"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.145"
+tokio = { version = "=1.53.1", default-features = false, features = ["macros", "process", "rt-multi-thread", "sync", "time"] }
+
+# OpenRaft alpha.33 was authored against validit 0.2.5. That package was later
+# yanked from crates.io and can no longer be selected by a fresh resolver. Use
+# the exact upstream BumpVer commit as an auditable, immutable source override.
+# The probe's effective Rust 1.88 floor is independently enforced by the
+# OpenRaft macro let-chain boundary gate; it is not a reason to drift to 0.2.6.
+[patch.crates-io]
+validit = { git = "https://github.com/drmingdrmer/validit.git", rev = "7016fa5e072a86092928144b3a3040381e6964e9" }
+
+[workspace]

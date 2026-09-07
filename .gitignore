@@ -1,0 +1,29 @@
+# Python bytecode and test caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Rust build outputs
+/target/
+**/target/
+
+# Local editor and OS metadata
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local execution artifacts; committed qualification evidence must live under
+# the explicit planning/evidence or qualifications trees.
+*.log
+*.tmp

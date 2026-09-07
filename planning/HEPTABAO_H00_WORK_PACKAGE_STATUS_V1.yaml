@@ -1,0 +1,139 @@
+schema: heptabao.h00-work-package-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: ACTIVE_NOT_QUALIFIED
+authority_effect: NONE
+work_packages:
+  H00-WP01:
+    title: repository governance and execution baseline
+    implementation_status: IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - initialized main and codex/plan-v1.1-h00-execution
+      - pinned workflow actions by commit
+      - CODEOWNERS and PR template
+    blockers:
+      - repository ruleset and security-feature mutation evidence not available through current connector
+      - independent reviewer teams not assigned
+  H00-WP02:
+    title: Plan V1.1 executable model
+    implementation_status: IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - 28 Program Gates
+      - 258 Work Packages
+      - three dependency classes
+      - exact compatibility profiles
+      - 56 traced requirements
+      - 32 governed risks
+      - 12 ADRs
+      - single-writer and capacity models
+    blockers:
+      - remote CI runner unexecuted
+      - independent approvals absent
+  H00-WP03:
+    title: evidence and authority object separation
+    implementation_status: IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - qualification receipt v2
+      - compatibility claim v1
+      - authority grant v1
+      - revocation v1
+      - release attestation v1
+      - authority policy and all flags false
+    blockers:
+      - signing keys and transparency log not operational
+      - approval identities absent
+  H00-WP04:
+    title: semantic validators and CI
+    implementation_status: IMPLEMENTED
+    qualification_status: INFRASTRUCTURE_UNEXECUTED
+    delivered:
+      - validate_plan_v2.py
+      - validate_plan_v2_extensions.py
+      - Rust governance sentinel
+      - Plan Integrity v2/v3 workflows
+      - provenance validator and workflow
+    blockers:
+      - GitHub jobs observed with steps=[] and runner_id=0
+      - no executable remote runner evidence
+  H00-WP05:
+    title: clean-room access and provenance separation
+    implementation_status: POLICY_AND_TOOLING_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - clean-room lane/material-flow policy
+      - source provenance schema
+      - forbidden-transfer validator
+    blockers:
+      - real lane repositories/storage/ACLs not provisioned
+      - named personnel and access logs absent
+      - no signed transfer record
+  H00-WP06:
+    title: license, trademark, patent and export review
+    implementation_status: POLICY_SCAFFOLD_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - LICENSE-PLANNING.md
+      - legal outputs and release restrictions
+    blockers:
+      - no signed legal disposition
+      - outbound license, contributor policy, trademark, patent and export decisions pending
+  H00-WP07:
+    title: security disclosure and incident response
+    implementation_status: RUNBOOK_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - SECURITY.md
+      - incident and revocation runbook
+      - revocation triggers and ordering
+    blockers:
+      - private disclosure channel not qualified
+      - 24x7 roster and incident commander absent
+      - tabletop and technical revocation drill not executed
+  H00-WP08:
+    title: signing, provenance and transparency
+    implementation_status: POLICY_AND_SCHEMAS_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - signing/transparency policy
+      - signed receipt/claim/grant/revocation/release schemas
+    blockers:
+      - no selected HSM/isolated signer
+      - no generated role-separated keys
+      - no transparency log or emergency revocation drill
+  H00-WP09:
+    title: capacity, budget and independent review
+    implementation_status: PLANNING_MODEL_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - 34-FTE standard capacity model
+      - standard, accelerated and constrained timelines
+      - reviewer role registry and separation rules
+    blockers:
+      - no named budget owner
+      - no approved staffing ramp
+      - no independent reviewers or external-audit contracts
+  H00-WP10:
+    title: H00 qualification
+    implementation_status: NOT_STARTED
+    qualification_status: BLOCKED
+    entry_requires:
+      - H00-WP01 through H00-WP09 evidence complete
+      - executable remote CI with zero failed/unknown
+      - critical/high/unclassified findings zero
+      - at least program, security and domain independent approvals
+      - valid signatures and current unrevoked evidence
+    result_if_successful:
+      qualification_receipt: allowed
+      compatibility_claim: still separate and false unless issued
+      authority_grant: still separate and false unless issued
+next_execution_order:
+  - establish executable runner and obtain first real CI evidence
+  - provision real clean-room ACL separation and identity roster
+  - complete legal disposition
+  - establish private disclosure and incident roster
+  - provision signing/transparency/revocation system
+  - approve staffing, budget and independent reviewers
+  - execute H00 game days and qualification

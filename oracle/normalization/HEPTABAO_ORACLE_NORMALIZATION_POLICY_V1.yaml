@@ -1,0 +1,228 @@
+schema: heptabao.oracle-normalization-policy.v1
+policy_id: HB-ORACLE-NORMALIZATION-V1
+version: '1.0.0'
+status: NORMATIVE_SANITIZATION_POLICY_NOT_COMPATIBILITY_AUTHORITY
+defaults:
+  unknown_fields: PRESERVE
+  unknown_arrays: PRESERVE_ORDER
+  unmatched_secret_key: REJECT
+  remove_field: FORBIDDEN_UNLESS_EXPLICIT_NON_SECURITY_REVIEW
+  authority_effect: NONE
+secret_placeholder:
+  schema_key: $heptabao_secret_placeholder_v1
+  fields: [kind, sha256, byte_length, value_shape]
+  digest_algorithm: sha256
+  retain_raw_value: false
+suspicious_exact_key_names:
+  - access_token
+  - authorization
+  - client_secret
+  - client_token
+  - encoded_root_token
+  - key_material
+  - otp
+  - password
+  - private_key
+  - recovery_keys
+  - recovery_keys_base64
+  - recovery_token
+  - refresh_token
+  - root_token
+  - secret
+  - secret_id
+  - token
+  - unseal_key
+  - unseal_keys
+rules:
+  - path: /request_id
+    operation: replace
+    replacement: $REQUEST_ID
+    reason: Per-request correlation value.
+    security_relevance: CORRELATION_ONLY
+    approved_roles: [compatibility, security]
+  - path: /wrap_info/token
+    operation: secret_placeholder
+    secret_kind: wrapping_token
+    reason: Single-use wrapping token must never enter sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /wrap_info/creation_time
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+  - path: /auth/client_token
+    operation: secret_placeholder
+    secret_kind: service_or_batch_token
+    reason: Authentication token is secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /auth/issue_time
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+  - path: /auth/policies
+    operation: sort_scalar_array
+    reason: Policy-set order is not semantic for this registered path.
+    security_relevance: SEMANTIC_SET
+    approved_roles: [compatibility, security]
+  - path: /auth/token_policies
+    operation: sort_scalar_array
+    reason: Token-policy set order is not semantic for this registered path.
+    security_relevance: SEMANTIC_SET
+    approved_roles: [compatibility, security]
+  - path: /auth/identity_policies
+    operation: sort_scalar_array
+    reason: Identity-policy set order is not semantic for this registered path.
+    security_relevance: SEMANTIC_SET
+    approved_roles: [compatibility, security]
+  - path: /data/policies
+    operation: sort_scalar_array
+    reason: Policy-set order is not semantic for this registered path.
+    security_relevance: SEMANTIC_SET
+    approved_roles: [compatibility, security]
+  - path: /data/creation_time
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+  - path: /data/creation_time_rfc3339
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+  - path: /data/last_renewal_time
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+  - path: /data/root_token
+    operation: secret_placeholder
+    secret_kind: root_token
+    reason: Root token is forbidden in ordinary fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/encoded_root_token
+    operation: secret_placeholder
+    secret_kind: encoded_root_token
+    reason: Encoded root token remains secret-bearing.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/keys
+    operation: secret_placeholder
+    secret_kind: shamir_unseal_shares
+    reason: Init/rekey unseal shares are forbidden in sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/keys_base64
+    operation: secret_placeholder
+    secret_kind: shamir_unseal_shares_base64
+    reason: Base64 encoding does not remove secrecy.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/recovery_keys
+    operation: secret_placeholder
+    secret_kind: recovery_shares
+    reason: Recovery shares are forbidden in sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/recovery_keys_base64
+    operation: secret_placeholder
+    secret_kind: recovery_shares_base64
+    reason: Base64 encoding does not remove secrecy.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/private_key
+    operation: secret_placeholder
+    secret_kind: private_key
+    reason: Private key material must not enter sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/password
+    operation: secret_placeholder
+    secret_kind: password
+    reason: Dynamic/static password is secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/secret_id
+    operation: secret_placeholder
+    secret_kind: approle_secret_id
+    reason: Secret ID is authentication material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/token
+    operation: secret_placeholder
+    secret_kind: provider_or_service_token
+    reason: Generic token response is secret-bearing until classified otherwise.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/access_token
+    operation: secret_placeholder
+    secret_kind: access_token
+    reason: Access token is secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/refresh_token
+    operation: secret_placeholder
+    secret_kind: refresh_token
+    reason: Refresh token is secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/client_secret
+    operation: secret_placeholder
+    secret_kind: client_secret
+    reason: Client secret is secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/otp
+    operation: secret_placeholder
+    secret_kind: one_time_password
+    reason: OTP output is short-lived secret material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/*/private_key
+    operation: secret_placeholder
+    secret_kind: nested_private_key
+    reason: Nested private key material must not enter sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security, crypto]
+  - path: /data/*/password
+    operation: secret_placeholder
+    secret_kind: nested_password
+    reason: Nested password material must not enter sanitized fixtures.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/*/secret_id
+    operation: secret_placeholder
+    secret_kind: nested_secret_id
+    reason: Nested Secret ID remains authentication material.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/*/token
+    operation: secret_placeholder
+    secret_kind: nested_token
+    reason: Nested token remains secret-bearing until classified otherwise.
+    security_relevance: SECRET
+    approved_roles: [compatibility, security]
+  - path: /data/*/creation_time
+    operation: replace
+    replacement: $TIMESTAMP
+    reason: Nested capture-time-dependent timestamp.
+    security_relevance: TIME_ONLY
+    approved_roles: [compatibility, security]
+forbidden_rules:
+  - remove a policy, TTL, lease duration, namespace, mount, algorithm, key version, Raft index, status, error or audit field
+  - replace an unknown identifier or status merely to make differential output match
+  - normalize a raw secret without a typed digest/length placeholder
+  - sort an array unless its exact registered path is a reviewed semantic set
+  - use regex or substring matching to silently discard unclassified fields
+review:
+  required_for_new_rule: [compatibility, security]
+  additional_for_crypto_secret: [crypto]
+  change_effect: existing fixtures and claims expire until recaptured or dispositioned

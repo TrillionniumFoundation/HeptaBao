@@ -1,0 +1,204 @@
+schema: heptabao.h02-os-durable-clock-blocker-closure.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: IMPLEMENTED_PENDING_EXACT_HEAD_REMOTE_EXECUTION
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+candidate_binding:
+  candidate_id: HB-DEP-RAFT-OPENRAFT
+  package: openraft
+  version: 0.10.0-alpha.33
+  effective_rust_floor: '1.88.0'
+  profile_id: HB-H02-BLOCKER-CLOSURE-OPENRAFT-0_10_0_ALPHA_33
+  state: IDENTIFIED_NOT_SELECTED
+
+implementation:
+  manifest: probes/h02/openraft-tokio/Cargo.toml
+  committed_lock: probes/h02/openraft-tokio/Cargo.lock
+  blocker_closure_binary: heptabao-h02-openraft-blocker-closure-lab
+  blocker_closure_entrypoint: probes/h02/openraft-tokio/src/bin/blocker_closure_lab.rs
+  os_parent_module: probes/h02/openraft-tokio/src/bin/openraft_fault_lab/os_clock.rs
+  candidate_child_module: probes/h02/openraft-tokio/src/bin/openraft_fault_lab/os_clock_cluster.rs
+  storage_fault_seam_module: probes/h02/openraft-tokio/src/bin/openraft_fault_lab/durable.rs
+  durable_store_binary: heptabao-h02-openraft-durable-store-lab
+  durable_store_entrypoint: probes/h02/openraft-tokio/src/bin/durable_store_lab.rs
+  durable_log_and_state_machine: probes/h02/openraft-tokio/src/bin/durable_store_lab/store.rs
+  durable_cluster: probes/h02/openraft-tokio/src/bin/durable_store_lab/cluster.rs
+  durable_network: probes/h02/openraft-tokio/src/bin/durable_store_lab/network.rs
+
+os_process_suspend:
+  implementation_state: IMPLEMENTED_UNQUALIFIED
+  execution:
+    - start a real three-node OpenRaft cluster in an isolated child process
+    - commit values and perform ReadIndex reads while atomically publishing progress
+    - send SIGSTOP through the Linux process interface
+    - verify /proc reports a stopped process state
+    - verify committed/read progress does not change during the stopped interval
+    - send SIGCONT and require candidate commit and ReadIndex progress to resume
+  scope_limit:
+    topology: SINGLE_OS_PROCESS_THREE_INPROCESS_RAFT_NODES
+    separate_process_per_raft_node: false
+    separate_process_majority_election: false
+  fail_closed:
+    - missing child PID blocks
+    - missing readiness or progress blocks
+    - process state other than stopped fails
+    - progress movement during SIGSTOP fails
+    - failure to resume commit and ReadIndex progress fails
+
+durable_storage:
+  integrated_openraft_store:
+    state: IMPLEMENTED_UNQUALIFIED
+    candidate_id: HB-STORE-FILE-DURABLE-PROTOTYPE
+    openraft_storage_integrated: true
+    implements:
+      - RaftLogReader
+      - RaftLogStorage
+      - RaftSnapshotBuilder
+      - RaftStateMachine
+    persistence_contract:
+      envelope: magic + u64 payload length + payload + CRC32
+      artifact_bound: 128 MiB
+      publication: create-new temporary + write-all + flush + sync_all + rename + parent-directory sync_all
+      vote_persisted_before_return: true
+      committed_index_persisted_before_return: true
+      append_IOFlushed_after_sync_all: true
+      state_machine_persisted_before_client_responder: true
+      snapshot_metadata_and_membership_validated: true
+      explicit_create_reopen_lifecycle: true
+      validated_current_discards_single_stale_previous: true
+      corrupt_current_never_falls_back_to_previous: true
+      multiple_previous_generations_fail_closed: true
+      initialized_store_marker_persisted: true
+      missing_initialized_generation_fails_closed: true
+      legacy_generation_adoption_requires_full_validation: true
+      marker_domain_and_file_binding_validated: true
+    implemented_cases:
+      - three-node replicated writes with non-empty durable artifacts
+      - logical full-cluster shutdown and disk reopen in the same OS process
+      - ReadIndex after disk reopen
+      - post-reopen write surviving a second disk reopen
+      - snapshot recovery when the state-machine file is missing
+      - log corruption rejected on reopen
+      - state-machine corruption rejected on reopen
+      - bootstrap uses explicit create-new while restart uses explicit reopen-existing
+      - initialized log generation deletion rejected on reopen
+      - initialized state generation deletion rejected on reopen
+      - corrupt or domain-mismatched initialization marker rejected
+      - interrupted marker replacement recovered before classification
+      - deleted initialized directory is not silently recreated by reopen-existing
+      - legacy authoritative generation requires explicit validated adoption
+      - valid current generation discards one stale previous only after validation
+      - corrupt current generation never falls back silently to previous
+      - multiple previous generations fail closed as ambiguous
+      - isolated writer cannot advance committed state
+    scope_limit:
+      production_selected: false
+      separate_process_node_restart: false
+      kernel_power_cut: false
+      storage_controller_cache_flush_proven: false
+      filesystem_crash_consistency_lab: false
+      silent_fresh_reinitialization_on_reopen: false
+      whole_directory_loss_detectable_without_external_anchor: false
+  storage_fault_seam:
+    state: IMPLEMENTED_UNQUALIFIED
+    format_magic: HBWAL001
+    implemented_cases:
+      - restart recovery from synced records
+      - bounded injected disk stall with no post-deadline state advance
+      - synced torn-tail detection and truncation to the last complete record
+      - simulated loss of an unsynced tail
+      - committed-record corruption detection and fail-closed reopen
+      - atomic snapshot publication and reopen
+    scope_limit:
+      integrated_with_openraft_store: false
+      kernel_power_loss: simulated only at the storage fault seam
+
+clock_faults:
+  implementation_state: IMPLEMENTED_UNQUALIFIED
+  execution:
+    - real three-node OpenRaft cluster
+    - real client_write operations
+    - real ReadIndex linearizable reads
+    - injected application wall-clock projections of minus/plus one day and one year
+    - monotonic elapsed-time bounds and stable-leader checks
+  scope_limit:
+    kernel_wall_clock_changed: false
+    per_node_kernel_clock_skew: false
+    Linux_time_namespace_execution: false
+    candidate_runtime_timer_kind: MONOTONIC_TOKIO_INSTANT
+
+execution_matrix:
+  bounded_msrv_failures: ['1.85.0', '1.86.0', '1.87.0']
+  effective_toolchains: ['1.88.0', '1.98.0']
+  linux_target: x86_64-unknown-linux-gnu
+  macos_target: runner-native
+  seeds:
+    - '0x5eed20260828cafe'
+    - '0x8badf00d12345678'
+    - '0xd15ea5e5cafef00d'
+  effective_entries_per_environment: 6
+  scheduling: SERIAL_PER_RUNNER
+  preserve_every_outcome: true
+  workflows:
+    - .github/workflows/h02-openraft-effective-msrv-boundary.yml
+    - .github/workflows/h02-durable-store-v2.yml
+    - .github/workflows/h02-durable-store-macos-v2.yml
+    - .github/workflows/h02-openraft-blocker-closure.yml
+  exact_head_passes: 0
+
+technical_pass_requires:
+  - committed Cargo.lock resolves validit 0.2.5 from the exact audited Git revision
+  - Rust 1.85 through 1.87 fail only with the recorded OpenRaft let-chain MSRV boundary
+  - Rust 1.88 and 1.98 fmt, all-target tests and Clippy with warnings denied pass
+  - all three deterministic seeds pass on each required environment
+  - raw results satisfy their Draft 2020-12 schemas
+  - OS suspend, integrated durable store, storage fault seam and clock cases are EXECUTED_PASS
+  - source commit, source tree, manifest and committed lock digests are bound
+  - qualification remains false
+  - selection_effect remains NONE
+  - authority_effect remains NONE
+
+last_verified_runner_observations:
+  - environment: macos-15-arm64
+    run_id: 33248705381
+    source_sha: 9ef45d08c26773feb919a616bf74bc89489d8798
+    result: EXECUTED_FAIL_STALE_LOCK_GRAPH
+    disposition: lockfile binding repair in progress; not counted as a technical pass
+  - environment: ubuntu-24.04
+    source_sha: ed248c4b06be884af43c60721aba48838784d666
+    result: EXECUTED_FAIL_EFFECTIVE_MSRV_BOUNDARY
+    disposition: Rust floor corrected to 1.88; not counted as a technical pass
+
+remaining_technical_gaps:
+  - exact-head Linux effective-MSRV and durable-store pass artifacts
+  - exact-head macOS native-architecture durable-store pass artifacts
+  - real kernel power-cut or equivalent crash-consistency laboratory evidence
+  - separate-process Raft-node restart with independently persisted node directories
+  - per-node time-namespace or kernel-clock skew evidence
+  - storage-controller and filesystem durability assumptions disposition
+
+remaining_external_gaps:
+  - second independently operated and attested reproduction environment
+  - independent distributed-systems, storage, platform and security approvals
+  - independent crypto and license/legal disposition where applicable
+  - signed bounded prototype-selection receipt
+  - H00 qualification receipt and formal authority grant
+
+invariants:
+  - Implemented is not equivalent to executed, reviewed, selected or qualified.
+  - A technical pass does not select OpenRaft or either file-storage prototype.
+  - Process-fatal, blocked, queued, skipped or empty-step outcomes remain visible and cannot become a pass.
+  - Same-process disk reopen cannot be represented as separate-process restart evidence.
+  - Fault-seam fsync-loss simulation cannot be represented as kernel power-cut evidence.
+  - Application wall-clock projection cannot be represented as kernel-clock mutation evidence.
+  - A second GitHub-hosted OS is cross-environment evidence but is not independent attestation by itself.
+  - Missing external approvals and signed receipts remain real blockers and are never fabricated.
+  - Once an initialization marker exists, an absent authoritative generation is corruption and cannot be interpreted as a fresh store.
+  - Loss of both a storage directory and its marker requires a separately qualified external rollback anchor; this prototype does not claim otherwise.
+  - Bootstrap creation, existing-store reopen and legacy adoption are distinct caller-selected operations.
+  - A missing marker or authoritative generation on reopen-existing is corruption, never permission to initialize empty state.
+  - A validated current generation may retire one stale previous file; corrupt current state never rolls back silently.
+  - qualification=false, selection_effect=NONE and authority_effect=NONE are immutable.

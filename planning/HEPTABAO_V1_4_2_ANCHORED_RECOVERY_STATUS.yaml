@@ -1,0 +1,70 @@
+schema: heptabao.v1-4-2-anchored-recovery-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.2'
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_AND_INDEPENDENT_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_2_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY.md
+current_state: planning/HEPTABAO_V1_4_2_ANCHORED_RECOVERY_STATUS.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_2.yaml
+profile:
+  id: HB-P1-DEV-ANCHORED-RECOVERY-SINGLE-PROCESS
+  operating_system: linux
+  production_supported: false
+  replicated: false
+  multi_process_supported: false
+  external_anchor_provider_selected: false
+  archive_authenticator_provider_selected: false
+  compatibility_supported: false
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  inherited_head: 6b2c11d46c65603f1a1e8ded742335990b61a79b
+  inherited_tree: a83b78d1f2312f495ed82c2af1071342676380f2
+  source_identity: RESOLVE_FROM_EXACT_GIT_HEAD
+implementation:
+  durable_provider_neutral_key_lifecycle_ledger: IMPLEMENTED_SOURCE
+  atomic_rotate_and_active_revocation_guard: IMPLEMENTED_SOURCE
+  authenticated_external_checkpoint_contract: IMPLEMENTED_SOURCE
+  authenticator_identity_and_previous_digest_binding: IMPLEMENTED_SOURCE
+  rollback_divergence_and_epoch_regression_detection: IMPLEMENTED_SOURCE
+  bounded_authenticated_recovery_archive: IMPLEMENTED_SOURCE
+  exact_state_journal_key_and_checkpoint_binding: IMPLEMENTED_SOURCE
+  externally_verified_checkpoint_restore_gate: IMPLEMENTED_SOURCE
+  empty_target_staging_and_receipt_validation: IMPLEMENTED_SOURCE
+  explicit_restore_publish_outcome_unknown: IMPLEMENTED_SOURCE
+execution_required:
+  v1_4_2_plan_and_mutation_tests: REQUIRED_EXACT_HEAD
+  v1_4_2_inherited_surface_diff: REQUIRED_EXACT_HEAD
+  frozen_v1_4_1_baseline_replay: REQUIRED_EXACT_HEAD
+  current_platform_and_oracle_regressions: REQUIRED_EXACT_HEAD
+  rust_1_98_fmt_test_strict_clippy: REQUIRED_EXACT_HEAD
+  final_project_ratification: REQUIRED_DESIGNATED_RATIFIER_HEAD
+  independent_recovery_storage_and_security_review: REQUIRED_EXTERNAL_IDENTITY
+remaining_product_work:
+  production_key_custody_and_rotation_ceremony: OPEN
+  production_external_rollback_anchor: OPEN
+  descriptor_relative_filesystem_and_writer_fencing: OPEN
+  retention_compaction_and_offsite_backup_custody: OPEN
+  replicated_audit_and_ha_recovery: OPEN
+  production_restore_drills_and_online_upgrade: OPEN
+  policy_identity_token_lease_namespace_plugins: OPEN
+  raft_ha_and_standby: OPEN
+  compatibility_oracle_implementation: OPEN
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

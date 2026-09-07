@@ -1,0 +1,64 @@
+schema: heptabao.v1-3-foundation-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: REPOSITORY_REMEDIATION_IMPLEMENTED_LOCAL_REMOTE_AND_EXTERNAL_CLOSURE_REQUIRED
+source:
+  local_branch: codex/plan-v1.3-foundation-closure-v1
+  base_description: audited V1.2.2 unified local source candidate
+  upstream_lifecycle_branch: codex/plan-v1.2.1-direct-generation-closure-v2
+  upstream_lifecycle_materialized_head: cd56d815f03c0a62ecb3572fb0ba635e9c5f6b93
+  upstream_lifecycle_materialization_run_id: 33276128606
+  upstream_lifecycle_materialization_job_id: 99163068708
+  upstream_lifecycle_materialization: EXECUTED_PASS_MATERIALIZED
+  upstream_lifecycle_followup_checks: ACTION_REQUIRED_NOT_EXECUTED
+  v1_3_remote_materialization: UNEXECUTED
+foundation:
+  workspace_crates: 7
+  new_crates:
+  - heptabao-protocol
+  - heptabao-authbus-contracts
+  - heptabao-p0-server
+  effective_work_packages: 306
+  p0_profile: HB-P0-DEV-MEMORY
+  p0_production_supported: false
+repository_remediation:
+  inherited_repository_blockers: 13
+  new_repository_blockers: 4
+  implementation_state: IMPLEMENTED_LOCAL_UNQUALIFIED
+  rust_fmt_test_clippy: UNEXECUTED_ENVIRONMENT_TOOLCHAIN_UNAVAILABLE
+  p0_socket_smoke: UNEXECUTED_ENVIRONMENT_TOOLCHAIN_UNAVAILABLE
+  h02_exact_head_matrix: UNEXECUTED_REMOTE_REQUIRED
+  independent_review: ABSENT
+  closure_receipts: ABSENT
+oracle:
+  claimed_local_vectors: 4
+  repository_verifiable_transferred_vectors: 0
+  qualified_vectors: 0
+external_open_count: 8
+external_open_ids:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE
+local_evidence:
+  validators: PASS_12_OF_12
+  oracle_tests: PASS_20_OF_20
+  platform_tests: PASS_116_OF_116
+  plan_tests: PASS_36_OF_36
+  total_python_tests: PASS_172_OF_172
+  json_documents_parsed: 64
+  yaml_workflow_documents_parsed: 95
+  draft_2020_12_schemas_meta_validated: 39
+  rust_source_surface: PASS_LEXICAL_DEVELOPMENT_EVIDENCE_NOT_COMPILATION

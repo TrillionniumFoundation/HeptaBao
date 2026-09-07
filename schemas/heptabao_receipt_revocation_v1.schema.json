@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/receipt-revocation-v1.json",
+  "title": "HeptaBao Receipt, Claim or Grant Revocation V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "revocation_id",
+    "plan_binding",
+    "target",
+    "reason_class",
+    "reason",
+    "effective_at_utc",
+    "replacement_ref",
+    "approvals",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.receipt-revocation.v1"},
+    "revocation_id": {"pattern": "^HB-RV-[A-Z0-9._-]{8,200}$"},
+    "plan_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "revision", "plan_digest_sha256"],
+      "properties": {
+        "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+        "revision": {"const": "1.1"},
+        "plan_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "sha256"],
+      "properties": {
+        "kind": {"enum": ["QUALIFICATION_RECEIPT", "COMPATIBILITY_CLAIM", "AUTHORITY_GRANT", "RELEASE_ATTESTATION"]},
+        "id": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "reason_class": {
+      "enum": [
+        "SECRET_OR_KEY_LEAK",
+        "SECURITY_BYPASS",
+        "DATA_LOSS_OR_CONSISTENCY_VIOLATION",
+        "BLIND_RETRY_OR_DUPLICATE_EFFECT",
+        "WRITER_AUTHORITY_OVERLAP",
+        "INVALID_EVIDENCE_OR_SIGNATURE",
+        "EXPIRED_OR_UNSUPPORTED_SCOPE",
+        "NEW_UPSTREAM_SECURITY_FINDING",
+        "DEPENDENCY_OR_TOOLCHAIN_INVALIDATION",
+        "SUPERSEDED",
+        "OPERATOR_REQUEST",
+        "OTHER_FAIL_CLOSED"
+      ]
+    },
+    "reason": {"type": "string", "minLength": 8},
+    "effective_at_utc": {"type": "string", "format": "date-time"},
+    "replacement_ref": {"type": ["string", "null"]},
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["program", "security", "compatibility", "domain", "operations", "migration", "release", "legal", "incident-commander"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"const": "APPROVE"},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

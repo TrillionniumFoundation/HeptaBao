@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.h02-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h01-h02-next-foundation",
+  "program_authority_gate": "H00",
+  "status": "CANDIDATE_BAKEOFF_STARTED_NOT_QUALIFIED",
+  "implemented": {
+    "candidate_schema": true,
+    "selection_receipt_schema": true,
+    "research_capture_schema": true,
+    "candidate_catalog": true,
+    "rust_fail_closed_model": true,
+    "work_package_status": true,
+    "cross_file_validator": true,
+    "research_capture_validator": true,
+    "official_metadata_captures": 3,
+    "candidate_source_pins": false,
+    "source_archive_checksums": false,
+    "crate_package_checksums": false,
+    "unsafe_inventory": false,
+    "license_review": false,
+    "security_advisory_review": false,
+    "msrv_execution": false,
+    "benchmark_evidence": false,
+    "specialist_reviews": false
+  },
+  "official_metadata_capture_candidates": [
+    "HB-DEP-ASYNC-TOKIO-0001",
+    "HB-DEP-TLS-RUSTLS-0001",
+    "HB-DEP-RAFT-OPENRAFT"
+  ],
+  "candidate_counts": {
+    "identified": 25,
+    "official_metadata_captured_unreviewed": 3,
+    "evidence_collecting": 0,
+    "eligible_for_bakeoff": 0,
+    "rejected": 0,
+    "selected_for_prototype": 0
+  },
+  "selection_receipts": [],
+  "qualification": {
+    "status": "NOT_QUALIFIED",
+    "receipt": null,
+    "compatibility_claim": null,
+    "authority_grant": null
+  },
+  "authority_flags": {
+    "prototype_selection_authority": false,
+    "production_dependency_authority": false,
+    "crypto_implementation_authority": false,
+    "raft_implementation_authority": false,
+    "compatibility_claim": false,
+    "production_authority": false,
+    "release_authority": false
+  },
+  "blocking_conditions": [
+    "H00 is not qualified",
+    "Official release metadata for three candidates is unreviewed and has not been promoted into catalog pins",
+    "No candidate has both an independently hashed source archive and crates.io package checksum",
+    "No candidate has complete license, maintenance, security advisory or unsafe review",
+    "No candidate has executable declared/effective MSRV evidence",
+    "No deterministic candidate benchmark and qualification evidence exists",
+    "No crypto or distributed-systems specialist approval exists",
+    "No executable remote CI evidence exists",
+    "No signed prototype selection receipt exists"
+  ],
+  "authority_effect": "NONE"
+}

@@ -1,0 +1,16 @@
+schema: heptabao.oracle-inventory-metadata-correction.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+correction_id: HB-ORACLE-CORRECTION-ENDPOINT-SEED-COUNT-001
+target_path: oracle/inventory/openbao-v2.6.2/endpoint-seed.yaml
+target_inventory_id: HB-ENDPOINTS-OPENBAO-V2_6_2-SEED
+field: coverage.total_seeded
+previous_value: 50
+corrected_value: 51
+reason: The final generic dynamic-secret family entry was added after the initial seed counter was calculated.
+semantic_effect: METADATA_ONLY
+fixture_or_behavior_changed: false
+compatibility_authority_effect: NONE
+qualification_status: NOT_QUALIFIED
+canonical_rewrite_required: true
+rewrite_blocker: Exact branch CI and manifest generation have not acquired a runner; retain transparent correction instead of claiming a validated rewrite.
+review_status: PENDING_COMPATIBILITY_AND_SECURITY_REVIEW

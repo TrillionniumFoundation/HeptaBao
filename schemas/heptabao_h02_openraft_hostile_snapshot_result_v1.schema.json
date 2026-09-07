@@ -1,0 +1,46 @@
+{
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_openraft_hostile_snapshot_result_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "EXECUTED_PASS"}}, "required": ["status"]},
+      "then": {"properties": {"outcome": {"const": "REJECTED_OR_ABORTED_AFTER_INJECTION"}, "phase_reached": {"const": true}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "EXECUTED_FAIL"}}, "required": ["status"]},
+      "then": {"properties": {"outcome": {"const": "ACCEPTED"}, "phase_reached": {"const": true}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "BLOCKED"}}, "required": ["status"]},
+      "then": {"properties": {"outcome": {"const": "SETUP_OR_EXECUTION_BLOCKED"}}}
+    }
+  ],
+  "properties": {
+    "authority_effect": {"const": "NONE"},
+    "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+    "child_exit_code": {"type": ["integer", "null"]},
+    "child_signal": {"type": ["integer", "null"]},
+    "detail": {"type": "object"},
+    "durability_class": {"const": "TEST_ONLY_IN_MEMORY_NO_PRODUCTION_CLAIM"},
+    "execution_scope": {"const": "ISOLATED_CHILD_REAL_OPENRAFT_STALE_COMMITTED_SNAPSHOT_INJECTION"},
+    "outcome": {"enum": ["REJECTED_OR_ABORTED_AFTER_INJECTION", "ACCEPTED", "SETUP_OR_EXECUTION_BLOCKED"]},
+    "phase_reached": {"type": "boolean"},
+    "profile_id": {"const": "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33"},
+    "qualification": {"const": false},
+    "schema": {"const": "heptabao.h02-openraft-hostile-snapshot-result.v1"},
+    "seed": {"pattern": "^0x[0-9a-f]{16}$", "type": "string"},
+    "selection_effect": {"const": "NONE"},
+    "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED"]},
+    "stderr_bytes": {"minimum": 0, "type": "integer"},
+    "stdout_lines": {"minimum": 0, "type": "integer"},
+    "version": {"const": "0.10.0-alpha.33"}
+  },
+  "required": [
+    "schema", "candidate_id", "version", "profile_id", "seed", "status", "phase_reached", "outcome",
+    "child_exit_code", "child_signal", "stdout_lines", "stderr_bytes", "execution_scope", "durability_class",
+    "detail", "qualification", "selection_effect", "authority_effect"
+  ],
+  "title": "HeptaBao H02 OpenRaft hostile snapshot result v1",
+  "type": "object"
+}

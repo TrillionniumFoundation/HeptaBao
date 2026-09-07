@@ -1,0 +1,117 @@
+schema: heptabao.capacity-and-budget-model.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: PLANNING_BASELINE_NOT_FUNDING_AUTHORITY
+currency: USD
+calendar_assumptions:
+  productive_engineering_weeks_per_fte_year: 40
+  onboarding_ramp_months: 3
+  planned_leave_and_training_percent: 12
+  security_review_capacity_reserved_percent: 15
+  qualification_and_release_capacity_reserved_percent: 15
+  unplanned_incident_and_upstream_security_reserve_percent: 10
+  external_audit_procurement_lead_months: 4
+  legal_review_lead_months: 2
+  hardware_lab_procurement_lead_months: 3
+standard_staffing:
+  dedicated_fte: 34
+  tracks:
+    governance_program_architecture: 3
+    oracle_compatibility: 4
+    crypto_barrier_seal: 4
+    core_policy_identity_token_lease_audit: 6
+    storage_raft_ha: 5
+    plugins_auth_secrets_integrations: 7
+    api_cli_agent_proxy_operations: 3
+    qualification_release_supply_chain: 2
+  required_external_or_independent_capacity:
+    legal_and_license: 1.0
+    cryptography_review: 1.0
+    distributed_systems_review: 1.0
+    penetration_and_red_team: 2.0
+    sre_incident_and_restore: 3.0
+    release_signing_and_compliance: 1.0
+  reviewer_separation:
+    minimum_distinct_h00_approvers: 3
+    author_cannot_be_sole_approver: true
+    crypto_author_and_final_crypto_approver_separate: true
+    raft_author_and_final_distributed_approver_separate: true
+    release_builder_and_release_approver_separate: true
+scenarios:
+  standard:
+    staffing_condition: 34 dedicated FTE reached by M12
+    oracle_automation_condition: core inventory and differential harness operational by M8
+    external_review_condition: crypto and distributed-systems reviewers contracted before H05/H20 qualification
+    c1_window: M12-M20
+    c2_window: M20-M30
+    selected_c3_window: M30-M48
+    c4_window: M42-M62
+    full_c5_window: M60-M84
+  accelerated:
+    status: CONDITIONAL_NOT_BASELINE
+    staffing_condition: 34 or more dedicated FTE reached by M9 with four independent implementation lanes
+    oracle_automation_condition: endpoint/config/CLI inventory and normalized differential automation complete by M6
+    external_review_condition: all critical external reviewers contracted before M6
+    scope_condition: exact compatibility profiles; no unbounded third-party plugin ecosystem promise
+    full_c5_window: M52-M68
+  constrained:
+    status: EXPECTED_IF_CORE_FTE_BELOW_24
+    staffing_condition: less than 24 dedicated FTE or reviewer bottleneck
+    behavior: prioritize P1 core, P6 secrets foundation and P11 migration; defer broad ecosystem
+    full_c5_window: M84-M120+
+budget_categories:
+  engineering_compensation:
+    owner_required: true
+    amount: TBD_BY_FINANCE
+  external_legal:
+    owner_required: true
+    amount: TBD_BY_FINANCE
+  cryptography_and_distributed_audits:
+    owner_required: true
+    amount: TBD_BY_PROCUREMENT
+  penetration_and_red_team:
+    owner_required: true
+    amount: TBD_BY_SECURITY
+  fuzzing_and_chaos_infrastructure:
+    owner_required: true
+    amount: TBD_BY_ENGINEERING
+  hardware_kms_hsm_and_signing_lab:
+    owner_required: true
+    amount: TBD_BY_OPERATIONS
+  oracle_external_services_and_version_matrix:
+    owner_required: true
+    amount: TBD_BY_COMPATIBILITY
+  reproducible_build_sbom_transparency:
+    owner_required: true
+    amount: TBD_BY_RELEASE
+  incident_response_and_24x7_oncall:
+    owner_required: true
+    amount: TBD_BY_OPERATIONS
+  long_term_support_and_backport:
+    owner_required: true
+    amount: TBD_BY_PROGRAM
+reforecast_triggers:
+  - every calendar quarter
+  - compatibility profile scope change
+  - new OpenBao major/minor release or security advisory
+  - staffing variance greater than 10 percent
+  - critical dependency abandonment or license change
+  - external audit delay greater than 30 days
+  - critical/high security finding
+  - missed Program Gate by more than one quarter
+  - performance or capacity target change
+  - migration-source version expansion
+blocking_conditions:
+  H00-WP09:
+    - named budget owner missing
+    - 34-FTE ramp not approved
+    - independent reviewer capacity not assigned
+    - external-audit procurement not initiated
+  H27:
+    - 24x7 support funding absent
+    - signing/HSM operation funding absent
+    - LTS/backport staffing absent
+notes:
+  - Calendar windows are capacity scenarios, not authority or delivery promises.
+  - A smaller team may produce valuable qualified profiles without claiming full C5.
+  - Review, qualification, incident response and upstream-security work are planned capacity, not free overhead.

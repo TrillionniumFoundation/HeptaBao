@@ -1,0 +1,35 @@
+schema: heptabao.h01-oracle-evidence-reconciliation.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: CLAIM_RECORDED_REPOSITORY_TRANSFER_UNVERIFIED_NOT_QUALIFIED
+claim_source:
+  repository_issue: 14
+  reported_bundle: v0.2.2-h01-oracle
+  claimed_local_vectors: 4
+  claimed_vector_ids:
+  - HB-ORACLE-SYS-HEALTH-0001
+  - HB-ORACLE-SYS-SEAL-STATUS-0001
+  - HB-ORACLE-NORMALIZE-DOUBLE-SLASH-0001
+  - HB-ORACLE-NORMALIZE-ENCODED-SLASH-0001
+repository_observation:
+  repository_verifiable_transferred_vectors: 0
+  signed_transfer_records: 0
+  qualified_vectors: 0
+  known_oracle_branch_fixture_class: SYNTHETIC_ONLY
+  known_oracle_branch_files:
+  - oracle/fixtures/synthetic/HB-ORACLE-SYS-HEALTH-0001/README.md
+  - oracle/fixtures/synthetic/HB-ORACLE-SYS-HEALTH-0001/synthetic-health-observation.json
+  - oracle/fixtures/synthetic/HB-ORACLE-SYS-HEALTH-0001/synthetic-health-side-effects.json
+closure_requires:
+- materialized exact artifacts and digests
+- source provenance and tool/image binding
+- independent sanitization and secret review
+- signed transfer into implementation-consumable fixture storage
+- exact-profile differential execution
+invariants:
+- A local claim is retained but is not repository-verifiable evidence.
+- Synthetic fixtures cannot be relabeled as black-box Oracle captures.
+- Missing transferred artifacts cannot be inferred from an issue description.
+qualification: false
+compatibility_claim: false
+authority_effect: NONE

@@ -1,0 +1,115 @@
+schema: heptabao.blocker-register-extension.v1_4_3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.3'
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  commit: 34e8dc0caceb84288d4ef61f79cd7ca062718b63
+  tree: a1a0e7ab4e5ae8d4a2a5a7cde425eaf94a54b1d7
+added_blockers:
+- id: HB-BLK-REPO-033
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: filesystem roots were reopened by path instead of held as verified directory capabilities
+  owner_role: filesystem-storage-core-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - final root component is opened with directory nofollow and close-on-exec flags
+  - pre-open opened-handle post-open and proc-descriptor identities are equal
+  - unsupported platforms and unavailable descriptor paths fail closed
+  - only bounded flat leaf names can be resolved
+  - an exclusive non-blocking directory lock is held for the guard lifetime
+  - a second opener is rejected and a later opener succeeds after drop
+  required_execution:
+  - plan-v1.4.3-descriptor-fencing/descriptor-fencing
+  evidence:
+  - crates/heptabao-filesystem-guard/src/lib.rs
+  - docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-034
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: generation store path access and publication were not descriptor anchored or writer fenced
+  owner_role: storage-filesystem-core-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - create reopen and adopt acquire the exclusive root guard before inspection
+  - marker current and generation files are resolved through the descriptor access path
+  - reads open with nofollow before validating regular-file metadata and size
+  - immutable generation creation uses create-new as the atomic conflict check
+  - publication syncs the held directory descriptor and retains outcome-unknown semantics
+  - a second live writer is rejected
+  - root pathname replacement cannot redirect a live commit
+  required_execution:
+  - plan-v1.4.3-descriptor-fencing/descriptor-fencing
+  evidence:
+  - crates/heptabao-single-node-store/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-035
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: authenticated journal path access and publication were not descriptor anchored or writer fenced
+  owner_role: audit-journal-filesystem-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - create and reopen acquire the exclusive root guard before inspection
+  - marker tail entries and layout enumeration remain descriptor rooted
+  - reads and immutable entry writes use nofollow descriptor-rooted operations
+  - tail publication syncs the held directory descriptor
+  - replay append and orphan reconciliation verify the held directory identity
+  - a second live writer is rejected
+  - root pathname replacement cannot redirect a live append
+  required_execution:
+  - plan-v1.4.3-descriptor-fencing/descriptor-fencing
+  evidence:
+  - crates/heptabao-single-node-journal/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-036
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.4.3 filesystem fencing extension lacked a version-aware exact-head gate
+  owner_role: qualification-platform-filesystem-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - exact Git delta proves only the closed 18-path extension surface changed
+  - frozen V1.4.2 validators regressions and Rust 1.98 gates pass in a detached worktree
+  - current V1.4.3 validators hostile mutations platform Oracle and Rust gates pass
+  - no temporary source-export materializer or write-capable V1.4.3 workflow remains
+  - qualification compatibility selection and all authority fields remain false
+  required_execution:
+  - plan-v1.4.3-descriptor-fencing/descriptor-fencing
+  evidence:
+  - scripts/validate_plan_v1_4_3.py
+  - scripts/validate_v1_4_3_inherited_surface.py
+  - tests/plan/test_plan_v1_4_3.py
+  - .github/workflows/plan-v1.4.3-descriptor-fencing.yml
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production key custody generation wrapping rotation and revocation ceremony
+- production remote append-only rollback anchor
+- non-Linux descriptor adapters and network or distributed filesystem qualification
+- retention compaction offsite backup custody and restore drills
+- replicated audit and HA recovery reconciliation
+- production online upgrade downgrade and schema migration
+- policy identity token lease namespace and plugin domains
+- Raft HA membership snapshot and standby integration
+- Oracle-derived compatibility implementation
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE

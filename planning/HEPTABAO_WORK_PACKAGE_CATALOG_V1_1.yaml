@@ -1,0 +1,365 @@
+schema: heptabao.work-package-catalog.v1_1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+rules:
+- work packages are implementation units
+- all compatibility and authority effects are NONE
+- critical authors cannot be sole approvers
+gates:
+  H00:
+    packages:
+    - H00-WP01:repository-governance
+    - H00-WP02:plan-v1-1-execution-model
+    - H00-WP03:receipt-claim-grant-revocation-schemas
+    - H00-WP04:semantic-validators-and-ci
+    - H00-WP05:clean-room-access-separation
+    - H00-WP06:license-trademark-patent-export-review
+    - H00-WP07:security-disclosure-and-incident-model
+    - H00-WP08:signing-provenance-and-transparency
+    - H00-WP09:capacity-budget-and-reviewer-plan
+    - H00-WP10:h00-qualification
+  H01:
+    packages:
+    - H01-WP01:oracle-image-provenance
+    - H01-WP02:http-endpoint-inventory
+    - H01-WP03:cli-inventory
+    - H01-WP04:config-env-header-inventory
+    - H01-WP05:auth-secret-audit-plugin-inventory
+    - H01-WP06:raw-fixture-capture
+    - H01-WP07:sanitized-fixture-capture
+    - H01-WP08:normalization-policy
+    - H01-WP09:side-effect-observer
+    - H01-WP10:advisory-regression-registry
+  H02:
+    packages:
+    - H02-WP01:async-runtime
+    - H02-WP02:http-tls-stack
+    - H02-WP03:crypto-provider
+    - H02-WP04:secure-memory
+    - H02-WP05:serialization-and-hcl
+    - H02-WP06:postgres-client
+    - H02-WP07:raft-library
+    - H02-WP08:plugin-grpc
+    - H02-WP09:fuzz-model-tooling
+    - H02-WP10:dependency-vet-policy
+  H03:
+    packages:
+    - H03-WP01:operation-registry
+    - H03-WP02:request-response-types
+    - H03-WP03:error-taxonomy
+    - H03-WP04:path-header-query-canonicalization
+    - H03-WP05:namespace-mount-context
+    - H03-WP06:secret-bearing-types
+    - H03-WP07:internal-operation-guard
+    - H03-WP08:external-effect-model
+    - H03-WP09:version-negotiation
+    - H03-WP10:deviation-model
+  H04:
+    packages:
+    - H04-WP01:storage-traits
+    - H04-WP02:transaction-cas
+    - H04-WP03:memory-backend
+    - H04-WP04:postgres-backend
+    - H04-WP05:fsync-durability
+    - H04-WP06:torn-write-model
+    - H04-WP07:schema-migration
+    - H04-WP08:corruption-reopen
+    - H04-WP09:backup-restore-contract
+  H05:
+    packages:
+    - H05-WP01:ciphertext-envelope
+    - H05-WP02:keyring-versioning
+    - H05-WP03:nonce-discipline
+    - H05-WP04:aad-object-binding
+    - H05-WP05:barrier-storage-view
+    - H05-WP06:barrier-cache-zeroization
+    - H05-WP07:tamper-detection
+    - H05-WP08:rollback-detection
+    - H05-WP09:kat-cross-provider
+    - H05-WP10:external-crypto-review
+  H06:
+    packages:
+    - H06-WP01:initialization
+    - H06-WP02:shamir-shares
+    - H06-WP03:seal-state-machine
+    - H06-WP04:unseal-state-machine
+    - H06-WP05:rekey
+    - H06-WP06:recovery-keys
+    - H06-WP07:barrier-key-rotation
+    - H06-WP08:auto-unseal-trait
+    - H06-WP09:kms-hsm-failure-model
+    - H06-WP10:memory-residue-tests
+  H07:
+    packages:
+    - H07-WP01:request-context
+    - H07-WP02:deadline-cancellation
+    - H07-WP03:router-precedence
+    - H07-WP04:mount-registry
+    - H07-WP05:system-backend
+    - H07-WP06:authoritative-pipeline
+    - H07-WP07:cache-invalidation
+    - H07-WP08:active-context-fencing
+    - H07-WP09:help-openapi-registry
+    - H07-WP10:fault-happens-before
+  H08:
+    packages:
+    - H08-WP01:policy-parser
+    - H08-WP02:acl-matcher
+    - H08-WP03:specificity-and-deny
+    - H08-WP04:glob-plus-star
+    - H08-WP05:parameter-constraints
+    - H08-WP06:identity-templates
+    - H08-WP07:wrapping-ttl-hooks
+    - H08-WP08:mfa-control-group-hooks
+    - H08-WP09:capabilities-explain
+    - H08-WP10:policy-cache-monotonicity
+  H09:
+    packages:
+    - H09-WP01:entity-store
+    - H09-WP02:alias-store
+    - H09-WP03:group-store
+    - H09-WP04:nested-group-cycle-control
+    - H09-WP05:merge-dedupe-lineage
+    - H09-WP06:identity-policy-projection
+    - H09-WP07:mfa-framework
+    - H09-WP08:mfa-replay-fence
+    - H09-WP09:oidc-provider-key-jwks
+    - H09-WP10:standby-cache-invalidation
+  H10:
+    packages:
+    - H10-WP01:service-token-codec
+    - H10-WP02:batch-token-codec
+    - H10-WP03:accessor-index
+    - H10-WP04:parent-orphan-graph
+    - H10-WP05:ttl-periodic-num-uses
+    - H10-WP06:cidr-role-semantics
+    - H10-WP07:cubbyhole
+    - H10-WP08:wrapping-lifecycle
+    - H10-WP09:recovery-token
+    - H10-WP10:root-generation
+    - H10-WP11:million-node-revoke-model
+  H11:
+    packages:
+    - H11-WP01:lease-record
+    - H11-WP02:expiration-index
+    - H11-WP03:persistent-scheduler
+    - H11-WP04:renew-state-machine
+    - H11-WP05:revoke-tree
+    - H11-WP06:effect-intent-wal
+    - H11-WP07:indeterminate-reconcile
+    - H11-WP08:rollback-manager
+    - H11-WP09:irrevocable-lease
+    - H11-WP10:owner-epoch-fence
+    - H11-WP11:fault-injection-corpus
+  H12:
+    packages:
+    - H12-WP01:audit-event-schema
+    - H12-WP02:per-device-salt
+    - H12-WP03:hmac-redaction
+    - H12-WP04:audit-broker-ordering
+    - H12-WP05:file-device
+    - H12-WP06:http-device
+    - H12-WP07:socket-device
+    - H12-WP08:syslog-device
+    - H12-WP09:audit-hash
+    - H12-WP10:blocked-device-game-day
+    - H12-WP11:secret-canary
+  H13:
+    packages:
+    - H13-WP01:plugin-wire-protocol
+    - H13-WP02:version-negotiation
+    - H13-WP03:automtls
+    - H13-WP04:plugin-identity
+    - H13-WP05:catalog-version-digest
+    - H13-WP06:process-supervisor
+    - H13-WP07:oci-verifier
+    - H13-WP08:linux-sandbox
+    - H13-WP09:auth-plugin-interop
+    - H13-WP10:secret-plugin-interop
+    - H13-WP11:database-plugin-interop
+    - H13-WP12:kms-plugin-interop
+    - H13-WP13:malformed-crash-hang-suite
+  H14:
+    packages:
+    - H14-WP01:namespace-tree
+    - H14-WP02:namespace-id-tombstone
+    - H14-WP03:path-header-canonicalization
+    - H14-WP04:storage-cache-context
+    - H14-WP05:policy-identity-token-lease-isolation
+    - H14-WP06:audit-context
+    - H14-WP07:namespace-keyring
+    - H14-WP08:namespace-seal-api
+    - H14-WP09:delete-recreate-restore
+    - H14-WP10:noninterference-fuzz
+  H15:
+    packages:
+    - H15-WP01:profile-schema
+    - H15-WP02:header-evaluation
+    - H15-WP03:cel-template-sandbox
+    - H15-WP04:workflow-operation-allowlist
+    - H15-WP05:step-auth-attenuation
+    - H15-WP06:transaction-compensation
+    - H15-WP07:self-init-runner
+    - H15-WP08:transient-root-revoke
+    - H15-WP09:crash-resume
+    - H15-WP10:cycle-control
+  H16:
+    packages:
+    - H16-WP01:auth-token
+    - H16-WP02:auth-userpass
+    - H16-WP03:auth-approle
+    - H16-WP04:auth-cert
+    - H16-WP05:auth-jwt-oidc
+    - H16-WP06:auth-kubernetes
+    - H16-WP07:auth-ldap
+    - H16-WP08:auth-radius
+    - H16-WP09:auth-kerberos
+    - H16-WP10:auth-conformance-sdk
+  H17:
+    packages:
+    - H17-WP01:internal-backends
+    - H17-WP02:kv-v1
+    - H17-WP03:kv-v2-data-cas
+    - H17-WP04:kv-v2-metadata
+    - H17-WP05:kv-delete-undelete-destroy
+    - H17-WP06:kv-list-scan-pagination
+    - H17-WP07:transit-key-lifecycle
+    - H17-WP08:transit-encrypt-decrypt-rewrap
+    - H17-WP09:transit-sign-verify-hmac-hash-random
+    - H17-WP10:totp
+    - H17-WP11:engine-conformance-sdk
+  H18:
+    packages:
+    - H18-WP01:pki-key-issuer
+    - H18-WP02:root-intermediate
+    - H18-WP03:roles-issuance
+    - H18-WP04:crl-ocsp-tidy
+    - H18-WP05:acme
+    - H18-WP06:pkiext
+    - H18-WP07:ssh-ca-cert
+    - H18-WP08:ssh-otp
+    - H18-WP09:pki-ssh-conformance
+  H19:
+    packages:
+    - H19-WP01:database-engine-core
+    - H19-WP02:static-roles
+    - H19-WP03:dynamic-roles
+    - H19-WP04:root-rotation-rollback
+    - H19-WP05:postgres-provider
+    - H19-WP06:mysql-provider
+    - H19-WP07:cassandra-provider
+    - H19-WP08:influxdb-provider
+    - H19-WP09:valkey-provider
+    - H19-WP10:kubernetes-engine
+    - H19-WP11:openldap-engine
+    - H19-WP12:rabbitmq-engine
+    - H19-WP13:external-effect-chaos
+  H20:
+    packages:
+    - H20-WP01:deterministic-fsm
+    - H20-WP02:raft-log-store
+    - H20-WP03:transaction-entry
+    - H20-WP04:size-limits
+    - H20-WP05:chunking
+    - H20-WP06:snapshot-create-install
+    - H20-WP07:membership
+    - H20-WP08:non-voter
+    - H20-WP09:retry-join-discovery
+    - H20-WP10:autopilot-core
+    - H20-WP11:linearizability-harness
+    - H20-WP12:six-month-chaos
+  H21:
+    packages:
+    - H21-WP01:cluster-pki
+    - H21-WP02:node-identity
+    - H21-WP03:secure-join
+    - H21-WP04:forwarding-protocol
+    - H21-WP05:redirect-origin-protection
+    - H21-WP06:read-standby-freshness
+    - H21-WP07:route-classification
+    - H21-WP08:stepdown-fencing
+    - H21-WP09:cache-wrap-namespace-propagation
+    - H21-WP10:failover-split-brain
+    - H21-WP11:autopilot-reconcile
+  H22:
+    packages:
+    - H22-WP01:http-tls-listener
+    - H22-WP02:request-limits
+    - H22-WP03:server-command-config
+    - H22-WP04:cli-compatibility
+    - H22-WP05:operator-commands
+    - H22-WP06:agent-auto-auth
+    - H22-WP07:agent-cache-template-sinks
+    - H22-WP08:proxy-token-tls-retry
+    - H22-WP09:openapi
+    - H22-WP10:ui-adapter
+    - H22-WP11:http-fuzz
+  H23:
+    packages:
+    - H23-WP01:structured-logging
+    - H23-WP02:secret-redaction
+    - H23-WP03:metrics-cardinality
+    - H23-WP04:tracing-correlation
+    - H23-WP05:request-rate-lease-quotas
+    - H23-WP06:user-lockout
+    - H23-WP07:diagnose-debug-bundle
+    - H23-WP08:atomic-config-reload
+    - H23-WP09:service-registration-health
+    - H23-WP10:slo-runbooks
+    - H23-WP11:game-days
+  H24:
+    packages:
+    - H24-WP01:logical-export
+    - H24-WP02:logical-import
+    - H24-WP03:dry-run-resume
+    - H24-WP04:snapshot-inspector
+    - H24-WP05:snapshot-conversion
+    - H24-WP06:schema-upgrade-downgrade
+    - H24-WP07:source-version-matrix
+    - H24-WP08:shadow-comparator
+    - H24-WP09:writer-freeze-epoch-fence
+    - H24-WP10:overlap-detector
+    - H24-WP11:cutover-controller
+    - H24-WP12:rollback-forward-recovery
+    - H24-WP13:three-scale-rehearsals
+  H25:
+    packages:
+    - H25-WP01:seal-keyring-model
+    - H25-WP02:token-graph-model
+    - H25-WP03:lease-effect-model
+    - H25-WP04:audit-ordering-model
+    - H25-WP05:raft-fsm-model
+    - H25-WP06:migration-authority-model
+    - H25-WP07:continuous-fuzz
+    - H25-WP08:loom-miri-kani-sanitizers
+    - H25-WP09:external-audits
+    - H25-WP10:red-team
+    - H25-WP11:finding-class-closure
+    - H25-WP12:ninety-day-rc-chaos
+  H26:
+    packages:
+    - H26-WP01:benchmark-lab
+    - H26-WP02:kv-token-policy-bench
+    - H26-WP03:transit-pki-plugin-bench
+    - H26-WP04:lease-audit-bench
+    - H26-WP05:raft-failover-snapshot-bench
+    - H26-WP06:large-cardinality-capacity
+    - H26-WP07:allocation-lock-copy-profile
+    - H26-WP08:72h-soak
+    - H26-WP09:30d-soak
+    - H26-WP10:hardware-sizing
+    - H26-WP11:regression-bisect
+  H27:
+    packages:
+    - H27-WP01:hermetic-build
+    - H27-WP02:reproducible-build
+    - H27-WP03:sbom-provenance-signatures
+    - H27-WP04:transparency-log
+    - H27-WP05:multi-arch-artifacts
+    - H27-WP06:install-upgrade-rollback
+    - H27-WP07:canary-controller
+    - H27-WP08:claim-grant-issuance
+    - H27-WP09:90d-production-canary
+    - H27-WP10:oncall-backport-eol
+    - H27-WP11:upstream-sync-sla
+    - H27-WP12:c5-ga-lts-receipt

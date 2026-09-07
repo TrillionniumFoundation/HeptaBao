@@ -1,0 +1,24 @@
+[package]
+name = "heptabao-journaled-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-barrier-api = { path = "../heptabao-barrier-api" }
+heptabao-durable-core = { path = "../heptabao-durable-core" }
+heptabao-journal-api = { path = "../heptabao-journal-api" }
+heptabao-operation-ledger = { path = "../heptabao-operation-ledger" }
+heptabao-storage-api = { path = "../heptabao-storage-api" }
+
+[dev-dependencies]
+heptabao-single-node-journal = { path = "../heptabao-single-node-journal" }
+heptabao-single-node-store = { path = "../heptabao-single-node-store" }
+
+[lints]
+workspace = true

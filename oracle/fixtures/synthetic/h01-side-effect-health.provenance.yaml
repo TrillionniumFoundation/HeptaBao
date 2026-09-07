@@ -1,0 +1,26 @@
+schema: heptabao.synthetic-fixture-provenance.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+plan_revision: '1.1'
+record_id: HB-SP-H01-SYNTHETIC-HEALTH-0001
+status: SYNTHETIC_LOCAL_NO_ORACLE_EVIDENCE_NO_TRANSFER
+material_class: HEPTABAO_ORIGINAL_IMPLEMENTATION
+created_by: deterministic test vector authored in the independent implementation lane
+input_path: oracle/fixtures/synthetic/h01-side-effect-health.input.json
+output_path: oracle/fixtures/synthetic/h01-side-effect-health.observation.json
+sanitized_capture_digest_sha256: e79ae141529f2e1c5c54e95e753a6ab0b754b4afc843be12e34859992cea2dec
+raw_oracle_capture: false
+openbao_process_executed: false
+artifact_signature_required: false
+secret_material_present: false
+implementation_consumable: true
+compatibility_evidence: false
+qualification_evidence: false
+review_status: PENDING
+transfer_record: null
+authority_effect: NONE
+invariants:
+  - The fixture exercises only deterministic side-effect diff contracts.
+  - It is not evidence of OpenBao behavior.
+  - It contains no token, share, private key, credential or provider response.
+  - Its digest binds the explicit null raw-capture digest used by a synthetic contract.
+  - It cannot be cited by a compatibility claim until replaced or paired with an approved black-box Oracle capture.

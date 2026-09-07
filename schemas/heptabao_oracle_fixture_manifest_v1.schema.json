@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-fixture-manifest-v1.json",
+  "title": "HeptaBao Oracle Fixture Manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "fixture_id",
+    "baseline",
+    "capture",
+    "request",
+    "raw_artifact",
+    "sanitized_artifact",
+    "normalization",
+    "observable_side_effects",
+    "security_classification",
+    "reviews",
+    "signature",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-fixture-manifest.v1"},
+    "fixture_id": {"pattern": "^HB-FIXTURE-[A-Z0-9._-]{8,200}$"},
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_id", "product", "version", "commit_sha", "artifact_sha256"],
+      "properties": {
+        "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+        "product": {"const": "OpenBao"},
+        "version": {"const": "v2.6.2"},
+        "commit_sha": {"const": "dd9c19c37a878cf4a81b18efb8d6f0599c7da923"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_at_utc", "tool", "tool_version", "environment_digest_sha256", "config_digest_sha256", "seed", "operator_identity"],
+      "properties": {
+        "captured_at_utc": {"type": "string", "format": "date-time"},
+        "tool": {"type": "string", "minLength": 1},
+        "tool_version": {"type": "string", "minLength": 1},
+        "environment_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "config_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "seed": {"type": "string", "minLength": 1},
+        "operator_identity": {"type": "string", "minLength": 1}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_id", "method", "canonical_path", "namespace_profile", "mount_profile", "request_schema_digest_sha256", "request_body_sha256"],
+      "properties": {
+        "operation_id": {"type": "string", "minLength": 1},
+        "method": {"enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "LIST", "SCAN"]},
+        "canonical_path": {"type": "string", "minLength": 1},
+        "namespace_profile": {"type": "string", "minLength": 1},
+        "mount_profile": {"type": "string", "minLength": 1},
+        "request_schema_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "request_body_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "raw_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["restricted_reference", "sha256", "stored_in_implementation_repo", "contains_live_secret"],
+      "properties": {
+        "restricted_reference": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "stored_in_implementation_repo": {"const": false},
+        "contains_live_secret": {"const": false}
+      }
+    },
+    "sanitized_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "canonical_json_sha256", "secret_scan_passed"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_json_sha256": {"$ref": "#/$defs/sha256"},
+        "secret_scan_passed": {"const": true}
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "policy_sha256", "normalizer_version", "changes", "ignored_security_fields"],
+      "properties": {
+        "policy_id": {"const": "HB-ORACLE-NORMALIZATION-V1"},
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "normalizer_version": {"type": "string", "minLength": 1},
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "operation", "reason"],
+            "properties": {
+              "path": {"type": "string"},
+              "operation": {"enum": ["replace", "secret_placeholder", "sort_scalar_array", "remove"]},
+              "reason": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "ignored_security_fields": {"const": 0}
+      }
+    },
+    "observable_side_effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "observer", "before_digest_sha256", "after_digest_sha256", "classification"],
+        "properties": {
+          "kind": {"enum": ["STORAGE", "TOKEN", "LEASE", "AUDIT", "PLUGIN_PROCESS", "CLUSTER", "EXTERNAL_SYSTEM", "NONE"]},
+          "observer": {"type": "string", "minLength": 1},
+          "before_digest_sha256": {"$ref": "#/$defs/sha256"},
+          "after_digest_sha256": {"$ref": "#/$defs/sha256"},
+          "classification": {"enum": ["UNCHANGED", "CREATED", "UPDATED", "DELETED", "INDETERMINATE", "NOT_APPLICABLE"]}
+        }
+      }
+    },
+    "security_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticality", "contains_secret_placeholder", "contains_raw_secret", "unclassified_fields"],
+      "properties": {
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "contains_secret_placeholder": {"type": "boolean"},
+        "contains_raw_secret": {"const": false},
+        "unclassified_fields": {"const": 0}
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["compatibility", "security", "domain", "legal"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"const": "APPROVE"},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,173 @@
+name: h02-durable-store-macos-v2
+
+on:
+  push:
+    branches: ["codex/h02-durable-multiprocess-closure-v2"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-durable-store-macos-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TOOLCHAINS: "1.88.0 1.98.0"
+  SEEDS: "0x5eed20260828cafe 0x8badf00d12345678 0xd15ea5e5cafef00d"
+  VALIDIT_REV: "7016fa5e072a86092928144b3a3040381e6964e9"
+
+jobs:
+  macos-cross-environment:
+    runs-on: macos-15
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          mkdir -p "$RUNNER_TEMP/results"
+          printf 'repository=%s\nref=%s\nevent=%s\ngithub_sha=%s\nsource_commit=%s\nsource_tree=%s\nrunner_tracking_id=%s\nrunner_name=%s\nos=%s\narch=%s\n' \
+            "$GITHUB_REPOSITORY" "$GITHUB_REF" "$GITHUB_EVENT_NAME" "$GITHUB_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" \
+            "${RUNNER_TRACKING_ID:-unavailable}" "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH" \
+            | tee "$RUNNER_TEMP/results/source-binding.txt"
+          uname -a | tee "$RUNNER_TEMP/results/uname.txt"
+          sw_vers | tee "$RUNNER_TEMP/results/sw-vers.txt"
+
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal --component rustfmt,clippy
+            rustup run "$toolchain" rustc --version --verbose \
+              | tee "$RUNNER_TEMP/results/rustc-$toolchain.txt"
+            rustup run "$toolchain" cargo --version --verbose \
+              | tee "$RUNNER_TEMP/results/cargo-$toolchain.txt"
+          done
+
+      - name: Bind the committed dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/openraft-durable"
+          cp -a probes/h02/openraft-tokio "$probe"
+          manifest="$probe/Cargo.toml"
+          lock="$probe/Cargo.lock"
+          test -s "$lock"
+          grep -F 'rust-version = "1.88"' "$manifest"
+          shasum -a 256 "$manifest" | tee "$RUNNER_TEMP/results/manifest.sha256"
+          shasum -a 256 "$lock" | tee "$RUNNER_TEMP/results/Cargo.lock.sha256"
+          rustup run 1.88.0 cargo metadata --locked --format-version 1 \
+            --manifest-path "$manifest" >"$RUNNER_TEMP/results/metadata.json"
+          python3 - "$RUNNER_TEMP/results/metadata.json" "$VALIDIT_REV" <<'PY'
+          import json
+          import sys
+
+          metadata = json.load(open(sys.argv[1], encoding="utf-8"))
+          revision = sys.argv[2]
+          packages = [package for package in metadata["packages"] if package["name"] == "validit"]
+          assert len(packages) == 1, packages
+          source = packages[0].get("source") or ""
+          assert source.startswith("git+https://github.com/drmingdrmer/validit.git?"), source
+          assert f"rev={revision}" in source, source
+          assert source.endswith(f"#{revision}"), source
+          PY
+
+      - name: Compile, test, lint and execute all six macOS entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/openraft-durable"
+          manifest="$probe/Cargo.toml"
+          rustup run 1.98.0 cargo fmt --manifest-path "$manifest" --all --check \
+            2>&1 | tee "$RUNNER_TEMP/results/fmt-1.98.0.log"
+          for toolchain in $TOOLCHAINS; do
+            export CARGO_TARGET_DIR="$RUNNER_TEMP/target-$toolchain"
+            rustup run "$toolchain" cargo test --locked --all-targets --manifest-path "$manifest" \
+              2>&1 | tee "$RUNNER_TEMP/results/test-$toolchain.log"
+            rustup run "$toolchain" cargo clippy --locked --all-targets --manifest-path "$manifest" -- -D warnings \
+              2>&1 | tee "$RUNNER_TEMP/results/clippy-$toolchain.log"
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              output="$RUNNER_TEMP/results/durable-$toolchain-$seed_name.json"
+              rustup run "$toolchain" cargo run --quiet --locked --manifest-path "$manifest" \
+                --bin heptabao-h02-openraft-durable-store-lab -- --seed "$seed" >"$output"
+              python3 - "$output" "$GITHUB_SHA" "$toolchain" "$RUNNER_OS" "$RUNNER_ARCH" <<'PY'
+          import json
+          import sys
+
+          value = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert value["status"] == "EXECUTED_PASS", value
+          assert len(value["cases"]) == 7, value
+          assert all(case["status"] == "PASS" for case in value["cases"]), value
+          assert value["scope"]["raft_log_storage_implemented"] is True
+          assert value["scope"]["raft_state_machine_implemented"] is True
+          assert value["scope"]["full_cluster_disk_restart"] is True
+          assert value["qualification"] is False
+          assert value["selection_effect"] == "NONE"
+          assert value["authority_effect"] == "NONE"
+          print(json.dumps({
+              "head_sha": sys.argv[2],
+              "toolchain": sys.argv[3],
+              "runner_os": sys.argv[4],
+              "runner_arch": sys.argv[5],
+              "status": value["status"],
+              "case_count": len(value["cases"]),
+              "qualification": value["qualification"],
+              "selection_effect": value["selection_effect"],
+              "authority_effect": value["authority_effect"],
+          }, sort_keys=True))
+          PY
+            done
+          done
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Emit non-authoritative cross-environment result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/results/aggregate.json" "$GITHUB_SHA" "$RUNNER_OS" "$RUNNER_ARCH" <<'PY'
+          import json
+          import sys
+
+          value = {
+              "schema": "heptabao.h02-durable-store-cross-environment.v2",
+              "head_sha": sys.argv[2],
+              "runner_os": sys.argv[3],
+              "runner_arch": sys.argv[4],
+              "candidate": "openraft-0.10.0-alpha.33",
+              "toolchains": ["1.88.0", "1.98.0"],
+              "seeds": [
+                  "0x5eed20260828cafe",
+                  "0x8badf00d12345678",
+                  "0xd15ea5e5cafef00d",
+              ],
+              "status": "EXECUTED_PASS",
+              "independent_attestation": False,
+              "qualification": False,
+              "selection_effect": "NONE",
+              "authority_effect": "NONE",
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(value, handle, sort_keys=True, indent=2)
+              handle.write("\n")
+          print(json.dumps(value, sort_keys=True))
+          PY
+
+      - name: Upload complete diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-durable-store-macos-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/results/
+          if-no-files-found: warn
+          retention-days: 30

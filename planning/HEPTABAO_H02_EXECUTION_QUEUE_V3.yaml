@@ -1,0 +1,124 @@
+schema: heptabao.h02-execution-queue.v3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: ACTIVE_FAIL_CLOSED
+qualification: false
+authority_effect: NONE
+selection_effect: NONE
+
+stack:
+  parent_branch: codex/h02-os-durable-clock-supplychain-v1
+  parent_pr: 24
+  active_branch: codex/h02-durable-multiprocess-closure-v2
+  intended_next_pr: stacked draft from active_branch to parent_branch
+  merge_policy: no merge or retarget to main before parent governance, H00/H01/H02 evidence gates and independent approvals are resolved
+
+completed_implementation_layers:
+  - canonical candidate, package checksum and release-commit bindings
+  - provider-neutral platform contracts and isolated candidate probes
+  - package graph, SBOM, build-script, native-link, license, advisory and MSRV evidence scaffolding
+  - exact OpenRaft alpha.33 family pin and immutable validit source override
+  - real three-node OpenRaft in-memory candidate cluster
+  - real append, pre-vote, vote and full-snapshot forwarding
+  - real client writes, ReadIndex, membership transition, follower replay, snapshot catch-up, transport partition and quorum-loss guard
+  - isolated stale committed-snapshot injection child/parent harness
+  - real concurrent single-register OpenRaft history generator
+  - independent bounded real-time linearizability checker
+  - Linux SIGSTOP/SIGCONT process-suspension harness
+  - storage fault-seam disk-stall, torn-tail, unsynced-loss, corruption and snapshot cases
+  - application wall-clock projection and monotonic-time safety cases
+  - integrated prototype implementing RaftLogStorage, RaftStateMachine and snapshot persistence
+  - logical full-cluster disk reopen, ReadIndex-after-reopen, second reopen and corruption rejection
+  - Linux and macOS exact-head durable evidence workflows
+  - bounded OpenRaft effective-MSRV workflow for Rust 1.85 through 1.88 plus 1.98
+
+active_execution:
+  - work_package: H02-WP01
+    action: execute Tokio minimal profile on Rust 1.71.0 and 1.98.0
+    state: PR_TRIGGER_PENDING
+  - work_package: H02-WP02
+    action: execute rustls ring and aws-lc profiles on Rust 1.71.0 and 1.98.0
+    state: PR_TRIGGER_PENDING
+  - work_package: H02-WP07
+    action: execute OpenRaft candidate, in-memory cluster, fault lab and blocker closure on Rust 1.88.0 and 1.98.0 across three seeds
+    state: IMPLEMENTED_EXACT_HEAD_EXECUTION_PENDING
+  - work_package: H02-WP07-MSRV
+    action: require exact OpenRaft let-chain boundary failures on Rust 1.85.0, 1.86.0 and 1.87.0 and passes on 1.88.0 and 1.98.0
+    state: IMPLEMENTED_EXECUTION_PENDING
+  - work_package: H02-WP07-DURABLE
+    action: execute integrated durable store on Linux and runner-native macOS with fixed lock graph, two effective toolchains and three seeds
+    state: LOCK_BINDING_REPAIR_AND_REEXECUTION_PENDING
+  - work_package: H02-WP10
+    action: capture locked graph, SBOM, build scripts, native links, licenses, advisories and heuristic unsafe/FFI evidence
+    state: PR_TRIGGER_PENDING
+
+verified_runner_observations:
+  - run_id: 33248705381
+    job_id: 99090524856
+    source_sha: 9ef45d08c26773feb919a616bf74bc89489d8798
+    environment: macos-15-arm64
+    steps_received: true
+    classification: EXECUTED_FAIL_STALE_LOCK_GRAPH
+    failure: committed Cargo.lock retained registry validit 0.2.6, so the exact validit 0.2.5 patch was unused
+    disposition: repair the lock graph; do not weaken --locked
+  - source_sha: ed248c4b06be884af43c60721aba48838784d666
+    environment: ubuntu-24.04
+    steps_received: true
+    classification: EXECUTED_FAIL_EFFECTIVE_MSRV_BOUNDARY
+    failure: OpenRaft alpha.33 macro uses Rust-2024 let chains unavailable on Rust 1.85
+    disposition: declare and prove the effective Rust 1.88 floor; preserve 1.85-1.87 as expected boundary failures
+  - source_sha: ed248c4b06be884af43c60721aba48838784d666
+    environment: macos-15-arm64
+    steps_received: true
+    classification: EXECUTED_FAIL_CLIPPY
+    failure: five deterministic Clippy findings
+    disposition: corrected by commit 537cd9458a0a4438bd91a61ae8276c6b2e322b4b; requires exact-head re-execution
+
+next_technical_closure:
+  - bind committed Cargo.lock to validit 0.2.5 at revision 7016fa5e072a86092928144b3a3040381e6964e9
+  - make candidate manifest binding distinguish direct dependencies from source overrides
+  - run all active validators against the current plan revision and branch
+  - open the new stacked draft PR and execute every PR-triggered gate
+  - retain and classify every compile, API, runtime, child-process, checker and artifact failure
+  - bind numeric runner and job identities through trusted post-run enrichment
+  - add true multi-process Raft-node restart and per-node persisted directories
+  - add kernel power-cut or equivalent filesystem crash-consistency laboratory evidence
+  - add per-node time-namespace or kernel-clock skew evidence
+  - complete advisory, license, unsafe/FFI, native/build-script and effective-MSRV disposition
+
+external_closure_required:
+  - reproduce the exact commit, tree, lock graph and evidence in a separately operated attested environment
+  - obtain independent platform, distributed-systems, storage, security and crypto approvals as applicable
+  - obtain independent license/legal disposition
+  - obtain H00 qualification receipt
+  - issue a signed bounded prototype-selection receipt only after every critical technical and review result is current and PASS
+  - issue a formal authority grant separately from CI and repository administrator permissions
+
+hard_blocks:
+  - current exact-head Linux and macOS durable passes are absent
+  - current exact-head candidate, cluster, fault, source-integrity and supply-chain PR gates are absent
+  - true kernel power-cut and filesystem crash-consistency evidence is absent
+  - separate-process per-node restart and per-node clock-skew evidence is absent
+  - independent reproduction count is zero
+  - independent specialist approvals are absent
+  - candidate selection receipt is absent
+  - H00 is not qualified
+  - formal authority grant is absent
+
+evidence_rules:
+  - queued, pending, skipped, cancelled, empty-step and runner_id=0 outcomes are not executions
+  - a failed executable run remains evidence and must not be deleted from the audit trail
+  - cross-OS GitHub-hosted evidence is not independent attestation by itself
+  - implemented code is not executed evidence
+  - successful CI is not candidate selection or authority
+  - no reviewer alias or administrator self-signature may satisfy an independent approval
+
+authority_flags:
+  prototype_selection_authority: false
+  production_dependency_authority: false
+  crypto_implementation_authority: false
+  raft_implementation_authority: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false

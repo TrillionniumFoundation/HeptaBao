@@ -1,0 +1,245 @@
+name: h02-openraft-fault-lab
+
+on:
+  push:
+    branches:
+      - "codex/h02-openraft-hostile-faults-linearizability-v1"
+      - "codex/h02-os-durable-clock-supplychain-v1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-openraft-fault-lab-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-plan:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - run: python scripts/validate_h02_openraft_fault_lab_v1.py
+      - run: |
+          python -m unittest \
+            tests/platform/test_h02_linearizability_checker_v1.py \
+            tests/platform/test_h02_openraft_fault_lab_evidence_v1.py \
+            -v
+
+  fault-sequential:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    needs: validate-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      TOOLCHAINS: "1.88.0 1.98.0"
+      SEEDS: "0x5eed20260828cafe 0x8badf00d12345678 0xd15ea5e5cafef00d"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal
+            rustup target add x86_64-unknown-linux-gnu --toolchain "$toolchain"
+            rustup run "$toolchain" rustc --version --verbose
+            rustup run "$toolchain" cargo --version --verbose
+          done
+      - name: Execute all six fault-lab entries and retain every outcome
+        shell: bash
+        run: |
+          set -u
+          root="$RUNNER_TEMP/h02-openraft-fault-sequential"
+          evidence_root="$GITHUB_WORKSPACE/evidence/h02-openraft-fault-lab"
+          rm -rf "$root" "$evidence_root"
+          mkdir -p "$root" "$evidence_root"
+
+          for toolchain in $TOOLCHAINS; do
+            probe="$root/$toolchain"
+            mkdir -p "$probe"
+            cp -a probes/h02/openraft-tokio/. "$probe/"
+            manifest="$probe/Cargo.toml"
+            export CARGO_TARGET_DIR="$root/target-$toolchain"
+            build_status=0
+            rustup run "$toolchain" cargo generate-lockfile --manifest-path "$manifest" \
+              >"$evidence_root/cargo-generate-lockfile-$toolchain.log" 2>&1 || build_status=$?
+            if [ "$build_status" -eq 0 ]; then
+              rustup run "$toolchain" cargo test --locked --all-targets --manifest-path "$manifest" \
+                >"$evidence_root/cargo-test-$toolchain.log" 2>&1 || build_status=$?
+            fi
+
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$evidence_root/$toolchain-$seed_name"
+              mkdir -p "$entry"
+              hostile_status=125
+              history_status=125
+              checker_status=125
+              if [ "$build_status" -eq 0 ]; then
+                rustup run "$toolchain" cargo run --quiet --locked --manifest-path "$manifest" \
+                  --bin heptabao-h02-openraft-fault-lab -- --mode hostile-snapshot-parent --seed "$seed" \
+                  >"$entry/hostile-result.json" 2>"$entry/hostile-stderr.log"
+                hostile_status=$?
+                rustup run "$toolchain" cargo run --quiet --locked --manifest-path "$manifest" \
+                  --bin heptabao-h02-openraft-fault-lab -- --mode linearizability-history --seed "$seed" \
+                  >"$entry/linearizability-history.json" 2>"$entry/history-stderr.log"
+                history_status=$?
+                if [ "$history_status" -eq 0 ]; then
+                  python scripts/h02_linearizability_checker_v1.py check \
+                    --history "$entry/linearizability-history.json" \
+                    --output "$entry/linearizability-result.json" \
+                    >"$entry/linearizability-checker.log" 2>&1
+                  checker_status=$?
+                fi
+              fi
+              cp "$manifest" "$entry/Cargo.toml"
+              if [ -f "$probe/Cargo.lock" ]; then cp "$probe/Cargo.lock" "$entry/Cargo.lock"; else : > "$entry/Cargo.lock"; fi
+              printf '%s\n' "$build_status" > "$entry/build-exit-code.txt"
+              printf '%s\n' "$hostile_status" > "$entry/hostile-exit-code.txt"
+              printf '%s\n' "$history_status" > "$entry/history-exit-code.txt"
+              printf '%s\n' "$checker_status" > "$entry/checker-exit-code.txt"
+            done
+          done
+          exit 0
+      - name: Build and schema-validate all fail-closed evidence
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -u
+          set +e
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          source_commit="$(git rev-parse HEAD)"
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          root="$GITHUB_WORKSPACE/evidence/h02-openraft-fault-lab"
+          for toolchain in $TOOLCHAINS; do
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$root/$toolchain-$seed_name"
+              [ -s "$entry/hostile-result.json" ] || printf '{}\n' > "$entry/hostile-result.json"
+              [ -s "$entry/linearizability-history.json" ] || printf '{}\n' > "$entry/linearizability-history.json"
+              [ -s "$entry/linearizability-result.json" ] || printf '{}\n' > "$entry/linearizability-result.json"
+              environment_id="github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RUNNER_NAME}-${toolchain}-${seed}"
+              python scripts/h02_openraft_fault_lab_evidence_v1.py collect \
+                --hostile-result "$entry/hostile-result.json" \
+                --history "$entry/linearizability-history.json" \
+                --linearizability-result "$entry/linearizability-result.json" \
+                --build-exit-code "$(cat "$entry/build-exit-code.txt")" \
+                --hostile-exit-code "$(cat "$entry/hostile-exit-code.txt")" \
+                --history-exit-code "$(cat "$entry/history-exit-code.txt")" \
+                --checker-exit-code "$(cat "$entry/checker-exit-code.txt")" \
+                --seed "$seed" \
+                --toolchain "$toolchain" \
+                --manifest "$entry/Cargo.toml" \
+                --cargo-lock "$entry/Cargo.lock" \
+                --source-commit "$source_commit" \
+                --source-tree "$tree_sha" \
+                --branch "$branch" \
+                --clean-tree \
+                --environment-id "$environment_id" \
+                --executor-kind github-hosted \
+                --runner-id github-api-enrichment-pending \
+                --runner-name "$RUNNER_NAME" \
+                --output "$entry/fault-lab-evidence.json" \
+                >"$entry/collector.log" 2>&1
+              printf '%s\n' "$?" > "$entry/collector-exit-code.txt"
+            done
+          done
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schemas = {
+              'hostile-result.json': 'schemas/heptabao_h02_openraft_hostile_snapshot_result_v1.schema.json',
+              'linearizability-history.json': 'schemas/heptabao_h02_linearizability_history_v1.schema.json',
+              'linearizability-result.json': 'schemas/heptabao_h02_linearizability_result_v1.schema.json',
+              'fault-lab-evidence.json': 'schemas/heptabao_h02_openraft_fault_lab_evidence_v1.schema.json',
+          }
+          entries = sorted(Path('evidence/h02-openraft-fault-lab').glob('*-*'))
+          assert len([p for p in entries if p.is_dir()]) == 6
+          failures = []
+          for entry in entries:
+              if not entry.is_dir():
+                  continue
+              for name, schema_path in schemas.items():
+                  try:
+                      value = json.load((entry / name).open(encoding='utf-8'))
+                      schema = json.load(open(schema_path, encoding='utf-8'))
+                      errors = list(Draft202012Validator(schema).iter_errors(value))
+                      failures.extend(f'{entry}/{name}: {error.message}' for error in errors)
+                  except Exception as error:
+                      failures.append(f'{entry}/{name}: {error}')
+          if failures:
+              raise SystemExit('\n'.join(failures))
+          print('all six fault-lab evidence directories satisfy schemas')
+          PY
+      - name: Upload every outcome before final gate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-openraft-fault-lab-sequential-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/h02-openraft-fault-lab/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require all six safety and linearizability passes without qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          entries = sorted(path for path in Path('evidence/h02-openraft-fault-lab').glob('*-*') if path.is_dir())
+          assert len(entries) == 6, len(entries)
+          for entry in entries:
+              evidence = json.load((entry / 'fault-lab-evidence.json').open(encoding='utf-8'))
+              hostile = json.load((entry / 'hostile-result.json').open(encoding='utf-8'))
+              linear = json.load((entry / 'linearizability-result.json').open(encoding='utf-8'))
+              assert evidence['status'] == 'EXECUTED_PASS', (str(entry), evidence)
+              assert hostile['status'] == 'EXECUTED_PASS'
+              assert hostile['phase_reached'] is True
+              assert hostile['outcome'] == 'REJECTED_OR_ABORTED_AFTER_INJECTION'
+              assert linear['status'] == 'EXECUTED_PASS'
+              assert linear['linearizable'] is True
+              assert evidence['qualification'] is False
+              assert evidence['selection_effect'] == 'NONE'
+              assert evidence['authority_effect'] == 'NONE'
+          print('all six fault-lab entries passed; qualification=false selection=0 authority=NONE')
+          PY
+
+  authority-sentinel:
+    needs: [validate-plan, fault-sequential]
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Keep all authority closed
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-plan.result }}
+          FAULT_RESULT: ${{ needs.fault-sequential.result }}
+        run: |
+          set -euo pipefail
+          printf 'validate=%s\nfault=%s\n' "$VALIDATE_RESULT" "$FAULT_RESULT"
+          test "$VALIDATE_RESULT" = success
+          test "$FAULT_RESULT" = success
+          echo 'OpenRaft fault evidence collected; qualification=false selection=0 authority=NONE.'

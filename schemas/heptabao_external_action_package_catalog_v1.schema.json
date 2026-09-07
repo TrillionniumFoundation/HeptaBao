@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_external_action_package_catalog_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "rules",
+    "packages",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.external-action-package-catalog.v1"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "revision": {
+      "const": "1.2"
+    },
+    "status": {
+      "const": "ACTIVE_FAIL_CLOSED"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 8
+      }
+    },
+    "packages": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "blocker_id",
+          "class",
+          "title",
+          "owner_role",
+          "operator_requirement",
+          "state",
+          "prerequisites",
+          "scope",
+          "explicit_non_scope",
+          "ordered_procedure",
+          "evidence_requirements",
+          "acceptance_criteria",
+          "forbidden_substitutions",
+          "failure_outcomes",
+          "handoff",
+          "authority_effect"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^HB-EAP-(?:CTRL|EXT)-[0-9]{3}$"
+          },
+          "blocker_id": {
+            "type": "string",
+            "pattern": "^HB-BLK-(?:CTRL|EXT)-[0-9]{3}$"
+          },
+          "class": {
+            "enum": [
+              "REPOSITORY_SETTING",
+              "EXTERNAL_GOVERNANCE",
+              "EXTERNAL_LEGAL",
+              "EXTERNAL_SECURITY",
+              "EXTERNAL_SIGNING",
+              "EXTERNAL_ORACLE",
+              "EXTERNAL_STORAGE_LAB",
+              "EXTERNAL_REPRODUCTION"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 12
+          },
+          "owner_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "operator_requirement": {
+            "type": "string",
+            "minLength": 12
+          },
+          "state": {
+            "const": "EXTERNAL_ACTION_REQUIRED"
+          },
+          "prerequisites": {
+            "type": "array",
+            "minItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "scope": {
+            "type": "array",
+            "minItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "explicit_non_scope": {
+            "type": "array",
+            "minItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "ordered_procedure": {
+            "type": "array",
+            "minItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "actor_role",
+                "action",
+                "required_outputs"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^STEP-[0-9]{2}$"
+                },
+                "actor_role": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "action": {
+                  "type": "string",
+                  "minLength": 12
+                },
+                "required_outputs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 5
+                  }
+                }
+              }
+            }
+          },
+          "evidence_requirements": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "artifact_type",
+                "required_fields",
+                "custody",
+                "signer_role",
+                "freshness"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^EV-[0-9]{2}$"
+                },
+                "artifact_type": {
+                  "type": "string",
+                  "minLength": 5
+                },
+                "required_fields": {
+                  "type": "array",
+                  "minItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 2
+                  }
+                },
+                "custody": {
+                  "type": "string",
+                  "minLength": 8
+                },
+                "signer_role": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "freshness": {
+                  "type": "string",
+                  "minLength": 8
+                }
+              }
+            }
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "minItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "forbidden_substitutions": {
+            "type": "array",
+            "minItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8
+            }
+          },
+          "failure_outcomes": {
+            "type": "array",
+            "minItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "EXTERNAL_ACTION_REQUIRED",
+                "BLOCKED_UPSTREAM",
+                "BASE_DRIFT",
+                "REVOKED",
+                "RESUME_REQUIRED"
+              ]
+            }
+          },
+          "handoff": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "request_owner",
+              "completion_owner",
+              "escalation_owner",
+              "required_context",
+              "expected_completion_object",
+              "expiry_policy",
+              "revocation_policy"
+            ],
+            "properties": {
+              "request_owner": {
+                "type": "string",
+                "minLength": 3
+              },
+              "completion_owner": {
+                "type": "string",
+                "minLength": 3
+              },
+              "escalation_owner": {
+                "type": "string",
+                "minLength": 3
+              },
+              "required_context": {
+                "type": "array",
+                "minItems": 3,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 5
+                }
+              },
+              "expected_completion_object": {
+                "type": "string",
+                "minLength": 8
+              },
+              "expiry_policy": {
+                "type": "string",
+                "minLength": 8
+              },
+              "revocation_policy": {
+                "type": "string",
+                "minLength": 8
+              }
+            }
+          },
+          "authority_effect": {
+            "const": "NONE"
+          }
+        }
+      }
+    }
+  }
+}

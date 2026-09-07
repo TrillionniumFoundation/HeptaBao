@@ -1,0 +1,546 @@
+schema: heptabao.oracle-cli-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-CLI-OPENBAO-V2_6_2-SEED01
+status: SEED
+commands:
+  - id: HB-CLI-CMD-SERVER
+    command_path: [bao, server]
+    surface: SERVER
+    criticality: OPERATOR_CRITICAL
+    operation_class: CLIENT_LOCAL
+    secret_bearing: REFERENCE_ONLY
+    flags:
+      - {name: -config, value_shape: PATH, secret_bearing: REFERENCE_ONLY, required: true, notes: One or more server configuration paths.}
+      - {name: -dev, value_shape: BOOLEAN, secret_bearing: NO, required: false, notes: Development-only server profile; never production evidence.}
+    environment_variables: &server_env [BAO_API_ADDR, BAO_CLUSTER_ADDR, BAO_LOG_LEVEL, BAO_LOG_FORMAT]
+    output_modes: &human_machine [TABLE, JSON]
+    exit_code_classes: &server_exit [SUCCESS, USAGE_ERROR, SERVER_ERROR, INTERRUPTED]
+    signal_behavior: [SIGINT_CANCEL, SIGTERM_SHUTDOWN, SIGHUP_RELOAD, SECOND_SIGINT_FORCE]
+    side_effect_domains: [LOCAL_PROCESS, LOCAL_FILE, SEAL, CLUSTER]
+    owner_work_packages: [H01-WP04, H22-WP03]
+    source_reference: docs://openbao/v2.6.2/commands/server
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Startup, config parsing, signal and shutdown behavior.
+  - id: HB-CLI-CMD-STATUS
+    command_path: [bao, status]
+    surface: GENERAL
+    criticality: OPERATOR_CRITICAL
+    operation_class: PURE_READ
+    secret_bearing: NO
+    flags: []
+    environment_variables: &client_env [BAO_ADDR, BAO_CACERT, BAO_CAPATH, BAO_CLIENT_CERT, BAO_CLIENT_KEY, BAO_NAMESPACE, BAO_TOKEN, BAO_FORMAT]
+    output_modes: *human_machine
+    exit_code_classes: &client_read_exit [SUCCESS, USAGE_ERROR, AUTH_ERROR, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [NONE]
+    owner_work_packages: [H01-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/status
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Status code and sealed/standby exit-code semantics are operator critical.
+  - id: HB-CLI-CMD-OPERATOR-INIT
+    command_path: [bao, operator, init]
+    surface: OPERATOR
+    criticality: CRYPTO_CRITICAL
+    operation_class: SEAL_CEREMONY
+    secret_bearing: YES
+    flags:
+      - {name: -key-shares, value_shape: INTEGER, secret_bearing: NO, required: false, notes: Shamir share count.}
+      - {name: -key-threshold, value_shape: INTEGER, secret_bearing: NO, required: false, notes: Shamir threshold.}
+      - {name: -pgp-keys, value_shape: LIST, secret_bearing: REFERENCE_ONLY, required: false, notes: Public-key references for share encryption.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [SEAL, TOKEN]
+    owner_work_packages: [H01-WP04, H06-WP01, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/init
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Raw unseal shares and initial root token are forbidden from repository fixtures.
+  - id: HB-CLI-CMD-OPERATOR-UNSEAL
+    command_path: [bao, operator, unseal]
+    surface: OPERATOR
+    criticality: CRYPTO_CRITICAL
+    operation_class: SEAL_CEREMONY
+    secret_bearing: YES
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, SEALED, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [SEAL, CLUSTER]
+    owner_work_packages: [H01-WP04, H06-WP04, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/unseal
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Share material is process-bound and must never be captured.
+  - id: HB-CLI-CMD-OPERATOR-SEAL
+    command_path: [bao, operator, seal]
+    surface: OPERATOR
+    criticality: SECURITY_CRITICAL
+    operation_class: SEAL_CEREMONY
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, AUTH_ERROR, POLICY_DENIED, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [SEAL, PLUGIN, CLUSTER]
+    owner_work_packages: [H01-WP04, H06-WP03, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/seal
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Seal must fence active workers and plugin processes.
+  - id: HB-CLI-CMD-OPERATOR-REKEY
+    command_path: [bao, operator, rekey]
+    surface: OPERATOR
+    criticality: CRYPTO_CRITICAL
+    operation_class: SEAL_CEREMONY
+    secret_bearing: YES
+    flags: []
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [SEAL]
+    owner_work_packages: [H01-WP04, H06-WP05, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/rekey
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Multi-step ceremony state and cancellation semantics require exact capture.
+  - id: HB-CLI-CMD-OPERATOR-GENERATE-ROOT
+    command_path: [bao, operator, generate-root]
+    surface: OPERATOR
+    criticality: SECURITY_CRITICAL
+    operation_class: TOKEN_ISSUE
+    secret_bearing: YES
+    flags: []
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [TOKEN, SEAL]
+    owner_work_packages: [H01-WP04, H10-WP10, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/generate-root
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Root token generation cannot be exercised in ordinary CI or captured in fixtures.
+  - id: HB-CLI-CMD-RAFT-SNAPSHOT-SAVE
+    command_path: [bao, operator, raft, snapshot, save]
+    surface: RAFT
+    criticality: DATA_DURABILITY_CRITICAL
+    operation_class: CLUSTER_OPERATION
+    secret_bearing: YES
+    flags: []
+    environment_variables: *client_env
+    output_modes: [MACHINE]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [RAFT, LOCAL_FILE]
+    owner_work_packages: [H01-WP04, H20-WP06, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/raft/snapshot/save
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Snapshot bytes are restricted secret-bearing artifacts.
+  - id: HB-CLI-CMD-RAFT-SNAPSHOT-RESTORE
+    command_path: [bao, operator, raft, snapshot, restore]
+    surface: RAFT
+    criticality: DATA_DURABILITY_CRITICAL
+    operation_class: CLUSTER_OPERATION
+    secret_bearing: YES
+    flags:
+      - {name: -force, value_shape: BOOLEAN, secret_bearing: NO, required: false, notes: Restore override semantics are security critical.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [RAFT, CLUSTER, TOKEN, LEASE, SEAL]
+    owner_work_packages: [H01-WP04, H20-WP06, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/raft/snapshot/restore
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Restore can revive authority and requires rollback/replay controls.
+  - id: HB-CLI-CMD-RAFT-JOIN
+    command_path: [bao, operator, raft, join]
+    surface: RAFT
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    operation_class: CLUSTER_OPERATION
+    secret_bearing: REFERENCE_ONLY
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [RAFT, CLUSTER]
+    owner_work_packages: [H01-WP04, H20-WP07, H21-WP03, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/raft/join
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Join identity, challenge and redirect behavior.
+  - id: HB-CLI-CMD-RAFT-REMOVE-PEER
+    command_path: [bao, operator, raft, remove-peer]
+    surface: RAFT
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    operation_class: CLUSTER_OPERATION
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [RAFT, CLUSTER]
+    owner_work_packages: [H01-WP04, H20-WP07, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/raft/remove-peer
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Membership removal and stale-node behavior.
+  - id: HB-CLI-CMD-RAFT-AUTOPILOT-STATE
+    command_path: [bao, operator, raft, autopilot, state]
+    surface: RAFT
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    operation_class: PURE_READ
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: *client_read_exit
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [NONE]
+    owner_work_packages: [H01-WP04, H20-WP10, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/raft/autopilot/state
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Health/state output and standby routing.
+  - id: HB-CLI-CMD-READ
+    command_path: [bao, read]
+    surface: GENERAL
+    criticality: COMPATIBILITY_CRITICAL
+    operation_class: UNKNOWN
+    secret_bearing: UNKNOWN
+    flags:
+      - {name: -field, value_shape: STRING, secret_bearing: NO, required: false, notes: Select one response field.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML, RAW, FIELD]
+    exit_code_classes: *client_read_exit
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [UNKNOWN]
+    owner_work_packages: [H01-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/read
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: HTTP read may create a lease or external effect; route classification is mandatory.
+  - id: HB-CLI-CMD-WRITE
+    command_path: [bao, write]
+    surface: GENERAL
+    criticality: SECURITY_CRITICAL
+    operation_class: UNKNOWN
+    secret_bearing: UNKNOWN
+    flags:
+      - {name: -force, value_shape: BOOLEAN, secret_bearing: NO, required: false, notes: Allow request without key-value pairs where supported.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [UNKNOWN]
+    owner_work_packages: [H01-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/write
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Arbitrary endpoint mutation must resolve through the operation registry.
+  - id: HB-CLI-CMD-DELETE
+    command_path: [bao, delete]
+    surface: GENERAL
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [UNKNOWN]
+    owner_work_packages: [H01-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/delete
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Response loss requires lookup/reconcile based on target endpoint.
+  - id: HB-CLI-CMD-LIST
+    command_path: [bao, list]
+    surface: GENERAL
+    criticality: COMPATIBILITY_CRITICAL
+    operation_class: PURE_READ
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: *client_read_exit
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [NONE]
+    owner_work_packages: [H01-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/list
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: LIST/SCAN/pagination and path normalization behavior.
+  - id: HB-CLI-CMD-KV-GET
+    command_path: [bao, kv, get]
+    surface: SECRETS
+    criticality: COMPATIBILITY_CRITICAL
+    operation_class: PURE_READ
+    secret_bearing: YES
+    flags:
+      - {name: -version, value_shape: INTEGER, secret_bearing: NO, required: false, notes: KV v2 version selection.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML, RAW, FIELD]
+    exit_code_classes: *client_read_exit
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [NONE]
+    owner_work_packages: [H01-WP04, H17-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/kv/get
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Secret output is prohibited from repository fixtures; use structural synthetic vectors.
+  - id: HB-CLI-CMD-KV-PUT
+    command_path: [bao, kv, put]
+    surface: SECRETS
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: YES
+    flags:
+      - {name: -cas, value_shape: INTEGER, secret_bearing: NO, required: false, notes: KV v2 compare-and-set version.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [UNKNOWN]
+    owner_work_packages: [H01-WP04, H17-WP03, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/kv/put
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Raw values are forbidden; CAS and response-unknown behavior require synthetic/controlled capture.
+  - id: HB-CLI-CMD-AUTH-ENABLE
+    command_path: [bao, auth, enable]
+    surface: AUTH
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: NO
+    flags:
+      - {name: -path, value_shape: STRING, secret_bearing: NO, required: false, notes: Auth mount path.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [MOUNT]
+    owner_work_packages: [H01-WP04, H07-WP04, H16-WP10, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/auth/enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Mount revision, path collision and cache invalidation.
+  - id: HB-CLI-CMD-SECRETS-ENABLE
+    command_path: [bao, secrets, enable]
+    surface: SECRETS
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: NO
+    flags:
+      - {name: -path, value_shape: STRING, secret_bearing: NO, required: false, notes: Secrets mount path.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [MOUNT]
+    owner_work_packages: [H01-WP04, H07-WP04, H17-WP11, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/secrets/enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Backend type/path/config and mount mutation semantics.
+  - id: HB-CLI-CMD-POLICY-WRITE
+    command_path: [bao, policy, write]
+    surface: POLICY
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [POLICY]
+    owner_work_packages: [H01-WP04, H08-WP01, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/policy/write
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: HCL parse, revision and cache invalidation.
+  - id: HB-CLI-CMD-TOKEN-CREATE
+    command_path: [bao, token, create]
+    surface: AUTH
+    criticality: SECURITY_CRITICAL
+    operation_class: TOKEN_ISSUE
+    secret_bearing: YES
+    flags:
+      - {name: -policy, value_shape: LIST, secret_bearing: NO, required: false, notes: Attached policy names.}
+      - {name: -ttl, value_shape: DURATION, secret_bearing: NO, required: false, notes: Requested TTL.}
+      - {name: -orphan, value_shape: BOOLEAN, secret_bearing: NO, required: false, notes: Orphan token semantics.}
+    environment_variables: *client_env
+    output_modes: [TABLE, JSON, YAML, RAW, FIELD]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [TOKEN]
+    owner_work_packages: [H01-WP04, H10-WP01, H10-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/token/create
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Raw token output must never be stored in fixtures or CI artifacts.
+  - id: HB-CLI-CMD-TOKEN-REVOKE
+    command_path: [bao, token, revoke]
+    surface: AUTH
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: REFERENCE_ONLY
+    flags:
+      - {name: -mode, value_shape: ENUM, secret_bearing: NO, required: false, notes: Revoke tree/orphan/path/accessor mode.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [TOKEN, LEASE, EXTERNAL_PROVIDER]
+    owner_work_packages: [H01-WP04, H10-WP04, H11-WP05, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/token/revoke
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Descendant token/lease effects and revoke-error semantics.
+  - id: HB-CLI-CMD-AUDIT-ENABLE
+    command_path: [bao, audit, enable]
+    surface: AUDIT
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: REFERENCE_ONLY
+    flags:
+      - {name: -path, value_shape: STRING, secret_bearing: NO, required: false, notes: Audit mount path.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [AUDIT, LOCAL_FILE]
+    owner_work_packages: [H01-WP04, H12-WP04, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/audit/enable
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Device destination, minimum-success policy and rollback behavior.
+  - id: HB-CLI-CMD-PLUGIN-REGISTER
+    command_path: [bao, plugin, register]
+    surface: PLUGIN
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: REFERENCE_ONLY
+    flags:
+      - {name: -sha256, value_shape: STRING, secret_bearing: NO, required: true, notes: Plugin binary digest.}
+      - {name: -version, value_shape: STRING, secret_bearing: NO, required: false, notes: Plugin version.}
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [PLUGIN]
+    owner_work_packages: [H01-WP04, H13-WP05, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/plugin/register
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Type/name/version/digest/command identity and catalog race behavior.
+  - id: HB-CLI-CMD-NAMESPACE-CREATE
+    command_path: [bao, namespace, create]
+    surface: NAMESPACE
+    criticality: SECURITY_CRITICAL
+    operation_class: DURABLE_MUTATION
+    secret_bearing: NO
+    flags: []
+    environment_variables: *client_env
+    output_modes: *human_machine
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, POLICY_DENIED, SEALED, STANDBY, NETWORK_ERROR, SERVER_ERROR]
+    signal_behavior: [NO_LONG_RUNNING_PROCESS]
+    side_effect_domains: [MOUNT, POLICY, IDENTITY, TOKEN, LEASE, AUDIT, SEAL]
+    owner_work_packages: [H01-WP04, H14-WP01, H22-WP04]
+    source_reference: docs://openbao/v2.6.2/commands/namespace/create
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Nested namespace creation and context propagation; exact CLI availability requires Oracle capture.
+  - id: HB-CLI-CMD-AGENT
+    command_path: [bao, agent]
+    surface: AGENT
+    criticality: OPERATOR_CRITICAL
+    operation_class: CLIENT_LOCAL
+    secret_bearing: YES
+    flags:
+      - {name: -config, value_shape: PATH, secret_bearing: REFERENCE_ONLY, required: true, notes: Agent configuration path.}
+    environment_variables: *client_env
+    output_modes: [PRETTY, JSON]
+    exit_code_classes: *server_exit
+    signal_behavior: [SIGINT_CANCEL, SIGTERM_SHUTDOWN, SIGHUP_RELOAD, SECOND_SIGINT_FORCE]
+    side_effect_domains: [LOCAL_FILE, LOCAL_PROCESS, TOKEN]
+    owner_work_packages: [H01-WP04, H22-WP06, H22-WP07]
+    source_reference: docs://openbao/v2.6.2/commands/agent
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Auto-auth, cache, templates and sink permissions; secret output must remain local and protected.
+  - id: HB-CLI-CMD-PROXY
+    command_path: [bao, proxy]
+    surface: PROXY
+    criticality: OPERATOR_CRITICAL
+    operation_class: CLIENT_LOCAL
+    secret_bearing: YES
+    flags:
+      - {name: -config, value_shape: PATH, secret_bearing: REFERENCE_ONLY, required: true, notes: Proxy configuration path.}
+    environment_variables: *client_env
+    output_modes: [PRETTY, JSON]
+    exit_code_classes: *server_exit
+    signal_behavior: [SIGINT_CANCEL, SIGTERM_SHUTDOWN, SIGHUP_RELOAD, SECOND_SIGINT_FORCE]
+    side_effect_domains: [LOCAL_PROCESS, TOKEN]
+    owner_work_packages: [H01-WP04, H22-WP08]
+    source_reference: docs://openbao/v2.6.2/commands/proxy
+    observation_status: IDENTIFIED
+    fixture_status: NONE
+    notes: Token handling, TLS, retries and cancellation cannot bypass server policy/audit.
+  - id: HB-CLI-CMD-OPERATOR-DIAGNOSE
+    command_path: [bao, operator, diagnose]
+    surface: DEBUG
+    criticality: OPERATOR_CRITICAL
+    operation_class: CLIENT_LOCAL
+    secret_bearing: REFERENCE_ONLY
+    flags: []
+    environment_variables: *client_env
+    output_modes: [PRETTY, JSON]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, NETWORK_ERROR, SERVER_ERROR, PARTIAL_FAILURE]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [LOCAL_FILE, NONE]
+    owner_work_packages: [H01-WP04, H23-WP07, H22-WP05]
+    source_reference: docs://openbao/v2.6.2/commands/operator/diagnose
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Diagnostic collection must be deterministic and secret-free.
+  - id: HB-CLI-CMD-DEBUG
+    command_path: [bao, debug]
+    surface: DEBUG
+    criticality: SECURITY_CRITICAL
+    operation_class: CLIENT_LOCAL
+    secret_bearing: REFERENCE_ONLY
+    flags: []
+    environment_variables: *client_env
+    output_modes: [MACHINE]
+    exit_code_classes: [SUCCESS, USAGE_ERROR, AUTH_ERROR, NETWORK_ERROR, SERVER_ERROR, PARTIAL_FAILURE, INTERRUPTED]
+    signal_behavior: [SIGINT_CANCEL]
+    side_effect_domains: [LOCAL_FILE]
+    owner_work_packages: [H01-WP04, H23-WP07]
+    source_reference: docs://openbao/v2.6.2/commands/debug
+    observation_status: IDENTIFIED
+    fixture_status: PLANNED
+    notes: Debug bundles require strict redaction, permissions and manifest integrity.
+coverage:
+  total_seeded: 30
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unknown_semantics: 30
+  unowned_critical: 0
+  operator_critical_total: 5
+  operator_critical_captured: 0
+authority_effect: NONE

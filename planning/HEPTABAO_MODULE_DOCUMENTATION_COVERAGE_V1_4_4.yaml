@@ -1,0 +1,184 @@
+schema: heptabao.module-documentation-coverage.v1_4_4
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.4.4
+status: COMPLETE_FOR_CURRENT_CARGO_WORKSPACE
+source_baseline:
+  commit: 3582fda50cd9b03ca39713814cdd8229462bbbd2
+  tree: 123c99b71c7e33169bef6033eaefb71e386ed6ca
+  branch: codex/plan-v1.4.3-descriptor-fencing-clean-v1
+standard: docs/modules/MODULE_DOCUMENTATION_STANDARD_V1.md
+index: docs/modules/README.md
+workspace_module_count: 19
+documented_module_count: 19
+modules:
+- crate: heptabao-authbus-contracts
+  path: crates/heptabao-authbus-contracts
+  document: docs/modules/heptabao-authbus-contracts.md
+  owner_role: identity-authentication-security
+  maturity: FOUNDATION_IMPLEMENTED_NOT_PRODUCTION_AUTHORITY
+  required_sections: &id001
+  - Purpose and non-goals
+  - Maturity and authority boundary
+  - Ownership and trust boundary
+  - Dependency contract
+  - Public API index
+  - State and invariants
+  - Failure and retry semantics
+  - Persistent or wire formats
+  - Concurrency and cancellation
+  - Security and secret handling
+  - Testing and evidence
+  - Extension workflow
+  - Operations and diagnostics
+  - Known gaps
+  - Traceability and maintenance
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-barrier-api
+  path: crates/heptabao-barrier-api
+  document: docs/modules/heptabao-barrier-api.md
+  owner_role: cryptography-barrier-core-security
+  maturity: PROVIDER_NEUTRAL_API_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-durable-core
+  path: crates/heptabao-durable-core
+  document: docs/modules/heptabao-durable-core.md
+  owner_role: core-storage-barrier
+  maturity: SINGLE_NODE_FOUNDATION_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-filesystem-guard
+  path: crates/heptabao-filesystem-guard
+  document: docs/modules/heptabao-filesystem-guard.md
+  owner_role: storage-platform-security
+  maturity: V1_4_3_CANDIDATE_TECHNICAL_SOURCE
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-governance
+  path: crates/heptabao-governance
+  document: docs/modules/heptabao-governance.md
+  owner_role: program-governance-security
+  maturity: GOVERNANCE_SENTINEL_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-journal-api
+  path: crates/heptabao-journal-api
+  document: docs/modules/heptabao-journal-api.md
+  owner_role: audit-journal-core-security
+  maturity: PROVIDER_NEUTRAL_API_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-journaled-core
+  path: crates/heptabao-journaled-core
+  document: docs/modules/heptabao-journaled-core.md
+  owner_role: core-audit-storage
+  maturity: SINGLE_NODE_JOURNALED_FOUNDATION_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-key-lifecycle
+  path: crates/heptabao-key-lifecycle
+  document: docs/modules/heptabao-key-lifecycle.md
+  owner_role: cryptography-custody-core-security
+  maturity: STATE_MACHINE_FOUNDATION_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-operation-ledger
+  path: crates/heptabao-operation-ledger
+  document: docs/modules/heptabao-operation-ledger.md
+  owner_role: core-audit-reconciliation
+  maturity: DURABLE_STATE_MACHINE_FOUNDATION_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-oracle-observer
+  path: crates/heptabao-oracle-observer
+  document: docs/modules/heptabao-oracle-observer.md
+  owner_role: compatibility-clean-room-security
+  maturity: OBSERVATION_FOUNDATION_UNQUALIFIED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-p0-server
+  path: crates/heptabao-p0-server
+  document: docs/modules/heptabao-p0-server.md
+  owner_role: protocol-core-development
+  maturity: P0_DEVELOPMENT_MEMORY_ONLY
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-platform-bakeoff
+  path: crates/heptabao-platform-bakeoff
+  document: docs/modules/heptabao-platform-bakeoff.md
+  owner_role: platform-qualification-security
+  maturity: BAKEOFF_TOOLING_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-platform-contracts
+  path: crates/heptabao-platform-contracts
+  document: docs/modules/heptabao-platform-contracts.md
+  owner_role: platform-runtime-tls-distributed-systems
+  maturity: CONTRACT_AND_PROBE_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-protocol
+  path: crates/heptabao-protocol
+  document: docs/modules/heptabao-protocol.md
+  owner_role: protocol-ingress-security
+  maturity: STRICT_P0_PROTOCOL_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-recovery-core
+  path: crates/heptabao-recovery-core
+  document: docs/modules/heptabao-recovery-core.md
+  owner_role: recovery-storage-audit-security
+  maturity: ANCHORED_RECOVERY_FOUNDATION_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-rollback-anchor
+  path: crates/heptabao-rollback-anchor
+  document: docs/modules/heptabao-rollback-anchor.md
+  owner_role: storage-cryptography-distributed-systems
+  maturity: PROVIDER_NEUTRAL_ANCHOR_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-single-node-journal
+  path: crates/heptabao-single-node-journal
+  document: docs/modules/heptabao-single-node-journal.md
+  owner_role: audit-storage-platform
+  maturity: SINGLE_NODE_DURABLE_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-single-node-store
+  path: crates/heptabao-single-node-store
+  document: docs/modules/heptabao-single-node-store.md
+  owner_role: storage-platform-security
+  maturity: SINGLE_NODE_DURABLE_FOUNDATION
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- crate: heptabao-storage-api
+  path: crates/heptabao-storage-api
+  document: docs/modules/heptabao-storage-api.md
+  owner_role: storage-core-api
+  maturity: PROVIDER_NEUTRAL_API_IMPLEMENTED
+  required_sections: *id001
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+target_not_yet_implemented:
+- heptabao-server
+- heptabao-core-pipeline
+- heptabao-policy
+- heptabao-identity
+- heptabao-token
+- heptabao-lease
+- heptabao-system
+- heptabao-namespace
+- heptabao-plugin-host
+- heptabao-storage-raft
+- heptabao-cluster
+- heptabao-migration
+- heptabao-cli
+- heptabao-agent
+- heptabao-proxy
+claims:
+  qualification: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

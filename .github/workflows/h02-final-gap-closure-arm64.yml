@@ -1,0 +1,192 @@
+name: h02-final-gap-closure-arm64
+
+on:
+  push:
+    branches: ["codex/plan-v1.2.1-final-gap-closure-v1"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-final-gap-closure-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TOOLCHAINS: "1.88.0 1.98.0"
+
+jobs:
+  exact-head-single-runner:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    steps:
+      - name: Checkout exact immutable source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and initialize diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          mkdir -p "$RUNNER_TEMP/results"
+          printf 'repository=%s\nref=%s\ncommit=%s\ntree=%s\nrunner=%s\nos=%s\narch=%s\n' \
+            "$GITHUB_REPOSITORY" "$GITHUB_REF" "$SOURCE_SHA" \
+            "$(git rev-parse 'HEAD^{tree}')" "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH" \
+            | tee "$RUNNER_TEMP/results/source-binding.txt"
+
+      - name: Install exact Python validation dependencies
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Validate all current plans, contracts and Python suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python3 scripts/validate_plan_v2.py
+          python3 scripts/validate_plan_v2_extensions.py
+          python3 scripts/validate_plan_v1_2.py
+          python3 scripts/validate_plan_v1_2_1.py
+          python3 scripts/validate_h02_exact_head_matrix_contract_v1.py
+          python3 scripts/validate_h01_h02_next_v1.py
+          python3 scripts/validate_h02_candidate_adapters_v1.py
+          python3 scripts/validate_h02_openraft_inmemory_cluster_v1.py
+          python3 scripts/validate_h02_openraft_fault_lab_v1.py
+          python3 scripts/validate_h02_blocker_closure_v1.py
+          python3 scripts/validate_h02_pr40_reconciliation_v1.py
+          python3 scripts/validate_plan_v1_2_2.py
+          python3 -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python3 -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python3 -m unittest discover -s tests/plan -p 'test_*.py' -v
+
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal --component rustfmt,clippy
+            rustup run "$toolchain" rustc --version --verbose \
+              | tee "$RUNNER_TEMP/results/rustc-$toolchain.txt"
+            rustup run "$toolchain" cargo --version --verbose \
+              | tee "$RUNNER_TEMP/results/cargo-$toolchain.txt"
+          done
+
+      - name: Validate root and exact OpenRaft Rust graphs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/results/root-test.log"
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/results/root-clippy.log"
+
+          manifest=probes/h02/openraft-tokio/Cargo.toml
+          lock=probes/h02/openraft-tokio/Cargo.lock
+          test -s "$lock"
+          sha256sum "$manifest" | tee "$RUNNER_TEMP/results/openraft-manifest.sha256"
+          sha256sum "$lock" | tee "$RUNNER_TEMP/results/openraft-lock.sha256"
+          cargo +1.88.0 metadata --locked --format-version 1 --manifest-path "$manifest" \
+            > "$RUNNER_TEMP/results/openraft-metadata.json"
+          cargo +1.98.0 fmt --manifest-path "$manifest" --all -- --check
+          for toolchain in $TOOLCHAINS; do
+            export CARGO_TARGET_DIR="$RUNNER_TEMP/openraft-compile-$toolchain"
+            cargo +"$toolchain" test --locked --all-targets --manifest-path "$manifest" \
+              2>&1 | tee "$RUNNER_TEMP/results/openraft-test-$toolchain.log"
+            cargo +"$toolchain" clippy --locked --all-targets --manifest-path "$manifest" -- -D warnings \
+              2>&1 | tee "$RUNNER_TEMP/results/openraft-clippy-$toolchain.log"
+          done
+
+      - name: Execute all 24 application entries without early abort
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/h02_exact_head_matrix_v1.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --ref "$GITHUB_REF_NAME" \
+            --commit "$SOURCE_SHA" \
+            --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --manifest probes/h02/openraft-tokio/Cargo.toml \
+            --output-dir "$RUNNER_TEMP/results/matrix" \
+            --cargo-target-root "$RUNNER_TEMP/openraft-matrix-target" \
+            --entry-timeout-seconds 240 \
+            > "$RUNNER_TEMP/results/matrix-runner.log" 2>&1
+          rc=$?
+          printf '%s\n' "$rc" > "$RUNNER_TEMP/results/matrix-runner.exit"
+          cat "$RUNNER_TEMP/results/matrix-runner.log"
+          exit 0
+
+      - name: Upload complete diagnostics before final gate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-final-gap-closure-arm64-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/results/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require complete schema-valid exact-head PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(cat "$RUNNER_TEMP/results/matrix-runner.exit")" = 0
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path.cwd()
+          matrix_root = Path(os.environ["RUNNER_TEMP"]) / "results/matrix"
+          summary = json.loads((matrix_root / "matrix-summary.json").read_text(encoding="utf-8"))
+          schema = json.loads((root / "schemas/heptabao_h02_exact_head_matrix_summary_v1.schema.json").read_text(encoding="utf-8"))
+          errors = list(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(summary))
+          assert not errors, [error.message for error in errors]
+          assert summary["result"] == "PASS"
+          assert summary["counts"] == {"pass": 24, "fail": 0, "blocked": 0, "unknown": 0, "unexecuted": 0}
+          assert summary["matrix"]["executed_entry_count"] == 24
+          assert summary["matrix"]["missing_entry_ids"] == []
+          assert summary["matrix"]["unexpected_entry_ids"] == []
+          assert summary["matrix"]["duplicate_entry_ids"] == []
+          assert summary["runner_errors"] == []
+          assert summary["source_binding"]["commit"] == os.environ["SOURCE_SHA"]
+          actual_tree = subprocess.run(["git", "rev-parse", "HEAD^{tree}"], check=True, capture_output=True, text=True).stdout.strip()
+          assert summary["source_binding"]["tree"] == actual_tree
+
+          def digest(path):
+              return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+          manifest = root / summary["dependency_binding"]["manifest_path"]
+          lock = root / summary["dependency_binding"]["lock_path"]
+          assert digest(manifest) == summary["dependency_binding"]["manifest_digest"]
+          assert digest(lock) == summary["dependency_binding"]["lock_digest"]
+          for entry in summary["entries"]:
+              assert entry["process_started"] is True
+              assert entry["exit_code"] == 0
+              assert entry["timed_out"] is False
+              assert entry["conclusion"] == "PASS"
+              assert entry["application_status"] == "EXECUTED_PASS"
+              assert entry["validation_errors"] == []
+              assert digest(matrix_root / entry["stdout_path"]) == entry["stdout_digest"]
+              assert digest(matrix_root / entry["stderr_path"]) == entry["stderr_digest"]
+              assert (matrix_root / entry["exit_path"]).read_text(encoding="utf-8").strip() == "0"
+              command = json.dumps(entry["command"], sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+              assert "sha256:" + hashlib.sha256(command).hexdigest() == entry["command_digest"]
+          assert summary["qualification"] is False
+          assert summary["compatibility_claim"] is False
+          assert summary["selection_effect"] == "NONE"
+          assert summary["authority_effect"] == "NONE"
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

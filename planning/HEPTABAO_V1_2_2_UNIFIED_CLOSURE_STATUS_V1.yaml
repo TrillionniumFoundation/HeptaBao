@@ -1,0 +1,58 @@
+schema: heptabao.v1-2-2-unified-closure-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2.2'
+status: LOCAL_UNIFIED_PATCH_CANDIDATE_NOT_QUALIFIED
+source_inputs:
+  exact_head_matrix:
+    pull_request: 40
+    branch: codex/plan-v1.2.1-final-gap-closure-v1
+    commit: cedb6c95a5323f7004551087d75e2f57a1ec484a
+    tree: e0032b54bad2048802cd61f6bbc7d6d1f9ce4003
+  explicit_lifecycle:
+    pull_request: 41
+    branch: codex/plan-v1.2.1-direct-generation-closure-v2
+    commit: c2a7967df4a3f1e66d021423fbb561c2491d2843
+    tree: ca0f61cf147a7db59f52ed160b6eb3c81c21a0fc
+local_candidate:
+  branch: codex/plan-v1.2.2-unified-gap-closure-v1
+  base_commit: 60f653f38bcf46662f2ee41301733fffc70701fd
+  base_tree: c4165081d59ecd7f936e519537926bbdddae65f6
+  remote_materialization: UNEXECUTED
+composition:
+  exact_head_runner_hardening: true
+  result_taxonomy_preserved: true
+  process_group_timeout: true
+  source_manifest_lock_reverification: true
+  explicit_create_reopen_adopt: true
+  initialized_generation_loss_fails_closed: true
+  stale_previous_cleanup_after_validation: true
+  corrupt_current_no_rollback: true
+  ambiguous_previous_fails_closed: true
+  symlink_and_non_regular_rejection: true
+  guarded_snapshot_source_binding: true
+  strict_lint_repairs: true
+  read_only_ci: true
+local_evidence:
+  python_and_schema_validation: PASS
+  rust_fmt_test_clippy: UNEXECUTED
+  exact_head_24_entry_matrix: UNEXECUTED
+  independent_reproduction: UNEXECUTED
+repository_controlled_state:
+  implementation_remediation: IMPLEMENTED_LOCAL
+  exact_head_execution: UNEXECUTED
+  independent_review: UNEXECUTED
+  closure_receipt: ABSENT
+external_gaps:
+  - repository-ruleset-and-negative-controls
+  - independent-reviewer-identities
+  - legal-clean-room-license-disposition
+  - private-disclosure-oncall-and-drills
+  - isolated-signing-transparency-and-revocation
+  - restricted-oracle-capture-and-signed-transfer
+  - independent-power-cut-filesystem-lab
+  - independent-operator-reproduction
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+authority_effect: NONE

@@ -1,0 +1,89 @@
+name: generate-h02-exact-lock-artifact
+
+on:
+  push:
+    branches:
+      - "codex/plan-v1.2-canonical-gap-closure-v1"
+    paths:
+      - ".github/workflows/generate-h02-exact-lock-artifact.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: generate-h02-exact-lock-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Install exact Rust resolver toolchain
+        shell: bash
+        run: rustup toolchain install 1.88.0 --profile minimal
+      - name: Generate exact OpenRaft alpha.33 graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/openraft-lock"
+          evidence="$RUNNER_TEMP/evidence"
+          mkdir -p "$work" "$evidence"
+          cp -a probes/h02/openraft-tokio/. "$work/"
+          manifest="$work/Cargo.toml"
+          lock="$work/Cargo.lock"
+          rm -f "$lock"
+          cargo +1.88.0 generate-lockfile --manifest-path "$manifest"
+          cargo +1.88.0 metadata --locked --format-version 1 --manifest-path "$manifest" > "$evidence/metadata.json"
+          cp "$lock" "$evidence/Cargo.lock"
+          sha256sum "$manifest" "$lock" | tee "$evidence/sha256.txt"
+      - name: Verify exact family and immutable validit source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/evidence/metadata.json" "$RUNNER_TEMP/evidence/Cargo.lock" <<'PY'
+          import json
+          import sys
+          import tomllib
+
+          revision = "7016fa5e072a86092928144b3a3040381e6964e9"
+          source = f"git+https://github.com/drmingdrmer/validit.git?rev={revision}#{revision}"
+          metadata = json.load(open(sys.argv[1], encoding="utf-8"))
+          lock = tomllib.loads(open(sys.argv[2], encoding="utf-8").read())
+          exact = {
+              "openraft": "0.10.0-alpha.33",
+              "openraft-macros": "0.10.0-alpha.33",
+              "openraft-memstore": "0.10.0-alpha.33",
+              "openraft-rt": "0.10.0-alpha.33",
+              "openraft-rt-tokio": "0.10.0-alpha.33",
+              "validit": "0.2.5",
+          }
+          for document in (metadata["packages"], lock["package"]):
+              for name, version in exact.items():
+                  values = [item for item in document if item["name"] == name]
+                  assert len(values) == 1, (name, values)
+                  assert values[0]["version"] == version, values[0]
+              validit = next(item for item in document if item["name"] == "validit")
+              assert validit["source"] == source, validit
+          print("exact OpenRaft alpha.33 family and validit 0.2.5 source verified")
+          PY
+      - name: Upload exact lock artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-exact-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence/
+          if-no-files-found: error
+          retention-days: 7

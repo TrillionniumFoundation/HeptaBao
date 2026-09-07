@@ -1,0 +1,46 @@
+schema: heptabao.dependency-registry-evidence.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+evidence_id: HB-DEP-REGISTRY-RAFT-OPENRAFT-0001
+candidate_id: HB-DEP-RAFT-OPENRAFT
+capability: RAFT
+captured_at_utc: '2026-08-28T08:00:00Z'
+release_binding:
+  tag: v0.10.0-alpha.33
+  commit_sha: 2be3f99a23c0ec734aefc18d1c8e756b35567c35
+  tree_sha: 84c2f86b6bdffb3f25ffbc7a9341ef7295a5ac28
+registry_source:
+  repository: https://github.com/rust-lang/crates.io-index
+  ref: refs/heads/master
+  commit_sha: 777d86659770fa5d3eac37c83f3772de7faf0a83
+  path: op/en/openraft
+  blob_sha: db74d6c8621154a5700f716e6f4020783b9a1e7e
+registry_entry:
+  package: openraft
+  version: 0.10.0-alpha.33
+  checksum_sha256: ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8
+  yanked: false
+  rust_version: null
+  published_at_utc: '2026-08-05T09:48:12Z'
+  observed_features:
+  - default=tokio-rt,clap
+  - serde
+  - single-threaded
+  - runtime-stats
+  - compat
+byte_verification:
+  status: UNEXECUTED
+  crate_download_sha256: null
+  matches_registry_checksum: false
+  source_archive_sha256: null
+  source_archive_digest_kind: NOT_CAPTURED
+  package_vcs_commit_sha: null
+  independent_reproduction_count: 0
+review_status:
+  platform: PENDING
+  security: PENDING
+  license: PENDING
+  specialist: PENDING
+selection_state: IDENTIFIED
+qualification: false
+authority_effect: NONE

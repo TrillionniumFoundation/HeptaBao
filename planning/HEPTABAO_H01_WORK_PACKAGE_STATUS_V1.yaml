@@ -1,0 +1,146 @@
+schema: heptabao.h01-work-package-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: SAFE_PUBLIC_AND_SYNTHETIC_FOUNDATION_ACTIVE_NOT_QUALIFIED
+program_authority_gate: H00
+work_start_basis:
+  required_interface: H00.clean-room-interface:FROZEN
+  satisfied_for:
+    - public baseline metadata
+    - sanitized schemas and inventory seeds
+    - deterministic normalization and side-effect contracts
+    - public upstream changelog regression seed
+    - public dependency candidate identification
+  not_satisfied_for:
+    - restricted raw capture
+    - upstream-source research transfer
+    - implementation-consumable Oracle fixture transfer
+    - qualification or compatibility claim
+  reason: Clean-room policy/provenance interfaces are frozen, but real ACLs, identities, signed transfers and executable runner evidence remain blocked.
+authority_effect: NONE
+work_packages:
+  H01-WP01:
+    title: OpenBao release and source provenance manifest
+    implementation_status: IMPLEMENTED_SANITIZED_PUBLIC_BASELINE
+    qualification_status: NOT_QUALIFIED
+    delivered: [oracle/baselines/openbao-v2.6.2.yaml]
+    blockers: [independent compatibility/security review, signed provenance record]
+  H01-WP02:
+    title: HTTP endpoint inventory
+    implementation_status: SEED_IMPLEMENTED
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - schemas/heptabao_oracle_endpoint_inventory_v1.schema.json
+      - oracle/inventory/openbao-v2.6.2/endpoint-seed.yaml
+      - 51 critical endpoint families identified
+    blockers:
+      - exhaustive endpoint, field, header and error inventory incomplete
+      - no black-box endpoint capture
+      - metadata count correction pending canonical compaction
+  H01-WP03:
+    title: HCL configuration, environment and listener inventory
+    implementation_status: FOUR_SEED_INVENTORIES_IMPLEMENTED
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - schemas/heptabao_oracle_config_inventory_v1.schema.json
+      - 52 configuration/environment items across core, listener/TLS, storage/seal/operations and client environment
+      - YAML 1.2 enum-safe validation loader
+    blockers:
+      - full server, plugin, seal-provider, Agent and Proxy configuration inventories incomplete
+      - no parse/startup/reload black-box matrix
+      - source references require independent review
+  H01-WP04:
+    title: CLI, operator, Agent and Proxy inventory
+    implementation_status: THIRTY_COMMAND_SEED_IMPLEMENTED
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - schemas/heptabao_oracle_cli_inventory_v1.schema.json
+      - oracle/inventory/openbao-v2.6.2/cli-command-seed.yaml
+      - 30 security/operator-critical command families with flags, environment, outputs, exit classes and side effects
+    blockers:
+      - exhaustive command/flag/help/env/output/exit-code/signal inventory absent
+      - no real CLI black-box capture
+      - secret-bearing commands intentionally have no repository output fixtures
+  H01-WP05:
+    title: sys, policy, identity, token, lease and audit side-effect inventory
+    implementation_status: RUST_AND_PYTHON_SYNTHETIC_OBSERVER_IMPLEMENTED
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - crates/heptabao-oracle-observer
+      - schemas/heptabao_oracle_side_effect_observation_v1.schema.json
+      - scripts/oracle_side_effect_diff_v1.py
+      - declared side-effect allowlist, black-box artifact/raw-digest binding and secret rejection
+      - one deterministic synthetic health observation
+    blockers:
+      - storage/token/lease/audit/plugin/cluster/external observers not connected to a restricted Oracle lab
+      - no black-box before/after observation
+      - independent review absent
+  H01-WP06:
+    title: deterministic Oracle capture harness and manifest
+    implementation_status: SCHEMAS_AND_CAPTURE_BOUNDARIES_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - schemas/heptabao_oracle_fixture_manifest_v1.schema.json
+      - black-box side-effect artifact signature and raw digest requirements
+    blockers:
+      - restricted Oracle environment/ACL/operator identity not provisioned
+      - no black-box capture on this branch
+  H01-WP07:
+    title: normalizer and canonical comparison engine
+    implementation_status: IMPLEMENTED_LOCAL_REVIEW_PENDING
+    qualification_status: INFRASTRUCTURE_UNEXECUTED
+    delivered:
+      - explicit normalization policy
+      - deterministic Python normalizer
+      - secret placeholder and unmatched-secret rejection
+      - unit and adversarial tests
+      - side-effect delta canonicalizer
+    blockers: [remote runner evidence, compatibility/security review]
+  H01-WP08:
+    title: observable side-effect inspectors
+    implementation_status: GENERIC_SECRET_FREE_OBSERVER_IMPLEMENTED_SYNTHETIC_ONLY
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - bounded mount/policy/token/lease/audit/plugin/Raft/external-effect counters
+      - seal and active transition detection
+      - explicit per-observation allowlist
+      - deterministic Rust and Python tests
+    blockers:
+      - backend-specific read-only inspectors absent
+      - restricted lab integration absent
+      - no signed black-box evidence
+  H01-WP09:
+    title: fixture review, sanitization and provenance transfer
+    implementation_status: POLICY_SCHEMA_AND_SYNTHETIC_PROVENANCE_IMPLEMENTED
+    qualification_status: BLOCKED
+    delivered:
+      - source provenance schema
+      - clean-room transfer policy
+      - normalization controls
+      - synthetic fixture explicitly classified as non-Oracle/non-compatibility evidence
+    blockers: [real ACLs, named reviewers, first signed transfer]
+  H01-WP10:
+    title: upstream advisory and behavior-regression registry
+    implementation_status: TWENTY_ONE_REGRESSION_SEEDS_IMPLEMENTED
+    qualification_status: NOT_QUALIFIED
+    delivered:
+      - schemas/heptabao_oracle_regression_registry_v1.schema.json
+      - 21 OpenBao 2.6 security/bug-fix regression entries
+      - frozen/current-security/migration-source train policy
+    blockers:
+      - all fixtures remain PLANNED
+      - no 24-hour operational triage evidence
+      - no independent review or disposition
+next_execution_order:
+  - obtain executable H01/H02 CI with real runner evidence
+  - provision restricted Oracle lab and clean-room ACLs through H00-WP05
+  - capture only non-secret health/status/seal/normalization fixtures first
+  - implement backend-specific read-only side-effect inspectors
+  - complete configuration and CLI inventories from approved public sources and black-box evidence
+  - implement security regression fixtures in priority order
+  - issue first signed source-provenance transfer record
+  - keep all black-box and compatibility claims false until independent review
+promotion_rules:
+  H01_qualification: forbidden until H00 qualified and every required H01 lane has PASS evidence
+  compatibility_claim: separate, exact-profile scoped and authority_effect NONE
+  operational_authority: forbidden

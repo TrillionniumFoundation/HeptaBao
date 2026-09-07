@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-surface-inventory-v1.json",
+  "title": "HeptaBao OpenBao Oracle Surface Inventory V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "baseline_id",
+    "inventory_id",
+    "status",
+    "generated_at_utc",
+    "source_provenance",
+    "categories",
+    "coverage",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-surface-inventory.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "inventory_id": {"pattern": "^HB-INV-[A-Z0-9._-]{8,200}$"},
+    "status": {"enum": ["SEED", "IN_PROGRESS", "CAPTURED", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "generated_at_utc": {"type": "string", "format": "date-time"},
+    "source_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product", "tag", "commit_sha", "tree_sha", "artifact_sha256", "source_class"],
+      "properties": {
+        "product": {"const": "OpenBao"},
+        "tag": {"const": "v2.6.2"},
+        "commit_sha": {"const": "dd9c19c37a878cf4a81b18efb8d6f0599c7da923"},
+        "tree_sha": {"const": "308de7e6da19d8b994c5710ffd715ce4cedde448"},
+        "artifact_sha256": {"pattern": "^[0-9a-f]{64}$"},
+        "source_class": {"enum": ["PUBLIC_PRODUCT_DOCUMENTATION", "BLACK_BOX_OBSERVATION", "SANITIZED_SOURCE_SURFACE_FACT"]}
+      }
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/category"}
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_items", "identified", "captured", "reviewed", "qualified", "unowned_critical", "unclassified"],
+      "properties": {
+        "total_items": {"type": "integer", "minimum": 0},
+        "identified": {"type": "integer", "minimum": 0},
+        "captured": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "qualified": {"type": "integer", "minimum": 0},
+        "unowned_critical": {"type": "integer", "minimum": 0},
+        "unclassified": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "owner_gate", "items"],
+      "properties": {
+        "id": {"pattern": "^[a-z][a-z0-9_-]{1,80}$"},
+        "title": {"type": "string", "minLength": 1},
+        "owner_gate": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])$"},
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/item"}
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "criticality",
+        "source_reference",
+        "source_class",
+        "owner_work_packages",
+        "inventory_status",
+        "fixture_status",
+        "support_profiles",
+        "notes"
+      ],
+      "properties": {
+        "id": {"pattern": "^HB-SURFACE-[A-Z0-9._-]{4,200}$"},
+        "name": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["CORE", "SYSTEM", "AUTH_METHOD", "SECRET_ENGINE", "DATABASE_PROVIDER", "AUDIT_DEVICE", "STORAGE_BACKEND", "PLUGIN_CLASS", "CLUSTER_HA", "CLIENT_OPERATOR", "NAMESPACE_WORKFLOW", "CONFIGURATION", "MIGRATION"]},
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "source_reference": {"type": "string", "minLength": 1},
+        "source_class": {"enum": ["PUBLIC_PRODUCT_DOCUMENTATION", "BLACK_BOX_OBSERVATION", "SANITIZED_SOURCE_SURFACE_FACT"]},
+        "owner_work_packages": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])-WP[0-9]{2,3}$"}
+        },
+        "inventory_status": {"enum": ["IDENTIFIED", "CAPTURED", "REVIEWED", "QUALIFIED", "UNSUPPORTED", "SUPERSEDED"]},
+        "fixture_status": {"enum": ["NONE", "PLANNED", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED"]},
+        "support_profiles": {"type": "array", "items": {"pattern": "^HB-P[0-9]+-[A-Z0-9_-]+$"}},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

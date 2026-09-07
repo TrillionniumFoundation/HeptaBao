@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-endpoint-inventory-v1.json",
+  "title": "HeptaBao OpenBao Oracle Endpoint Inventory V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "baseline_id", "inventory_id", "status", "entries", "coverage", "authority_effect"],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-endpoint-inventory.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "inventory_id": {"pattern": "^HB-ENDPOINTS-[A-Z0-9._-]{8,200}$"},
+    "status": {"enum": ["SEED", "IN_PROGRESS", "CAPTURED", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/endpoint"}},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_seeded", "captured", "reviewed", "qualified", "unowned_critical", "unclassified"],
+      "properties": {
+        "total_seeded": {"type": "integer", "minimum": 0},
+        "captured": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "qualified": {"type": "integer", "minimum": 0},
+        "unowned_critical": {"type": "integer", "minimum": 0},
+        "unclassified": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path_template",
+        "methods",
+        "operation_class",
+        "exposure",
+        "criticality",
+        "authentication_mode",
+        "policy_capability",
+        "request_audit",
+        "response_audit",
+        "side_effects",
+        "secret_response",
+        "active_required",
+        "response_unknown_policy",
+        "owner_work_packages",
+        "source_reference",
+        "observation_status",
+        "fixture_status",
+        "notes"
+      ],
+      "properties": {
+        "id": {"pattern": "^HB-ENDPOINT-[A-Z0-9._-]{4,200}$"},
+        "path_template": {"type": "string", "pattern": "^/v1/"},
+        "methods": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "LIST", "SCAN"]}},
+        "operation_class": {"enum": ["PURE_READ", "DURABLE_MUTATION", "LEASE_ISSUING_READ", "EXTERNAL_EFFECT", "AUTH_LOGIN", "TOKEN_ISSUE", "SEAL_CEREMONY", "CLUSTER_OPERATION", "MIGRATION_OPERATION"]},
+        "exposure": {"enum": ["PUBLIC_AUTHENTICATED", "PUBLIC_UNAUTHENTICATED", "INTERNAL_ONLY", "CLUSTER_ONLY", "MIGRATION_ONLY"]},
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "authentication_mode": {"type": "string", "minLength": 1},
+        "policy_capability": {"type": "string", "minLength": 1},
+        "request_audit": {"enum": ["REQUIRED", "PROFILE_DEPENDENT", "CEREMONY_REQUIRED"]},
+        "response_audit": {"enum": ["REQUIRED", "REQUIRED_BEFORE_SECRET_RELEASE", "PROFILE_DEPENDENT", "CEREMONY_REQUIRED"]},
+        "side_effects": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["NONE", "STORAGE", "TOKEN", "LEASE", "AUDIT_CONFIG", "PLUGIN_PROCESS", "CLUSTER", "EXTERNAL_SYSTEM", "SEAL_STATE", "MIGRATION_AUTHORITY"]}
+        },
+        "secret_response": {"type": "boolean"},
+        "active_required": {"type": "boolean"},
+        "response_unknown_policy": {"enum": ["SAFE_NOT_SENT", "LOOKUP_BY_OPERATION_KEY", "RECONCILE_EXTERNAL_EFFECT", "MANUAL_HOLD", "CEREMONY_RESUME", "CONSENSUS_OBSERVE"]},
+        "owner_work_packages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])-WP[0-9]{2,3}$"}},
+        "source_reference": {"type": "string", "minLength": 1},
+        "observation_status": {"enum": ["IDENTIFIED", "CAPTURED", "REVIEWED", "QUALIFIED", "UNSUPPORTED", "SUPERSEDED"]},
+        "fixture_status": {"enum": ["NONE", "PLANNED", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED"]},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+[package]
+name = "heptabao-recovery-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[dependencies]
+heptabao-barrier-api = { path = "../heptabao-barrier-api" }
+heptabao-journal-api = { path = "../heptabao-journal-api" }
+heptabao-rollback-anchor = { path = "../heptabao-rollback-anchor" }
+heptabao-storage-api = { path = "../heptabao-storage-api" }
+
+[lints]
+workspace = true

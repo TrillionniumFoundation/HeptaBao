@@ -1,0 +1,103 @@
+schema: heptabao.domain-ownership.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_SINGLE_WRITER_REGISTRY
+rules:
+  - Every durable domain has exactly one authoritative writer implementation.
+  - Adapters, projections, caches, Oracle harnesses, read standbys and migration comparators are never writers.
+  - A writer change requires authority epoch and fencing-token transition plus stale-writer rejection evidence.
+  - Shared writable databases and dual writes are forbidden.
+domains:
+  operation_registry:
+    writer: heptabao-protocol
+    projections: [heptabao-api, heptabao-cli, heptabao-openapi]
+  physical_storage_schema:
+    writer: heptabao-storage-api
+    implementations: [heptabao-storage-memory, heptabao-storage-postgres, heptabao-storage-raft]
+  barrier_envelope_keyring:
+    writer: heptabao-barrier
+    readers: [heptabao-seal, heptabao-storage-api]
+  seal_lifecycle:
+    writer: heptabao-seal
+    projections: [heptabao-system, heptabao-cluster]
+  mount_and_system_registry:
+    writer: heptabao-system
+    projections: [heptabao-router, heptabao-openapi]
+  policy_source_and_decision:
+    writer: heptabao-policy
+    readers: [heptabao-core, heptabao-identity, heptabao-auth-star]
+  identity_entity_group_alias_mfa:
+    writer: heptabao-identity
+    projections: [heptabao-auth-star, heptabao-policy]
+  oidc_provider_and_signing_key:
+    writer: heptabao-identity-oidc
+    projections: [heptabao-system, heptabao-openapi]
+  external_jwt_oidc_login:
+    writer: heptabao-auth-jwt
+    result_owner: heptabao-token
+  token_store_graph_wrapping:
+    writer: heptabao-token
+    projections: [heptabao-auth-token, heptabao-system]
+  token_auth_mount_http_api:
+    writer: heptabao-auth-token
+    durable_delegate: heptabao-token
+  lease_expiration_effect_reconcile:
+    writer: heptabao-lease
+    projections: [heptabao-system, heptabao-telemetry]
+  audit_gate_and_device_config:
+    writer: heptabao-audit
+    sinks: [file, http, socket, syslog]
+  plugin_catalog_and_process_lifecycle:
+    writer: heptabao-plugin-host
+    projections: [heptabao-system, heptabao-telemetry]
+  namespace_tree_keyring_seal_context:
+    writer: heptabao-namespace
+    delegates: [heptabao-barrier, heptabao-seal]
+  profiles_and_workflows:
+    writer: heptabao-workflow
+    profile_engine: heptabao-profile
+  auth_method_configuration:
+    writer: heptabao-auth-star
+    token_issuer: heptabao-token
+  secret_engine_state:
+    writer: heptabao-secrets-star
+    lease_delegate: heptabao-lease
+  database_provider_configuration:
+    writer: heptabao-database-star
+    effect_delegate: heptabao-lease
+  raft_fsm_and_logical_state:
+    writer: heptabao-storage-raft
+    consensus_library: selected-at-H02
+  cluster_membership_forwarding_active_owner:
+    writer: heptabao-cluster
+    durable_delegate: heptabao-storage-raft
+  listener_cli_agent_proxy_config:
+    writer: heptabao-server
+    clients: [heptabao-cli, heptabao-agent, heptabao-proxy]
+  telemetry_limits_lockout_reload:
+    writer: heptabao-telemetry
+    config_delegate: heptabao-server
+  migration_inventory_cutover_authority:
+    writer: heptabao-migration
+    source_and_target_adapters: read-or-fenced-command-only
+  qualification_receipts:
+    writer: heptabao-qualification
+    authority_effect: NONE
+  compatibility_claims:
+    writer: heptabao-governance
+    authority_effect: NONE
+  authority_grants_and_revocations:
+    writer: heptabao-governance
+    revocation_precedence: highest
+  release_attestations:
+    writer: heptabao-release
+    operational_authority_requires_separate_grant: true
+forbidden_writers:
+  - OpenBao Oracle harness
+  - shadow comparator
+  - standby cache
+  - HTTP adapter
+  - CLI or UI client
+  - documentation generator
+  - test fixture loader
+  - migration observe/shadow lane

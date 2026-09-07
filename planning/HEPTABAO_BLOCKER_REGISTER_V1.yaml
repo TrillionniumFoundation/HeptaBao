@@ -1,0 +1,410 @@
+schema: heptabao.blocker-register.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.2.1
+status: ACTIVE_FAIL_CLOSED
+authority_effect: NONE
+closure_receipt_schema: schemas/heptabao_blocker_closure_receipt_v1.schema.json
+external_action_catalog: planning/HEPTABAO_EXTERNAL_ACTION_PACKAGE_CATALOG_V1.yaml
+rules:
+- CLOSED requires exact-head evidence and every closure criterion
+- repository-controlled and external blockers are never conflated
+- automations may not fabricate independent review legal disposition or authority
+- failed executable runs remain immutable evidence
+- external blockers remain EXTERNAL_ACTION_REQUIRED until signed completion objects verify
+- critical blocker closure requires an independent reviewer and current unrevoked receipt
+blockers:
+- id: HB-BLK-REPO-001
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: self-modifying validation workflows
+  owner_role: program-security
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - no active workflow has contents write
+  - no active workflow persists checkout credentials
+  - no workflow executes git commit push or rebase
+  - exact-head workflow-policy validator passes
+  - critical workflow paths retain read-only exact-SHA execution
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  - repository-identity-integrity
+  - plan-v1.2.1-operational-integrity/operational-contracts
+  evidence:
+  - scripts/validate_plan_v1_2.py
+  - scripts/validate_plan_v1_2_1.py
+  - .github/workflows/plan-integrity-v4.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-002
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: multiple stale status files claimed current truth
+  owner_role: program
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - normative manifest identifies one current state input
+  - historical state and queue objects are marked non-normative
+  - resolved state is generated from exact source
+  - all normative extensions are uniquely indexed
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  evidence:
+  - planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1.yaml
+  - planning/HEPTABAO_CANONICAL_PROJECT_STATE_V1.yaml
+  - scripts/render_canonical_project_state_v1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-003
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.1 stated work-package count does not match catalog
+  owner_role: program
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - V1.2 catalog contains exactly 301 unique IDs
+  - every V1.1 work-package ID is preserved
+  - validator rejects additions removals duplicates or count drift
+  - active H00-H04 contract coverage is complete
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  evidence:
+  - planning/HEPTABAO_WORK_PACKAGE_CATALOG_V1_2.yaml
+  - planning/HEPTABAO_ACTIVE_WORK_PACKAGE_CONTRACTS_V1.yaml
+  - scripts/validate_plan_v1_2.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-004
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: OpenRaft committed lock does not bind audited validit source
+  owner_role: platform
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - lock has exactly one validit 0.2.5 exact git revision
+  - exact OpenRaft alpha.33 family is unique
+  - cargo metadata locked succeeds on exact head
+  - Rust 1.88 and 1.98 build and test the same committed graph
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-source-integrity-evidence
+  - h02-probe-sbom-msrv
+  evidence:
+  - probes/h02/openraft-tokio/Cargo.toml
+  - probes/h02/openraft-tokio/Cargo.lock
+  - .github/workflows/plan-integrity-v4.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-005
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: candidate adapter conflates direct dependencies and source overrides
+  owner_role: platform
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - source override is independently parsed and digest-bound
+  - branch tag path and revision drift are rejected
+  - unbound patch tables are rejected
+  - negative tests pass on exact head
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  - h02-candidate-adapters
+  evidence:
+  - scripts/h02_candidate_adapter_harness_v1.py
+  - tests/platform/test_h02_candidate_adapter_harness_v1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-006
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable store publishes in-memory state before persistence
+  owner_role: storage-distributed-systems
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - all log and state mutations build a candidate copy
+  - persistence succeeds before in-memory publish and callback
+  - failed persistence leaves published state unchanged
+  - fault regression and exact-head Rust lanes pass
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-openraft-blocker-closure
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/durable_store_lab/store.rs
+  - probes/h02/openraft-tokio/src/bin/durable_store_lab.rs
+  - .github/workflows/plan-integrity-v4.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-007
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable generations can cross, disappear, or roll back through ambiguous reopen semantics
+  owner_role: storage-distributed-systems
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - state and snapshot are stored in one atomic versioned bundle or manifest
+  - bootstrap create-new and recovery reopen-existing are distinct operations
+  - missing marker on reopen requires explicit legacy adoption rather than implicit initialization
+  - valid current state retires stale previous state only after validation
+  - corrupt current state never silently falls back to previous
+  - multiple previous generations fail closed as ambiguous
+  - interrupted replacement recovery is explicit
+  - corruption and reopen fail closed
+  - exact-head durable matrix passes across required toolchains and seeds
+  - initialized-store markers distinguish first bootstrap from authoritative generation
+    loss
+  - marker domain and authoritative filename are versioned and validated
+  - missing initialized log or state generations fail closed
+  - corrupt markers and non-regular authoritative generations fail closed
+  - legacy authoritative generations are adopted only after validation and marker
+    publication
+  - interrupted replacement recovery is explicit for generations and markers
+  - whole-directory loss remains bound to an external rollback anchor rather than
+    silent proof
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-openraft-blocker-closure
+  - h02-final-gap-closure-arm64/exact-head-single-runner
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/durable_store_lab/store.rs
+  - probes/h02/openraft-tokio/src/bin/durable_store_lab.rs
+  - docs/plan/HEPTABAO_PLAN_V1_2_1_PR40_RECONCILIATION_AND_TECHNICAL_CLOSURE.md
+  - planning/HEPTABAO_PR40_RECONCILIATION_STATUS_V1.yaml
+  - tests/platform/test_h02_openraft_strict_lint_source_v1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-008
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: stale snapshot protocol acknowledgement was conflated with state installation
+  owner_role: storage-distributed-systems
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - successful stale-snapshot response is followed by bounded state observation
+  - log committed applied snapshot purged membership and application state remain
+    unchanged
+  - any guarded state change is EXECUTED_FAIL
+  - exact-head hostile-snapshot and linearizability matrices PASS
+  - the semantic validator binds hostile_snapshot_guard.rs rather than obsolete unguarded
+    source
+  - negative tests reject a missing or semantically stripped guard implementation
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-openraft-fault-lab
+  - plan-integrity-v4/plan-and-python
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/hostile_snapshot_guard.rs
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab.rs
+  - .github/workflows/h02-openraft-fault-lab.yml
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/cluster.rs
+  - scripts/validate_h02_openraft_fault_lab_v1.py
+  - tests/platform/test_h02_openraft_fault_lab_source_binding_v1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-009
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: in-memory evidence collector rejected the declared effective Rust floor
+  owner_role: platform
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - collector accepts Rust 1.88.0 and 1.98.0 only
+  - Rust 1.85.0 cannot be represented as an effective execution
+  - exact-head six-entry in-memory evidence matrix PASS
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  - h02-openraft-inmemory-cluster
+  evidence:
+  - scripts/h02_openraft_inmemory_cluster_evidence_v1.py
+  - tests/platform/test_h02_openraft_inmemory_cluster_v1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-010
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: exact OpenRaft graph must pass formatter and strict lint without dead compatibility
+    paths
+  owner_role: storage-distributed-systems
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - cargo fmt check passes on the exact OpenRaft manifest
+  - the obsolete unguarded stale-snapshot helper is absent rather than lint-suppressed
+  - the durable fault path uses a direct async block rather than an immediately invoked
+    closure
+  - all emitted JSON format arguments use Rust inline capture and pass uninlined-format-args
+  - Rust 1.88.0 and 1.98.0 tests and Clippy -D warnings pass on the same lock graph
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-final-gap-closure-arm64/exact-head-single-runner
+  evidence:
+  - probes/h02/openraft-tokio/src/bin/durable_store_lab/store.rs
+  - .github/workflows/plan-integrity-v4.yml
+  - probes/h02/openraft-tokio/src/main.rs
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/cluster.rs
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab/durable.rs
+  - scripts/validate_h02_openraft_fault_lab_v1.py
+  - tests/platform/test_h02_openraft_fault_lab_source_binding_v1.py
+  - tests/platform/test_h02_openraft_strict_lint_source_v1.py
+  - .github/workflows/h02-final-gap-closure-arm64.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-011
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: exact-head H02 aggregate could abort early or trust process exit over application failure
+  owner_role: qualification-platform-security
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - all 24 toolchain seed and probe entries execute or receive an explicit unexecuted classification
+  - stdout stderr exit code duration and SHA-256 are retained for every entry before the final gate
+  - in-memory hostile blocker and durable application outputs receive independent semantic validation
+  - zero process exit cannot hide EXECUTED_FAIL failed cases malformed output or authority drift
+  - hostile EXECUTED_FAIL returns nonzero as a defense-in-depth invariant
+  - final gate rejects any failed blocked unknown unexecuted missing duplicate or unexpected entry
+  required_execution:
+  - plan-integrity-v4/openraft-exact-graph-and-runtime
+  - h02-final-gap-closure-arm64/exact-head-single-runner
+  - h02-openraft-fault-lab
+  - h02-openraft-blocker-closure
+  evidence:
+  - docs/execution/HEPTABAO_H02_EXACT_HEAD_MATRIX_EXECUTION_SPEC_V1.md
+  - scripts/h02_exact_head_matrix_v1.py
+  - schemas/heptabao_h02_exact_head_matrix_summary_v1.schema.json
+  - tests/platform/test_h02_exact_head_matrix_v1.py
+  - probes/h02/openraft-tokio/src/bin/openraft_fault_lab.rs
+  - .github/workflows/plan-integrity-v4.yml
+  - .github/workflows/h02-final-gap-closure-arm64.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-012
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: external blockers lacked executable one-to-one action packages
+  owner_role: program-governance
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - every non-repository blocker has exactly one schema-valid action package
+  - procedures evidence custody acceptance failure and handoff fields are complete
+  - external package state cannot be set to CLOSED by repository automation
+  - negative coverage and one-to-one mapping validator pass
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  - plan-v1.2.1-operational-integrity/operational-contracts
+  evidence:
+  - planning/HEPTABAO_EXTERNAL_ACTION_PACKAGE_CATALOG_V1.yaml
+  - schemas/heptabao_external_action_package_catalog_v1.schema.json
+  - scripts/validate_plan_v1_2_1.py
+  - tests/plan/test_plan_v1_2_1.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-013
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: blocker closure lacked an exact-source receipt and retry/base-drift contract
+  owner_role: qualification-security
+  state: REMEDIATION_IMPLEMENTED
+  closure_criteria:
+  - normative blocker closure operating contract is indexed
+  - closure receipt schema binds exact source plan execution criteria artifacts and review
+  - CLOSED receipts require zero failed blocked unknown and unexecuted entries
+  - retry flake base-drift supersession and stop conditions are fail-closed
+  required_execution:
+  - plan-integrity-v4/plan-and-python
+  - plan-v1.2.1-operational-integrity/operational-contracts
+  evidence:
+  - docs/execution/HEPTABAO_BLOCKER_CLOSURE_OPERATING_CONTRACT_V1.md
+  - schemas/heptabao_blocker_closure_receipt_v1.schema.json
+  - scripts/validate_plan_v1_2_1.py
+  - tests/plan/test_plan_v1_2_1.py
+  closure_receipt_required: true
+- id: HB-BLK-CTRL-001
+  class: REPOSITORY_SETTING
+  severity: CRITICAL
+  title: canonical integration branch has no enforced ruleset
+  owner_role: repository-admin
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-CTRL-001
+  closure_criteria:
+  - required checks are enforced on the explicitly designated canonical branch
+  - stale approvals are dismissed and CODEOWNERS approval is required
+  - direct push force push branch deletion and administrator bypass are disabled
+  - commit provenance policy and negative control tests pass
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-001
+  class: EXTERNAL_GOVERNANCE
+  severity: CRITICAL
+  title: independent accountable reviewer identities are absent
+  owner_role: program-owner
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-001
+  closure_criteria:
+  - program security and domain roles are assigned to distinct real identities
+  - conflicts delegation limits and signing keys are recorded
+  - first scoped approval set verifies cryptographically
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-002
+  class: EXTERNAL_LEGAL
+  severity: CRITICAL
+  title: outbound license clean-room trademark patent and export disposition is absent
+  owner_role: legal
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-002
+  closure_criteria:
+  - signed legal disposition is current and scoped
+  - outbound license and contributor policy are approved
+  - clean-room interop trademark patent and export obligations are explicit
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-003
+  class: EXTERNAL_SECURITY
+  severity: CRITICAL
+  title: private disclosure 24x7 incident and revocation operation is absent
+  owner_role: security-operations
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-003
+  closure_criteria:
+  - private vulnerability channel is operational
+  - primary and backup incident roster is assigned
+  - tabletop and technical revocation drills pass with critical findings closed
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-004
+  class: EXTERNAL_SIGNING
+  severity: CRITICAL
+  title: isolated signer trust root transparency and emergency revocation are absent
+  owner_role: release-security
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-004
+  closure_criteria:
+  - role-separated signing keys are provisioned in isolated custody
+  - trust root and transparency checkpoint verify offline
+  - emergency revocation ceremony propagates fail-closed
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-005
+  class: EXTERNAL_ORACLE
+  severity: CRITICAL
+  title: real restricted Oracle fixtures and signed transfer are absent
+  owner_role: compatibility
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-005
+  closure_criteria:
+  - restricted lab and ACL separation are provisioned
+  - first approved raw capture is sanitized and reviewed
+  - signed provenance transfer reaches the implementation lane without raw material
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-006
+  class: EXTERNAL_STORAGE_LAB
+  severity: CRITICAL
+  title: kernel or VM power-cut and filesystem crash-consistency evidence is absent
+  owner_role: storage
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-006
+  closure_criteria:
+  - separately operated lab executes the declared crash matrix
+  - exact source lock environment and power-cut mechanism are attested
+  - all critical durability and recovery invariants pass
+  evidence: []
+  closure_receipt_required: true
+- id: HB-BLK-EXT-007
+  class: EXTERNAL_REPRODUCTION
+  severity: CRITICAL
+  title: independently operated reproduction count is zero
+  owner_role: qualification
+  state: EXTERNAL_ACTION_REQUIRED
+  action_package_id: HB-EAP-EXT-007
+  closure_criteria:
+  - operator credential root runner administration and artifact custody are distinct
+  - exact source lock profile and required matrix are reproduced
+  - divergences are resolved and completion object verifies
+  evidence: []
+  closure_receipt_required: true

@@ -1,0 +1,63 @@
+{
+  "after": {
+    "active": true,
+    "audit_event_count": 11,
+    "external_effect_receipt_count": 0,
+    "lease_count": 0,
+    "mount_revision": 0,
+    "plugin_process_count": 0,
+    "policy_revision": 0,
+    "raft_commit_index": 12,
+    "sealed": false,
+    "token_count": 0
+  },
+  "artifact_signature_verified": false,
+  "authority_effect": "NONE",
+  "baseline_id": "HB-ORACLE-OPENBAO-V2_6_2",
+  "before": {
+    "active": true,
+    "audit_event_count": 10,
+    "external_effect_receipt_count": 0,
+    "lease_count": 0,
+    "mount_revision": 0,
+    "plugin_process_count": 0,
+    "policy_revision": 0,
+    "raft_commit_index": 12,
+    "sealed": false,
+    "token_count": 0
+  },
+  "capture_kind": "SYNTHETIC_CONTRACT",
+  "declared_policy": {
+    "allow_active_transition": false,
+    "allow_audit_event_count": true,
+    "allow_external_effect_receipt_count": false,
+    "allow_lease_count": false,
+    "allow_mount_revision": false,
+    "allow_plugin_process_count": false,
+    "allow_policy_revision": false,
+    "allow_raft_commit_index": false,
+    "allow_seal_transition": false,
+    "allow_token_count": false
+  },
+  "delta": {
+    "active_changed": false,
+    "audit_event_count": 1,
+    "external_effect_receipt_count": 0,
+    "lease_count": 0,
+    "mount_revision": 0,
+    "plugin_process_count": 0,
+    "policy_revision": 0,
+    "raft_commit_index": 0,
+    "sealed_changed": false,
+    "token_count": 0
+  },
+  "observation_id": "HB-OSE-SYNTHETIC-HEALTH-0001",
+  "operation_id": "sys.health.read",
+  "provenance_ref": "HB-SP-H01-SYNTHETIC-HEALTH-0001",
+  "raw_capture_digest_sha256": null,
+  "review_status": "PENDING",
+  "sanitized_capture_digest_sha256": "e79ae141529f2e1c5c54e95e753a6ab0b754b4afc843be12e34859992cea2dec",
+  "schema": "heptabao.oracle-side-effect-observation.v1",
+  "secret_material_present": false,
+  "status": "SYNTHETIC_CONTRACT"
+}

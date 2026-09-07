@@ -1,0 +1,57 @@
+schema: heptabao.work-package-extension.v1_3
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3'
+status: NORMATIVE_EXTENSION_NOT_QUALIFIED
+base_catalog: planning/HEPTABAO_WORK_PACKAGE_CATALOG_V1_2.yaml
+base_package_count: 301
+added_package_count: 5
+effective_package_count: 306
+packages:
+- id: H03-WP11
+  gate: H03
+  slug: authbus-assertion-request-binding
+  title: Authbus assertion protocol and request binding
+  owner_role: protocol-identity-security
+  critical: true
+  contract_profile: CRITICAL
+  objective: Freeze the bounded cross-process assertion and canonical request-binding contract without granting authorization.
+  authority_effect: NONE
+- id: H07-WP11
+  gate: H07
+  slug: authbus-request-pipeline-adapter
+  title: Authbus request-pipeline adapter and failure semantics
+  owner_role: request-pipeline-identity-security
+  critical: true
+  contract_profile: CRITICAL
+  objective: Verify assertions before internal identity and policy evaluation, with replay/cache/signature failures blocking dispatch.
+  authority_effect: NONE
+- id: H16-WP11
+  gate: H16
+  slug: authbus-auth-method-operator-api
+  title: Authbus authentication method and operator API
+  owner_role: identity-operator-security
+  critical: true
+  contract_profile: CRITICAL
+  objective: Implement mount/configuration/key-rotation and identity-alias behavior while preserving HeptaBao token authority.
+  authority_effect: NONE
+- id: H21-WP12
+  gate: H21
+  slug: authbus-ha-replay-cache-fencing
+  title: Authbus HA forwarding replay-cache and fencing
+  owner_role: ha-identity-distributed-systems
+  critical: true
+  contract_profile: DISTRIBUTED_OR_SCALE_CRITICAL
+  objective: Define cluster-wide nonce replay, forwarding identity and configuration epoch fencing.
+  authority_effect: NONE
+- id: H25-WP13
+  gate: H25
+  slug: authbus-adversarial-qualification
+  title: Authbus replay confusion forgery fuzz and red-team qualification
+  owner_role: qualification-identity-security
+  critical: true
+  contract_profile: CRITICAL
+  objective: Prove fail-closed parsing, canonicalization, replay and authorization separation under adversarial input.
+  authority_effect: NONE
+qualification: false
+selection_effect: NONE
+authority_effect: NONE

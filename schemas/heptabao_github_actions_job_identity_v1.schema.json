@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_github_actions_job_identity_v1.schema.json",
+  "title": "HeptaBao GitHub Actions numeric job identity",
+  "description": "Normalized, digest-bound read-only Actions API identity for one exact-source matrix lane.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "run_attempt",
+    "job",
+    "job_id",
+    "job_name",
+    "workflow_name",
+    "job_status",
+    "job_conclusion",
+    "runner_id",
+    "runner_name",
+    "runner_labels",
+    "runner_group_id",
+    "runner_group",
+    "os",
+    "arch",
+    "head_sha",
+    "source_kind",
+    "job_started_at",
+    "job_completed_at",
+    "required_step_names",
+    "steps",
+    "step_outcomes_digest",
+    "api_response_digest",
+    "raw_log_manifest_digest"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.github-actions-job-identity.v1"
+    },
+    "run_id": {
+      "$ref": "#/$defs/positive_decimal"
+    },
+    "run_attempt": {
+      "$ref": "#/$defs/positive_decimal"
+    },
+    "job": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "job_id": {
+      "$ref": "#/$defs/positive_decimal"
+    },
+    "job_name": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "workflow_name": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "job_status": {
+      "enum": ["queued", "in_progress", "completed"]
+    },
+    "job_conclusion": {
+      "type": ["string", "null"],
+      "enum": [
+        "success",
+        "failure",
+        "cancelled",
+        "skipped",
+        "neutral",
+        "timed_out",
+        "action_required",
+        null
+      ]
+    },
+    "runner_id": {
+      "$ref": "#/$defs/positive_decimal"
+    },
+    "runner_name": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "runner_labels": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/non_empty"
+      },
+      "contains": {
+        "const": "ubuntu-24.04"
+      }
+    },
+    "runner_group_id": {
+      "$ref": "#/$defs/non_negative_decimal"
+    },
+    "runner_group": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "os": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "arch": {
+      "$ref": "#/$defs/non_empty"
+    },
+    "head_sha": {
+      "$ref": "#/$defs/sha40"
+    },
+    "source_kind": {
+      "enum": ["head", "merge"]
+    },
+    "job_started_at": {
+      "$ref": "#/$defs/date_time_or_null"
+    },
+    "job_completed_at": {
+      "$ref": "#/$defs/date_time_or_null"
+    },
+    "required_step_names": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/non_empty"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "step_outcomes_digest": {
+      "$ref": "#/$defs/sha256_digest"
+    },
+    "api_response_digest": {
+      "$ref": "#/$defs/sha256_digest"
+    },
+    "raw_log_manifest_digest": {
+      "$ref": "#/$defs/sha256_digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"job_status": {"const": "queued"}},
+        "required": ["job_status"]
+      },
+      "then": {
+        "properties": {
+          "job_conclusion": {"const": null},
+          "job_started_at": {"const": null},
+          "job_completed_at": {"const": null}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"job_status": {"const": "in_progress"}},
+        "required": ["job_status"]
+      },
+      "then": {
+        "properties": {
+          "job_conclusion": {"const": null},
+          "job_started_at": {"$ref": "#/$defs/date_time"},
+          "job_completed_at": {"const": null}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"job_status": {"const": "completed"}},
+        "required": ["job_status"]
+      },
+      "then": {
+        "properties": {
+          "job_conclusion": {"const": "success"},
+          "job_started_at": {"$ref": "#/$defs/date_time"},
+          "job_completed_at": {"$ref": "#/$defs/date_time"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "positive_decimal": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "non_negative_decimal": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)$"
+    },
+    "sha40": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "non_empty": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "date_time_or_null": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "date_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "name",
+        "status",
+        "conclusion",
+        "started_at",
+        "completed_at",
+        "outcome"
+      ],
+      "properties": {
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "$ref": "#/$defs/non_empty"
+        },
+        "status": {
+          "enum": ["queued", "in_progress", "completed"]
+        },
+        "conclusion": {
+          "type": ["string", "null"],
+          "enum": [
+            "success",
+            "failure",
+            "cancelled",
+            "skipped",
+            "neutral",
+            "timed_out",
+            "action_required",
+            null
+          ]
+        },
+        "started_at": {
+          "$ref": "#/$defs/date_time_or_null"
+        },
+        "completed_at": {
+          "$ref": "#/$defs/date_time_or_null"
+        },
+        "outcome": {
+          "enum": ["PASS", "FAIL", "BLOCKED", "SKIPPED", "IN_PROGRESS", "QUEUED"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "queued"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "conclusion": {"const": null},
+              "started_at": {"const": null},
+              "completed_at": {"const": null},
+              "outcome": {"const": "QUEUED"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"const": "in_progress"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "conclusion": {"const": null},
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"const": null},
+              "outcome": {"const": "IN_PROGRESS"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"const": "completed"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "conclusion": {
+                "enum": [
+                  "success",
+                  "failure",
+                  "cancelled",
+                  "skipped",
+                  "neutral",
+                  "timed_out",
+                  "action_required"
+                ]
+              },
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"$ref": "#/$defs/date_time"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {"const": "completed"},
+              "conclusion": {"const": "success"}
+            },
+            "required": ["status", "conclusion"]
+          },
+          "then": {
+            "properties": {
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"$ref": "#/$defs/date_time"},
+              "outcome": {"const": "PASS"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {"const": "completed"},
+              "conclusion": {"const": "failure"}
+            },
+            "required": ["status", "conclusion"]
+          },
+          "then": {
+            "properties": {
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"$ref": "#/$defs/date_time"},
+              "outcome": {"const": "FAIL"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {"const": "completed"},
+              "conclusion": {
+                "enum": ["cancelled", "timed_out", "action_required"]
+              }
+            },
+            "required": ["status", "conclusion"]
+          },
+          "then": {
+            "properties": {
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"$ref": "#/$defs/date_time"},
+              "outcome": {"const": "BLOCKED"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {"const": "completed"},
+              "conclusion": {"enum": ["skipped", "neutral"]}
+            },
+            "required": ["status", "conclusion"]
+          },
+          "then": {
+            "properties": {
+              "started_at": {"$ref": "#/$defs/date_time"},
+              "completed_at": {"$ref": "#/$defs/date_time"},
+              "outcome": {"const": "SKIPPED"}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

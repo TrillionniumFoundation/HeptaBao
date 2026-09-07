@@ -1,0 +1,153 @@
+schema: heptabao.blocker-register-extension.v1_4_5
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.4.5
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_4.yaml
+source_baseline:
+  commit: 489a104450ff48c49e7fb61e167e566ea5e0e6c7
+  tree: a567e8feb90077de5e3a8e540f07a89192264338
+added_blockers:
+- id: HB-BLK-REPO-041
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable state and journal compositions exposed raw writable provider capabilities
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - durable core exposes no mutable store or raw provider decomposition
+  - journaled core exposes no independently writable state and ledger decomposition
+  - operation and key ledgers expose replay-based reopen instead of raw journal extraction
+  evidence:
+  - crates/heptabao-durable-core/src/lib.rs
+  - crates/heptabao-journaled-core/src/lib.rs
+  - crates/heptabao-operation-ledger/src/lib.rs
+  - crates/heptabao-key-lifecycle/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-042
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: provider-neutral append outcome unknown did not poison operation or key ledgers
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - journal contract has conservative append-failure classification
+  - operation ledger rejects all writes after an unknown append until authenticated replay
+  - key lifecycle ledger rejects all writes after an unknown append until authenticated replay
+  - hostile tests simulate a durable append followed by an error
+  evidence:
+  - crates/heptabao-journal-api/src/lib.rs
+  - crates/heptabao-operation-ledger/src/lib.rs
+  - crates/heptabao-key-lifecycle/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-043
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable mutation intent could be reconciled without exact authoritative storage evidence
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - durable IntentCommitted to Reconciled transition is absent from the operation state machine
+  - generic journaled-core reconciliation rejects a durable intent
+  - exact generation and digest reread remains the only committed-state recovery path
+  evidence:
+  - crates/heptabao-operation-ledger/src/lib.rs
+  - crates/heptabao-journaled-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-044
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: stale checkpoint and archive-authenticated capabilities could bypass live-anchor restore admission
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - detached verified checkpoint is non-cloneable and cannot be downgraded
+  - restore rereads and authenticates the current external anchor before capability handoff
+  - target accepts only an unforgeable authorized recovery image
+  - archive-authenticated image cannot release state or records
+  - stale-checkpoint hostile restore test fails before target publication
+  evidence:
+  - crates/heptabao-rollback-anchor/src/lib.rs
+  - crates/heptabao-recovery-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-045
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: rollback and recovery receipts could be accepted without exact post-effect proof
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - rollback CAS receipt current checkpoint equals the exact requested checkpoint
+  - alternate authenticated checkpoint receipt is rejected
+  - wrong recovery receipt after publish is outcome unknown rather than safe contract failure
+  - recovery receipt binds the anchor revision
+  evidence:
+  - crates/heptabao-rollback-anchor/src/lib.rs
+  - crates/heptabao-recovery-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-046
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: filesystem guard did not reject symlinks in intermediate root ancestors
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - acquisition walks from an opened root descriptor through every normal component
+  - every component uses nofollow directory open and pre-open-opened-post-open identity equality
+  - parent traversal and intermediate symlinks fail closed
+  - hostile intermediate-symlink test passes
+  evidence:
+  - crates/heptabao-filesystem-guard/src/lib.rs
+  - docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-047
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: historical V1.3.1 owner-ratification gate rejected later version heads
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - historical workflow is scoped to the V1.3.1 base branch
+  - current V1.4.5 workflow is read-only and binds exact source/merge SHA
+  - no temporary source generator or write-capable candidate publisher remains
+  evidence:
+  - .github/workflows/plan-v1.3.1-head-and-merge-closure.yml
+  - .github/workflows/plan-v1.4.5-security-invariant-closure.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-048
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: documentation structure checks did not enforce security-claim/source semantic alignment
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - current documentation portal identifies one normative entry per subject
+  - security contract maps capabilities failures and hostile evidence
+  - validator rejects reintroduced public escapes missing fail-stop states and missing tests
+  - mutation tests prove the validator fails closed
+  evidence:
+  - docs/CURRENT_DOCUMENTATION.md
+  - docs/security/HEPTABAO_SECURITY_INVARIANT_CLOSURE_V1.md
+  - scripts/validate_plan_v1_4_5.py
+  - tests/plan/test_plan_v1_4_5.py
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production composition root and mandatory end-to-end request path
+- policy identity token lease namespace system and plugin domains
+- production KMS or HSM custody rotation and revocation ceremony
+- remote append-only rollback anchor and target publication CAS provider
+- non-Linux adapters and filesystem or storage-controller qualification
+- retention compaction offsite backup custody and restore drills
+- Raft HA replication membership snapshots and standby reconciliation
+- online migration upgrade downgrade and mixed-version operation
+- full OpenBao compatibility and Oracle-derived implementation
+- CLI Agent Proxy and production operations surface
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

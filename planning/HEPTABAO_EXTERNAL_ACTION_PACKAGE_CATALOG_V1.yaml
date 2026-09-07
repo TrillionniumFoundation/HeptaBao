@@ -1,0 +1,967 @@
+schema: heptabao.external-action-package-catalog.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: ACTIVE_FAIL_CLOSED
+rules:
+- Every non-repository-controlled blocker has exactly one action package
+- Repository automation may validate structure but may not perform or self-approve external accountability
+- Action completion requires signed current scoped evidence and independent verification
+- No action package changes qualification compatibility selection or authority by itself
+- Failure and interrupted execution remain visible and are never converted to success
+- Base, source, plan, profile or custody drift invalidates affected completion evidence
+packages:
+- id: HB-EAP-CTRL-001
+  blocker_id: HB-BLK-CTRL-001
+  class: REPOSITORY_SETTING
+  title: Enforce the canonical integration branch and GitHub ruleset
+  owner_role: repository-admin
+  operator_requirement: Repository administrator with a distinct security reviewer and no self-approval
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - A canonical integration branch is explicitly designated
+  - Required workflow names have executed on a representative pull request
+  - Real reviewer users or teams exist and are resolvable by GitHub
+  scope:
+  - Branch ruleset, pull-request policy, required checks and bypass policy
+  - Commit provenance, force-push/delete controls and merge queue behavior
+  - CODEOWNERS enforcement and negative control tests
+  explicit_non_scope:
+  - No qualification or compatibility claim is issued
+  - No production, migration, release or mixed-cluster authority is granted
+  - No reviewer identity is invented by repository automation
+  - No direct merge of the current critical stacked pull requests is authorized
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: repository-admin
+    action: Select the canonical integration branch and record repository ID, branch ref and current commit
+    required_outputs:
+    - control-plane request object
+    - canonical branch binding
+  - id: STEP-02
+    actor_role: repository-admin
+    action: Create or update the ruleset to require pull requests, two approvals, CODEOWNERS, stale-approval dismissal,
+      resolved conversations and required checks
+    required_outputs:
+    - ruleset ID and full JSON
+    - required-check name inventory
+  - id: STEP-03
+    actor_role: repository-admin
+    action: Disable direct push, force push, branch deletion and administrator bypass; configure the selected
+      commit-provenance policy
+    required_outputs:
+    - bypass actor inventory
+    - commit provenance policy
+  - id: STEP-04
+    actor_role: repository-admin
+    action: Execute negative tests for direct push, insufficient approval, failed check, stale approval, unresolved
+      conversation and administrator bypass
+    required_outputs:
+    - negative-control results
+    - sanitized API responses
+  - id: STEP-05
+    actor_role: security
+    action: Independently review the live control-plane state and verify that every required check can trigger
+      on a representative pull request
+    required_outputs:
+    - security review statement
+    - positive representative PR evidence
+  - id: STEP-06
+    actor_role: repository-admin
+    action: Emit a signed repository-control completion object with expiry and revocation lookup key
+    required_outputs:
+    - repository-control completion object
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: github-ruleset-snapshot
+    required_fields:
+    - repository_id
+    - ruleset_id
+    - target_ref
+    - rules
+    - bypass_actors
+    - captured_at
+    custody: Read from GitHub API and retained by repository administrator plus reviewer
+    signer_role: repository-admin
+    freshness: Revalidate after every ruleset, branch, team or check-name change
+  - id: EV-02
+    artifact_type: repository-negative-control-bundle
+    required_fields:
+    - test_id
+    - actor
+    - request
+    - status_code
+    - expected_denial
+    - ruleset_id
+    custody: Stored outside the tested branch and digest-bound in the completion object
+    signer_role: security
+    freshness: Valid for 90 days or until the relevant control changes
+  - id: EV-03
+    artifact_type: repository-control-review
+    required_fields:
+    - reviewer_identity
+    - role
+    - conflict_disposition
+    - ruleset_digest
+    - decision
+    custody: Held by the independent security reviewer
+    signer_role: security
+    freshness: Expires when reviewer membership or ruleset changes
+  acceptance_criteria:
+  - The designated branch has an enforceable active ruleset
+  - Every required check is proven to trigger and a failing check blocks merge
+  - Direct push, force push, branch deletion and administrator bypass are rejected
+  - Two approvals and CODEOWNERS are enforced with stale approvals dismissed
+  - The completion object is signed, current, scoped and independently reviewed
+  forbidden_substitutions:
+  - CODEOWNERS text without live enforcement is not evidence
+  - A screenshot without API state is not sufficient
+  - Repository owner permission is not independent review
+  - A green CI run does not prove branch protection
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: program-owner
+    completion_owner: repository-admin
+    escalation_owner: security
+    required_context:
+    - repository ID
+    - target branch/ref
+    - required check names
+    - reviewer team IDs
+    - current plan digest
+    expected_completion_object: heptabao.repository-control-completion.v1
+    expiry_policy: Revalidate within 90 days and immediately after any relevant control-plane change
+    revocation_policy: Any unauthorized push, bypass or ruleset weakening revokes the completion object
+  authority_effect: NONE
+- id: HB-EAP-EXT-001
+  blocker_id: HB-BLK-EXT-001
+  class: EXTERNAL_GOVERNANCE
+  title: Assign independent accountable reviewers and signing identities
+  owner_role: program-owner
+  operator_requirement: Real accountable people with distinct natural-person identities and conflict-of-interest
+    review
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Review roles and critical path ownership are defined
+  - Identity proofing and approved signing mechanisms are available
+  - Repository teams or equivalent access groups can be administered
+  scope:
+  - Program, security, domain and specialist reviewer assignment
+  - Conflict-of-interest, delegation, key and emergency-revocation records
+  - Representative scoped approval verification
+  explicit_non_scope:
+  - Automated agents do not fill human accountability roles
+  - Multiple aliases of one person do not create independence
+  - Reviewer assignment alone does not qualify a gate
+  - No operational authority is granted
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: program-owner
+    action: Nominate program, security, domain and required specialist reviewers with natural-person identity records
+    required_outputs:
+    - nomination roster
+    - role-to-scope matrix
+  - id: STEP-02
+    actor_role: security
+    action: Perform identity proofing, conflict-of-interest review and separation analysis
+    required_outputs:
+    - identity proofing records
+    - conflict dispositions
+  - id: STEP-03
+    actor_role: release-security
+    action: Bind each approved reviewer to a signing key or approved identity-based signature mechanism
+    required_outputs:
+    - key/identity binding records
+    - revocation contacts
+  - id: STEP-04
+    actor_role: repository-admin
+    action: Create resolvable teams and update access/CODEOWNERS without granting unnecessary write authority
+    required_outputs:
+    - team IDs
+    - membership snapshot
+    - access review
+  - id: STEP-05
+    actor_role: program-owner
+    action: Execute a representative approval exercise and verify signatures, scope, time and distinct identities
+    required_outputs:
+    - sample scoped approvals
+    - verification result
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: reviewer-role-roster
+    required_fields:
+    - identity_id
+    - natural_person_binding
+    - roles
+    - scopes
+    - conflicts
+    - delegation_limits
+    custody: Program governance store with access-controlled identity records
+    signer_role: program-owner
+    freshness: Review quarterly and after any role or employment change
+  - id: EV-02
+    artifact_type: reviewer-signing-binding
+    required_fields:
+    - identity_id
+    - key_id
+    - algorithm
+    - not_before
+    - not_after
+    - revocation_authority
+    custody: Isolated signing/trust-root custody
+    signer_role: release-security
+    freshness: Expires with the key or role assignment
+  - id: EV-03
+    artifact_type: representative-approval-verification
+    required_fields:
+    - object_digest
+    - reviewers
+    - roles
+    - signature_results
+    - scope_result
+    - time_result
+    custody: Qualification evidence store
+    signer_role: qualification-security
+    freshness: Must use current identities and keys
+  acceptance_criteria:
+  - Program, security and domain roles have distinct accountable identities
+  - Every critical specialist scope has an assigned qualified reviewer or remains blocked
+  - Conflicts, delegation limits, keys and revocation contacts are recorded
+  - A representative scoped approval verifies cryptographically
+  - CODEOWNERS and team references resolve to the approved roster
+  forbidden_substitutions:
+  - Bot accounts and language-model agents cannot satisfy accountable reviewer roles
+  - One person using multiple aliases cannot satisfy independence
+  - Repository administrator self-approval cannot satisfy critical review
+  - Unsigned comments are not approval evidence
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: program-owner
+    completion_owner: program-governance
+    escalation_owner: security
+    required_context:
+    - review role registry
+    - critical work-package list
+    - identity policy
+    - signing policy
+    - CODEOWNERS target
+    expected_completion_object: heptabao.reviewer-roster-completion.v1
+    expiry_policy: Quarterly revalidation and immediate revalidation after identity, role, key or conflict change
+    revocation_policy: Identity compromise, conflict discovery or role termination immediately revokes affected
+      approvals
+  authority_effect: NONE
+- id: HB-EAP-EXT-002
+  blocker_id: HB-BLK-EXT-002
+  class: EXTERNAL_LEGAL
+  title: Complete outbound license, clean-room, trademark, patent and export disposition
+  owner_role: legal
+  operator_requirement: Licensed counsel or formally accountable legal function independent from implementation
+    authorship
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Clean-room lane policy and source-material inventory are available
+  - Intended distribution regions and product claims are documented
+  - Third-party dependency and contribution inventories are available
+  scope:
+  - Outbound code/documentation license and contributor policy
+  - MPL and interop-exception material handling
+  - Trademark, patent, defensive publication and export/cryptography review
+  - Dependency license policy, notices, source-offer and retention obligations
+  explicit_non_scope:
+  - Legal counsel does not certify software correctness
+  - A dependency scanner does not replace legal judgment
+  - The disposition does not create compatibility or production authority
+  - No OpenBao endorsement or trademark permission is implied
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: legal
+    action: Review source provenance, clean-room lanes, public specifications, Oracle material and interop exceptions
+    required_outputs:
+    - provenance legal inventory
+    - clean-room legal findings
+  - id: STEP-02
+    actor_role: legal
+    action: Select outbound code and documentation licenses and define DCO or CLA contribution terms
+    required_outputs:
+    - license decision
+    - contributor policy
+  - id: STEP-03
+    actor_role: legal
+    action: Disposition MPL, trademark, naming, patent, defensive-publication and distribution obligations
+    required_outputs:
+    - MPL/interop disposition
+    - trademark/patent disposition
+  - id: STEP-04
+    actor_role: legal
+    action: Review cryptography and export-control obligations for intended regions and release channels
+    required_outputs:
+    - export/cryptography disposition
+    - regional restrictions
+  - id: STEP-05
+    actor_role: legal
+    action: Sign a scoped legal completion object and enumerate unresolved exclusions or re-review triggers
+    required_outputs:
+    - signed legal completion object
+    - re-review trigger list
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: signed-legal-disposition
+    required_fields:
+    - scope
+    - jurisdictions
+    - licenses
+    - clean_room
+    - trademark
+    - patent
+    - export
+    - exceptions
+    - signer
+    custody: Legal records system with immutable digest exported to HeptaBao evidence
+    signer_role: legal
+    freshness: Revalidate after scope, license, dependency, region or material-flow change
+  - id: EV-02
+    artifact_type: third-party-license-inventory-review
+    required_fields:
+    - locked_graph_digest
+    - licenses
+    - exceptions
+    - notices
+    - source_offer
+    - reviewer
+    custody: Legal and supply-chain joint custody
+    signer_role: legal
+    freshness: Bound to exact dependency lock and release candidate
+  acceptance_criteria:
+  - Outbound code and documentation licenses are selected
+  - DCO or CLA and third-party dependency policies are approved
+  - Clean-room and interop-exception handling is legally dispositioned
+  - Trademark, patent and export/cryptography conclusions are signed and scoped
+  - Release obligations and re-review triggers are explicit
+  forbidden_substitutions:
+  - Repository LICENSE placeholder is not a signed legal disposition
+  - Automated license detection is not legal approval
+  - Changing implementation language does not erase provenance obligations
+  - A repository owner statement cannot replace accountable legal review
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: program-owner
+    completion_owner: legal
+    escalation_owner: executive-sponsor
+    required_context:
+    - source provenance inventory
+    - clean-room policy
+    - dependency lock
+    - distribution regions
+    - intended claims
+    expected_completion_object: heptabao.legal-disposition-completion.v1
+    expiry_policy: Revalidate for every release train and after material scope or dependency changes
+    revocation_policy: New provenance, license, patent, trademark or export facts revoke the affected scope
+  authority_effect: NONE
+- id: HB-EAP-EXT-003
+  blocker_id: HB-BLK-EXT-003
+  class: EXTERNAL_SECURITY
+  title: Operate private disclosure, 24x7 incident response and revocation drills
+  owner_role: security-operations
+  operator_requirement: Named security operations team with continuous escalation coverage and independent exercise
+    observers
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Security incident and revocation runbook is approved
+  - Private communication and case-management systems are available
+  - Reviewer and signing revocation contacts are assigned
+  scope:
+  - Private vulnerability intake and acknowledgement
+  - 24x7 incident commander and escalation roster
+  - Tabletop and technical revocation/freeze exercises
+  - Evidence preservation, communication and recovery validation
+  explicit_non_scope:
+  - Public issues do not become the vulnerability intake channel
+  - Real customer secrets are never used in drills
+  - A written runbook alone is not operational evidence
+  - Incident readiness does not grant production authority
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: security-operations
+    action: Provision and test a private reporting channel with authenticated access and case tracking
+    required_outputs:
+    - private channel identifier
+    - intake test record
+  - id: STEP-02
+    actor_role: security-operations
+    action: Assign primary and secondary incident commanders, 24x7 escalation paths and communication owners
+    required_outputs:
+    - on-call roster
+    - escalation matrix
+  - id: STEP-03
+    actor_role: security
+    action: Run a tabletop covering secret leak, policy bypass, committed-write loss, split brain and supply-chain
+      compromise
+    required_outputs:
+    - tabletop transcript
+    - action items
+  - id: STEP-04
+    actor_role: security-operations
+    action: Run a technical drill that freezes integration, revokes a test key/receipt, publishes a revocation
+      and verifies fail-closed consumers
+    required_outputs:
+    - technical drill evidence
+    - revocation propagation results
+  - id: STEP-05
+    actor_role: independent-observer
+    action: Review timing, separation, evidence custody and closure of drill findings
+    required_outputs:
+    - independent exercise review
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: security-operations-readiness
+    required_fields:
+    - private_channel
+    - roster
+    - ack_slo
+    - escalation_slo
+    - case_system
+    - tested_at
+    custody: Security operations system
+    signer_role: security-operations
+    freshness: Revalidate quarterly and after roster/channel changes
+  - id: EV-02
+    artifact_type: incident-revocation-drill-bundle
+    required_fields:
+    - scenario
+    - timeline
+    - actors
+    - actions
+    - revocations
+    - consumer_results
+    - findings
+    custody: Incident evidence vault with observer copy
+    signer_role: security
+    freshness: Valid for 180 days or until the runbook/control changes
+  acceptance_criteria:
+  - Private reporting is operational and test reports receive acknowledgement
+  - 24x7 primary and backup incident roles are assigned
+  - Tabletop and technical revocation drills complete within declared SLOs
+  - All Critical/High drill findings are closed
+  - Independent observer accepts the evidence and remaining risks
+  forbidden_substitutions:
+  - SECURITY.md text is not proof of an operational channel
+  - One repository owner is not a 24x7 roster
+  - A simulated signature-valid flag is not a revocation drill
+  - Real credentials or customer data cannot be used as test material
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: security
+    completion_owner: security-operations
+    escalation_owner: executive-sponsor
+    required_context:
+    - incident runbook
+    - revocation policy
+    - contact roster
+    - test trust root
+    - declared response SLOs
+    expected_completion_object: heptabao.security-operations-completion.v1
+    expiry_policy: Quarterly exercise or after any material runbook, roster, channel or trust-root change
+    revocation_policy: Missed coverage, compromised channel or failed revocation propagation revokes readiness
+  authority_effect: NONE
+- id: HB-EAP-EXT-004
+  blocker_id: HB-BLK-EXT-004
+  class: EXTERNAL_SIGNING
+  title: Provision isolated signer, trust root, transparency and emergency revocation
+  owner_role: release-security
+  operator_requirement: Offline or isolated signing operators separated from builders, repository administrators
+    and sole authors
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Evidence verification protocol and object schemas are frozen
+  - Approved algorithms and key lifetimes are selected
+  - Physical or cloud HSM custody and recovery procedures are available
+  scope:
+  - Root and delegated signing keys with role/scope restrictions
+  - Trust-root registry, transparency publication and checkpoint custody
+  - Key rotation, compromise, emergency revocation and offline verification
+  explicit_non_scope:
+  - GitHub Actions token is not a qualification or authority signing key
+  - Repository administrator permission is not signing independence
+  - A valid signature does not imply semantic correctness
+  - No authority grant is issued by the ceremony itself
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: release-security
+    action: Approve algorithms, domain separators, key roles, scopes, lifetimes and quorum requirements
+    required_outputs:
+    - signing profile
+    - role/scope matrix
+  - id: STEP-02
+    actor_role: signing-operator
+    action: Generate root and delegated keys in isolated custody with dual control and recovery inventory
+    required_outputs:
+    - key ceremony transcript
+    - public-key records
+    - custody inventory
+  - id: STEP-03
+    actor_role: release-security
+    action: Publish a signed trust-root registry and initial transparency checkpoint
+    required_outputs:
+    - trust-root snapshot
+    - transparency checkpoint
+  - id: STEP-04
+    actor_role: signing-operator
+    action: Sign representative qualification, claim and revocation test objects and verify them offline
+    required_outputs:
+    - signed test objects
+    - offline verification results
+  - id: STEP-05
+    actor_role: security-operations
+    action: Execute emergency key/receipt revocation and prove verifier fail-closed propagation
+    required_outputs:
+    - revocation ceremony record
+    - consumer rejection results
+  - id: STEP-06
+    actor_role: independent-observer
+    action: Review ceremony separation, custody, quorum and recovery controls
+    required_outputs:
+    - independent ceremony review
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: key-ceremony-and-trust-root
+    required_fields:
+    - key_ids
+    - algorithms
+    - roles
+    - scopes
+    - custodians
+    - quorum
+    - not_before
+    - not_after
+    - checkpoint
+    custody: HSM/offline custody with independent observer copy
+    signer_role: release-security
+    freshness: Bound to key lifetime and trust-root version
+  - id: EV-02
+    artifact_type: revocation-ceremony-bundle
+    required_fields:
+    - revoked_key_or_object
+    - reason
+    - effective_at
+    - publication
+    - verifier_results
+    - recovery
+    custody: Security operations plus transparency custody
+    signer_role: security-operations
+    freshness: Repeat at least annually and after material signing changes
+  acceptance_criteria:
+  - Role-separated keys exist in isolated custody with dual control
+  - Trust-root and transparency checkpoint verify offline
+  - Representative objects verify only for permitted role/scope/time
+  - Emergency revocation causes all declared consumers to fail closed
+  - Independent observer accepts custody and recovery evidence
+  forbidden_substitutions:
+  - A plaintext key in repository secrets is not isolated custody
+  - Self-signed CI metadata is not an independent trust root
+  - signature_valid true is not cryptographic verification
+  - A transparency URL without inclusion/checkpoint proof is insufficient
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: release-security
+    completion_owner: signing-operator
+    escalation_owner: security
+    required_context:
+    - verification protocol
+    - object schemas
+    - approved algorithms
+    - role registry
+    - revocation consumers
+    expected_completion_object: heptabao.signing-trust-root-completion.v1
+    expiry_policy: Bound to key lifetime; annual ceremony review and immediate review after custody or policy change
+    revocation_policy: Compromise, custody failure or scope violation immediately revokes keys and dependent objects
+  authority_effect: NONE
+- id: HB-EAP-EXT-005
+  blocker_id: HB-BLK-EXT-005
+  class: EXTERNAL_ORACLE
+  title: Produce the first restricted Oracle capture and signed sanitized transfer
+  owner_role: compatibility
+  operator_requirement: Restricted Oracle operators separated from implementation authors and transfer reviewers
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Clean-room repositories, storage and ACLs are provisioned
+  - Oracle baseline binary/source/version provenance is frozen
+  - Fixture schema, normalization and secret-scanning policies are approved
+  scope:
+  - Secret-free initial OpenBao black-box health, seal and canonicalization behaviors
+  - Restricted raw capture, deterministic sanitization and side-effect observation
+  - Signed provenance transfer into the implementation lane
+  explicit_non_scope:
+  - No real root token, unseal share, private key or customer secret is captured
+  - Raw restricted fixtures do not enter the implementation repository
+  - A synthetic fixture does not become Oracle evidence
+  - One fixture does not create a broad compatibility claim
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: oracle-operator
+    action: Build an isolated Oracle environment bound to the frozen OpenBao version, config, platform and artifact
+      digest
+    required_outputs:
+    - Oracle environment manifest
+    - baseline provenance
+  - id: STEP-02
+    actor_role: oracle-operator
+    action: Execute the approved non-secret operation set and capture raw request, response, exit, audit and side-effect
+      observations
+    required_outputs:
+    - restricted raw capture bundle
+    - execution log
+  - id: STEP-03
+    actor_role: sanitization-operator
+    action: Apply versioned normalization, secret scanning, field minimization and deterministic canonicalization
+    required_outputs:
+    - sanitized candidate fixture
+    - sanitization report
+  - id: STEP-04
+    actor_role: compatibility-reviewer
+    action: Compare raw and sanitized digests, verify no semantic side effect was removed and approve the transfer
+      scope
+    required_outputs:
+    - compatibility review
+    - secret-scan review
+  - id: STEP-05
+    actor_role: transfer-custodian
+    action: Sign the provenance transfer and deliver only approved sanitized artifacts to the implementation lane
+    required_outputs:
+    - signed transfer object
+    - implementation-lane receipt
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: restricted-oracle-capture
+    required_fields:
+    - oracle_version
+    - artifact_digest
+    - config_digest
+    - platform
+    - operations
+    - raw_digest
+    - operator
+    custody: Restricted Oracle storage inaccessible to implementation authors
+    signer_role: oracle-operator
+    freshness: Bound permanently to exact Oracle/profile; execution freshness by train policy
+  - id: EV-02
+    artifact_type: sanitized-provenance-transfer
+    required_fields:
+    - raw_digest
+    - sanitized_digest
+    - normalizer_digest
+    - secret_scan
+    - reviewers
+    - scope
+    - recipient
+    custody: Transfer custodian with copies in Oracle and implementation evidence stores
+    signer_role: compatibility-reviewer
+    freshness: Revoked by normalization, provenance or secret-leak defect
+  acceptance_criteria:
+  - Restricted lab and ACL separation are independently verified
+  - At least one approved non-secret operation set is captured raw
+  - Sanitized fixture passes deterministic replay and secret scanning
+  - Side-effect semantics remain traceable to the raw capture
+  - Signed transfer is accepted by the implementation lane without raw material exposure
+  forbidden_substitutions:
+  - Synthetic fixtures cannot satisfy raw Oracle capture
+  - Public documentation alone cannot satisfy black-box side effects
+  - Raw fixtures cannot be committed to the implementation lane
+  - Repository owner self-transfer cannot satisfy role separation
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: compatibility
+    completion_owner: transfer-custodian
+    escalation_owner: legal-security
+    required_context:
+    - Oracle baseline
+    - approved operation list
+    - fixture schemas
+    - normalization policy
+    - clean-room ACL evidence
+    expected_completion_object: heptabao.oracle-transfer-completion.v1
+    expiry_policy: Fixture provenance is immutable; compatibility freshness follows the upstream train policy
+    revocation_policy: Secret exposure, provenance defect or semantic normalization loss revokes the transfer
+  authority_effect: NONE
+- id: HB-EAP-EXT-006
+  blocker_id: HB-BLK-EXT-006
+  class: EXTERNAL_STORAGE_LAB
+  title: Execute kernel or VM power-cut and filesystem crash-consistency qualification
+  owner_role: storage
+  operator_requirement: Separately operated storage laboratory with controlled power-cut capability and independent
+    artifact custody
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Exact source, dependency lock, storage format and durability profile are frozen
+  - Crash points, expected invariants and recovery oracle are machine enumerated
+  - Laboratory platform, filesystem and virtual block-device profiles are approved
+  scope:
+  - Process kill, host reboot and VM or kernel-level power-cut execution
+  - Filesystem-specific write, fsync, rename, directory-sync and corruption behavior
+  - Per-node persisted directories, restart, recovery and RPO/RTO measurement
+  explicit_non_scope:
+  - Application sleep is not a disk stall
+  - Application truncate is not a physical torn write
+  - Logical fault simulation does not replace power-cut evidence
+  - A lab pass does not select OpenRaft or grant production authority
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: storage-lab-operator
+    action: Attest hardware or VM, kernel, filesystem, mount options, block device, cache and power-cut mechanism
+    required_outputs:
+    - laboratory environment attestation
+    - filesystem profile
+  - id: STEP-02
+    actor_role: storage
+    action: Materialize the exact source and lock, verify clean tree and build reproducible test artifacts
+    required_outputs:
+    - source/lock binding
+    - test artifact digest
+  - id: STEP-03
+    actor_role: storage-lab-operator
+    action: Execute every declared crash point across required filesystems, generations, seeds and restart counts
+    required_outputs:
+    - raw crash matrix
+    - power-cut controller log
+  - id: STEP-04
+    actor_role: storage-lab-operator
+    action: Run recovery without external effects and record state, log, vote, membership, snapshot, RPO and RTO
+    required_outputs:
+    - recovery results
+    - state digests
+  - id: STEP-05
+    actor_role: distributed-systems-reviewer
+    action: Review linearizability, single-writer, snapshot-generation and no-silent-empty invariants
+    required_outputs:
+    - distributed-systems review
+  - id: STEP-06
+    actor_role: storage-lab-operator
+    action: Emit a signed lab completion object and preserve raw artifacts under separate custody
+    required_outputs:
+    - storage-lab completion object
+    - artifact custody manifest
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: storage-lab-environment-attestation
+    required_fields:
+    - operator
+    - credential_root
+    - hardware_or_vm
+    - kernel
+    - filesystem
+    - mount_options
+    - power_cut_mechanism
+    custody: Separately operated lab custody
+    signer_role: storage-lab-operator
+    freshness: Bound to exact environment image and hardware profile
+  - id: EV-02
+    artifact_type: power-cut-crash-matrix
+    required_fields:
+    - source_commit
+    - tree
+    - lock_digest
+    - case_ids
+    - seeds
+    - crash_points
+    - recovery
+    - rpo
+    - rto
+    - artifacts
+    custody: Independent artifact custody with immutable digests
+    signer_role: storage-lab-operator
+    freshness: Bound to exact source/storage format; rerun after any durability change
+  - id: EV-03
+    artifact_type: storage-distributed-review
+    required_fields:
+    - reviewer
+    - scope
+    - matrix_digest
+    - invariants
+    - findings
+    - decision
+    custody: Independent reviewer custody
+    signer_role: distributed-systems-reviewer
+    freshness: Expires on source, format or lab-profile change
+  acceptance_criteria:
+  - Every declared crash entry executes in the separately operated lab
+  - No acknowledged committed write is lost for the qualified profile
+  - Corruption and incomplete generation recovery fail closed without silent empty initialization
+  - Snapshot, state, log, vote and membership invariants hold after restart
+  - All Critical/High/Unclassified findings are zero and independent review passes
+  forbidden_substitutions:
+  - Application-level sleep or truncate is not kernel power-cut evidence
+  - GitHub-hosted runner alone is not a separately operated storage lab
+  - One successful filesystem cannot qualify untested filesystems
+  - A benchmark result cannot replace crash-consistency evidence
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: storage
+    completion_owner: storage-lab-operator
+    escalation_owner: distributed-systems
+    required_context:
+    - exact source/tree
+    - dependency lock
+    - storage format
+    - crash matrix
+    - recovery oracle
+    expected_completion_object: heptabao.storage-lab-completion.v1
+    expiry_policy: Bound to exact source, storage format, kernel/filesystem and lab mechanism
+    revocation_policy: Any data-loss, corruption-classification or environment-attestation defect revokes the
+      result
+  authority_effect: NONE
+- id: HB-EAP-EXT-007
+  blocker_id: HB-BLK-EXT-007
+  class: EXTERNAL_REPRODUCTION
+  title: Reproduce exact source, lock and evidence under independent operation
+  owner_role: qualification
+  operator_requirement: Independent organization or operator with distinct credentials, runner administration
+    and artifact custody
+  state: EXTERNAL_ACTION_REQUIRED
+  prerequisites:
+  - Repository-controlled exact-head technical lanes are green and immutable
+  - Source, plan, profile, lock, container or toolchain inputs are fully enumerated
+  - Expected result and artifact digest comparison protocol is frozen
+  scope:
+  - Independent acquisition, build, test and evidence reproduction
+  - Different operator, credential root, runner administration and artifact custody
+  - Digest and semantic comparison with the primary execution
+  explicit_non_scope:
+  - Two jobs in one GitHub organization are not automatically independent
+  - A rerun by the same operator is not independent reproduction
+  - Reproduction does not create compatibility or production authority
+  - Unknown or divergent results cannot be averaged away
+  ordered_procedure:
+  - id: STEP-01
+    actor_role: independent-operator
+    action: Acquire the exact public source and declared dependencies without using the primary builder cache
+      or credentials
+    required_outputs:
+    - independent acquisition log
+    - source/lock digests
+  - id: STEP-02
+    actor_role: independent-operator
+    action: Attest operator identity, credential root, runner administration, toolchain and artifact custody separation
+    required_outputs:
+    - independence attestation
+    - environment manifest
+  - id: STEP-03
+    actor_role: independent-operator
+    action: Execute every required validator, build, test, fault and seed entry using the frozen profile
+    required_outputs:
+    - independent raw execution bundle
+  - id: STEP-04
+    actor_role: qualification
+    action: Compare result classifications and allowed artifact digests or semantic outputs against the primary
+      execution
+    required_outputs:
+    - cross-environment comparison
+  - id: STEP-05
+    actor_role: independent-reviewer
+    action: Review independence, completeness, divergences and unresolved findings
+    required_outputs:
+    - independent reproduction review
+  - id: STEP-06
+    actor_role: independent-operator
+    action: Sign the reproduction completion object with expiry and revocation lookup key
+    required_outputs:
+    - independent reproduction completion object
+  evidence_requirements:
+  - id: EV-01
+    artifact_type: independent-environment-attestation
+    required_fields:
+    - operator_identity
+    - organization
+    - credential_root
+    - runner_admin
+    - artifact_custody
+    - toolchains
+    - platform
+    custody: Independent operator custody with qualification copy
+    signer_role: independent-operator
+    freshness: Bound to operator and environment profile
+  - id: EV-02
+    artifact_type: independent-reproduction-bundle
+    required_fields:
+    - source_commit
+    - tree
+    - plan_digest
+    - lock_digest
+    - entries
+    - results
+    - artifacts
+    - comparison
+    custody: Independent artifact store with immutable exported digests
+    signer_role: independent-operator
+    freshness: Bound to exact source/profile and rerun after any affecting change
+  - id: EV-03
+    artifact_type: independence-review
+    required_fields:
+    - reviewer
+    - conflicts
+    - separation_checks
+    - divergences
+    - decision
+    custody: Independent reviewer custody
+    signer_role: independent-reviewer
+    freshness: Expires when operator/custody facts change
+  acceptance_criteria:
+  - Operator, credential root, runner administration and artifact custody are distinct from the primary execution
+  - Every required entry executes with no failed, blocked, unknown or unexecuted result
+  - Deterministic outputs match exactly and allowed nondeterminism is explicitly normalized
+  - All divergences are dispositioned without weakening requirements
+  - The completion object and independent review verify cryptographically
+  forbidden_substitutions:
+  - Linux and macOS jobs under the same GitHub administration are not sufficient by themselves
+  - A same-operator rerun cannot satisfy independence
+  - Comparing only aggregate pass counts is insufficient
+  - Manual assertion of independence without credential and custody evidence is insufficient
+  failure_outcomes:
+  - EXTERNAL_ACTION_REQUIRED
+  - BLOCKED_UPSTREAM
+  - BASE_DRIFT
+  - REVOKED
+  - RESUME_REQUIRED
+  handoff:
+    request_owner: qualification
+    completion_owner: independent-operator
+    escalation_owner: program-security
+    required_context:
+    - exact source/tree
+    - plan and manifest digests
+    - dependency lock
+    - required entry matrix
+    - comparison rules
+    expected_completion_object: heptabao.independent-reproduction-completion.v1
+    expiry_policy: Bound to exact source, profile, toolchain and independence attestation
+    revocation_policy: Credential overlap, custody overlap, divergence defect or evidence tampering revokes the
+      result
+  authority_effect: NONE
+authority_effect: NONE

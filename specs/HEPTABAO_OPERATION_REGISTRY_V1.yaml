@@ -1,0 +1,289 @@
+schema: heptabao.operation-registry.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_SECURITY_BOUNDARY
+unknown_operation: DENY
+unknown_field: DENY
+unknown_internal_operation: DENY
+rules:
+  - HTTP method is not an operation-safety classification.
+  - Every route, CLI command, workflow step, plugin callback and cluster message resolves to exactly one operation ID.
+  - Every operation declares authentication, policy, audit, mutation, effect and retry semantics.
+  - External requests cannot construct INTERNAL_ONLY operations.
+  - Missing or ambiguous registry metadata denies before backend dispatch.
+operation_classes:
+  PURE_READ:
+    durable_intent: false
+    external_effect: false
+    active_required: conditional
+    blind_retry: SAFE_WITH_SAME_DEADLINE_AND_AUTHORITY
+  DURABLE_MUTATION:
+    durable_intent: true
+    external_effect: false
+    active_required: true
+    blind_retry: ONLY_WITH_IDEMPOTENCY_AND_STATE_LOOKUP
+  LEASE_ISSUING_READ:
+    durable_intent: true
+    external_effect: conditional
+    active_required: true
+    blind_retry: LOOKUP_OR_RECONCILE_ONLY_AFTER_DISPATCH
+  EXTERNAL_EFFECT:
+    durable_intent: true
+    external_effect: true
+    active_required: true
+    blind_retry: FORBIDDEN_AFTER_SEND_OR_UNKNOWN
+  AUTH_LOGIN:
+    durable_intent: conditional
+    external_effect: conditional
+    active_required: true
+    blind_retry: METHOD_SPECIFIC_AND_BOUNDED
+  TOKEN_ISSUE:
+    durable_intent: true
+    external_effect: false
+    active_required: true
+    blind_retry: LOOKUP_BY_OPERATION_KEY
+  SEAL_CEREMONY:
+    durable_intent: true
+    external_effect: conditional
+    active_required: true
+    blind_retry: CEREMONY_STATE_MACHINE_ONLY
+  CLUSTER_OPERATION:
+    durable_intent: true
+    external_effect: true
+    active_required: true
+    blind_retry: CONSENSUS_OR_LOOKUP_ONLY
+  MIGRATION_OPERATION:
+    durable_intent: true
+    external_effect: true
+    active_required: true
+    blind_retry: FENCED_RESUME_OR_FORWARD_RECOVERY_ONLY
+required_metadata:
+  - operation_id
+  - operation_class
+  - exposure
+  - allowed_http_methods
+  - namespace_semantics
+  - mount_semantics
+  - authentication_mode
+  - policy_capability
+  - sudo_required
+  - request_audit
+  - response_audit
+  - durable_intent
+  - mutation_owner
+  - external_effect
+  - active_required
+  - idempotency_key
+  - response_unknown_policy
+  - retry_policy
+  - cancellation_policy
+  - secret_response
+  - size_limits
+  - timeout_profile
+  - compatibility_source
+exposure:
+  PUBLIC_AUTHENTICATED: normal authenticated API
+  PUBLIC_UNAUTHENTICATED: explicit login, health or ceremony endpoint with strict route guard
+  INTERNAL_ONLY: trusted Rust construction point only
+  CLUSTER_ONLY: authenticated cluster-mTLS peer only
+  MIGRATION_ONLY: valid migration grant and fenced domain only
+response_unknown_policies:
+  SAFE_NOT_SENT: operation proven not sent; bounded retry may be allowed
+  LOOKUP_BY_OPERATION_KEY: query committed local/provider state
+  RECONCILE_EXTERNAL_EFFECT: retain INDETERMINATE until evidence
+  MANUAL_HOLD: no reliable lookup exists
+  CEREMONY_RESUME: resume exact ceremony state and shares/approvals
+  CONSENSUS_OBSERVE: inspect committed/applied index before action
+sample_operations:
+  sys.health.read:
+    operation_id: sys.health.read
+    operation_class: PURE_READ
+    exposure: PUBLIC_UNAUTHENTICATED
+    allowed_http_methods: [GET]
+    namespace_semantics: root-or-requested
+    mount_semantics: system
+    authentication_mode: OPTIONAL
+    policy_capability: none
+    sudo_required: false
+    request_audit: profile-dependent
+    response_audit: profile-dependent
+    durable_intent: false
+    mutation_owner: none
+    external_effect: false
+    active_required: false
+    idempotency_key: none
+    response_unknown_policy: SAFE_NOT_SENT
+    retry_policy: bounded
+    cancellation_policy: cancel-before-response
+    secret_response: false
+    size_limits: health-small
+    timeout_profile: health
+    compatibility_source: oracle://openbao/v2.6.2/sys/health
+  sys.mounts.update:
+    operation_id: sys.mounts.update
+    operation_class: DURABLE_MUTATION
+    exposure: PUBLIC_AUTHENTICATED
+    allowed_http_methods: [POST, PUT]
+    namespace_semantics: bound
+    mount_semantics: system
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: sudo-or-update
+    sudo_required: conditional
+    request_audit: required
+    response_audit: required
+    durable_intent: true
+    mutation_owner: heptabao-system
+    external_effect: false
+    active_required: true
+    idempotency_key: required
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    retry_policy: no-blind-retry
+    cancellation_policy: does-not-cancel-committed-mutation
+    secret_response: false
+    size_limits: config-small
+    timeout_profile: durable-mutation
+    compatibility_source: oracle://openbao/v2.6.2/sys/mounts
+  secret.dynamic.read:
+    operation_id: secret.dynamic.read
+    operation_class: LEASE_ISSUING_READ
+    exposure: PUBLIC_AUTHENTICATED
+    allowed_http_methods: [GET, POST]
+    namespace_semantics: bound
+    mount_semantics: dynamic-secret-engine
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: read
+    sudo_required: false
+    request_audit: required
+    response_audit: required-before-secret-release
+    durable_intent: true
+    mutation_owner: heptabao-lease
+    external_effect: true
+    active_required: true
+    idempotency_key: required
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    retry_policy: forbidden-after-send-or-unknown
+    cancellation_policy: client-disconnect-does-not-authorize-retry
+    secret_response: true
+    size_limits: secret-bounded
+    timeout_profile: external-effect
+    compatibility_source: oracle://openbao/v2.6.2/dynamic-secret
+  auth.login:
+    operation_id: auth.login
+    operation_class: AUTH_LOGIN
+    exposure: PUBLIC_UNAUTHENTICATED
+    allowed_http_methods: [POST]
+    namespace_semantics: bound
+    mount_semantics: auth-mount
+    authentication_mode: DECLARED_AUTH_METHOD
+    policy_capability: login-route-only
+    sudo_required: false
+    request_audit: required
+    response_audit: required-before-token-release
+    durable_intent: conditional
+    mutation_owner: heptabao-auth-method
+    external_effect: conditional
+    active_required: true
+    idempotency_key: method-specific
+    response_unknown_policy: MANUAL_HOLD
+    retry_policy: method-specific
+    cancellation_policy: no-token-reissue-without-proof
+    secret_response: true
+    size_limits: login-bounded
+    timeout_profile: authentication
+    compatibility_source: oracle://openbao/v2.6.2/auth/login
+  token.create:
+    operation_id: token.create
+    operation_class: TOKEN_ISSUE
+    exposure: PUBLIC_AUTHENTICATED
+    allowed_http_methods: [POST]
+    namespace_semantics: bound
+    mount_semantics: token-auth
+    authentication_mode: TOKEN_REQUIRED
+    policy_capability: update
+    sudo_required: conditional
+    request_audit: required
+    response_audit: required-before-token-release
+    durable_intent: true
+    mutation_owner: heptabao-token
+    external_effect: false
+    active_required: true
+    idempotency_key: required
+    response_unknown_policy: LOOKUP_BY_OPERATION_KEY
+    retry_policy: lookup-only
+    cancellation_policy: issued-token-remains-authoritative
+    secret_response: true
+    size_limits: token-small
+    timeout_profile: durable-mutation
+    compatibility_source: oracle://openbao/v2.6.2/auth/token/create
+  seal.unseal.submit-share:
+    operation_id: seal.unseal.submit-share
+    operation_class: SEAL_CEREMONY
+    exposure: PUBLIC_UNAUTHENTICATED
+    allowed_http_methods: [POST]
+    namespace_semantics: root-or-explicit-sealable-namespace
+    mount_semantics: system
+    authentication_mode: CEREMONY_GUARD
+    policy_capability: none
+    sudo_required: false
+    request_audit: ceremony-audit-required
+    response_audit: ceremony-audit-required
+    durable_intent: true
+    mutation_owner: heptabao-seal
+    external_effect: false
+    active_required: true
+    idempotency_key: ceremony-and-share-digest
+    response_unknown_policy: CEREMONY_RESUME
+    retry_policy: exact-state-only
+    cancellation_policy: accepted-share-not-rolled-back-by-disconnect
+    secret_response: false
+    size_limits: unseal-small
+    timeout_profile: ceremony
+    compatibility_source: oracle://openbao/v2.6.2/sys/unseal
+  cluster.join:
+    operation_id: cluster.join
+    operation_class: CLUSTER_OPERATION
+    exposure: CLUSTER_ONLY
+    allowed_http_methods: [POST]
+    namespace_semantics: root
+    mount_semantics: cluster
+    authentication_mode: CLUSTER_MTLS_AND_JOIN_CHALLENGE
+    policy_capability: membership-authority
+    sudo_required: true
+    request_audit: required
+    response_audit: required
+    durable_intent: true
+    mutation_owner: heptabao-cluster
+    external_effect: true
+    active_required: true
+    idempotency_key: cluster-id-and-node-id
+    response_unknown_policy: CONSENSUS_OBSERVE
+    retry_policy: membership-state-lookup
+    cancellation_policy: committed-membership-not-cancelled
+    secret_response: true
+    size_limits: cluster-small
+    timeout_profile: cluster
+    compatibility_source: oracle://openbao/v2.6.2/sys/storage/raft/join
+  migration.cutover:
+    operation_id: migration.cutover
+    operation_class: MIGRATION_OPERATION
+    exposure: MIGRATION_ONLY
+    allowed_http_methods: [POST]
+    namespace_semantics: migration-domain-bound
+    mount_semantics: migration-controller
+    authentication_mode: VALID_AUTHORITY_GRANT
+    policy_capability: migration-cutover
+    sudo_required: true
+    request_audit: required
+    response_audit: required
+    durable_intent: true
+    mutation_owner: heptabao-migration
+    external_effect: true
+    active_required: true
+    idempotency_key: migration-id-domain-epoch
+    response_unknown_policy: RECONCILE_EXTERNAL_EFFECT
+    retry_policy: fenced-resume-only
+    cancellation_policy: forward-recovery-after-authority-switch
+    secret_response: false
+    size_limits: migration-small
+    timeout_profile: migration
+    compatibility_source: heptabao://migration/v1

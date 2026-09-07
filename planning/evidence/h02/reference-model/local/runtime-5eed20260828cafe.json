@@ -1,0 +1,101 @@
+{
+  "authority_effect": "NONE",
+  "candidate": {
+    "bound": false,
+    "candidate_id": null,
+    "feature_profile_sha256": null,
+    "version": null
+  },
+  "cases": [
+    {
+      "assertion_count": 2,
+      "case_id": "runtime-cancel-before-start",
+      "details_sha256": "aa71d3d5c2abf178fdd702d1ce1cacec7fbd179c7ae457a092dbd9b392cefd71",
+      "status": "PASS",
+      "trace_end": 3,
+      "trace_start": 0
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "runtime-cancel-during-wait",
+      "details_sha256": "c8955a0f01444c6c9b313efbbbaaf752637019bdfcac6a013b94a47b8c567662",
+      "status": "PASS",
+      "trace_end": 7,
+      "trace_start": 3
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "runtime-equal-deadline-seed-replay",
+      "details_sha256": "5d1b04279ec4dd5d4e8d765433a20141b827af0781938ee697ed7b2827103355",
+      "status": "PASS",
+      "trace_end": 15,
+      "trace_start": 7
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "runtime-task-panic-isolation",
+      "details_sha256": "623b74dfdd2aa97c08d4e8c8a828ef3ac5780a98dbd6a536e9e2675e7afafeb1",
+      "status": "PASS",
+      "trace_end": 21,
+      "trace_start": 15
+    },
+    {
+      "assertion_count": 1,
+      "case_id": "runtime-bounded-blocking-saturation",
+      "details_sha256": "e76df4a159cc4abdac0bdc90c459f441079311e552070cfefadd1416ccd41f33",
+      "status": "PASS",
+      "trace_end": 36,
+      "trace_start": 21
+    },
+    {
+      "assertion_count": 2,
+      "case_id": "runtime-zero-task-resource-leak",
+      "details_sha256": "c0a3fbfa34cdc57237a98dc5ac220e2a602f149349212cacb02fc42b73bc2705",
+      "status": "PASS",
+      "trace_end": 36,
+      "trace_start": 36
+    }
+  ],
+  "domain": "RUNTIME",
+  "environment": {
+    "architecture": "x86_64",
+    "attested": false,
+    "environment_id": "chatgpt-local-container-20260828-h02-behavior",
+    "executor_kind": "local-container",
+    "os": "Linux",
+    "python_version": "3.13.5",
+    "runner_id": null,
+    "runner_name": "chatgpt-container"
+  },
+  "execution_kind": "REFERENCE_MODEL",
+  "final_state_sha256": "0505150138836fa3d2e145ce2344913df49fe2176b0ad6a7abcc174424896670",
+  "harness_version": "1.0.0",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "profile_id": "HB-H02-BEHAVIOR-RUNTIME-REFERENCE",
+  "qualification": false,
+  "replay_command": "python scripts/h02_seeded_behavior_harness_v1.py replay --evidence <runtime-6840158756763388670.json>",
+  "revision": "1.1",
+  "schema": "heptabao.h02-seeded-behavior-evidence.v1",
+  "seed": {
+    "decimal": 6840158756763388670,
+    "hex": "0x5eed20260828cafe"
+  },
+  "selection_effect": "NONE",
+  "source": {
+    "branch": "codex/h02-seeded-behavior-harnesses",
+    "clean_tree": true,
+    "commit_sha": "dc5f18bea2e039e2897cd89a3e502e96c4580b8d",
+    "repository": "ProfHepta/HeptaBao",
+    "tree_sha": "52cd4c67cda5984183bef11bae31e230512cd35a"
+  },
+  "status": "EXECUTED_PASS",
+  "summary": {
+    "blocked": 0,
+    "failed": 0,
+    "passed": 6,
+    "total": 6,
+    "unexecuted": 0,
+    "unknown": 0
+  },
+  "trace_sha256": "fdcbe302910b97884f56ded87d094dde938e364b12a5e6ae281fe7832967b16a"
+}

@@ -1,0 +1,12 @@
+[package]
+name = "heptabao-h02-probe-rustls-ring"
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.71"
+publish = false
+
+[dependencies]
+rustls = { version = "=0.23.43", default-features = false, features = ["logging", "ring", "std", "tls12"] }
+zeroize = "=1.8.2"
+
+[workspace]

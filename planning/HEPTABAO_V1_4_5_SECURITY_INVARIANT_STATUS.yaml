@@ -1,0 +1,45 @@
+schema: heptabao.v1-4-5-security-invariant-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.4.5
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_AND_INDEPENDENT_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_5_SECURITY_INVARIANT_CLOSURE.md
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_5.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_5.yaml
+security_contract: docs/security/HEPTABAO_SECURITY_INVARIANT_CLOSURE_V1.md
+current_documentation: docs/CURRENT_DOCUMENTATION.md
+source_baseline:
+  commit: 489a104450ff48c49e7fb61e167e566ea5e0e6c7
+  tree: a567e8feb90077de5e3a8e540f07a89192264338
+implementation:
+  durable_capability_escape_closure: IMPLEMENTED_SOURCE
+  append_unknown_operation_ledger_fence: IMPLEMENTED_SOURCE
+  append_unknown_key_ledger_fence: IMPLEMENTED_SOURCE
+  exact_durable_intent_reconciliation: IMPLEMENTED_SOURCE
+  live_anchor_restore_admission: IMPLEMENTED_SOURCE
+  authorized_recovery_capability: IMPLEMENTED_SOURCE
+  exact_anchor_and_restore_receipts: IMPLEMENTED_SOURCE
+  ancestor_symlink_rejection: IMPLEMENTED_SOURCE
+  historical_gate_scoping: IMPLEMENTED_SOURCE
+  semantic_source_document_validator: IMPLEMENTED_SOURCE
+execution:
+  exact_head: REQUIRED
+  merge_candidate: REQUIRED
+  independent_security_review: REQUIRED
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

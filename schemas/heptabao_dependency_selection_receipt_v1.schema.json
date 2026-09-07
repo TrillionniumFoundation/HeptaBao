@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/dependency-selection-receipt-v1.json",
+  "title": "HeptaBao H02 Dependency Prototype Selection Receipt V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "receipt_id",
+    "plan_binding",
+    "capability",
+    "selected_candidate",
+    "evaluated_candidates",
+    "criteria_weights",
+    "selection_threshold",
+    "test_and_review_evidence",
+    "deferred_risks",
+    "approvals",
+    "issued_at_utc",
+    "expires_at_utc",
+    "signature",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.dependency-selection-receipt.v1"},
+    "receipt_id": {"pattern": "^HB-DSR-[A-Z0-9._-]{8,200}$"},
+    "plan_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_id", "revision", "plan_digest_sha256"],
+      "properties": {
+        "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+        "revision": {"const": "1.1"},
+        "plan_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "capability": {"type": "string", "minLength": 1},
+    "selected_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "version", "commit_sha", "source_digest_sha256", "normalized_score"],
+      "properties": {
+        "candidate_id": {"pattern": "^HB-DEP-[A-Z0-9._-]{8,200}$"},
+        "version": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_digest_sha256": {"$ref": "#/$defs/sha256"},
+        "normalized_score": {"type": "integer", "minimum": 0, "maximum": 50}
+      }
+    },
+    "evaluated_candidates": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"pattern": "^HB-DEP-[A-Z0-9._-]{8,200}$"}
+    },
+    "criteria_weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maintenance", "security_history", "license_fit", "unsafe_surface", "api_stability", "rust_version_fit", "performance", "replacement_seam", "ecosystem_fit", "qualification_cost"],
+      "properties": {
+        "maintenance": {"type": "integer", "minimum": 0},
+        "security_history": {"type": "integer", "minimum": 0},
+        "license_fit": {"type": "integer", "minimum": 0},
+        "unsafe_surface": {"type": "integer", "minimum": 0},
+        "api_stability": {"type": "integer", "minimum": 0},
+        "rust_version_fit": {"type": "integer", "minimum": 0},
+        "performance": {"type": "integer", "minimum": 0},
+        "replacement_seam": {"type": "integer", "minimum": 0},
+        "ecosystem_fit": {"type": "integer", "minimum": 0},
+        "qualification_cost": {"type": "integer", "minimum": 0}
+      }
+    },
+    "selection_threshold": {"type": "integer", "minimum": 38, "maximum": 50},
+    "test_and_review_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "sha256"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "deferred_risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["risk_id", "disposition", "owner", "due_at_utc"],
+        "properties": {
+          "risk_id": {"type": "string", "minLength": 1},
+          "disposition": {"enum": ["ACCEPT_FOR_PROTOTYPE_ONLY", "MITIGATE_BEFORE_QUALIFICATION", "BLOCK_PRODUCTION", "REPLACE_CANDIDATE"]},
+          "owner": {"type": "string", "minLength": 1},
+          "due_at_utc": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["program", "security", "domain", "license", "performance", "qualification"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"const": "APPROVE"},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "issued_at_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": "string", "format": "date-time"},
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

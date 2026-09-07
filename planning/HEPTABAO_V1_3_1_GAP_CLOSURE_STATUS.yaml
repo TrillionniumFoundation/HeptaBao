@@ -1,0 +1,71 @@
+schema: heptabao.v1-3-1-gap-closure-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.3.1'
+status: REPOSITORY_CONTROLLED_PATCH_COMMITTED_EXACT_HEAD_AND_INDEPENDENT_CLOSURE_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_3_1_REPOSITORY_GAP_CLOSURE.md
+current_state: planning/HEPTABAO_V1_3_1_GAP_CLOSURE_STATUS.yaml
+current_state_input: planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3_1.yaml
+canonical_integration:
+  branch: codex/plan-v1.3-gap-closure-v2
+  pull_request: 45
+  anchored_materialized_parent: b694d24a16ee9714fb888e72aca86f16effd1761
+  ordinary_reviewable_source: true
+  compressed_transport_is_not_canonical_delivery: true
+repository_remediation:
+  total_request_read_deadline: IMPLEMENTED_SOURCE
+  bounded_concurrent_connections: IMPLEMENTED_SOURCE
+  preparse_request_attempt_identity: IMPLEMENTED_SOURCE
+  transport_rejection_audit: IMPLEMENTED_SOURCE
+  client_request_id_duplicate_guard: IMPLEMENTED_P0_SOURCE
+  http_204_zero_wire_body: IMPLEMENTED_SOURCE
+  durable_active_parent_fail_closed: IMPLEMENTED_SOURCE
+  legacy_data_temporary_artifact_guard: IMPLEMENTED_SOURCE
+  exact_head_consolidated_workflow: IMPLEMENTED_SOURCE_FAIL_CLOSED_YML_YAML_ADMISSION_CANCELLATION_SAFE
+  machine_checked_v1_3_1_contract: IMPLEMENTED_SOURCE_DEPENDENCIES_MANIFEST_BOUND
+  bounded_transport_rejection_writes: IMPLEMENTED_SOURCE
+  absolute_total_response_write_deadline: IMPLEMENTED_SOURCE
+  connection_worker_spawn_fail_closed: IMPLEMENTED_SOURCE
+  strict_invalid_deadline_and_json_string_validation: IMPLEMENTED_SOURCE
+  operation_specific_body_fail_closed: IMPLEMENTED_SOURCE
+  owned_request_response_and_wire_buffer_hygiene: IMPLEMENTED_SOURCE
+  owned_target_and_kv_path_hygiene: IMPLEMENTED_SOURCE
+  authbus_binding_redaction_and_digest_preimage_hygiene: IMPLEMENTED_SOURCE
+  repository_identity_transfer_and_ratifier_separation: IMPLEMENTED_SOURCE
+execution_required:
+  plan_and_python: REQUIRED_EXACT_HEAD
+  root_rust_1_98_fmt_test_clippy: REQUIRED_EXACT_HEAD
+  p0_socket_and_transport_matrix: REQUIRED_EXACT_HEAD
+  openraft_1_88_1_98_compile_lint: REQUIRED_EXACT_HEAD
+  openraft_24_entry_matrix: REQUIRED_EXACT_HEAD
+  independent_program_security_storage_review: REQUIRED_EXTERNAL_IDENTITY
+external_open:
+- id: HB-BLK-CTRL-001
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-001
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-002
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-003
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-004
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-005
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-006
+  state: EXTERNAL_ACTION_REQUIRED
+- id: HB-BLK-EXT-007
+  state: EXTERNAL_ACTION_REQUIRED
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE
+closure_rule: >-
+  Source markers become technical closure only after all exact-head execution lanes pass;
+  critical closure additionally requires independent current receipts; external blockers
+  cannot be closed by repository automation.

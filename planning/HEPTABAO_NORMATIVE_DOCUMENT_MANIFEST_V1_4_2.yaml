@@ -1,0 +1,67 @@
+schema: heptabao.normative-document-manifest.v1_4_2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.2'
+status: ACTIVE_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY
+inherits: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_1.yaml
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_2_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY.md
+current_state: planning/HEPTABAO_V1_4_2_ANCHORED_RECOVERY_STATUS.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml
+source_binding: RESOLVE_FROM_EXACT_SOURCE
+documents:
+- path: docs/plan/HEPTABAO_PLAN_V1_4_2_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY.md
+  role: PLAN
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: docs/recovery/HEPTABAO_ANCHORED_RECOVERY_CONTRACT_V1.md
+  role: RECOVERY_CONTRACT
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_V1_4_2_ANCHORED_RECOVERY_STATUS.yaml
+  role: STATUS
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml
+  role: BLOCKER_REGISTER
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_2.yaml
+  role: MANIFEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: schemas/heptabao_normative_document_manifest_v1_4_2.schema.json
+  role: SCHEMA
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-key-lifecycle/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-key-lifecycle/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-rollback-anchor/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-rollback-anchor/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-recovery-core/Cargo.toml
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: crates/heptabao-recovery-core/src/lib.rs
+  role: RUST_CRATE
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_plan_v1_4_2.py
+  role: VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: scripts/validate_v1_4_2_inherited_surface.py
+  role: VALIDATOR
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: tests/plan/test_plan_v1_4_2.py
+  role: TEST
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+- path: .github/workflows/plan-v1.4.2-anchored-recovery.yml
+  role: WORKFLOW
+  source_binding: RESOLVE_FROM_EXACT_SOURCE
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

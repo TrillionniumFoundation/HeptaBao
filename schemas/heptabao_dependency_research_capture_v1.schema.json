@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/dependency-research-capture-v1.json",
+  "title": "HeptaBao H02 Dependency Research Capture V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "plan_revision",
+    "capture_id",
+    "candidate_id",
+    "capability",
+    "capture_status",
+    "captured_at_utc",
+    "official_source",
+    "release",
+    "manifest_observation",
+    "source_integrity",
+    "review_status",
+    "selection_state",
+    "authority_effect",
+    "remaining_evidence"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.dependency-research-capture.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "plan_revision": {"const": "1.1"},
+    "capture_id": {"pattern": "^HB-DEP-CAPTURE-[A-Z0-9._-]{8,200}$"},
+    "candidate_id": {"pattern": "^HB-DEP-[A-Z0-9._-]{8,200}$"},
+    "capability": {
+      "enum": [
+        "ASYNC_RUNTIME",
+        "HTTP_SERVER",
+        "HTTP_CLIENT",
+        "TLS",
+        "CRYPTO_PROVIDER",
+        "SECURE_MEMORY",
+        "SERIALIZATION",
+        "HCL_PARSING",
+        "POSTGRES",
+        "RAFT",
+        "GRPC",
+        "TEMPLATE_CEL",
+        "TELEMETRY",
+        "CLI",
+        "LINUX_SANDBOX",
+        "FUZZ_MODEL_TOOLING"
+      ]
+    },
+    "capture_status": {"const": "OFFICIAL_METADATA_CAPTURED_UNREVIEWED"},
+    "captured_at_utc": {"type": "string", "format": "date-time"},
+    "official_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "release_api", "tag_ref_api", "manifest_path", "manifest_ref"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^https://github.com/"},
+        "release_api": {"type": "string", "pattern": "^https://api.github.com/"},
+        "tag_ref_api": {"type": "string", "pattern": "^https://api.github.com/"},
+        "manifest_path": {"type": "string", "minLength": 1},
+        "manifest_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tag", "version", "published_at_utc", "commit_sha", "tree_sha", "commit_signature_status"],
+      "properties": {
+        "tag": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "published_at_utc": {"type": "string", "format": "date-time"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "commit_signature_status": {"enum": ["VERIFIED", "UNSIGNED", "UNKNOWN_NOT_EVALUATED"]}
+      }
+    },
+    "manifest_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package_names", "declared_license", "edition", "declared_rust_version", "default_features", "manifest_blob_sha"],
+      "properties": {
+        "package_names": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "declared_license": {"type": ["string", "null"]},
+        "edition": {"type": ["string", "null"]},
+        "declared_rust_version": {"type": ["string", "null"]},
+        "default_features": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "manifest_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "source_integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tag_resolves_to_commit", "commit_tree_resolved", "source_archive_sha256", "crate_package_checksum", "integrity_status"],
+      "properties": {
+        "tag_resolves_to_commit": {"const": true},
+        "commit_tree_resolved": {"const": true},
+        "source_archive_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "crate_package_checksum": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "integrity_status": {"const": "PARTIAL_OFFICIAL_GIT_METADATA_ONLY"}
+      }
+    },
+    "review_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license", "maintenance", "security_advisories", "unsafe_inventory", "msrv_verification", "api_replacement_seam", "deterministic_tests", "benchmark", "qualification_plan", "independent_review"],
+      "properties": {
+        "license": {"enum": ["PENDING", "CAPTURED_UNREVIEWED", "APPROVED", "REJECTED"]},
+        "maintenance": {"enum": ["PENDING", "CAPTURED_UNREVIEWED", "APPROVED", "REJECTED"]},
+        "security_advisories": {"enum": ["PENDING", "CAPTURED_UNREVIEWED", "APPROVED", "REJECTED"]},
+        "unsafe_inventory": {"enum": ["PENDING", "CAPTURED_UNREVIEWED", "APPROVED", "REJECTED"]},
+        "msrv_verification": {"enum": ["PENDING", "DECLARED_NOT_EXECUTED", "EXECUTED_PASS", "EXECUTED_FAIL"]},
+        "api_replacement_seam": {"enum": ["PENDING", "DESIGNED_UNREVIEWED", "APPROVED", "REJECTED"]},
+        "deterministic_tests": {"enum": ["PENDING", "IDENTIFIED_UNEXECUTED", "EXECUTED_PASS", "EXECUTED_FAIL"]},
+        "benchmark": {"enum": ["PENDING", "PROFILE_DEFINED_UNEXECUTED", "EXECUTED", "REJECTED"]},
+        "qualification_plan": {"enum": ["PENDING", "DRAFTED", "APPROVED", "REJECTED"]},
+        "independent_review": {"const": "PENDING"}
+      }
+    },
+    "selection_state": {"const": "IDENTIFIED"},
+    "authority_effect": {"const": "NONE"},
+    "remaining_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

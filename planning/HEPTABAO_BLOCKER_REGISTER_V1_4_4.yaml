@@ -1,0 +1,79 @@
+schema: heptabao.blocker-register-extension.v1_4_4
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.4.4
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_3.yaml
+source_baseline:
+  commit: 3582fda50cd9b03ca39713814cdd8229462bbbd2
+  tree: 123c99b71c7e33169bef6033eaefb71e386ed6ca
+added_blockers:
+- id: HB-BLK-REPO-037
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: current Cargo modules lacked one maintained developer guide each
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - workspace members and module guides are one-to-one
+  - every guide contains all mandatory engineering sections
+  - guide records owner maturity source and known gaps
+  evidence:
+  - docs/modules/README.md
+  - planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-038
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: target architecture could be confused with the as-built Cargo graph
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - dependency and reverse-dependency lists derive from exact Cargo manifests
+  - unimplemented target modules remain explicitly listed as gaps
+  - module guides never imply production authority
+  evidence:
+  - docs/modules/README.md
+  - scripts/validate_module_documentation_v1_4_4.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-039
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: module documentation completeness was not mechanically enforced
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - validator rejects missing extra duplicate or incomplete module documents
+  - mutation tests prove fail-closed behavior
+  - read-only exact-head workflow runs docs Python and Rust gates
+  evidence:
+  - scripts/validate_module_documentation_v1_4_4.py
+  - tests/plan/test_module_documentation_v1_4_4.py
+  - .github/workflows/plan-v1.4.4-module-documentation.yml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-040
+  class: REPOSITORY_CONTROLLED
+  severity: MEDIUM
+  title: root README current-truth section lagged the implemented durable kernel
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - README names V1.4.4 and its exact predecessor
+  - README states nineteen documented workspace modules and non-production boundary
+  - README links current plan status coverage and module index
+  evidence:
+  - README.md
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

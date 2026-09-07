@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-cli-inventory-v1.json",
+  "title": "HeptaBao OpenBao Oracle CLI Inventory V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "baseline_id", "inventory_id", "status", "commands", "coverage", "authority_effect"],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-cli-inventory.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "inventory_id": {"pattern": "^HB-CLI-[A-Z0-9._-]{8,200}$"},
+    "status": {"enum": ["SEED", "IN_PROGRESS", "CAPTURED", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "commands": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/command"}},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_seeded", "captured", "reviewed", "qualified", "unknown_semantics", "unowned_critical", "operator_critical_total", "operator_critical_captured"],
+      "properties": {
+        "total_seeded": {"type": "integer", "minimum": 0},
+        "captured": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "qualified": {"type": "integer", "minimum": 0},
+        "unknown_semantics": {"type": "integer", "minimum": 0},
+        "unowned_critical": {"type": "integer", "minimum": 0},
+        "operator_critical_total": {"type": "integer", "minimum": 0},
+        "operator_critical_captured": {"type": "integer", "minimum": 0}
+      }
+    },
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "flag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "value_shape", "secret_bearing", "required", "notes"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "value_shape": {"enum": ["NONE", "STRING", "BOOLEAN", "INTEGER", "DURATION", "PATH", "ADDRESS", "ENUM", "LIST", "SECRET", "UNKNOWN"]},
+        "secret_bearing": {"enum": ["NO", "YES", "REFERENCE_ONLY", "UNKNOWN"]},
+        "required": {"type": "boolean"},
+        "notes": {"type": "string"}
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "command_path",
+        "surface",
+        "criticality",
+        "operation_class",
+        "secret_bearing",
+        "flags",
+        "environment_variables",
+        "output_modes",
+        "exit_code_classes",
+        "signal_behavior",
+        "side_effect_domains",
+        "owner_work_packages",
+        "source_reference",
+        "observation_status",
+        "fixture_status",
+        "notes"
+      ],
+      "properties": {
+        "id": {"pattern": "^HB-CLI-CMD-[A-Z0-9._-]{4,200}$"},
+        "command_path": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "surface": {"enum": ["SERVER", "OPERATOR", "AUTH", "SECRETS", "POLICY", "NAMESPACE", "PLUGIN", "AUDIT", "RAFT", "AGENT", "PROXY", "DEBUG", "GENERAL"]},
+        "criticality": {"enum": ["SECURITY_CRITICAL", "CRYPTO_CRITICAL", "DATA_DURABILITY_CRITICAL", "DISTRIBUTED_SYSTEMS_CRITICAL", "COMPATIBILITY_CRITICAL", "OPERATOR_CRITICAL", "STANDARD"]},
+        "operation_class": {"enum": ["PURE_READ", "DURABLE_MUTATION", "LEASE_ISSUING_READ", "EXTERNAL_EFFECT", "AUTH_LOGIN", "TOKEN_ISSUE", "SEAL_CEREMONY", "CLUSTER_OPERATION", "MIGRATION_OPERATION", "CLIENT_LOCAL", "UNKNOWN"]},
+        "secret_bearing": {"enum": ["NO", "YES", "REFERENCE_ONLY", "UNKNOWN"]},
+        "flags": {"type": "array", "items": {"$ref": "#/$defs/flag"}},
+        "environment_variables": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "output_modes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["TABLE", "JSON", "YAML", "RAW", "FIELD", "PRETTY", "MACHINE", "UNKNOWN"]}},
+        "exit_code_classes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["SUCCESS", "USAGE_ERROR", "AUTH_ERROR", "POLICY_DENIED", "SEALED", "STANDBY", "NETWORK_ERROR", "SERVER_ERROR", "PARTIAL_FAILURE", "INTERRUPTED", "UNKNOWN"]}},
+        "signal_behavior": {"type": "array", "items": {"enum": ["SIGINT_CANCEL", "SIGTERM_SHUTDOWN", "SIGHUP_RELOAD", "SECOND_SIGINT_FORCE", "NO_LONG_RUNNING_PROCESS", "UNKNOWN"]}},
+        "side_effect_domains": {"type": "array", "uniqueItems": true, "items": {"enum": ["NONE", "MOUNT", "POLICY", "IDENTITY", "TOKEN", "LEASE", "AUDIT", "PLUGIN", "SEAL", "RAFT", "CLUSTER", "EXTERNAL_PROVIDER", "LOCAL_FILE", "LOCAL_PROCESS", "UNKNOWN"]}},
+        "owner_work_packages": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"pattern": "^H(?:0[0-9]|1[0-9]|2[0-7])-WP[0-9]{2,3}$"}},
+        "source_reference": {"type": "string", "minLength": 1},
+        "observation_status": {"enum": ["IDENTIFIED", "CAPTURED", "REVIEWED", "QUALIFIED", "UNSUPPORTED", "SUPERSEDED"]},
+        "fixture_status": {"enum": ["NONE", "PLANNED", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED"]},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

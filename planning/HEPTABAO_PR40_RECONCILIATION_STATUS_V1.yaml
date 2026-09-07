@@ -1,0 +1,43 @@
+schema: heptabao.pr40-reconciliation-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: 1.2.1-pr40-r1
+status: PATCH_CANDIDATE_NOT_QUALIFIED
+source_input:
+  repository: ProfHepta/HeptaBao
+  pull_request: 40
+  branch: codex/plan-v1.2.1-final-gap-closure-v1
+  commit: cedb6c95a5323f7004551087d75e2f57a1ec484a
+  tree: e0032b54bad2048802cd61f6bbc7d6d1f9ce4003
+inherited:
+  exact_head_matrix_runner_hardened: true
+  application_result_taxonomy_preserved: true
+  full_process_group_timeout: true
+  source_rechecked_after_matrix: true
+reconciled:
+  initialized_generation_marker: true
+  missing_initialized_generation_fails_closed: true
+  legacy_generation_adoption_requires_validation: true
+  non_regular_or_symlinked_storage_rejected: true
+  guarded_snapshot_source_semantically_bound: true
+  obsolete_unguarded_snapshot_helper_removed: true
+  strict_rust_lint_repairs_applied: true
+  workflow_is_read_only: true
+local_evidence:
+  python_and_schema_validation: PASS
+  rust_compile_test_clippy: UNEXECUTED
+  exact_head_24_entry_matrix: UNEXECUTED
+  independent_reproduction: UNEXECUTED
+external_gaps:
+  - repository-ruleset-and-negative-controls
+  - independent-reviewer-identities
+  - legal-clean-room-license-disposition
+  - private-disclosure-oncall-and-drills
+  - isolated-signing-transparency-and-revocation
+  - restricted-oracle-capture-and-signed-transfer
+  - independent-power-cut-filesystem-lab
+  - independent-operator-reproduction
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+authority_effect: NONE

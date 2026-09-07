@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_normative_document_manifest_v1_3_1.schema.json",
+  "title": "HeptaBao V1.3.1 normative document manifest",
+  "description": "Strict active-manifest contract; inherited legacy workflows are historical and non-authoritative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "inherits",
+    "current_plan",
+    "current_state",
+    "current_state_input",
+    "normative_manifest",
+    "historical_inheritance",
+    "documents",
+    "closure_semantics",
+    "qualification",
+    "compatibility_claim",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.normative-document-manifest-extension.v1_3_1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.3.1"},
+    "status": {"const": "NORMATIVE_REPOSITORY_GAP_CLOSURE_EXTENSION"},
+    "inherits": {"const": "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3.yaml"},
+    "current_plan": {"$ref": "#/$defs/relative_path"},
+    "current_state": {"$ref": "#/$defs/relative_path"},
+    "current_state_input": {"$ref": "#/$defs/relative_path"},
+    "normative_manifest": {"const": "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3_1.yaml"},
+    "historical_inheritance": {"$ref": "#/$defs/historical_inheritance"},
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/document"}
+    },
+    "closure_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_presence_is_execution",
+        "source_bound_evidence_is_runtime_execution",
+        "exact_head_execution_is_independent_review",
+        "synthetic_merge_execution_is_independent_review",
+        "independent_review_is_qualification",
+        "qualification_is_authority"
+      ],
+      "properties": {
+        "source_presence_is_execution": {"const": false},
+        "source_bound_evidence_is_runtime_execution": {"const": false},
+        "exact_head_execution_is_independent_review": {"const": false},
+        "synthetic_merge_execution_is_independent_review": {"const": false},
+        "independent_review_is_qualification": {"const": false},
+        "qualification_is_authority": {"const": false}
+      }
+    },
+    "qualification": {"const": false},
+    "compatibility_claim": {"const": false},
+    "authority_effect": {"const": "NONE"}
+  },
+  "$defs": {
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"
+    },
+    "non_empty": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "kind",
+        "owner_role",
+        "digest",
+        "effective_revision",
+        "authority_effect"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^HB-[A-Z0-9][A-Z0-9_-]+$"},
+        "path": {"$ref": "#/$defs/relative_path"},
+        "kind": {"enum": ["NORMATIVE", "DERIVED", "EVIDENCE", "HISTORICAL"]},
+        "owner_role": {"$ref": "#/$defs/non_empty"},
+        "digest": {"const": "RESOLVE_FROM_EXACT_SOURCE"},
+        "effective_revision": {"$ref": "#/$defs/non_empty"},
+        "authority_effect": {"const": "NONE"}
+      }
+    },
+    "historical_workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "kind", "authority_effect"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relative_path"},
+        "kind": {"const": "HISTORICAL"},
+        "authority_effect": {"const": "NONE"}
+      }
+    },
+    "historical_inheritance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_manifest",
+        "inherited_current_plan",
+        "inherited_current_state_input",
+        "retained_for_audit",
+        "inherited_legacy_workflows"
+      ],
+      "properties": {
+        "parent_manifest": {"const": "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3.yaml"},
+        "inherited_current_plan": {"$ref": "#/$defs/relative_path"},
+        "inherited_current_state_input": {"$ref": "#/$defs/relative_path"},
+        "retained_for_audit": {"const": true},
+        "inherited_legacy_workflows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/historical_workflow"}
+        }
+      }
+    }
+  }
+}

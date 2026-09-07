@@ -1,0 +1,55 @@
+name: evidence-semantics
+
+on:
+  push:
+    branches: ["main", "codex/plan-v1.1-h00-execution"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-objects:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          git diff --quiet
+          git diff --cached --quiet
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Validate schemas and cross-field semantics
+        run: python scripts/validate_evidence_objects_v1.py
+      - name: Confirm no operational evidence objects exist during H00
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in authority/grants compatibility/claims qualifications/receipts releases/attestations; do
+            if [ -d "$path" ] && find "$path" -type f -name '*.json' -print -quit | grep -q .; then
+              echo "Evidence objects exist under $path; ensure H00 review explicitly covers them."
+            fi
+          done
+          python - <<'PY'
+          import yaml
+          flags = yaml.safe_load(open('planning/AUTHORITY_FLAGS_V2.yaml', encoding='utf-8'))
+          enabled = [name for name, value in flags['flags'].items() if value and name != 'implementation_started']
+          if enabled:
+              raise SystemExit(f'unexpected authority flags: {enabled}')
+          print('H00 authority remains false')
+          PY

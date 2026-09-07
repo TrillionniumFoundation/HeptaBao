@@ -1,0 +1,122 @@
+schema: heptabao.h02-seeded-behavior-harness.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: IMPLEMENTED_REFERENCE_MODEL_CANDIDATE_ADAPTERS_PENDING
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+purpose:
+  - Turn the H02 Runtime, TLS and Raft behavioral requirements into deterministic, seed-replayable executable cases.
+  - Separate HeptaBao reference-model evidence from candidate-adapter evidence.
+  - Allow the same runner to execute on GitHub-hosted, self-hosted and offline independent environments.
+  - Preserve failures, blocked cases, unknowns and incomplete runs rather than collapsing them into a green summary.
+  - Produce evidence that can be independently reproduced without granting dependency selection or runtime authority.
+
+evidence_classes:
+  REFERENCE_MODEL:
+    candidate_binding: false
+    meaning: validates the HeptaBao-owned state machine, invariants, trace format and replay mechanism
+    permits: [harness qualification work, candidate-adapter contract development, regression triage]
+    forbids: [candidate scoring, candidate selection, production authority]
+  CANDIDATE_ADAPTER:
+    candidate_binding: true
+    meaning: executes one exact candidate/version/feature/toolchain profile through the HeptaBao-owned harness
+    permits: [candidate-specific evidence collection]
+    forbids: [selection without all H02 evidence and independent review]
+
+determinism:
+  prng: SplitMix64
+  seed_encoding: unsigned 64-bit decimal plus fixed-width hexadecimal
+  trace_encoding: canonical JSON with sorted keys and compact separators
+  digest: SHA-256
+  replay_rule: same source, harness version, profile, seed and input manifest must reproduce trace and final-state digests
+  incomplete_run_rule: interruption records the seed and last event index and is classified INCOMPLETE_REPLAYABLE, never PASS
+
+profiles:
+  - profile_id: HB-H02-BEHAVIOR-RUNTIME-REFERENCE
+    domain: RUNTIME
+    execution_kind: REFERENCE_MODEL
+    required_cases:
+      - runtime-cancel-before-start
+      - runtime-cancel-during-wait
+      - runtime-equal-deadline-seed-replay
+      - runtime-task-panic-isolation
+      - runtime-bounded-blocking-saturation
+      - runtime-zero-task-resource-leak
+    candidate_adapters:
+      - HB-H02-PROBE-TOKIO-MINIMAL-SERVER
+    state: IMPLEMENTED_LOCAL_UNATTESTED
+  - profile_id: HB-H02-BEHAVIOR-TLS-REFERENCE
+    domain: TLS
+    execution_kind: REFERENCE_MODEL
+    required_cases:
+      - tls-version-policy-fail-closed
+      - tls-mutual-auth-identity-and-expiry
+      - tls-malformed-ticket-length-no-panic
+      - tls-atomic-stage-activate-revoke
+      - tls-handshake-time-and-byte-bounds
+      - tls-trace-secret-residue-zero
+    candidate_adapters:
+      - HB-H02-PROBE-RUSTLS-RING
+      - HB-H02-PROBE-RUSTLS-AWS-LC
+    state: IMPLEMENTED_LOCAL_UNATTESTED
+  - profile_id: HB-H02-BEHAVIOR-RAFT-REFERENCE
+    domain: RAFT
+    execution_kind: REFERENCE_MODEL
+    required_cases:
+      - raft-deterministic-apply-and-restart
+      - raft-committed-snapshot-conflict-rejected
+      - raft-joint-membership-single-writer
+      - raft-process-pause-plus-partition
+      - raft-quorum-loss-fail-closed
+      - raft-incomplete-run-replay-diagnostics
+    candidate_adapters:
+      - HB-H02-PROBE-OPENRAFT-TOKIO
+    state: IMPLEMENTED_LOCAL_UNATTESTED
+
+evidence_requirements:
+  - exact source commit, tree, branch and clean-tree status
+  - exact harness version and profile ID
+  - exact 64-bit seed
+  - environment ID, executor kind, runner identity, OS, architecture and Python version
+  - every required case with PASS, FAIL, BLOCKED, UNEXECUTED or UNKNOWN
+  - canonical trace and final-state SHA-256
+  - failed, blocked and unknown counts
+  - replay command
+  - candidate identity only for CANDIDATE_ADAPTER evidence
+  - qualification=false, selection_effect=NONE and authority_effect=NONE
+
+independent_reproduction:
+  minimum_environments: 2
+  requirements:
+    - distinct environment IDs
+    - distinct attested runner identities
+    - identical source commit and tree
+    - identical harness version, profile, seed and input manifest
+    - both executions are EXECUTED_PASS
+    - identical trace and final-state SHA-256
+    - zero failed, blocked and unknown cases
+  result: INDEPENDENTLY_REPRODUCED_UNREVIEWED
+  authority_effect: NONE
+
+fail_closed_conditions:
+  - seed missing, truncated or outside unsigned 64-bit range
+  - source commit/tree missing or mutable-only branch binding
+  - required case absent
+  - PASS evidence containing failed, blocked or unknown cases
+  - replay digest mismatch
+  - candidate-bound evidence missing candidate/version/feature-profile digest
+  - reference-model evidence claiming candidate binding
+  - two reproduction inputs from the same environment or runner
+  - unattested input used for independent reproduction
+  - any qualification, selection or authority field set true/non-NONE
+
+current_state:
+  reference_models_implemented: 3
+  behavior_cases_implemented: 18
+  candidate_adapters_executed: 0
+  independent_reproduction_bundles: 0
+  candidates_selected: 0
+  qualification: false
+  authority_effect: NONE

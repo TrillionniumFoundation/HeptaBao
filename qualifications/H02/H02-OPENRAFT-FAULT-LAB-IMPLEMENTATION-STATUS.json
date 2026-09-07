@@ -1,0 +1,154 @@
+{
+  "authority_effect": "NONE",
+  "authority_flags": {
+    "compatibility_claim": false,
+    "crypto_implementation_authority": false,
+    "migration_authority": false,
+    "production_authority": false,
+    "production_dependency_authority": false,
+    "prototype_selection_authority": false,
+    "raft_implementation_authority": false,
+    "release_authority": false
+  },
+  "candidate_binding": {
+    "candidate_id": "HB-DEP-RAFT-OPENRAFT",
+    "durability_class": "TEST_ONLY_IN_MEMORY_NO_PRODUCTION_CLAIM",
+    "openraft_memstore_package_sha256": "e01ecc54eb1d048efafdb599100dba8ed9215153fc418ab51a29e918ba50261c",
+    "openraft_memstore_version": "0.10.0-alpha.33",
+    "openraft_package_sha256": "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8",
+    "openraft_release_commit": "2be3f99a23c0ec734aefc18d1c8e756b35567c35",
+    "openraft_version": "0.10.0-alpha.33",
+    "profile_id": "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33",
+    "selection_state": "IDENTIFIED",
+    "tokio_package_sha256": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+    "tokio_version": "1.53.1"
+  },
+  "hostile_snapshot_contract": {
+    "availability_boundary": "process-fatal rejection may preserve this safety invariant but is not an availability or production pass",
+    "blocked": [
+      "child fails before the injection marker",
+      "parent cannot spawn or observe the child",
+      "bounded parent or child deadline expires",
+      "child exits without a recognized result"
+    ],
+    "executed_fail": [
+      "candidate returns success for the stale committed snapshot"
+    ],
+    "executed_pass": [
+      "explicit candidate rejection after ABOUT_TO_INSTALL_STALE_COMMITTED_SNAPSHOT",
+      "isolated child process fatality only after ABOUT_TO_INSTALL_STALE_COMMITTED_SNAPSHOT"
+    ],
+    "injection": "rewrite snapshot.meta.last_log_id to an older committed log id while retaining real later snapshot bytes, then call target Raft::install_full_snapshot"
+  },
+  "implementation_commit": "66a7f888944d1ae74129edaacc03660e69986f81",
+  "implementation_tree": "8930306e005361b30ecddf3eb7f701dccefed0f2",
+  "implemented": {
+    "candidate_install_full_snapshot_call": true,
+    "candidate_selected": false,
+    "external_single_register_checker": true,
+    "fail_closed_combined_collector": true,
+    "hostile_snapshot_executions": 0,
+    "independent_reproductions": 0,
+    "isolated_hostile_snapshot_child": true,
+    "isolated_hostile_snapshot_parent": true,
+    "json_schemas": 4,
+    "maximum_checked_operations": 64,
+    "pre_injection_phase_marker": true,
+    "process_fatal_after_marker_classification": true,
+    "python_semantic_negative_tests": 27,
+    "real_concurrent_client_write_history": true,
+    "real_history_executions": 0,
+    "real_openraft_candidate": true,
+    "real_readindex_history": true,
+    "real_three_voter_cluster": true,
+    "real_time_precedence_backtracking": true,
+    "rust_compile_executions": 0,
+    "stale_committed_snapshot_metadata_injection": true,
+    "toolchain_seed_matrix_entries": 6
+  },
+  "linearizability_contract": {
+    "checker": "bounded-real-time-precedence-backtracking",
+    "failed_or_unknown_operation_policy": "BLOCKED; operations are never silently discarded",
+    "history_scope": "two overlapping real client_write operations, one overlapping ReadIndex read, and one final ReadIndex read",
+    "maximum_operations": 64,
+    "model": "single-register-v1",
+    "read_rule": "read output must equal the current register value",
+    "real_time_rule": "A precedes B when A.complete is strictly less than B.invoke",
+    "write_rule": "write changes the register to its input"
+  },
+  "local_validation": {
+    "authority_effect": "NONE",
+    "combined_evidence_tests": {
+      "failed": 0,
+      "passed": 14,
+      "unknown": 0
+    },
+    "hostile_snapshot_run": "UNEXECUTED_RUST_TOOLCHAIN_NOT_PRESENT_IN_LOCAL_CONTAINER",
+    "json_schema_meta_validation": "PASS",
+    "linearizability_checker_tests": {
+      "failed": 0,
+      "passed": 13,
+      "unknown": 0
+    },
+    "python_syntax": "PASS",
+    "qualification_effect": "NONE",
+    "real_history_generation": "UNEXECUTED_RUST_TOOLCHAIN_NOT_PRESENT_IN_LOCAL_CONTAINER",
+    "rust_compile": "UNEXECUTED_RUST_TOOLCHAIN_NOT_PRESENT_IN_LOCAL_CONTAINER",
+    "semantic_validator": "PASS",
+    "status": "LOCAL_UNATTESTED_PYTHON_PASS_RUST_UNEXECUTED_NOT_QUALIFICATION",
+    "total_python_tests": {
+      "failed": 0,
+      "passed": 27,
+      "unknown": 0
+    }
+  },
+  "next_blockers": [
+    "Acquire an executable attested runner and execute both exact toolchains across all three fixed seeds",
+    "Fix every actual Rust compile, API, trait, runtime, child-process and checker integration failure while retaining failed evidence",
+    "Bind numeric runner and job identity through trusted post-run enrichment",
+    "Reproduce exact commit, tree, lock graph and evidence in a second independent attested environment",
+    "Execute OS process suspension, disk/torn-write/corruption and clock fault cases",
+    "Select and qualify a production durable log/state-machine/snapshot storage implementation separately",
+    "Complete package/SBOM/advisory/license/unsafe/native/build-script/effective-MSRV evidence",
+    "Obtain independent distributed-systems, storage, platform and security approvals",
+    "Keep OpenRaft IDENTIFIED until a separate signed bounded prototype-selection receipt exists"
+  ],
+  "parent_pr": 22,
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "promotion_effect": "BLOCK_PENDING_DURABLE_STORE_OS_DISK_CLOCK_AND_INDEPENDENT_REPRODUCTION",
+  "qualification": {
+    "authority_grant": null,
+    "compatibility_claim": null,
+    "receipt": null,
+    "status": "NOT_QUALIFIED"
+  },
+  "remote_execution": {
+    "conclusion": null,
+    "github_status": "pending",
+    "head_sha": "66a7f888944d1ae74129edaacc03660e69986f81",
+    "interpretation": "The workflow exists but no job or runner has been assigned and no validator, compiler, child process, history or checker step has executed. This is neither passing evidence nor a code-test failure.",
+    "jobs": [],
+    "run_id": 33174789738,
+    "runner_id": null,
+    "runner_name": null,
+    "status": "INFRASTRUCTURE_UNEXECUTED",
+    "steps": [],
+    "workflow": "h02-openraft-fault-lab"
+  },
+  "revision": "1.2",
+  "schema": "heptabao.h02-openraft-fault-lab-implementation-status.v1",
+  "scope_limitations": [
+    "openraft-memstore remains test-only in-memory storage",
+    "operating-system SIGSTOP or equivalent process suspension is not executed",
+    "disk stall, torn write, fsync loss and storage corruption are not executed",
+    "monotonic and wall-clock fault injection is not executed",
+    "no second independent attested reproduction exists",
+    "package, locked graph, SBOM, advisory, license, unsafe/native/build-script and effective-MSRV closure remains incomplete",
+    "independent distributed-systems, storage, platform and security approvals are absent"
+  ],
+  "selection_effect": "NONE",
+  "source_branch": "codex/h02-openraft-hostile-faults-linearizability-v1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "stack_base_branch": "codex/h02-openraft-inmemory-cluster-v1",
+  "status": "HOSTILE_SNAPSHOT_AND_LINEARIZABILITY_IMPLEMENTED_REMOTE_UNEXECUTED_NOT_QUALIFIED"
+}

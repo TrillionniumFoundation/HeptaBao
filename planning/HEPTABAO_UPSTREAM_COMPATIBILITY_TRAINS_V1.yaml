@@ -1,0 +1,48 @@
+schema: heptabao.upstream-compatibility-trains.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_VERSION_GOVERNANCE
+trains:
+  frozen_oracle_baseline:
+    purpose: deterministic differential qualification
+    product: OpenBao
+    version: v2.6.2
+    commit_sha: dd9c19c37a878cf4a81b18efb8d6f0599c7da923
+    change_policy: immutable; a new baseline creates a new fixture namespace and claim scope
+  current_security_baseline:
+    purpose: vulnerability and behavioral-drift triage
+    product: OpenBao
+    version: latest-supported-security-release
+    update_policy:
+      triage_sla_hours: 24
+      isolated_oracle_lane: required
+      affected_claims_expire_until_disposition: true
+      dispositions: [not-affected-with-evidence, stricter-HeptaBao-deviation, patch-and-requalify, narrow-support, revoke]
+  migration_source_matrix:
+    purpose: define supported source-to-target migration pairs
+    initial_sources: [OpenBao-v2.6.x]
+    target_profiles: [HB-P11-MIGRATE-OPENBAO-2_6]
+    per_pair_required:
+      - source binary and image digest
+      - source config/storage/seal profile
+      - object and endpoint inventory
+      - logical and optional snapshot fixture set
+      - upgrade/downgrade path
+      - three scale rehearsals
+      - signed cutover and rollback/forward-recovery evidence
+rules:
+  - A frozen Oracle fixture never silently changes in place.
+  - Current security triage does not mutate historical evidence; it may revoke or supersede claims.
+  - A migration source version is unsupported until its exact pair is qualified.
+  - Future OpenBao features are not inherited automatically.
+  - Security-sensitive upstream differences cannot be normalized away.
+  - Upstream suspected vulnerabilities are reproduced in isolation and disclosed responsibly.
+  - Every claim lists exact Oracle versions and fixture digests.
+  - Every release records the current-security-baseline disposition at build time.
+claim_invalidation_events:
+  - upstream security advisory affects claimed behavior
+  - Oracle artifact or fixture signature mismatch
+  - normalization rule changes a security-relevant field
+  - source version leaves support window
+  - migration pair behavior diverges after upstream patch
+  - third-party plugin protocol changes outside qualified matrix

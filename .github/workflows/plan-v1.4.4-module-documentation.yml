@@ -1,0 +1,50 @@
+name: plan-v1.4.4-module-documentation
+
+on:
+  push:
+    branches:
+      - codex/plan-v1.4.4-module-documentation-closure-v1
+  pull_request:
+    paths:
+      - 'Cargo.toml'
+      - 'crates/**'
+      - 'docs/modules/**'
+      - 'docs/plan/HEPTABAO_PLAN_V1_4_4_MODULE_DOCUMENTATION_CLOSURE.md'
+      - 'planning/HEPTABAO_*V1_4_4.yaml'
+      - 'schemas/heptabao_normative_document_manifest_v1_4_4.schema.json'
+      - 'scripts/validate_module_documentation_v1_4_4.py'
+      - 'tests/plan/test_module_documentation_v1_4_4.py'
+      - 'README.md'
+      - '.github/workflows/plan-v1.4.4-module-documentation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  module-documentation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Python and Rust 1.98
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Validate complete module documentation
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

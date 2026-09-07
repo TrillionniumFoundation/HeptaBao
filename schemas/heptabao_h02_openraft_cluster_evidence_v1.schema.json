@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/h02-openraft-cluster-evidence-v1.json",
+  "title": "HeptaBao H02 OpenRaft In-Memory Cluster Evidence V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "plan_id", "revision", "status", "profile_id", "candidate",
+    "source", "environment", "seed", "dependencies", "scope", "cases",
+    "summary", "replay_match", "limitations", "review_status", "qualification",
+    "selection_effect", "promotion_effect", "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.h02-openraft-cluster-evidence.v1"},
+    "plan_id": {"const": "HEPTABAO-PLAN-2026-08-28"},
+    "revision": {"const": "1.1"},
+    "status": {"enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED", "UNEXECUTED", "UNKNOWN"]},
+    "profile_id": {"const": "HB-H02-BEHAVIOR-RAFT-OPENRAFT-INMEMORY-0_10_0_ALPHA_33"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "package", "version", "bound"],
+      "properties": {
+        "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+        "package": {"const": "openraft"},
+        "version": {"const": "0.10.0-alpha.33"},
+        "bound": {"const": true}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "tree_sha", "branch", "clean_tree"],
+      "properties": {
+        "repository": {"const": "ProfHepta/HeptaBao"},
+        "commit_sha": {"$ref": "#/$defs/sha40"},
+        "tree_sha": {"$ref": "#/$defs/sha40"},
+        "branch": {"type": "string", "minLength": 1},
+        "clean_tree": {"type": "boolean"}
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment_id", "executor_kind", "runner_id", "runner_name", "os", "architecture", "rust_toolchain", "target", "attested"],
+      "properties": {
+        "environment_id": {"type": "string", "minLength": 8},
+        "executor_kind": {"enum": ["local-container", "github-hosted", "self-hosted", "offline-lab"]},
+        "runner_id": {"type": ["string", "null"]},
+        "runner_name": {"type": ["string", "null"]},
+        "os": {"type": "string", "minLength": 1},
+        "architecture": {"type": "string", "minLength": 1},
+        "rust_toolchain": {"enum": ["1.88.0", "1.98.0"]},
+        "target": {"const": "x86_64-unknown-linux-gnu"},
+        "attested": {"type": "boolean"}
+      }
+    },
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decimal", "hex"],
+      "properties": {
+        "decimal": {"type": "integer", "minimum": 0, "maximum": 18446744073709551615},
+        "hex": {"type": "string", "pattern": "^0x[0-9a-f]{16}$"}
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openraft", "openraft_memstore", "tokio", "cargo_lock_sha256", "manifest_sha256"],
+      "properties": {
+        "openraft": {"const": "0.10.0-alpha.33"},
+        "openraft_memstore": {"const": "0.10.0-alpha.33"},
+        "tokio": {"const": "1.53.1"},
+        "cargo_lock_sha256": {"$ref": "#/$defs/sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["real_raft_nodes", "real_network_factory", "real_log_store", "real_state_machine", "real_membership_change", "real_client_write", "real_read_index", "real_full_snapshot_rpc", "durability_class"],
+      "properties": {
+        "real_raft_nodes": {"const": 3},
+        "real_network_factory": {"const": true},
+        "real_log_store": {"const": true},
+        "real_state_machine": {"const": true},
+        "real_membership_change": {"const": true},
+        "real_client_write": {"const": true},
+        "real_read_index": {"const": true},
+        "real_full_snapshot_rpc": {"type": "boolean"},
+        "durability_class": {"const": "TEST_ONLY_IN_MEMORY_NO_PRODUCTION_CLAIM"}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "status", "assertion_count", "details_sha256"],
+        "properties": {
+          "case_id": {"enum": [
+            "raft-deterministic-apply-and-restart",
+            "raft-committed-snapshot-conflict-rejected",
+            "raft-joint-membership-single-writer",
+            "raft-process-pause-plus-partition",
+            "raft-quorum-loss-fail-closed",
+            "raft-incomplete-run-replay-diagnostics"
+          ]},
+          "status": {"enum": ["PASS", "FAIL", "BLOCKED", "UNEXECUTED", "UNKNOWN"]},
+          "assertion_count": {"type": "integer", "minimum": 1},
+          "details_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "passed", "failed", "blocked", "unexecuted", "unknown"],
+      "properties": {
+        "total": {"const": 6},
+        "passed": {"type": "integer", "minimum": 0, "maximum": 6},
+        "failed": {"type": "integer", "minimum": 0, "maximum": 6},
+        "blocked": {"type": "integer", "minimum": 0, "maximum": 6},
+        "unexecuted": {"type": "integer", "minimum": 0, "maximum": 6},
+        "unknown": {"type": "integer", "minimum": 0, "maximum": 6}
+      }
+    },
+    "replay_match": {"type": "boolean"},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "items": {"type": "string", "minLength": 8}
+    },
+    "review_status": {"const": "PENDING"},
+    "qualification": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "promotion_effect": {"const": "BLOCK_PENDING_DURABLE_STORE_AND_HOSTILE_FAULTS"},
+    "authority_effect": {"const": "NONE"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "EXECUTED_PASS"}}},
+      "then": {
+        "properties": {
+          "source": {"properties": {"clean_tree": {"const": true}}},
+          "cases": {"items": {"properties": {"status": {"const": "PASS"}}}},
+          "summary": {"properties": {"passed": {"const": 6}, "failed": {"const": 0}, "blocked": {"const": 0}, "unexecuted": {"const": 0}, "unknown": {"const": 0}}},
+          "replay_match": {"const": true},
+          "scope": {"properties": {"real_full_snapshot_rpc": {"const": true}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sha40": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+  }
+}

@@ -1,0 +1,147 @@
+schema: heptabao.h02-openraft-inmemory-cluster.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+status: IMPLEMENTED_PENDING_EXACT_HEAD_REMOTE_EXECUTION_NOT_QUALIFIED
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+candidate:
+  candidate_id: HB-DEP-RAFT-OPENRAFT
+  package: openraft
+  version: 0.10.0-alpha.33
+  release_commit: 2be3f99a23c0ec734aefc18d1c8e756b35567c35
+  package_sha256: ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8
+  effective_rust_floor: '1.88.0'
+  state: IDENTIFIED_NOT_SELECTED
+
+supporting_packages:
+  - package: openraft-memstore
+    version: 0.10.0-alpha.33
+    package_sha256: e01ecc54eb1d048efafdb599100dba8ed9215153fc418ab51a29e918ba50261c
+    purpose: upstream-published test implementation used only by the in-memory cluster lane
+    production_selection_effect: NONE
+  - package: tokio
+    version: 1.53.1
+    package_sha256: 202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed
+    purpose: isolated candidate runtime for the OpenRaft probes
+    production_selection_effect: NONE
+  - package: validit
+    version: 0.2.5
+    source: https://github.com/drmingdrmer/validit.git
+    revision: 7016fa5e072a86092928144b3a3040381e6964e9
+    purpose: immutable source override required by the audited alpha.33 family
+    production_selection_effect: NONE
+
+implementation:
+  manifest: probes/h02/openraft-tokio/Cargo.toml
+  committed_lock: probes/h02/openraft-tokio/Cargo.lock
+  binary: heptabao-h02-openraft-inmemory-cluster
+  entrypoint: probes/h02/openraft-tokio/src/bin/inmemory_cluster.rs
+  cluster_module: probes/h02/openraft-tokio/src/bin/inmemory_cluster/cluster.rs
+  network_module: probes/h02/openraft-tokio/src/bin/inmemory_cluster/network.rs
+  node_count: 3
+  storage_kind: openraft-memstore-in-memory-test-only
+  network_kind: HeptaBao-owned in-process RaftNetworkV2 transport
+  source_copying: forbidden
+  upstream_source_runtime_dependency: false
+  core_workspace_dependency_effect: NONE
+
+real_candidate_operations:
+  - construct three Raft<TypeConfig, Arc<MemStateMachine>> instances
+  - initialize one voter, add two learners and execute joint-to-uniform membership change
+  - forward append_entries, vote, pre_vote and full_snapshot through a HeptaBao-owned in-process network
+  - commit ClientRequest values through the actual OpenRaft client_write API
+  - perform ReadIndex linearizable-read validation
+  - restart a follower with the retained in-memory log store and a fresh state machine
+  - isolate a follower, build a snapshot, heal the link and observe full-snapshot catch-up
+  - isolate or transport-pause leaders and verify failed writes do not advance committed state
+  - preserve deterministic seed, fault plan, RPC counters and replay output
+
+cases:
+  - case_id: raft-deterministic-apply-and-restart
+    required: true
+    actual_candidate_scope:
+      - replicated client writes on a three-voter OpenRaft cluster
+      - fresh state-machine reconstruction from the retained in-memory log store
+      - equal post-restart application state
+  - case_id: raft-committed-snapshot-conflict-rejected
+    required: true
+    actual_candidate_scope:
+      - lagging follower isolation
+      - real snapshot construction and RaftNetworkV2 full_snapshot delivery
+      - monotonic committed index and state convergence after heal
+    related_closure:
+      implementation: isolated hostile stale-committed-snapshot child/parent test exists
+      exact_head_execution: pending
+  - case_id: raft-joint-membership-single-writer
+    required: true
+    actual_candidate_scope:
+      - add_learner for nodes 2 and 3
+      - change_membership to voters 1,2,3
+      - one reported leader and successful ReadIndex
+  - case_id: raft-process-pause-plus-partition
+    required: true
+    actual_candidate_scope:
+      - in-process transport pause of the old leader
+      - election among the remaining majority
+      - old-leader write rejection and new-leader commit
+    related_closure:
+      Linux_SIGSTOP_harness: implemented_unqualified
+      separate_process_per_node_pause: not_implemented
+  - case_id: raft-quorum-loss-fail-closed
+    required: true
+    actual_candidate_scope:
+      - isolate the active leader from both followers
+      - bound the write attempt with a deadline
+      - verify local committed index does not advance
+  - case_id: raft-incomplete-run-replay-diagnostics
+    required: true
+    actual_candidate_scope:
+      - deterministic SplitMix64 fault plan
+      - fixed seed and last-event index
+      - protocol RPC counters retained in evidence
+
+execution_matrix:
+  toolchains: ['1.88.0', '1.98.0']
+  target: x86_64-unknown-linux-gnu
+  seeds:
+    - '0x5eed20260828cafe'
+    - '0x8badf00d12345678'
+    - '0xd15ea5e5cafef00d'
+  entries: 6
+  scheduling: SERIAL_ON_ONE_RUNNER
+  exact_head_remote_executions: 0
+  historical_executable_runner_observed: true
+  workflow: .github/workflows/h02-openraft-inmemory-cluster.yml
+
+related_implemented_closure_layers:
+  hostile_snapshot_child_process: true
+  external_linearizability_checker: true
+  Linux_process_suspend: true
+  storage_fault_seam: true
+  integrated_RaftLogStorage_and_RaftStateMachine: true
+  application_wall_clock_projection: true
+  bounded_effective_MSRV: true
+
+promotion_blockers:
+  - no current exact-head six-entry in-memory cluster pass artifact
+  - no second independently operated and attested reproduction
+  - openraft-memstore is test-only and cannot provide a production durability claim
+  - separate-process per-node restart and process suspension are absent
+  - real kernel power-cut and per-node time-namespace skew evidence are absent
+  - current exact-head hostile-snapshot and external-linearizability passes are absent
+  - current exact-head package/SBOM/advisory/license/unsafe/native/build-script closure is absent
+  - independent distributed-systems, storage, platform and security approvals are absent
+  - no signed bounded prototype-selection receipt exists
+  - H00 is not qualified and formal authority is absent
+
+invariants:
+  - All candidate and transport types remain inside probes/h02.
+  - The HeptaBao core workspace does not depend on OpenRaft or openraft-memstore.
+  - The exact validit source override is separately bound from direct dependencies.
+  - A successful six-case run remains unreviewed evidence and cannot select a candidate.
+  - Any missing, blocked, timed-out, malformed or replay-divergent case fails closed.
+  - The test memstore never creates a production durability claim.
+  - Implemented related closure layers are not represented as exact-head executions.
+  - qualification remains false and every authority effect remains NONE.

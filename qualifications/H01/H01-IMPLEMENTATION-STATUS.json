@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.h01-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h01-h02-next-foundation",
+  "program_authority_gate": "H00",
+  "work_status": "SAFE_PUBLIC_AND_SYNTHETIC_FOUNDATION_ACTIVE",
+  "delivered": {
+    "frozen_oracle_baseline": "HB-ORACLE-OPENBAO-V2_6_2",
+    "surface_catalog_items": 60,
+    "endpoint_seed_items": 51,
+    "config_seed_items": 52,
+    "cli_seed_items": 30,
+    "regression_seed_items": 21,
+    "synthetic_side_effect_contracts": 1,
+    "schemas": [
+      "heptabao.oracle-surface-inventory.v1",
+      "heptabao.oracle-endpoint-inventory.v1",
+      "heptabao.oracle-config-inventory.v1",
+      "heptabao.oracle-cli-inventory.v1",
+      "heptabao.oracle-fixture-manifest.v1",
+      "heptabao.oracle-side-effect-observation.v1",
+      "heptabao.oracle-regression-registry.v1"
+    ],
+    "normalization_policy": "HB-ORACLE-NORMALIZATION-V1",
+    "normalizer": "scripts/oracle_normalize_v1.py",
+    "side_effect_tool": "scripts/oracle_side_effect_diff_v1.py",
+    "side_effect_rust_model": "crates/heptabao-oracle-observer",
+    "cross_file_validator": "scripts/validate_h01_h02_next_v1.py",
+    "tests": [
+      "tests/oracle/test_normalize_v1.py",
+      "tests/oracle/test_side_effect_diff_v1.py"
+    ]
+  },
+  "known_metadata_corrections": [
+    {
+      "correction_id": "HB-ORACLE-CORRECTION-ENDPOINT-SEED-COUNT-001",
+      "field": "coverage.total_seeded",
+      "from": 50,
+      "to": 51,
+      "canonical_rewrite_pending": true
+    }
+  ],
+  "capture_evidence": {
+    "raw_restricted_fixtures": 0,
+    "black_box_sanitized_fixtures": 0,
+    "synthetic_contract_fixtures": 1,
+    "signed_provenance_transfers": 0,
+    "reviewed_normalization_rules": 0,
+    "qualified_fixtures": 0
+  },
+  "qualification": {
+    "status": "NOT_QUALIFIED",
+    "receipt": null,
+    "compatibility_claim": null,
+    "authority_grant": null
+  },
+  "authority_flags": {
+    "compatibility_claim": false,
+    "production_authority": false,
+    "migration_authority": false,
+    "release_authority": false,
+    "real_secret_fixture_allowed": false,
+    "root_token_fixture_allowed": false,
+    "restricted_oracle_to_implementation_transfer_allowed": false
+  },
+  "blocking_conditions": [
+    "H00 is not qualified",
+    "GitHub Runner evidence is not executable",
+    "Real Oracle/implementation ACL separation and named identities are absent",
+    "No black-box raw/sanitized fixture capture has been executed on this branch",
+    "No source-provenance transfer record has been signed",
+    "Endpoint, configuration and CLI inventories remain seed inventories rather than reviewed exhaustive inventories",
+    "Side-effect observer has synthetic contract evidence only",
+    "All regression fixtures remain planned and pending review",
+    "Independent compatibility and security approvals are absent"
+  ],
+  "authority_effect": "NONE"
+}

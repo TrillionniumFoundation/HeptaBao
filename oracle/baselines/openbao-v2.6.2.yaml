@@ -1,0 +1,64 @@
+schema: heptabao.oracle-baseline.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+plan_revision: '1.1'
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+status: FROZEN_RESEARCH_BASELINE_NOT_COMPATIBILITY_AUTHORITY
+captured_at_utc: '2026-08-28T00:00:00Z'
+product:
+  name: OpenBao
+  repository: https://github.com/openbao/openbao
+  license: MPL-2.0
+release:
+  tag: v2.6.2
+  version: 2.6.2
+  published_at_utc: '2026-08-18T16:21:00Z'
+  commit_sha: dd9c19c37a878cf4a81b18efb8d6f0599c7da923
+  tree_sha: 308de7e6da19d8b994c5710ffd715ce4cedde448
+  commit_signature_verified_by_github: true
+artifacts:
+  distribution_source:
+    name: openbao-dist-v2.6.2.tar.xz
+    sha256: a7784550a9db16f24e99d65a18c9b12a433707c79ef4c1f34262d3f48171c7a9
+    use: restricted Oracle/specification lane only until provenance transfer approval
+  checksums:
+    name: checksums.txt
+    sha256: 3d4a19fdc54a86fd94ce59ea91316dbf4304180bb27ae818e78e85c7f2164645
+  checksums_sigstore:
+    name: checksums.txt.sigstore.json
+    sha256: 29b6e158e63a90470e090461364afd2e559ab920afb3cd912e01fddff39c18e8
+source_observations:
+  core_path: vault/
+  barrier_path: vault/barrier/
+  physical_backends_path: physical/
+  auth_methods_path: builtin/credential/
+  secret_engines_path: builtin/logical/
+  audit_devices_path: builtin/audit/
+  plugin_sdk_path: sdk/plugin/
+  cli_path: command/
+  public_source_consumable_by_implementation: false
+frozen_behavior_scope:
+  - HTTP API and error behavior
+  - HCL configuration and environment behavior
+  - CLI, operator, Agent and Proxy behavior
+  - policy, identity, token, lease and audit side effects
+  - plugin protocol and lifecycle
+  - namespace, profile, workflow and self-init behavior
+  - PostgreSQL and Integrated Raft storage behavior
+  - active, standby, forwarding, snapshot and restore behavior
+  - built-in auth methods, secret engines and database providers
+  - migration-observable behavior
+not_claimed:
+  - physical raft.db compatibility
+  - barrier ciphertext byte compatibility
+  - mixed OpenBao/HeptaBao cluster compatibility
+  - future OpenBao release behavior
+  - unregistered third-party plugin compatibility
+  - production authority
+integrity_rules:
+  - This manifest is immutable after review; corrections create a superseding manifest.
+  - Every fixture binds this baseline ID, release commit, artifact digest, config digest and capture environment.
+  - Raw and sanitized fixtures have distinct digests.
+  - Normalization never removes an unreviewed security-relevant field.
+  - A new upstream security release may invalidate affected claims but never rewrites historical evidence.
+authority_effect: NONE
+qualification_status: NOT_QUALIFIED

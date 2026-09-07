@@ -1,0 +1,57 @@
+schema: heptabao.dependency-research-capture.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+plan_revision: '1.1'
+capture_id: HB-DEP-CAPTURE-ASYNC-TOKIO-0001
+candidate_id: HB-DEP-ASYNC-TOKIO
+capability: ASYNC_RUNTIME
+capture_status: OFFICIAL_METADATA_CAPTURED_UNREVIEWED
+captured_at_utc: '2026-08-28T06:30:00Z'
+official_source:
+  repository: https://github.com/tokio-rs/tokio
+  release_api: https://api.github.com/repos/tokio-rs/tokio/releases/356880872
+  tag_ref_api: https://api.github.com/repos/tokio-rs/tokio/git/refs/tags/tokio-1.53.1
+  manifest_path: tokio/Cargo.toml
+  manifest_ref: tokio-1.53.1
+release:
+  tag: tokio-1.53.1
+  version: 1.53.1
+  published_at_utc: '2026-07-20T17:06:31Z'
+  commit_sha: 75fef53d0a8590c2d1dbb63672aa7b7d1ef51155
+  tree_sha: 26def82f663c2936cbd062e54c8cf8db81fc2a1c
+  commit_signature_status: VERIFIED
+manifest_observation:
+  package_names: [tokio]
+  declared_license: MIT
+  edition: '2021'
+  declared_rust_version: '1.71'
+  default_features: []
+  manifest_blob_sha: e260bbc5bd9f47243ff40ad36b994ba5cf1bd96d
+source_integrity:
+  tag_resolves_to_commit: true
+  commit_tree_resolved: true
+  source_archive_sha256: null
+  crate_package_checksum: null
+  integrity_status: PARTIAL_OFFICIAL_GIT_METADATA_ONLY
+review_status:
+  license: CAPTURED_UNREVIEWED
+  maintenance: CAPTURED_UNREVIEWED
+  security_advisories: PENDING
+  unsafe_inventory: PENDING
+  msrv_verification: DECLARED_NOT_EXECUTED
+  api_replacement_seam: DESIGNED_UNREVIEWED
+  deterministic_tests: IDENTIFIED_UNEXECUTED
+  benchmark: PENDING
+  qualification_plan: DRAFTED
+  independent_review: PENDING
+selection_state: IDENTIFIED
+authority_effect: NONE
+remaining_evidence:
+  - bind and verify the crates.io-index checksum in the separate registry evidence object
+  - download and hash the release source archive and crates.io package in an attested runner
+  - review all Tokio and transitive security advisories for the pinned graph
+  - inventory unsafe code and OS-specific FFI paths under the proposed feature set
+  - build and test the proposed minimal feature profile on Rust 1.98.0 and the declared MSRV
+  - validate cancellation, time, signal, shutdown and deterministic scheduler semantics
+  - benchmark candidate profiles against the HeptaBao runtime trait
+  - obtain platform and security approvals
+  - issue no prototype selection receipt until every mandatory field is complete

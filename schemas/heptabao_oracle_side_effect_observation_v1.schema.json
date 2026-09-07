@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/oracle-side-effect-observation-v1.json",
+  "title": "HeptaBao Oracle Side-Effect Observation V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "baseline_id",
+    "observation_id",
+    "operation_id",
+    "capture_kind",
+    "status",
+    "artifact_signature_verified",
+    "secret_material_present",
+    "before",
+    "after",
+    "declared_policy",
+    "delta",
+    "raw_capture_digest_sha256",
+    "sanitized_capture_digest_sha256",
+    "provenance_ref",
+    "review_status",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.oracle-side-effect-observation.v1"},
+    "baseline_id": {"const": "HB-ORACLE-OPENBAO-V2_6_2"},
+    "observation_id": {"pattern": "^HB-OSE-[A-Z0-9._-]{8,200}$"},
+    "operation_id": {"type": "string", "minLength": 1},
+    "capture_kind": {"enum": ["SYNTHETIC_CONTRACT", "BLACK_BOX_ORACLE"]},
+    "status": {"enum": ["SYNTHETIC_CONTRACT", "RAW_RESTRICTED", "SANITIZED", "REVIEWED", "QUALIFIED", "SUPERSEDED"]},
+    "artifact_signature_verified": {"type": "boolean"},
+    "secret_material_present": {"const": false},
+    "before": {"$ref": "#/$defs/snapshot"},
+    "after": {"$ref": "#/$defs/snapshot"},
+    "declared_policy": {"$ref": "#/$defs/policy"},
+    "delta": {"$ref": "#/$defs/delta"},
+    "raw_capture_digest_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "sanitized_capture_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "provenance_ref": {"type": "string", "minLength": 1},
+    "review_status": {"enum": ["PENDING", "APPROVED", "REJECTED", "SUPERSEDED"]},
+    "authority_effect": {"const": "NONE"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"capture_kind": {"const": "BLACK_BOX_ORACLE"}}},
+      "then": {
+        "properties": {
+          "artifact_signature_verified": {"const": true},
+          "raw_capture_digest_sha256": {"type": "string"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["REVIEWED", "QUALIFIED"]}}},
+      "then": {"properties": {"review_status": {"const": "APPROVED"}}}
+    }
+  ],
+  "$defs": {
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mount_revision", "policy_revision", "token_count", "lease_count", "audit_event_count", "plugin_process_count", "raft_commit_index", "external_effect_receipt_count", "sealed", "active"],
+      "properties": {
+        "mount_revision": {"type": "integer", "minimum": 0},
+        "policy_revision": {"type": "integer", "minimum": 0},
+        "token_count": {"type": "integer", "minimum": 0},
+        "lease_count": {"type": "integer", "minimum": 0},
+        "audit_event_count": {"type": "integer", "minimum": 0},
+        "plugin_process_count": {"type": "integer", "minimum": 0},
+        "raft_commit_index": {"type": "integer", "minimum": 0},
+        "external_effect_receipt_count": {"type": "integer", "minimum": 0},
+        "sealed": {"type": "boolean"},
+        "active": {"type": "boolean"}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allow_mount_revision", "allow_policy_revision", "allow_token_count", "allow_lease_count", "allow_audit_event_count", "allow_plugin_process_count", "allow_raft_commit_index", "allow_external_effect_receipt_count", "allow_seal_transition", "allow_active_transition"],
+      "properties": {
+        "allow_mount_revision": {"type": "boolean"},
+        "allow_policy_revision": {"type": "boolean"},
+        "allow_token_count": {"type": "boolean"},
+        "allow_lease_count": {"type": "boolean"},
+        "allow_audit_event_count": {"type": "boolean"},
+        "allow_plugin_process_count": {"type": "boolean"},
+        "allow_raft_commit_index": {"type": "boolean"},
+        "allow_external_effect_receipt_count": {"type": "boolean"},
+        "allow_seal_transition": {"type": "boolean"},
+        "allow_active_transition": {"type": "boolean"}
+      }
+    },
+    "delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mount_revision", "policy_revision", "token_count", "lease_count", "audit_event_count", "plugin_process_count", "raft_commit_index", "external_effect_receipt_count", "sealed_changed", "active_changed"],
+      "properties": {
+        "mount_revision": {"type": "integer"},
+        "policy_revision": {"type": "integer"},
+        "token_count": {"type": "integer"},
+        "lease_count": {"type": "integer"},
+        "audit_event_count": {"type": "integer"},
+        "plugin_process_count": {"type": "integer"},
+        "raft_commit_index": {"type": "integer"},
+        "external_effect_receipt_count": {"type": "integer"},
+        "sealed_changed": {"type": "boolean"},
+        "active_changed": {"type": "boolean"}
+      }
+    }
+  }
+}

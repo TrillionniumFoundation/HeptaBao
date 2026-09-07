@@ -1,0 +1,726 @@
+schema: heptabao.oracle-surface-inventory.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+inventory_id: HB-INV-OPENBAO-V2_6_2-SURFACES
+status: SEED
+generated_at_utc: '2026-08-28T00:00:00Z'
+source_provenance:
+  product: OpenBao
+  tag: v2.6.2
+  commit_sha: dd9c19c37a878cf4a81b18efb8d6f0599c7da923
+  tree_sha: 308de7e6da19d8b994c5710ffd715ce4cedde448
+  artifact_sha256: a7784550a9db16f24e99d65a18c9b12a433707c79ef4c1f34262d3f48171c7a9
+  source_class: SANITIZED_SOURCE_SURFACE_FACT
+categories:
+  - id: core_system
+    title: Core and system surfaces
+    owner_gate: H07
+    items:
+      - id: HB-SURFACE-CORE-REQUEST-PIPELINE
+        name: Core request, routing and backend dispatch pipeline
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://internals/architecture
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H07-WP01, H07-WP02, H07-WP06, H07-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: Must distinguish pure reads, durable mutations and side-effecting reads.
+      - id: HB-SURFACE-SYSTEM-BACKEND
+        name: System backend and sys route registry
+        kind: SYSTEM
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://vault/logical_system.go
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H07-WP05, H07-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P2-RAFT-HA, HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Endpoint-level inventory remains incomplete.
+      - id: HB-SURFACE-MOUNT-REGISTRY
+        name: Auth, secret and audit mount registry, tune, remount and disable
+        kind: SYSTEM
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/mounts
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H07-WP03, H07-WP04, H07-WP07]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Requires revision, CAS, cache invalidation and crash fixtures.
+      - id: HB-SURFACE-POLICY-ACL
+        name: Policy parser, ACL decision, templates and parameter constraints
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/policies
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H08-WP01, H08-WP02, H08-WP03, H08-WP04, H08-WP05, H08-WP06, H08-WP07, H08-WP08, H08-WP09, H08-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Security advisories and path/glob/list/scan edge cases require dedicated corpus.
+      - id: HB-SURFACE-IDENTITY
+        name: Entity, alias, group, MFA and OIDC provider
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/identity
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H09-WP01, H09-WP02, H09-WP03, H09-WP04, H09-WP05, H09-WP06, H09-WP07, H09-WP08, H09-WP09, H09-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P9-NAMESPACE-WORKFLOW, HB-P12-FULL-C5]
+        notes: Namespace and mount non-interference are release blockers.
+      - id: HB-SURFACE-TOKEN
+        name: Service, batch and recovery token store and revocation graph
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/tokens
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H10-WP01, H10-WP02, H10-WP03, H10-WP04, H10-WP05, H10-WP06, H10-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P3-AUTH-WAVE-A, HB-P12-FULL-C5]
+        notes: Includes parent/orphan, periodic, explicit max TTL, uses and CIDR semantics.
+      - id: HB-SURFACE-CUBBYHOLE-WRAPPING
+        name: Cubbyhole and response wrapping lifecycle
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/response-wrapping
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H10-WP07, H10-WP08]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Single-use and active/standby response-loss behavior require race fixtures.
+      - id: HB-SURFACE-LEASE-EXPIRATION
+        name: Lease, expiration, renew, revoke, WAL and rollback manager
+        kind: CORE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/lease
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H11-WP01, H11-WP02, H11-WP03, H11-WP04, H11-WP05, H11-WP06, H11-WP07, H11-WP08, H11-WP09, H11-WP10, H11-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: External effect ambiguity must remain indeterminate until evidence.
+  - id: auth_methods
+    title: Built-in authentication methods
+    owner_gate: H16
+    items:
+      - id: HB-SURFACE-AUTH-TOKEN
+        name: Token auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/token
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP01, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P3-AUTH-WAVE-A, HB-P12-FULL-C5]
+        notes: HTTP/API projection delegates durable token state to heptabao-token.
+      - id: HB-SURFACE-AUTH-USERPASS
+        name: Userpass auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/userpass
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP02, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P3-AUTH-WAVE-A, HB-P12-FULL-C5]
+        notes: Password hashing, lockout and audit require exact profiles.
+      - id: HB-SURFACE-AUTH-APPROLE
+        name: AppRole auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/approle
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP03, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P3-AUTH-WAVE-A, HB-P12-FULL-C5]
+        notes: Role ID, secret ID, wrapping, CIDR and single-use behavior.
+      - id: HB-SURFACE-AUTH-CERT
+        name: Certificate auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/cert
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP04, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P3-AUTH-WAVE-A, HB-P12-FULL-C5]
+        notes: Chain, CRL, OCSP and trusted-forwarded-certificate behavior.
+      - id: HB-SURFACE-AUTH-JWT-OIDC
+        name: JWT and OIDC auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/jwt
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP05, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P4-AUTH-WAVE-B, HB-P12-FULL-C5]
+        notes: Algorithm, issuer, audience, JWKS, callback, CEL and MFA.
+      - id: HB-SURFACE-AUTH-KUBERNETES
+        name: Kubernetes auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/kubernetes
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP06, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P4-AUTH-WAVE-B, HB-P12-FULL-C5]
+        notes: TokenReview, service-account binding and TLS trust.
+      - id: HB-SURFACE-AUTH-LDAP
+        name: LDAP auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/ldap
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP07, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P5-AUTH-WAVE-C, HB-P12-FULL-C5]
+        notes: Bind/search/group escaping, TLS and credential rotation.
+      - id: HB-SURFACE-AUTH-RADIUS
+        name: RADIUS auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/radius
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP08, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P5-AUTH-WAVE-C, HB-P12-FULL-C5]
+        notes: Shared-secret handling, replay, timeout and fail-closed behavior.
+      - id: HB-SURFACE-AUTH-KERBEROS
+        name: Kerberos auth method
+        kind: AUTH_METHOD
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/credential/kerberos
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H16-WP09, H16-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P5-AUTH-WAVE-C, HB-P12-FULL-C5]
+        notes: SPNEGO/PAC, realm and clock behavior; may be feature-gated but remains v2.6.2 target.
+  - id: secret_engines
+    title: Built-in secret engines
+    owner_gate: H17
+    items:
+      - id: HB-SURFACE-SECRET-KV
+        name: KV v1 and v2
+        kind: SECRET_ENGINE
+        criticality: DATA_DURABILITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/kv
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H17-WP02, H17-WP03, H17-WP04, H17-WP05, H17-WP06, H17-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P6-SECRETS-FOUNDATION, HB-P12-FULL-C5]
+        notes: CAS, versions, metadata, delete/undelete/destroy, list/scan and pagination.
+      - id: HB-SURFACE-SECRET-TRANSIT
+        name: Transit cryptographic engine
+        kind: SECRET_ENGINE
+        criticality: CRYPTO_CRITICAL
+        source_reference: public-source-surface://builtin/logical/transit
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H17-WP07, H17-WP08, H17-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P6-SECRETS-FOUNDATION, HB-P12-FULL-C5]
+        notes: Key lifecycle, encrypt/decrypt/rewrap/sign/verify/HMAC/hash/random.
+      - id: HB-SURFACE-SECRET-TOTP
+        name: TOTP secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/totp
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H17-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P6-SECRETS-FOUNDATION, HB-P12-FULL-C5]
+        notes: Import, generate, code, validate, period and expiry.
+      - id: HB-SURFACE-SECRET-PKI
+        name: PKI engine
+        kind: SECRET_ENGINE
+        criticality: CRYPTO_CRITICAL
+        source_reference: public-source-surface://builtin/logical/pki
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H18-WP01, H18-WP02, H18-WP03, H18-WP04, H18-WP05]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
+        notes: Roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy.
+      - id: HB-SURFACE-SECRET-PKIEXT
+        name: PKI extension engine
+        kind: SECRET_ENGINE
+        criticality: CRYPTO_CRITICAL
+        source_reference: public-source-surface://builtin/logical/pkiext
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H18-WP06]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
+        notes: Separate compatibility and protocol inventory required.
+      - id: HB-SURFACE-SECRET-SSH
+        name: SSH secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/ssh
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H18-WP07, H18-WP08, H18-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
+        notes: Signed certificates, OTP, user/domain constraints and TTL.
+      - id: HB-SURFACE-SECRET-DATABASE
+        name: Database secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/database
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP01, H19-WP02, H19-WP03, H19-WP04]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback.
+      - id: HB-SURFACE-SECRET-KUBERNETES
+        name: Kubernetes dynamic secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/kubernetes
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP10, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Dynamic service-account/token credentials and revocation.
+      - id: HB-SURFACE-SECRET-OPENLDAP
+        name: OpenLDAP dynamic secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/openldap
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP11, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Dynamic LDAP credentials, expiry and revoke behavior.
+      - id: HB-SURFACE-SECRET-RABBITMQ
+        name: RabbitMQ dynamic secret engine
+        kind: SECRET_ENGINE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/logical/rabbitmq
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP12, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Users, vhosts, permissions, lease and revocation lifecycle.
+  - id: database_providers
+    title: Built-in database providers
+    owner_gate: H19
+    items:
+      - id: HB-SURFACE-DB-POSTGRESQL
+        name: PostgreSQL database provider
+        kind: DATABASE_PROVIDER
+        criticality: SECURITY_CRITICAL
+        source_reference: public-product-surface://database/postgresql
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP05, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Real version/TLS/root-rotation/static/dynamic/renew/revoke matrix required.
+      - id: HB-SURFACE-DB-MYSQL
+        name: MySQL database provider
+        kind: DATABASE_PROVIDER
+        criticality: SECURITY_CRITICAL
+        source_reference: public-product-surface://database/mysql
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP06, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Real service and statement/rollback matrix required.
+      - id: HB-SURFACE-DB-CASSANDRA
+        name: Cassandra database provider
+        kind: DATABASE_PROVIDER
+        criticality: SECURITY_CRITICAL
+        source_reference: public-product-surface://database/cassandra
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP07, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Real service, network-partition and revoke matrix required.
+      - id: HB-SURFACE-DB-INFLUXDB
+        name: InfluxDB database provider
+        kind: DATABASE_PROVIDER
+        criticality: SECURITY_CRITICAL
+        source_reference: public-product-surface://database/influxdb
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP08, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Real service and token lifecycle matrix required.
+      - id: HB-SURFACE-DB-VALKEY
+        name: Valkey database provider
+        kind: DATABASE_PROVIDER
+        criticality: SECURITY_CRITICAL
+        source_reference: public-product-surface://database/valkey
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H19-WP09, H19-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Real version, ACL, TLS, rotate and revoke matrix required.
+  - id: audit_devices
+    title: Built-in audit devices
+    owner_gate: H12
+    items:
+      - id: HB-SURFACE-AUDIT-FILE
+        name: File audit device
+        kind: AUDIT_DEVICE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/audit/file
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H12-WP05, H12-WP10, H12-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Permissions, rotation, disk-full and partial-line behavior.
+      - id: HB-SURFACE-AUDIT-HTTP
+        name: HTTP audit device
+        kind: AUDIT_DEVICE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/audit/http
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H12-WP06, H12-WP10, H12-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: TLS, redirect, timeout, SSRF and blocked destination behavior.
+      - id: HB-SURFACE-AUDIT-SOCKET
+        name: Socket audit device
+        kind: AUDIT_DEVICE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/audit/socket
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H12-WP07, H12-WP10, H12-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Blocking, reconnect, partial write and lifecycle behavior.
+      - id: HB-SURFACE-AUDIT-SYSLOG
+        name: Syslog audit device
+        kind: AUDIT_DEVICE
+        criticality: SECURITY_CRITICAL
+        source_reference: public-source-surface://builtin/audit/syslog
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H12-WP08, H12-WP10, H12-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Facility/tag/network/local delivery and outage behavior.
+  - id: storage_backends
+    title: Production storage backends
+    owner_gate: H20
+    items:
+      - id: HB-SURFACE-STORAGE-POSTGRESQL
+        name: PostgreSQL physical storage
+        kind: STORAGE_BACKEND
+        criticality: DATA_DURABILITY_CRITICAL
+        source_reference: public-source-surface://physical/postgresql
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H04-WP04, H04-WP05, H04-WP06, H04-WP07, H04-WP08, H04-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P1-CORE-POSTGRES, HB-P12-FULL-C5]
+        notes: Transactions, locks, consistency, migration and durability.
+      - id: HB-SURFACE-STORAGE-RAFT
+        name: Integrated Raft storage
+        kind: STORAGE_BACKEND
+        criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+        source_reference: public-source-surface://physical/raft
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H20-WP01, H20-WP02, H20-WP03, H20-WP04, H20-WP05, H20-WP06, H20-WP07, H20-WP08, H20-WP09, H20-WP10, H20-WP11, H20-WP12]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: FSM, log, snapshot, chunking, membership, non-voter and autopilot.
+  - id: plugin_classes
+    title: External plugin classes and lifecycle
+    owner_gate: H13
+    items:
+      - id: HB-SURFACE-PLUGIN-AUTH
+        name: External auth plugin class
+        kind: PLUGIN_CLASS
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://plugins/auth
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H13-WP01, H13-WP02, H13-WP03, H13-WP04, H13-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P3-AUTH-WAVE-A, HB-P4-AUTH-WAVE-B, HB-P5-AUTH-WAVE-C, HB-P12-FULL-C5]
+        notes: Go plugin interoperability and token result contracts.
+      - id: HB-SURFACE-PLUGIN-SECRET
+        name: External secret plugin class
+        kind: PLUGIN_CLASS
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://plugins/secret
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H13-WP01, H13-WP02, H13-WP03, H13-WP04, H13-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P6-SECRETS-FOUNDATION, HB-P7-PKI-SSH, HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Lease/effect lifecycle and rollback callbacks.
+      - id: HB-SURFACE-PLUGIN-DATABASE
+        name: External database plugin class
+        kind: PLUGIN_CLASS
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://plugins/database
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H13-WP01, H13-WP02, H13-WP03, H13-WP04, H13-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P8-DYNAMIC, HB-P12-FULL-C5]
+        notes: Connection lifecycle, static/dynamic users and root rotation.
+      - id: HB-SURFACE-PLUGIN-KMS
+        name: External KMS plugin class
+        kind: PLUGIN_CLASS
+        criticality: CRYPTO_CRITICAL
+        source_reference: public-docs://plugins/kms
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H13-WP01, H13-WP02, H13-WP03, H13-WP04, H13-WP12]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P12-FULL-C5]
+        notes: Key identity, version, outage and recovery behavior.
+  - id: cluster_ha
+    title: Integrated storage, HA and cluster behavior
+    owner_gate: H21
+    items:
+      - id: HB-SURFACE-CLUSTER-MTLS
+        name: Cluster mTLS and node identity
+        kind: CLUSTER_HA
+        criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+        source_reference: public-docs://internals/ha
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H21-WP01, H21-WP02, H21-WP03]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: Cluster ID, node ID, cert rotation, join challenge and replay.
+      - id: HB-SURFACE-CLUSTER-FORWARDING
+        name: Active/standby request forwarding and redirect
+        kind: CLUSTER_HA
+        criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+        source_reference: public-docs://concepts/ha
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H21-WP04, H21-WP05, H21-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: Token/wrap/namespace/context preservation and origin protection.
+      - id: HB-SURFACE-CLUSTER-READ-STANDBY
+        name: Read-enabled standby and freshness policy
+        kind: CLUSTER_HA
+        criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+        source_reference: public-docs://configuration/read-standby
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H21-WP06, H21-WP07]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: HTTP GET is not automatically safe; lease-issuing reads remain active-only.
+      - id: HB-SURFACE-CLUSTER-STEPDOWN
+        name: Stepdown, active fencing and failover
+        kind: CLUSTER_HA
+        criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+        source_reference: public-docs://commands/operator-step-down
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H21-WP08, H21-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: Old owner effects must stop before a new owner starts.
+      - id: HB-SURFACE-CLUSTER-AUTOPILOT
+        name: Autopilot health and reconcile
+        kind: CLUSTER_HA
+        criticality: OPERATOR_CRITICAL
+        source_reference: public-source-surface://physical/raft/autopilot
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H20-WP10, H21-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P2-RAFT-HA, HB-P12-FULL-C5]
+        notes: Health, promotion and membership decisions require deterministic evidence.
+  - id: client_operator
+    title: Server, CLI, Agent, Proxy and operator surfaces
+    owner_gate: H22
+    items:
+      - id: HB-SURFACE-EDGE-HTTP-TLS
+        name: HTTP/TLS listener and protocol edge
+        kind: CLIENT_OPERATOR
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://configuration/listener
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H22-WP01, H22-WP02, H22-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Smuggling, limits, CORS, Host, forwarded certificate, redirect and HTTP/2.
+      - id: HB-SURFACE-CLI-ROOT
+        name: Bao-compatible CLI
+        kind: CLIENT_OPERATOR
+        criticality: OPERATOR_CRITICAL
+        source_reference: public-source-surface://command
+        source_class: SANITIZED_SOURCE_SURFACE_FACT
+        owner_work_packages: [H22-WP03, H22-WP04, H22-WP05]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Command, flag, env, output, exit code and signal inventory incomplete.
+      - id: HB-SURFACE-AGENT
+        name: Agent auto-auth, cache, templates and sinks
+        kind: CLIENT_OPERATOR
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://agent
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H22-WP06, H22-WP07]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Sink permissions, rotation, stale-cache and secret-output controls.
+      - id: HB-SURFACE-PROXY
+        name: Proxy token, TLS, retry and cache behavior
+        kind: CLIENT_OPERATOR
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://proxy
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H22-WP08]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Proxy must not bypass server policy/audit or replay ambiguous requests.
+      - id: HB-SURFACE-OPENAPI-UI
+        name: OpenAPI and browser UI protocol adapter
+        kind: CLIENT_OPERATOR
+        criticality: COMPATIBILITY_CRITICAL
+        source_reference: public-docs://api/openapi
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H22-WP09, H22-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: UI implementation language is not part of the Rust server claim.
+      - id: HB-SURFACE-OPERATIONS
+        name: Telemetry, quotas, lockout, diagnose, reload and runbooks
+        kind: CLIENT_OPERATOR
+        criticality: OPERATOR_CRITICAL
+        source_reference: public-docs://operations
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H23-WP01, H23-WP02, H23-WP03, H23-WP04, H23-WP05, H23-WP06, H23-WP07, H23-WP08, H23-WP09, H23-WP10, H23-WP11]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P10-CLIENT-OPS, HB-P12-FULL-C5]
+        notes: Atomic reload and no-secret observability are critical.
+  - id: namespace_workflow
+    title: Namespace, profile, workflow and self-init surfaces
+    owner_gate: H14
+    items:
+      - id: HB-SURFACE-NAMESPACE-TREE
+        name: Nested namespace tree and isolation
+        kind: NAMESPACE_WORKFLOW
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://concepts/namespaces
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H14-WP01, H14-WP02, H14-WP03, H14-WP04, H14-WP05, H14-WP06]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P9-NAMESPACE-WORKFLOW, HB-P12-FULL-C5]
+        notes: Storage, policy, identity, token, lease, audit and plugin context isolation.
+      - id: HB-SURFACE-NAMESPACE-SEAL
+        name: Namespace sealing and independent key material
+        kind: NAMESPACE_WORKFLOW
+        criticality: CRYPTO_CRITICAL
+        source_reference: public-docs://concepts/namespace-seal
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H14-WP07, H14-WP08, H14-WP09, H14-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P9-NAMESPACE-WORKFLOW, HB-P12-FULL-C5]
+        notes: Delete/recreate/restore and standby synchronization require dedicated state models.
+      - id: HB-SURFACE-PROFILES-WORKFLOWS
+        name: Profiles, CEL/templates and workflows
+        kind: NAMESPACE_WORKFLOW
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://workflows
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H15-WP01, H15-WP02, H15-WP03, H15-WP04, H15-WP05, H15-WP06, H15-WP10]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P9-NAMESPACE-WORKFLOW, HB-P12-FULL-C5]
+        notes: Internal operation construction, SSRF, secret echo and resource limits.
+      - id: HB-SURFACE-SELF-INIT
+        name: Declarative self-initialization and transient-root cleanup
+        kind: NAMESPACE_WORKFLOW
+        criticality: SECURITY_CRITICAL
+        source_reference: public-docs://configuration/self-init
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H15-WP07, H15-WP08, H15-WP09]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P9-NAMESPACE-WORKFLOW, HB-P12-FULL-C5]
+        notes: Crash/resume idempotency and unconditional transient-root revocation.
+  - id: migration
+    title: OpenBao migration and release continuity
+    owner_gate: H24
+    items:
+      - id: HB-SURFACE-MIGRATION-LOGICAL
+        name: Logical export/import and behavioral verification
+        kind: MIGRATION
+        criticality: OPERATOR_CRITICAL
+        source_reference: heptabao-plan://H24/logical-migration
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H24-WP01, H24-WP02, H24-WP03, H24-WP06, H24-WP07]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P11-MIGRATE-OPENBAO-2_6, HB-P12-FULL-C5]
+        notes: Preferred path; exact source-target version pair required.
+      - id: HB-SURFACE-MIGRATION-SNAPSHOT
+        name: Snapshot inspection and conversion
+        kind: MIGRATION
+        criticality: DATA_DURABILITY_CRITICAL
+        source_reference: heptabao-plan://H24/snapshot-conversion
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H24-WP04, H24-WP05]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P11-MIGRATE-OPENBAO-2_6, HB-P12-FULL-C5]
+        notes: Direct raft.db mutation is excluded; parser requires separate qualification.
+      - id: HB-SURFACE-MIGRATION-CUTOVER
+        name: Shadow, freeze, final delta, authority switch and recovery
+        kind: MIGRATION
+        criticality: SECURITY_CRITICAL
+        source_reference: heptabao-spec://migration-authority-state-machine-v1
+        source_class: PUBLIC_PRODUCT_DOCUMENTATION
+        owner_work_packages: [H24-WP08, H24-WP09, H24-WP10, H24-WP11, H24-WP12, H24-WP13]
+        inventory_status: IDENTIFIED
+        fixture_status: PLANNED
+        support_profiles: [HB-P11-MIGRATE-OPENBAO-2_6, HB-P12-FULL-C5]
+        notes: Source and target writers never overlap; unknown authority means no writer.
+coverage:
+  total_items: 60
+  identified: 60
+  captured: 0
+  reviewed: 0
+  qualified: 0
+  unowned_critical: 0
+  unclassified: 0
+authority_effect: NONE

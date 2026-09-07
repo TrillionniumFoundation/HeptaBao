@@ -1,0 +1,190 @@
+schema: heptabao.blocker-register-extension.v1_4_6
+plan_id: HEPTABAO-PLAN-2026-09-02
+revision: 1.4.6
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_5.yaml
+source_baseline:
+  commit: 936cb5599d206cea895de2ae04a1289a0b3a0326
+  tree: 7c2ac2adc8eff42360950dcd425eb20e894c3c22
+added_blockers:
+- id: HB-BLK-REPO-049
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: rollback anchor currentness was not held across irreversible recovery publication
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - rollback provider serializes exact-current comparison and publication against anchor CAS
+  - recovery target staging and publication occur inside the provider fence
+  - hostile test proves the anchor serialization lock is held during publish
+  evidence:
+  - crates/heptabao-rollback-anchor/src/lib.rs
+  - crates/heptabao-recovery-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-050
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: recovery target empty check and staging were separate TOCTOU operations
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - target exposes atomic stage_if_empty admission
+  - target-not-empty is a distinct fail-closed disposition
+  - no advisory is_empty method remains in the recovery target contract
+  evidence:
+  - crates/heptabao-recovery-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-051
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: interrupted durable mutation lacked authoritative provider recovery
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - operation ledger persists exact generation and digest at IntentCommitted
+  - store classifies committed absent or conflicting state by authoritative readback
+  - exact authenticated orphan bundle is the only publication that recovery may complete
+  - generic durable reconciliation remains forbidden
+  evidence:
+  - crates/heptabao-storage-api/src/lib.rs
+  - crates/heptabao-single-node-store/src/lib.rs
+  - crates/heptabao-durable-core/src/lib.rs
+  - crates/heptabao-journaled-core/src/lib.rs
+  - crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-052
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: append-unknown hostile evidence did not persist before returning the injected error
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - hostile journal stores event bytes before the injected failure
+  - ledger enters ReplayRequired and rejects further writes
+  - authoritative recovery reconstructs the persisted operation
+  evidence:
+  - crates/heptabao-operation-ledger/src/lib.rs
+  - crates/heptabao-key-lifecycle/src/lib.rs
+  - crates/heptabao-single-node-journal/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-053
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: single-node store durable files inherited ambient Unix umask
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - every new marker control temporary and generation-bundle file is created mode 0600 on Unix
+  - hostile permission test checks marker CURRENT and bundle
+  evidence:
+  - crates/heptabao-single-node-store/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-054
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: push and pull-request checks could share ambiguous required-check contexts
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - permanent V1.4.6 workflow is pull-request-only and read-only
+  - exact-head and prospective-merge checks have distinct names and immutable refs
+  - inherited V1.4.5 change-surface proof is bound to immutable V1.4.5 checkpoint while current head and merge regressions still execute
+  - materializer workflows diagnostics and apply scripts are absent from candidate source
+  evidence:
+  - .github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml
+  - .github/workflows/plan-v1.4.5-security-invariant-closure.yml
+  - scripts/validate_plan_v1_4_6.py
+  - scripts/validate_plan_v1_4_5.py
+  - tests/plan/test_plan_v1_4_5.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-055
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: recovery capability and crash semantics were not documented at implementation depth
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - normative protocol contains capability topology recovery sequence and failure matrices
+  - storage and journal crash boundaries are explicit
+  - affected module guides contain exact V1.4.6 addenda
+  - hostile validator tests reject semantic regression
+  evidence:
+  - docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md
+  - docs/modules
+  - tests/plan/test_plan_v1_4_6.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-056
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: parallel filesystem-guard tests could retain unrelated writer locks across fork before exec
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - all crate-local writer-fence tests acquire one process-local serialization guard
+  - cross-process fencing test still proves busy-before-release and available-after-release
+  - semantic and hostile validators reject removal of the isolation guard
+  - exact-head and prospective-merge full-workspace runs both pass
+  evidence:
+  - crates/heptabao-filesystem-guard/src/lib.rs
+  - docs/modules/heptabao-filesystem-guard.md
+  - scripts/validate_plan_v1_4_6.py
+  - tests/plan/test_plan_v1_4_6.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-057
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: outer anchor-fence failure could relabel a completed recovery publication as a safe pre-entry failure
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - AnchorFenceError distinguishes checkpoint rejection provider failure before entry and uncertainty after operation entry
+  - CheckpointNotCurrent and ProviderBeforeEntry guarantee the publication closure was not invoked
+  - OutcomeUnknownAfterEntry is mandatory whenever fence validity or completion is uncertain after closure entry
+  - RecoveryRestorer preserves anchor contract provider and checkpoint-authenticator failure classes
+  - deterministic hostile provider publishes the target and then fails fence completion
+  - post-entry fence failure returns AnchorFenceOutcomeUnknown and requires anchor plus target reconciliation before retry
+  evidence:
+  - crates/heptabao-rollback-anchor/src/lib.rs
+  - crates/heptabao-recovery-core/src/lib.rs
+  - docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md
+  - docs/modules/heptabao-rollback-anchor.md
+  - docs/modules/heptabao-recovery-core.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-058
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: inherited Rust semantic validation was sensitive to rustfmt whitespace
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - Rust required-token checks ignore only insignificant whitespace introduced by formatting
+  - non-Rust semantic tokens remain exact
+  - hostile tests still reject removal or renaming of required symbols
+  - positive regression proves a rustfmt line break cannot create a false blocker
+  - exact candidate passes inherited validation after cargo fmt
+  evidence:
+  - scripts/validate_plan_v1_4_5.py
+  - tests/plan/test_plan_v1_4_5.py
+  - scripts/validate_plan_v1_4_6.py
+  - tests/plan/test_plan_v1_4_6.py
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production composition root and mandatory end-to-end request path
+- policy identity token lease namespace system and plugin domains
+- production KMS or HSM custody rotation and revocation ceremony
+- remote append-only rollback anchor and publication-fence provider
+- qualified recovery target with atomic empty admission and readback
+- non-Linux adapters and filesystem or storage-controller qualification
+- retention compaction offsite backup custody and restore drills
+- Raft HA replication membership snapshots and standby reconciliation
+- online migration upgrade downgrade and mixed-version operation
+- full OpenBao compatibility and Oracle-derived implementation
+- CLI Agent Proxy and production operations surface
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

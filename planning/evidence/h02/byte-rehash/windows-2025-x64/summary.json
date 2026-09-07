@@ -1,0 +1,14 @@
+{
+  "all_registry_checksums_match": true,
+  "all_vcs_commits_match": true,
+  "authority_effect": "NONE",
+  "entries": 3,
+  "qualification": false,
+  "runner_arch": "X64",
+  "runner_name": "GitHub Actions 1000035807",
+  "runner_os": "Windows",
+  "schema": "heptabao.dependency-byte-rehash-summary.v1",
+  "selection_effect": "NONE",
+  "source_commit": "540fc788697a3a195ab51225f59e55bb4ba1f298",
+  "workflow_run_id": "33237110556"
+}

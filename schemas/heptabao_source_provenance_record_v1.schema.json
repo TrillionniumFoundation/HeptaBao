@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/source-provenance-record-v1.json",
+  "title": "HeptaBao Source Provenance Record V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "record_id",
+    "material_class",
+    "source",
+    "capture",
+    "raw_artifact",
+    "sanitized_artifact",
+    "normalization",
+    "license_disposition",
+    "security_disposition",
+    "transfer",
+    "reviews",
+    "signature"
+  ],
+  "properties": {
+    "schema": {"const": "heptabao.source-provenance-record.v1"},
+    "record_id": {"pattern": "^HB-SP-[A-Z0-9._-]{8,200}$"},
+    "material_class": {"enum": ["PUBLIC_STANDARD", "PUBLIC_PRODUCT_DOCUMENTATION", "BLACK_BOX_RAW_OBSERVATION", "SANITIZED_ORACLE_FIXTURE", "UPSTREAM_SOURCE_RESEARCH", "INTEROP_EXCEPTION_SOURCE", "HEPTABAO_ORIGINAL_IMPLEMENTATION"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product", "uri_or_reference", "version_or_ref", "retrieved_at_utc"],
+      "properties": {
+        "product": {"type": "string", "minLength": 1},
+        "uri_or_reference": {"type": "string", "minLength": 1},
+        "version_or_ref": {"type": "string", "minLength": 1},
+        "retrieved_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "tool_version", "operator_identity", "environment_digest_sha256"],
+      "properties": {
+        "tool": {"type": "string", "minLength": 1},
+        "tool_version": {"type": "string", "minLength": 1},
+        "operator_identity": {"type": "string", "minLength": 1},
+        "environment_digest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "raw_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["restricted_reference", "sha256", "contains_real_secrets"],
+      "properties": {
+        "restricted_reference": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "contains_real_secrets": {"const": false}
+      }
+    },
+    "sanitized_artifact": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["repository_path", "sha256", "secret_scan_passed"],
+      "properties": {
+        "repository_path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "secret_scan_passed": {"const": true}
+      }
+    },
+    "normalization": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["policy_id", "policy_sha256", "ignored_fields", "security_reviewed"],
+      "properties": {
+        "policy_id": {"type": "string", "minLength": 1},
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "ignored_fields": {"type": "array", "items": {"type": "string"}},
+        "security_reviewed": {"const": true}
+      }
+    },
+    "license_disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "license_ids", "notes", "reviewer_identity"],
+      "properties": {
+        "status": {"enum": ["PUBLIC_FACT_ONLY", "APPROVED_FOR_SPECIFICATION", "APPROVED_FOR_IMPLEMENTATION", "INTEROP_EXCEPTION_APPROVED", "RESTRICTED_ORACLE_ONLY", "REJECTED", "PENDING"]},
+        "license_ids": {"type": "array", "items": {"type": "string"}},
+        "notes": {"type": "string"},
+        "reviewer_identity": {"type": "string", "minLength": 1}
+      }
+    },
+    "security_disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["secret_scan", "sensitive_metadata_review", "implementation_detail_review", "reviewer_identity"],
+      "properties": {
+        "secret_scan": {"const": "PASS"},
+        "sensitive_metadata_review": {"const": "PASS"},
+        "implementation_detail_review": {"enum": ["PASS", "NOT_APPLICABLE"]},
+        "reviewer_identity": {"type": "string", "minLength": 1}
+      }
+    },
+    "transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from_lane", "to_lane", "implementation_consumable", "scope", "expires_at_utc"],
+      "properties": {
+        "from_lane": {"enum": ["oracle_specification", "interop_exception", "independent_implementation", "public_specification"]},
+        "to_lane": {"enum": ["oracle_specification", "interop_exception", "independent_implementation", "public_specification"]},
+        "implementation_consumable": {"type": "boolean"},
+        "scope": {"type": "array", "items": {"type": "string"}},
+        "expires_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "identity", "decision", "timestamp_utc", "signature_ref"],
+        "properties": {
+          "role": {"enum": ["compatibility", "security", "legal", "domain"]},
+          "identity": {"type": "string", "minLength": 1},
+          "decision": {"enum": ["APPROVE", "REJECT"]},
+          "timestamp_utc": {"type": "string", "format": "date-time"},
+          "signature_ref": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "signature_ref", "payload_sha256"],
+      "properties": {
+        "algorithm": {"enum": ["sigstore-bundle", "ed25519", "ecdsa-p256-sha256"]},
+        "key_id": {"type": "string", "minLength": 1},
+        "signature_ref": {"type": "string", "minLength": 8},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transfer": {"properties": {"implementation_consumable": {"const": true}}}}},
+      "then": {
+        "properties": {
+          "material_class": {"enum": ["PUBLIC_STANDARD", "PUBLIC_PRODUCT_DOCUMENTATION", "SANITIZED_ORACLE_FIXTURE", "INTEROP_EXCEPTION_SOURCE", "HEPTABAO_ORIGINAL_IMPLEMENTATION"]},
+          "sanitized_artifact": {"type": "object"},
+          "license_disposition": {"properties": {"status": {"enum": ["PUBLIC_FACT_ONLY", "APPROVED_FOR_SPECIFICATION", "APPROVED_FOR_IMPLEMENTATION", "INTEROP_EXCEPTION_APPROVED"]}}},
+          "transfer": {"properties": {"to_lane": {"const": "independent_implementation"}}},
+          "reviews": {"items": {"properties": {"decision": {"const": "APPROVE"}}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"material_class": {"enum": ["BLACK_BOX_RAW_OBSERVATION", "UPSTREAM_SOURCE_RESEARCH"]}}},
+      "then": {"properties": {"transfer": {"properties": {"implementation_consumable": {"const": false}}}}}
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

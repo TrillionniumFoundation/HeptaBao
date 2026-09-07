@@ -1,0 +1,58 @@
+{
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_linearizability_history_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_effect": {"const": "NONE"},
+    "candidate_id": {"const": "HB-DEP-RAFT-OPENRAFT"},
+    "durability_class": {"const": "TEST_ONLY_IN_MEMORY_NO_PRODUCTION_CLAIM"},
+    "execution_scope": {"const": "REAL_OPENRAFT_READINDEX_SINGLE_REGISTER_HISTORY"},
+    "initial_value": {"type": ["string", "null"]},
+    "metadata": {"type": "object"},
+    "model": {"const": "single-register-v1"},
+    "operations": {
+      "items": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {"properties": {"kind": {"const": "write"}}, "required": ["kind"]},
+            "then": {"properties": {"input": {"type": "string"}}}
+          },
+          {
+            "if": {"properties": {"kind": {"const": "read"}}, "required": ["kind"]},
+            "then": {"properties": {"input": {"type": "null"}}}
+          }
+        ],
+        "properties": {
+          "client": {"minLength": 1, "type": "string"},
+          "complete": {"minimum": 0, "type": "integer"},
+          "error": {"type": ["string", "null"]},
+          "id": {"minLength": 1, "type": "string"},
+          "input": {"type": ["string", "null"]},
+          "invoke": {"minimum": 0, "type": "integer"},
+          "kind": {"enum": ["write", "read"]},
+          "node_id": {"minimum": 1, "type": "integer"},
+          "output": {"type": ["string", "null"]},
+          "status": {"const": "ok"}
+        },
+        "required": ["id", "client", "kind", "invoke", "complete", "input", "output", "status"],
+        "type": "object"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "type": "array"
+    },
+    "profile_id": {"const": "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33"},
+    "qualification": {"const": false},
+    "schema": {"const": "heptabao.h02-linearizability-history.v1"},
+    "seed": {"pattern": "^0x[0-9a-f]{16}$", "type": "string"},
+    "selection_effect": {"const": "NONE"},
+    "version": {"const": "0.10.0-alpha.33"}
+  },
+  "required": [
+    "schema", "model", "candidate_id", "version", "profile_id", "seed", "initial_value",
+    "operations", "execution_scope", "durability_class", "qualification", "selection_effect", "authority_effect"
+  ],
+  "title": "HeptaBao H02 OpenRaft linearizability history v1",
+  "type": "object"
+}

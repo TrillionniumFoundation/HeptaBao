@@ -1,0 +1,314 @@
+schema: heptabao.oracle-regression-registry.v1
+baseline_id: HB-ORACLE-OPENBAO-V2_6_2
+registry_id: HB-REG-OPENBAO-V2_6-SECURITY-BEHAVIOR
+status: SEED
+latest_release_observation:
+  checked_at_utc: '2026-08-28T00:00:00Z'
+  tag: v2.6.2
+  commit_sha: dd9c19c37a878cf4a81b18efb8d6f0599c7da923
+  published_at_utc: '2026-08-18T16:21:00Z'
+  source_reference: https://api.github.com/repos/openbao/openbao/releases/latest
+entries:
+  - id: HB-REG-ITEM-INTERNAL-OP-INLINE-AUTH
+    upstream_version: 2.6.2
+    class: SECURITY
+    component: core/workflows/inline-auth
+    summary: Internal operation types must not be dispatchable from inline authentication or workflows to create tokens.
+    advisory_id: GHSA-rh46-vc3j-w2w3
+    source_reference: https://github.com/openbao/openbao/pull/3831
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H03-WP07, H10-WP01, H15-WP04, H15-WP05]
+    invariant_refs: [HB-INV-INTERNAL-OP-CLOSED, HB-INV-AUTH-ATTENUATION]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-PKI-IP-SANS-CIDR
+    upstream_version: 2.6.2
+    class: SECURITY
+    component: secrets/pki
+    summary: IP SANs supplied by CSRs must be constrained by allowed_ip_sans_cidr.
+    advisory_id: GHSA-g892-p242-8g86
+    source_reference: https://github.com/openbao/openbao/pull/3833
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H18-WP03, H18-WP09]
+    invariant_refs: [HB-INV-PKI-NO-MISISSUANCE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-ACTIVE-CONTEXT-CANCEL
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: core/active-context
+    summary: Active request context must be cancelled safely between initialization and standby or active enablement.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3623
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    required_work_packages: [H07-WP02, H07-WP08, H21-WP08]
+    invariant_refs: [HB-INV-SINGLE-ACTIVE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-WRAP-INFO-FORWARDING
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: core/request-forwarding
+    summary: Requests carrying response-wrap information must preserve that information when forwarded to the active node.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3790
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H10-WP08, H21-WP04, H21-WP09]
+    invariant_refs: [HB-INV-WRAP-SINGLE-USE, HB-INV-CLUSTER-IDENTITY]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-OIDC-KEY-NAMESPACE-STORAGE
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: core/identity/namespaces
+    summary: Default OIDC signing keys must be stored inside the correct namespace and created safely across standby nodes.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3662
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H09-WP09, H09-WP10, H14-WP04, H14-WP05]
+    invariant_refs: [HB-INV-OIDC-KEY-ISOLATION, HB-INV-NAMESPACE-NONINTERFERENCE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-SYS-RAW-ACTIVE-PROPAGATION
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: sys/raw
+    summary: Raw delete and write requests must execute on the active node rather than mutating standby-local state.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3766
+    criticality: DISTRIBUTED_SYSTEMS_CRITICAL
+    required_work_packages: [H07-WP05, H21-WP04, H21-WP07]
+    invariant_refs: [HB-INV-SINGLE-ACTIVE, HB-INV-READ-STANDBY-NO-WRITE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-LEASE-ACTIVE-PROPAGATION
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: sys/leases
+    summary: Lease renew, revoke and revoke-prefix operations must propagate to the active owner by default.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3766
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H11-WP04, H11-WP05, H21-WP04, H21-WP07]
+    invariant_refs: [HB-INV-LEASE-SINGLE-WRITER, HB-INV-SINGLE-ACTIVE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-QUOTA-AUDIT-LOGGING
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: sys/quotas
+    summary: The rate-limit audit logging configuration must be honored without creating an audit bypass.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3673
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H12-WP04, H23-WP05]
+    invariant_refs: [HB-INV-AUDIT-BEFORE-DISPATCH]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-UNAUTHENTICATED-WORKFLOW
+    upstream_version: 2.6.2
+    class: BEHAVIOR_CHANGE
+    component: sys/workflows
+    summary: Explicitly configured unauthenticated workflow execution must still constrain every dispatched operation and inline credential.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3785
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H15-WP04, H15-WP05, H15-WP07]
+    invariant_refs: [HB-INV-WORKFLOW-OP-ALLOWLIST, HB-INV-AUTH-ATTENUATION]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-AUDIT-HTTP-ERROR-CAUSE
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: audit/http
+    summary: HTTP audit header parsing must preserve the underlying error cause for bounded operator diagnosis.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3746
+    criticality: OPERATOR_CRITICAL
+    required_work_packages: [H12-WP06, H12-WP10]
+    invariant_refs: [HB-INV-AUDIT-DEVICE-FAIL-CLOSED]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-AGENT-WINDOWS-CHOWN
+    upstream_version: 2.6.2
+    class: BUG_FIX
+    component: command/agent
+    summary: File-sink ownership handling must not fail unconditionally on Windows and must preserve safe permissions.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3733
+    criticality: OPERATOR_CRITICAL
+    required_work_packages: [H22-WP07]
+    invariant_refs: [HB-INV-CLIENT-NO-SECRET-LEAK]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-STANDBY-LEASE-CACHE
+    upstream_version: 2.6.1
+    class: BUG_FIX
+    component: core/expiration
+    summary: Lease records must not be inadvertently cached on standby nodes.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3555
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H11-WP02, H21-WP06, H21-WP09]
+    invariant_refs: [HB-INV-EXPIRED-NOT-RENEWABLE, HB-INV-READ-STANDBY-NO-WRITE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-POLICY-PAGINATION-LIMIT
+    upstream_version: 2.6.1
+    class: BUG_FIX
+    component: core/policies
+    summary: Zero or negative limits must not bypass the pagination_limit ACL restriction.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3518
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H08-WP05]
+    invariant_refs: [HB-INV-POLICY-PARAMETER-CONSTRAINT]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-JWT-PATCH-CEL-ROLE
+    upstream_version: 2.6.1
+    class: BUG_FIX
+    component: auth/jwt
+    summary: Patching CEL roles must preserve bound audiences and all configured leeway values.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3551
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H16-WP05]
+    invariant_refs: [HB-INV-AUTH-TRUST-BOUND]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-TOKEN-SALT-CACHE-INVALIDATION
+    upstream_version: 2.6.1
+    class: BUG_FIX
+    component: auth/token
+    summary: Token salt cache must invalidate correctly on standby nodes.
+    advisory_id: null
+    source_reference: https://github.com/openbao/openbao/pull/3555
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H10-WP01, H21-WP09]
+    invariant_refs: [HB-INV-TOKEN-SECRET-NOT-STORED, HB-INV-STALE-CACHE-DENY]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-AGENT-STDOUT-SECRET
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: command/agent
+    summary: Previously rendered secrets must never be written to stdout when an Agent operation fails.
+    advisory_id: GHSA-444v-8vxr-p36h
+    source_reference: https://github.com/openbao/openbao/pull/3494
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H22-WP07]
+    invariant_refs: [HB-INV-CLIENT-NO-SECRET-LEAK]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-RECOVERY-CONSTANT-TIME
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: core/recovery
+    summary: Recovery-mode token comparisons must use constant-time equality.
+    advisory_id: GHSA-34fc-gh42-pj53
+    source_reference: https://github.com/openbao/openbao/pull/3388
+    criticality: CRYPTO_CRITICAL
+    required_work_packages: [H10-WP09]
+    invariant_refs: [HB-INV-ROOT-WINDOW-MINIMAL]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-LIST-DENY-BYPASS
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: core/policies
+    summary: LIST must not bypass a more specific deny because of a broader wildcard grant.
+    advisory_id: GHSA-xp3c-3jw3-4vcr
+    source_reference: https://github.com/openbao/openbao/pull/3389
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H08-WP02, H08-WP03, H08-WP04]
+    invariant_refs: [HB-INV-POLICY-MONOTONIC]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-IDENTITY-TEMPLATE-WILDCARD-SLASH
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: core/policies
+    summary: Wildcards and slashes in expanded identity templates must be rejected unless explicitly and safely enabled.
+    advisory_id: GHSA-59w7-v8rr-pr4p
+    source_reference: https://github.com/openbao/openbao/pull/3401
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H08-WP04, H08-WP06]
+    invariant_refs: [HB-INV-POLICY-MONOTONIC]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-PKI-TEMPLATE-GLOB
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: secrets/pki
+    summary: PKI identity-template values containing glob characters must be rejected unless explicitly enabled.
+    advisory_id: GHSA-59w7-v8rr-pr4p
+    source_reference: https://github.com/openbao/openbao/pull/3401
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H18-WP03]
+    invariant_refs: [HB-INV-PKI-NO-MISISSUANCE]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+  - id: HB-REG-ITEM-SSH-TEMPLATE-COMMA
+    upstream_version: 2.6.0
+    class: SECURITY
+    component: secrets/ssh
+    summary: SSH identity-template values containing commas must be rejected unless explicitly enabled.
+    advisory_id: GHSA-59w7-v8rr-pr4p
+    source_reference: https://github.com/openbao/openbao/pull/3401
+    criticality: SECURITY_CRITICAL
+    required_work_packages: [H18-WP07, H18-WP08]
+    invariant_refs: [HB-INV-SSH-ROLE-BOUND]
+    fixture_status: PLANNED
+    review_status: PENDING
+    disposition: PENDING
+    authority_effect: NONE
+coverage:
+  identified: 21
+  fixture_planned: 21
+  fixture_implemented: 0
+  reviewed: 0
+  qualified: 0
+  unowned_critical: 0
+  unclassified: 0
+authority_effect: NONE

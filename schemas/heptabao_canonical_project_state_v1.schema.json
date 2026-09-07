@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_canonical_project_state_v1.schema.json",
+  "type": "object",
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "binding",
+    "qualification",
+    "compatibility_claim",
+    "selected_candidates",
+    "authority_flags",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.canonical-project-state.v1"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "revision": {
+      "const": "1.2"
+    },
+    "status": {
+      "type": "string"
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "mode",
+        "repository",
+        "ref",
+        "commit",
+        "tree",
+        "clean_tree_required"
+      ]
+    },
+    "qualification": {
+      "const": false
+    },
+    "compatibility_claim": {
+      "const": false
+    },
+    "selected_candidates": {
+      "maxItems": 0
+    },
+    "authority_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "const": false
+      }
+    },
+    "authority_effect": {
+      "const": "NONE"
+    }
+  }
+}

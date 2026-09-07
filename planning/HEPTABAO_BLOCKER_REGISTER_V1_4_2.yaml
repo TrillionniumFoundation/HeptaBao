@@ -1,0 +1,128 @@
+schema: heptabao.blocker-register-extension.v1_4_2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.2'
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_1.yaml
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  commit: 6b2c11d46c65603f1a1e8ded742335990b61a79b
+  tree: a83b78d1f2312f495ed82c2af1071342676380f2
+added_blockers:
+- id: HB-BLK-REPO-028
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: no durable provider-neutral key epoch lifecycle state existed
+  owner_role: cryptography-custody-core-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - lifecycle journal contains no key material or provider credentials
+  - bootstrap produces exactly one active epoch
+  - staged epochs are unique and strictly monotonic
+  - one rotation event demotes the exact old active epoch and promotes one staged epoch
+  - active revocation is forbidden and use directives fail closed
+  - live append and replay use the same invariant checks
+  required_execution:
+  - plan-v1.4.2-anchored-recovery/anchored-recovery
+  evidence:
+  - crates/heptabao-key-lifecycle/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-029
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: durable state had no externally verifiable rollback checkpoint contract
+  owner_role: storage-cryptography-distributed-systems
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - checkpoint binds authenticator identity revision previous digest state journal and key epoch
+  - provider checkpoint is authenticated before comparison or advancement
+  - recovery verification requires equality with the provider current checkpoint
+  - rollback same-position divergence and key epoch regression fail closed
+  - provider compare-and-swap receipt is verified and reread exactly
+  - verified checkpoint wrapper is available to recovery consumers
+  required_execution:
+  - plan-v1.4.2-anchored-recovery/anchored-recovery
+  evidence:
+  - crates/heptabao-rollback-anchor/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-030
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: no bounded authenticated state and journal recovery archive existed
+  owner_role: recovery-storage-audit-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - archive binds archive and checkpoint authenticator identities
+  - exact sealed state generation digest journal records tail key epoch and checkpoint are authenticated
+  - decoder rejects malformed excessive discontinuous divergent truncated and trailing input
+  - archive Debug output never exposes state or journal payload bytes
+  required_execution:
+  - plan-v1.4.2-anchored-recovery/anchored-recovery
+  evidence:
+  - crates/heptabao-recovery-core/src/lib.rs
+  - docs/recovery/HEPTABAO_ANCHORED_RECOVERY_CONTRACT_V1.md
+  closure_receipt_required: true
+- id: HB-BLK-REPO-031
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: restore lacked external checkpoint enforcement staged publication and explicit uncertainty
+  owner_role: recovery-core-storage-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - archive checkpoint must equal an externally verified checkpoint wrapper
+  - restore target must be empty before staging
+  - complete verified image is staged before publication
+  - publish receipt must match archive identity observation and checkpoint digest
+  - publication outcome unknown remains explicit and forbids blind retry
+  required_execution:
+  - plan-v1.4.2-anchored-recovery/anchored-recovery
+  evidence:
+  - crates/heptabao-recovery-core/src/lib.rs
+  closure_receipt_required: true
+- id: HB-BLK-REPO-032
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.4.2 recovery extension lacked a version-aware exact-head gate
+  owner_role: qualification-platform-recovery-security
+  state: IMPLEMENTED_SOURCE
+  closure_criteria:
+  - exact Git delta proves only the closed 18-path extension surface changed
+  - frozen V1.4.1 validators regressions and Rust 1.98 gates pass in a detached worktree
+  - current V1.4.2 validators hostile mutation tests platform Oracle and Rust gates pass
+  - no temporary source-export materializer or write-capable recovery workflow remains
+  - qualification compatibility selection and all authority fields remain false
+  required_execution:
+  - plan-v1.4.2-anchored-recovery/anchored-recovery
+  evidence:
+  - scripts/validate_plan_v1_4_2.py
+  - scripts/validate_v1_4_2_inherited_surface.py
+  - tests/plan/test_plan_v1_4_2.py
+  - .github/workflows/plan-v1.4.2-anchored-recovery.yml
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production key custody generation wrapping rotation and revocation ceremony
+- production remote append-only rollback anchor
+- descriptor-relative filesystem adapter and multi-process writer fencing
+- retention compaction offsite backup custody and restore drills
+- replicated audit and HA recovery reconciliation
+- production online upgrade downgrade and schema migration
+- policy identity token lease namespace and plugin domains
+- Raft HA membership snapshot and standby integration
+- Oracle-derived compatibility implementation
+qualification: false
+compatibility_claim: false
+selected_candidates: []
+selection_effect: NONE
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE

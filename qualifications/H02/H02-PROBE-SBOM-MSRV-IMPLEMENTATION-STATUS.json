@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.h02-probe-sbom-msrv-implementation-status.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-08-28",
+  "revision": "1.1",
+  "source_repository": "ProfHepta/HeptaBao",
+  "source_branch": "codex/h02-probes-sbom-msrv",
+  "stack_base_branch": "codex/h02-source-integrity-evidence",
+  "program_authority_gate": "H00",
+  "status": "PROBE_SBOM_MSRV_CONTRACTS_IMPLEMENTED_NOT_QUALIFIED",
+  "implemented": {
+    "candidate_probe_matrix": true,
+    "probe_profiles_specified": 4,
+    "isolated_probe_manifests": 4,
+    "probe_evidence_schema": true,
+    "probe_evidence_collector": true,
+    "mechanical_dependency_graph_summary": true,
+    "heuristic_unsafe_ffi_source_scan": true,
+    "sbom_unsafe_policy": true,
+    "negative_semantic_tests": 8,
+    "github_probe_workflow": true,
+    "probe_profiles_executed": 0,
+    "cargo_lockfiles_captured": 0,
+    "dependency_graphs_captured": 0,
+    "feature_trees_captured": 0,
+    "source_scans_captured": 0,
+    "advisory_scans_captured": 0,
+    "declared_msrv_runs_completed": 0,
+    "effective_msrv_searches_completed": 0,
+    "independent_reproductions": 0,
+    "specialist_reviews_complete": false
+  },
+  "profiles": [
+    {"profile_id":"HB-H02-PROBE-TOKIO-MINIMAL-SERVER","candidate_id":"HB-DEP-ASYNC-TOKIO","version":"1.53.1","toolchains":["1.71.0","1.98.0"],"state":"SPECIFIED_UNEXECUTED"},
+    {"profile_id":"HB-H02-PROBE-RUSTLS-RING","candidate_id":"HB-DEP-TLS-RUSTLS","version":"0.23.43","toolchains":["1.71.0","1.98.0"],"state":"SPECIFIED_UNEXECUTED"},
+    {"profile_id":"HB-H02-PROBE-RUSTLS-AWS-LC","candidate_id":"HB-DEP-TLS-RUSTLS","version":"0.23.43","toolchains":["1.71.0","1.98.0"],"state":"SPECIFIED_UNEXECUTED"},
+    {"profile_id":"HB-H02-PROBE-OPENRAFT-TOKIO","candidate_id":"HB-DEP-RAFT-OPENRAFT","version":"0.10.0-alpha.33","toolchains":["1.85.0","1.98.0"],"state":"SPECIFIED_UNEXECUTED"}
+  ],
+  "local_validation": {
+    "status": "LOCAL_UNATTESTED_EXECUTED_PASS_NOT_QUALIFICATION",
+    "probe_matrix_profiles": 4,
+    "python_tests_passed": 8,
+    "rust_tests": "UNEXECUTED_RUST_TOOLCHAIN_NOT_PRESENT_IN_LOCAL_CONTAINER",
+    "qualification_effect": "NONE",
+    "authority_effect": "NONE"
+  },
+  "remote_execution": {
+    "status": "PENDING_NEW_WORKFLOW_RUN",
+    "workflow": ".github/workflows/h02-probe-sbom-msrv.yml",
+    "runner_id": null,
+    "steps": [],
+    "interpretation": "No remote execution result is claimed by this source object. A queued or steps-empty job is not passing evidence."
+  },
+  "qualification": {"status":"NOT_QUALIFIED","receipt":null,"compatibility_claim":null,"authority_grant":null},
+  "authority_flags": {
+    "prototype_selection_authority": false,
+    "production_dependency_authority": false,
+    "crypto_implementation_authority": false,
+    "raft_implementation_authority": false,
+    "compatibility_claim": false,
+    "production_authority": false,
+    "migration_authority": false,
+    "release_authority": false
+  },
+  "authority_effect": "NONE",
+  "next_blockers": [
+    "Acquire an executable hosted or attested self-hosted runner",
+    "Run every exact probe/toolchain matrix entry and preserve failed or blocked evidence",
+    "Reproduce package, graph and source-scan evidence in a second independent environment",
+    "Complete license, advisory, yanked/unmaintained and exact locked-graph review",
+    "Review every build script, Cargo links package, native tool and authority-critical unsafe/FFI boundary",
+    "Complete effective-MSRV search rather than inferring it from edition or declared rust-version",
+    "Execute the remaining behavioral Runtime, TLS and Raft cases with replayable seeds",
+    "Obtain independent platform, security, crypto/license and distributed-systems approvals",
+    "Keep all candidates IDENTIFIED until a separate signed bounded prototype-selection receipt exists"
+  ]
+}

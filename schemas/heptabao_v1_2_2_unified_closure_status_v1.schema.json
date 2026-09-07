@@ -1,0 +1,239 @@
+{
+  "$defs": {
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "branch": {
+          "minLength": 3,
+          "type": "string"
+        },
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "pull_request": {
+          "enum": [
+            40,
+            41
+          ]
+        },
+        "tree": {
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "required": [
+        "pull_request",
+        "branch",
+        "commit",
+        "tree"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://heptabao.dev/schemas/heptabao_v1_2_2_unified_closure_status_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "compatibility_claim": {
+      "const": false
+    },
+    "composition": {
+      "additionalProperties": false,
+      "properties": {
+        "ambiguous_previous_fails_closed": {
+          "const": true
+        },
+        "corrupt_current_no_rollback": {
+          "const": true
+        },
+        "exact_head_runner_hardening": {
+          "const": true
+        },
+        "explicit_create_reopen_adopt": {
+          "const": true
+        },
+        "guarded_snapshot_source_binding": {
+          "const": true
+        },
+        "initialized_generation_loss_fails_closed": {
+          "const": true
+        },
+        "process_group_timeout": {
+          "const": true
+        },
+        "read_only_ci": {
+          "const": true
+        },
+        "result_taxonomy_preserved": {
+          "const": true
+        },
+        "source_manifest_lock_reverification": {
+          "const": true
+        },
+        "stale_previous_cleanup_after_validation": {
+          "const": true
+        },
+        "strict_lint_repairs": {
+          "const": true
+        },
+        "symlink_and_non_regular_rejection": {
+          "const": true
+        }
+      },
+      "required": [
+        "exact_head_runner_hardening",
+        "result_taxonomy_preserved",
+        "process_group_timeout",
+        "source_manifest_lock_reverification",
+        "explicit_create_reopen_adopt",
+        "initialized_generation_loss_fails_closed",
+        "stale_previous_cleanup_after_validation",
+        "corrupt_current_no_rollback",
+        "ambiguous_previous_fails_closed",
+        "symlink_and_non_regular_rejection",
+        "guarded_snapshot_source_binding",
+        "strict_lint_repairs",
+        "read_only_ci"
+      ],
+      "type": "object"
+    },
+    "external_gaps": {
+      "items": {
+        "minLength": 3,
+        "type": "string"
+      },
+      "minItems": 8,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "local_candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "base_commit": {
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "base_tree": {
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "branch": {
+          "const": "codex/plan-v1.2.2-unified-gap-closure-v1"
+        },
+        "remote_materialization": {
+          "const": "UNEXECUTED"
+        }
+      },
+      "required": [
+        "branch",
+        "base_commit",
+        "base_tree",
+        "remote_materialization"
+      ],
+      "type": "object"
+    },
+    "local_evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "exact_head_24_entry_matrix": {
+          "const": "UNEXECUTED"
+        },
+        "independent_reproduction": {
+          "const": "UNEXECUTED"
+        },
+        "python_and_schema_validation": {
+          "const": "PASS"
+        },
+        "rust_fmt_test_clippy": {
+          "const": "UNEXECUTED"
+        }
+      },
+      "required": [
+        "python_and_schema_validation",
+        "rust_fmt_test_clippy",
+        "exact_head_24_entry_matrix",
+        "independent_reproduction"
+      ],
+      "type": "object"
+    },
+    "plan_id": {
+      "const": "HEPTABAO-PLAN-2026-08-28"
+    },
+    "qualification": {
+      "const": false
+    },
+    "repository_controlled_state": {
+      "additionalProperties": false,
+      "properties": {
+        "closure_receipt": {
+          "const": "ABSENT"
+        },
+        "exact_head_execution": {
+          "const": "UNEXECUTED"
+        },
+        "implementation_remediation": {
+          "const": "IMPLEMENTED_LOCAL"
+        },
+        "independent_review": {
+          "const": "UNEXECUTED"
+        }
+      },
+      "required": [
+        "implementation_remediation",
+        "exact_head_execution",
+        "independent_review",
+        "closure_receipt"
+      ],
+      "type": "object"
+    },
+    "revision": {
+      "const": "1.2.2"
+    },
+    "schema": {
+      "const": "heptabao.v1-2-2-unified-closure-status.v1"
+    },
+    "selected_candidates": {
+      "const": []
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "source_inputs": {
+      "additionalProperties": false,
+      "properties": {
+        "exact_head_matrix": {
+          "$ref": "#/$defs/source"
+        },
+        "explicit_lifecycle": {
+          "$ref": "#/$defs/source"
+        }
+      },
+      "required": [
+        "exact_head_matrix",
+        "explicit_lifecycle"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "const": "LOCAL_UNIFIED_PATCH_CANDIDATE_NOT_QUALIFIED"
+    }
+  },
+  "required": [
+    "schema",
+    "plan_id",
+    "revision",
+    "status",
+    "source_inputs",
+    "local_candidate",
+    "composition",
+    "local_evidence",
+    "repository_controlled_state",
+    "external_gaps",
+    "qualification",
+    "compatibility_claim",
+    "selected_candidates",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "type": "object"
+}

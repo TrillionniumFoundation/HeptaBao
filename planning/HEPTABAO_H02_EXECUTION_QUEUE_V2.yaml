@@ -1,0 +1,65 @@
+schema: heptabao.h02-execution-queue.v2
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: ACTIVE_FAIL_CLOSED
+authority_effect: NONE
+selection_effect: NONE
+
+stack:
+  parent_branch: codex/h02-source-integrity-evidence
+  active_branch: codex/h02-probes-sbom-msrv
+  parent_pr: 18
+  merge_policy: stacked draft; do not merge or retarget to main before parent governance is dispositioned
+
+completed_contract_work:
+  - canonical candidate and registry checksum bindings for Tokio, rustls and OpenRaft
+  - provider-neutral runtime, TLS, artifact and Raft interfaces
+  - exact isolated candidate probe manifests
+  - machine-readable probe evidence schema
+  - dependency graph and heuristic unsafe/FFI collector
+  - SBOM, build-script, native-link, license, advisory and MSRV evidence policy
+  - fail-closed Python tests and GitHub matrix workflow
+
+active_execution:
+  - work_package: H02-WP01
+    action: execute Tokio minimal profile on Rust 1.71.0 and 1.98.0
+    state: QUEUED_PENDING_RUNNER
+  - work_package: H02-WP02
+    action: execute rustls ring and aws-lc profiles on Rust 1.71.0 and 1.98.0
+    state: QUEUED_PENDING_RUNNER
+  - work_package: H02-WP07
+    action: execute OpenRaft profile on Rust 1.85.0 and 1.98.0
+    state: QUEUED_PENDING_RUNNER
+  - work_package: H02-WP10
+    action: capture lock, metadata, feature graph, build scripts, native links and heuristic unsafe/FFI evidence
+    state: QUEUED_PENDING_RUNNER
+
+next_after_mechanical_probes:
+  - reproduce package and graph evidence in a second independent environment
+  - execute advisory scan against the exact locked graphs
+  - complete license-file/SPDX and notice review
+  - disposition every custom build script, Cargo links package and authority-critical unsafe/FFI boundary
+  - perform bounded effective-MSRV search and record lower/upper toolchain bounds
+  - implement candidate adapters only behind heptabao-platform-contracts
+  - execute behavioral runtime, TLS and Raft cases with recorded seeds
+  - obtain platform, security, crypto/license and distributed-systems approvals
+  - issue no prototype-selection receipt until every critical result is PASS and current
+
+hard_blocks:
+  - H00 not qualified
+  - executable Runner evidence not yet available
+  - independent reproduction count is zero
+  - advisory, license, unsafe/FFI and effective-MSRV review incomplete
+  - behavioral profiles not executed
+  - independent specialist approvals absent
+  - candidate selection receipts absent
+
+authority_flags:
+  prototype_selection_authority: false
+  production_dependency_authority: false
+  crypto_implementation_authority: false
+  raft_implementation_authority: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false

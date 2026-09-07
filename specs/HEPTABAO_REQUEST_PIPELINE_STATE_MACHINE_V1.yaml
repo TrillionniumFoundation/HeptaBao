@@ -1,0 +1,144 @@
+schema: heptabao.request-pipeline-state-machine.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: NORMATIVE_SECURITY_BOUNDARY
+initial_state: RECEIVED
+terminal_states: [RESPONDED, DENIED, CANCELLED_SAFE, INDETERMINATE, MANUAL_HOLD]
+states:
+  RECEIVED:
+    allowed: [bounds_ok, reject_bounds]
+  BOUNDED:
+    allowed: [canonical_ok, reject_canonicalization]
+  CANONICALIZED:
+    allowed: [context_bound, reject_context]
+  CONTEXT_BOUND:
+    allowed: [operation_resolved, reject_operation]
+  OPERATION_RESOLVED:
+    allowed: [declared_unauthenticated_route, authentication_required, reject_exposure]
+  AUTHENTICATING:
+    allowed: [authenticated, authentication_denied, authentication_indeterminate]
+  IDENTITY_BOUND:
+    allowed: [mfa_not_required, mfa_challenge, identity_denied]
+  MFA_PENDING:
+    allowed: [mfa_satisfied, mfa_denied, mfa_expired]
+  POLICY_EVALUATING:
+    allowed: [policy_allowed, policy_denied, policy_indeterminate]
+  REQUEST_AUDITING:
+    allowed: [request_audit_succeeded, request_audit_failed]
+  INTENT_PERSISTING:
+    allowed: [intent_committed, intent_failed]
+  READY_TO_DISPATCH:
+    allowed: [dispatch_local, dispatch_plugin, dispatch_cluster, dispatch_external, cancel_before_dispatch]
+  DISPATCHING:
+    allowed: [effect_succeeded, effect_failed_terminal, effect_failed_retryable_before_send, effect_response_unknown]
+  OBSERVATION_PERSISTING:
+    allowed: [observation_committed, observation_commit_failed]
+  LOCAL_COMMITTING:
+    allowed: [local_commit_succeeded, local_commit_failed]
+  RESPONSE_AUDITING:
+    allowed: [response_audit_succeeded, response_audit_failed]
+  RECONCILING:
+    allowed: [reconcile_succeeded, reconcile_failed_terminal, reconcile_retryable, reconcile_manual_hold]
+  COMPENSATING:
+    allowed: [compensation_succeeded, compensation_failed, compensation_unknown]
+  RESPONDED: {allowed: []}
+  DENIED: {allowed: []}
+  CANCELLED_SAFE: {allowed: []}
+  INDETERMINATE: {allowed: [start_reconcile]}
+  MANUAL_HOLD: {allowed: [submit_manual_evidence, revoke_or_forward_recover]}
+transitions:
+  - [RECEIVED, bounds_ok, BOUNDED]
+  - [RECEIVED, reject_bounds, DENIED]
+  - [BOUNDED, canonical_ok, CANONICALIZED]
+  - [BOUNDED, reject_canonicalization, DENIED]
+  - [CANONICALIZED, context_bound, CONTEXT_BOUND]
+  - [CANONICALIZED, reject_context, DENIED]
+  - [CONTEXT_BOUND, operation_resolved, OPERATION_RESOLVED]
+  - [CONTEXT_BOUND, reject_operation, DENIED]
+  - [OPERATION_RESOLVED, authentication_required, AUTHENTICATING]
+  - [OPERATION_RESOLVED, declared_unauthenticated_route, IDENTITY_BOUND]
+  - [OPERATION_RESOLVED, reject_exposure, DENIED]
+  - [AUTHENTICATING, authenticated, IDENTITY_BOUND]
+  - [AUTHENTICATING, authentication_denied, DENIED]
+  - [AUTHENTICATING, authentication_indeterminate, MANUAL_HOLD]
+  - [IDENTITY_BOUND, mfa_not_required, POLICY_EVALUATING]
+  - [IDENTITY_BOUND, mfa_challenge, MFA_PENDING]
+  - [IDENTITY_BOUND, identity_denied, DENIED]
+  - [MFA_PENDING, mfa_satisfied, POLICY_EVALUATING]
+  - [MFA_PENDING, mfa_denied, DENIED]
+  - [MFA_PENDING, mfa_expired, DENIED]
+  - [POLICY_EVALUATING, policy_allowed, REQUEST_AUDITING]
+  - [POLICY_EVALUATING, policy_denied, DENIED]
+  - [POLICY_EVALUATING, policy_indeterminate, DENIED]
+  - [REQUEST_AUDITING, request_audit_failed, DENIED]
+  - [REQUEST_AUDITING, request_audit_succeeded, INTENT_PERSISTING]
+  - [INTENT_PERSISTING, intent_committed, READY_TO_DISPATCH]
+  - [INTENT_PERSISTING, intent_failed, DENIED]
+  - [READY_TO_DISPATCH, cancel_before_dispatch, CANCELLED_SAFE]
+  - [READY_TO_DISPATCH, dispatch_local, DISPATCHING]
+  - [READY_TO_DISPATCH, dispatch_plugin, DISPATCHING]
+  - [READY_TO_DISPATCH, dispatch_cluster, DISPATCHING]
+  - [READY_TO_DISPATCH, dispatch_external, DISPATCHING]
+  - [DISPATCHING, effect_failed_terminal, OBSERVATION_PERSISTING]
+  - [DISPATCHING, effect_failed_retryable_before_send, READY_TO_DISPATCH]
+  - [DISPATCHING, effect_response_unknown, INDETERMINATE]
+  - [DISPATCHING, effect_succeeded, OBSERVATION_PERSISTING]
+  - [OBSERVATION_PERSISTING, observation_committed, LOCAL_COMMITTING]
+  - [OBSERVATION_PERSISTING, observation_commit_failed, INDETERMINATE]
+  - [LOCAL_COMMITTING, local_commit_succeeded, RESPONSE_AUDITING]
+  - [LOCAL_COMMITTING, local_commit_failed, INDETERMINATE]
+  - [RESPONSE_AUDITING, response_audit_succeeded, RESPONDED]
+  - [RESPONSE_AUDITING, response_audit_failed, INDETERMINATE]
+  - [INDETERMINATE, start_reconcile, RECONCILING]
+  - [RECONCILING, reconcile_succeeded, RESPONSE_AUDITING]
+  - [RECONCILING, reconcile_failed_terminal, RESPONSE_AUDITING]
+  - [RECONCILING, reconcile_retryable, INDETERMINATE]
+  - [RECONCILING, reconcile_manual_hold, MANUAL_HOLD]
+  - [MANUAL_HOLD, submit_manual_evidence, RECONCILING]
+  - [MANUAL_HOLD, revoke_or_forward_recover, COMPENSATING]
+  - [COMPENSATING, compensation_succeeded, RESPONSE_AUDITING]
+  - [COMPENSATING, compensation_failed, MANUAL_HOLD]
+  - [COMPENSATING, compensation_unknown, MANUAL_HOLD]
+class_overlays:
+  PURE_READ:
+    durable_intent_required: false
+    dispatch_unknown: bounded retry only if non-send proven
+    response_audit_failure: deny response; no state mutation to reconcile
+  DURABLE_MUTATION:
+    durable_intent_required: true
+    dispatch_unknown: lookup committed local state; no blind retry
+    client_disconnect: committed mutation remains authoritative
+  LEASE_ISSUING_READ:
+    durable_intent_required: true
+    dispatch_unknown: reconcile external effect and lease state
+    response_audit_failure: withhold secret; retain retrievable opaque reference or revoke
+  EXTERNAL_EFFECT:
+    durable_intent_required: true
+    dispatch_unknown: INDETERMINATE; provider lookup, revoke, compensate or manual hold
+    client_disconnect: never authorizes a second effect
+  AUTH_LOGIN:
+    durable_intent_required: method-specific
+    response_audit_failure: withhold token; revoke or retain one-time retrieval reference
+  TOKEN_ISSUE:
+    durable_intent_required: true
+    response_audit_failure: withhold token; lookup/revoke by operation key
+  SEAL_CEREMONY:
+    durable_intent_required: true
+    dispatch_unknown: resume exact ceremony; never count an unproven share twice
+  CLUSTER_OPERATION:
+    durable_intent_required: true
+    dispatch_unknown: observe consensus index/membership before action
+  MIGRATION_OPERATION:
+    durable_intent_required: true
+    dispatch_unknown: fenced resume or forward recovery only
+invariants:
+  - No backend, plugin, cluster or external dispatch before operation classification, policy allow and request-audit success.
+  - Required durable intent is physically committed before dispatch.
+  - External effect response loss never transitions directly to success or automatic redispatch.
+  - No blind retry is permitted after dispatch unless non-send is proven and the operation contract explicitly allows a bounded retry.
+  - Client cancellation after dispatch never rolls back committed authority and never creates retry authority.
+  - Response audit failure never exposes a secret.
+  - A stale owner epoch, authority epoch, generation or fencing token is rejected before dispatch.
+  - Namespace and mount context are immutable after CONTEXT_BOUND.
+  - INTERNAL_ONLY operations cannot originate from external bytes.
+  - Terminal receipt and operation payload digests are immutable.

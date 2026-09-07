@@ -1,0 +1,160 @@
+name: h02-source-integrity-evidence
+
+on:
+  push:
+    branches:
+      - "codex/h02-source-integrity-evidence"
+      - "codex/h02-os-durable-clock-supplychain-v1"
+  workflow_dispatch:
+    inputs:
+      run_byte_rehash:
+        description: "Download public source/package bytes and emit unreviewed digest evidence"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-source-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-contracts:
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install pinned validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Validate inherited and new H02 evidence
+        run: |
+          python scripts/validate_dependency_bakeoff_v1.py
+          python scripts/validate_dependency_research_captures_v1.py
+          python scripts/validate_dependency_registry_evidence_v1.py
+          python scripts/validate_dependency_execution_profiles_v1.py
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+
+      - name: Install pinned Rust
+        run: |
+          rustup toolchain install 1.98.0 --profile minimal --component clippy,rustfmt
+          rustup override set 1.98.0
+
+      - name: Rust format, tests and clippy
+        run: |
+          cargo fmt --all --check
+          cargo test --workspace --all-targets --locked
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Assert no selection or authority
+        run: |
+          python - <<'PY'
+          import json
+          import yaml
+          catalog = yaml.safe_load(open("planning/HEPTABAO_H02_DEPENDENCY_BAKEOFF_V1.yaml", encoding="utf-8"))
+          status = json.load(open("qualifications/H02/H02-SOURCE-INTEGRITY-IMPLEMENTATION-STATUS.json", encoding="utf-8"))
+          if catalog["prototype_selection_receipts"] or any(c["state"] != "IDENTIFIED" for c in catalog["candidates"]):
+              raise SystemExit("candidate selection is not authorized")
+          if any(status["authority_flags"].values()):
+              raise SystemExit("unexpected H02 authority")
+          if status["qualification"]["status"] != "NOT_QUALIFIED":
+              raise SystemExit("H02 cannot self-qualify")
+          print("H02 remains IDENTIFIED, unqualified and authority-free")
+          PY
+
+  byte-rehash:
+    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (github.event_name == 'workflow_dispatch' && inputs.run_byte_rehash) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Download and verify all bounded public artifacts serially
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python - <<'PY' > /tmp/h02-rehash.tsv
+          rows = [
+              ("HB-DEP-ASYNC-TOKIO", "tokio", "1.53.1", "https://api.github.com/repos/tokio-rs/tokio/tarball/tokio-1.53.1", "https://static.crates.io/crates/tokio/tokio-1.53.1.crate", "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed", "75fef53d0a8590c2d1dbb63672aa7b7d1ef51155"),
+              ("HB-DEP-TLS-RUSTLS", "rustls", "0.23.43", "https://api.github.com/repos/rustls/rustls/tarball/v/0.23.43", "https://static.crates.io/crates/rustls/rustls-0.23.43.crate", "0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06", "fcf61cdbba30913cfd5b40aefa83989c6233812d"),
+              ("HB-DEP-RAFT-OPENRAFT", "openraft", "0.10.0-alpha.33", "https://api.github.com/repos/databendlabs/openraft/tarball/v0.10.0-alpha.33", "https://static.crates.io/crates/openraft/openraft-0.10.0-alpha.33.crate", "ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8", "2be3f99a23c0ec734aefc18d1c8e756b35567c35"),
+          ]
+          for row in rows:
+              print("\t".join(row))
+          PY
+
+          while IFS=$'\t' read -r candidate package version source_url crate_url checksum release_commit; do
+            out="evidence/$package-$version"
+            mkdir -p "$out/package"
+            curl --fail --location --proto '=https' --max-redirs 5 --max-time 180 --output "$out/source.tar.gz" "$source_url"
+            curl --fail --location --proto '=https' --max-redirs 5 --max-time 180 --output "$out/package.crate" "$crate_url"
+            test -s "$out/source.tar.gz"
+            test -s "$out/package.crate"
+            test "$(stat -c %s "$out/source.tar.gz")" -le 104857600
+            test "$(stat -c %s "$out/package.crate")" -le 52428800
+            package_sha="$(sha256sum "$out/package.crate" | cut -d' ' -f1)"
+            test "$package_sha" = "$checksum"
+            tar -xzf "$out/package.crate" -C "$out/package"
+            vcs_file="$(find "$out/package" -name .cargo_vcs_info.json -type f -print -quit)"
+            test -n "$vcs_file"
+            package_vcs_commit="$(python - "$vcs_file" <<'PY'
+          import json, sys
+          print(json.load(open(sys.argv[1], encoding="utf-8"))["git"]["sha1"])
+          PY
+          )"
+            test "$package_vcs_commit" = "$release_commit"
+            CANDIDATE="$candidate" PACKAGE="$package" VERSION="$version" CHECKSUM="$checksum" RELEASE_COMMIT="$release_commit" OUT="$out" python - <<'PY'
+          import json, os, platform, subprocess
+          out = os.environ["OUT"]
+          def sha(path):
+              return subprocess.check_output(["sha256sum", path], text=True).split()[0]
+          value = {
+              "schema": "heptabao.dependency-byte-rehash.v1",
+              "candidate_id": os.environ["CANDIDATE"],
+              "package": os.environ["PACKAGE"],
+              "version": os.environ["VERSION"],
+              "source_archive_sha256": sha(f"{out}/source.tar.gz"),
+              "source_archive_digest_kind": "OBSERVED_GITHUB_GENERATED_ARCHIVE",
+              "crate_download_sha256": sha(f"{out}/package.crate"),
+              "registry_checksum_sha256": os.environ["CHECKSUM"],
+              "matches_registry_checksum": True,
+              "package_vcs_commit_sha": os.environ["RELEASE_COMMIT"],
+              "runner_name": os.environ.get("RUNNER_NAME"),
+              "runner_os": os.environ.get("RUNNER_OS"),
+              "runner_arch": os.environ.get("RUNNER_ARCH"),
+              "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
+              "source_commit": os.environ.get("GITHUB_SHA"),
+              "python": platform.python_version(),
+              "review_status": "PENDING",
+              "qualification": False,
+              "selection_effect": "NONE",
+              "authority_effect": "NONE",
+          }
+          with open(f"{out}/rehash.json", "w", encoding="utf-8") as handle:
+              json.dump(value, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+          done < /tmp/h02-rehash.tsv
+
+      - name: Upload all unreviewed rehash evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-rehash-all-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/*/rehash.json
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,51 @@
+schema: heptabao.review-role-registry.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: BLOCKED_PENDING_INDEPENDENT_IDENTITIES
+rules:
+  - A critical author cannot be the sole approver of their own evidence.
+  - Program, security and domain approval are the minimum for qualification.
+  - Crypto, distributed-systems, migration and release scopes require their named specialist role.
+  - Approvals must be signed, current, scoped and attributable to distinct accountable identities.
+  - Automated checks may supply evidence but cannot fill a human accountability role.
+roles:
+  program:
+    responsibilities: [scope, gate ordering, capacity, residual risk coordination]
+    assigned_identities: []
+  security:
+    responsibilities: [threat model, vulnerability closure, disclosure, incident revocation]
+    assigned_identities: []
+  domain:
+    responsibilities: [component correctness, requirement coverage, operational limits]
+    assigned_identities: []
+  compatibility:
+    responsibilities: [Oracle fixtures, deviations, support matrix, claim issuance]
+    assigned_identities: []
+  legal:
+    responsibilities: [license, clean-room, trademark, patent, export and distribution]
+    assigned_identities: []
+  crypto:
+    responsibilities: [barrier, key hierarchy, ceremonies, KMS/HSM, external crypto review]
+    assigned_identities: []
+  distributed-systems:
+    responsibilities: [storage durability, Raft FSM, snapshot, HA, linearizability]
+    assigned_identities: []
+  operations:
+    responsibilities: [SLO, on-call, runbooks, restore, canary and incident operations]
+    assigned_identities: []
+  migration:
+    responsibilities: [inventory, freeze, delta, authority switch, rollback and forward recovery]
+    assigned_identities: []
+  release:
+    responsibilities: [hermetic build, signing, provenance, canary, GA, LTS and EOL]
+    assigned_identities: []
+blocking_effect:
+  qualification_receipt: forbidden
+  compatibility_claim: forbidden
+  authority_grant: forbidden
+  release_attestation: forbidden
+next_actions:
+  - Create or designate independent GitHub teams for security, domain, compatibility and release.
+  - Assign at least three distinct accountable identities for H00 qualification.
+  - Record conflicts of interest, delegation limits, signing keys and emergency-revocation authority.
+  - Update CODEOWNERS only with real, resolvable users or teams; never invent team slugs.

@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.dev/schemas/heptabao_h02_exact_head_matrix_summary_v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "source_binding",
+    "dependency_binding",
+    "matrix",
+    "started_at",
+    "completed_at",
+    "entries",
+    "counts",
+    "runner_errors",
+    "result",
+    "qualification",
+    "compatibility_claim",
+    "selection_effect",
+    "authority_effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "heptabao.h02-exact-head-matrix-summary.v1"
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "commit", "tree", "clean_tree"],
+      "properties": {
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
+        "ref": {"type": "string", "minLength": 1},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "clean_tree": {"type": "boolean"}
+      }
+    },
+    "dependency_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_path", "manifest_digest", "lock_path", "lock_digest"],
+      "properties": {
+        "manifest_path": {"type": "string", "minLength": 1},
+        "manifest_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "lock_path": {"type": "string", "minLength": 1},
+        "lock_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "matrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolchains",
+        "seeds",
+        "kinds",
+        "required_entry_count",
+        "executed_entry_count",
+        "missing_entry_ids",
+        "unexpected_entry_ids",
+        "duplicate_entry_ids"
+      ],
+      "properties": {
+        "toolchains": {
+          "const": ["1.88.0", "1.98.0"]
+        },
+        "seeds": {
+          "const": [
+            "0x5eed20260828cafe",
+            "0x8badf00d12345678",
+            "0xd15ea5e5cafef00d"
+          ]
+        },
+        "kinds": {
+          "const": ["inmemory", "hostile", "blocker", "durable"]
+        },
+        "required_entry_count": {"const": 24},
+        "executed_entry_count": {"type": "integer", "minimum": 0, "maximum": 24},
+        "missing_entry_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 8}
+        },
+        "unexpected_entry_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 8}
+        },
+        "duplicate_entry_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 8}
+        }
+      }
+    },
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": "string", "format": "date-time"},
+    "entries": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_id",
+          "kind",
+          "binary",
+          "toolchain",
+          "seed",
+          "command",
+          "command_digest",
+          "started_at",
+          "completed_at",
+          "duration_ms",
+          "process_started",
+          "exit_code",
+          "timed_out",
+          "conclusion",
+          "application_status",
+          "stdout_path",
+          "stderr_path",
+          "exit_path",
+          "stdout_digest",
+          "stderr_digest",
+          "exit_digest",
+          "validation_errors"
+        ],
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "pattern": "^(inmemory|hostile|blocker|durable)-(1\\.88\\.0|1\\.98\\.0)-(5eed20260828cafe|8badf00d12345678|d15ea5e5cafef00d)$"
+          },
+          "kind": {"enum": ["inmemory", "hostile", "blocker", "durable"]},
+          "binary": {
+            "type": "string",
+            "minLength": 8,
+            "enum": [
+              "heptabao-h02-openraft-inmemory-cluster",
+              "heptabao-h02-openraft-fault-lab",
+              "heptabao-h02-openraft-blocker-closure-lab",
+              "heptabao-h02-openraft-durable-store-lab"
+            ]
+          },
+          "toolchain": {"enum": ["1.88.0", "1.98.0"]},
+          "seed": {
+            "enum": [
+              "0x5eed20260828cafe",
+              "0x8badf00d12345678",
+              "0xd15ea5e5cafef00d"
+            ]
+          },
+          "command": {
+            "type": "array",
+            "minItems": 8,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "command_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "started_at": {"type": "string", "format": "date-time"},
+          "completed_at": {"type": "string", "format": "date-time"},
+          "duration_ms": {"type": "integer", "minimum": 0},
+          "process_started": {"type": "boolean"},
+          "exit_code": {"type": ["integer", "null"]},
+          "timed_out": {"type": "boolean"},
+          "conclusion": {"enum": ["PASS", "FAIL", "BLOCKED", "UNKNOWN", "UNEXECUTED"]},
+          "application_status": {
+            "enum": ["EXECUTED_PASS", "EXECUTED_FAIL", "BLOCKED", "UNKNOWN", "UNEXECUTED", null]
+          },
+          "stdout_path": {
+            "type": "string",
+            "pattern": "^(inmemory|hostile|blocker|durable)-(1\\.88\\.0|1\\.98\\.0)-(5eed20260828cafe|8badf00d12345678|d15ea5e5cafef00d)\\.stdout$"
+          },
+          "stderr_path": {
+            "type": "string",
+            "pattern": "^(inmemory|hostile|blocker|durable)-(1\\.88\\.0|1\\.98\\.0)-(5eed20260828cafe|8badf00d12345678|d15ea5e5cafef00d)\\.stderr$"
+          },
+          "exit_path": {
+            "type": "string",
+            "pattern": "^(inmemory|hostile|blocker|durable)-(1\\.88\\.0|1\\.98\\.0)-(5eed20260828cafe|8badf00d12345678|d15ea5e5cafef00d)\\.exit$"
+          },
+          "stdout_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "stderr_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "exit_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "validation_errors": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^inmemory-"}},
+              "required": ["entry_id"]
+            },
+            "then": {
+              "properties": {
+                "kind": {"const": "inmemory"},
+                "binary": {"const": "heptabao-h02-openraft-inmemory-cluster"}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^hostile-"}},
+              "required": ["entry_id"]
+            },
+            "then": {
+              "properties": {
+                "kind": {"const": "hostile"},
+                "binary": {"const": "heptabao-h02-openraft-fault-lab"}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^blocker-"}},
+              "required": ["entry_id"]
+            },
+            "then": {
+              "properties": {
+                "kind": {"const": "blocker"},
+                "binary": {"const": "heptabao-h02-openraft-blocker-closure-lab"}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^durable-"}},
+              "required": ["entry_id"]
+            },
+            "then": {
+              "properties": {
+                "kind": {"const": "durable"},
+                "binary": {"const": "heptabao-h02-openraft-durable-store-lab"}
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^[^-]+-1\\.88\\.0-"}},
+              "required": ["entry_id"]
+            },
+            "then": {"properties": {"toolchain": {"const": "1.88.0"}}}
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "^[^-]+-1\\.98\\.0-"}},
+              "required": ["entry_id"]
+            },
+            "then": {"properties": {"toolchain": {"const": "1.98.0"}}}
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "-5eed20260828cafe$"}},
+              "required": ["entry_id"]
+            },
+            "then": {"properties": {"seed": {"const": "0x5eed20260828cafe"}}}
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "-8badf00d12345678$"}},
+              "required": ["entry_id"]
+            },
+            "then": {"properties": {"seed": {"const": "0x8badf00d12345678"}}}
+          },
+          {
+            "if": {
+              "properties": {"entry_id": {"pattern": "-d15ea5e5cafef00d$"}},
+              "required": ["entry_id"]
+            },
+            "then": {"properties": {"seed": {"const": "0xd15ea5e5cafef00d"}}}
+          },
+          {
+            "if": {"properties": {"conclusion": {"const": "PASS"}}, "required": ["conclusion"]},
+            "then": {
+              "properties": {
+                "process_started": {"const": true},
+                "exit_code": {"const": 0},
+                "timed_out": {"const": false},
+                "application_status": {"const": "EXECUTED_PASS"},
+                "validation_errors": {"maxItems": 0}
+              }
+            }
+          },
+          {
+            "if": {"properties": {"process_started": {"const": false}}, "required": ["process_started"]},
+            "then": {
+              "properties": {
+                "exit_code": {"const": null},
+                "conclusion": {"const": "UNEXECUTED"}
+              }
+            }
+          },
+          {
+            "if": {"properties": {"timed_out": {"const": true}}, "required": ["timed_out"]},
+            "then": {"properties": {"conclusion": {"const": "BLOCKED"}}}
+          }
+        ]
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "fail", "blocked", "unknown", "unexecuted"],
+      "properties": {
+        "pass": {"type": "integer", "minimum": 0, "maximum": 24},
+        "fail": {"type": "integer", "minimum": 0, "maximum": 24},
+        "blocked": {"type": "integer", "minimum": 0, "maximum": 24},
+        "unknown": {"type": "integer", "minimum": 0, "maximum": 24},
+        "unexecuted": {"type": "integer", "minimum": 0, "maximum": 24}
+      }
+    },
+    "runner_errors": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "result": {"enum": ["PASS", "FAIL"]},
+    "qualification": {"const": false},
+    "compatibility_claim": {"const": false},
+    "selection_effect": {"const": "NONE"},
+    "authority_effect": {"const": "NONE"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"result": {"const": "PASS"}},
+        "required": ["result"]
+      },
+      "then": {
+        "properties": {
+          "source_binding": {
+            "properties": {"clean_tree": {"const": true}}
+          },
+          "matrix": {
+            "properties": {
+              "executed_entry_count": {"const": 24},
+              "missing_entry_ids": {"maxItems": 0},
+              "unexpected_entry_ids": {"maxItems": 0},
+              "duplicate_entry_ids": {"maxItems": 0}
+            }
+          },
+          "entries": {"minItems": 24, "maxItems": 24},
+          "counts": {
+            "properties": {
+              "pass": {"const": 24},
+              "fail": {"const": 0},
+              "blocked": {"const": 0},
+              "unknown": {"const": 0},
+              "unexecuted": {"const": 0}
+            }
+          },
+          "runner_errors": {"maxItems": 0}
+        }
+      }
+    }
+  ]
+}

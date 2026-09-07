@@ -1,0 +1,154 @@
+name: h02-openraft-effective-msrv-boundary
+
+on:
+  push:
+    branches: ["codex/h02-durable-multiprocess-closure-v2"]
+    paths:
+      - ".github/workflows/h02-openraft-effective-msrv-boundary.yml"
+      - "probes/h02/openraft-tokio/Cargo.toml"
+      - "probes/h02/openraft-tokio/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-openraft-effective-msrv-boundary-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BOUNDARY_TOOLCHAINS: "1.85.0 1.86.0 1.87.0"
+  EFFECTIVE_TOOLCHAINS: "1.88.0 1.98.0"
+  VALIDIT_REV: "7016fa5e072a86092928144b3a3040381e6964e9"
+
+jobs:
+  bounded-msrv:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and initialize diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_head="$(git rev-parse HEAD)"
+          actual_tree="$(git rev-parse 'HEAD^{tree}')"
+          test "$actual_head" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          mkdir -p "$RUNNER_TEMP/results"
+          printf 'repository=%s\nref=%s\nevent=%s\ngithub_sha=%s\nsource_commit=%s\nsource_tree=%s\nrunner_tracking_id=%s\nrunner_name=%s\nos=%s\narch=%s\n' \
+            "$GITHUB_REPOSITORY" "$GITHUB_REF" "$GITHUB_EVENT_NAME" "$GITHUB_SHA" \
+            "$actual_head" "$actual_tree" "${RUNNER_TRACKING_ID:-unavailable}" "$RUNNER_NAME" \
+            "$RUNNER_OS" "$RUNNER_ARCH" \
+            | tee "$RUNNER_TEMP/results/source-binding.txt"
+      - name: Install exact boundary and effective Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $BOUNDARY_TOOLCHAINS $EFFECTIVE_TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal
+            rustup run "$toolchain" rustc --version --verbose \
+              | tee "$RUNNER_TEMP/results/rustc-$toolchain.txt"
+            rustup run "$toolchain" cargo --version --verbose \
+              | tee "$RUNNER_TEMP/results/cargo-$toolchain.txt"
+          done
+      - name: Bind the committed immutable dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/openraft-msrv"
+          cp -a probes/h02/openraft-tokio "$probe"
+          manifest="$probe/Cargo.toml"
+          lock="$probe/Cargo.lock"
+          test -s "$lock"
+          grep -F 'rust-version = "1.88"' "$manifest"
+          sha256sum "$manifest" | tee "$RUNNER_TEMP/results/manifest.sha256"
+          sha256sum "$lock" | tee "$RUNNER_TEMP/results/Cargo.lock.sha256"
+          rustup run 1.88.0 cargo metadata --locked --format-version 1 \
+            --manifest-path "$manifest" >"$RUNNER_TEMP/results/metadata.json"
+          python3 - "$RUNNER_TEMP/results/metadata.json" "$VALIDIT_REV" <<'PY'
+          import json
+          import sys
+
+          metadata = json.load(open(sys.argv[1], encoding="utf-8"))
+          revision = sys.argv[2]
+          packages = [package for package in metadata["packages"] if package["name"] == "validit"]
+          assert len(packages) == 1, packages
+          package = packages[0]
+          assert package["version"] == "0.2.5", package
+          source = package.get("source") or ""
+          assert source == f"git+https://github.com/drmingdrmer/validit.git?rev={revision}#{revision}", source
+          PY
+      - name: Prove the exact effective OpenRaft MSRV boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/openraft-msrv"
+          manifest="$probe/Cargo.toml"
+          : >"$RUNNER_TEMP/results/msrv-boundary.tsv"
+
+          for toolchain in $BOUNDARY_TOOLCHAINS; do
+            export CARGO_TARGET_DIR="$RUNNER_TEMP/target-boundary-$toolchain"
+            log="$RUNNER_TEMP/results/check-ignore-rust-version-$toolchain.log"
+            set +e
+            rustup run "$toolchain" cargo check --locked --all-targets --ignore-rust-version \
+              --manifest-path "$manifest" >"$log" 2>&1
+            rc=$?
+            set -e
+            test "$rc" -ne 0
+            grep -F 'error[E0658]' "$log"
+            grep -F 'openraft-macros-0.10.0-alpha.33/src/expand.rs' "$log"
+            grep -F 'expressions in this position are unstable' "$log"
+            printf '%s\tEXPECTED_FAIL_MSRV_BOUNDARY\t%s\n' "$toolchain" "$rc" \
+              | tee -a "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          done
+
+          for toolchain in $EFFECTIVE_TOOLCHAINS; do
+            export CARGO_TARGET_DIR="$RUNNER_TEMP/target-effective-$toolchain"
+            log="$RUNNER_TEMP/results/check-$toolchain.log"
+            rustup run "$toolchain" cargo check --locked --all-targets \
+              --manifest-path "$manifest" >"$log" 2>&1
+            printf '%s\tPASS\t0\n' "$toolchain" \
+              | tee -a "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          done
+
+          grep -F $'1.85.0\tEXPECTED_FAIL_MSRV_BOUNDARY' "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          grep -F $'1.86.0\tEXPECTED_FAIL_MSRV_BOUNDARY' "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          grep -F $'1.87.0\tEXPECTED_FAIL_MSRV_BOUNDARY' "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          grep -F $'1.88.0\tPASS\t0' "$RUNNER_TEMP/results/msrv-boundary.tsv"
+          grep -F $'1.98.0\tPASS\t0' "$RUNNER_TEMP/results/msrv-boundary.tsv"
+
+          python3 - "$RUNNER_TEMP/results/msrv-boundary.json" "$GITHUB_SHA" <<'PY'
+          import json
+          import sys
+
+          result = {
+              "schema": "heptabao.h02-openraft-effective-msrv-boundary.v1",
+              "head_sha": sys.argv[2],
+              "candidate": "openraft-0.10.0-alpha.33",
+              "fixed_graph_lock_sha256_file": "Cargo.lock.sha256",
+              "effective_msrv": "1.88.0",
+              "bounded_failures": ["1.85.0", "1.86.0", "1.87.0"],
+              "required_passes": ["1.88.0", "1.98.0"],
+              "status": "EXECUTED_PASS",
+              "qualification": False,
+              "selection_effect": "NONE",
+              "authority_effect": "NONE",
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(result, handle, sort_keys=True, indent=2)
+              handle.write("\n")
+          print(json.dumps(result, sort_keys=True))
+          PY
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Upload complete diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-openraft-effective-msrv-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/results/
+          if-no-files-found: warn
+          retention-days: 30

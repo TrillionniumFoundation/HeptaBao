@@ -1,0 +1,84 @@
+name: HeptaBao V1.4.6 authoritative recovery closure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - integration/v1.4.4-technical-candidate
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v1.4.6-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: v1.4.6 / pull_request / ${{ matrix.source_kind }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        source_kind: [exact-head, prospective-merge]
+    steps:
+      - name: Checkout immutable pull-request head
+        if: matrix.source_kind == 'exact-head'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout GitHub prospective merge
+        if: matrix.source_kind == 'prospective-merge'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind checked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'source_kind=%s\nsha=%s\ntree=%s\n' \
+            '${{ matrix.source_kind }}' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse HEAD^{tree})"
+
+      - name: Install exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install exact Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Validate plans and documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_plan_v1_4_6.py
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_6.py' -v
+          python scripts/validate_plan_v1_4_5.py
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+
+      - name: Validate Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings

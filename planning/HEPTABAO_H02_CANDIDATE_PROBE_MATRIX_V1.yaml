@@ -1,0 +1,139 @@
+schema: heptabao.h02-candidate-probe-matrix.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.1'
+status: SPECIFIED_UNEXECUTED
+qualification: false
+selection_effect: NONE
+authority_effect: NONE
+
+rules:
+  - Probe profiles are isolated evaluation manifests and are not workspace dependencies.
+  - Exact versions, feature sets, target triples and toolchains are immutable inputs to one evidence run.
+  - A probe may download public dependencies but may not read production credentials or secret fixtures.
+  - Generated lockfiles, metadata, feature trees, source scans and logs are evidence; none of them select a candidate.
+  - A successful build on a declared toolchain is evidence for that exact profile only, not a general MSRV claim.
+  - OpenRaft has no declared rust-version in the captured upstream workspace manifest; alpha.33 macros use Rust-2024 let chains, so the probe enforces an effective Rust 1.88 floor and separately requires bounded 1.85-1.87 failures plus 1.88/1.98 passes.
+  - Rustls crypto-provider variants are compared separately; defining a variant does not select either provider.
+  - Candidate source code is scanned heuristically for unsafe, FFI, native links and build scripts; heuristic counts require human review.
+  - Failed, skipped, network-blocked or unknown critical steps block promotion and remain visible in the evidence object.
+  - Every evidence object has qualification=false, selection_effect=NONE and authority_effect=NONE.
+
+profiles:
+  - profile_id: HB-H02-PROBE-TOKIO-MINIMAL-SERVER
+    candidate_id: HB-DEP-ASYNC-TOKIO
+    capability: ASYNC_RUNTIME
+    package: tokio
+    version: 1.53.1
+    probe_manifest: probes/h02/tokio-minimal/Cargo.toml
+    probe_source: probes/h02/tokio-minimal/src/main.rs
+    default_features: false
+    features: [io-util, macros, net, rt-multi-thread, signal, sync, time]
+    declared_rust_version: '1.71'
+    probe_toolchains: ['1.71.0', '1.98.0']
+    targets: [x86_64-unknown-linux-gnu]
+    expected_registry_checksum_sha256: 202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed
+    expected_release_commit_sha: 75fef53d0a8590c2d1dbb63672aa7b7d1ef51155
+    required_cases:
+      - compile-minimal-feature-profile
+      - cancellation-and-join
+      - deterministic-time-seed-replay
+      - bounded-blocking-saturation
+      - task-and-timer-leak
+    forbidden_feature_expansion: [full, process, fs, io-uring, taskdump]
+    state: SPECIFIED_UNEXECUTED
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROBE-RUSTLS-RING
+    candidate_id: HB-DEP-TLS-RUSTLS
+    capability: TLS
+    package: rustls
+    version: 0.23.43
+    probe_manifest: probes/h02/rustls-ring/Cargo.toml
+    probe_source: probes/h02/rustls-ring/src/main.rs
+    default_features: false
+    features: [logging, ring, std, tls12]
+    declared_rust_version: '1.71'
+    probe_toolchains: ['1.71.0', '1.98.0']
+    targets: [x86_64-unknown-linux-gnu]
+    expected_registry_checksum_sha256: 0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06
+    expected_release_commit_sha: fcf61cdbba30913cfd5b40aefa83989c6233812d
+    required_cases:
+      - compile-ring-provider-profile
+      - malformed-record-no-panic
+      - mtls-chain-and-name-rejection
+      - atomic-config-reload
+      - stateless-ticket-policy-disabled
+    forbidden_feature_expansion: [aws_lc_rs, fips, prefer-post-quantum]
+    state: SPECIFIED_UNEXECUTED
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROBE-RUSTLS-AWS-LC
+    candidate_id: HB-DEP-TLS-RUSTLS
+    capability: TLS
+    package: rustls
+    version: 0.23.43
+    probe_manifest: probes/h02/rustls-aws-lc/Cargo.toml
+    probe_source: probes/h02/rustls-aws-lc/src/main.rs
+    default_features: false
+    features: [aws_lc_rs, logging, prefer-post-quantum, std, tls12]
+    declared_rust_version: '1.71'
+    probe_toolchains: ['1.71.0', '1.98.0']
+    targets: [x86_64-unknown-linux-gnu]
+    expected_registry_checksum_sha256: 0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06
+    expected_release_commit_sha: fcf61cdbba30913cfd5b40aefa83989c6233812d
+    required_cases:
+      - compile-aws-lc-provider-profile
+      - pre-auth-ticket-length-regression
+      - malformed-record-no-panic
+      - mtls-chain-and-name-rejection
+      - atomic-config-reload
+    forbidden_feature_expansion: [fips, ring]
+    state: SPECIFIED_UNEXECUTED
+    evidence_refs: []
+
+  - profile_id: HB-H02-PROBE-OPENRAFT-TOKIO
+    candidate_id: HB-DEP-RAFT-OPENRAFT
+    capability: RAFT
+    package: openraft
+    version: 0.10.0-alpha.33
+    probe_manifest: probes/h02/openraft-tokio/Cargo.toml
+    probe_source: probes/h02/openraft-tokio/src/main.rs
+    default_features: false
+    features: [serde, tokio-rt, type-alias]
+    declared_rust_version: null
+    probe_toolchains: ['1.88.0', '1.98.0']
+    targets: [x86_64-unknown-linux-gnu]
+    expected_registry_checksum_sha256: ba6e911fb3c97faeecb8324b803a37d77a7387d02ee7019fc2a9777569e7f7b8
+    expected_release_commit_sha: 2be3f99a23c0ec734aefc18d1c8e756b35567c35
+    required_cases:
+      - compile-minimal-tokio-runtime-profile
+      - deterministic-fsm-adapter-trace
+      - snapshot-conflict-rejection
+      - membership-transition-trace
+      - quorum-loss-fail-closed
+    forbidden_feature_expansion: [clap, runtime-stats]
+    state: SPECIFIED_UNEXECUTED
+    evidence_refs: []
+
+execution_contract:
+  required_commands:
+    - cargo generate-lockfile --manifest-path <probe_manifest>
+    - cargo metadata --format-version 1 --locked --manifest-path <probe_manifest>
+    - cargo tree --locked --edges normal,build --manifest-path <probe_manifest>
+    - cargo tree --locked --edges features --manifest-path <probe_manifest>
+    - cargo check --locked --all-targets --manifest-path <probe_manifest>
+    - cargo test --locked --all-targets --manifest-path <probe_manifest>
+  required_outputs:
+    - Cargo.lock SHA-256
+    - cargo metadata SHA-256 and normalized package graph
+    - normal/build dependency tree SHA-256
+    - feature tree SHA-256
+    - build and test logs with exit status
+    - source-tree heuristic unsafe/FFI/native/build-script inventory
+    - exact runner, toolchain, target and environment identity
+    - package source checksum and VCS commit binding
+  post_run_enrichment:
+    - GitHub numeric runner_id and job_id from the Actions API when applicable
+    - independent reviewer identities and signatures
+    - advisory and license disposition
+    - replayable random seeds for behavioral profiles

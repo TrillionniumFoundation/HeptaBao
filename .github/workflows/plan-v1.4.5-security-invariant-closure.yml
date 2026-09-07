@@ -1,0 +1,198 @@
+name: plan-v1.4.5-security-invariant-closure
+
+on:
+  push:
+    branches:
+      - codex/plan-v1.4.5-security-invariant-closure-v1
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - integration/v1.4.4-technical-candidate
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plan-v1.4.5-security-invariant-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  security-invariant-matrix:
+    name: security-invariant-matrix (${{ matrix.source_kind }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      pull-requests: read
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        source_kind: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
+    env:
+      SOURCE_KIND: ${{ matrix.source_kind }}
+      SOURCE_SHA: ${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      V145_BASELINE: 489a104450ff48c49e7fb61e167e566ea5e0e6c7
+      V145_HEAD: 936cb5599d206cea895de2ae04a1289a0b3a0326
+
+    steps:
+      - name: Checkout exact head or GitHub merge candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable source and closed change surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git rev-parse "$V145_HEAD^{commit}")" = "$V145_HEAD"
+          git merge-base --is-ancestor "$V145_BASELINE" "$V145_HEAD"
+          git merge-base --is-ancestor "$V145_HEAD" "$HEAD_SHA"
+          if [[ "$SOURCE_KIND" == "merge" ]]; then
+            read -r merge_commit parent_one parent_two parent_extra <<<"$(git rev-list --parents -n 1 HEAD)"
+            test "$merge_commit" = "$SOURCE_SHA"
+            test "$parent_one" = "$BASE_SHA"
+            test "$parent_two" = "$HEAD_SHA"
+            test -z "${parent_extra:-}"
+          else
+            test "$SOURCE_SHA" = "$HEAD_SHA"
+          fi
+          allowed="$RUNNER_TEMP/v1.4.5-allowed-paths.txt"
+          cat >"$allowed" <<'EOF'
+          .github/workflows/plan-v1.3.1-head-and-merge-closure.yml
+          .github/workflows/plan-v1.4.5-security-invariant-closure.yml
+          README.md
+          crates/heptabao-durable-core/src/lib.rs
+          crates/heptabao-filesystem-guard/src/lib.rs
+          crates/heptabao-journal-api/src/lib.rs
+          crates/heptabao-journaled-core/src/lib.rs
+          crates/heptabao-key-lifecycle/src/lib.rs
+          crates/heptabao-operation-ledger/src/lib.rs
+          crates/heptabao-recovery-core/src/lib.rs
+          crates/heptabao-rollback-anchor/src/lib.rs
+          docs/CURRENT_DOCUMENTATION.md
+          docs/modules/heptabao-durable-core.md
+          docs/modules/heptabao-filesystem-guard.md
+          docs/modules/heptabao-journal-api.md
+          docs/modules/heptabao-journaled-core.md
+          docs/modules/heptabao-key-lifecycle.md
+          docs/modules/heptabao-operation-ledger.md
+          docs/modules/heptabao-recovery-core.md
+          docs/modules/heptabao-rollback-anchor.md
+          docs/plan/HEPTABAO_PLAN_V1_4_5_SECURITY_INVARIANT_CLOSURE.md
+          docs/security/HEPTABAO_SECURITY_INVARIANT_CLOSURE_V1.md
+          docs/storage/HEPTABAO_DESCRIPTOR_ANCHOR_AND_WRITER_FENCE_V1.md
+          planning/HEPTABAO_BLOCKER_REGISTER_V1_4_5.yaml
+          planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_5.yaml
+          planning/HEPTABAO_V1_4_5_SECURITY_INVARIANT_STATUS.yaml
+          scripts/validate_plan_v1_4_5.py
+          tests/plan/test_plan_v1_4_5.py
+          EOF
+          sed -i 's/^          //' "$allowed"
+          changed="$RUNNER_TEMP/v1.4.5-changed-paths.txt"
+          git diff --name-only "$V145_BASELINE" "$V145_HEAD" | LC_ALL=C sort -u >"$changed"
+          test -s "$changed"
+          unexpected="$RUNNER_TEMP/v1.4.5-unexpected-paths.txt"
+          comm -23 "$changed" <(LC_ALL=C sort -u "$allowed") >"$unexpected"
+          if [[ -s "$unexpected" ]]; then
+            echo "unexpected V1.4.5 path(s):" >&2
+            cat "$unexpected" >&2
+            exit 1
+          fi
+          if grep -E '(^|/)(\.bootstrap|apply_v1_4_5_gap_closure|v1\.4\.5-gap-closure-bootstrap)' "$changed"; then
+            echo "temporary generator/publisher path entered final source" >&2
+            exit 1
+          fi
+          git diff --check "$V145_BASELINE" "$V145_HEAD"
+          printf 'source_kind=%s\nsource_sha=%s\nhead_sha=%s\nbase_sha=%s\nv145_baseline=%s\nv145_head=%s\ntree=%s\n' \
+            "$SOURCE_KIND" "$SOURCE_SHA" "$HEAD_SHA" "$BASE_SHA" "$V145_BASELINE" "$V145_HEAD" \
+            "$(git rev-parse HEAD^{tree})" \
+            | tee "$RUNNER_TEMP/v1.4.5-source-binding.txt"
+
+      - name: Install exact Python dependencies
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Validate V1.4.5 and inherited documentation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_plan_v1_4_5.py
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+
+      - name: Install exact Rust 1.98 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Format test and strictly lint current workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 metadata --locked --no-deps --format-version 1 >"$RUNNER_TEMP/v1.4.5-cargo-metadata.json"
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+
+      - name: Confirm fail-closed authority boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          expected = {
+              'qualification': False,
+              'compatibility_claim': False,
+              'selected_candidates': [],
+              'selection_effect': 'NONE',
+              'production_authority': False,
+              'migration_authority': False,
+              'release_authority': False,
+              'authority_effect': 'NONE',
+          }
+          for name in (
+              'planning/HEPTABAO_BLOCKER_REGISTER_V1_4_5.yaml',
+              'planning/HEPTABAO_V1_4_5_SECURITY_INVARIANT_STATUS.yaml',
+              'planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_5.yaml',
+          ):
+              value = yaml.safe_load(Path(name).read_text(encoding='utf-8'))
+              if value.get('claims') != expected:
+                  raise SystemExit(f'{name}: authority drift')
+          print('V1.4.5 authority_effect=NONE')
+          PY
+
+      - name: Emit immutable evidence summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## HeptaBao V1.4.5 security invariant closure'
+            echo
+            echo "- source kind: \`$SOURCE_KIND\`"
+            echo "- source SHA: \`$SOURCE_SHA\`"
+            echo "- source tree: \`$(git rev-parse HEAD^{tree})\`"
+            echo "- immutable V1.4.5 checkpoint: \`$V145_HEAD\`"
+            echo '- semantic/hostile validation: PASS'
+            echo '- Rust 1.98 fmt, locked workspace tests and strict Clippy: PASS'
+            echo '- authority effect: NONE'
+          } >>"$GITHUB_STEP_SUMMARY"

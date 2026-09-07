@@ -1,0 +1,101 @@
+schema: heptabao.vertical-slice-roadmap.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.2'
+authority_effect: NONE
+slices:
+- id: HB-S0-TRUSTED-EXECUTION
+  maturity: IMPLEMENTED
+  qualification: false
+  profiles:
+  - governance-only
+  required_gates:
+  - H00
+  - H01
+  - H02
+  exit_criteria:
+  - V1.2 exact-head validators PASS
+  - read-only CI policy PASS
+  - exact lock source-bound
+  - repository blocker state resolved from evidence
+- id: HB-P0-DEV-MEMORY
+  maturity: SPECIFIED
+  qualification: false
+  production_supported: false
+  required_gates:
+  - H03
+  - H04
+  - H05
+  - H06
+  - H07
+  - H08
+  - H10
+  - H12
+  - H17
+  - H22
+  included:
+  - bootstrap
+  - HTTP bounds/canonicalization
+  - operation registry
+  - request pipeline
+  - memory storage
+  - development barrier/seal
+  - token/minimal ACL
+  - KV v1
+  - file audit
+  - Oracle differential
+  excluded:
+  - PostgreSQL
+  - Raft/HA
+  - plugins
+  - dynamic credentials
+  - namespace
+  - migration
+  - production key custody
+- id: HB-P1-CORE-POSTGRES
+  maturity: PLANNED
+  qualification: false
+  production_supported: false
+  required_gates:
+  - H03
+  - H04
+  - H05
+  - H06
+  - H07
+  - H08
+  - H09
+  - H10
+  - H11
+  - H12
+  - H17
+  - H22
+  - H23
+  included:
+  - PostgreSQL transaction/CAS
+  - barrier/keyring
+  - init/seal/unseal/rekey
+  - KV v2
+  - token graph
+  - lease
+  - audit devices
+  - backup/restore/reopen
+- id: HB-P2-RAFT-HA
+  maturity: PLANNED
+  qualification: false
+  production_supported: false
+  required_gates:
+  - H02
+  - H03
+  - H04
+  - H20
+  - H21
+  - H25
+  - H26
+  included:
+  - durable Raft
+  - snapshot
+  - membership
+  - HA
+  - read standby
+  - linearizability
+  - multi-process restart
+  - power-cut lab

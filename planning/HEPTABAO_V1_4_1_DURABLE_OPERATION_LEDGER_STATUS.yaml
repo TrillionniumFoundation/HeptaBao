@@ -1,0 +1,67 @@
+schema: heptabao.v1-4-1-durable-operation-ledger-status.v1
+plan_id: HEPTABAO-PLAN-2026-08-28
+revision: '1.4.1'
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_EXECUTION_AND_INDEPENDENT_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_1_DURABLE_JOURNAL_AND_OPERATION_LEDGER.md
+current_state: planning/HEPTABAO_V1_4_1_DURABLE_OPERATION_LEDGER_STATUS.yaml
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_1.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_1.yaml
+profile:
+  id: HB-P1-DEV-JOURNALED-SINGLE-PROCESS
+  operating_system: linux
+  production_supported: false
+  replicated: false
+  multi_process_supported: false
+  compatibility_supported: false
+source_baseline:
+  repository_id: 1349115072
+  repository: TrillionniumFoundation/HeptaBao
+  inherited_head: 33e1c14c3e417ea1c9ea181e2181751736c7bce5
+  inherited_tree: 7c49319a20ffbbe7a9b8b078e052da63dd6b636b
+  source_identity: RESOLVE_FROM_EXACT_GIT_HEAD
+implementation:
+  provider_neutral_authenticated_journal_api: IMPLEMENTED_SOURCE
+  strict_chained_single_node_journal: IMPLEMENTED_SOURCE
+  explicit_next_orphan_reconciliation: IMPLEMENTED_SOURCE
+  strict_operation_event_envelope: IMPLEMENTED_SOURCE
+  replayed_operation_state_machine: IMPLEMENTED_SOURCE
+  retry_and_reconciliation_directives: IMPLEMENTED_SOURCE
+  durable_intent_before_state_mutation: IMPLEMENTED_SOURCE
+  explicit_state_committed_ledger_incomplete: IMPLEMENTED_SOURCE
+  durable_response_audit_and_delivery_outcomes: IMPLEMENTED_SOURCE
+execution_required:
+  v1_4_1_plan_and_mutation_tests: REQUIRED_EXACT_HEAD
+  v1_4_1_inherited_surface_diff: REQUIRED_EXACT_HEAD
+  frozen_v1_4_baseline_replay: REQUIRED_EXACT_HEAD
+  current_platform_and_oracle_regressions: REQUIRED_EXACT_HEAD
+  rust_1_98_fmt_test_strict_clippy: REQUIRED_EXACT_HEAD
+  final_project_ratification: REQUIRED_DESIGNATED_RATIFIER_HEAD
+  independent_storage_and_security_review: REQUIRED_EXTERNAL_IDENTITY
+remaining_product_work:
+  production_journal_authenticator_and_key_custody: OPEN
+  descriptor_relative_filesystem_and_writer_fencing: OPEN
+  external_rollback_anchor_and_retention: OPEN
+  replicated_audit_and_ha_reconciliation: OPEN
+  external_effect_provider_integration: OPEN
+  backup_restore_and_upgrade: OPEN
+  policy_identity_token_lease_namespace_plugins: OPEN
+  raft_ha_and_standby: OPEN
+  compatibility_oracle_implementation: OPEN
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE
