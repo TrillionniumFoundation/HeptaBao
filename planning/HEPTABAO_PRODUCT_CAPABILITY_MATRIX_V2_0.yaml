@@ -1,6 +1,6 @@
 schema: heptabao.product-capability-matrix.v2
-plan_id: HEPTABAO-PLAN-2026-09-07-V2.0
-revision: 2.0.0
+plan_id: HEPTABAO-PLAN-2026-09-07-V2.1
+revision: 2.1.0
 status: ACTIVE
 modules:
 - {crate: heptabao-agent, domain: auto-auth renewal and token sink lifecycle, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-agent/src/lib.rs, guide: docs/modules/heptabao-agent.md}
@@ -11,6 +11,7 @@ modules:
 - {crate: heptabao-compatibility, domain: differential compatibility admission, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-compatibility/src/lib.rs, guide: docs/modules/heptabao-compatibility.md}
 - {crate: heptabao-domain, domain: shared bounded domain values, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-domain/src/lib.rs, guide: docs/modules/heptabao-domain.md}
 - {crate: heptabao-durable-core, domain: durable commit contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-durable-core/src/lib.rs, guide: docs/modules/heptabao-durable-core.md}
+- {crate: heptabao-durable-service, domain: restart-safe sealed durable mutation runtime, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-durable-service/src/lib.rs, guide: docs/modules/heptabao-durable-service.md}
 - {crate: heptabao-filesystem-guard, domain: local filesystem fencing, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-filesystem-guard/src/lib.rs, guide: docs/modules/heptabao-filesystem-guard.md}
 - {crate: heptabao-governance, domain: qualification and authority contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-governance/src/lib.rs, guide: docs/modules/heptabao-governance.md}
 - {crate: heptabao-ha-contracts, domain: HA term membership and writer fences, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-ha-contracts/src/lib.rs, guide: docs/modules/heptabao-ha-contracts.md}
@@ -43,5 +44,5 @@ modules:
 - {crate: heptabao-storage-api, domain: storage contracts, state: INHERITED_IMPLEMENTED, documentation_standard: V2, source: crates/heptabao-storage-api/src/lib.rs, guide: docs/modules/heptabao-storage-api.md}
 - {crate: heptabao-telemetry, domain: bounded telemetry contract, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-telemetry/src/lib.rs, guide: docs/modules/heptabao-telemetry.md}
 - {crate: heptabao-token, domain: token lifecycle, state: IMPLEMENTED_REVIEW_REQUIRED, documentation_standard: V3, source: crates/heptabao-token/src/lib.rs, guide: docs/modules/heptabao-token.md}
-planned_modules: []
+planned_modules: [authenticated-durable-service-adapter, production-barrier-provider, production-storage-journal-anchor-providers, raft-ha-runtime, destructive-platform-qualification, complete-compatibility-corpus]
 claims: {qualification: false, compatibility_claim: false, production_authority: false, migration_authority: false, release_authority: false, authority_effect: NONE}
