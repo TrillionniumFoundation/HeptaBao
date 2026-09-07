@@ -83,10 +83,10 @@ impl KvStore {
     ) -> Result<KvMetadata, KvError> {
         let history = self.entries.entry(path).or_default();
         let current = history.last().map_or(0, |record| record.metadata.version);
-        if let Some(expected) = cas {
-            if expected != current {
-                return Err(KvError::CasMismatch);
-            }
+        if let Some(expected) = cas
+            && expected != current
+        {
+            return Err(KvError::CasMismatch);
         }
         let version = current.checked_add(1).ok_or(KvError::VersionOverflow)?;
         let metadata = KvMetadata {
@@ -105,11 +105,7 @@ impl KvStore {
         Ok(metadata)
     }
 
-    pub fn read(
-        &self,
-        path: &CanonicalPath,
-        version: Option<u64>,
-    ) -> Result<KvRead<'_>, KvError> {
+    pub fn read(&self, path: &CanonicalPath, version: Option<u64>) -> Result<KvRead<'_>, KvError> {
         let history = self.entries.get(path).ok_or(KvError::MissingKey)?;
         let record = match version {
             Some(expected) => history
@@ -160,11 +156,7 @@ impl KvStore {
         Ok(record.metadata.clone())
     }
 
-    pub fn destroy(
-        &mut self,
-        path: &CanonicalPath,
-        versions: &[u64],
-    ) -> Result<usize, KvError> {
+    pub fn destroy(&mut self, path: &CanonicalPath, versions: &[u64]) -> Result<usize, KvError> {
         if versions.is_empty() {
             return Err(KvError::MissingVersion);
         }
@@ -259,7 +251,10 @@ mod tests {
         store.undelete(&path, second.version)?;
         assert_eq!(b"two", store.read(&path, None)?.value);
         store.destroy(&path, &[first.version])?;
-        assert_eq!(Err(KvError::Destroyed), store.read(&path, Some(first.version)));
+        assert_eq!(
+            Err(KvError::Destroyed),
+            store.read(&path, Some(first.version))
+        );
         Ok(())
     }
 

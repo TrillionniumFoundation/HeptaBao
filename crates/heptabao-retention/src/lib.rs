@@ -83,7 +83,10 @@ impl BackupCoordinator {
     }
 
     pub fn begin(&mut self, source_generation: u64, now: Tick) -> Result<(), RetentionError> {
-        if !matches!(self.state, BackupState::Idle | BackupState::Verified | BackupState::Failed) {
+        if !matches!(
+            self.state,
+            BackupState::Idle | BackupState::Verified | BackupState::Failed
+        ) {
             return Err(RetentionError::InvalidTransition);
         }
         self.state = BackupState::Snapshotting;
@@ -119,7 +122,10 @@ impl BackupCoordinator {
         if self.state != BackupState::Sealed {
             return Err(RetentionError::InvalidTransition);
         }
-        let receipt = self.receipt.as_ref().ok_or(RetentionError::InvalidTransition)?;
+        let receipt = self
+            .receipt
+            .as_ref()
+            .ok_or(RetentionError::InvalidTransition)?;
         if receipt.digest != digest {
             self.state = BackupState::Failed;
             return Err(RetentionError::DigestMismatch);
@@ -184,7 +190,10 @@ mod tests {
         coordinator.verify([9; 32])?;
         assert_eq!(BackupState::Verified, coordinator.state());
         assert_eq!(1, coordinator.generation());
-        assert_eq!(Err(RetentionError::InvalidTransition), coordinator.verify([9; 32]));
+        assert_eq!(
+            Err(RetentionError::InvalidTransition),
+            coordinator.verify([9; 32])
+        );
         Ok(())
     }
 }

@@ -117,7 +117,10 @@ impl PluginRegistry {
 
     pub fn enable(&mut self, id: &Id) -> Result<(), PluginError> {
         let plugin = self.plugins.get_mut(id).ok_or(PluginError::MissingPlugin)?;
-        if !matches!(plugin.status, PluginStatus::Registered | PluginStatus::Disabled) {
+        if !matches!(
+            plugin.status,
+            PluginStatus::Registered | PluginStatus::Disabled
+        ) {
             return Err(PluginError::InvalidTransition);
         }
         plugin.status = PluginStatus::Enabled;

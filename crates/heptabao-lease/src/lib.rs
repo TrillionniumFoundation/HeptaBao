@@ -86,7 +86,9 @@ impl LeaseStore {
         if self.leases.contains_key(&id) {
             return Err(LeaseError::DuplicateLease);
         }
-        let expires_at = issued_at.checked_add(ttl).map_err(|_| LeaseError::InvalidTtl)?;
+        let expires_at = issued_at
+            .checked_add(ttl)
+            .map_err(|_| LeaseError::InvalidTtl)?;
         let record = LeaseRecord {
             id: id.clone(),
             owner_entity,
@@ -211,7 +213,10 @@ mod tests {
         let renewed = store.renew(&lease, Tick::new(10), 20)?;
         assert_eq!(Tick::new(30), renewed.expires_at);
         store.revoke(&lease)?;
-        assert_eq!(Err(LeaseError::Revoked), store.validate(&lease, Tick::new(11)));
+        assert_eq!(
+            Err(LeaseError::Revoked),
+            store.validate(&lease, Tick::new(11))
+        );
         Ok(())
     }
 
@@ -236,7 +241,10 @@ mod tests {
             100,
             false,
         )?;
-        assert_eq!(1, store.revoke_prefix(&CanonicalPath::parse("/secret/app")?));
+        assert_eq!(
+            1,
+            store.revoke_prefix(&CanonicalPath::parse("/secret/app")?)
+        );
         Ok(())
     }
 }

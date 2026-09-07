@@ -147,8 +147,12 @@ impl NamespaceStore {
             .as_str()
             .strip_prefix('/')
             .ok_or(NamespaceError::InvalidResourcePath)?;
-        CanonicalPath::parse(format!("{}/{}", namespace.path.as_str().trim_end_matches('/'), suffix))
-            .map_err(NamespaceError::Domain)
+        CanonicalPath::parse(format!(
+            "{}/{}",
+            namespace.path.as_str().trim_end_matches('/'),
+            suffix
+        ))
+        .map_err(NamespaceError::Domain)
     }
 }
 

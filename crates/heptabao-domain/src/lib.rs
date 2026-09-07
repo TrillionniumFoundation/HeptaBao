@@ -165,7 +165,10 @@ impl CanonicalPath {
 
 impl fmt::Debug for CanonicalPath {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.debug_tuple("CanonicalPath").field(&self.0).finish()
+        formatter
+            .debug_tuple("CanonicalPath")
+            .field(&self.0)
+            .finish()
     }
 }
 

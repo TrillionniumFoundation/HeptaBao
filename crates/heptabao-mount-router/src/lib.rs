@@ -100,11 +100,7 @@ impl MountRouter {
         self.mounts.remove(id).ok_or(MountError::MissingMount)
     }
 
-    pub fn route(
-        &self,
-        namespace_id: &Id,
-        path: &CanonicalPath,
-    ) -> Result<Route, MountError> {
+    pub fn route(&self, namespace_id: &Id, path: &CanonicalPath) -> Result<Route, MountError> {
         let mount = self
             .mounts
             .values()

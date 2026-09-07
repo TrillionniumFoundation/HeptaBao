@@ -74,11 +74,7 @@ impl IdentityStore {
         Ok(())
     }
 
-    pub fn create_group(
-        &mut self,
-        id: Id,
-        policies: BTreeSet<Id>,
-    ) -> Result<(), IdentityError> {
+    pub fn create_group(&mut self, id: Id, policies: BTreeSet<Id>) -> Result<(), IdentityError> {
         if self.groups.contains_key(&id) {
             return Err(IdentityError::DuplicateGroup);
         }
@@ -145,10 +141,7 @@ impl IdentityStore {
     }
 
     pub fn resolve_alias(&self, alias: &Id) -> Result<&Entity, IdentityError> {
-        let entity_id = self
-            .aliases
-            .get(alias)
-            .ok_or(IdentityError::MissingAlias)?;
+        let entity_id = self.aliases.get(alias).ok_or(IdentityError::MissingAlias)?;
         self.entities
             .get(entity_id)
             .ok_or(IdentityError::MissingEntity)
@@ -160,10 +153,7 @@ impl IdentityStore {
             .ok_or(IdentityError::MissingEntity)
     }
 
-    pub fn effective_policy_ids(
-        &self,
-        entity_id: &Id,
-    ) -> Result<BTreeSet<Id>, IdentityError> {
+    pub fn effective_policy_ids(&self, entity_id: &Id) -> Result<BTreeSet<Id>, IdentityError> {
         let entity = self.entity(entity_id)?;
         if entity.disabled {
             return Err(IdentityError::EntityDisabled);
@@ -241,7 +231,10 @@ mod tests {
         let mut store = IdentityStore::default();
         store.create_entity(entity.clone())?;
         store.set_disabled(&entity, true)?;
-        assert_eq!(Err(IdentityError::EntityDisabled), store.effective_policy_ids(&entity));
+        assert_eq!(
+            Err(IdentityError::EntityDisabled),
+            store.effective_policy_ids(&entity)
+        );
         Ok(())
     }
 }

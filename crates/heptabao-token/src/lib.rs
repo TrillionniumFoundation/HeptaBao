@@ -196,19 +196,15 @@ mod tests {
         let mut policies = BTreeSet::new();
         policies.insert(Id::parse("reader")?);
         let mut store = TokenStore::default();
-        let issued = store.issue(
-            token_id.clone(),
-            entity,
-            policies,
-            Tick::new(10),
-            10,
-            true,
-        )?;
+        let issued = store.issue(token_id.clone(), entity, policies, Tick::new(10), 10, true)?;
         assert_eq!(Tick::new(20), issued.expires_at);
         let renewed = store.renew(&token_id, Tick::new(15), 20)?;
         assert_eq!(Tick::new(35), renewed.expires_at);
         store.revoke(&token_id, Tick::new(16))?;
-        assert_eq!(Err(TokenError::Revoked), store.validate(&token_id, Tick::new(17)));
+        assert_eq!(
+            Err(TokenError::Revoked),
+            store.validate(&token_id, Tick::new(17))
+        );
         Ok(())
     }
 

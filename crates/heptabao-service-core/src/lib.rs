@@ -19,8 +19,13 @@ use heptabao_token::{TokenError, TokenId, TokenStore};
 
 #[derive(Debug)]
 pub enum ServiceOperation {
-    KvRead { version: Option<u64> },
-    KvWrite { value: SecretValue, cas: Option<u64> },
+    KvRead {
+        version: Option<u64>,
+    },
+    KvWrite {
+        value: SecretValue,
+        cas: Option<u64>,
+    },
     KvDelete,
     KvList,
 }
@@ -60,7 +65,10 @@ pub struct ServiceRequest {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ServiceOutput {
-    Read { metadata: KvMetadata, value: SecretValue },
+    Read {
+        metadata: KvMetadata,
+        value: SecretValue,
+    },
     Written(KvMetadata),
     Deleted(KvMetadata),
     Listed(Vec<CanonicalPath>),
@@ -210,15 +218,15 @@ impl<H: PostCommitHook> ServiceCore<H> {
         let operation_label = request.operation.label();
         let success_event = telemetry_event(operation_label, "completed")?;
         let unknown_event = telemetry_event(operation_label, "outcome_unknown")?;
-        let engine_path = engine_path(
-            &request.namespace_id,
-            &route.mount_id,
-            &route.relative_path,
-        )?;
+        let engine_path =
+            engine_path(&request.namespace_id, &route.mount_id, &route.relative_path)?;
         let is_commit = request.operation.is_commit();
         let output = match request.operation {
             ServiceOperation::KvRead { version } => {
-                let read = self.kv.read(&engine_path, version).map_err(ServiceError::Kv)?;
+                let read = self
+                    .kv
+                    .read(&engine_path, version)
+                    .map_err(ServiceError::Kv)?;
                 let value = SecretValue::new(read.value.to_vec()).map_err(ServiceError::Domain)?;
                 ServiceOutput::Read {
                     metadata: read.metadata,
@@ -350,9 +358,7 @@ mod tests {
         service
             .policies_mut()
             .insert(Policy::new(policy_id.clone(), vec![rule])?)?;
-        service
-            .identities_mut()
-            .attach_policy(&entity, policy_id)?;
+        service.identities_mut().attach_policy(&entity, policy_id)?;
         let token_id = TokenId::parse("token_alice")?;
         service.tokens_mut().issue(
             token_id.clone(),
@@ -366,7 +372,8 @@ mod tests {
     }
 
     #[test]
-    fn accepted_request_runs_identity_policy_namespace_mount_and_engine() -> Result<(), Box<dyn Error>> {
+    fn accepted_request_runs_identity_policy_namespace_mount_and_engine()
+    -> Result<(), Box<dyn Error>> {
         let (mut service, token) = configured(NoopPostCommitHook)?;
         let write = service.handle(
             ServiceRequest {
@@ -381,7 +388,10 @@ mod tests {
             },
             Tick::new(1),
         )?;
-        assert!(matches!(write, ServiceResponse::Completed(ServiceOutput::Written(_))));
+        assert!(matches!(
+            write,
+            ServiceResponse::Completed(ServiceOutput::Written(_))
+        ));
         let read = service.handle(
             ServiceRequest {
                 request_id: Id::parse("read_one")?,
