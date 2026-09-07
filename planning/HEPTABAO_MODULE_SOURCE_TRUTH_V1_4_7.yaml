@@ -1,0 +1,3757 @@
+schema: heptabao.module-source-truth.v1
+plan_id: HEPTABAO-PLAN-2026-09-02-V1.4.7
+baseline_commit: 54d524214df443752a2ecaeff6d4a05625bf52c7
+baseline_tree: c22288f561fdd711e908ce8a70c0116601d519e5
+parser:
+  class: bounded-lexical-rust-public-surface-v1
+  captures:
+  - pub declarations
+  - workspace-internal dependency declarations
+  - test functions
+  - source digests
+  does_not_claim:
+  - rust name resolution
+  - semantic API compatibility
+  - production qualification
+module_count: 19
+modules:
+- crate: heptabao-authbus-contracts
+  crate_path: crates/heptabao-authbus-contracts
+  cargo_toml_sha256: b04a63f914e2dfae7be69c144ef43253b2b910107a2e7a8c3ec4e643a3916032
+  source_files:
+  - path: crates/heptabao-authbus-contracts/src/lib.rs
+    sha256: a98b8370053f02f7ab186f77fcdef8948d2ecef4c933cce98fdac4ba487f15ae
+  module_guide: docs/modules/heptabao-authbus-contracts.md
+  internal_dependencies:
+  - name: heptabao-protocol
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_ASSERTION_TTL_SECONDS
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 19
+    signature: 'pub const MAX_ASSERTION_TTL_SECONDS: u64 = 30;'
+  - kind: const
+    name: MAX_CLOCK_SKEW_SECONDS
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 20
+    signature: 'pub const MAX_CLOCK_SKEW_SECONDS: u64 = 5;'
+  - kind: const
+    name: MAX_IDENTITY_BYTES
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 21
+    signature: 'pub const MAX_IDENTITY_BYTES: usize = 512;'
+  - kind: const
+    name: MAX_SIGNATURE_BYTES
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 22
+    signature: 'pub const MAX_SIGNATURE_BYTES: usize = 16 * 1024;'
+  - kind: const
+    name: MAX_IN_MEMORY_REPLAY_ENTRIES
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 23
+    signature: 'pub const MAX_IN_MEMORY_REPLAY_ENTRIES: usize = 4096;'
+  - kind: struct
+    name: UnixTimeSeconds
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 26
+    signature: pub struct UnixTimeSeconds(pub u64);
+  - kind: enum
+    name: DigestAlgorithm
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 29
+    signature: pub enum DigestAlgorithm {
+  - kind: trait
+    name: CryptographicDigestProvider
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 33
+    signature: 'pub trait CryptographicDigestProvider: fmt::Debug + Send + Sync {'
+  - kind: trait
+    name: AssertionSignatureVerifier
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 38
+    signature: 'pub trait AssertionSignatureVerifier: fmt::Debug + Send + Sync {'
+  - kind: trait
+    name: ReplayCache
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 47
+    signature: 'pub trait ReplayCache: fmt::Debug + Send + Sync {'
+  - kind: struct
+    name: RequestBinding
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 58
+    signature: pub struct RequestBinding<'a> {
+  - kind: fn
+    name: canonical_bytes
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 80
+    signature: pub fn canonical_bytes(&self) -> Result<Vec<u8>, AuthbusError> {
+  - kind: struct
+    name: AuthbusAssertion
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 115
+    signature: pub struct AuthbusAssertion {
+  - kind: fn
+    name: unsigned_payload
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 147
+    signature: pub fn unsigned_payload(&self) -> Result<Vec<u8>, AuthbusError> {
+  - kind: struct
+    name: VerificationPolicy
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 164
+    signature: pub struct VerificationPolicy {
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 173
+    signature: pub fn validate(&self) -> Result<(), AuthbusError> {
+  - kind: struct
+    name: VerifiedAuthbusIdentity
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 193
+    signature: pub struct VerifiedAuthbusIdentity {
+  - kind: enum
+    name: AuthorizationEffect
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 215
+    signature: pub enum AuthorizationEffect {
+  - kind: fn
+    name: verify_bound_assertion
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 219
+    signature: pub fn verify_bound_assertion(
+  - kind: struct
+    name: InMemoryReplayCache
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 327
+    signature: pub struct InMemoryReplayCache {
+  - kind: fn
+    name: with_capacity
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 352
+    signature: 'pub fn with_capacity(max_entries: usize) -> Result<Self, AuthbusError> {'
+  - kind: enum
+    name: AuthbusError
+    modifier: null
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 395
+    signature: pub enum AuthbusError {
+  test_functions:
+  - name: valid_assertion_authenticates_but_does_not_authorize
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 533
+  - name: request_binding_debug_redacts_target_host_and_body
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 559
+  - name: assertion_debug_redacts_subject_and_cryptographic_fields
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 579
+  - name: request_binding_mismatch_is_rejected
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 593
+  - name: replay_is_rejected
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 617
+  - name: replay_cache_saturation_fails_closed
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 648
+  - name: invalid_replay_cache_capacity_is_rejected
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 675
+  - name: future_issue_time_respects_bounded_skew
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 687
+  - name: replay_cache_prunes_expired_entries
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 724
+  - name: expiry_key_and_signature_fail_closed
+    path: crates/heptabao-authbus-contracts/src/lib.rs
+    line: 752
+- crate: heptabao-barrier-api
+  crate_path: crates/heptabao-barrier-api
+  cargo_toml_sha256: 60cebd8c3e417f4ed40548c425eadec9ba70671cd6a4399c14f0817ab6a4d7e3
+  source_files:
+  - path: crates/heptabao-barrier-api/src/lib.rs
+    sha256: f6194ff85abafd31c9d3b64ff6b5b3dbccca5171dd0dffed4edd175ea20f91d6
+  module_guide: docs/modules/heptabao-barrier-api.md
+  internal_dependencies:
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: SEALED_ENVELOPE_VERSION
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 16
+    signature: 'pub const SEALED_ENVELOPE_VERSION: u16 = 1;'
+  - kind: const
+    name: MAX_BARRIER_FIELD_BYTES
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 17
+    signature: 'pub const MAX_BARRIER_FIELD_BYTES: usize = 16 * 1024 * 1024;'
+  - kind: const
+    name: MAX_ASSOCIATED_DATA_BYTES
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 18
+    signature: 'pub const MAX_ASSOCIATED_DATA_BYTES: usize = 64 * 1024;'
+  - kind: struct
+    name: KeyEpoch
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 23
+    signature: pub struct KeyEpoch(u64);
+  - kind: const
+    name: INITIAL
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 26
+    signature: 'pub const INITIAL: Self = Self(1);'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 28
+    signature: 'pub const fn new(value: u64) -> Result<Self, BarrierContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 35
+    signature: pub const fn get(self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 39
+    signature: pub const fn checked_next(self) -> Result<Self, BarrierContractError> {
+  - kind: enum
+    name: BarrierPurpose
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 48
+    signature: pub enum BarrierPurpose {
+  - kind: struct
+    name: BarrierContext
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 66
+    signature: pub struct BarrierContext {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 75
+    signature: pub fn new(
+  - kind: fn
+    name: domain
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 95
+    signature: pub fn domain(&self) -> &StoreDomain {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 99
+    signature: pub const fn generation(&self) -> Generation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 103
+    signature: pub const fn key_epoch(&self) -> KeyEpoch {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 107
+    signature: pub const fn purpose(&self) -> BarrierPurpose {
+  - kind: fn
+    name: canonical_associated_data
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 111
+    signature: pub fn canonical_associated_data(&self) -> Result<Vec<u8>, BarrierContractError> {
+  - kind: struct
+    name: SecretState
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 146
+    signature: pub struct SecretState(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 149
+    signature: 'pub fn new(mut value: Vec<u8>) -> Result<Self, BarrierContractError> {'
+  - kind: fn
+    name: as_bytes
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 157
+    signature: pub fn as_bytes(&self) -> &[u8] {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 161
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 165
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: fn
+    name: into_bytes
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 169
+    signature: pub fn into_bytes(mut self) -> Vec<u8> {
+  - kind: struct
+    name: SealedEnvelope
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 191
+    signature: pub struct SealedEnvelope {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 200
+    signature: pub fn new(
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 234
+    signature: pub const fn version(&self) -> u16 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 238
+    signature: pub const fn key_epoch(&self) -> KeyEpoch {
+  - kind: fn
+    name: nonce
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 242
+    signature: pub fn nonce(&self) -> &[u8] {
+  - kind: fn
+    name: ciphertext
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 246
+    signature: pub fn ciphertext(&self) -> &[u8] {
+  - kind: fn
+    name: authentication_tag
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 250
+    signature: pub fn authentication_tag(&self) -> &[u8] {
+  - kind: fn
+    name: encode
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 254
+    signature: pub fn encode(&self) -> Result<Vec<u8>, BarrierContractError> {
+  - kind: fn
+    name: decode
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 275
+    signature: 'pub fn decode(mut encoded: Vec<u8>) -> Result<Self, BarrierContractError> {'
+  - kind: trait
+    name: BarrierProvider
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 304
+    signature: 'pub trait BarrierProvider: fmt::Debug + Send + Sync {'
+  - kind: enum
+    name: BarrierContractError
+    modifier: null
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 323
+    signature: pub enum BarrierContractError {
+  test_functions:
+  - name: envelope_round_trips_strictly
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 449
+  - name: context_binds_domain_generation_epoch_purpose_and_caller_data
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 476
+  - name: truncated_and_trailing_envelopes_fail_closed
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 506
+  - name: secret_and_envelope_debug_output_is_redacted
+    path: crates/heptabao-barrier-api/src/lib.rs
+    line: 533
+- crate: heptabao-durable-core
+  crate_path: crates/heptabao-durable-core
+  cargo_toml_sha256: b47355056fc09de553586bc31dd34dc9b5d5a24294c12a6ec9e316ade064902f
+  source_files:
+  - path: crates/heptabao-durable-core/src/lib.rs
+    sha256: 27d022c81b4f47b0c703d42cc05897f189e37756e7b8a31d9750c15253eded90
+  module_guide: docs/modules/heptabao-durable-core.md
+  internal_dependencies:
+  - name: heptabao-barrier-api
+    section: dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: DurableStateEngine
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 24
+    signature: pub struct DurableStateEngine<S, B> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 30
+    signature: 'pub const fn new(store: S, barrier: B) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 34
+    signature: pub const fn store(&self) -> &S {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 38
+    signature: pub const fn barrier(&self) -> &B {
+  - kind: struct
+    name: PreparedDurableMutation
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 57
+    signature: pub struct PreparedDurableMutation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 63
+    signature: pub const fn intent(&self) -> CommitIntent {
+  - kind: fn
+    name: prepare_persist
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 84
+    signature: pub fn prepare_persist(
+  - kind: fn
+    name: commit_prepared
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 139
+    signature: pub fn commit_prepared(
+  - kind: fn
+    name: recover_commit
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 153
+    signature: pub fn recover_commit(
+  - kind: fn
+    name: persist
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 162
+    signature: pub fn persist(
+  - kind: fn
+    name: load_current
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 172
+    signature: pub fn load_current(
+  - kind: struct
+    name: LoadedSecretState
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 209
+    signature: pub struct LoadedSecretState {
+  - kind: enum
+    name: DurableCoreError
+    modifier: null
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 229
+    signature: pub enum DurableCoreError<S, B>
+  test_functions:
+  - name: prepared_mutation_binds_target_before_authoritative_commit
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 560
+  - name: plaintext_is_sealed_before_storage_and_round_trips
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 585
+  - name: associated_data_mismatch_fails_authentication
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 615
+  - name: stale_expected_generation_is_rejected_before_sealing
+    path: crates/heptabao-durable-core/src/lib.rs
+    line: 638
+- crate: heptabao-filesystem-guard
+  crate_path: crates/heptabao-filesystem-guard
+  cargo_toml_sha256: 273084bb18dc1d6e29ea9cfcd156e65d92a034a6c00657224fa7a23b47d98d25
+  source_files:
+  - path: crates/heptabao-filesystem-guard/src/lib.rs
+    sha256: 5ab1241afe48594aaef26b0451caffd205bd96bd7ea30719f702d25ba7cc9983
+  module_guide: docs/modules/heptabao-filesystem-guard.md
+  internal_dependencies: []
+  public_items:
+  - kind: const
+    name: MAX_GUARDED_LEAF_BYTES
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 28
+    signature: 'pub const MAX_GUARDED_LEAF_BYTES: usize = 240;'
+  - kind: struct
+    name: DirectoryIdentity
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 40
+    signature: pub struct DirectoryIdentity {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 46
+    signature: pub const fn device(self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 50
+    signature: pub const fn inode(self) -> u64 {
+  - kind: struct
+    name: ExclusiveDirectory
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 59
+    signature: pub struct ExclusiveDirectory {
+  - kind: fn
+    name: open
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 79
+    signature: 'pub fn open(root: impl AsRef<Path>) -> Result<Self, DirectoryGuardError> {'
+  - kind: fn
+    name: original_path
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 97
+    signature: pub fn original_path(&self) -> &Path {
+  - kind: fn
+    name: access_path
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 101
+    signature: pub fn access_path(&self) -> &Path {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 105
+    signature: pub const fn identity(&self) -> DirectoryIdentity {
+  - kind: fn
+    name: leaf_path
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 109
+    signature: 'pub fn leaf_path(&self, name: &str) -> Result<PathBuf, DirectoryGuardError> {'
+  - kind: fn
+    name: verify
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 114
+    signature: pub fn verify(&self) -> Result<(), DirectoryGuardError> {
+  - kind: fn
+    name: sync_all
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 141
+    signature: pub fn sync_all(&self) -> Result<(), DirectoryGuardError> {
+  - kind: enum
+    name: DirectoryGuardError
+    modifier: null
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 197
+    signature: pub enum DirectoryGuardError {
+  test_functions:
+  - name: root_is_descriptor_bound_and_leaf_names_are_closed
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 392
+  - name: second_open_is_fenced_until_drop
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 415
+  - name: cooperating_processes_observe_writer_fence
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 428
+  - name: descriptor_survives_root_path_replacement
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 476
+  - name: symlink_root_is_rejected
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 500
+  - name: relative_root_is_rejected
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 512
+  - name: intermediate_symlink_is_rejected
+    path: crates/heptabao-filesystem-guard/src/lib.rs
+    line: 522
+- crate: heptabao-governance
+  crate_path: crates/heptabao-governance
+  cargo_toml_sha256: 2fae46fc7c92cf7fcaa6374a58b2be49de8e2c9ae03cdedb0bf5b9dc1194ef31
+  source_files:
+  - path: crates/heptabao-governance/src/lib.rs
+    sha256: b8fd281d3e8702b5b34139d654758f703ea7f910a7cc5bf50791e7468ed8fb8c
+  module_guide: docs/modules/heptabao-governance.md
+  internal_dependencies: []
+  public_items:
+  - kind: enum
+    name: AuthorityEffect
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 12
+    signature: pub enum AuthorityEffect {
+  - kind: struct
+    name: QualificationFacts
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 19
+    signature: pub struct QualificationFacts {
+  - kind: struct
+    name: TestSummary
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 31
+    signature: pub struct TestSummary {
+  - kind: struct
+    name: FindingSummary
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 38
+    signature: pub struct FindingSummary {
+  - kind: enum
+    name: QualificationError
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 46
+    signature: pub enum QualificationError {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 65
+    signature: pub const fn qualify(
+  - kind: struct
+    name: PlanningAuthority
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 111
+    signature: pub struct PlanningAuthority {
+  - kind: const
+    name: H00_AUTHORITY
+    modifier: null
+    path: crates/heptabao-governance/src/lib.rs
+    line: 125
+    signature: 'pub const H00_AUTHORITY: PlanningAuthority = PlanningAuthority {'
+  test_functions:
+  - name: qualification_never_grants_authority
+    path: crates/heptabao-governance/src/lib.rs
+    line: 167
+  - name: failed_tests_reject_qualification
+    path: crates/heptabao-governance/src/lib.rs
+    line: 175
+  - name: unknown_tests_reject_qualification
+    path: crates/heptabao-governance/src/lib.rs
+    line: 187
+  - name: high_finding_rejects_qualification
+    path: crates/heptabao-governance/src/lib.rs
+    line: 199
+  - name: revoked_receipt_rejects_qualification
+    path: crates/heptabao-governance/src/lib.rs
+    line: 212
+  - name: every_h00_authority_flag_is_false
+    path: crates/heptabao-governance/src/lib.rs
+    line: 224
+- crate: heptabao-journal-api
+  crate_path: crates/heptabao-journal-api
+  cargo_toml_sha256: ff34ae29a8c1c7148b47e50437c32e7f873ea22cd911f5ad71401df39ebb5dec
+  source_files:
+  - path: crates/heptabao-journal-api/src/lib.rs
+    sha256: 833134cb502065c3724c574a2618e3b888a77a4e775d68a892aa9a5a7db2703f
+  module_guide: docs/modules/heptabao-journal-api.md
+  internal_dependencies: []
+  public_items:
+  - kind: const
+    name: MAX_JOURNAL_PAYLOAD_BYTES
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 14
+    signature: 'pub const MAX_JOURNAL_PAYLOAD_BYTES: usize = 1024 * 1024;'
+  - kind: const
+    name: MAX_JOURNAL_DOMAIN_BYTES
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 15
+    signature: 'pub const MAX_JOURNAL_DOMAIN_BYTES: usize = 128;'
+  - kind: const
+    name: MAX_AUTHENTICATOR_ID_BYTES
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 16
+    signature: 'pub const MAX_AUTHENTICATOR_ID_BYTES: usize = 128;'
+  - kind: struct
+    name: JournalDomain
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 19
+    signature: pub struct JournalDomain(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 22
+    signature: 'pub fn new(value: String) -> Result<Self, JournalContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 29
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: AuthenticatorId
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 35
+    signature: pub struct AuthenticatorId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 38
+    signature: 'pub fn new(value: String) -> Result<Self, JournalContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 45
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: JournalSequence
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 70
+    signature: pub struct JournalSequence(u64);
+  - kind: const
+    name: INITIAL
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 73
+    signature: 'pub const INITIAL: Self = Self(1);'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 75
+    signature: 'pub const fn new(value: u64) -> Result<Self, JournalContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 82
+    signature: pub const fn get(self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 86
+    signature: pub const fn checked_next(self) -> Result<Self, JournalContractError> {
+  - kind: struct
+    name: JournalTag
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 95
+    signature: pub struct JournalTag([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 98
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, JournalContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 105
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: struct
+    name: JournalPayload
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 117
+    signature: pub struct JournalPayload(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 120
+    signature: 'pub fn new(mut value: Vec<u8>) -> Result<Self, JournalContractError> {'
+  - kind: fn
+    name: as_bytes
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 128
+    signature: pub fn as_bytes(&self) -> &[u8] {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 132
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 136
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: fn
+    name: into_bytes
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 140
+    signature: pub fn into_bytes(mut self) -> Vec<u8> {
+  - kind: struct
+    name: JournalRecord
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 162
+    signature: pub struct JournalRecord {
+  - kind: struct
+    name: JournalTail
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 182
+    signature: pub struct JournalTail {
+  - kind: struct
+    name: AppendReceipt
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 188
+    signature: pub struct AppendReceipt {
+  - kind: enum
+    name: JournalOpenMode
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 194
+    signature: pub enum JournalOpenMode {
+  - kind: enum
+    name: AppendFailureDisposition
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 204
+    signature: pub enum AppendFailureDisposition {
+  - kind: trait
+    name: JournalAuthenticator
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 209
+    signature: 'pub trait JournalAuthenticator: fmt::Debug + Send + Sync {'
+  - kind: trait
+    name: DurableJournal
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 223
+    signature: 'pub trait DurableJournal: fmt::Debug + Send {'
+  - kind: enum
+    name: JournalContractError
+    modifier: null
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 255
+    signature: pub enum JournalContractError {
+  test_functions:
+  - name: sequence_is_checked_and_non_zero
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 284
+  - name: domain_and_authenticator_identity_are_canonical
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 297
+  - name: payload_debug_is_redacted_and_consumable_without_clone
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 305
+  - name: zero_tag_is_rejected
+    path: crates/heptabao-journal-api/src/lib.rs
+    line: 315
+- crate: heptabao-journaled-core
+  crate_path: crates/heptabao-journaled-core
+  cargo_toml_sha256: 1f3a73394d559ff5eddeeaa6da1f5d30393d39897f77bc8251fae6837c4233fe
+  source_files:
+  - path: crates/heptabao-journaled-core/src/lib.rs
+    sha256: f5780f71e2a2a03575e5366441c9113313fad6c761d631f885e00e5ed745adb0
+  - path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+    sha256: 8eca7340f0a0ef162c031f1418a2b36977d7230f033c65f0d65838224f7b16f8
+  module_guide: docs/modules/heptabao-journaled-core.md
+  internal_dependencies:
+  - name: heptabao-barrier-api
+    section: dependencies
+  - name: heptabao-durable-core
+    section: dependencies
+  - name: heptabao-journal-api
+    section: dependencies
+  - name: heptabao-operation-ledger
+    section: dependencies
+  - name: heptabao-single-node-journal
+    section: dev-dependencies
+  - name: heptabao-single-node-store
+    section: dev-dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: type
+    name: JournaledCoreResult
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 26
+    signature: pub type JournaledCoreResult<T, S, B, J> = Result<T, JournaledCoreError<S, B, J>>;
+  - kind: struct
+    name: JournaledDurableCore
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 28
+    signature: pub struct JournaledDurableCore<S, B, J>
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 40
+    signature: 'pub const fn new(state: DurableStateEngine<S, B>, ledger: OperationLedger<J>) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 44
+    signature: pub const fn state(&self) -> &DurableStateEngine<S, B> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 48
+    signature: pub const fn ledger(&self) -> &OperationLedger<J> {
+  - kind: fn
+    name: recover_ledger_after_append_failure
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 74
+    signature: pub fn recover_ledger_after_append_failure(
+  - kind: fn
+    name: persist_mutation
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 82
+    signature: pub fn persist_mutation(
+  - kind: fn
+    name: record_rejected_before_dispatch
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 160
+    signature: pub fn record_rejected_before_dispatch(
+  - kind: fn
+    name: recover_durable_intent
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 185
+    signature: pub fn recover_durable_intent(
+  - kind: fn
+    name: record_response_audited
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 283
+    signature: pub fn record_response_audited(
+  - kind: fn
+    name: record_response_audit_failure_after_commit
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 296
+    signature: pub fn record_response_audit_failure_after_commit(
+  - kind: fn
+    name: record_delivery
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 309
+    signature: pub fn record_delivery(
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 348
+    signature: pub fn reconcile(
+  - kind: struct
+    name: JournaledCommitReceipt
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 413
+    signature: pub struct JournaledCommitReceipt {
+  - kind: enum
+    name: DurableIntentRecovery
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 419
+    signature: pub enum DurableIntentRecovery {
+  - kind: enum
+    name: JournaledCoreError
+    modifier: null
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 425
+    signature: pub enum JournaledCoreError<S, B, J>
+  test_functions:
+  - name: intent_precedes_state_commit_and_duplicate_never_mutates_again
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 939
+  - name: postcommit_ledger_failure_is_recovered_from_persisted_target_not_caller_receipt
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 997
+  - name: definitely_uncommitted_intent_is_durably_aborted_before_unfencing
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 1052
+  - name: response_audit_and_delivery_are_durable_ledger_transitions
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 1092
+  - name: unresolved_operation_fences_new_generation_until_provider_recovery
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 1130
+  - name: accepted_pre_dispatch_failure_can_be_durably_rejected
+    path: crates/heptabao-journaled-core/src/lib.rs
+    line: 1196
+  - name: storage_outcome_unknown_recovers_from_persisted_intent_after_reopen
+    path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+    line: 493
+  - name: journal_outcome_unknown_after_state_event_is_idempotent_after_reopen
+    path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+    line: 530
+  - name: definitely_missing_state_event_is_reconstructed_from_file_store_after_reopen
+    path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+    line: 566
+  - name: definitely_uncommitted_file_intent_is_aborted_after_reopen
+    path: crates/heptabao-journaled-core/tests/file_provider_recovery.rs
+    line: 606
+- crate: heptabao-key-lifecycle
+  crate_path: crates/heptabao-key-lifecycle
+  cargo_toml_sha256: b16bae50f3b6e4741e02846566db7bae7c98c21c69027d03eb401d5fab0c13a4
+  source_files:
+  - path: crates/heptabao-key-lifecycle/src/lib.rs
+    sha256: 0ea9bd1f0e92270930bba932e8e917610e86a9c46909601924c94cf091df4e91
+  module_guide: docs/modules/heptabao-key-lifecycle.md
+  internal_dependencies:
+  - name: heptabao-barrier-api
+    section: dependencies
+  - name: heptabao-journal-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_REASON_CODE_BYTES
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 23
+    signature: 'pub const MAX_REASON_CODE_BYTES: usize = 96;'
+  - kind: struct
+    name: ReasonCode
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 26
+    signature: pub struct ReasonCode(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 29
+    signature: 'pub fn new(value: String) -> Result<Self, KeyLifecycleContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 42
+    signature: pub fn as_str(&self) -> &str {
+  - kind: enum
+    name: KeyStatus
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 54
+    signature: pub enum KeyStatus {
+  - kind: enum
+    name: KeyUseDirective
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 63
+    signature: pub enum KeyUseDirective {
+  - kind: enum
+    name: KeyRingEventKind
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 70
+    signature: pub enum KeyRingEventKind {
+  - kind: struct
+    name: KeyRingEvent
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 102
+    signature: pub struct KeyRingEvent {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 126
+    signature: pub const fn kind(&self) -> KeyRingEventKind {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 130
+    signature: pub const fn epoch(&self) -> KeyEpoch {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 134
+    signature: pub const fn previous_active(&self) -> Option<KeyEpoch> {
+  - kind: fn
+    name: reason
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 138
+    signature: pub fn reason(&self) -> &ReasonCode {
+  - kind: fn
+    name: encode
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 142
+    signature: pub fn encode(&self) -> Result<JournalPayload, KeyLifecycleContractError> {
+  - kind: fn
+    name: decode
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 160
+    signature: 'pub fn decode(bytes: &[u8]) -> Result<Self, KeyLifecycleContractError> {'
+  - kind: struct
+    name: KeyRingState
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 199
+    signature: pub struct KeyRingState {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 205
+    signature: pub const fn active_epoch(&self) -> Option<KeyEpoch> {
+  - kind: fn
+    name: status
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 209
+    signature: 'pub fn status(&self, epoch: KeyEpoch) -> Option<KeyStatus> {'
+  - kind: fn
+    name: directive
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 213
+    signature: 'pub fn directive(&self, epoch: KeyEpoch) -> KeyUseDirective {'
+  - kind: fn
+    name: known_epoch_count
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 223
+    signature: pub fn known_epoch_count(&self) -> usize {
+  - kind: enum
+    name: KeyLedgerWriteState
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 307
+    signature: pub enum KeyLedgerWriteState {
+  - kind: struct
+    name: KeyRingLedger
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 312
+    signature: 'pub struct KeyRingLedger<J: DurableJournal> {'
+  - kind: fn
+    name: open
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 331
+    signature: 'pub fn open(mut journal: J) -> Result<Self, KeyLifecycleError<J::Error>> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 348
+    signature: pub const fn write_state(&self) -> KeyLedgerWriteState {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 352
+    signature: pub const fn replay_required(&self) -> bool {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 356
+    signature: pub const fn state(&self) -> &KeyRingState {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 360
+    signature: pub const fn journal(&self) -> &J {
+  - kind: fn
+    name: bootstrap
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 364
+    signature: pub fn bootstrap(
+  - kind: fn
+    name: stage
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 377
+    signature: pub fn stage(
+  - kind: fn
+    name: rotate
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 390
+    signature: pub fn rotate(
+  - kind: fn
+    name: retire
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 404
+    signature: pub fn retire(
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 417
+    signature: pub fn revoke(
+  - kind: fn
+    name: recover_after_append_failure
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 430
+    signature: pub fn recover_after_append_failure(&mut self) -> Result<(), KeyLifecycleError<J::Error>> {
+  - kind: fn
+    name: reopen
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 449
+    signature: pub fn reopen(self) -> Result<Self, KeyLifecycleError<J::Error>> {
+  - kind: enum
+    name: KeyLifecycleError
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 489
+    signature: pub enum KeyLifecycleError<E>
+  - kind: enum
+    name: KeyLifecycleContractError
+    modifier: null
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 529
+    signature: pub enum KeyLifecycleContractError {
+  test_functions:
+  - name: bootstrap_stage_rotate_retire_and_revoke_replay
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 747
+  - name: active_revocation_and_unstaged_rotation_fail_closed
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 769
+  - name: event_decoder_rejects_trailing_bytes
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 803
+  - name: append_outcome_unknown_poison_requires_replay
+    path: crates/heptabao-key-lifecycle/src/lib.rs
+    line: 820
+- crate: heptabao-operation-ledger
+  crate_path: crates/heptabao-operation-ledger
+  cargo_toml_sha256: 5a71ca1f04ea41c380d78f02d2891bb962ab25b0dd3ca82ad96fba9d31a88354
+  source_files:
+  - path: crates/heptabao-operation-ledger/src/lib.rs
+    sha256: 3802fc32037119d1a784ce81cc0cdcdc0ae0ddfd74bde9da371850323e6d378b
+  module_guide: docs/modules/heptabao-operation-ledger.md
+  internal_dependencies:
+  - name: heptabao-journal-api
+    section: dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_OPERATION_ID_BYTES
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 22
+    signature: 'pub const MAX_OPERATION_ID_BYTES: usize = 128;'
+  - kind: const
+    name: MAX_DETAIL_CODE_BYTES
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 23
+    signature: 'pub const MAX_DETAIL_CODE_BYTES: usize = 128;'
+  - kind: struct
+    name: OperationId
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 26
+    signature: pub struct OperationId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 29
+    signature: 'pub fn new(value: String) -> Result<Self, OperationContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 51
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: StableDetailCode
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 63
+    signature: pub struct StableDetailCode(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 66
+    signature: 'pub fn new(value: String) -> Result<Self, OperationContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 79
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: OperationDigest
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 94
+    signature: pub struct OperationDigest([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 97
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, OperationContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 104
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: enum
+    name: OperationClass
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 116
+    signature: pub enum OperationClass {
+  - kind: enum
+    name: OperationPhase
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 139
+    signature: pub enum OperationPhase {
+  - kind: struct
+    name: OperationEvent
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 198
+    signature: pub struct OperationEvent {
+  - kind: fn
+    name: accepted
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 212
+    signature: pub fn accepted(
+  - kind: fn
+    name: next
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 234
+    signature: pub fn next(
+  - kind: fn
+    name: operation_id
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 262
+    signature: pub fn operation_id(&self) -> &OperationId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 266
+    signature: pub const fn request_digest(&self) -> OperationDigest {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 270
+    signature: pub const fn class(&self) -> OperationClass {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 274
+    signature: pub const fn previous_phase(&self) -> Option<OperationPhase> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 278
+    signature: pub const fn phase(&self) -> OperationPhase {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 282
+    signature: pub const fn state(&self) -> Option<(Generation, StateDigest)> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 289
+    signature: pub const fn effect_key_digest(&self) -> Option<OperationDigest> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 293
+    signature: pub const fn response_digest(&self) -> Option<OperationDigest> {
+  - kind: fn
+    name: detail_code
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 297
+    signature: pub fn detail_code(&self) -> &StableDetailCode {
+  - kind: fn
+    name: encode
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 301
+    signature: pub fn encode(&self) -> Result<JournalPayload, OperationContractError> {
+  - kind: fn
+    name: decode
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 342
+    signature: 'pub fn decode(bytes: &[u8]) -> Result<Self, OperationContractError> {'
+  - kind: enum
+    name: RetryDirective
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 412
+    signature: pub enum RetryDirective {
+  - kind: enum
+    name: LedgerWriteState
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 421
+    signature: pub enum LedgerWriteState {
+  - kind: struct
+    name: OperationLedger
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 426
+    signature: 'pub struct OperationLedger<J: DurableJournal> {'
+  - kind: fn
+    name: open
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 444
+    signature: 'pub fn open(mut journal: J) -> Result<Self, OperationLedgerError<J::Error>> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 461
+    signature: pub const fn write_state(&self) -> LedgerWriteState {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 465
+    signature: pub const fn replay_required(&self) -> bool {
+  - kind: fn
+    name: current
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 469
+    signature: 'pub fn current(&self, operation_id: &OperationId) -> Option<&OperationEvent> {'
+  - kind: fn
+    name: operation_count
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 473
+    signature: pub fn operation_count(&self) -> usize {
+  - kind: fn
+    name: blocking_phase
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 477
+    signature: pub fn blocking_phase(&self) -> Option<OperationPhase> {
+  - kind: fn
+    name: retry_directive
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 484
+    signature: 'pub fn retry_directive(&self, operation_id: &OperationId) -> Option<RetryDirective> {'
+  - kind: fn
+    name: record
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 488
+    signature: pub fn record(
+  - kind: fn
+    name: recover_after_append_failure
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 514
+    signature: pub fn recover_after_append_failure(&mut self) -> Result<(), OperationLedgerError<J::Error>> {
+  - kind: fn
+    name: reopen
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 533
+    signature: pub fn reopen(self) -> Result<Self, OperationLedgerError<J::Error>> {
+  - kind: enum
+    name: OperationLedgerError
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 545
+    signature: pub enum OperationLedgerError<E>
+  - kind: enum
+    name: OperationContractError
+    modifier: null
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 577
+    signature: pub enum OperationContractError {
+  test_functions:
+  - name: legal_mutation_chain_replays_and_requires_lookup_after_commit
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1042
+  - name: proven_not_committed_intent_is_terminal_and_unblocks_new_mutations
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1118
+  - name: duplicate_acceptance_and_illegal_transition_fail_closed
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1179
+  - name: external_unknown_effect_is_reconcile_only
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1205
+  - name: encoded_event_rejects_trailing_bytes
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1261
+  - name: append_outcome_unknown_after_persistence_requires_authoritative_replay
+    path: crates/heptabao-operation-ledger/src/lib.rs
+    line: 1278
+- crate: heptabao-oracle-observer
+  crate_path: crates/heptabao-oracle-observer
+  cargo_toml_sha256: 389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429
+  source_files:
+  - path: crates/heptabao-oracle-observer/src/lib.rs
+    sha256: 30463a6996ba0490c1b867c36942e2fc5ff54f678f53bc97f5ce0ce827e0904b
+  module_guide: docs/modules/heptabao-oracle-observer.md
+  internal_dependencies: []
+  public_items:
+  - kind: enum
+    name: AuthorityEffect
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 13
+    signature: pub enum AuthorityEffect {
+  - kind: enum
+    name: CaptureKind
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 20
+    signature: pub enum CaptureKind {
+  - kind: struct
+    name: ObservationContext
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 27
+    signature: pub struct ObservationContext<'a> {
+  - kind: enum
+    name: ObservationError
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 38
+    signature: pub enum ObservationError {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 58
+    signature: pub const fn validate(self) -> Result<AuthorityEffect, ObservationError> {
+  - kind: struct
+    name: SideEffectSnapshot
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 79
+    signature: pub struct SideEffectSnapshot {
+  - kind: struct
+    name: SideEffectDelta
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 94
+    signature: pub struct SideEffectDelta {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 108
+    signature: 'pub const fn between(before: SideEffectSnapshot, after: SideEffectSnapshot) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 125
+    signature: pub const fn is_empty(self) -> bool {
+  - kind: struct
+    name: SideEffectPolicy
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 141
+    signature: pub struct SideEffectPolicy {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 155
+    signature: pub const fn validate_delta(
+  test_functions:
+  - name: synthetic_contract_has_no_authority
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 200
+  - name: black_box_oracle_requires_verified_artifact
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 213
+  - name: secret_material_is_rejected
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 229
+  - name: health_observation_allows_audit_only
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 245
+  - name: undeclared_token_mutation_is_rejected
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 263
+  - name: empty_delta_is_empty
+    path: crates/heptabao-oracle-observer/src/lib.rs
+    line: 277
+- crate: heptabao-p0-server
+  crate_path: crates/heptabao-p0-server
+  cargo_toml_sha256: 21a883c7709d8ba3574270452eb57615fc815e274d689448e5b631133bb56365
+  source_files:
+  - path: crates/heptabao-p0-server/src/lib.rs
+    sha256: d0e685b6b94ddb2be9fe3fa9baeb8102b0cdd59f4dbb0daa8daaaa146f7263dd
+  - path: crates/heptabao-p0-server/src/main.rs
+    sha256: 2f5c674b9e765cd3b5f3202f92f013f88b82d0af1ad709fd8be8671f4fa8f630
+  module_guide: docs/modules/heptabao-p0-server.md
+  internal_dependencies:
+  - name: heptabao-protocol
+    section: dependencies
+  public_items:
+  - kind: const
+    name: P0_PROFILE
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 23
+    signature: 'pub const P0_PROFILE: &str = "HB-P0-DEV-MEMORY";'
+  - kind: const
+    name: P0_PRODUCTION_SUPPORTED
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 24
+    signature: 'pub const P0_PRODUCTION_SUPPORTED: bool = false;'
+  - kind: const
+    name: P0_COMPATIBILITY_CLAIM
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 25
+    signature: 'pub const P0_COMPATIBILITY_CLAIM: bool = false;'
+  - kind: const
+    name: P0_AUTHORITY_EFFECT
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 26
+    signature: 'pub const P0_AUTHORITY_EFFECT: &str = "NONE";'
+  - kind: struct
+    name: DevelopmentCredentials
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 29
+    signature: pub struct DevelopmentCredentials {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 35
+    signature: 'pub fn new(mut root_token: Vec<u8>, mut unseal_key: Vec<u8>) -> Result<Self, P0Error> {'
+  - kind: trait
+    name: AuditSink
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 58
+    signature: 'pub trait AuditSink: fmt::Debug + Send {'
+  - kind: struct
+    name: MemoryAuditSink
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 63
+    signature: pub struct MemoryAuditSink {
+  - kind: fn
+    name: with_failure_on
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 70
+    signature: 'pub fn with_failure_on(call: usize) -> Self {'
+  - kind: fn
+    name: events
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 78
+    signature: pub fn events(&self) -> &[AuditEvent] {
+  - kind: struct
+    name: FileAuditSink
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 94
+    signature: pub struct FileAuditSink {
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 125
+    signature: 'pub fn create_new(path: impl AsRef<Path>) -> Result<Self, AuditError> {'
+  - kind: fn
+    name: path
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 152
+    signature: pub fn path(&self) -> &Path {
+  - kind: struct
+    name: P0Server
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 180
+    signature: 'pub struct P0Server<A: AuditSink> {'
+  - kind: struct
+    name: P0Response
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 264
+    signature: pub struct P0Response {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 318
+    signature: 'pub fn new(credentials: DevelopmentCredentials, audit: A) -> Self {'
+  - kind: fn
+    name: audit
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 326
+    signature: pub fn audit(&self) -> &A {
+  - kind: fn
+    name: generation
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 330
+    signature: pub fn generation(&self) -> u64 {
+  - kind: fn
+    name: handle
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 334
+    signature: 'pub fn handle(&mut self, envelope: RequestEnvelope, now: MonotonicTick) -> P0Response {'
+  - kind: enum
+    name: AuditError
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 828
+    signature: pub enum AuditError {
+  - kind: enum
+    name: P0Error
+    modifier: null
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 853
+    signature: pub enum P0Error {
+  test_functions:
+  - name: fresh_server_starts_fail_closed_and_sealed
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 922
+  - name: weak_or_equal_credentials_are_rejected
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 941
+  - name: init_unseal_write_and_read_are_audited
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 953
+  - name: server_debug_redacts_kv_paths_and_values
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 996
+  - name: kv_list_response_is_direct_owned_and_debug_redacted
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1022
+  - name: delete_no_content_is_always_body_free
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1054
+  - name: ignored_operation_bodies_fail_closed_before_dispatch
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1073
+  - name: init_requires_the_exact_empty_object_body
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1101
+  - name: secret_path_debug_is_redacted
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1125
+  - name: invalid_unescaped_quote_is_rejected
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1133
+  - name: trailing_escape_is_rejected
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1141
+  - name: expired_request_never_dispatches
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1146
+  - name: sealed_and_authentication_bypasses_fail_closed
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1169
+  - name: request_audit_failure_prevents_mutation
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1186
+  - name: rejection_audit_failure_returns_service_unavailable
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1205
+  - name: response_audit_failure_preserves_commit_and_returns_recovery_reference
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1227
+  - name: file_audit_requires_new_absolute_non_symlink_path
+    path: crates/heptabao-p0-server/src/lib.rs
+    line: 1252
+  - name: no_content_response_never_emits_a_wire_body
+    path: crates/heptabao-p0-server/src/main.rs
+    line: 741
+  - name: request_registry_debug_redacts_live_ids
+    path: crates/heptabao-p0-server/src/main.rs
+    line: 758
+  - name: client_request_id_is_single_use_inside_the_p0_window
+    path: crates/heptabao-p0-server/src/main.rs
+    line: 768
+  - name: request_id_registry_fails_closed_when_saturated
+    path: crates/heptabao-p0-server/src/main.rs
+    line: 777
+- crate: heptabao-platform-bakeoff
+  crate_path: crates/heptabao-platform-bakeoff
+  cargo_toml_sha256: 204649e472b08da3e1c63cee39f5afaa0f678c351c1e6581e3668e29916f51d7
+  source_files:
+  - path: crates/heptabao-platform-bakeoff/src/lib.rs
+    sha256: 8eb22e2943e7e63d54313df5a9edadf8ccb4a87336639c21b7594ed299f99888
+  module_guide: docs/modules/heptabao-platform-bakeoff.md
+  internal_dependencies: []
+  public_items:
+  - kind: enum
+    name: Capability
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 13
+    signature: pub enum Capability {
+  - kind: enum
+    name: CandidateState
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 34
+    signature: pub enum CandidateState {
+  - kind: enum
+    name: AuthorityEffect
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 44
+    signature: pub enum AuthorityEffect {
+  - kind: struct
+    name: ScoreCard
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 52
+    signature: pub struct ScoreCard {
+  - kind: const
+    name: MAX_SCORE
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 66
+    signature: 'pub const MAX_SCORE: u16 = 50;'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 68
+    signature: pub const fn validate(self) -> Result<(), BakeoffError> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 85
+    signature: pub const fn total(self) -> u16 {
+  - kind: struct
+    name: CandidateEvidence
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 101
+    signature: pub struct CandidateEvidence {
+  - kind: struct
+    name: Candidate
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 119
+    signature: pub struct Candidate<'a> {
+  - kind: struct
+    name: PrototypeSelection
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 130
+    signature: pub struct PrototypeSelection<'a> {
+  - kind: enum
+    name: BakeoffError
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 139
+    signature: pub enum BakeoffError {
+  - kind: const
+    name: PROTOTYPE_SELECTION_MINIMUM
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 163
+    signature: 'pub const PROTOTYPE_SELECTION_MINIMUM: u16 = 38;'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 166
+    signature: 'pub const fn validate_candidate(candidate: Candidate<''_>) -> Result<AuthorityEffect, BakeoffError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 186
+    signature: pub const fn select_for_prototype(
+  test_functions:
+  - name: validated_candidate_has_no_authority
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 294
+  - name: complete_candidate_can_be_selected_for_prototype_only
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 302
+  - name: pending_license_rejects_selection
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 317
+  - name: unclassified_finding_rejects_selection
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 332
+  - name: identified_candidate_is_not_selectable
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 347
+  - name: low_score_is_not_selectable
+    path: crates/heptabao-platform-bakeoff/src/lib.rs
+    line: 359
+- crate: heptabao-platform-contracts
+  crate_path: crates/heptabao-platform-contracts
+  cargo_toml_sha256: 58309ecbb712274000ca0b7bc575c9fade218355777c2e959ee6a8ddc9ec49b4
+  source_files:
+  - path: crates/heptabao-platform-contracts/src/lib.rs
+    sha256: 50469f79c0766331e266de8b0f039786a8731837de8552049b97831a16e47788
+  module_guide: docs/modules/heptabao-platform-contracts.md
+  internal_dependencies: []
+  public_items:
+  - kind: enum
+    name: AuthorityEffect
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 16
+    signature: pub enum AuthorityEffect {
+  - kind: enum
+    name: EvidenceMaturity
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 22
+    signature: pub enum EvidenceMaturity {
+  - kind: struct
+    name: Digest32
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 30
+    signature: pub struct Digest32([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 33
+    signature: 'pub fn new(bytes: [u8; 32]) -> Result<Self, ContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 40
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: struct
+    name: ObjectId20
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 47
+    signature: pub struct ObjectId20([u8; 20]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 50
+    signature: 'pub fn new(bytes: [u8; 20]) -> Result<Self, ContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 57
+    signature: pub const fn bytes(self) -> [u8; 20] {
+  - kind: struct
+    name: ArtifactBinding
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 64
+    signature: pub struct ArtifactBinding<'a> {
+  - kind: struct
+    name: ValidatedArtifact
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 80
+    signature: pub struct ValidatedArtifact {
+  - kind: fn
+    name: validate_artifact_binding
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 86
+    signature: pub fn validate_artifact_binding(
+  - kind: struct
+    name: MonotonicInstant
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 134
+    signature: pub struct MonotonicInstant(pub u64);
+  - kind: struct
+    name: TaskId
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 138
+    signature: pub struct TaskId(u64);
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 141
+    signature: 'pub const fn new(value: u64) -> Result<Self, ContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 148
+    signature: pub const fn get(self) -> u64 {
+  - kind: enum
+    name: TaskClass
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 155
+    signature: pub enum TaskClass {
+  - kind: struct
+    name: TaskSpec
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 164
+    signature: pub struct TaskSpec {
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 172
+    signature: 'pub fn validate(self, now: MonotonicInstant) -> Result<(), ContractError> {'
+  - kind: type
+    name: BoxTask
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 188
+    signature: pub type BoxTask = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
+  - kind: trait
+    name: RuntimeAdapter
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 191
+    signature: 'pub trait RuntimeAdapter: Send + Sync {'
+  - kind: enum
+    name: RuntimeError
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 206
+    signature: pub enum RuntimeError {
+  - kind: enum
+    name: TlsVersion
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 217
+    signature: pub enum TlsVersion {
+  - kind: enum
+    name: ClientAuthMode
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 233
+    signature: pub enum ClientAuthMode {
+  - kind: struct
+    name: TlsProfile
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 241
+    signature: pub struct TlsProfile {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 253
+    signature: pub const fn validate(self) -> Result<(), ContractError> {
+  - kind: struct
+    name: TlsConfigId
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 277
+    signature: pub struct TlsConfigId(pub Digest32);
+  - kind: struct
+    name: PrivateKeyHandle
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 281
+    signature: pub struct PrivateKeyHandle(pub Digest32);
+  - kind: struct
+    name: StagedTlsConfig
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 285
+    signature: pub struct StagedTlsConfig {
+  - kind: trait
+    name: TlsProvider
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 292
+    signature: 'pub trait TlsProvider: Send + Sync {'
+  - kind: enum
+    name: TlsError
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 300
+    signature: pub enum TlsError {
+  - kind: struct
+    name: LogPosition
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 311
+    signature: pub struct LogPosition {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 317
+    signature: pub const fn validate(self) -> Result<(), ContractError> {
+  - kind: struct
+    name: ApplyCursor
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 327
+    signature: pub struct ApplyCursor {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 332
+    signature: 'pub const fn validate_next(self, next: LogPosition) -> Result<Self, ContractError> {'
+  - kind: struct
+    name: SnapshotMeta
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 364
+    signature: pub struct SnapshotMeta {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 372
+    signature: 'pub const fn validate(self, cursor: ApplyCursor) -> Result<(), ContractError> {'
+  - kind: trait
+    name: StateMachineAdapter
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 390
+    signature: pub trait StateMachineAdapter {
+  - kind: trait
+    name: ConsensusAdapter
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 404
+    signature: 'pub trait ConsensusAdapter: Send + Sync {'
+  - kind: enum
+    name: RaftError
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 412
+    signature: pub enum RaftError {
+  - kind: enum
+    name: ContractError
+    modifier: null
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 424
+    signature: pub enum ContractError {
+  test_functions:
+  - name: registry_metadata_has_no_authority
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 465
+  - name: registry_checksum_mismatch_is_rejected
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 489
+  - name: independent_reproduction_still_has_no_authority
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 510
+  - name: critical_task_requires_cancellation_and_future_deadline
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 535
+  - name: unsafe_ticket_policy_is_rejected
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 559
+  - name: raft_apply_is_contiguous_and_term_monotonic
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 574
+  - name: snapshot_cannot_regress_applied_state
+    path: crates/heptabao-platform-contracts/src/lib.rs
+    line: 594
+- crate: heptabao-protocol
+  crate_path: crates/heptabao-protocol
+  cargo_toml_sha256: 951de609e5e4f963856967dccae040184a9215084f138141b9205747d6a7f226
+  source_files:
+  - path: crates/heptabao-protocol/src/lib.rs
+    sha256: 87bc624950e06b98a9624ade5aa3cd5fa2e17204b3987b66593f2fac61dd545e
+  module_guide: docs/modules/heptabao-protocol.md
+  internal_dependencies: []
+  public_items:
+  - kind: const
+    name: MAX_HTTP_HEAD_BYTES
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 13
+    signature: 'pub const MAX_HTTP_HEAD_BYTES: usize = 16 * 1024;'
+  - kind: const
+    name: MAX_HTTP_BODY_BYTES
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 14
+    signature: 'pub const MAX_HTTP_BODY_BYTES: usize = 1024 * 1024;'
+  - kind: const
+    name: MAX_TARGET_BYTES
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 15
+    signature: 'pub const MAX_TARGET_BYTES: usize = 2 * 1024;'
+  - kind: const
+    name: MAX_HEADER_COUNT
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 16
+    signature: 'pub const MAX_HEADER_COUNT: usize = 64;'
+  - kind: const
+    name: MAX_HEADER_VALUE_BYTES
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 17
+    signature: 'pub const MAX_HEADER_VALUE_BYTES: usize = 8 * 1024;'
+  - kind: const
+    name: MONOTONIC_NANOS_PER_SECOND
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 18
+    signature: 'pub const MONOTONIC_NANOS_PER_SECOND: u64 = 1_000_000_000;'
+  - kind: const
+    name: MAX_REQUEST_BUDGET_NANOS
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 19
+    signature: 'pub const MAX_REQUEST_BUDGET_NANOS: u64 = 60 * MONOTONIC_NANOS_PER_SECOND;'
+  - kind: const
+    name: MAX_REQUEST_BUDGET_TICKS
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 20
+    signature: 'pub const MAX_REQUEST_BUDGET_TICKS: u64 = MAX_REQUEST_BUDGET_NANOS;'
+  - kind: enum
+    name: Method
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 23
+    signature: pub enum Method {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 43
+    signature: pub const fn as_str(self) -> &'static str {
+  - kind: enum
+    name: Operation
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 55
+    signature: pub enum Operation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 68
+    signature: pub const fn mutates(self) -> bool {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 75
+    signature: pub const fn requires_authentication(self) -> bool {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 82
+    signature: pub const fn allowed_while_sealed(self) -> bool {
+  - kind: struct
+    name: CanonicalTarget
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 123
+    signature: pub struct CanonicalTarget {
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 149
+    signature: 'pub fn parse(raw: &str) -> Result<Self, ProtocolError> {'
+  - kind: fn
+    name: path
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 168
+    signature: pub fn path(&self) -> &str {
+  - kind: fn
+    name: query
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 172
+    signature: pub fn query(&self) -> &[(String, String)] {
+  - kind: fn
+    name: canonical_string
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 176
+    signature: pub fn canonical_string(&self) -> String {
+  - kind: fn
+    name: matches_canonical
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 193
+    signature: 'pub fn matches_canonical(&self, raw: &str) -> bool {'
+  - kind: struct
+    name: HeaderMap
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 307
+    signature: pub struct HeaderMap(BTreeMap<String, Vec<u8>>);
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 329
+    signature: 'pub fn get(&self, name: &str) -> Option<&str> {'
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 335
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 339
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: fn
+    name: iter
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 343
+    signature: pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {
+  - kind: struct
+    name: ParsedHttpRequest
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 353
+    signature: pub struct ParsedHttpRequest {
+  - kind: fn
+    name: parse_http_request
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 378
+    signature: 'pub fn parse_http_request(input: &[u8]) -> Result<ParsedHttpRequest, ProtocolError> {'
+  - kind: fn
+    name: classify_operation
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 532
+    signature: pub fn classify_operation(
+  - kind: struct
+    name: MonotonicTick
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 563
+    signature: pub struct MonotonicTick(pub u64);
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 566
+    signature: 'pub const fn from_nanos(value: u64) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 570
+    signature: pub const fn as_nanos(self) -> u64 {
+  - kind: fn
+    name: checked_add_duration
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 574
+    signature: 'pub fn checked_add_duration(self, duration: Duration) -> Option<Self> {'
+  - kind: fn
+    name: checked_duration_since
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 579
+    signature: 'pub fn checked_duration_since(self, earlier: Self) -> Option<Duration> {'
+  - kind: struct
+    name: RequestEnvelope
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 585
+    signature: pub struct RequestEnvelope {
+  - kind: fn
+    name: validate_at
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 605
+    signature: 'pub fn validate_at(&self, now: MonotonicTick) -> Result<Operation, ProtocolError> {'
+  - kind: struct
+    name: RequestId
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 627
+    signature: pub struct RequestId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 630
+    signature: 'pub fn new(value: String) -> Result<Self, ProtocolError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 642
+    signature: pub fn as_str(&self) -> &str {
+  - kind: enum
+    name: AuditPhase
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 648
+    signature: pub enum AuditPhase {
+  - kind: enum
+    name: CommitDisposition
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 657
+    signature: pub enum CommitDisposition {
+  - kind: struct
+    name: AuditEvent
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 665
+    signature: pub struct AuditEvent {
+  - kind: struct
+    name: SecretBytes
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 675
+    signature: pub struct SecretBytes(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 678
+    signature: 'pub fn new(mut value: Vec<u8>) -> Result<Self, ProtocolError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 686
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: fn
+    name: constant_time_eq
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 690
+    signature: 'pub fn constant_time_eq(&self, candidate: &[u8]) -> bool {'
+  - kind: enum
+    name: ProtocolError
+    modifier: null
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 715
+    signature: pub enum ProtocolError {
+  test_functions:
+  - name: strict_request_parses_and_classifies
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 810
+  - name: duplicate_host_is_rejected
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 823
+  - name: request_line_whitespace_smuggling_is_rejected
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 829
+  - name: encoded_slash_and_lowercase_encoding_are_rejected
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 840
+  - name: query_keys_are_unique_sorted_and_exactly_matchable
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 852
+  - name: oversized_unterminated_head_is_rejected_early
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 867
+  - name: body_requires_exact_content_length
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 874
+  - name: deadline_uses_actual_dispatch_time
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 890
+  - name: deadline_must_be_strictly_after_receipt
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 921
+  - name: monotonic_units_are_nanoseconds_and_budget_is_sixty_seconds
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 944
+  - name: monotonic_duration_addition_fails_on_overflow
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 953
+  - name: request_debug_redacts_path_header_values_and_body
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 963
+  - name: secret_debug_is_redacted_and_compare_is_length_aware
+    path: crates/heptabao-protocol/src/lib.rs
+    line: 984
+- crate: heptabao-recovery-core
+  crate_path: crates/heptabao-recovery-core
+  cargo_toml_sha256: 951bd09462faa2e6936dcf86b5f9a95ebc4f67654a6712dc345b9842abd4ced6
+  source_files:
+  - path: crates/heptabao-recovery-core/src/lib.rs
+    sha256: 05b043ba09efcf993c6f7ab144b4c53153d2f25e348926d7b2ee9eaaf14a26e3
+  module_guide: docs/modules/heptabao-recovery-core.md
+  internal_dependencies:
+  - name: heptabao-barrier-api
+    section: dependencies
+  - name: heptabao-journal-api
+    section: dependencies
+  - name: heptabao-rollback-anchor
+    section: dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_RECOVERY_ID_BYTES
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 29
+    signature: 'pub const MAX_RECOVERY_ID_BYTES: usize = 128;'
+  - kind: const
+    name: MAX_RECOVERY_AUTHENTICATOR_ID_BYTES
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 30
+    signature: 'pub const MAX_RECOVERY_AUTHENTICATOR_ID_BYTES: usize = 128;'
+  - kind: const
+    name: MAX_RECOVERY_STATE_BYTES
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 31
+    signature: 'pub const MAX_RECOVERY_STATE_BYTES: usize = 16 * 1024 * 1024;'
+  - kind: const
+    name: MAX_RECOVERY_RECORDS
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 32
+    signature: 'pub const MAX_RECOVERY_RECORDS: usize = 100_000;'
+  - kind: const
+    name: MAX_RECOVERY_PAYLOAD_BYTES
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 33
+    signature: 'pub const MAX_RECOVERY_PAYLOAD_BYTES: usize = 64 * 1024 * 1024;'
+  - kind: struct
+    name: RecoveryArchiveId
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 36
+    signature: pub struct RecoveryArchiveId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 39
+    signature: 'pub fn new(value: String) -> Result<Self, RecoveryContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 46
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: RecoveryAuthenticatorId
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 58
+    signature: pub struct RecoveryAuthenticatorId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 61
+    signature: 'pub fn new(value: String) -> Result<Self, RecoveryContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 68
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: RecoveryTag
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 93
+    signature: pub struct RecoveryTag([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 96
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, RecoveryContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 103
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: struct
+    name: RecoveryRecord
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 115
+    signature: pub struct RecoveryRecord {
+  - kind: fn
+    name: from_journal_record
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 123
+    signature: 'pub fn from_journal_record(record: JournalRecord) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 132
+    signature: pub const fn sequence(&self) -> JournalSequence {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 136
+    signature: pub const fn previous_tag(&self) -> Option<JournalTag> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 140
+    signature: pub const fn tag(&self) -> JournalTag {
+  - kind: fn
+    name: payload
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 144
+    signature: pub fn payload(&self) -> &[u8] {
+  - kind: fn
+    name: into_journal_record
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 148
+    signature: pub fn into_journal_record(mut self) -> Result<JournalRecord, RecoveryContractError> {
+  - kind: type
+    name: RecoveryImageParts
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 178
+    signature: pub type RecoveryImageParts = (
+  - kind: struct
+    name: RecoveryImage
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 188
+    signature: pub struct RecoveryImage {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 198
+    signature: pub fn new(
+  - kind: fn
+    name: archive_id
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 222
+    signature: pub fn archive_id(&self) -> &RecoveryArchiveId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 226
+    signature: pub const fn authenticator_id(&self) -> &RecoveryAuthenticatorId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 230
+    signature: pub const fn observation(&self) -> &CheckpointObservation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 234
+    signature: pub const fn checkpoint(&self) -> &RecoveryCheckpoint {
+  - kind: fn
+    name: sealed_state
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 238
+    signature: pub fn sealed_state(&self) -> &[u8] {
+  - kind: fn
+    name: records
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 242
+    signature: pub fn records(&self) -> &[RecoveryRecord] {
+  - kind: struct
+    name: RecoveryArchive
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 281
+    signature: pub struct RecoveryArchive {
+  - kind: fn
+    name: seal
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 287
+    signature: 'pub fn seal<A: RecoveryAuthenticator>('
+  - kind: fn
+    name: capture
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 305
+    signature: pub fn capture<S, J, A>(
+  - kind: fn
+    name: verify
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 355
+    signature: 'pub fn verify<A: RecoveryAuthenticator>('
+  - kind: fn
+    name: encode
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 378
+    signature: pub fn encode(&self) -> Result<Vec<u8>, RecoveryContractError> {
+  - kind: fn
+    name: decode
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 385
+    signature: 'pub fn decode(bytes: &[u8]) -> Result<Self, RecoveryContractError> {'
+  - kind: struct
+    name: VerifiedRecoveryImage
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 489
+    signature: pub struct VerifiedRecoveryImage {
+  - kind: fn
+    name: archive_id
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 494
+    signature: pub fn archive_id(&self) -> &RecoveryArchiveId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 498
+    signature: pub const fn authenticator_id(&self) -> &RecoveryAuthenticatorId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 502
+    signature: pub const fn observation(&self) -> &CheckpointObservation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 506
+    signature: pub const fn checkpoint(&self) -> &RecoveryCheckpoint {
+  - kind: struct
+    name: AuthorizedRecoveryImage
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 524
+    signature: pub struct AuthorizedRecoveryImage {
+  - kind: fn
+    name: archive_id
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 530
+    signature: pub fn archive_id(&self) -> &RecoveryArchiveId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 534
+    signature: pub const fn observation(&self) -> &CheckpointObservation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 538
+    signature: pub const fn checkpoint(&self) -> &RecoveryCheckpoint {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 542
+    signature: pub const fn anchor_revision(&self) -> AnchorRevision {
+  - kind: fn
+    name: into_authorized_parts
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 546
+    signature: pub fn into_authorized_parts(self) -> (RecoveryImageParts, AnchorRevision) {
+  - kind: trait
+    name: RecoveryAuthenticator
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 562
+    signature: 'pub trait RecoveryAuthenticator: fmt::Debug + Send + Sync {'
+  - kind: struct
+    name: RestoreReceipt
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 571
+    signature: pub struct RestoreReceipt {
+  - kind: enum
+    name: PublishFailure
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 579
+    signature: pub enum PublishFailure<E>
+  - kind: enum
+    name: StageFailure
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 607
+    signature: pub enum StageFailure<E>
+  - kind: trait
+    name: RecoveryTarget
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 629
+    signature: 'pub trait RecoveryTarget: fmt::Debug {'
+  - kind: struct
+    name: RecoveryRestorer
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 648
+    signature: pub struct RecoveryRestorer;
+  - kind: fn
+    name: restore
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 651
+    signature: pub fn restore<T, A, R, P>(
+  - kind: type
+    name: RecoveryCaptureResult
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 736
+    signature: pub type RecoveryCaptureResult<T, S, J, A> = Result<T, RecoveryCaptureError<S, J, A>>;
+  - kind: type
+    name: RecoveryVerifyResult
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 737
+    signature: pub type RecoveryVerifyResult<T, A> = Result<T, RecoveryVerificationError<A>>;
+  - kind: type
+    name: RecoveryRestoreResult
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 738
+    signature: pub type RecoveryRestoreResult<T, A, E, R, P> = Result<T, RecoveryRestoreError<A, E, R, P>>;
+  - kind: enum
+    name: RecoveryCaptureError
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 741
+    signature: pub enum RecoveryCaptureError<S, J, A>
+  - kind: enum
+    name: RecoveryVerificationError
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 782
+    signature: pub enum RecoveryVerificationError<A>
+  - kind: enum
+    name: RecoveryRestoreError
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 809
+    signature: pub enum RecoveryRestoreError<A, E, R, P>
+  - kind: enum
+    name: RecoveryContractError
+    modifier: null
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 899
+    signature: pub enum RecoveryContractError {
+  test_functions:
+  - name: anchor_fence_is_held_across_target_publication
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1691
+  - name: capture_encode_decode_verify_and_restore_round_trip
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1724
+  - name: tamper_trailing_bytes_and_non_empty_target_fail_closed
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1748
+  - name: restore_requires_the_exact_externally_verified_checkpoint
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1789
+  - name: archive_authenticator_identity_is_bound
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1830
+  - name: unknown_target_publication_remains_explicit
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1855
+  - name: post_entry_anchor_fence_failure_is_outcome_unknown
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1880
+  - name: stale_checkpoint_cannot_authorize_restore
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1912
+  - name: wrong_receipt_after_publication_is_outcome_unknown
+    path: crates/heptabao-recovery-core/src/lib.rs
+    line: 1953
+- crate: heptabao-rollback-anchor
+  crate_path: crates/heptabao-rollback-anchor
+  cargo_toml_sha256: 5d25fc4b2c0903ba3bd5f279255c1a82e7a1fc8d0acb7341811eeea964472d52
+  source_files:
+  - path: crates/heptabao-rollback-anchor/src/lib.rs
+    sha256: a940cbdda71c3a44affd5b4a6c7f44875fa425c2b0f6f62bd24e78d21dde2a80
+  module_guide: docs/modules/heptabao-rollback-anchor.md
+  internal_dependencies:
+  - name: heptabao-barrier-api
+    section: dependencies
+  - name: heptabao-journal-api
+    section: dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_ANCHOR_AUTHENTICATOR_ID_BYTES
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 18
+    signature: 'pub const MAX_ANCHOR_AUTHENTICATOR_ID_BYTES: usize = 128;'
+  - kind: struct
+    name: AnchorAuthenticatorId
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 21
+    signature: pub struct AnchorAuthenticatorId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 24
+    signature: 'pub fn new(value: String) -> Result<Self, AnchorContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 31
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: AnchorRevision
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 56
+    signature: pub struct AnchorRevision(u64);
+  - kind: const
+    name: INITIAL
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 59
+    signature: 'pub const INITIAL: Self = Self(1);'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 61
+    signature: 'pub const fn new(value: u64) -> Result<Self, AnchorContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 68
+    signature: pub const fn get(self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 72
+    signature: pub const fn checked_next(self) -> Result<Self, AnchorContractError> {
+  - kind: struct
+    name: CheckpointDigest
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 81
+    signature: pub struct CheckpointDigest([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 84
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, AnchorContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 91
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: struct
+    name: CheckpointObservation
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 103
+    signature: pub struct CheckpointObservation {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 113
+    signature: pub fn new(
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 131
+    signature: pub const fn store_domain(&self) -> &StoreDomain {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 135
+    signature: pub const fn generation(&self) -> Generation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 139
+    signature: pub const fn state_digest(&self) -> StateDigest {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 143
+    signature: pub const fn journal_domain(&self) -> &JournalDomain {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 147
+    signature: pub const fn journal_tail(&self) -> Option<JournalTail> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 151
+    signature: pub const fn key_epoch(&self) -> KeyEpoch {
+  - kind: struct
+    name: RecoveryCheckpoint
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 161
+    signature: pub struct RecoveryCheckpoint {
+  - kind: fn
+    name: from_parts
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 170
+    signature: pub fn from_parts(
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 192
+    signature: pub const fn revision(&self) -> AnchorRevision {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 196
+    signature: pub const fn previous_digest(&self) -> Option<CheckpointDigest> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 200
+    signature: pub const fn authenticator_id(&self) -> &AnchorAuthenticatorId {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 204
+    signature: pub const fn observation(&self) -> &CheckpointObservation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 208
+    signature: pub const fn digest(&self) -> CheckpointDigest {
+  - kind: fn
+    name: canonical_preimage
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 212
+    signature: pub fn canonical_preimage(
+  - kind: struct
+    name: VerifiedRecoveryCheckpoint
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 247
+    signature: pub struct VerifiedRecoveryCheckpoint {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 252
+    signature: pub const fn revision(&self) -> AnchorRevision {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 256
+    signature: pub const fn digest(&self) -> CheckpointDigest {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 260
+    signature: pub const fn observation(&self) -> &CheckpointObservation {
+  - kind: trait
+    name: CheckpointAuthenticator
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 265
+    signature: 'pub trait CheckpointAuthenticator: fmt::Debug + Send + Sync {'
+  - kind: enum
+    name: AnchorFenceError
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 274
+    signature: pub enum AnchorFenceError<E>
+  - kind: trait
+    name: RollbackAnchor
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 323
+    signature: 'pub trait RollbackAnchor: fmt::Debug + Send {'
+  - kind: struct
+    name: AnchorAdvanceReceipt
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 353
+    signature: pub struct AnchorAdvanceReceipt {
+  - kind: enum
+    name: ObservationDisposition
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 359
+    signature: pub enum ObservationDisposition {
+  - kind: struct
+    name: AnchorCoordinator
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 365
+    signature: pub struct AnchorCoordinator<A, P> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 371
+    signature: 'pub const fn new(anchor: A, authenticator: P) -> Self {'
+  - kind: type
+    name: AnchorResult
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 393
+    signature: pub type AnchorResult<T, A, P> = Result<T, AnchorCoordinatorError<A, P>>;
+  - kind: fn
+    name: classify
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 400
+    signature: pub fn classify(
+  - kind: fn
+    name: advance
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 416
+    signature: pub fn advance(
+  - kind: fn
+    name: with_current_fence
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 494
+    signature: pub fn with_current_fence<T, F>(
+  - kind: fn
+    name: verify_owned
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 518
+    signature: pub fn verify_owned(
+  - kind: fn
+    name: verify_current
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 525
+    signature: pub fn verify_current(
+  - kind: fn
+    name: verify_checkpoint
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 547
+    signature: pub fn verify_checkpoint(
+  - kind: enum
+    name: AnchorCoordinatorError
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 587
+    signature: pub enum AnchorCoordinatorError<A, P>
+  - kind: enum
+    name: AnchorContractError
+    modifier: null
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 626
+    signature: pub enum AnchorContractError {
+  test_functions:
+  - name: checkpoint_advances_and_exact_observation_is_detected
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 829
+  - name: current_checkpoint_fence_rejects_stale_checkpoint
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 848
+  - name: rollback_divergence_and_epoch_regression_fail_closed
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 867
+  - name: historical_but_authentic_checkpoint_cannot_authorize_restore
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 898
+  - name: checkpoint_preimage_binds_every_observation_field
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 916
+  - name: alternate_authenticated_cas_receipt_is_rejected
+    path: crates/heptabao-rollback-anchor/src/lib.rs
+    line: 975
+- crate: heptabao-single-node-journal
+  crate_path: crates/heptabao-single-node-journal
+  cargo_toml_sha256: 6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325
+  source_files:
+  - path: crates/heptabao-single-node-journal/src/lib.rs
+    sha256: 383fa58a626f4b1c1ccbe52fedb4cf53b864f23ca23b4d5c73d818129a26c968
+  module_guide: docs/modules/heptabao-single-node-journal.md
+  internal_dependencies:
+  - name: heptabao-filesystem-guard
+    section: dependencies
+  - name: heptabao-journal-api
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_JOURNAL_RECORDS
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 42
+    signature: 'pub const MAX_JOURNAL_RECORDS: u64 = 65_536;'
+  - kind: struct
+    name: FileDurableJournal
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 46
+    signature: 'pub struct FileDurableJournal<A: JournalAuthenticator> {'
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 68
+    signature: pub fn create_new(
+  - kind: fn
+    name: reopen_existing
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 96
+    signature: pub fn reopen_existing(
+  - kind: fn
+    name: root
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 119
+    signature: pub fn root(&self) -> &Path {
+  - kind: fn
+    name: root_identity
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 123
+    signature: pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {
+  - kind: fn
+    name: reconcile_next_orphan
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 127
+    signature: pub fn reconcile_next_orphan(&mut self) -> Result<AppendReceipt, FileJournalError<A::Error>> {
+  - kind: enum
+    name: FileJournalError
+    modifier: null
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 429
+    signature: pub enum FileJournalError<E>
+  test_functions:
+  - name: create_append_replay_and_reopen_round_trip
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1037
+  - name: stale_tail_is_rejected
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1072
+  - name: tampered_entry_fails_authentication
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1095
+  - name: exact_next_orphan_requires_explicit_reconciliation
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1130
+  - name: authoritative_recovery_refreshes_stale_cached_tail
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1164
+  - name: symlinked_root_is_rejected
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1197
+  - name: journal_files_are_owner_only_on_unix
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1216
+  - name: second_journal_writer_is_fenced
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1249
+  - name: open_journal_remains_bound_after_root_path_replacement
+    path: crates/heptabao-single-node-journal/src/lib.rs
+    line: 1266
+- crate: heptabao-single-node-store
+  crate_path: crates/heptabao-single-node-store
+  cargo_toml_sha256: b44e28cf79ed86fefeedbb92bec0d971c00d864fe6e2f75b74612278cbb77d73
+  source_files:
+  - path: crates/heptabao-single-node-store/src/lib.rs
+    sha256: 86f0d89a01573007688c899a29d849776dacb46053847d7f41cdb162311e49c4
+  module_guide: docs/modules/heptabao-single-node-store.md
+  internal_dependencies:
+  - name: heptabao-filesystem-guard
+    section: dependencies
+  - name: heptabao-storage-api
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: FileGenerationStore
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 44
+    signature: 'pub struct FileGenerationStore<P: IntegrityProvider> {'
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 66
+    signature: pub fn create_new(
+  - kind: fn
+    name: reopen_existing
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 84
+    signature: pub fn reopen_existing(
+  - kind: fn
+    name: adopt_legacy
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 107
+    signature: pub fn adopt_legacy(
+  - kind: fn
+    name: root
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 141
+    signature: pub fn root(&self) -> &Path {
+  - kind: fn
+    name: root_identity
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 145
+    signature: pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {
+  - kind: enum
+    name: FileStoreError
+    modifier: null
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 517
+    signature: pub enum FileStoreError<E>
+  test_functions:
+  - name: create_commit_load_and_reopen_round_trip
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1117
+  - name: authoritative_recovery_classifies_unwritten_and_published_intents
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1157
+  - name: exact_orphan_bundle_is_completed_only_for_matching_intent
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1190
+  - name: compare_and_swap_rejects_stale_expected_generation
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1234
+  - name: corrupt_bundle_is_never_silently_reopened
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1260
+  - name: missing_current_after_initialization_fails_closed
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1284
+  - name: legacy_state_requires_explicit_adoption
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1306
+  - name: create_new_rejects_non_empty_root
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1334
+  - name: durable_store_files_are_owner_only_on_unix
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1347
+  - name: symlinked_storage_root_is_rejected
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1379
+  - name: second_store_writer_is_fenced
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1398
+  - name: open_store_remains_bound_after_root_path_replacement
+    path: crates/heptabao-single-node-store/src/lib.rs
+    line: 1414
+- crate: heptabao-storage-api
+  crate_path: crates/heptabao-storage-api
+  cargo_toml_sha256: 7c31ca83f1253d29128905cce76400717e01de047bf52f388f9ba5f710c99ad3
+  source_files:
+  - path: crates/heptabao-storage-api/src/lib.rs
+    sha256: d188280167521b2563049d0f3d052ded942389f706a92c8fcbe62b6d4024a192
+  module_guide: docs/modules/heptabao-storage-api.md
+  internal_dependencies: []
+  public_items:
+  - kind: const
+    name: MAX_OPAQUE_STATE_BYTES
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 13
+    signature: 'pub const MAX_OPAQUE_STATE_BYTES: usize = 16 * 1024 * 1024;'
+  - kind: const
+    name: MAX_STORE_DOMAIN_BYTES
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 14
+    signature: 'pub const MAX_STORE_DOMAIN_BYTES: usize = 128;'
+  - kind: const
+    name: MAX_INTEGRITY_ALGORITHM_ID_BYTES
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 15
+    signature: 'pub const MAX_INTEGRITY_ALGORITHM_ID_BYTES: usize = 128;'
+  - kind: struct
+    name: StoreDomain
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 18
+    signature: pub struct StoreDomain(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 21
+    signature: 'pub fn new(value: String) -> Result<Self, StorageContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 46
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: IntegrityAlgorithmId
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 52
+    signature: pub struct IntegrityAlgorithmId(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 55
+    signature: 'pub fn new(value: String) -> Result<Self, StorageContractError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 80
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: Generation
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 86
+    signature: pub struct Generation(u64);
+  - kind: const
+    name: INITIAL
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 89
+    signature: 'pub const INITIAL: Self = Self(1);'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 91
+    signature: 'pub const fn new(value: u64) -> Result<Self, StorageContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 98
+    signature: pub const fn get(self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 102
+    signature: pub const fn previous(self) -> Option<Self> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 109
+    signature: pub const fn checked_next(self) -> Result<Self, StorageContractError> {
+  - kind: struct
+    name: StateDigest
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 118
+    signature: pub struct StateDigest([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 121
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, StorageContractError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 128
+    signature: pub const fn bytes(self) -> [u8; 32] {
+  - kind: struct
+    name: OpaqueState
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 140
+    signature: pub struct OpaqueState(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 143
+    signature: 'pub fn new(mut value: Vec<u8>) -> Result<Self, StorageContractError> {'
+  - kind: fn
+    name: as_bytes
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 151
+    signature: pub fn as_bytes(&self) -> &[u8] {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 155
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 159
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: fn
+    name: into_bytes
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 163
+    signature: pub fn into_bytes(mut self) -> Vec<u8> {
+  - kind: enum
+    name: StoreOpenMode
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 185
+    signature: pub enum StoreOpenMode {
+  - kind: struct
+    name: GenerationSnapshot
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 192
+    signature: pub struct GenerationSnapshot {
+  - kind: struct
+    name: CommitReceipt
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 210
+    signature: pub struct CommitReceipt {
+  - kind: struct
+    name: CommitIntent
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 223
+    signature: pub struct CommitIntent {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 230
+    signature: pub fn new(
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 249
+    signature: pub const fn previous(self) -> Option<Generation> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 253
+    signature: pub const fn committed(self) -> Generation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 257
+    signature: pub const fn digest(self) -> StateDigest {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 261
+    signature: pub const fn receipt(self) -> CommitReceipt {
+  - kind: enum
+    name: CommitRecovery
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 271
+    signature: pub enum CommitRecovery {
+  - kind: trait
+    name: IntegrityProvider
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 279
+    signature: 'pub trait IntegrityProvider: fmt::Debug + Send + Sync {'
+  - kind: trait
+    name: DurableGenerationStore
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 292
+    signature: 'pub trait DurableGenerationStore: fmt::Debug + Send {'
+  - kind: enum
+    name: StorageContractError
+    modifier: null
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 322
+    signature: pub enum StorageContractError {
+  test_functions:
+  - name: generation_is_non_zero_and_checked
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 355
+  - name: domains_and_algorithm_ids_are_canonical_ascii
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 368
+  - name: opaque_state_redacts_and_can_be_consumed_without_clone
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 376
+  - name: commit_intent_requires_exact_generation_successor
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 387
+  - name: zero_digest_is_rejected
+    path: crates/heptabao-storage-api/src/lib.rs
+    line: 411
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

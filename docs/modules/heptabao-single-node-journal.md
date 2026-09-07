@@ -36,16 +36,22 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_JOURNAL_RECORDS` (crates/heptabao-single-node-journal/src/lib.rs)
-- `enum FileJournalError` (crates/heptabao-single-node-journal/src/lib.rs)
-- `fn create_new` (crates/heptabao-single-node-journal/src/lib.rs)
-- `fn reconcile_next_orphan` (crates/heptabao-single-node-journal/src/lib.rs)
-- `fn reopen_existing` (crates/heptabao-single-node-journal/src/lib.rs)
-- `fn root_identity` (crates/heptabao-single-node-journal/src/lib.rs)
-- `fn root` (crates/heptabao-single-node-journal/src/lib.rs)
-- `struct FileDurableJournal` (crates/heptabao-single-node-journal/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-single-node-journal`; Cargo SHA-256 `6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_JOURNAL_RECORDS` | `crates/heptabao-single-node-journal/src/lib.rs:42` | `pub const MAX_JOURNAL_RECORDS: u64 = 65_536;` |
+| `struct` | `FileDurableJournal` | `crates/heptabao-single-node-journal/src/lib.rs:46` | `pub struct FileDurableJournal<A: JournalAuthenticator> {` |
+| `fn` | `create_new` | `crates/heptabao-single-node-journal/src/lib.rs:68` | `pub fn create_new(` |
+| `fn` | `reopen_existing` | `crates/heptabao-single-node-journal/src/lib.rs:96` | `pub fn reopen_existing(` |
+| `fn` | `root` | `crates/heptabao-single-node-journal/src/lib.rs:119` | `pub fn root(&self) -> &Path {` |
+| `fn` | `root_identity` | `crates/heptabao-single-node-journal/src/lib.rs:123` | `pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {` |
+| `fn` | `reconcile_next_orphan` | `crates/heptabao-single-node-journal/src/lib.rs:127` | `pub fn reconcile_next_orphan(&mut self) -> Result<AppendReceipt, FileJournalError<A::Error>> {` |
+| `enum` | `FileJournalError` | `crates/heptabao-single-node-journal/src/lib.rs:429` | `pub enum FileJournalError<E>` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -141,3 +147,18 @@ A journal append persists an immutable authenticated entry and then publishes
 `TAIL`. Reopen/recovery may reconcile one exact authenticated next entry when a
 crash separated those effects. Any gap, additional orphan, temporary artifact,
 chain mismatch or tag failure is corruption and keeps the writer fenced.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-single-node-journal`
+- Crate path: `crates/heptabao-single-node-journal`
+- Cargo manifest SHA-256: `6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325`
+- Rust source files: `1`
+- Public lexical declarations: `8`
+- Discovered test functions: `9`
+- Workspace-internal dependencies: `heptabao-filesystem-guard` (dependencies), `heptabao-journal-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

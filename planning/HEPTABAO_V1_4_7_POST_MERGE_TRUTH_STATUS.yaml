@@ -1,0 +1,66 @@
+schema: heptabao.v1-4-7-post-merge-truth-status.v1
+plan_id: HEPTABAO-PLAN-2026-09-02-V1.4.7
+revision: 1.4.7
+status: SOURCE_IMPLEMENTED_EXACT_HEAD_MERGE_AND_INDEPENDENT_REVIEW_REQUIRED
+current_plan: docs/plan/HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md
+current_blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_7.yaml
+normative_manifest: planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml
+current_documentation: docs/CURRENT_DOCUMENTATION.md
+source_baseline:
+  commit: 54d524214df443752a2ecaeff6d4a05625bf52c7
+  tree: c22288f561fdd711e908ce8a70c0116601d519e5
+closed_repository_scope_carried_forward:
+- HB-BLK-REPO-049
+- HB-BLK-REPO-050
+- HB-BLK-REPO-051
+- HB-BLK-REPO-052
+- HB-BLK-REPO-053
+- HB-BLK-REPO-054
+- HB-BLK-REPO-055
+- HB-BLK-REPO-056
+- HB-BLK-REPO-057
+- HB-BLK-REPO-058
+implementation:
+  post_merge_v146_closure_receipt: IMPLEMENTED_SOURCE
+  module_documentation_standard_v2: IMPLEMENTED_SOURCE
+  module_source_hash_dependency_api_test_truth: IMPLEMENTED_SOURCE
+  generated_public_api_sections: IMPLEMENTED_SOURCE
+  external_completion_schema_and_admission: IMPLEMENTED_SOURCE
+  blocker_specific_negative_tests: IMPLEMENTED_SOURCE
+  current_documentation_supersession: IMPLEMENTED_SOURCE
+  exact_head_and_prospective_merge_gate: IMPLEMENTED_SOURCE
+repository_open:
+- HB-BLK-REPO-059
+- HB-BLK-REPO-060
+- HB-BLK-REPO-061
+- HB-BLK-REPO-062
+external_open:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production composition root and mandatory end-to-end request path
+- policy identity token lease namespace system and plugin domains
+- production KMS or HSM custody rotation and revocation ceremony
+- remote append-only rollback anchor and publication-fence provider
+- qualified recovery target with atomic empty admission and readback
+- non-Linux adapters and filesystem or storage-controller qualification
+- retention compaction offsite backup custody and restore drills
+- Raft HA replication membership snapshots and standby reconciliation
+- online migration upgrade downgrade and mixed-version operation
+- full OpenBao compatibility and Oracle-derived implementation
+- CLI Agent Proxy and production operations surface
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

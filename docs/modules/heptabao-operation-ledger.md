@@ -36,36 +36,56 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_DETAIL_CODE_BYTES` (crates/heptabao-operation-ledger/src/lib.rs)
-- `const MAX_OPERATION_ID_BYTES` (crates/heptabao-operation-ledger/src/lib.rs)
-- `const fn` (crates/heptabao-operation-ledger/src/lib.rs)
-- `enum OperationClass` (crates/heptabao-operation-ledger/src/lib.rs)
-- `enum OperationContractError` (crates/heptabao-operation-ledger/src/lib.rs)
-- `enum OperationLedgerError` (crates/heptabao-operation-ledger/src/lib.rs)
-- `enum OperationPhase` (crates/heptabao-operation-ledger/src/lib.rs)
-- `enum RetryDirective` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn accepted` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn as_str` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn blocking_phase` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn current` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn decode` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn detail_code` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn encode` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn into_journal` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn new` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn next` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn open` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn operation_count` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn operation_id` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn record` (crates/heptabao-operation-ledger/src/lib.rs)
-- `fn retry_directive` (crates/heptabao-operation-ledger/src/lib.rs)
-- `struct OperationDigest` (crates/heptabao-operation-ledger/src/lib.rs)
-- `struct OperationEvent` (crates/heptabao-operation-ledger/src/lib.rs)
-- `struct OperationId` (crates/heptabao-operation-ledger/src/lib.rs)
-- `struct OperationLedger` (crates/heptabao-operation-ledger/src/lib.rs)
-- `struct StableDetailCode` (crates/heptabao-operation-ledger/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-operation-ledger`; Cargo SHA-256 `5a71ca1f04ea41c380d78f02d2891bb962ab25b0dd3ca82ad96fba9d31a88354`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_OPERATION_ID_BYTES` | `crates/heptabao-operation-ledger/src/lib.rs:22` | `pub const MAX_OPERATION_ID_BYTES: usize = 128;` |
+| `const` | `MAX_DETAIL_CODE_BYTES` | `crates/heptabao-operation-ledger/src/lib.rs:23` | `pub const MAX_DETAIL_CODE_BYTES: usize = 128;` |
+| `struct` | `OperationId` | `crates/heptabao-operation-ledger/src/lib.rs:26` | `pub struct OperationId(String);` |
+| `fn` | `new` | `crates/heptabao-operation-ledger/src/lib.rs:29` | `pub fn new(value: String) -> Result<Self, OperationContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-operation-ledger/src/lib.rs:51` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `StableDetailCode` | `crates/heptabao-operation-ledger/src/lib.rs:63` | `pub struct StableDetailCode(String);` |
+| `fn` | `new` | `crates/heptabao-operation-ledger/src/lib.rs:66` | `pub fn new(value: String) -> Result<Self, OperationContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-operation-ledger/src/lib.rs:79` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `OperationDigest` | `crates/heptabao-operation-ledger/src/lib.rs:94` | `pub struct OperationDigest([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-operation-ledger/src/lib.rs:97` | `pub fn new(value: [u8; 32]) -> Result<Self, OperationContractError> {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:104` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `enum` | `OperationClass` | `crates/heptabao-operation-ledger/src/lib.rs:116` | `pub enum OperationClass {` |
+| `enum` | `OperationPhase` | `crates/heptabao-operation-ledger/src/lib.rs:139` | `pub enum OperationPhase {` |
+| `struct` | `OperationEvent` | `crates/heptabao-operation-ledger/src/lib.rs:198` | `pub struct OperationEvent {` |
+| `fn` | `accepted` | `crates/heptabao-operation-ledger/src/lib.rs:212` | `pub fn accepted(` |
+| `fn` | `next` | `crates/heptabao-operation-ledger/src/lib.rs:234` | `pub fn next(` |
+| `fn` | `operation_id` | `crates/heptabao-operation-ledger/src/lib.rs:262` | `pub fn operation_id(&self) -> &OperationId {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:266` | `pub const fn request_digest(&self) -> OperationDigest {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:270` | `pub const fn class(&self) -> OperationClass {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:274` | `pub const fn previous_phase(&self) -> Option<OperationPhase> {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:278` | `pub const fn phase(&self) -> OperationPhase {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:282` | `pub const fn state(&self) -> Option<(Generation, StateDigest)> {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:289` | `pub const fn effect_key_digest(&self) -> Option<OperationDigest> {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:293` | `pub const fn response_digest(&self) -> Option<OperationDigest> {` |
+| `fn` | `detail_code` | `crates/heptabao-operation-ledger/src/lib.rs:297` | `pub fn detail_code(&self) -> &StableDetailCode {` |
+| `fn` | `encode` | `crates/heptabao-operation-ledger/src/lib.rs:301` | `pub fn encode(&self) -> Result<JournalPayload, OperationContractError> {` |
+| `fn` | `decode` | `crates/heptabao-operation-ledger/src/lib.rs:342` | `pub fn decode(bytes: &[u8]) -> Result<Self, OperationContractError> {` |
+| `enum` | `RetryDirective` | `crates/heptabao-operation-ledger/src/lib.rs:412` | `pub enum RetryDirective {` |
+| `enum` | `LedgerWriteState` | `crates/heptabao-operation-ledger/src/lib.rs:421` | `pub enum LedgerWriteState {` |
+| `struct` | `OperationLedger` | `crates/heptabao-operation-ledger/src/lib.rs:426` | `pub struct OperationLedger<J: DurableJournal> {` |
+| `fn` | `open` | `crates/heptabao-operation-ledger/src/lib.rs:444` | `pub fn open(mut journal: J) -> Result<Self, OperationLedgerError<J::Error>> {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:461` | `pub const fn write_state(&self) -> LedgerWriteState {` |
+| `const` | `fn` | `crates/heptabao-operation-ledger/src/lib.rs:465` | `pub const fn replay_required(&self) -> bool {` |
+| `fn` | `current` | `crates/heptabao-operation-ledger/src/lib.rs:469` | `pub fn current(&self, operation_id: &OperationId) -> Option<&OperationEvent> {` |
+| `fn` | `operation_count` | `crates/heptabao-operation-ledger/src/lib.rs:473` | `pub fn operation_count(&self) -> usize {` |
+| `fn` | `blocking_phase` | `crates/heptabao-operation-ledger/src/lib.rs:477` | `pub fn blocking_phase(&self) -> Option<OperationPhase> {` |
+| `fn` | `retry_directive` | `crates/heptabao-operation-ledger/src/lib.rs:484` | `pub fn retry_directive(&self, operation_id: &OperationId) -> Option<RetryDirective> {` |
+| `fn` | `record` | `crates/heptabao-operation-ledger/src/lib.rs:488` | `pub fn record(` |
+| `fn` | `recover_after_append_failure` | `crates/heptabao-operation-ledger/src/lib.rs:514` | `pub fn recover_after_append_failure(&mut self) -> Result<(), OperationLedgerError<J::Error>> {` |
+| `fn` | `reopen` | `crates/heptabao-operation-ledger/src/lib.rs:533` | `pub fn reopen(self) -> Result<Self, OperationLedgerError<J::Error>> {` |
+| `enum` | `OperationLedgerError` | `crates/heptabao-operation-ledger/src/lib.rs:545` | `pub enum OperationLedgerError<E>` |
+| `enum` | `OperationContractError` | `crates/heptabao-operation-ledger/src/lib.rs:577` | `pub enum OperationContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -169,3 +189,18 @@ returning the injected error. The ledger enters `ReplayRequired`, rejects the
 next write before provider access, calls authoritative journal recovery, and
 reconstructs the persisted operation. The recovered duplicate `Accepted` event
 is rejected rather than silently appended again.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-operation-ledger`
+- Crate path: `crates/heptabao-operation-ledger`
+- Cargo manifest SHA-256: `5a71ca1f04ea41c380d78f02d2891bb962ab25b0dd3ca82ad96fba9d31a88354`
+- Rust source files: `1`
+- Public lexical declarations: `42`
+- Discovered test functions: `6`
+- Workspace-internal dependencies: `heptabao-journal-api` (dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

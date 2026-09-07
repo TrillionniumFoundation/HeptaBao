@@ -35,19 +35,28 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_SCORE` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `const PROTOTYPE_SELECTION_MINIMUM` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `const fn` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `enum AuthorityEffect` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `enum BakeoffError` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `enum CandidateState` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `enum Capability` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `struct CandidateEvidence` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `struct Candidate` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `struct PrototypeSelection` (crates/heptabao-platform-bakeoff/src/lib.rs)
-- `struct ScoreCard` (crates/heptabao-platform-bakeoff/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-platform-bakeoff`; Cargo SHA-256 `204649e472b08da3e1c63cee39f5afaa0f678c351c1e6581e3668e29916f51d7`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `Capability` | `crates/heptabao-platform-bakeoff/src/lib.rs:13` | `pub enum Capability {` |
+| `enum` | `CandidateState` | `crates/heptabao-platform-bakeoff/src/lib.rs:34` | `pub enum CandidateState {` |
+| `enum` | `AuthorityEffect` | `crates/heptabao-platform-bakeoff/src/lib.rs:44` | `pub enum AuthorityEffect {` |
+| `struct` | `ScoreCard` | `crates/heptabao-platform-bakeoff/src/lib.rs:52` | `pub struct ScoreCard {` |
+| `const` | `MAX_SCORE` | `crates/heptabao-platform-bakeoff/src/lib.rs:66` | `pub const MAX_SCORE: u16 = 50;` |
+| `const` | `fn` | `crates/heptabao-platform-bakeoff/src/lib.rs:68` | `pub const fn validate(self) -> Result<(), BakeoffError> {` |
+| `const` | `fn` | `crates/heptabao-platform-bakeoff/src/lib.rs:85` | `pub const fn total(self) -> u16 {` |
+| `struct` | `CandidateEvidence` | `crates/heptabao-platform-bakeoff/src/lib.rs:101` | `pub struct CandidateEvidence {` |
+| `struct` | `Candidate` | `crates/heptabao-platform-bakeoff/src/lib.rs:119` | `pub struct Candidate<'a> {` |
+| `struct` | `PrototypeSelection` | `crates/heptabao-platform-bakeoff/src/lib.rs:130` | `pub struct PrototypeSelection<'a> {` |
+| `enum` | `BakeoffError` | `crates/heptabao-platform-bakeoff/src/lib.rs:139` | `pub enum BakeoffError {` |
+| `const` | `PROTOTYPE_SELECTION_MINIMUM` | `crates/heptabao-platform-bakeoff/src/lib.rs:163` | `pub const PROTOTYPE_SELECTION_MINIMUM: u16 = 38;` |
+| `const` | `fn` | `crates/heptabao-platform-bakeoff/src/lib.rs:166` | `pub const fn validate_candidate(candidate: Candidate<'_>) -> Result<AuthorityEffect, BakeoffError> {` |
+| `const` | `fn` | `crates/heptabao-platform-bakeoff/src/lib.rs:186` | `pub const fn select_for_prototype(` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -133,3 +142,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-platform-bakeoff`
+- Crate path: `crates/heptabao-platform-bakeoff`
+- Cargo manifest SHA-256: `204649e472b08da3e1c63cee39f5afaa0f678c351c1e6581e3668e29916f51d7`
+- Rust source files: `1`
+- Public lexical declarations: `14`
+- Discovered test functions: `6`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

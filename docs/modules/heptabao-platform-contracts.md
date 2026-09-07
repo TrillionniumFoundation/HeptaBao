@@ -35,40 +35,54 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const fn` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum AuthorityEffect` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum ClientAuthMode` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum ContractError` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum EvidenceMaturity` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum RaftError` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum RuntimeError` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum TaskClass` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum TlsError` (crates/heptabao-platform-contracts/src/lib.rs)
-- `enum TlsVersion` (crates/heptabao-platform-contracts/src/lib.rs)
-- `fn new` (crates/heptabao-platform-contracts/src/lib.rs)
-- `fn validate_artifact_binding` (crates/heptabao-platform-contracts/src/lib.rs)
-- `fn validate` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct ApplyCursor` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct ArtifactBinding` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct Digest32` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct LogPosition` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct MonotonicInstant` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct ObjectId20` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct PrivateKeyHandle` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct SnapshotMeta` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct StagedTlsConfig` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct TaskId` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct TaskSpec` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct TlsConfigId` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct TlsProfile` (crates/heptabao-platform-contracts/src/lib.rs)
-- `struct ValidatedArtifact` (crates/heptabao-platform-contracts/src/lib.rs)
-- `trait ConsensusAdapter` (crates/heptabao-platform-contracts/src/lib.rs)
-- `trait RuntimeAdapter` (crates/heptabao-platform-contracts/src/lib.rs)
-- `trait StateMachineAdapter` (crates/heptabao-platform-contracts/src/lib.rs)
-- `trait TlsProvider` (crates/heptabao-platform-contracts/src/lib.rs)
-- `type BoxTask` (crates/heptabao-platform-contracts/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-platform-contracts`; Cargo SHA-256 `58309ecbb712274000ca0b7bc575c9fade218355777c2e959ee6a8ddc9ec49b4`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `AuthorityEffect` | `crates/heptabao-platform-contracts/src/lib.rs:16` | `pub enum AuthorityEffect {` |
+| `enum` | `EvidenceMaturity` | `crates/heptabao-platform-contracts/src/lib.rs:22` | `pub enum EvidenceMaturity {` |
+| `struct` | `Digest32` | `crates/heptabao-platform-contracts/src/lib.rs:30` | `pub struct Digest32([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-platform-contracts/src/lib.rs:33` | `pub fn new(bytes: [u8; 32]) -> Result<Self, ContractError> {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:40` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `struct` | `ObjectId20` | `crates/heptabao-platform-contracts/src/lib.rs:47` | `pub struct ObjectId20([u8; 20]);` |
+| `fn` | `new` | `crates/heptabao-platform-contracts/src/lib.rs:50` | `pub fn new(bytes: [u8; 20]) -> Result<Self, ContractError> {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:57` | `pub const fn bytes(self) -> [u8; 20] {` |
+| `struct` | `ArtifactBinding` | `crates/heptabao-platform-contracts/src/lib.rs:64` | `pub struct ArtifactBinding<'a> {` |
+| `struct` | `ValidatedArtifact` | `crates/heptabao-platform-contracts/src/lib.rs:80` | `pub struct ValidatedArtifact {` |
+| `fn` | `validate_artifact_binding` | `crates/heptabao-platform-contracts/src/lib.rs:86` | `pub fn validate_artifact_binding(` |
+| `struct` | `MonotonicInstant` | `crates/heptabao-platform-contracts/src/lib.rs:134` | `pub struct MonotonicInstant(pub u64);` |
+| `struct` | `TaskId` | `crates/heptabao-platform-contracts/src/lib.rs:138` | `pub struct TaskId(u64);` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:141` | `pub const fn new(value: u64) -> Result<Self, ContractError> {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:148` | `pub const fn get(self) -> u64 {` |
+| `enum` | `TaskClass` | `crates/heptabao-platform-contracts/src/lib.rs:155` | `pub enum TaskClass {` |
+| `struct` | `TaskSpec` | `crates/heptabao-platform-contracts/src/lib.rs:164` | `pub struct TaskSpec {` |
+| `fn` | `validate` | `crates/heptabao-platform-contracts/src/lib.rs:172` | `pub fn validate(self, now: MonotonicInstant) -> Result<(), ContractError> {` |
+| `type` | `BoxTask` | `crates/heptabao-platform-contracts/src/lib.rs:188` | `pub type BoxTask = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;` |
+| `trait` | `RuntimeAdapter` | `crates/heptabao-platform-contracts/src/lib.rs:191` | `pub trait RuntimeAdapter: Send + Sync {` |
+| `enum` | `RuntimeError` | `crates/heptabao-platform-contracts/src/lib.rs:206` | `pub enum RuntimeError {` |
+| `enum` | `TlsVersion` | `crates/heptabao-platform-contracts/src/lib.rs:217` | `pub enum TlsVersion {` |
+| `enum` | `ClientAuthMode` | `crates/heptabao-platform-contracts/src/lib.rs:233` | `pub enum ClientAuthMode {` |
+| `struct` | `TlsProfile` | `crates/heptabao-platform-contracts/src/lib.rs:241` | `pub struct TlsProfile {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:253` | `pub const fn validate(self) -> Result<(), ContractError> {` |
+| `struct` | `TlsConfigId` | `crates/heptabao-platform-contracts/src/lib.rs:277` | `pub struct TlsConfigId(pub Digest32);` |
+| `struct` | `PrivateKeyHandle` | `crates/heptabao-platform-contracts/src/lib.rs:281` | `pub struct PrivateKeyHandle(pub Digest32);` |
+| `struct` | `StagedTlsConfig` | `crates/heptabao-platform-contracts/src/lib.rs:285` | `pub struct StagedTlsConfig {` |
+| `trait` | `TlsProvider` | `crates/heptabao-platform-contracts/src/lib.rs:292` | `pub trait TlsProvider: Send + Sync {` |
+| `enum` | `TlsError` | `crates/heptabao-platform-contracts/src/lib.rs:300` | `pub enum TlsError {` |
+| `struct` | `LogPosition` | `crates/heptabao-platform-contracts/src/lib.rs:311` | `pub struct LogPosition {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:317` | `pub const fn validate(self) -> Result<(), ContractError> {` |
+| `struct` | `ApplyCursor` | `crates/heptabao-platform-contracts/src/lib.rs:327` | `pub struct ApplyCursor {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:332` | `pub const fn validate_next(self, next: LogPosition) -> Result<Self, ContractError> {` |
+| `struct` | `SnapshotMeta` | `crates/heptabao-platform-contracts/src/lib.rs:364` | `pub struct SnapshotMeta {` |
+| `const` | `fn` | `crates/heptabao-platform-contracts/src/lib.rs:372` | `pub const fn validate(self, cursor: ApplyCursor) -> Result<(), ContractError> {` |
+| `trait` | `StateMachineAdapter` | `crates/heptabao-platform-contracts/src/lib.rs:390` | `pub trait StateMachineAdapter {` |
+| `trait` | `ConsensusAdapter` | `crates/heptabao-platform-contracts/src/lib.rs:404` | `pub trait ConsensusAdapter: Send + Sync {` |
+| `enum` | `RaftError` | `crates/heptabao-platform-contracts/src/lib.rs:412` | `pub enum RaftError {` |
+| `enum` | `ContractError` | `crates/heptabao-platform-contracts/src/lib.rs:424` | `pub enum ContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -156,3 +170,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-platform-contracts`
+- Crate path: `crates/heptabao-platform-contracts`
+- Cargo manifest SHA-256: `58309ecbb712274000ca0b7bc575c9fade218355777c2e959ee6a8ddc9ec49b4`
+- Rust source files: `1`
+- Public lexical declarations: `40`
+- Discovered test functions: `7`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

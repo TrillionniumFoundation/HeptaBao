@@ -36,15 +36,21 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `enum FileStoreError` (crates/heptabao-single-node-store/src/lib.rs)
-- `fn adopt_legacy` (crates/heptabao-single-node-store/src/lib.rs)
-- `fn create_new` (crates/heptabao-single-node-store/src/lib.rs)
-- `fn reopen_existing` (crates/heptabao-single-node-store/src/lib.rs)
-- `fn root_identity` (crates/heptabao-single-node-store/src/lib.rs)
-- `fn root` (crates/heptabao-single-node-store/src/lib.rs)
-- `struct FileGenerationStore` (crates/heptabao-single-node-store/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-single-node-store`; Cargo SHA-256 `b44e28cf79ed86fefeedbb92bec0d971c00d864fe6e2f75b74612278cbb77d73`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `FileGenerationStore` | `crates/heptabao-single-node-store/src/lib.rs:44` | `pub struct FileGenerationStore<P: IntegrityProvider> {` |
+| `fn` | `create_new` | `crates/heptabao-single-node-store/src/lib.rs:66` | `pub fn create_new(` |
+| `fn` | `reopen_existing` | `crates/heptabao-single-node-store/src/lib.rs:84` | `pub fn reopen_existing(` |
+| `fn` | `adopt_legacy` | `crates/heptabao-single-node-store/src/lib.rs:107` | `pub fn adopt_legacy(` |
+| `fn` | `root` | `crates/heptabao-single-node-store/src/lib.rs:141` | `pub fn root(&self) -> &Path {` |
+| `fn` | `root_identity` | `crates/heptabao-single-node-store/src/lib.rs:145` | `pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {` |
+| `enum` | `FileStoreError` | `crates/heptabao-single-node-store/src/lib.rs:517` | `pub enum FileStoreError<E>` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -147,3 +153,18 @@ On Unix every newly created marker, temporary control file, `CURRENT` image and
 generation bundle uses mode `0600`; `durable_store_files_are_owner_only_on_unix`
 checks the durable artifacts. Root-directory ownership and controller
 power-loss behavior remain deployment/qualification responsibilities.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-single-node-store`
+- Crate path: `crates/heptabao-single-node-store`
+- Cargo manifest SHA-256: `b44e28cf79ed86fefeedbb92bec0d971c00d864fe6e2f75b74612278cbb77d73`
+- Rust source files: `1`
+- Public lexical declarations: `7`
+- Discovered test functions: `12`
+- Workspace-internal dependencies: `heptabao-filesystem-guard` (dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

@@ -39,32 +39,47 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const INITIAL` (crates/heptabao-barrier-api/src/lib.rs)
-- `const MAX_ASSOCIATED_DATA_BYTES` (crates/heptabao-barrier-api/src/lib.rs)
-- `const MAX_BARRIER_FIELD_BYTES` (crates/heptabao-barrier-api/src/lib.rs)
-- `const SEALED_ENVELOPE_VERSION` (crates/heptabao-barrier-api/src/lib.rs)
-- `const fn` (crates/heptabao-barrier-api/src/lib.rs)
-- `enum BarrierContractError` (crates/heptabao-barrier-api/src/lib.rs)
-- `enum BarrierPurpose` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn as_bytes` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn authentication_tag` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn canonical_associated_data` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn ciphertext` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn decode` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn domain` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn encode` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn into_bytes` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn is_empty` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn len` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn new` (crates/heptabao-barrier-api/src/lib.rs)
-- `fn nonce` (crates/heptabao-barrier-api/src/lib.rs)
-- `struct BarrierContext` (crates/heptabao-barrier-api/src/lib.rs)
-- `struct KeyEpoch` (crates/heptabao-barrier-api/src/lib.rs)
-- `struct SealedEnvelope` (crates/heptabao-barrier-api/src/lib.rs)
-- `struct SecretState` (crates/heptabao-barrier-api/src/lib.rs)
-- `trait BarrierProvider` (crates/heptabao-barrier-api/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-barrier-api`; Cargo SHA-256 `60cebd8c3e417f4ed40548c425eadec9ba70671cd6a4399c14f0817ab6a4d7e3`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `SEALED_ENVELOPE_VERSION` | `crates/heptabao-barrier-api/src/lib.rs:16` | `pub const SEALED_ENVELOPE_VERSION: u16 = 1;` |
+| `const` | `MAX_BARRIER_FIELD_BYTES` | `crates/heptabao-barrier-api/src/lib.rs:17` | `pub const MAX_BARRIER_FIELD_BYTES: usize = 16 * 1024 * 1024;` |
+| `const` | `MAX_ASSOCIATED_DATA_BYTES` | `crates/heptabao-barrier-api/src/lib.rs:18` | `pub const MAX_ASSOCIATED_DATA_BYTES: usize = 64 * 1024;` |
+| `struct` | `KeyEpoch` | `crates/heptabao-barrier-api/src/lib.rs:23` | `pub struct KeyEpoch(u64);` |
+| `const` | `INITIAL` | `crates/heptabao-barrier-api/src/lib.rs:26` | `pub const INITIAL: Self = Self(1);` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:28` | `pub const fn new(value: u64) -> Result<Self, BarrierContractError> {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:35` | `pub const fn get(self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:39` | `pub const fn checked_next(self) -> Result<Self, BarrierContractError> {` |
+| `enum` | `BarrierPurpose` | `crates/heptabao-barrier-api/src/lib.rs:48` | `pub enum BarrierPurpose {` |
+| `struct` | `BarrierContext` | `crates/heptabao-barrier-api/src/lib.rs:66` | `pub struct BarrierContext {` |
+| `fn` | `new` | `crates/heptabao-barrier-api/src/lib.rs:75` | `pub fn new(` |
+| `fn` | `domain` | `crates/heptabao-barrier-api/src/lib.rs:95` | `pub fn domain(&self) -> &StoreDomain {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:99` | `pub const fn generation(&self) -> Generation {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:103` | `pub const fn key_epoch(&self) -> KeyEpoch {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:107` | `pub const fn purpose(&self) -> BarrierPurpose {` |
+| `fn` | `canonical_associated_data` | `crates/heptabao-barrier-api/src/lib.rs:111` | `pub fn canonical_associated_data(&self) -> Result<Vec<u8>, BarrierContractError> {` |
+| `struct` | `SecretState` | `crates/heptabao-barrier-api/src/lib.rs:146` | `pub struct SecretState(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-barrier-api/src/lib.rs:149` | `pub fn new(mut value: Vec<u8>) -> Result<Self, BarrierContractError> {` |
+| `fn` | `as_bytes` | `crates/heptabao-barrier-api/src/lib.rs:157` | `pub fn as_bytes(&self) -> &[u8] {` |
+| `fn` | `len` | `crates/heptabao-barrier-api/src/lib.rs:161` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-barrier-api/src/lib.rs:165` | `pub fn is_empty(&self) -> bool {` |
+| `fn` | `into_bytes` | `crates/heptabao-barrier-api/src/lib.rs:169` | `pub fn into_bytes(mut self) -> Vec<u8> {` |
+| `struct` | `SealedEnvelope` | `crates/heptabao-barrier-api/src/lib.rs:191` | `pub struct SealedEnvelope {` |
+| `fn` | `new` | `crates/heptabao-barrier-api/src/lib.rs:200` | `pub fn new(` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:234` | `pub const fn version(&self) -> u16 {` |
+| `const` | `fn` | `crates/heptabao-barrier-api/src/lib.rs:238` | `pub const fn key_epoch(&self) -> KeyEpoch {` |
+| `fn` | `nonce` | `crates/heptabao-barrier-api/src/lib.rs:242` | `pub fn nonce(&self) -> &[u8] {` |
+| `fn` | `ciphertext` | `crates/heptabao-barrier-api/src/lib.rs:246` | `pub fn ciphertext(&self) -> &[u8] {` |
+| `fn` | `authentication_tag` | `crates/heptabao-barrier-api/src/lib.rs:250` | `pub fn authentication_tag(&self) -> &[u8] {` |
+| `fn` | `encode` | `crates/heptabao-barrier-api/src/lib.rs:254` | `pub fn encode(&self) -> Result<Vec<u8>, BarrierContractError> {` |
+| `fn` | `decode` | `crates/heptabao-barrier-api/src/lib.rs:275` | `pub fn decode(mut encoded: Vec<u8>) -> Result<Self, BarrierContractError> {` |
+| `trait` | `BarrierProvider` | `crates/heptabao-barrier-api/src/lib.rs:304` | `pub trait BarrierProvider: fmt::Debug + Send + Sync {` |
+| `enum` | `BarrierContractError` | `crates/heptabao-barrier-api/src/lib.rs:323` | `pub enum BarrierContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -148,3 +163,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-barrier-api`
+- Crate path: `crates/heptabao-barrier-api`
+- Cargo manifest SHA-256: `60cebd8c3e417f4ed40548c425eadec9ba70671cd6a4399c14f0817ab6a4d7e3`
+- Rust source files: `1`
+- Public lexical declarations: `33`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

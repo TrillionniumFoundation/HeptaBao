@@ -1,0 +1,379 @@
+{
+  "$id": "https://heptabao.invalid/schemas/heptabao_external_completion_evidence_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actors": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "conflicts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "independent": {
+            "type": "boolean"
+          },
+          "organization": {
+            "minLength": 2,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "stable_id": {
+            "minLength": 3,
+            "type": "string"
+          }
+        },
+        "required": [
+          "stable_id",
+          "role",
+          "organization",
+          "independent",
+          "conflicts"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "artifacts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "classification": {
+            "enum": [
+              "PUBLIC",
+              "SANITIZED",
+              "RESTRICTED_REFERENCE"
+            ]
+          },
+          "custody_uri": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "digest": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "digest",
+          "custody_uri",
+          "classification"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "blocker_id": {
+      "enum": [
+        "HB-BLK-CTRL-001",
+        "HB-BLK-EXT-001",
+        "HB-BLK-EXT-002",
+        "HB-BLK-EXT-003",
+        "HB-BLK-EXT-004",
+        "HB-BLK-EXT-005",
+        "HB-BLK-EXT-006",
+        "HB-BLK-EXT-007"
+      ]
+    },
+    "checks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence_digest": {
+            "anyOf": [
+              {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "UNKNOWN",
+              "UNEXECUTED"
+            ]
+          }
+        },
+        "required": [
+          "case_id",
+          "status",
+          "evidence_digest"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "claims": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_effect": {
+          "const": "NONE"
+        },
+        "compatibility_claim": {
+          "const": false
+        },
+        "migration_authority": {
+          "const": false
+        },
+        "production_authority": {
+          "const": false
+        },
+        "qualification": {
+          "const": false
+        },
+        "release_authority": {
+          "const": false
+        },
+        "selected_candidates": {
+          "const": []
+        },
+        "selection_effect": {
+          "const": "NONE"
+        }
+      },
+      "required": [
+        "qualification",
+        "compatibility_claim",
+        "selected_candidates",
+        "selection_effect",
+        "production_authority",
+        "migration_authority",
+        "release_authority",
+        "authority_effect"
+      ],
+      "type": "object"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "CRITICAL",
+              "HIGH",
+              "MEDIUM",
+              "LOW",
+              "INFORMATIONAL",
+              "UNCLASSIFIED"
+            ]
+          },
+          "state": {
+            "enum": [
+              "OPEN",
+              "CLOSED",
+              "ACCEPTED_RISK"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "severity",
+          "state"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "repository": {
+      "additionalProperties": false,
+      "properties": {
+        "full_name": {
+          "const": "TrillionniumFoundation/HeptaBao"
+        },
+        "id": {
+          "const": 1349115072
+        }
+      },
+      "required": [
+        "id",
+        "full_name"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "heptabao.external-completion-evidence.v1"
+    },
+    "scope": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "separation": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "signatures": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "algorithm": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "key_id": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "role": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "signature": {
+            "minLength": 16,
+            "type": "string"
+          },
+          "signed_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "signer_id": {
+            "minLength": 3,
+            "type": "string"
+          },
+          "verification": {
+            "enum": [
+              "VALID",
+              "INVALID",
+              "UNKNOWN",
+              "REVOKED"
+            ]
+          }
+        },
+        "required": [
+          "signer_id",
+          "role",
+          "key_id",
+          "algorithm",
+          "signed_at",
+          "expires_at",
+          "signature",
+          "verification"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "manifest_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "merge_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merge_tree": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "plan_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tree": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "commit",
+        "tree",
+        "merge_commit",
+        "merge_tree",
+        "plan_digest",
+        "manifest_digest"
+      ],
+      "type": "object"
+    },
+    "state": {
+      "enum": [
+        "UNEXECUTED",
+        "EXECUTED_PENDING_REVIEW",
+        "ACCEPTED",
+        "REJECTED",
+        "REVOKED"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "blocker_id",
+    "state",
+    "repository",
+    "source",
+    "scope",
+    "actors",
+    "separation",
+    "checks",
+    "artifacts",
+    "findings",
+    "signatures",
+    "claims"
+  ],
+  "title": "HeptaBao external completion evidence envelope v1",
+  "type": "object"
+}

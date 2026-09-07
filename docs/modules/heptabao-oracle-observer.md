@@ -35,16 +35,25 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const fn` (crates/heptabao-oracle-observer/src/lib.rs)
-- `enum AuthorityEffect` (crates/heptabao-oracle-observer/src/lib.rs)
-- `enum CaptureKind` (crates/heptabao-oracle-observer/src/lib.rs)
-- `enum ObservationError` (crates/heptabao-oracle-observer/src/lib.rs)
-- `struct ObservationContext` (crates/heptabao-oracle-observer/src/lib.rs)
-- `struct SideEffectDelta` (crates/heptabao-oracle-observer/src/lib.rs)
-- `struct SideEffectPolicy` (crates/heptabao-oracle-observer/src/lib.rs)
-- `struct SideEffectSnapshot` (crates/heptabao-oracle-observer/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-oracle-observer`; Cargo SHA-256 `389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `AuthorityEffect` | `crates/heptabao-oracle-observer/src/lib.rs:13` | `pub enum AuthorityEffect {` |
+| `enum` | `CaptureKind` | `crates/heptabao-oracle-observer/src/lib.rs:20` | `pub enum CaptureKind {` |
+| `struct` | `ObservationContext` | `crates/heptabao-oracle-observer/src/lib.rs:27` | `pub struct ObservationContext<'a> {` |
+| `enum` | `ObservationError` | `crates/heptabao-oracle-observer/src/lib.rs:38` | `pub enum ObservationError {` |
+| `const` | `fn` | `crates/heptabao-oracle-observer/src/lib.rs:58` | `pub const fn validate(self) -> Result<AuthorityEffect, ObservationError> {` |
+| `struct` | `SideEffectSnapshot` | `crates/heptabao-oracle-observer/src/lib.rs:79` | `pub struct SideEffectSnapshot {` |
+| `struct` | `SideEffectDelta` | `crates/heptabao-oracle-observer/src/lib.rs:94` | `pub struct SideEffectDelta {` |
+| `const` | `fn` | `crates/heptabao-oracle-observer/src/lib.rs:108` | `pub const fn between(before: SideEffectSnapshot, after: SideEffectSnapshot) -> Self {` |
+| `const` | `fn` | `crates/heptabao-oracle-observer/src/lib.rs:125` | `pub const fn is_empty(self) -> bool {` |
+| `struct` | `SideEffectPolicy` | `crates/heptabao-oracle-observer/src/lib.rs:141` | `pub struct SideEffectPolicy {` |
+| `const` | `fn` | `crates/heptabao-oracle-observer/src/lib.rs:155` | `pub const fn validate_delta(` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -130,3 +139,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-oracle-observer`
+- Crate path: `crates/heptabao-oracle-observer`
+- Cargo manifest SHA-256: `389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429`
+- Rust source files: `1`
+- Public lexical declarations: `11`
+- Discovered test functions: `6`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

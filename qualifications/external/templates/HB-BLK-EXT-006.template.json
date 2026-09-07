@@ -1,0 +1,40 @@
+{
+  "actors": [],
+  "artifacts": [],
+  "blocker_id": "HB-BLK-EXT-006",
+  "checks": [
+    {
+      "case_id": "UNEXECUTED",
+      "evidence_digest": null,
+      "status": "UNEXECUTED"
+    }
+  ],
+  "claims": {
+    "authority_effect": "NONE",
+    "compatibility_claim": false,
+    "migration_authority": false,
+    "production_authority": false,
+    "qualification": false,
+    "release_authority": false,
+    "selected_candidates": [],
+    "selection_effect": "NONE"
+  },
+  "findings": [],
+  "repository": {
+    "full_name": "TrillionniumFoundation/HeptaBao",
+    "id": 1349115072
+  },
+  "schema": "heptabao.external-completion-evidence.v1",
+  "scope": [],
+  "separation": {},
+  "signatures": [],
+  "source": {
+    "commit": null,
+    "manifest_digest": null,
+    "merge_commit": null,
+    "merge_tree": null,
+    "plan_digest": null,
+    "tree": null
+  },
+  "state": "UNEXECUTED"
+}

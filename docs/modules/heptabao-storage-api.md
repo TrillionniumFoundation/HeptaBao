@@ -41,30 +41,51 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const INITIAL` (crates/heptabao-storage-api/src/lib.rs)
-- `const MAX_INTEGRITY_ALGORITHM_ID_BYTES` (crates/heptabao-storage-api/src/lib.rs)
-- `const MAX_OPAQUE_STATE_BYTES` (crates/heptabao-storage-api/src/lib.rs)
-- `const MAX_STORE_DOMAIN_BYTES` (crates/heptabao-storage-api/src/lib.rs)
-- `const fn` (crates/heptabao-storage-api/src/lib.rs)
-- `enum StorageContractError` (crates/heptabao-storage-api/src/lib.rs)
-- `enum StoreOpenMode` (crates/heptabao-storage-api/src/lib.rs)
-- `fn as_bytes` (crates/heptabao-storage-api/src/lib.rs)
-- `fn as_str` (crates/heptabao-storage-api/src/lib.rs)
-- `fn into_bytes` (crates/heptabao-storage-api/src/lib.rs)
-- `fn is_empty` (crates/heptabao-storage-api/src/lib.rs)
-- `fn len` (crates/heptabao-storage-api/src/lib.rs)
-- `fn new` (crates/heptabao-storage-api/src/lib.rs)
-- `struct CommitReceipt` (crates/heptabao-storage-api/src/lib.rs)
-- `struct GenerationSnapshot` (crates/heptabao-storage-api/src/lib.rs)
-- `struct Generation` (crates/heptabao-storage-api/src/lib.rs)
-- `struct IntegrityAlgorithmId` (crates/heptabao-storage-api/src/lib.rs)
-- `struct OpaqueState` (crates/heptabao-storage-api/src/lib.rs)
-- `struct StateDigest` (crates/heptabao-storage-api/src/lib.rs)
-- `struct StoreDomain` (crates/heptabao-storage-api/src/lib.rs)
-- `trait DurableGenerationStore` (crates/heptabao-storage-api/src/lib.rs)
-- `trait IntegrityProvider` (crates/heptabao-storage-api/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-storage-api`; Cargo SHA-256 `7c31ca83f1253d29128905cce76400717e01de047bf52f388f9ba5f710c99ad3`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_OPAQUE_STATE_BYTES` | `crates/heptabao-storage-api/src/lib.rs:13` | `pub const MAX_OPAQUE_STATE_BYTES: usize = 16 * 1024 * 1024;` |
+| `const` | `MAX_STORE_DOMAIN_BYTES` | `crates/heptabao-storage-api/src/lib.rs:14` | `pub const MAX_STORE_DOMAIN_BYTES: usize = 128;` |
+| `const` | `MAX_INTEGRITY_ALGORITHM_ID_BYTES` | `crates/heptabao-storage-api/src/lib.rs:15` | `pub const MAX_INTEGRITY_ALGORITHM_ID_BYTES: usize = 128;` |
+| `struct` | `StoreDomain` | `crates/heptabao-storage-api/src/lib.rs:18` | `pub struct StoreDomain(String);` |
+| `fn` | `new` | `crates/heptabao-storage-api/src/lib.rs:21` | `pub fn new(value: String) -> Result<Self, StorageContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-storage-api/src/lib.rs:46` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `IntegrityAlgorithmId` | `crates/heptabao-storage-api/src/lib.rs:52` | `pub struct IntegrityAlgorithmId(String);` |
+| `fn` | `new` | `crates/heptabao-storage-api/src/lib.rs:55` | `pub fn new(value: String) -> Result<Self, StorageContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-storage-api/src/lib.rs:80` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `Generation` | `crates/heptabao-storage-api/src/lib.rs:86` | `pub struct Generation(u64);` |
+| `const` | `INITIAL` | `crates/heptabao-storage-api/src/lib.rs:89` | `pub const INITIAL: Self = Self(1);` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:91` | `pub const fn new(value: u64) -> Result<Self, StorageContractError> {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:98` | `pub const fn get(self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:102` | `pub const fn previous(self) -> Option<Self> {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:109` | `pub const fn checked_next(self) -> Result<Self, StorageContractError> {` |
+| `struct` | `StateDigest` | `crates/heptabao-storage-api/src/lib.rs:118` | `pub struct StateDigest([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-storage-api/src/lib.rs:121` | `pub fn new(value: [u8; 32]) -> Result<Self, StorageContractError> {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:128` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `struct` | `OpaqueState` | `crates/heptabao-storage-api/src/lib.rs:140` | `pub struct OpaqueState(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-storage-api/src/lib.rs:143` | `pub fn new(mut value: Vec<u8>) -> Result<Self, StorageContractError> {` |
+| `fn` | `as_bytes` | `crates/heptabao-storage-api/src/lib.rs:151` | `pub fn as_bytes(&self) -> &[u8] {` |
+| `fn` | `len` | `crates/heptabao-storage-api/src/lib.rs:155` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-storage-api/src/lib.rs:159` | `pub fn is_empty(&self) -> bool {` |
+| `fn` | `into_bytes` | `crates/heptabao-storage-api/src/lib.rs:163` | `pub fn into_bytes(mut self) -> Vec<u8> {` |
+| `enum` | `StoreOpenMode` | `crates/heptabao-storage-api/src/lib.rs:185` | `pub enum StoreOpenMode {` |
+| `struct` | `GenerationSnapshot` | `crates/heptabao-storage-api/src/lib.rs:192` | `pub struct GenerationSnapshot {` |
+| `struct` | `CommitReceipt` | `crates/heptabao-storage-api/src/lib.rs:210` | `pub struct CommitReceipt {` |
+| `struct` | `CommitIntent` | `crates/heptabao-storage-api/src/lib.rs:223` | `pub struct CommitIntent {` |
+| `fn` | `new` | `crates/heptabao-storage-api/src/lib.rs:230` | `pub fn new(` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:249` | `pub const fn previous(self) -> Option<Generation> {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:253` | `pub const fn committed(self) -> Generation {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:257` | `pub const fn digest(self) -> StateDigest {` |
+| `const` | `fn` | `crates/heptabao-storage-api/src/lib.rs:261` | `pub const fn receipt(self) -> CommitReceipt {` |
+| `enum` | `CommitRecovery` | `crates/heptabao-storage-api/src/lib.rs:271` | `pub enum CommitRecovery {` |
+| `trait` | `IntegrityProvider` | `crates/heptabao-storage-api/src/lib.rs:279` | `pub trait IntegrityProvider: fmt::Debug + Send + Sync {` |
+| `trait` | `DurableGenerationStore` | `crates/heptabao-storage-api/src/lib.rs:292` | `pub trait DurableGenerationStore: fmt::Debug + Send {` |
+| `enum` | `StorageContractError` | `crates/heptabao-storage-api/src/lib.rs:322` | `pub enum StorageContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -162,3 +183,18 @@ must derive its descriptor from replayed `IntentCommitted` state.
 commit, exact non-commit, or conflict. It may complete one already durable
 candidate only when provider authentication and every descriptor field match.
 It must not accept caller-supplied opaque state during recovery.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-storage-api`
+- Crate path: `crates/heptabao-storage-api`
+- Cargo manifest SHA-256: `7c31ca83f1253d29128905cce76400717e01de047bf52f388f9ba5f710c99ad3`
+- Rust source files: `1`
+- Public lexical declarations: `37`
+- Discovered test functions: `5`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

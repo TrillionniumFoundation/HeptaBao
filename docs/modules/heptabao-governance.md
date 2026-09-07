@@ -35,16 +35,22 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const H00_AUTHORITY` (crates/heptabao-governance/src/lib.rs)
-- `const fn` (crates/heptabao-governance/src/lib.rs)
-- `enum AuthorityEffect` (crates/heptabao-governance/src/lib.rs)
-- `enum QualificationError` (crates/heptabao-governance/src/lib.rs)
-- `struct FindingSummary` (crates/heptabao-governance/src/lib.rs)
-- `struct PlanningAuthority` (crates/heptabao-governance/src/lib.rs)
-- `struct QualificationFacts` (crates/heptabao-governance/src/lib.rs)
-- `struct TestSummary` (crates/heptabao-governance/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-governance`; Cargo SHA-256 `2fae46fc7c92cf7fcaa6374a58b2be49de8e2c9ae03cdedb0bf5b9dc1194ef31`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `AuthorityEffect` | `crates/heptabao-governance/src/lib.rs:12` | `pub enum AuthorityEffect {` |
+| `struct` | `QualificationFacts` | `crates/heptabao-governance/src/lib.rs:19` | `pub struct QualificationFacts {` |
+| `struct` | `TestSummary` | `crates/heptabao-governance/src/lib.rs:31` | `pub struct TestSummary {` |
+| `struct` | `FindingSummary` | `crates/heptabao-governance/src/lib.rs:38` | `pub struct FindingSummary {` |
+| `enum` | `QualificationError` | `crates/heptabao-governance/src/lib.rs:46` | `pub enum QualificationError {` |
+| `const` | `fn` | `crates/heptabao-governance/src/lib.rs:65` | `pub const fn qualify(` |
+| `struct` | `PlanningAuthority` | `crates/heptabao-governance/src/lib.rs:111` | `pub struct PlanningAuthority {` |
+| `const` | `H00_AUTHORITY` | `crates/heptabao-governance/src/lib.rs:125` | `pub const H00_AUTHORITY: PlanningAuthority = PlanningAuthority {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -130,3 +136,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-governance`
+- Crate path: `crates/heptabao-governance`
+- Cargo manifest SHA-256: `2fae46fc7c92cf7fcaa6374a58b2be49de8e2c9ae03cdedb0bf5b9dc1194ef31`
+- Rust source files: `1`
+- Public lexical declarations: `8`
+- Discovered test functions: `6`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

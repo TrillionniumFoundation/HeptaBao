@@ -40,31 +40,45 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const INITIAL` (crates/heptabao-journal-api/src/lib.rs)
-- `const MAX_AUTHENTICATOR_ID_BYTES` (crates/heptabao-journal-api/src/lib.rs)
-- `const MAX_JOURNAL_DOMAIN_BYTES` (crates/heptabao-journal-api/src/lib.rs)
-- `const MAX_JOURNAL_PAYLOAD_BYTES` (crates/heptabao-journal-api/src/lib.rs)
-- `const fn` (crates/heptabao-journal-api/src/lib.rs)
-- `enum JournalContractError` (crates/heptabao-journal-api/src/lib.rs)
-- `enum JournalOpenMode` (crates/heptabao-journal-api/src/lib.rs)
-- `fn as_bytes` (crates/heptabao-journal-api/src/lib.rs)
-- `fn as_str` (crates/heptabao-journal-api/src/lib.rs)
-- `fn into_bytes` (crates/heptabao-journal-api/src/lib.rs)
-- `fn is_empty` (crates/heptabao-journal-api/src/lib.rs)
-- `fn len` (crates/heptabao-journal-api/src/lib.rs)
-- `fn new` (crates/heptabao-journal-api/src/lib.rs)
-- `struct AppendReceipt` (crates/heptabao-journal-api/src/lib.rs)
-- `struct AuthenticatorId` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalDomain` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalPayload` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalRecord` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalSequence` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalTag` (crates/heptabao-journal-api/src/lib.rs)
-- `struct JournalTail` (crates/heptabao-journal-api/src/lib.rs)
-- `trait DurableJournal` (crates/heptabao-journal-api/src/lib.rs)
-- `trait JournalAuthenticator` (crates/heptabao-journal-api/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-journal-api`; Cargo SHA-256 `ff34ae29a8c1c7148b47e50437c32e7f873ea22cd911f5ad71401df39ebb5dec`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_JOURNAL_PAYLOAD_BYTES` | `crates/heptabao-journal-api/src/lib.rs:14` | `pub const MAX_JOURNAL_PAYLOAD_BYTES: usize = 1024 * 1024;` |
+| `const` | `MAX_JOURNAL_DOMAIN_BYTES` | `crates/heptabao-journal-api/src/lib.rs:15` | `pub const MAX_JOURNAL_DOMAIN_BYTES: usize = 128;` |
+| `const` | `MAX_AUTHENTICATOR_ID_BYTES` | `crates/heptabao-journal-api/src/lib.rs:16` | `pub const MAX_AUTHENTICATOR_ID_BYTES: usize = 128;` |
+| `struct` | `JournalDomain` | `crates/heptabao-journal-api/src/lib.rs:19` | `pub struct JournalDomain(String);` |
+| `fn` | `new` | `crates/heptabao-journal-api/src/lib.rs:22` | `pub fn new(value: String) -> Result<Self, JournalContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-journal-api/src/lib.rs:29` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `AuthenticatorId` | `crates/heptabao-journal-api/src/lib.rs:35` | `pub struct AuthenticatorId(String);` |
+| `fn` | `new` | `crates/heptabao-journal-api/src/lib.rs:38` | `pub fn new(value: String) -> Result<Self, JournalContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-journal-api/src/lib.rs:45` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `JournalSequence` | `crates/heptabao-journal-api/src/lib.rs:70` | `pub struct JournalSequence(u64);` |
+| `const` | `INITIAL` | `crates/heptabao-journal-api/src/lib.rs:73` | `pub const INITIAL: Self = Self(1);` |
+| `const` | `fn` | `crates/heptabao-journal-api/src/lib.rs:75` | `pub const fn new(value: u64) -> Result<Self, JournalContractError> {` |
+| `const` | `fn` | `crates/heptabao-journal-api/src/lib.rs:82` | `pub const fn get(self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-journal-api/src/lib.rs:86` | `pub const fn checked_next(self) -> Result<Self, JournalContractError> {` |
+| `struct` | `JournalTag` | `crates/heptabao-journal-api/src/lib.rs:95` | `pub struct JournalTag([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-journal-api/src/lib.rs:98` | `pub fn new(value: [u8; 32]) -> Result<Self, JournalContractError> {` |
+| `const` | `fn` | `crates/heptabao-journal-api/src/lib.rs:105` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `struct` | `JournalPayload` | `crates/heptabao-journal-api/src/lib.rs:117` | `pub struct JournalPayload(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-journal-api/src/lib.rs:120` | `pub fn new(mut value: Vec<u8>) -> Result<Self, JournalContractError> {` |
+| `fn` | `as_bytes` | `crates/heptabao-journal-api/src/lib.rs:128` | `pub fn as_bytes(&self) -> &[u8] {` |
+| `fn` | `len` | `crates/heptabao-journal-api/src/lib.rs:132` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-journal-api/src/lib.rs:136` | `pub fn is_empty(&self) -> bool {` |
+| `fn` | `into_bytes` | `crates/heptabao-journal-api/src/lib.rs:140` | `pub fn into_bytes(mut self) -> Vec<u8> {` |
+| `struct` | `JournalRecord` | `crates/heptabao-journal-api/src/lib.rs:162` | `pub struct JournalRecord {` |
+| `struct` | `JournalTail` | `crates/heptabao-journal-api/src/lib.rs:182` | `pub struct JournalTail {` |
+| `struct` | `AppendReceipt` | `crates/heptabao-journal-api/src/lib.rs:188` | `pub struct AppendReceipt {` |
+| `enum` | `JournalOpenMode` | `crates/heptabao-journal-api/src/lib.rs:194` | `pub enum JournalOpenMode {` |
+| `enum` | `AppendFailureDisposition` | `crates/heptabao-journal-api/src/lib.rs:204` | `pub enum AppendFailureDisposition {` |
+| `trait` | `JournalAuthenticator` | `crates/heptabao-journal-api/src/lib.rs:209` | `pub trait JournalAuthenticator: fmt::Debug + Send + Sync {` |
+| `trait` | `DurableJournal` | `crates/heptabao-journal-api/src/lib.rs:223` | `pub trait DurableJournal: fmt::Debug + Send {` |
+| `enum` | `JournalContractError` | `crates/heptabao-journal-api/src/lib.rs:255` | `pub enum JournalContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -165,3 +179,18 @@ append-unknown ledger fence. It must refresh cached provider state, authenticate
 the committed prefix and reconcile any provider-defined exact-next durable
 artifact before returning records. The default append-failure disposition
 remains `OutcomeUnknown`; optimistic error-name classification is forbidden.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-journal-api`
+- Crate path: `crates/heptabao-journal-api`
+- Cargo manifest SHA-256: `ff34ae29a8c1c7148b47e50437c32e7f873ea22cd911f5ad71401df39ebb5dec`
+- Rust source files: `1`
+- Public lexical declarations: `31`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

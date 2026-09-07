@@ -36,15 +36,27 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const fn` (crates/heptabao-durable-core/src/lib.rs)
-- `enum DurableCoreError` (crates/heptabao-durable-core/src/lib.rs)
-- `fn into_parts` (crates/heptabao-durable-core/src/lib.rs)
-- `fn load_current` (crates/heptabao-durable-core/src/lib.rs)
-- `fn persist` (crates/heptabao-durable-core/src/lib.rs)
-- `struct DurableStateEngine` (crates/heptabao-durable-core/src/lib.rs)
-- `struct LoadedSecretState` (crates/heptabao-durable-core/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-durable-core`; Cargo SHA-256 `b47355056fc09de553586bc31dd34dc9b5d5a24294c12a6ec9e316ade064902f`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `DurableStateEngine` | `crates/heptabao-durable-core/src/lib.rs:24` | `pub struct DurableStateEngine<S, B> {` |
+| `const` | `fn` | `crates/heptabao-durable-core/src/lib.rs:30` | `pub const fn new(store: S, barrier: B) -> Self {` |
+| `const` | `fn` | `crates/heptabao-durable-core/src/lib.rs:34` | `pub const fn store(&self) -> &S {` |
+| `const` | `fn` | `crates/heptabao-durable-core/src/lib.rs:38` | `pub const fn barrier(&self) -> &B {` |
+| `struct` | `PreparedDurableMutation` | `crates/heptabao-durable-core/src/lib.rs:57` | `pub struct PreparedDurableMutation {` |
+| `const` | `fn` | `crates/heptabao-durable-core/src/lib.rs:63` | `pub const fn intent(&self) -> CommitIntent {` |
+| `fn` | `prepare_persist` | `crates/heptabao-durable-core/src/lib.rs:84` | `pub fn prepare_persist(` |
+| `fn` | `commit_prepared` | `crates/heptabao-durable-core/src/lib.rs:139` | `pub fn commit_prepared(` |
+| `fn` | `recover_commit` | `crates/heptabao-durable-core/src/lib.rs:153` | `pub fn recover_commit(` |
+| `fn` | `persist` | `crates/heptabao-durable-core/src/lib.rs:162` | `pub fn persist(` |
+| `fn` | `load_current` | `crates/heptabao-durable-core/src/lib.rs:172` | `pub fn load_current(` |
+| `struct` | `LoadedSecretState` | `crates/heptabao-durable-core/src/lib.rs:209` | `pub struct LoadedSecretState {` |
+| `enum` | `DurableCoreError` | `crates/heptabao-durable-core/src/lib.rs:229` | `pub enum DurableCoreError<S, B>` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -143,3 +155,18 @@ descriptor without publishing state. `PreparedDurableMutation` owns both that
 descriptor and the sealed candidate and is consumed by `commit_prepared`.
 The descriptor exposed for journaling is metadata; only the journaled
 composition supplies the intent-before-effect authority sequence.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-durable-core`
+- Crate path: `crates/heptabao-durable-core`
+- Cargo manifest SHA-256: `b47355056fc09de553586bc31dd34dc9b5d5a24294c12a6ec9e316ade064902f`
+- Rust source files: `1`
+- Public lexical declarations: `13`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: `heptabao-barrier-api` (dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

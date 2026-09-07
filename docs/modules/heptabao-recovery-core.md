@@ -38,53 +38,75 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_RECOVERY_AUTHENTICATOR_ID_BYTES` (crates/heptabao-recovery-core/src/lib.rs)
-- `const MAX_RECOVERY_ID_BYTES` (crates/heptabao-recovery-core/src/lib.rs)
-- `const MAX_RECOVERY_PAYLOAD_BYTES` (crates/heptabao-recovery-core/src/lib.rs)
-- `const MAX_RECOVERY_RECORDS` (crates/heptabao-recovery-core/src/lib.rs)
-- `const MAX_RECOVERY_STATE_BYTES` (crates/heptabao-recovery-core/src/lib.rs)
-- `const fn` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum PublishFailure` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum RecoveryCaptureError` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum RecoveryContractError` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum RecoveryRestoreError` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum RecoveryVerificationError` (crates/heptabao-recovery-core/src/lib.rs)
-- `enum StageFailure` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn archive_id` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn as_str` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn capture` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn decode` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn encode` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn from_journal_record` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn into_image` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn into_journal_record` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn into_parts` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn new` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn payload` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn records` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn restore` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn seal` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn sealed_state` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn stage_if_empty` (crates/heptabao-recovery-core/src/lib.rs)
-- `fn verify` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct AuthorizedRecoveryImage` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryArchiveId` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryArchive` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryAuthenticatorId` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryImage` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryRecord` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryRestorer` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RecoveryTag` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct RestoreReceipt` (crates/heptabao-recovery-core/src/lib.rs)
-- `struct VerifiedRecoveryImage` (crates/heptabao-recovery-core/src/lib.rs)
-- `trait RecoveryAuthenticator` (crates/heptabao-recovery-core/src/lib.rs)
-- `trait RecoveryTarget` (crates/heptabao-recovery-core/src/lib.rs)
-- `type RecoveryCaptureResult` (crates/heptabao-recovery-core/src/lib.rs)
-- `type RecoveryImageParts` (crates/heptabao-recovery-core/src/lib.rs)
-- `type RecoveryRestoreResult` (crates/heptabao-recovery-core/src/lib.rs)
-- `type RecoveryVerifyResult` (crates/heptabao-recovery-core/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-recovery-core`; Cargo SHA-256 `951bd09462faa2e6936dcf86b5f9a95ebc4f67654a6712dc345b9842abd4ced6`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_RECOVERY_ID_BYTES` | `crates/heptabao-recovery-core/src/lib.rs:29` | `pub const MAX_RECOVERY_ID_BYTES: usize = 128;` |
+| `const` | `MAX_RECOVERY_AUTHENTICATOR_ID_BYTES` | `crates/heptabao-recovery-core/src/lib.rs:30` | `pub const MAX_RECOVERY_AUTHENTICATOR_ID_BYTES: usize = 128;` |
+| `const` | `MAX_RECOVERY_STATE_BYTES` | `crates/heptabao-recovery-core/src/lib.rs:31` | `pub const MAX_RECOVERY_STATE_BYTES: usize = 16 * 1024 * 1024;` |
+| `const` | `MAX_RECOVERY_RECORDS` | `crates/heptabao-recovery-core/src/lib.rs:32` | `pub const MAX_RECOVERY_RECORDS: usize = 100_000;` |
+| `const` | `MAX_RECOVERY_PAYLOAD_BYTES` | `crates/heptabao-recovery-core/src/lib.rs:33` | `pub const MAX_RECOVERY_PAYLOAD_BYTES: usize = 64 * 1024 * 1024;` |
+| `struct` | `RecoveryArchiveId` | `crates/heptabao-recovery-core/src/lib.rs:36` | `pub struct RecoveryArchiveId(String);` |
+| `fn` | `new` | `crates/heptabao-recovery-core/src/lib.rs:39` | `pub fn new(value: String) -> Result<Self, RecoveryContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-recovery-core/src/lib.rs:46` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `RecoveryAuthenticatorId` | `crates/heptabao-recovery-core/src/lib.rs:58` | `pub struct RecoveryAuthenticatorId(String);` |
+| `fn` | `new` | `crates/heptabao-recovery-core/src/lib.rs:61` | `pub fn new(value: String) -> Result<Self, RecoveryContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-recovery-core/src/lib.rs:68` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `RecoveryTag` | `crates/heptabao-recovery-core/src/lib.rs:93` | `pub struct RecoveryTag([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-recovery-core/src/lib.rs:96` | `pub fn new(value: [u8; 32]) -> Result<Self, RecoveryContractError> {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:103` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `struct` | `RecoveryRecord` | `crates/heptabao-recovery-core/src/lib.rs:115` | `pub struct RecoveryRecord {` |
+| `fn` | `from_journal_record` | `crates/heptabao-recovery-core/src/lib.rs:123` | `pub fn from_journal_record(record: JournalRecord) -> Self {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:132` | `pub const fn sequence(&self) -> JournalSequence {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:136` | `pub const fn previous_tag(&self) -> Option<JournalTag> {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:140` | `pub const fn tag(&self) -> JournalTag {` |
+| `fn` | `payload` | `crates/heptabao-recovery-core/src/lib.rs:144` | `pub fn payload(&self) -> &[u8] {` |
+| `fn` | `into_journal_record` | `crates/heptabao-recovery-core/src/lib.rs:148` | `pub fn into_journal_record(mut self) -> Result<JournalRecord, RecoveryContractError> {` |
+| `type` | `RecoveryImageParts` | `crates/heptabao-recovery-core/src/lib.rs:178` | `pub type RecoveryImageParts = (` |
+| `struct` | `RecoveryImage` | `crates/heptabao-recovery-core/src/lib.rs:188` | `pub struct RecoveryImage {` |
+| `fn` | `new` | `crates/heptabao-recovery-core/src/lib.rs:198` | `pub fn new(` |
+| `fn` | `archive_id` | `crates/heptabao-recovery-core/src/lib.rs:222` | `pub fn archive_id(&self) -> &RecoveryArchiveId {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:226` | `pub const fn authenticator_id(&self) -> &RecoveryAuthenticatorId {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:230` | `pub const fn observation(&self) -> &CheckpointObservation {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:234` | `pub const fn checkpoint(&self) -> &RecoveryCheckpoint {` |
+| `fn` | `sealed_state` | `crates/heptabao-recovery-core/src/lib.rs:238` | `pub fn sealed_state(&self) -> &[u8] {` |
+| `fn` | `records` | `crates/heptabao-recovery-core/src/lib.rs:242` | `pub fn records(&self) -> &[RecoveryRecord] {` |
+| `struct` | `RecoveryArchive` | `crates/heptabao-recovery-core/src/lib.rs:281` | `pub struct RecoveryArchive {` |
+| `fn` | `seal` | `crates/heptabao-recovery-core/src/lib.rs:287` | `pub fn seal<A: RecoveryAuthenticator>(` |
+| `fn` | `capture` | `crates/heptabao-recovery-core/src/lib.rs:305` | `pub fn capture<S, J, A>(` |
+| `fn` | `verify` | `crates/heptabao-recovery-core/src/lib.rs:355` | `pub fn verify<A: RecoveryAuthenticator>(` |
+| `fn` | `encode` | `crates/heptabao-recovery-core/src/lib.rs:378` | `pub fn encode(&self) -> Result<Vec<u8>, RecoveryContractError> {` |
+| `fn` | `decode` | `crates/heptabao-recovery-core/src/lib.rs:385` | `pub fn decode(bytes: &[u8]) -> Result<Self, RecoveryContractError> {` |
+| `struct` | `VerifiedRecoveryImage` | `crates/heptabao-recovery-core/src/lib.rs:489` | `pub struct VerifiedRecoveryImage {` |
+| `fn` | `archive_id` | `crates/heptabao-recovery-core/src/lib.rs:494` | `pub fn archive_id(&self) -> &RecoveryArchiveId {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:498` | `pub const fn authenticator_id(&self) -> &RecoveryAuthenticatorId {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:502` | `pub const fn observation(&self) -> &CheckpointObservation {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:506` | `pub const fn checkpoint(&self) -> &RecoveryCheckpoint {` |
+| `struct` | `AuthorizedRecoveryImage` | `crates/heptabao-recovery-core/src/lib.rs:524` | `pub struct AuthorizedRecoveryImage {` |
+| `fn` | `archive_id` | `crates/heptabao-recovery-core/src/lib.rs:530` | `pub fn archive_id(&self) -> &RecoveryArchiveId {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:534` | `pub const fn observation(&self) -> &CheckpointObservation {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:538` | `pub const fn checkpoint(&self) -> &RecoveryCheckpoint {` |
+| `const` | `fn` | `crates/heptabao-recovery-core/src/lib.rs:542` | `pub const fn anchor_revision(&self) -> AnchorRevision {` |
+| `fn` | `into_authorized_parts` | `crates/heptabao-recovery-core/src/lib.rs:546` | `pub fn into_authorized_parts(self) -> (RecoveryImageParts, AnchorRevision) {` |
+| `trait` | `RecoveryAuthenticator` | `crates/heptabao-recovery-core/src/lib.rs:562` | `pub trait RecoveryAuthenticator: fmt::Debug + Send + Sync {` |
+| `struct` | `RestoreReceipt` | `crates/heptabao-recovery-core/src/lib.rs:571` | `pub struct RestoreReceipt {` |
+| `enum` | `PublishFailure` | `crates/heptabao-recovery-core/src/lib.rs:579` | `pub enum PublishFailure<E>` |
+| `enum` | `StageFailure` | `crates/heptabao-recovery-core/src/lib.rs:607` | `pub enum StageFailure<E>` |
+| `trait` | `RecoveryTarget` | `crates/heptabao-recovery-core/src/lib.rs:629` | `pub trait RecoveryTarget: fmt::Debug {` |
+| `struct` | `RecoveryRestorer` | `crates/heptabao-recovery-core/src/lib.rs:648` | `pub struct RecoveryRestorer;` |
+| `fn` | `restore` | `crates/heptabao-recovery-core/src/lib.rs:651` | `pub fn restore<T, A, R, P>(` |
+| `type` | `RecoveryCaptureResult` | `crates/heptabao-recovery-core/src/lib.rs:736` | `pub type RecoveryCaptureResult<T, S, J, A> = Result<T, RecoveryCaptureError<S, J, A>>;` |
+| `type` | `RecoveryVerifyResult` | `crates/heptabao-recovery-core/src/lib.rs:737` | `pub type RecoveryVerifyResult<T, A> = Result<T, RecoveryVerificationError<A>>;` |
+| `type` | `RecoveryRestoreResult` | `crates/heptabao-recovery-core/src/lib.rs:738` | `pub type RecoveryRestoreResult<T, A, E, R, P> = Result<T, RecoveryRestoreError<A, E, R, P>>;` |
+| `enum` | `RecoveryCaptureError` | `crates/heptabao-recovery-core/src/lib.rs:741` | `pub enum RecoveryCaptureError<S, J, A>` |
+| `enum` | `RecoveryVerificationError` | `crates/heptabao-recovery-core/src/lib.rs:782` | `pub enum RecoveryVerificationError<A>` |
+| `enum` | `RecoveryRestoreError` | `crates/heptabao-recovery-core/src/lib.rs:809` | `pub enum RecoveryRestoreError<A, E, R, P>` |
+| `enum` | `RecoveryContractError` | `crates/heptabao-recovery-core/src/lib.rs:899` | `pub enum RecoveryContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -213,3 +235,18 @@ A provider-declared publication-unknown or mismatched post-publication receipt r
 ## V1.4.6 outer-fence outcome preservation
 
 `RecoveryRestorer` now maps only a real `AnchorContractError::CheckpointNotCurrent` to `CheckpointNotAnchored`. Other anchor contract errors, pre-entry anchor provider failures and checkpoint-authenticator failures retain separate typed variants. When the anchor reports `FenceOutcomeUnknown` after closure entry, restore returns `AnchorFenceOutcomeUnknown` regardless of an inner exact receipt. This prevents release, lease or post-operation failures from being relabelled as a safe stale-checkpoint result.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-recovery-core`
+- Crate path: `crates/heptabao-recovery-core`
+- Cargo manifest SHA-256: `951bd09462faa2e6936dcf86b5f9a95ebc4f67654a6712dc345b9842abd4ced6`
+- Rust source files: `1`
+- Public lexical declarations: `61`
+- Discovered test functions: `9`
+- Workspace-internal dependencies: `heptabao-barrier-api` (dependencies), `heptabao-journal-api` (dependencies), `heptabao-rollback-anchor` (dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

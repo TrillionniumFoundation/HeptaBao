@@ -39,21 +39,30 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const fn` (crates/heptabao-journaled-core/src/lib.rs)
-- `enum JournaledCoreError` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn into_parts` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn persist_mutation` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn reconcile_committed_state` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn reconcile` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn record_delivery` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn record_rejected_before_dispatch` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn record_response_audit_failure_after_commit` (crates/heptabao-journaled-core/src/lib.rs)
-- `fn record_response_audited` (crates/heptabao-journaled-core/src/lib.rs)
-- `struct JournaledCommitReceipt` (crates/heptabao-journaled-core/src/lib.rs)
-- `struct JournaledDurableCore` (crates/heptabao-journaled-core/src/lib.rs)
-- `type JournaledCoreResult` (crates/heptabao-journaled-core/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-journaled-core`; Cargo SHA-256 `1f3a73394d559ff5eddeeaa6da1f5d30393d39897f77bc8251fae6837c4233fe`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `type` | `JournaledCoreResult` | `crates/heptabao-journaled-core/src/lib.rs:26` | `pub type JournaledCoreResult<T, S, B, J> = Result<T, JournaledCoreError<S, B, J>>;` |
+| `struct` | `JournaledDurableCore` | `crates/heptabao-journaled-core/src/lib.rs:28` | `pub struct JournaledDurableCore<S, B, J>` |
+| `const` | `fn` | `crates/heptabao-journaled-core/src/lib.rs:40` | `pub const fn new(state: DurableStateEngine<S, B>, ledger: OperationLedger<J>) -> Self {` |
+| `const` | `fn` | `crates/heptabao-journaled-core/src/lib.rs:44` | `pub const fn state(&self) -> &DurableStateEngine<S, B> {` |
+| `const` | `fn` | `crates/heptabao-journaled-core/src/lib.rs:48` | `pub const fn ledger(&self) -> &OperationLedger<J> {` |
+| `fn` | `recover_ledger_after_append_failure` | `crates/heptabao-journaled-core/src/lib.rs:74` | `pub fn recover_ledger_after_append_failure(` |
+| `fn` | `persist_mutation` | `crates/heptabao-journaled-core/src/lib.rs:82` | `pub fn persist_mutation(` |
+| `fn` | `record_rejected_before_dispatch` | `crates/heptabao-journaled-core/src/lib.rs:160` | `pub fn record_rejected_before_dispatch(` |
+| `fn` | `recover_durable_intent` | `crates/heptabao-journaled-core/src/lib.rs:185` | `pub fn recover_durable_intent(` |
+| `fn` | `record_response_audited` | `crates/heptabao-journaled-core/src/lib.rs:283` | `pub fn record_response_audited(` |
+| `fn` | `record_response_audit_failure_after_commit` | `crates/heptabao-journaled-core/src/lib.rs:296` | `pub fn record_response_audit_failure_after_commit(` |
+| `fn` | `record_delivery` | `crates/heptabao-journaled-core/src/lib.rs:309` | `pub fn record_delivery(` |
+| `fn` | `reconcile` | `crates/heptabao-journaled-core/src/lib.rs:348` | `pub fn reconcile(` |
+| `struct` | `JournaledCommitReceipt` | `crates/heptabao-journaled-core/src/lib.rs:413` | `pub struct JournaledCommitReceipt {` |
+| `enum` | `DurableIntentRecovery` | `crates/heptabao-journaled-core/src/lib.rs:419` | `pub enum DurableIntentRecovery {` |
+| `enum` | `JournaledCoreError` | `crates/heptabao-journaled-core/src/lib.rs:425` | `pub enum JournaledCoreError<S, B, J>` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -158,3 +167,18 @@ operation, invokes authoritative store classification, and records either
 fenced. Generic `Reconciled` is still forbidden for durable mutation intent.
 The file-provider integration suite covers failures before/after storage and
 journal publication boundaries.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-journaled-core`
+- Crate path: `crates/heptabao-journaled-core`
+- Cargo manifest SHA-256: `1f3a73394d559ff5eddeeaa6da1f5d30393d39897f77bc8251fae6837c4233fe`
+- Rust source files: `2`
+- Public lexical declarations: `16`
+- Discovered test functions: `10`
+- Workspace-internal dependencies: `heptabao-barrier-api` (dependencies), `heptabao-durable-core` (dependencies), `heptabao-journal-api` (dependencies), `heptabao-operation-ledger` (dependencies), `heptabao-single-node-journal` (dev-dependencies), `heptabao-single-node-store` (dev-dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

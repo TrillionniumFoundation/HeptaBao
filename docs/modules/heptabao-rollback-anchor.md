@@ -37,38 +37,62 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const INITIAL` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `const MAX_ANCHOR_AUTHENTICATOR_ID_BYTES` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `const fn` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `enum AnchorContractError` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `enum AnchorCoordinatorError` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `enum AnchorFenceError` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `enum ObservationDisposition` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn advance` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn as_str` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn canonical_preimage` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn classify` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn from_parts` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn into_checkpoint` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn into_parts` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn new` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn verify_checkpoint` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn verify_current` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn verify_owned` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `fn with_current_fence` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct AnchorAdvanceReceipt` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct AnchorAuthenticatorId` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct AnchorCoordinator` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct AnchorRevision` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct CheckpointDigest` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct CheckpointObservation` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct RecoveryCheckpoint` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `struct VerifiedRecoveryCheckpoint` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `trait CheckpointAuthenticator` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `trait RollbackAnchor` (crates/heptabao-rollback-anchor/src/lib.rs)
-- `type AnchorResult` (crates/heptabao-rollback-anchor/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-rollback-anchor`; Cargo SHA-256 `5d25fc4b2c0903ba3bd5f279255c1a82e7a1fc8d0acb7341811eeea964472d52`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_ANCHOR_AUTHENTICATOR_ID_BYTES` | `crates/heptabao-rollback-anchor/src/lib.rs:18` | `pub const MAX_ANCHOR_AUTHENTICATOR_ID_BYTES: usize = 128;` |
+| `struct` | `AnchorAuthenticatorId` | `crates/heptabao-rollback-anchor/src/lib.rs:21` | `pub struct AnchorAuthenticatorId(String);` |
+| `fn` | `new` | `crates/heptabao-rollback-anchor/src/lib.rs:24` | `pub fn new(value: String) -> Result<Self, AnchorContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-rollback-anchor/src/lib.rs:31` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `AnchorRevision` | `crates/heptabao-rollback-anchor/src/lib.rs:56` | `pub struct AnchorRevision(u64);` |
+| `const` | `INITIAL` | `crates/heptabao-rollback-anchor/src/lib.rs:59` | `pub const INITIAL: Self = Self(1);` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:61` | `pub const fn new(value: u64) -> Result<Self, AnchorContractError> {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:68` | `pub const fn get(self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:72` | `pub const fn checked_next(self) -> Result<Self, AnchorContractError> {` |
+| `struct` | `CheckpointDigest` | `crates/heptabao-rollback-anchor/src/lib.rs:81` | `pub struct CheckpointDigest([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-rollback-anchor/src/lib.rs:84` | `pub fn new(value: [u8; 32]) -> Result<Self, AnchorContractError> {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:91` | `pub const fn bytes(self) -> [u8; 32] {` |
+| `struct` | `CheckpointObservation` | `crates/heptabao-rollback-anchor/src/lib.rs:103` | `pub struct CheckpointObservation {` |
+| `fn` | `new` | `crates/heptabao-rollback-anchor/src/lib.rs:113` | `pub fn new(` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:131` | `pub const fn store_domain(&self) -> &StoreDomain {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:135` | `pub const fn generation(&self) -> Generation {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:139` | `pub const fn state_digest(&self) -> StateDigest {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:143` | `pub const fn journal_domain(&self) -> &JournalDomain {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:147` | `pub const fn journal_tail(&self) -> Option<JournalTail> {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:151` | `pub const fn key_epoch(&self) -> KeyEpoch {` |
+| `struct` | `RecoveryCheckpoint` | `crates/heptabao-rollback-anchor/src/lib.rs:161` | `pub struct RecoveryCheckpoint {` |
+| `fn` | `from_parts` | `crates/heptabao-rollback-anchor/src/lib.rs:170` | `pub fn from_parts(` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:192` | `pub const fn revision(&self) -> AnchorRevision {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:196` | `pub const fn previous_digest(&self) -> Option<CheckpointDigest> {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:200` | `pub const fn authenticator_id(&self) -> &AnchorAuthenticatorId {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:204` | `pub const fn observation(&self) -> &CheckpointObservation {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:208` | `pub const fn digest(&self) -> CheckpointDigest {` |
+| `fn` | `canonical_preimage` | `crates/heptabao-rollback-anchor/src/lib.rs:212` | `pub fn canonical_preimage(` |
+| `struct` | `VerifiedRecoveryCheckpoint` | `crates/heptabao-rollback-anchor/src/lib.rs:247` | `pub struct VerifiedRecoveryCheckpoint {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:252` | `pub const fn revision(&self) -> AnchorRevision {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:256` | `pub const fn digest(&self) -> CheckpointDigest {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:260` | `pub const fn observation(&self) -> &CheckpointObservation {` |
+| `trait` | `CheckpointAuthenticator` | `crates/heptabao-rollback-anchor/src/lib.rs:265` | `pub trait CheckpointAuthenticator: fmt::Debug + Send + Sync {` |
+| `enum` | `AnchorFenceError` | `crates/heptabao-rollback-anchor/src/lib.rs:274` | `pub enum AnchorFenceError<E>` |
+| `trait` | `RollbackAnchor` | `crates/heptabao-rollback-anchor/src/lib.rs:323` | `pub trait RollbackAnchor: fmt::Debug + Send {` |
+| `struct` | `AnchorAdvanceReceipt` | `crates/heptabao-rollback-anchor/src/lib.rs:353` | `pub struct AnchorAdvanceReceipt {` |
+| `enum` | `ObservationDisposition` | `crates/heptabao-rollback-anchor/src/lib.rs:359` | `pub enum ObservationDisposition {` |
+| `struct` | `AnchorCoordinator` | `crates/heptabao-rollback-anchor/src/lib.rs:365` | `pub struct AnchorCoordinator<A, P> {` |
+| `const` | `fn` | `crates/heptabao-rollback-anchor/src/lib.rs:371` | `pub const fn new(anchor: A, authenticator: P) -> Self {` |
+| `type` | `AnchorResult` | `crates/heptabao-rollback-anchor/src/lib.rs:393` | `pub type AnchorResult<T, A, P> = Result<T, AnchorCoordinatorError<A, P>>;` |
+| `fn` | `classify` | `crates/heptabao-rollback-anchor/src/lib.rs:400` | `pub fn classify(` |
+| `fn` | `advance` | `crates/heptabao-rollback-anchor/src/lib.rs:416` | `pub fn advance(` |
+| `fn` | `with_current_fence` | `crates/heptabao-rollback-anchor/src/lib.rs:494` | `pub fn with_current_fence<T, F>(` |
+| `fn` | `verify_owned` | `crates/heptabao-rollback-anchor/src/lib.rs:518` | `pub fn verify_owned(` |
+| `fn` | `verify_current` | `crates/heptabao-rollback-anchor/src/lib.rs:525` | `pub fn verify_current(` |
+| `fn` | `verify_checkpoint` | `crates/heptabao-rollback-anchor/src/lib.rs:547` | `pub fn verify_checkpoint(` |
+| `enum` | `AnchorCoordinatorError` | `crates/heptabao-rollback-anchor/src/lib.rs:587` | `pub enum AnchorCoordinatorError<A, P>` |
+| `enum` | `AnchorContractError` | `crates/heptabao-rollback-anchor/src/lib.rs:626` | `pub enum AnchorContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -183,3 +207,18 @@ Verified checkpoint values are non-cloneable and cannot be downgraded into ordin
 - `OutcomeUnknownAfterEntry(error)`: invocation occurred, but the provider cannot prove valid, clean fence completion.
 
 `AnchorCoordinatorError::FenceOutcomeUnknown` preserves the third state. It must not be downgraded to a normal provider error or stale-checkpoint contract result. The deterministic recovery hostile provider runs the publication closure, leaves the target populated and then returns `OutcomeUnknownAfterEntry`, proving that a completed effect remains operationally ambiguous until readback.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-rollback-anchor`
+- Crate path: `crates/heptabao-rollback-anchor`
+- Cargo manifest SHA-256: `5d25fc4b2c0903ba3bd5f279255c1a82e7a1fc8d0acb7341811eeea964472d52`
+- Rust source files: `1`
+- Public lexical declarations: `48`
+- Discovered test functions: `6`
+- Workspace-internal dependencies: `heptabao-barrier-api` (dependencies), `heptabao-journal-api` (dependencies), `heptabao-storage-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

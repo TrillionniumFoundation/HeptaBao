@@ -1,0 +1,106 @@
+name: HeptaBao V1.4.7 post-merge truth and external admission
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - integration/v1.4.4-technical-candidate
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v1.4.7-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: v1.4.7 / pull_request / ${{ matrix.source_kind }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      pull-requests: read
+    strategy:
+      fail-fast: false
+      matrix:
+        source_kind: [exact-head, prospective-merge]
+    env:
+      SOURCE_KIND: ${{ matrix.source_kind }}
+      SOURCE_SHA: ${{ matrix.source_kind == 'prospective-merge' && github.sha || github.event.pull_request.head.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      V147_BASELINE: 54d524214df443752a2ecaeff6d4a05625bf52c7
+    steps:
+      - name: Checkout immutable source identity
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact head or prospective merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$V147_BASELINE" "$HEAD_SHA"
+          if [[ "$SOURCE_KIND" == "prospective-merge" ]]; then
+            read -r merge parent_one parent_two extra <<<"$(git rev-list --parents -n 1 HEAD)"
+            test "$merge" = "$SOURCE_SHA"
+            test "$parent_one" = "$BASE_SHA"
+            test "$parent_two" = "$HEAD_SHA"
+            test -z "${extra:-}"
+          else
+            test "$SOURCE_SHA" = "$HEAD_SHA"
+          fi
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf 'source_kind=%s\nsource_sha=%s\ntree=%s\n' "$SOURCE_KIND" "$SOURCE_SHA" "$(git rev-parse HEAD^{tree})"
+
+      - name: Install exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Validate plans documentation and external admission
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_plan_v1_4_7.py
+          python -m unittest discover -s tests/plan -p 'test_*v1_4_7.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python scripts/validate_plan_v1_4_6.py
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_6.py' -v
+          python scripts/validate_plan_v1_4_5.py
+          python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+
+      - name: Install exact Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Validate locked Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+
+      - name: Confirm fail-closed authority boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -R "authority_effect: NONE" planning/HEPTABAO_*V1_4_7*.yaml planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+          ! grep -R "production_authority: true\|release_authority: true\|migration_authority: true\|compatibility_claim: true" \
+            planning/HEPTABAO_*V1_4_7*.yaml planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml

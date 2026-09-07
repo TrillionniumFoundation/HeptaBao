@@ -1,0 +1,40 @@
+schema: heptabao.external-completion-admission-catalog.v1
+plan_id: HEPTABAO-PLAN-2026-09-02-V1.4.7
+envelope_schema: schemas/heptabao_external_completion_evidence_v1.schema.json
+validator: scripts/validate_external_completion_evidence_v1.py
+protocol: docs/governance/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_PROTOCOL_V1.md
+closure_mode: FAIL_CLOSED_EXACT_SOURCE_REQUIRED
+blockers:
+- id: HB-BLK-CTRL-001
+  template: qualifications/external/templates/HB-BLK-CTRL-001.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-001
+  template: qualifications/external/templates/HB-BLK-EXT-001.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-002
+  template: qualifications/external/templates/HB-BLK-EXT-002.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-003
+  template: qualifications/external/templates/HB-BLK-EXT-003.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-004
+  template: qualifications/external/templates/HB-BLK-EXT-004.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-005
+  template: qualifications/external/templates/HB-BLK-EXT-005.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-006
+  template: qualifications/external/templates/HB-BLK-EXT-006.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-007
+  template: qualifications/external/templates/HB-BLK-EXT-007.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

@@ -1,0 +1,126 @@
+schema: heptabao.blocker-register-extension.v1_4_7
+plan_id: HEPTABAO-PLAN-2026-09-02-V1.4.7
+revision: 1.4.7
+status: ACTIVE_FAIL_CLOSED
+inherits: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_6.yaml
+source_baseline:
+  commit: 54d524214df443752a2ecaeff6d4a05625bf52c7
+  tree: c22288f561fdd711e908ce8a70c0116601d519e5
+closed_carried_forward:
+- id: HB-BLK-REPO-049
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-050
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-051
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-052
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-053
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-054
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-055
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-056
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-057
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+- id: HB-BLK-REPO-058
+  state: CLOSED_REPOSITORY_SCOPE
+  receipt: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+added_blockers:
+- id: HB-BLK-REPO-059
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: V1.4.6 post-merge repository closure was not canonicalized
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - receipt binds exact reviewed head base merge parent graph and merge tree
+  - repository blockers 049 through 058 close without closing control or external blockers
+  - authority flags remain false
+  evidence:
+  - planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
+  closure_receipt_required: true
+- id: HB-BLK-REPO-060
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: module documentation was structurally complete but not source truth bound
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - every workspace crate maps to exactly one module guide
+  - Cargo and Rust source hashes internal dependencies public lexical declarations and tests are recomputed
+  - generated Public API and facts blocks reject drift and hand edits
+  - bounded lexical scope and nonclaims remain explicit
+  evidence:
+  - docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md
+  - planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml
+  - scripts/render_plan_v1_4_7.py
+  - tests/plan/test_module_source_truth_v1_4_7.py
+  closure_receipt_required: true
+- id: HB-BLK-REPO-061
+  class: REPOSITORY_CONTROLLED
+  severity: CRITICAL
+  title: external completion evidence lacked one strict fail-closed admission gate
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - one schema covers control and external blocker completion envelopes
+  - closure mode binds exact source and merge identities
+  - required roles separation cases artifacts findings signatures and authority flags fail closed
+  - UNEXECUTED templates cannot be admitted as closure
+  evidence:
+  - schemas/heptabao_external_completion_evidence_v1.schema.json
+  - scripts/validate_external_completion_evidence_v1.py
+  - tests/plan/test_external_completion_evidence_v1.py
+  - qualifications/external/templates
+  closure_receipt_required: true
+- id: HB-BLK-REPO-062
+  class: REPOSITORY_CONTROLLED
+  severity: MEDIUM
+  title: current documentation still selected the pre-merge V1.4.6 status
+  state: IMPLEMENTED_SOURCE_REVIEW_REQUIRED
+  closure_criteria:
+  - single current portal selects V1.4.7 plan status blocker register and manifest
+  - V1.4.6 remains immutable inherited evidence
+  - external authority boundary remains explicit
+  evidence:
+  - docs/CURRENT_DOCUMENTATION.md
+  closure_receipt_required: true
+external_and_control_blockers_carried_forward:
+- HB-BLK-CTRL-001
+- HB-BLK-EXT-001
+- HB-BLK-EXT-002
+- HB-BLK-EXT-003
+- HB-BLK-EXT-004
+- HB-BLK-EXT-005
+- HB-BLK-EXT-006
+- HB-BLK-EXT-007
+product_gaps_carried_forward:
+- production composition root and mandatory end-to-end request path
+- policy identity token lease namespace system and plugin domains
+- production KMS or HSM custody rotation and revocation ceremony
+- remote append-only rollback anchor and publication-fence provider
+- qualified recovery target with atomic empty admission and readback
+- non-Linux adapters and filesystem or storage-controller qualification
+- retention compaction offsite backup custody and restore drills
+- Raft HA replication membership snapshots and standby reconciliation
+- online migration upgrade downgrade and mixed-version operation
+- full OpenBao compatibility and Oracle-derived implementation
+- CLI Agent Proxy and production operations surface
+claims:
+  qualification: false
+  compatibility_claim: false
+  selected_candidates: []
+  selection_effect: NONE
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE

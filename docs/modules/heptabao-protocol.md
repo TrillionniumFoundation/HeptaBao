@@ -36,48 +36,60 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_HEADER_COUNT` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_HEADER_VALUE_BYTES` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_HTTP_BODY_BYTES` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_HTTP_HEAD_BYTES` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_REQUEST_BUDGET_NANOS` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_REQUEST_BUDGET_TICKS` (crates/heptabao-protocol/src/lib.rs)
-- `const MAX_TARGET_BYTES` (crates/heptabao-protocol/src/lib.rs)
-- `const MONOTONIC_NANOS_PER_SECOND` (crates/heptabao-protocol/src/lib.rs)
-- `const fn` (crates/heptabao-protocol/src/lib.rs)
-- `enum AuditPhase` (crates/heptabao-protocol/src/lib.rs)
-- `enum CommitDisposition` (crates/heptabao-protocol/src/lib.rs)
-- `enum Method` (crates/heptabao-protocol/src/lib.rs)
-- `enum Operation` (crates/heptabao-protocol/src/lib.rs)
-- `enum ProtocolError` (crates/heptabao-protocol/src/lib.rs)
-- `fn as_str` (crates/heptabao-protocol/src/lib.rs)
-- `fn canonical_string` (crates/heptabao-protocol/src/lib.rs)
-- `fn checked_add_duration` (crates/heptabao-protocol/src/lib.rs)
-- `fn checked_duration_since` (crates/heptabao-protocol/src/lib.rs)
-- `fn classify_operation` (crates/heptabao-protocol/src/lib.rs)
-- `fn constant_time_eq` (crates/heptabao-protocol/src/lib.rs)
-- `fn expose` (crates/heptabao-protocol/src/lib.rs)
-- `fn get` (crates/heptabao-protocol/src/lib.rs)
-- `fn is_empty` (crates/heptabao-protocol/src/lib.rs)
-- `fn iter` (crates/heptabao-protocol/src/lib.rs)
-- `fn len` (crates/heptabao-protocol/src/lib.rs)
-- `fn matches_canonical` (crates/heptabao-protocol/src/lib.rs)
-- `fn new` (crates/heptabao-protocol/src/lib.rs)
-- `fn parse_http_request` (crates/heptabao-protocol/src/lib.rs)
-- `fn parse` (crates/heptabao-protocol/src/lib.rs)
-- `fn path` (crates/heptabao-protocol/src/lib.rs)
-- `fn query` (crates/heptabao-protocol/src/lib.rs)
-- `fn validate_at` (crates/heptabao-protocol/src/lib.rs)
-- `struct AuditEvent` (crates/heptabao-protocol/src/lib.rs)
-- `struct CanonicalTarget` (crates/heptabao-protocol/src/lib.rs)
-- `struct HeaderMap` (crates/heptabao-protocol/src/lib.rs)
-- `struct MonotonicTick` (crates/heptabao-protocol/src/lib.rs)
-- `struct ParsedHttpRequest` (crates/heptabao-protocol/src/lib.rs)
-- `struct RequestEnvelope` (crates/heptabao-protocol/src/lib.rs)
-- `struct RequestId` (crates/heptabao-protocol/src/lib.rs)
-- `struct SecretBytes` (crates/heptabao-protocol/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-protocol`; Cargo SHA-256 `951de609e5e4f963856967dccae040184a9215084f138141b9205747d6a7f226`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_HTTP_HEAD_BYTES` | `crates/heptabao-protocol/src/lib.rs:13` | `pub const MAX_HTTP_HEAD_BYTES: usize = 16 * 1024;` |
+| `const` | `MAX_HTTP_BODY_BYTES` | `crates/heptabao-protocol/src/lib.rs:14` | `pub const MAX_HTTP_BODY_BYTES: usize = 1024 * 1024;` |
+| `const` | `MAX_TARGET_BYTES` | `crates/heptabao-protocol/src/lib.rs:15` | `pub const MAX_TARGET_BYTES: usize = 2 * 1024;` |
+| `const` | `MAX_HEADER_COUNT` | `crates/heptabao-protocol/src/lib.rs:16` | `pub const MAX_HEADER_COUNT: usize = 64;` |
+| `const` | `MAX_HEADER_VALUE_BYTES` | `crates/heptabao-protocol/src/lib.rs:17` | `pub const MAX_HEADER_VALUE_BYTES: usize = 8 * 1024;` |
+| `const` | `MONOTONIC_NANOS_PER_SECOND` | `crates/heptabao-protocol/src/lib.rs:18` | `pub const MONOTONIC_NANOS_PER_SECOND: u64 = 1_000_000_000;` |
+| `const` | `MAX_REQUEST_BUDGET_NANOS` | `crates/heptabao-protocol/src/lib.rs:19` | `pub const MAX_REQUEST_BUDGET_NANOS: u64 = 60 * MONOTONIC_NANOS_PER_SECOND;` |
+| `const` | `MAX_REQUEST_BUDGET_TICKS` | `crates/heptabao-protocol/src/lib.rs:20` | `pub const MAX_REQUEST_BUDGET_TICKS: u64 = MAX_REQUEST_BUDGET_NANOS;` |
+| `enum` | `Method` | `crates/heptabao-protocol/src/lib.rs:23` | `pub enum Method {` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:43` | `pub const fn as_str(self) -> &'static str {` |
+| `enum` | `Operation` | `crates/heptabao-protocol/src/lib.rs:55` | `pub enum Operation {` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:68` | `pub const fn mutates(self) -> bool {` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:75` | `pub const fn requires_authentication(self) -> bool {` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:82` | `pub const fn allowed_while_sealed(self) -> bool {` |
+| `struct` | `CanonicalTarget` | `crates/heptabao-protocol/src/lib.rs:123` | `pub struct CanonicalTarget {` |
+| `fn` | `parse` | `crates/heptabao-protocol/src/lib.rs:149` | `pub fn parse(raw: &str) -> Result<Self, ProtocolError> {` |
+| `fn` | `path` | `crates/heptabao-protocol/src/lib.rs:168` | `pub fn path(&self) -> &str {` |
+| `fn` | `query` | `crates/heptabao-protocol/src/lib.rs:172` | `pub fn query(&self) -> &[(String, String)] {` |
+| `fn` | `canonical_string` | `crates/heptabao-protocol/src/lib.rs:176` | `pub fn canonical_string(&self) -> String {` |
+| `fn` | `matches_canonical` | `crates/heptabao-protocol/src/lib.rs:193` | `pub fn matches_canonical(&self, raw: &str) -> bool {` |
+| `struct` | `HeaderMap` | `crates/heptabao-protocol/src/lib.rs:307` | `pub struct HeaderMap(BTreeMap<String, Vec<u8>>);` |
+| `fn` | `get` | `crates/heptabao-protocol/src/lib.rs:329` | `pub fn get(&self, name: &str) -> Option<&str> {` |
+| `fn` | `len` | `crates/heptabao-protocol/src/lib.rs:335` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-protocol/src/lib.rs:339` | `pub fn is_empty(&self) -> bool {` |
+| `fn` | `iter` | `crates/heptabao-protocol/src/lib.rs:343` | `pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {` |
+| `struct` | `ParsedHttpRequest` | `crates/heptabao-protocol/src/lib.rs:353` | `pub struct ParsedHttpRequest {` |
+| `fn` | `parse_http_request` | `crates/heptabao-protocol/src/lib.rs:378` | `pub fn parse_http_request(input: &[u8]) -> Result<ParsedHttpRequest, ProtocolError> {` |
+| `fn` | `classify_operation` | `crates/heptabao-protocol/src/lib.rs:532` | `pub fn classify_operation(` |
+| `struct` | `MonotonicTick` | `crates/heptabao-protocol/src/lib.rs:563` | `pub struct MonotonicTick(pub u64);` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:566` | `pub const fn from_nanos(value: u64) -> Self {` |
+| `const` | `fn` | `crates/heptabao-protocol/src/lib.rs:570` | `pub const fn as_nanos(self) -> u64 {` |
+| `fn` | `checked_add_duration` | `crates/heptabao-protocol/src/lib.rs:574` | `pub fn checked_add_duration(self, duration: Duration) -> Option<Self> {` |
+| `fn` | `checked_duration_since` | `crates/heptabao-protocol/src/lib.rs:579` | `pub fn checked_duration_since(self, earlier: Self) -> Option<Duration> {` |
+| `struct` | `RequestEnvelope` | `crates/heptabao-protocol/src/lib.rs:585` | `pub struct RequestEnvelope {` |
+| `fn` | `validate_at` | `crates/heptabao-protocol/src/lib.rs:605` | `pub fn validate_at(&self, now: MonotonicTick) -> Result<Operation, ProtocolError> {` |
+| `struct` | `RequestId` | `crates/heptabao-protocol/src/lib.rs:627` | `pub struct RequestId(String);` |
+| `fn` | `new` | `crates/heptabao-protocol/src/lib.rs:630` | `pub fn new(value: String) -> Result<Self, ProtocolError> {` |
+| `fn` | `as_str` | `crates/heptabao-protocol/src/lib.rs:642` | `pub fn as_str(&self) -> &str {` |
+| `enum` | `AuditPhase` | `crates/heptabao-protocol/src/lib.rs:648` | `pub enum AuditPhase {` |
+| `enum` | `CommitDisposition` | `crates/heptabao-protocol/src/lib.rs:657` | `pub enum CommitDisposition {` |
+| `struct` | `AuditEvent` | `crates/heptabao-protocol/src/lib.rs:665` | `pub struct AuditEvent {` |
+| `struct` | `SecretBytes` | `crates/heptabao-protocol/src/lib.rs:675` | `pub struct SecretBytes(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-protocol/src/lib.rs:678` | `pub fn new(mut value: Vec<u8>) -> Result<Self, ProtocolError> {` |
+| `fn` | `expose` | `crates/heptabao-protocol/src/lib.rs:686` | `pub fn expose(&self) -> &[u8] {` |
+| `fn` | `constant_time_eq` | `crates/heptabao-protocol/src/lib.rs:690` | `pub fn constant_time_eq(&self, candidate: &[u8]) -> bool {` |
+| `enum` | `ProtocolError` | `crates/heptabao-protocol/src/lib.rs:715` | `pub enum ProtocolError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -171,3 +183,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-protocol`
+- Crate path: `crates/heptabao-protocol`
+- Cargo manifest SHA-256: `951de609e5e4f963856967dccae040184a9215084f138141b9205747d6a7f226`
+- Rust source files: `1`
+- Public lexical declarations: `46`
+- Discovered test functions: `13`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

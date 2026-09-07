@@ -36,34 +36,49 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_REASON_CODE_BYTES` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `const fn` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `enum KeyLifecycleContractError` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `enum KeyLifecycleError` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `enum KeyRingEventKind` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `enum KeyStatus` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `enum KeyUseDirective` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn as_str` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn bootstrap` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn decode` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn directive` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn encode` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn into_journal` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn known_epoch_count` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn new` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn open` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn reason` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn retire` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn revoke` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn rotate` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn stage` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `fn status` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `struct KeyRingEvent` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `struct KeyRingLedger` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `struct KeyRingState` (crates/heptabao-key-lifecycle/src/lib.rs)
-- `struct ReasonCode` (crates/heptabao-key-lifecycle/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-key-lifecycle`; Cargo SHA-256 `b16bae50f3b6e4741e02846566db7bae7c98c21c69027d03eb401d5fab0c13a4`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_REASON_CODE_BYTES` | `crates/heptabao-key-lifecycle/src/lib.rs:23` | `pub const MAX_REASON_CODE_BYTES: usize = 96;` |
+| `struct` | `ReasonCode` | `crates/heptabao-key-lifecycle/src/lib.rs:26` | `pub struct ReasonCode(String);` |
+| `fn` | `new` | `crates/heptabao-key-lifecycle/src/lib.rs:29` | `pub fn new(value: String) -> Result<Self, KeyLifecycleContractError> {` |
+| `fn` | `as_str` | `crates/heptabao-key-lifecycle/src/lib.rs:42` | `pub fn as_str(&self) -> &str {` |
+| `enum` | `KeyStatus` | `crates/heptabao-key-lifecycle/src/lib.rs:54` | `pub enum KeyStatus {` |
+| `enum` | `KeyUseDirective` | `crates/heptabao-key-lifecycle/src/lib.rs:63` | `pub enum KeyUseDirective {` |
+| `enum` | `KeyRingEventKind` | `crates/heptabao-key-lifecycle/src/lib.rs:70` | `pub enum KeyRingEventKind {` |
+| `struct` | `KeyRingEvent` | `crates/heptabao-key-lifecycle/src/lib.rs:102` | `pub struct KeyRingEvent {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:126` | `pub const fn kind(&self) -> KeyRingEventKind {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:130` | `pub const fn epoch(&self) -> KeyEpoch {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:134` | `pub const fn previous_active(&self) -> Option<KeyEpoch> {` |
+| `fn` | `reason` | `crates/heptabao-key-lifecycle/src/lib.rs:138` | `pub fn reason(&self) -> &ReasonCode {` |
+| `fn` | `encode` | `crates/heptabao-key-lifecycle/src/lib.rs:142` | `pub fn encode(&self) -> Result<JournalPayload, KeyLifecycleContractError> {` |
+| `fn` | `decode` | `crates/heptabao-key-lifecycle/src/lib.rs:160` | `pub fn decode(bytes: &[u8]) -> Result<Self, KeyLifecycleContractError> {` |
+| `struct` | `KeyRingState` | `crates/heptabao-key-lifecycle/src/lib.rs:199` | `pub struct KeyRingState {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:205` | `pub const fn active_epoch(&self) -> Option<KeyEpoch> {` |
+| `fn` | `status` | `crates/heptabao-key-lifecycle/src/lib.rs:209` | `pub fn status(&self, epoch: KeyEpoch) -> Option<KeyStatus> {` |
+| `fn` | `directive` | `crates/heptabao-key-lifecycle/src/lib.rs:213` | `pub fn directive(&self, epoch: KeyEpoch) -> KeyUseDirective {` |
+| `fn` | `known_epoch_count` | `crates/heptabao-key-lifecycle/src/lib.rs:223` | `pub fn known_epoch_count(&self) -> usize {` |
+| `enum` | `KeyLedgerWriteState` | `crates/heptabao-key-lifecycle/src/lib.rs:307` | `pub enum KeyLedgerWriteState {` |
+| `struct` | `KeyRingLedger` | `crates/heptabao-key-lifecycle/src/lib.rs:312` | `pub struct KeyRingLedger<J: DurableJournal> {` |
+| `fn` | `open` | `crates/heptabao-key-lifecycle/src/lib.rs:331` | `pub fn open(mut journal: J) -> Result<Self, KeyLifecycleError<J::Error>> {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:348` | `pub const fn write_state(&self) -> KeyLedgerWriteState {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:352` | `pub const fn replay_required(&self) -> bool {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:356` | `pub const fn state(&self) -> &KeyRingState {` |
+| `const` | `fn` | `crates/heptabao-key-lifecycle/src/lib.rs:360` | `pub const fn journal(&self) -> &J {` |
+| `fn` | `bootstrap` | `crates/heptabao-key-lifecycle/src/lib.rs:364` | `pub fn bootstrap(` |
+| `fn` | `stage` | `crates/heptabao-key-lifecycle/src/lib.rs:377` | `pub fn stage(` |
+| `fn` | `rotate` | `crates/heptabao-key-lifecycle/src/lib.rs:390` | `pub fn rotate(` |
+| `fn` | `retire` | `crates/heptabao-key-lifecycle/src/lib.rs:404` | `pub fn retire(` |
+| `fn` | `revoke` | `crates/heptabao-key-lifecycle/src/lib.rs:417` | `pub fn revoke(` |
+| `fn` | `recover_after_append_failure` | `crates/heptabao-key-lifecycle/src/lib.rs:430` | `pub fn recover_after_append_failure(&mut self) -> Result<(), KeyLifecycleError<J::Error>> {` |
+| `fn` | `reopen` | `crates/heptabao-key-lifecycle/src/lib.rs:449` | `pub fn reopen(self) -> Result<Self, KeyLifecycleError<J::Error>> {` |
+| `enum` | `KeyLifecycleError` | `crates/heptabao-key-lifecycle/src/lib.rs:489` | `pub enum KeyLifecycleError<E>` |
+| `enum` | `KeyLifecycleContractError` | `crates/heptabao-key-lifecycle/src/lib.rs:529` | `pub enum KeyLifecycleContractError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -164,3 +179,18 @@ the journal provider's authoritative recovery method rather than replaying a
 possibly stale cached tail, then rebuilds the complete key-ring state before
 writes resume. The hostile provider persists the key event before returning its
 error.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-key-lifecycle`
+- Crate path: `crates/heptabao-key-lifecycle`
+- Cargo manifest SHA-256: `b16bae50f3b6e4741e02846566db7bae7c98c21c69027d03eb401d5fab0c13a4`
+- Rust source files: `1`
+- Public lexical declarations: `35`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: `heptabao-barrier-api` (dependencies), `heptabao-journal-api` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

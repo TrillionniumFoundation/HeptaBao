@@ -35,28 +35,35 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const P0_AUTHORITY_EFFECT` (crates/heptabao-p0-server/src/lib.rs)
-- `const P0_COMPATIBILITY_CLAIM` (crates/heptabao-p0-server/src/lib.rs)
-- `const P0_PRODUCTION_SUPPORTED` (crates/heptabao-p0-server/src/lib.rs)
-- `const P0_PROFILE` (crates/heptabao-p0-server/src/lib.rs)
-- `enum AuditError` (crates/heptabao-p0-server/src/lib.rs)
-- `enum P0Error` (crates/heptabao-p0-server/src/lib.rs)
-- `fn audit` (crates/heptabao-p0-server/src/lib.rs)
-- `fn create_new` (crates/heptabao-p0-server/src/lib.rs)
-- `fn events` (crates/heptabao-p0-server/src/lib.rs)
-- `fn generation` (crates/heptabao-p0-server/src/lib.rs)
-- `fn handle` (crates/heptabao-p0-server/src/lib.rs)
-- `fn new` (crates/heptabao-p0-server/src/lib.rs)
-- `fn path` (crates/heptabao-p0-server/src/lib.rs)
-- `fn with_failure_on` (crates/heptabao-p0-server/src/lib.rs)
-- `struct DevelopmentCredentials` (crates/heptabao-p0-server/src/lib.rs)
-- `struct FileAuditSink` (crates/heptabao-p0-server/src/lib.rs)
-- `struct MemoryAuditSink` (crates/heptabao-p0-server/src/lib.rs)
-- `struct P0Response` (crates/heptabao-p0-server/src/lib.rs)
-- `struct P0Server` (crates/heptabao-p0-server/src/lib.rs)
-- `trait AuditSink` (crates/heptabao-p0-server/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-p0-server`; Cargo SHA-256 `21a883c7709d8ba3574270452eb57615fc815e274d689448e5b631133bb56365`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `P0_PROFILE` | `crates/heptabao-p0-server/src/lib.rs:23` | `pub const P0_PROFILE: &str = "HB-P0-DEV-MEMORY";` |
+| `const` | `P0_PRODUCTION_SUPPORTED` | `crates/heptabao-p0-server/src/lib.rs:24` | `pub const P0_PRODUCTION_SUPPORTED: bool = false;` |
+| `const` | `P0_COMPATIBILITY_CLAIM` | `crates/heptabao-p0-server/src/lib.rs:25` | `pub const P0_COMPATIBILITY_CLAIM: bool = false;` |
+| `const` | `P0_AUTHORITY_EFFECT` | `crates/heptabao-p0-server/src/lib.rs:26` | `pub const P0_AUTHORITY_EFFECT: &str = "NONE";` |
+| `struct` | `DevelopmentCredentials` | `crates/heptabao-p0-server/src/lib.rs:29` | `pub struct DevelopmentCredentials {` |
+| `fn` | `new` | `crates/heptabao-p0-server/src/lib.rs:35` | `pub fn new(mut root_token: Vec<u8>, mut unseal_key: Vec<u8>) -> Result<Self, P0Error> {` |
+| `trait` | `AuditSink` | `crates/heptabao-p0-server/src/lib.rs:58` | `pub trait AuditSink: fmt::Debug + Send {` |
+| `struct` | `MemoryAuditSink` | `crates/heptabao-p0-server/src/lib.rs:63` | `pub struct MemoryAuditSink {` |
+| `fn` | `with_failure_on` | `crates/heptabao-p0-server/src/lib.rs:70` | `pub fn with_failure_on(call: usize) -> Self {` |
+| `fn` | `events` | `crates/heptabao-p0-server/src/lib.rs:78` | `pub fn events(&self) -> &[AuditEvent] {` |
+| `struct` | `FileAuditSink` | `crates/heptabao-p0-server/src/lib.rs:94` | `pub struct FileAuditSink {` |
+| `fn` | `create_new` | `crates/heptabao-p0-server/src/lib.rs:125` | `pub fn create_new(path: impl AsRef<Path>) -> Result<Self, AuditError> {` |
+| `fn` | `path` | `crates/heptabao-p0-server/src/lib.rs:152` | `pub fn path(&self) -> &Path {` |
+| `struct` | `P0Server` | `crates/heptabao-p0-server/src/lib.rs:180` | `pub struct P0Server<A: AuditSink> {` |
+| `struct` | `P0Response` | `crates/heptabao-p0-server/src/lib.rs:264` | `pub struct P0Response {` |
+| `fn` | `new` | `crates/heptabao-p0-server/src/lib.rs:318` | `pub fn new(credentials: DevelopmentCredentials, audit: A) -> Self {` |
+| `fn` | `audit` | `crates/heptabao-p0-server/src/lib.rs:326` | `pub fn audit(&self) -> &A {` |
+| `fn` | `generation` | `crates/heptabao-p0-server/src/lib.rs:330` | `pub fn generation(&self) -> u64 {` |
+| `fn` | `handle` | `crates/heptabao-p0-server/src/lib.rs:334` | `pub fn handle(&mut self, envelope: RequestEnvelope, now: MonotonicTick) -> P0Response {` |
+| `enum` | `AuditError` | `crates/heptabao-p0-server/src/lib.rs:828` | `pub enum AuditError {` |
+| `enum` | `P0Error` | `crates/heptabao-p0-server/src/lib.rs:853` | `pub enum P0Error {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -158,3 +165,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-p0-server`
+- Crate path: `crates/heptabao-p0-server`
+- Cargo manifest SHA-256: `21a883c7709d8ba3574270452eb57615fc815e274d689448e5b631133bb56365`
+- Rust source files: `2`
+- Public lexical declarations: `21`
+- Discovered test functions: `21`
+- Workspace-internal dependencies: `heptabao-protocol` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

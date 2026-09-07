@@ -35,30 +35,36 @@ The allowed direction follows the system crate graph: provider-neutral types and
 
 ## Public API index
 
-- `const MAX_ASSERTION_TTL_SECONDS` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `const MAX_CLOCK_SKEW_SECONDS` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `const MAX_IDENTITY_BYTES` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `const MAX_IN_MEMORY_REPLAY_ENTRIES` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `const MAX_SIGNATURE_BYTES` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `enum AuthbusError` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `enum AuthorizationEffect` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `enum DigestAlgorithm` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `fn canonical_bytes` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `fn unsigned_payload` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `fn validate` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `fn verify_bound_assertion` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `fn with_capacity` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct AuthbusAssertion` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct InMemoryReplayCache` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct RequestBinding` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct UnixTimeSeconds` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct VerificationPolicy` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `struct VerifiedAuthbusIdentity` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `trait AssertionSignatureVerifier` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `trait CryptographicDigestProvider` (crates/heptabao-authbus-contracts/src/lib.rs)
-- `trait ReplayCache` (crates/heptabao-authbus-contracts/src/lib.rs)
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-authbus-contracts`; Cargo SHA-256 `b04a63f914e2dfae7be69c144ef43253b2b910107a2e7a8c3ec4e643a3916032`.
 
-This index is generated from explicit `pub` declarations and is not a replacement for rustdoc. New public items require an invariant, error semantics, tests and an entry in this guide.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_ASSERTION_TTL_SECONDS` | `crates/heptabao-authbus-contracts/src/lib.rs:19` | `pub const MAX_ASSERTION_TTL_SECONDS: u64 = 30;` |
+| `const` | `MAX_CLOCK_SKEW_SECONDS` | `crates/heptabao-authbus-contracts/src/lib.rs:20` | `pub const MAX_CLOCK_SKEW_SECONDS: u64 = 5;` |
+| `const` | `MAX_IDENTITY_BYTES` | `crates/heptabao-authbus-contracts/src/lib.rs:21` | `pub const MAX_IDENTITY_BYTES: usize = 512;` |
+| `const` | `MAX_SIGNATURE_BYTES` | `crates/heptabao-authbus-contracts/src/lib.rs:22` | `pub const MAX_SIGNATURE_BYTES: usize = 16 * 1024;` |
+| `const` | `MAX_IN_MEMORY_REPLAY_ENTRIES` | `crates/heptabao-authbus-contracts/src/lib.rs:23` | `pub const MAX_IN_MEMORY_REPLAY_ENTRIES: usize = 4096;` |
+| `struct` | `UnixTimeSeconds` | `crates/heptabao-authbus-contracts/src/lib.rs:26` | `pub struct UnixTimeSeconds(pub u64);` |
+| `enum` | `DigestAlgorithm` | `crates/heptabao-authbus-contracts/src/lib.rs:29` | `pub enum DigestAlgorithm {` |
+| `trait` | `CryptographicDigestProvider` | `crates/heptabao-authbus-contracts/src/lib.rs:33` | `pub trait CryptographicDigestProvider: fmt::Debug + Send + Sync {` |
+| `trait` | `AssertionSignatureVerifier` | `crates/heptabao-authbus-contracts/src/lib.rs:38` | `pub trait AssertionSignatureVerifier: fmt::Debug + Send + Sync {` |
+| `trait` | `ReplayCache` | `crates/heptabao-authbus-contracts/src/lib.rs:47` | `pub trait ReplayCache: fmt::Debug + Send + Sync {` |
+| `struct` | `RequestBinding` | `crates/heptabao-authbus-contracts/src/lib.rs:58` | `pub struct RequestBinding<'a> {` |
+| `fn` | `canonical_bytes` | `crates/heptabao-authbus-contracts/src/lib.rs:80` | `pub fn canonical_bytes(&self) -> Result<Vec<u8>, AuthbusError> {` |
+| `struct` | `AuthbusAssertion` | `crates/heptabao-authbus-contracts/src/lib.rs:115` | `pub struct AuthbusAssertion {` |
+| `fn` | `unsigned_payload` | `crates/heptabao-authbus-contracts/src/lib.rs:147` | `pub fn unsigned_payload(&self) -> Result<Vec<u8>, AuthbusError> {` |
+| `struct` | `VerificationPolicy` | `crates/heptabao-authbus-contracts/src/lib.rs:164` | `pub struct VerificationPolicy {` |
+| `fn` | `validate` | `crates/heptabao-authbus-contracts/src/lib.rs:173` | `pub fn validate(&self) -> Result<(), AuthbusError> {` |
+| `struct` | `VerifiedAuthbusIdentity` | `crates/heptabao-authbus-contracts/src/lib.rs:193` | `pub struct VerifiedAuthbusIdentity {` |
+| `enum` | `AuthorizationEffect` | `crates/heptabao-authbus-contracts/src/lib.rs:215` | `pub enum AuthorizationEffect {` |
+| `fn` | `verify_bound_assertion` | `crates/heptabao-authbus-contracts/src/lib.rs:219` | `pub fn verify_bound_assertion(` |
+| `struct` | `InMemoryReplayCache` | `crates/heptabao-authbus-contracts/src/lib.rs:327` | `pub struct InMemoryReplayCache {` |
+| `fn` | `with_capacity` | `crates/heptabao-authbus-contracts/src/lib.rs:352` | `pub fn with_capacity(max_entries: usize) -> Result<Self, AuthbusError> {` |
+| `enum` | `AuthbusError` | `crates/heptabao-authbus-contracts/src/lib.rs:395` | `pub enum AuthbusError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and invariants
 
@@ -148,3 +154,18 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 - Coverage object: `planning/HEPTABAO_MODULE_DOCUMENTATION_COVERAGE_V1_4_4.yaml`
 
 The owner updates this document whenever public API, dependency edges, persistent formats, security invariants, retry behavior, tests or known gaps change.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-authbus-contracts`
+- Crate path: `crates/heptabao-authbus-contracts`
+- Cargo manifest SHA-256: `b04a63f914e2dfae7be69c144ef43253b2b910107a2e7a8c3ec4e643a3916032`
+- Rust source files: `1`
+- Public lexical declarations: `22`
+- Discovered test functions: `10`
+- Workspace-internal dependencies: `heptabao-protocol` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->
