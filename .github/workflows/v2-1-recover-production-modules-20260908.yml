@@ -1,0 +1,150 @@
+name: HeptaBao V2.1 recover published production modules
+
+on:
+  push:
+    branches:
+      - exec/v2.1-recover-production-modules-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-1-recover-production-modules
+  cancel-in-progress: false
+
+jobs:
+  recover-validate-and-publish:
+    if: github.event.head_commit.message == 'chore(exec): install bounded V2.1 module recovery transaction'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CANDIDATE_BRANCH: codex/v2.1-main-convergence-durable-runtime-20260907
+      ORIGINAL_HEAD: ff8ff379509baa95f54744f0b931810d1f115211
+    steps:
+      - name: Checkout immutable recovery controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout candidate with bounded publish credential
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.CANDIDATE_BRANCH }}
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for validated G0 successor and bind it
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C controller rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git -C controller status --porcelain=v1 --untracked-files=all)"
+          validated_head=''
+          for attempt in $(seq 1 120); do
+            git -C candidate fetch --quiet origin "refs/heads/$CANDIDATE_BRANCH"
+            observed=$(git -C candidate rev-parse FETCH_HEAD)
+            if test "$observed" != "$ORIGINAL_HEAD" && git -C candidate cat-file -e "$observed:planning/HEPTABAO_V2_1_G0_REMEDIATION_STATUS.yaml" 2>/dev/null; then
+              validated_head="$observed"
+              break
+            fi
+            sleep 10
+          done
+          test -n "$validated_head"
+          git -C candidate checkout --detach "$validated_head"
+          test -z "$(git -C candidate status --porcelain=v1 --untracked-files=all)"
+          echo "VALIDATED_G0_HEAD=$validated_head" >> "$GITHUB_ENV"
+
+      - name: Fetch all published repository refs
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin '+refs/heads/*:refs/remotes/origin/*'
+          test "$(git rev-parse HEAD)" = "$VALIDATED_G0_HEAD"
+
+      - name: Install exact Python dependencies
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: candidate/requirements-plan.txt
+
+      - name: Recover module-local source, guides and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement candidate/requirements-plan.txt
+          python controller/tools/recover_v21_modules.py candidate
+          python controller/tools/normalize_v21_workspace.py candidate
+          git -C candidate diff --check
+
+      - name: Install declared Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Generate lockfile and execute complete source gates
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find crates -mindepth 1 -maxdepth 1 -type d -name 'heptabao-*' | wc -l)" = 53
+          cargo +1.98.0 generate-lockfile
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          python scripts/validate_workflow_trust.py
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+
+      - name: Enforce bounded candidate surface
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git diff --name-only | grep -E '^(\.github/workflows/|\.exec/|tools/)' || true)"
+          test ! -e .exec/v2-g4-overlay.part-00
+          for crate in \
+            heptabao-aead-barrier heptabao-audit-file heptabao-single-node-runtime \
+            heptabao-http-adapter heptabao-tls-server heptabao-network-server \
+            heptabao-access-file heptabao-format-migration heptabao-plugin-host \
+            heptabao-raft-replica heptabao-compatibility-runner; do
+            test -f "crates/$crate/Cargo.toml"
+            test -f "crates/$crate/src/lib.rs"
+            test -f "docs/modules/$crate.md"
+            test "$(grep -c "^name = \"$crate\"$" Cargo.lock)" = 1
+          done
+          grep -Fq 'workspace_packages: 53' planning/HEPTABAO_V2_1_WORKSPACE_NORMALIZATION_STATUS.yaml
+          grep -Fq 'qualification: false' planning/HEPTABAO_V2_1_WORKSPACE_NORMALIZATION_STATUS.yaml
+
+      - name: Commit and fast-forward candidate only after complete success
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'HeptaBao V2.1 convergence controller'
+          git config user.email 'heptabao-v2-1@users.noreply.github.com'
+          git add --all
+          git commit -m 'feat(v2.1): recover and validate production-boundary modules'
+          new_head=$(git rev-parse HEAD)
+          test "$(git rev-parse HEAD^)" = "$VALIDATED_G0_HEAD"
+          git push --force-with-lease="refs/heads/$CANDIDATE_BRANCH:$VALIDATED_G0_HEAD" origin "HEAD:refs/heads/$CANDIDATE_BRANCH"
+          echo "published_head=$new_head" >> "$GITHUB_STEP_SUMMARY"
+          echo 'workspace_packages=53' >> "$GITHUB_STEP_SUMMARY"
+          echo 'qualification=false' >> "$GITHUB_STEP_SUMMARY"
+          echo 'production_authority=false' >> "$GITHUB_STEP_SUMMARY"
+          echo 'release_authority=false' >> "$GITHUB_STEP_SUMMARY"
