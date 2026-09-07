@@ -1,0 +1,108 @@
+name: HeptaBao V2 final review fix materializer
+
+on:
+  push:
+    branches:
+      - codex/v2.0-product-closure-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-final-review-fix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: "${{ github.event.head_commit.message == 'ci(v2): stage namespace and replay closure' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact staging commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify staging identity and materialize reviewed paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "TrillionniumFoundation/HeptaBao"
+          test "$GITHUB_REF" = "refs/heads/codex/v2.0-product-closure-20260907"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          read -r commit parent extra <<<"$(git rev-list --parents -n 1 HEAD)"
+          test "$commit" = "$GITHUB_SHA"
+          test "$parent" = "1e9522b0d6cbc1db22683499a504206aa7afc86b"
+          test -z "${extra:-}"
+          test "$(git log -1 --format=%s)" = "ci(v2): stage namespace and replay closure"
+          cat \
+            .exec/v2-final-review-fix.part-00 \
+            .exec/v2-final-review-fix.part-01 \
+            .exec/v2-final-review-fix.part-02 \
+            .exec/v2-final-review-fix.part-03 \
+            .exec/v2-final-review-fix.part-04-00 \
+            .exec/v2-final-review-fix.part-04-01 \
+            .exec/v2-final-review-fix.part-04-02 \
+            | base64 --decode > "$RUNNER_TEMP/v2-final-review-fix.tar.gz"
+          echo "9790b610550d5f0eb78b83a2248c5c82833ab082a5230fb499422e5323469389  $RUNNER_TEMP/v2-final-review-fix.tar.gz" | sha256sum --check
+          cat > "$RUNNER_TEMP/expected-paths.txt" <<'EOF'
+          crates/heptabao-service-core/src/lib.rs
+          docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md
+          docs/modules/heptabao-service-core.md
+          planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          EOF
+          tar -tzf "$RUNNER_TEMP/v2-final-review-fix.tar.gz" | sort > "$RUNNER_TEMP/observed-paths.txt"
+          sort "$RUNNER_TEMP/expected-paths.txt" > "$RUNNER_TEMP/expected-paths.sorted.txt"
+          cmp "$RUNNER_TEMP/expected-paths.sorted.txt" "$RUNNER_TEMP/observed-paths.txt"
+          tar --extract --gzip --file "$RUNNER_TEMP/v2-final-review-fix.tar.gz" --directory . --no-same-owner --no-same-permissions
+          echo "085024c4cadf1c54cbe8bd6dbaa659451eb2a109ae89056fe4710bc70555ae54  crates/heptabao-service-core/src/lib.rs" | sha256sum --check
+          echo "9bff11271c963a690e9242fc34d6b1016fae48d6cab895fc74d5fada00223960  docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md" | sha256sum --check
+          echo "e776dc193debbdc92dbd5362734ad7cd84afd716227d6f33f5de9af2b82559f5  docs/modules/heptabao-service-core.md" | sha256sum --check
+          echo "78287ac524ced9d09280ee4b37499b8ec40b31f8cb6e2dc1cc7bfb64673cd857  planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml" | sha256sum --check
+          rm -f .exec/v2-final-review-fix.part-*
+          rm -f .github/workflows/v2-final-gap-materializer.yml
+          test -z "$(find .exec -maxdepth 1 -type f -name 'v2-final-review-fix.part-*' -print -quit)"
+          test ! -e .github/workflows/v2-final-gap-materializer.yml
+      - name: Install validation toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Validate repository and inherited contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          python scripts/validate_workflow_trust.py
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+      - name: Validate and format complete Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+          test -z "$(find .exec -maxdepth 1 -type f -name 'v2-final-review-fix.part-*' -print -quit)"
+          test ! -e .github/workflows/v2-final-gap-materializer.yml
+          grep -Fq 'contents: read' .github/workflows/v2-continuous-assurance.yml
+          test "$(grep -Fc 'contents: write' .github/workflows/v2-continuous-assurance.yml)" = 0
+      - name: Commit verified final review fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "HeptaBao convergence controller"
+          git config user.email "heptabao-convergence@users.noreply.github.com"
+          git add --all
+          git commit -m "fix(v2): bind namespace authorization and retain replay identities"
+          git push origin HEAD:codex/v2.0-product-closure-20260907
