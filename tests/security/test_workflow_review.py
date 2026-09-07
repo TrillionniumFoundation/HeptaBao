@@ -159,6 +159,104 @@ class WorkflowReviewTests(unittest.TestCase):
             self.assertIn("not credential-free", result["credential_model"])
             self.assertTrue(result["requires_live_runner_environment_and_independent_policy_controls"])
 
+    def test_external_expression_sources_cannot_enter_environment(self):
+        sources = [
+            "${{ inputs.payload }}",
+            "${{ vars.PAYLOAD }}",
+            "${{ github.event.client_payload.payload }}",
+            "${{ github.event.inputs.payload }}",
+        ]
+        sinks = [
+            'bash -c "$X"',
+            'eval "$X"',
+            'curl "https://example.invalid/$X"',
+            'python tool.py "$X"',
+            'source "$X"',
+        ]
+        for source in sources:
+            for sink in sinks:
+                with self.subTest(source=source, sink=sink):
+                    text = SAFE.replace(
+                        "      - run: python -m unittest discover",
+                        f"      - env: {{X: '{source}'}}\n        run: {sink}",
+                    )
+                    self.reject(text)
+
+    def test_review_counterexample_with_dispatch_input_is_rejected(self):
+        text = SAFE.replace(
+            "  pull_request:\n",
+            "  workflow_dispatch:\n    inputs:\n      payload:\n        required: true\n",
+        ).replace(
+            "      - run: python -m unittest discover",
+            "      - env: {X: '${{ inputs.payload }}'}\n        run: bash -c \"$X\"",
+        )
+        self.reject(text)
+
+    def test_allowed_environment_value_still_cannot_select_shell_program(self):
+        text = SAFE.replace(
+            "      - run: python -m unittest discover",
+            "      - env: {SOURCE_SHA: '${{ github.sha }}'}\n        run: bash -c \"$SOURCE_SHA\"",
+        )
+        self.reject(text)
+
+    def test_artifact_path_grammar_rejects_broad_or_escaping_exports(self):
+        rejected = [
+            "/home/runner",
+            "/tmp",
+            "${{ runner.temp }}/",
+            "../workspace",
+            "evidence/*",
+            "${{ inputs.path }}/results",
+            "~/secrets",
+        ]
+        for value in rejected:
+            with self.subTest(value=value), self.assertRaises(policy.PolicyError):
+                policy.check_upload_path(value, {}, "fixture.path", lambda *_: False, {})
+
+    def test_artifact_path_grammar_accepts_only_bounded_roots(self):
+        for value in [
+            "evidence/result.json",
+            "${{ runner.temp }}/reviewed/result.json",
+        ]:
+            with self.subTest(value=value):
+                policy.check_upload_path(value, {}, "fixture.path", lambda *_: False, {})
+
+    def test_upload_registry_is_closed_and_contains_no_unsafe_paths(self):
+        self.assertEqual(27, len(policy.APPROVED_UPLOAD_PATHS))
+        for key, value in policy.APPROVED_UPLOAD_PATHS.items():
+            with self.subTest(invocation=key):
+                self.assertNotIn("*", value)
+                self.assertNotIn("?", value)
+                self.assertNotIn("..", value.split("/"))
+                self.assertNotIn("/home/runner", value)
+                self.assertNotEqual("/tmp", value.rstrip("/"))
+
+    def test_action_inputs_are_checked_beyond_action_sha(self):
+        setup = SAFE.replace(
+            "      - run: python -m unittest discover",
+            "      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97\n"
+            "        with:\n"
+            "          python-version: 3.13\n"
+            "          token: disposable",
+        )
+        self.reject(setup)
+        dynamic = setup.replace("          token: disposable\n", "").replace(
+            "python-version: 3.13", "python-version: '${{ inputs.python }}'"
+        )
+        self.reject(dynamic)
+        self.reject(SAFE.replace("          ref:", "          clean: true\n          ref:"))
+
+    def test_validation_result_discloses_closed_artifact_model(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            (path / "safe.yml").write_text(SAFE)
+            result = policy.validate_directory(path)
+            self.assertEqual(
+                "EXACT_PER_INVOCATION_PATH_AND_ACTION_INPUT_SCHEMA",
+                result["artifact_export_model"],
+            )
+            self.assertEqual("heptabao.workflow-trust-check.v2", result["schema"])
+
     def test_current_installed_workflows_pass_without_running_them(self):
         result = policy.validate_directory(ROOT / ".github/workflows")
         self.assertEqual("PASS", result["result"], result["failures"])

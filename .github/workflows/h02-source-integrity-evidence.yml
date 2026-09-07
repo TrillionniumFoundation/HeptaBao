@@ -120,6 +120,7 @@ jobs:
             test "$package_vcs_commit" = "$release_commit"
             CANDIDATE="$candidate" PACKAGE="$package" VERSION="$version" CHECKSUM="$checksum" RELEASE_COMMIT="$release_commit" OUT="$out" python - <<'PY'
           import json, os, platform, subprocess
+          from pathlib import Path
           out = os.environ["OUT"]
           def sha(path):
               return subprocess.check_output(["sha256sum", path], text=True).split()[0]
@@ -145,7 +146,10 @@ jobs:
               "selection_effect": "NONE",
               "authority_effect": "NONE",
           }
-          with open(f"{out}/rehash.json", "w", encoding="utf-8") as handle:
+          destination = Path("rehash-evidence")
+          destination.mkdir(mode=0o700, exist_ok=True)
+          output = destination / f"{os.environ['PACKAGE']}-{os.environ['VERSION']}.rehash.json"
+          with output.open("w", encoding="utf-8") as handle:
               json.dump(value, handle, indent=2, sort_keys=True)
               handle.write("\n")
           PY
@@ -155,6 +159,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: h02-rehash-all-${{ github.run_id }}-${{ github.run_attempt }}
-          path: evidence/*/rehash.json
+          path: rehash-evidence/
           if-no-files-found: error
           retention-days: 30
