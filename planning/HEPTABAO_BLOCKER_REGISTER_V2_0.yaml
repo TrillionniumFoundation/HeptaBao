@@ -9,11 +9,12 @@ repository_blockers:
   class: REPOSITORY_CONTROLLED
   severity: HIGH
   title: no single V2 current truth, capability matrix and repository validator
-  state: IMPLEMENTATION_IN_PROGRESS
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml
   - planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
   - scripts/validate_repository_v2.py
+  - tests/repository/test_repository_v2.py
   closure_criteria:
   - one current portal selects the V2 plan, state, matrix and blocker register
   - validator checks workspace, lockfile, source and guide coverage
@@ -22,10 +23,15 @@ repository_blockers:
   class: REPOSITORY_CONTROLLED
   severity: HIGH
   title: module guides repeat boilerplate and lack one semantic asset standard
-  state: IMPLEMENTATION_IN_PROGRESS
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md
   - docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md
+  - docs/modules/heptabao-domain.md
+  - docs/modules/heptabao-policy.md
+  - docs/modules/heptabao-identity.md
+  - docs/modules/heptabao-token.md
+  - docs/modules/heptabao-lease.md
   closure_criteria:
   - shared rules live in one handbook
   - every new or materially changed package has a V3 guide
@@ -34,8 +40,13 @@ repository_blockers:
   class: REPOSITORY_CONTROLLED
   severity: CRITICAL
   title: policy identity token lease namespace mount plugin and secrets-engine domains are absent
-  state: PLANNED
-  evidence: []
+  state: IMPLEMENTATION_IN_PROGRESS
+  evidence:
+  - crates/heptabao-domain/src/lib.rs
+  - crates/heptabao-policy/src/lib.rs
+  - crates/heptabao-identity/src/lib.rs
+  - crates/heptabao-token/src/lib.rs
+  - crates/heptabao-lease/src/lib.rs
   closure_criteria:
   - source packages exist for every named domain
   - authorization is default deny
@@ -77,7 +88,7 @@ repository_blockers:
   class: REPOSITORY_CONTROLLED
   severity: MEDIUM
   title: current CI is fragmented across historical plan workflows
-  state: IMPLEMENTATION_IN_PROGRESS
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - .github/workflows/v2-continuous-assurance.yml
   closure_criteria:

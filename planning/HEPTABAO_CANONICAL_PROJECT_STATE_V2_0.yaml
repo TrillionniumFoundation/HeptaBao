@@ -14,8 +14,8 @@ current_documents:
   engineering_handbook: docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md
   repository_validator: scripts/validate_repository_v2.py
 workstreams:
-  G0_repository_truth: IN_PROGRESS
-  G1_control_plane: NOT_YET_COMMITTED
+  G0_repository_truth: IMPLEMENTED_REVIEW_REQUIRED
+  G1_control_plane: IN_PROGRESS
   G2_service_composition: NOT_YET_COMMITTED
   G3_operations: NOT_YET_COMMITTED
   G4_ha_migration_client_compatibility: NOT_YET_COMMITTED

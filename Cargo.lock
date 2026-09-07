@@ -17,6 +17,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-domain"
+version = "0.1.0"
+
+[[package]]
 name = "heptabao-durable-core"
 version = "0.1.0"
 dependencies = [
@@ -31,6 +35,13 @@ version = "0.1.0"
 [[package]]
 name = "heptabao-governance"
 version = "0.1.0"
+
+[[package]]
+name = "heptabao-identity"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
 
 [[package]]
 name = "heptabao-journal-api"
@@ -55,6 +66,13 @@ version = "0.1.0"
 dependencies = [
  "heptabao-barrier-api",
  "heptabao-journal-api",
+]
+
+[[package]]
+name = "heptabao-lease"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
 ]
 
 [[package]]
@@ -83,6 +101,13 @@ version = "0.1.0"
 [[package]]
 name = "heptabao-platform-contracts"
 version = "0.1.0"
+
+[[package]]
+name = "heptabao-policy"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
 
 [[package]]
 name = "heptabao-protocol"
@@ -126,3 +151,10 @@ dependencies = [
 [[package]]
 name = "heptabao-storage-api"
 version = "0.1.0"
+
+[[package]]
+name = "heptabao-token"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+]
