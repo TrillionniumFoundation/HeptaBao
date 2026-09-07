@@ -1,0 +1,15 @@
+[package]
+name = "heptabao-runtime-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+heptabao-durable-service = { path = "../heptabao-durable-service" }
+
+[lib]
+path = "src/lib.rs"
+
+[lints]
+workspace = true
