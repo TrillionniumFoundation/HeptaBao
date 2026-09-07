@@ -1,0 +1,29 @@
+schema: heptabao.canonical-project-state.v2
+plan_id: HEPTABAO-PLAN-2026-09-07-V2.0
+revision: 2.0.0
+status: REPOSITORY_PRODUCT_CLOSURE_IN_PROGRESS
+source_baseline:
+  commit: 388661a4b3f6e009c219ff48820dfa4e27e27444
+  tree: 7904a2f67403a29a6eee149bcc4f8cf2239e19ac
+  description: PR-68 exact-head safety and documentation baseline
+current_documents:
+  plan: docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_0.md
+  blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+  capability_matrix: planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
+  module_standard: docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md
+  engineering_handbook: docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md
+  repository_validator: scripts/validate_repository_v2.py
+workstreams:
+  G0_repository_truth: IN_PROGRESS
+  G1_control_plane: NOT_YET_COMMITTED
+  G2_service_composition: NOT_YET_COMMITTED
+  G3_operations: NOT_YET_COMMITTED
+  G4_ha_migration_client_compatibility: NOT_YET_COMMITTED
+  G5_external_authority: EXTERNAL_COMPLETION_REQUIRED
+claims:
+  qualification: false
+  compatibility_claim: false
+  production_authority: false
+  migration_authority: false
+  release_authority: false
+  authority_effect: NONE
