@@ -20,6 +20,7 @@ cat payload/v21-g0/overlay.part-00 \
     > "$RUNNER_TEMP/v21-g0-overlay.b64"
 base64 --decode "$RUNNER_TEMP/v21-g0-overlay.b64" > "$RUNNER_TEMP/v21-g0-overlay.tar.gz"
 echo "$overlay_sha256  $RUNNER_TEMP/v21-g0-overlay.tar.gz" | sha256sum --check
+cp tools/apply-v21-pr75-g0-remediation.py "$RUNNER_TEMP/apply-v21-pr75-g0-remediation.py"
 
 cat > "$RUNNER_TEMP/expected-paths.txt" <<'PATHS'
 README.md
@@ -51,7 +52,7 @@ git fetch origin "$target_branch"
 git checkout --detach "$source_sha"
 [[ -z "$(git status --porcelain=v1 --untracked-files=all)" ]]
 tar --extract --gzip --file "$RUNNER_TEMP/v21-g0-overlay.tar.gz" --directory . --no-same-owner --no-same-permissions
-python "$GITHUB_WORKSPACE/tools/apply-v21-pr75-g0-remediation.py"
+python "$RUNNER_TEMP/apply-v21-pr75-g0-remediation.py"
 git diff --check
 
 python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
