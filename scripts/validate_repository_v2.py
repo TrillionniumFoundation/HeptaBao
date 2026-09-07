@@ -30,10 +30,17 @@ V3_HEADINGS = (
 )
 
 
+def display_path(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.name
+
+
 def read_yaml(path: Path) -> dict[str, Any]:
     value = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
-        raise ValueError(f"{path.relative_to(ROOT)} must contain a mapping")
+        raise ValueError(f"{display_path(path)} must contain a mapping")
     return value
 
 
@@ -49,7 +56,7 @@ def package_name(manifest: Path) -> str:
     value = tomllib.loads(manifest.read_text(encoding="utf-8"))
     name = value.get("package", {}).get("name")
     if not isinstance(name, str) or not name:
-        raise ValueError(f"{manifest.relative_to(ROOT)} has no package.name")
+        raise ValueError(f"{display_path(manifest)} has no package.name")
     return name
 
 
@@ -75,18 +82,19 @@ def discovered_tests(source_root: Path) -> int:
 
 def validate_v3_guide(path: Path) -> list[str]:
     errors: list[str] = []
+    label = display_path(path)
     text = path.read_text(encoding="utf-8")
     for title in V3_HEADINGS:
         heading = f"## {title}\n"
         if text.count(heading) != 1:
-            errors.append(f"{path.relative_to(ROOT)} must contain exactly one {heading.strip()!r}")
+            errors.append(f"{label} must contain exactly one {heading.strip()!r}")
             continue
         section = text.split(heading, 1)[1].split("\n## ", 1)[0].strip()
         if len(section) < 40:
-            errors.append(f"{path.relative_to(ROOT)} section {title!r} is not substantive")
+            errors.append(f"{label} section {title!r} is not substantive")
     handbook = "docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md"
     if handbook not in text:
-        errors.append(f"{path.relative_to(ROOT)} must reference {handbook}")
+        errors.append(f"{label} must reference {handbook}")
     return errors
 
 
@@ -95,7 +103,7 @@ def validate() -> list[str]:
     required = (STATE_PATH, MATRIX_PATH, BLOCKERS_PATH)
     for path in required:
         if not path.is_file():
-            errors.append(f"missing current file: {path.relative_to(ROOT)}")
+            errors.append(f"missing current file: {display_path(path)}")
     if errors:
         return errors
 
@@ -114,7 +122,7 @@ def validate() -> list[str]:
         root = ROOT / member
         manifest = root / "Cargo.toml"
         if not manifest.is_file():
-            errors.append(f"missing manifest: {manifest.relative_to(ROOT)}")
+            errors.append(f"missing manifest: {display_path(manifest)}")
             continue
         name = package_name(manifest)
         names.append(name)
@@ -154,9 +162,9 @@ def validate() -> list[str]:
         source = ROOT / str(item.get("source", ""))
         guide = ROOT / str(item.get("guide", ""))
         if not source.is_file():
-            errors.append(f"matrix source missing for {name}: {source.relative_to(ROOT)}")
+            errors.append(f"matrix source missing for {name}: {display_path(source)}")
         if not guide.is_file():
-            errors.append(f"matrix guide missing for {name}: {guide.relative_to(ROOT)}")
+            errors.append(f"matrix guide missing for {name}: {display_path(guide)}")
         elif item.get("documentation_standard") == "V3":
             errors.extend(validate_v3_guide(guide))
         source_root = ROOT / "crates" / name
