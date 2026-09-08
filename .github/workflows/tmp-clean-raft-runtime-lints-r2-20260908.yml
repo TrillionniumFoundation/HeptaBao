@@ -1,0 +1,106 @@
+name: Temporary complete Raft runtime lint cleanup
+
+on:
+  push:
+    branches:
+      - codex/v2-2-raft-runtime-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-complete-raft-runtime-lints
+  cancel-in-progress: false
+
+jobs:
+  clean-and-push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reuse reviewed cleanup and close remaining lint ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/v2-2-raft-runtime-20260908
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/tmp-clean-raft-runtime-lints-20260908.yml').read_text(encoding='utf-8')
+          marker = "          python - <<'PY'\n"
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index("\n          PY\n", start)
+          reviewed = textwrap.dedent(workflow[start:end])
+          exec(compile(reviewed, '<reviewed-raft-cleanup>', 'exec'), {})
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              text = path.read_text(encoding='utf-8')
+              if new in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected one replacement for {old!r}')
+              path.write_text(text.replace(old, new), encoding='utf-8')
+
+          cluster = Path('crates/heptabao-raft-runtime/src/cluster.rs')
+          replace_once(
+              cluster,
+              'use openraft::async_runtime::WatchReceiver;\n',
+              '#[cfg(test)]\nuse openraft::async_runtime::WatchReceiver;\n',
+          )
+          replace_once(
+              cluster,
+              'use openraft::{Config, LogIdOptionExt, ReadPolicy, SnapshotPolicy};\n',
+              'use openraft::{Config, ReadPolicy, SnapshotPolicy};\n#[cfg(test)]\nuse openraft::LogIdOptionExt;\n',
+          )
+
+          store = Path('crates/heptabao-raft-runtime/src/store.rs')
+          text = store.read_text(encoding='utf-8')
+          old = '    pub fn state_path(&self) -> &Path {\n'
+          new = '    #[cfg(test)]\n    pub fn state_path(&self) -> &Path {\n'
+          if new not in text:
+              count = text.count(old)
+              if count != 2:
+                  raise SystemExit(f'expected two state_path methods, found {count}')
+              text = text.replace(old, new)
+              store.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Prove tests and strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test -p heptabao-raft-runtime
+          cargo +1.98.0 clippy -p heptabao-raft-runtime --all-targets -- -D warnings
+          git restore Cargo.lock
+          git diff --check
+
+      - name: Commit only four reviewed source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/v2-2-raft-runtime-20260908
+          changed="$(git diff --name-only)"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              crates/heptabao-raft-runtime/src/lib.rs|crates/heptabao-raft-runtime/src/cluster.rs|crates/heptabao-raft-runtime/src/network.rs|crates/heptabao-raft-runtime/src/store.rs) ;;
+              *) echo "unexpected cleanup path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          git fetch origin "$branch"
+          test "$(git rev-parse "refs/remotes/origin/$branch")" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add crates/heptabao-raft-runtime/src
+          git commit -m 'refactor(raft): expose snapshot status and scope fault helpers'
+          git push origin "HEAD:refs/heads/$branch"
