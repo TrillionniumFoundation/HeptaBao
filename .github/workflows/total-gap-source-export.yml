@@ -1,0 +1,42 @@
+name: Export exact total-gap candidate source
+
+on:
+  push:
+    branches:
+      - exec/total-gap-source-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 633848024e5315f3def23c035a1dec53f83a62b3
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and bundle exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=633848024e5315f3def23c035a1dec53f83a62b3
+          test "$(git rev-parse HEAD)" = "$expected"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          out="$RUNNER_TEMP/heptabao-total-gap-source"
+          mkdir -p "$out"
+          git bundle create "$out/heptabao-total-gap.bundle" HEAD
+          git bundle verify "$out/heptabao-total-gap.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$expected" "$(git rev-parse 'HEAD^{tree}')" > "$out/source-binding.txt"
+          (cd "$out" && sha256sum heptabao-total-gap.bundle > heptabao-total-gap.bundle.sha256)
+      - name: Upload bounded exact-source artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-total-gap-source
+          path: ${{ runner.temp }}/heptabao-total-gap-source/
+          if-no-files-found: error
+          retention-days: 3
