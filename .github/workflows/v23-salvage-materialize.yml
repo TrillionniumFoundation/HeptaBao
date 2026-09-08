@@ -1,0 +1,118 @@
+name: Materialize recovered V2.3 candidate
+
+on:
+  push:
+    branches:
+      - ops/v23-salvage-materialize-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v23-salvage-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BASE_SHA: 8c5f9151585309f79b62be47c3bbc2ca8002b126
+      TARGET_BRANCH: codex/openbao-replacement-total-gap-closure-20260908
+      OVERLAY_SHA256: f11b434caadb8c5aa73f125d66a85e0162c9ed99d39e5e0e1a99d6d8cbdd7eea
+    steps:
+      - name: Checkout materializer source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and stage bounded overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mapfile -t parts < <(find .github/payload/v23-salvage -maxdepth 1 -type f -name 'part-*' -print | LC_ALL=C sort)
+          test "${#parts[@]}" -eq 4
+          cat "${parts[@]}" > "$RUNNER_TEMP/overlay.b64"
+          base64 --decode "$RUNNER_TEMP/overlay.b64" > "$RUNNER_TEMP/overlay.tar.gz"
+          echo "$OVERLAY_SHA256  $RUNNER_TEMP/overlay.tar.gz" | sha256sum --check --strict
+          python - <<'PY'
+          import os
+          import tarfile
+          from pathlib import PurePosixPath
+
+          expected = {
+              "Cargo.lock",
+              "README.md",
+              "crates/heptabao-compatibility/src/lib.rs",
+              "crates/heptabao-plugin-host/Cargo.toml",
+              "crates/heptabao-plugin-host/src/lib.rs",
+              "docs/CURRENT_DOCUMENTATION.md",
+              "docs/modules/README.md",
+              "docs/modules/heptabao-compatibility.md",
+              "docs/modules/heptabao-plugin-host.md",
+              "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml",
+              "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml",
+              "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+              "scripts/validate_compatibility_corpus.py",
+              "scripts/validate_repository_v2.py",
+              "tests/repository/test_compatibility_corpus_v2_3.py",
+          }
+          archive = os.path.join(os.environ["RUNNER_TEMP"], "overlay.tar.gz")
+          with tarfile.open(archive, "r:gz") as bundle:
+              members = bundle.getmembers()
+              names = {member.name for member in members}
+              if names != expected:
+                  raise SystemExit(f"overlay path set mismatch: missing={sorted(expected-names)} extra={sorted(names-expected)}")
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  if path.is_absolute() or ".." in path.parts or not member.isfile():
+                      raise SystemExit(f"unsafe overlay member: {member.name}")
+          PY
+
+      - name: Rebase overlay onto exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          target_sha="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$target_sha" = "$BASE_SHA"
+          git reset --hard "$BASE_SHA"
+          git clean -ffd
+          tar -xzf "$RUNNER_TEMP/overlay.tar.gz"
+          test -z "$(git diff --check)"
+
+      - name: Install exact validation toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Qualify recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_compatibility_corpus.py
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+
+      - name: Publish one direct-child candidate commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "HeptaBao Recovery Materializer"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add --all
+          test -n "$(git status --porcelain=v1)"
+          git commit -m "feat(v2.3): recover bounded plugin host and compatibility denominator"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH" --force-with-lease="refs/heads/$TARGET_BRANCH:$BASE_SHA"
