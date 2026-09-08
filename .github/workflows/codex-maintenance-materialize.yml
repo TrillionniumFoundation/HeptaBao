@@ -29,11 +29,11 @@ jobs:
           test "$(sha256sum crates/heptabao-durable-service/src/lib.rs | cut -d' ' -f1)" = "c79a2264618f0c16c6426524e47c871252c34f4099c8b488026de88b9c47f341"
           sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/maintenance-tranche/payload.sha256)
           cat .g1/codex-openbao-replacement/maintenance-tranche/part-* > "$RUNNER_TEMP/maintenance.patch.gz.b64"
-          test "$(sha256sum "$RUNNER_TEMP/maintenance.patch.gz.b64" | cut -d' ' -f1)" = "66c3a3439f18bb8f9a17402be1013c06985b0ff98a03082b289be2e076945909"
+          test "$(sha256sum "$RUNNER_TEMP/maintenance.patch.gz.b64" | cut -d' ' -f1)" = "8dc2c63d49771b8cb07e2846a5454c09700f44058aa2c2772044e3d8612480de"
           base64 --decode "$RUNNER_TEMP/maintenance.patch.gz.b64" > "$RUNNER_TEMP/maintenance.patch.gz"
           gzip --test "$RUNNER_TEMP/maintenance.patch.gz"
           gzip --decompress --stdout "$RUNNER_TEMP/maintenance.patch.gz" > "$RUNNER_TEMP/maintenance.patch"
-          test "$(sha256sum "$RUNNER_TEMP/maintenance.patch" | cut -d' ' -f1)" = "c3526c8bd67758f6746c07da0c7b6483a486a1e88be55cb2bb1fdffed5cb7442"
+          test "$(sha256sum "$RUNNER_TEMP/maintenance.patch" | cut -d' ' -f1)" = "f333dac009a8e158ef25382be41e9af01c44e29d3fdbbd679681470ac7f259e9"
 
       - name: Apply durable maintenance source
         shell: bash
