@@ -23,6 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          export CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           cargo +1.98.0 fetch --locked
           test -d "$CARGO_HOME/registry"
