@@ -25,11 +25,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "337cd0f9d42a4f27f2ccc15cffb327a6230a1bdc554e59a48551db4399869e87"
+          test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "f0aaf2208c1982c573c20241caba8633bd38de7d1230deebe6cce4129df7887c"
           test "$(sha256sum crates/heptabao-server/src/engines.rs | cut -d' ' -f1)" = "a13c88cec6799c60ec7a0e8c8f46c40535827ef8da8b7553326a05714c69f887"
           test "$(sha256sum crates/heptabao-server/src/lib.rs | cut -d' ' -f1)" = "e494b6d8ad65b944074f3c8201a4deef19b8b4fd43ef1a786b35497da98df70d"
-          test "$(sha256sum crates/heptabao-server/src/service.rs | cut -d' ' -f1)" = "eeb2975e6cd2ab80a31c504b0520caf0a8b4be0b0c0bea6d7cdc22f4e9b07638"
-          test "$(sha256sum crates/heptabao-server/src/service_tests.rs | cut -d' ' -f1)" = "19ee60c5f77c4c9f7450587ae868ff11f2d3cacc2546dfd762f150edb5f1d6af"
+          test "$(sha256sum crates/heptabao-server/src/service.rs | cut -d' ' -f1)" = "eeab70788fb190d714cc61dc23a239ac940684b7fccce2306f29d1d839263a4a"
+          test "$(sha256sum crates/heptabao-server/src/service_tests.rs | cut -d' ' -f1)" = "b102997973a3cef762ae8cd6681a5f7c8ea3a5310c0f9f95af28e77782f2eaf6"
           test ! -e crates/heptabao-server/src/wrapping.rs
           sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/wrapping-tranche/payload.sha256)
           cat .g1/codex-openbao-replacement/wrapping-tranche/part-* > "$RUNNER_TEMP/wrapping.patch.gz.b64"
