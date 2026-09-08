@@ -89,7 +89,7 @@ jobs:
           regression = Path("tests/repository/test_durable_runtime_v2_1.py")
           test_text = regression.read_text(encoding="utf-8")
           old = '            self.assertIn(".open(", body)\n'
-          new = '''            self.assertTrue(
+          new = r'''            self.assertTrue(
                   ".open(" in body or "read_bounded(" in body,
                   f"{function} must authenticate bytes directly or through the bounded reader",
               )
