@@ -166,7 +166,7 @@ fn shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key()
         "POST",
         "sys/rekey/init",
         &root_token,
-        json!({"secret_shares":4,"secret_threshold":2}),
+        json!({"secret_shares":4,"secret_threshold":2,"require_verification":false}),
     );
     assert_eq!(start.status, 200);
     let rekey_nonce = start.body["nonce"]
@@ -286,6 +286,332 @@ fn shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key()
         .body["sealed"],
         false
     );
+    Ok(())
+}
+
+#[test]
+fn verified_rekey_survives_response_loss_restart_and_cancel()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let initialized = call(
+        &mut service,
+        "PUT",
+        "sys/init",
+        "",
+        json!({"secret_shares":5,"secret_threshold":3}),
+    );
+    assert_eq!(initialized.status, 200);
+    let old_keys = initialized.body["keys_base64"]
+        .as_array()
+        .ok_or("missing original shares")?
+        .iter()
+        .map(|value| value.as_str().ok_or("invalid share").map(str::to_owned))
+        .collect::<Result<Vec<_>, _>>()?;
+    let root_token = initialized.body["root_token"]
+        .as_str()
+        .ok_or("missing root token")?
+        .to_owned();
+    for index in [0, 2, 4] {
+        let response = call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":old_keys[index]}),
+        );
+        assert_eq!(response.status, 200);
+    }
+    assert!(service.state.is_some());
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/verified-rekey",
+            &root_token,
+            json!({"data":{"value":"survives-verified-rekey"}}),
+        )
+        .status,
+        200
+    );
+
+    let started = call(
+        &mut service,
+        "POST",
+        "sys/rekey/init",
+        &root_token,
+        json!({"secret_shares":4,"secret_threshold":2}),
+    );
+    let authorization_nonce = started.body["nonce"]
+        .as_str()
+        .ok_or("missing rekey authorization nonce")?
+        .to_owned();
+    for index in [1, 3] {
+        let response = call(
+            &mut service,
+            "POST",
+            "sys/rekey/update",
+            &root_token,
+            json!({"nonce":authorization_nonce,"key":old_keys[index]}),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["complete"], false);
+    }
+    let staged = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":authorization_nonce,"key":old_keys[4]}),
+    );
+    assert_eq!(staged.status, 200);
+    assert_eq!(staged.body["complete"], true);
+    assert_eq!(staged.body["verification_required"], true);
+    let verification_nonce = staged.body["verification_nonce"]
+        .as_str()
+        .ok_or("missing rekey verification nonce")?
+        .to_owned();
+    let new_keys = staged.body["keys_base64"]
+        .as_array()
+        .ok_or("missing candidate shares")?
+        .iter()
+        .map(|value| value.as_str().ok_or("invalid share").map(str::to_owned))
+        .collect::<Result<Vec<_>, _>>()?;
+    assert_eq!(new_keys.len(), 4);
+    assert_eq!(
+        service
+            .seal
+            .as_ref()
+            .ok_or("missing active seal")?
+            .generation,
+        1
+    );
+    let pending_path = root.path.join("data").join(PENDING_REKEY_FILE);
+    assert!(pending_path.is_file());
+    let pending_text = fs::read_to_string(&pending_path)?;
+    assert!(old_keys.iter().all(|share| !pending_text.contains(share)));
+    assert!(new_keys.iter().all(|share| !pending_text.contains(share)));
+
+    // Losing the response or process cannot activate keys that have not been
+    // independently verified. The original shares remain authoritative.
+    drop(staged);
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_keys[0]}),
+        )
+        .status,
+        400
+    );
+    for index in [0, 1, 2] {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":old_keys[index]}),
+            )
+            .status,
+            200
+        );
+    }
+    let status = call(
+        &mut service,
+        "GET",
+        "sys/rekey/init",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(status.body["verification_required"], true);
+    assert_eq!(status.body["verification_nonce"], verification_nonce);
+    assert_eq!(status.body["verification_progress"], 0);
+    let first_verify = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":verification_nonce,"key":new_keys[0]}),
+    );
+    assert_eq!(first_verify.status, 200);
+    assert_eq!(first_verify.body["verification_progress"], 1);
+
+    // Verification progress may be replayed after restart, but the pending
+    // candidate and its nonce survive without changing the active seal.
+    drop(service);
+    let mut service = root.service()?;
+    for index in [0, 2, 4] {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":old_keys[index]}),
+            )
+            .status,
+            200
+        );
+    }
+    let resumed = call(
+        &mut service,
+        "GET",
+        "sys/rekey/init",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(resumed.body["verification_nonce"], verification_nonce);
+    assert_eq!(resumed.body["verification_progress"], 0);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/rekey/update",
+            &root_token,
+            json!({"nonce":verification_nonce,"key":new_keys[1]}),
+        )
+        .body["verification_progress"],
+        1
+    );
+    let verified = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":verification_nonce,"key":new_keys[3]}),
+    );
+    assert_eq!(verified.status, 200);
+    assert_eq!(verified.body["verification_required"], false);
+    assert_eq!(
+        service
+            .seal
+            .as_ref()
+            .ok_or("missing promoted seal")?
+            .generation,
+        2
+    );
+    assert!(!pending_path.exists());
+
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":old_keys[0]}),
+        )
+        .status,
+        400
+    );
+    for index in [0, 2] {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":new_keys[index]}),
+            )
+            .status,
+            200
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/verified-rekey",
+            &root_token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "survives-verified-rekey"
+    );
+
+    // A second staged generation can be cancelled durably. Its unpublished
+    // shares never displace the currently active generation.
+    let started = call(
+        &mut service,
+        "POST",
+        "sys/rekey/init",
+        &root_token,
+        json!({"secret_shares":3,"secret_threshold":2,"require_verification":true}),
+    );
+    let nonce = started.body["nonce"]
+        .as_str()
+        .ok_or("missing nonce")?
+        .to_owned();
+    let partial = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":nonce,"key":new_keys[0]}),
+    );
+    assert_eq!(partial.body["complete"], false);
+    let staged = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":nonce,"key":new_keys[2]}),
+    );
+    let cancelled_keys = staged.body["keys_base64"]
+        .as_array()
+        .ok_or("missing cancelled candidate shares")?
+        .iter()
+        .map(|value| value.as_str().ok_or("invalid share").map(str::to_owned))
+        .collect::<Result<Vec<_>, _>>()?;
+    assert!(pending_path.exists());
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/rekey/init",
+            &root_token,
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert!(!pending_path.exists());
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":cancelled_keys[0]}),
+        )
+        .status,
+        400
+    );
+    for index in [1, 3] {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":new_keys[index]}),
+            )
+            .status,
+            200
+        );
+    }
     Ok(())
 }
 

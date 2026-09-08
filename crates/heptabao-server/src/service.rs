@@ -22,9 +22,11 @@ const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 const MAX_SEAL_SHARES: u8 = 16;
 const SEAL_METADATA_FILE: &str = "seal.json";
+const PENDING_REKEY_FILE: &str = "seal-rekey.json";
 const SEAL_METADATA_LIMIT: u64 = 64 * 1024;
+const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 struct SealMetadata {
     schema: u32,
@@ -69,11 +71,43 @@ impl SealMetadata {
     }
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PendingRekeyMetadata {
+    schema: u32,
+    active_generation: u64,
+    nonce: String,
+    verification_nonce: String,
+    candidate: SealMetadata,
+}
+
+impl PendingRekeyMetadata {
+    fn validate_shape(&self) -> Result<(), &'static str> {
+        if self.schema != 1
+            || !valid_nonce(&self.nonce)
+            || !valid_nonce(&self.verification_nonce)
+            || self.active_generation == 0
+            || self.candidate.generation
+                != self
+                    .active_generation
+                    .checked_add(1)
+                    .ok_or("pending rekey generation exhausted")?
+            || self.candidate.share_format != "shamir-v1"
+        {
+            return Err("unsupported or invalid pending rekey metadata");
+        }
+        self.candidate.validate()
+    }
+}
+
 struct RekeyState {
     nonce: String,
     new_shares: u8,
     new_threshold: u8,
+    require_verification: bool,
     provided: BTreeMap<u8, SecretShare>,
+    verification: Option<PendingRekeyMetadata>,
+    verification_provided: BTreeMap<u8, SecretShare>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -161,6 +195,16 @@ impl Service {
             .and_then(|directory| directory.sync_all())
             .map_err(|_| "cannot sync audit directory")?;
         let seal = load_seal_metadata(&data_dir)?;
+        let pending_rekey = load_pending_rekey(&data_dir, seal.as_ref())?;
+        let rekey = pending_rekey.map(|pending| RekeyState {
+            nonce: pending.nonce.clone(),
+            new_shares: pending.candidate.secret_shares,
+            new_threshold: pending.candidate.secret_threshold,
+            require_verification: true,
+            provided: BTreeMap::new(),
+            verification: Some(pending),
+            verification_provided: BTreeMap::new(),
+        });
         let unseal_nonce = hex(&crypto::random::<16>()?);
         Ok(Self {
             data_dir,
@@ -175,7 +219,7 @@ impl Service {
             unseal_shares: BTreeMap::new(),
             unseal_nonce,
             barrier_key: None,
-            rekey: None,
+            rekey,
             recovery_required: false,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
@@ -318,7 +362,17 @@ impl Service {
             self.durable = None;
             self.barrier_key = None;
             self.unseal_shares.clear();
-            self.rekey = None;
+            let discard_rekey = self
+                .rekey
+                .as_ref()
+                .is_some_and(|rekey| rekey.verification.is_none());
+            if let Some(rekey) = self.rekey.as_mut() {
+                rekey.provided.clear();
+                rekey.verification_provided.clear();
+            }
+            if discard_rekey {
+                self.rekey = None;
+            }
             if self.rotate_unseal_nonce().is_err() {
                 return Response::error(503, "operating system randomness unavailable");
             }
@@ -776,15 +830,40 @@ impl Service {
 
     fn rekey_status(&self) -> Response {
         if let Some(rekey) = &self.rekey {
+            let (
+                progress,
+                required,
+                verification_required,
+                verification_nonce,
+                verification_progress,
+            ) = if let Some(pending) = &rekey.verification {
+                (
+                    0,
+                    0,
+                    true,
+                    pending.verification_nonce.as_str(),
+                    rekey.verification_provided.len(),
+                )
+            } else {
+                (
+                    rekey.provided.len(),
+                    usize::from(self.seal.as_ref().map_or(1, |seal| seal.secret_threshold)),
+                    false,
+                    "",
+                    0,
+                )
+            };
             Response::ok(json!({
-                "started": true,
+                "started": rekey.verification.is_none(),
                 "nonce": rekey.nonce,
                 "t": rekey.new_threshold,
                 "n": rekey.new_shares,
-                "progress": rekey.provided.len(),
-                "required": self.seal.as_ref().map_or(1, |seal| seal.secret_threshold),
-                "verification_required": false,
-                "verification_nonce": "",
+                "progress": progress,
+                "required": required,
+                "verification_required": verification_required,
+                "verification_nonce": verification_nonce,
+                "verification_progress": verification_progress,
+                "verification_required_shares": if verification_required { rekey.new_threshold } else { 0 },
             }))
         } else {
             Response::ok(json!({
@@ -796,6 +875,8 @@ impl Service {
                 "required": self.seal.as_ref().map_or(1, |seal| seal.secret_threshold),
                 "verification_required": false,
                 "verification_nonce": "",
+                "verification_progress": 0,
+                "verification_required_shares": 0,
             }))
         }
     }
@@ -806,6 +887,14 @@ impl Service {
                 return self.rekey_status();
             }
             if method == "DELETE" {
+                if self
+                    .rekey
+                    .as_ref()
+                    .is_some_and(|rekey| rekey.verification.is_some())
+                    && delete_pending_rekey(&self.data_dir).is_err()
+                {
+                    return Response::error(503, "cannot durably cancel pending rekey");
+                }
                 self.rekey = None;
                 return Response {
                     status: 204,
@@ -836,13 +925,11 @@ impl Service {
                 }
                 Some(_) => return Response::error(400, "backup must be a boolean"),
             }
-            match body.get("require_verification") {
-                None | Some(Value::Bool(false)) => {}
-                Some(Value::Bool(true)) => {
-                    return Response::error(501, "rekey verification is not implemented");
-                }
+            let require_verification = match body.get("require_verification") {
+                None => true,
+                Some(Value::Bool(value)) => *value,
                 Some(_) => return Response::error(400, "require_verification must be a boolean"),
-            }
+            };
             let shares = match bounded_u8_field(body, "secret_shares", 5) {
                 Ok(value) => value,
                 Err(error) => return Response::error(400, error),
@@ -862,7 +949,10 @@ impl Service {
                 nonce,
                 new_shares: shares,
                 new_threshold: threshold,
+                require_verification,
                 provided: BTreeMap::new(),
+                verification: None,
+                verification_provided: BTreeMap::new(),
             });
             return self.rekey_status();
         }
@@ -890,18 +980,24 @@ impl Service {
             Some(value) => value,
             None => return Response::error(400, "unseal share is required"),
         };
-        let seal = match self.seal.clone() {
-            Some(value) => value,
-            None => return Response::error(503, "seal metadata unavailable"),
-        };
         let mut rekey = match self.rekey.take() {
             Some(value) => value,
             None => return Response::error(400, "rekey is not in progress"),
         };
+        if rekey.verification.is_some() {
+            return self.verify_rekey_share(rekey, supplied_nonce, supplied_key);
+        }
         if supplied_nonce != rekey.nonce {
             self.rekey = Some(rekey);
             return Response::error(400, "rekey nonce mismatch");
         }
+        let seal = match self.seal.clone() {
+            Some(value) => value,
+            None => {
+                self.rekey = Some(rekey);
+                return Response::error(503, "seal metadata unavailable");
+            }
+        };
         let seal_key = match collect_seal_key(&seal, supplied_key, &mut rekey.provided) {
             Ok(Some(value)) => Zeroizing::new(value),
             Ok(None) => {
@@ -914,6 +1010,7 @@ impl Service {
                     "progress": progress,
                     "required": seal.secret_threshold,
                     "complete": false,
+                    "verification_required": false,
                 }));
                 self.rekey = Some(rekey);
                 return response;
@@ -938,22 +1035,9 @@ impl Service {
                     return Response::error(400, "unseal shares do not authorize rekey");
                 }
             };
-        let Some(active_key) = self.barrier_key.as_ref() else {
+        if let Err(error) = self.verify_active_barrier(&current_barrier_key) {
             self.rekey = Some(rekey);
-            return Response::error(503, "server must be unsealed for rekey");
-        };
-        let candidate_key = hmac::Key::new(hmac::HMAC_SHA256, current_barrier_key.as_ref());
-        let candidate_tag = hmac::sign(&candidate_key, b"heptabao.barrier-key-proof.v1");
-        let active_key = hmac::Key::new(hmac::HMAC_SHA256, active_key.as_ref());
-        if hmac::verify(
-            &active_key,
-            b"heptabao.barrier-key-proof.v1",
-            candidate_tag.as_ref(),
-        )
-        .is_err()
-        {
-            self.rekey = Some(rekey);
-            return Response::error(400, "unseal shares do not match the active barrier");
+            return error;
         }
 
         let next_seal_key = match crypto::random::<32>() {
@@ -998,13 +1082,6 @@ impl Service {
             }
         };
         next.wrapped_barrier_key = STANDARD.encode(next_wrapped.as_slice());
-        if persist_seal_metadata(&self.data_dir, &next).is_err() {
-            self.rekey = Some(rekey);
-            return Response::error(503, "cannot durably publish new seal generation");
-        }
-        self.seal = Some(next);
-        self.rekey = None;
-        self.unseal_shares.clear();
 
         let mut keys = Vec::with_capacity(next_shares.len());
         let mut keys_base64 = Vec::with_capacity(next_shares.len());
@@ -1013,6 +1090,49 @@ impl Service {
             keys.push(hex(&encoded));
             keys_base64.push(STANDARD.encode(encoded.as_slice()));
         }
+
+        if rekey.require_verification {
+            let verification_nonce = match crypto::random::<16>() {
+                Ok(value) => hex(&value),
+                Err(error) => {
+                    self.rekey = Some(rekey);
+                    return Response::error(503, error);
+                }
+            };
+            let pending = PendingRekeyMetadata {
+                schema: 1,
+                active_generation: seal.generation,
+                nonce: rekey.nonce.clone(),
+                verification_nonce,
+                candidate: next,
+            };
+            if persist_pending_rekey(&self.data_dir, &pending).is_err() {
+                self.rekey = Some(rekey);
+                return Response::error(503, "cannot durably stage rekey verification");
+            }
+            let response = Response::ok(json!({
+                "started": false,
+                "complete": true,
+                "nonce": rekey.nonce,
+                "keys": keys,
+                "keys_base64": keys_base64,
+                "verification_required": true,
+                "verification_nonce": pending.verification_nonce,
+            }));
+            rekey.provided.clear();
+            rekey.verification = Some(pending);
+            rekey.verification_provided.clear();
+            self.rekey = Some(rekey);
+            return response;
+        }
+
+        if persist_seal_metadata(&self.data_dir, &next).is_err() {
+            self.rekey = Some(rekey);
+            return Response::error(503, "cannot durably publish new seal generation");
+        }
+        self.seal = Some(next);
+        self.rekey = None;
+        self.unseal_shares.clear();
         Response::ok(json!({
             "started": false,
             "complete": true,
@@ -1020,7 +1140,110 @@ impl Service {
             "keys": keys,
             "keys_base64": keys_base64,
             "verification_required": false,
+            "verification_nonce": "",
         }))
+    }
+
+    fn verify_rekey_share(
+        &mut self,
+        mut rekey: RekeyState,
+        supplied_nonce: &str,
+        supplied_key: &str,
+    ) -> Response {
+        let pending = match rekey.verification.clone() {
+            Some(value) => value,
+            None => {
+                self.rekey = Some(rekey);
+                return Response::error(500, "missing pending rekey metadata");
+            }
+        };
+        if supplied_nonce != pending.verification_nonce {
+            self.rekey = Some(rekey);
+            return Response::error(400, "rekey verification nonce mismatch");
+        }
+        let next_seal_key = match collect_seal_key(
+            &pending.candidate,
+            supplied_key,
+            &mut rekey.verification_provided,
+        ) {
+            Ok(Some(value)) => Zeroizing::new(value),
+            Ok(None) => {
+                let progress = rekey.verification_provided.len();
+                let response = Response::ok(json!({
+                    "started": false,
+                    "complete": false,
+                    "verification_required": true,
+                    "verification_nonce": pending.verification_nonce,
+                    "verification_progress": progress,
+                    "verification_required_shares": pending.candidate.secret_threshold,
+                }));
+                self.rekey = Some(rekey);
+                return response;
+            }
+            Err(error) => {
+                self.rekey = Some(rekey);
+                return Response::error(400, error);
+            }
+        };
+        let wrapped = match STANDARD.decode(&pending.candidate.wrapped_barrier_key) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                self.rekey = Some(rekey);
+                return Response::error(503, "pending rekey metadata is corrupt");
+            }
+        };
+        let candidate_barrier = match crypto::unwrap_barrier_key(
+            &next_seal_key,
+            &pending.candidate.associated_data(),
+            &wrapped,
+        ) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => {
+                rekey.verification_provided.clear();
+                self.rekey = Some(rekey);
+                return Response::error(400, "rekey verification failed");
+            }
+        };
+        if let Err(error) = self.verify_active_barrier(&candidate_barrier) {
+            rekey.verification_provided.clear();
+            self.rekey = Some(rekey);
+            return error;
+        }
+        if persist_seal_metadata(&self.data_dir, &pending.candidate).is_err() {
+            self.rekey = Some(rekey);
+            return Response::error(503, "cannot durably promote verified seal generation");
+        }
+        self.seal = Some(pending.candidate.clone());
+        self.unseal_shares.clear();
+        self.rekey = None;
+        if delete_pending_rekey(&self.data_dir).is_err() {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "verified seal promoted but pending marker cleanup failed; restart required",
+            );
+        }
+        Response::ok(json!({
+            "started": false,
+            "complete": true,
+            "verification_required": false,
+            "verification_nonce": pending.verification_nonce,
+        }))
+    }
+
+    fn verify_active_barrier(&self, candidate: &[u8; 32]) -> Result<(), Response> {
+        let Some(active_key) = self.barrier_key.as_ref() else {
+            return Err(Response::error(503, "server must be unsealed for rekey"));
+        };
+        let candidate_key = hmac::Key::new(hmac::HMAC_SHA256, candidate);
+        let candidate_tag = hmac::sign(&candidate_key, b"heptabao.barrier-key-proof.v1");
+        let active_key = hmac::Key::new(hmac::HMAC_SHA256, active_key.as_ref());
+        hmac::verify(
+            &active_key,
+            b"heptabao.barrier-key-proof.v1",
+            candidate_tag.as_ref(),
+        )
+        .map_err(|_| Response::error(400, "seal shares do not match the active barrier"))
     }
 
     fn persist(&mut self, bytes: &[u8]) -> Result<(), Response> {
@@ -1237,6 +1460,108 @@ fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static 
     Ok(Some(metadata))
 }
 
+fn load_pending_rekey(
+    data_dir: &Path,
+    active: Option<&SealMetadata>,
+) -> Result<Option<PendingRekeyMetadata>, &'static str> {
+    let path = data_dir.join(PENDING_REKEY_FILE);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+    }
+    let file = match options.open(&path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err("cannot safely open pending rekey metadata"),
+    };
+    check_private_file(&file)
+        .map_err(|_| "pending rekey metadata must be a private regular file")?;
+    if file
+        .metadata()
+        .map_err(|_| "cannot inspect pending rekey metadata")?
+        .len()
+        > REKEY_METADATA_LIMIT
+    {
+        return Err("pending rekey metadata exceeds the supported bound");
+    }
+    let mut encoded = Zeroizing::new(Vec::new());
+    file.take(REKEY_METADATA_LIMIT + 1)
+        .read_to_end(&mut encoded)
+        .map_err(|_| "cannot read pending rekey metadata")?;
+    if encoded.len() as u64 > REKEY_METADATA_LIMIT {
+        return Err("pending rekey metadata exceeds the supported bound");
+    }
+    let pending: PendingRekeyMetadata =
+        serde_json::from_slice(&encoded).map_err(|_| "invalid pending rekey metadata")?;
+    pending.validate_shape()?;
+    let active = active.ok_or("pending rekey exists without active seal metadata")?;
+    if &pending.candidate == active {
+        delete_pending_rekey(data_dir)
+            .map_err(|_| "cannot reconcile completed pending rekey marker")?;
+        return Ok(None);
+    }
+    if pending.active_generation != active.generation {
+        return Err("pending rekey does not match the active seal generation");
+    }
+    Ok(Some(pending))
+}
+
+fn persist_pending_rekey(
+    data_dir: &Path,
+    pending: &PendingRekeyMetadata,
+) -> Result<(), std::io::Error> {
+    pending.validate_shape().map_err(std::io::Error::other)?;
+    private_directory(data_dir)?;
+    let encoded = Zeroizing::new(
+        serde_json::to_vec(pending)
+            .map_err(|_| std::io::Error::other("cannot encode pending rekey metadata"))?,
+    );
+    if encoded.len() as u64 > REKEY_METADATA_LIMIT {
+        return Err(std::io::Error::other(
+            "pending rekey metadata exceeds supported bound",
+        ));
+    }
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".seal-rekey.{suffix}.next"));
+    let final_path = data_dir.join(PENDING_REKEY_FILE);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(encoded.as_slice())?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn delete_pending_rekey(data_dir: &Path) -> Result<(), std::io::Error> {
+    match fs::remove_file(data_dir.join(PENDING_REKEY_FILE)) {
+        Ok(()) => File::open(data_dir)?.sync_all(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error),
+    }
+}
+
+fn valid_nonce(value: &str) -> bool {
+    value.len() == 32 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+}
+
 fn persist_seal_metadata(data_dir: &Path, seal: &SealMetadata) -> Result<(), std::io::Error> {
     seal.validate().map_err(std::io::Error::other)?;
     private_directory(data_dir)?;
@@ -1249,24 +1574,30 @@ fn persist_seal_metadata(data_dir: &Path, seal: &SealMetadata) -> Result<(), std
             "seal metadata exceeds supported bound",
         ));
     }
-    let temporary = data_dir.join(format!("seal.{}.next", seal.generation));
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".seal.{}.{}.next", seal.generation, suffix));
     let final_path = data_dir.join(SEAL_METADATA_FILE);
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(0o400000 | 0o2000000 | 0o4000);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(encoded.as_slice())?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
     }
-    let mut file = options.open(&temporary)?;
-    check_private_file(&file)?;
-    file.write_all(encoded.as_slice())?;
-    file.sync_all()?;
-    fs::rename(&temporary, &final_path)?;
-    File::open(data_dir)?.sync_all()?;
-    Ok(())
+    result
 }
 
 fn private_directory(path: &Path) -> Result<(), std::io::Error> {
