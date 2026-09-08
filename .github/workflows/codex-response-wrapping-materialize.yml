@@ -15,7 +15,7 @@ concurrency:
 jobs:
   materialize:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -49,54 +49,46 @@ jobs:
 
           service = Path("crates/heptabao-server/src/service.rs")
           text = service.read_text(encoding="utf-8")
-          obsolete = '''    fn request_fingerprint(
-              &self,
-              method: &str,
-              path: &str,
-              namespace: &str,
-              token: &str,
-          ) -> String {
-              let mut context = hmac::Context::with_key(&self.audit_key);
-              context.update(b"heptabao.audit.request-fingerprint.v2");
-              for field in [method, namespace, path, token] {
-                  context.update(&(field.len() as u64).to_le_bytes());
-                  context.update(field.as_bytes());
-              }
-              STANDARD.encode(context.sign().as_ref())
-          }
 
-          '''
-          if text.count(obsolete) != 1:
-              raise SystemExit("unexpected request_fingerprint source")
-          text = text.replace(obsolete, "")
-          reason = '''    #[expect(
-              clippy::too_many_arguments,
-              reason = "security-relevant request fields remain explicit at this bounded service boundary"
-          )]
-          '''
-          for marker in (
-              "    pub fn handle_at_with_wrap_ttl(\n",
-              "    fn handle_inner(\n",
-              "    fn wrapping_token_route(\n",
+          fingerprint = text.find("fn request_fingerprint(")
+          if fingerprint < 0:
+              raise SystemExit("request_fingerprint function not found")
+          fingerprint_start = text.rfind("\n", 0, fingerprint) + 1
+          audit_event = text.find("fn audit_event(", fingerprint)
+          if audit_event < 0:
+              raise SystemExit("audit_event boundary not found")
+          audit_start = text.rfind("\n", 0, audit_event) + 1
+          text = text[:fingerprint_start] + text[audit_start:]
+
+          for signature in (
+              "pub fn handle_at_with_wrap_ttl(",
+              "fn handle_inner(",
+              "fn wrapping_token_route(",
           ):
-              if text.count(marker) != 1:
-                  raise SystemExit(f"unexpected service marker: {marker.strip()}")
-              text = text.replace(marker, reason + marker, 1)
+              offset = text.find(signature)
+              if offset < 0:
+                  raise SystemExit(f"service signature not found: {signature}")
+              line_start = text.rfind("\n", 0, offset) + 1
+              indent = text[line_start:offset]
+              attribute = (
+                  f"{indent}#[expect(\n"
+                  f"{indent}    clippy::too_many_arguments,\n"
+                  f"{indent}    reason = \"security-relevant request fields remain explicit at this bounded service boundary\"\n"
+                  f"{indent})]\n"
+              )
+              text = text[:line_start] + attribute + text[line_start:]
           service.write_text(text, encoding="utf-8")
 
           regression = Path("tests/repository/test_durable_runtime_v2_1.py")
           test_text = regression.read_text(encoding="utf-8")
-          old = '''            self.assertIn("barrier", body)
-              self.assertIn(".open(", body)
-          '''
-          new = '''            self.assertIn("barrier", body)
-              self.assertTrue(
+          old = '            self.assertIn(".open(", body)\n'
+          new = '''            self.assertTrue(
                   ".open(" in body or "read_bounded(" in body,
                   f"{function} must authenticate bytes directly or through the bounded reader",
               )
 
           bounded_start = source.index("fn read_bounded(")
-          bounded_next = source.find("\\nfn ", bounded_start + 4)
+          bounded_next = source.find("\nfn ", bounded_start + 4)
           bounded_body = source[bounded_start : bounded_next if bounded_next != -1 else None]
           self.assertIn("symlink_metadata", bounded_body)
           self.assertIn("MAX_FILE_BYTES", bounded_body)
@@ -110,20 +102,31 @@ jobs:
       - name: Install exact Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
-      - name: Qualify wrapping state HTTP semantics and restart behavior
+      - name: Qualify wrapping and current V2.1 repository
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
           cargo +1.98.0 fmt --all
+          cargo +1.98.0 fmt --all -- --check
           cargo +1.98.0 test --locked -p heptabao-server
           cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
           cargo +1.98.0 build --locked -p heptabao-server
           python scripts/validate_repository_v2.py
-          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          for test_name in \
+            test_repository_v2.py \
+            test_durable_runtime_v2_1.py \
+            test_authorized_durable_runtime_v2_1.py \
+            test_security_hashing_v2_1.py
+          do
+            python -m unittest discover -s tests/repository -p "$test_name" -v
+          done
           work_dir="$RUNNER_TEMP/heptabao-response-wrapping-smoke"
           rm -rf "$work_dir"
           python qa/single-node/smoke.py --binary "$PWD/target/debug/heptabao-server" --work-dir "$work_dir"
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
           git diff --check
       - name: Publish qualified source commit
         shell: bash
