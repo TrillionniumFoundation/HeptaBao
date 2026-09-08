@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - name: Checkout exact branch head
+      - name: Checkout exact branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
@@ -30,7 +30,6 @@ jobs:
           test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "f0aaf2208c1982c573c20241caba8633bd38de7d1230deebe6cce4129df7887c"
           test "$(sha256sum crates/heptabao-server/src/service.rs | cut -d' ' -f1)" = "eeab70788fb190d714cc61dc23a239ac940684b7fccce2306f29d1d839263a4a"
           test ! -e crates/heptabao-server/src/wrapping.rs
-          sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/wrapping-tranche/payload.sha256)
           cat .g1/codex-openbao-replacement/wrapping-tranche/part-* > "$RUNNER_TEMP/wrapping.patch.gz.b64"
           test "$(sha256sum "$RUNNER_TEMP/wrapping.patch.gz.b64" | cut -d' ' -f1)" = "d17804bddf163ee21c76a8f138dc27b3d463835edb4b9934b9a5527aa41dc494"
           base64 --decode "$RUNNER_TEMP/wrapping.patch.gz.b64" > "$RUNNER_TEMP/wrapping.patch.gz"
@@ -45,15 +44,17 @@ jobs:
 
           service = Path("crates/heptabao-server/src/service.rs")
           text = service.read_text(encoding="utf-8")
+
           fingerprint = text.find("fn request_fingerprint(")
           if fingerprint < 0:
               raise SystemExit("request_fingerprint function not found")
           line = text.rfind("\n", 0, fingerprint) + 1
           indent_end = line
-          while text[indent_end] in " \t":
+          while indent_end < len(text) and text[indent_end] in " \t":
               indent_end += 1
           indent = text[line:indent_end]
           text = text[:line] + f"{indent}#[cfg(test)]\n" + text[line:]
+
           for name in (
               "fn handle_at_with_wrap_ttl(",
               "fn handle_inner(",
@@ -64,7 +65,7 @@ jobs:
                   raise SystemExit(f"service function not found: {name}")
               line = text.rfind("\n", 0, offset) + 1
               indent_end = line
-              while text[indent_end] in " \t":
+              while indent_end < len(text) and text[indent_end] in " \t":
                   indent_end += 1
               indent = text[line:indent_end]
               expect = (
@@ -99,21 +100,16 @@ jobs:
           if value.count(old) != 1:
               raise SystemExit("unexpected wrapping smoke assertion")
           value = value.replace(old, new)
-          old = '''    except Exception as error:
-              # Never print HTTP payloads, bearer credentials, or private key material.
-              print("single-node smoke failed: " + type(error).__name__, file=sys.stderr)
-              raise SystemExit(1) from None
-          '''
-          new = '''    except Exception as error:
-              # Print only fixed scenario/startup classifications, never HTTP payloads or credentials.
-              message = str(error)
-              safe = message.startswith(("failed scenario: ", "server exited during startup", "TLS listener did not become ready"))
-              print("single-node smoke failed: " + (message if safe else type(error).__name__), file=sys.stderr)
-              raise SystemExit(1) from None
-          '''
-          if value.count(old) != 1:
-              raise SystemExit("unexpected smoke error boundary")
-          smoke.write_text(value.replace(old, new), encoding="utf-8")
+
+          old_line = '    print("single-node smoke failed: " + type(error).__name__, file=sys.stderr)\n'
+          diagnostic = (
+              '    message = str(error)\n'
+              '    safe = message.startswith(("failed scenario: ", "server exited during startup", "TLS listener did not become ready"))\n'
+              '    print("single-node smoke failed: " + (message if safe else type(error).__name__), file=sys.stderr)\n'
+          )
+          if value.count(old_line) != 1:
+              raise SystemExit("unexpected smoke diagnostic line")
+          smoke.write_text(value.replace(old_line, diagnostic), encoding="utf-8")
           PY
           git diff --check
 
@@ -140,7 +136,7 @@ jobs:
           cargo +1.98.0 doc --locked --workspace --no-deps
           git diff --check
 
-      - name: Publish qualified source and retire materializer
+      - name: Publish qualified source
         shell: bash
         run: |
           set -euo pipefail
