@@ -1,0 +1,32 @@
+name: Codex qualify bounded request rate limiting
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-rate-limit-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+      - name: Qualify server rate limiting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked -p heptabao-server
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          git diff --check
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
