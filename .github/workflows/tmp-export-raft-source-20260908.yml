@@ -1,0 +1,43 @@
+name: Temporary exact Raft source export
+
+on:
+  push:
+    branches:
+      - exec/v2.2-raft-source-export-20260908-v2
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact reviewed Raft head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 0f66f877b620ef4bf3678cc8f30979505839f4ae
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bundle exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "0f66f877b620ef4bf3678cc8f30979505839f4ae"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-raft-source"
+          mkdir -p "$output"
+          git bundle create "$output/heptabao-raft-source.bundle" HEAD
+          git bundle verify "$output/heptabao-raft-source.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$output/source-binding.txt"
+          (cd "$output" && sha256sum heptabao-raft-source.bundle > heptabao-raft-source.bundle.sha256)
+
+      - name: Upload exact Raft source
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-raft-source-0f66f877
+          path: ${{ runner.temp }}/heptabao-raft-source/
+          if-no-files-found: error
+          retention-days: 1
