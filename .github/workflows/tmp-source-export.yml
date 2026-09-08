@@ -1,0 +1,32 @@
+name: Temporary exact source export
+
+on:
+  push:
+    branches: [codex/openbao-analysis-export-20260908]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Export exact advanced source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz --prefix=HeptaBao/ --output=heptabao-full-closure.tar.gz 82248057743b43c45e663299d41236897e9115d4
+          sha256sum heptabao-full-closure.tar.gz > heptabao-full-closure.tar.gz.sha256
+      - name: Upload exact source
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-full-closure-source-${{ github.run_id }}
+          path: |
+            heptabao-full-closure.tar.gz
+            heptabao-full-closure.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
