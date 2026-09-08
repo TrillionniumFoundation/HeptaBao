@@ -1,0 +1,43 @@
+name: Temporary exact V1.7 implementation asset export
+
+on:
+  push:
+    branches:
+      - exec/v1.7-assets-source-export-20260908-v1
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact reviewed asset head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 56aea04b4a081c89dd6f5b5ea74da25a2a0d6a8a
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bundle exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "56aea04b4a081c89dd6f5b5ea74da25a2a0d6a8a"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-v17-assets-source"
+          mkdir -p "$output"
+          git bundle create "$output/heptabao-v17-assets.bundle" HEAD
+          git bundle verify "$output/heptabao-v17-assets.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$output/source-binding.txt"
+          (cd "$output" && sha256sum heptabao-v17-assets.bundle > heptabao-v17-assets.bundle.sha256)
+
+      - name: Upload exact V1.7 source
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v17-assets-56aea04b
+          path: ${{ runner.temp }}/heptabao-v17-assets-source/
+          if-no-files-found: error
+          retention-days: 1
