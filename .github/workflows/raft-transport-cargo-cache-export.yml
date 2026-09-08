@@ -1,0 +1,58 @@
+name: HeptaBao Raft TCP transport cargo cache export
+
+on:
+  push:
+    branches:
+      - exec/raft-transport-cargo-cache-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout immutable dependency source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify bounded dependency-only delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="633848024e5315f3def23c035a1dec53f83a62b3"
+          git merge-base --is-ancestor "$base" HEAD
+          mapfile -t changed < <(git diff --name-only "$base"...HEAD | LC_ALL=C sort)
+          test "${#changed[@]}" -eq 2
+          test "${changed[0]}" = ".github/workflows/raft-transport-cargo-cache-export.yml"
+          test "${changed[1]}" = "crates/heptabao-raft-runtime/Cargo.toml"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Fetch exact dependency closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal
+          cargo +1.98.0 fetch
+          cargo +1.98.0 metadata --format-version 1 > "$RUNNER_TEMP/metadata.json"
+      - name: Package bounded cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
+          output="$RUNNER_TEMP/heptabao-raft-transport-cargo-cache"
+          mkdir -p "$output"
+          test -d "$cargo_home/registry"
+          tar -C "$cargo_home" -czf "$output/cargo-home-registry.tar.gz" registry
+          cp Cargo.lock "$output/Cargo.lock"
+          cp "$RUNNER_TEMP/metadata.json" "$output/metadata.json"
+          printf 'repository=TrillionniumFoundation/HeptaBao\nbase=633848024e5315f3def23c035a1dec53f83a62b3\nhead=%s\n' "$(git rev-parse HEAD)" > "$output/source-binding.txt"
+          (cd "$output" && sha256sum cargo-home-registry.tar.gz Cargo.lock metadata.json source-binding.txt > SHA256SUMS)
+      - name: Upload exact cache
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-raft-transport-cargo-cache
+          path: ${{ runner.temp }}/heptabao-raft-transport-cargo-cache/
+          if-no-files-found: error
+          retention-days: 3
