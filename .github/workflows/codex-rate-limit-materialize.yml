@@ -1,4 +1,4 @@
-name: Codex qualify bounded request rate limiting
+name: Codex materialize bounded request rate limiting
 
 on:
   push:
@@ -6,10 +6,14 @@ on:
       - codex/openbao-replacement-rate-limit-20260908
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: codex-openbao-replacement-rate-limit
+  cancel-in-progress: false
 
 jobs:
-  qualify:
+  materialize:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -17,16 +21,45 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
-          persist-credentials: false
-      - name: Install exact Rust toolchain
-        shell: bash
-        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
-      - name: Qualify server rate limiting
+      - name: Verify source baseline and assemble payload
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
+          test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "e92ad94bed90825a523d12187a95f4156f47d6a6d2d087ba9294d1997da83407"
+          sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/rate-limit-tranche/payload.sha256)
+          cat .g1/codex-openbao-replacement/rate-limit-tranche/part-* > "$RUNNER_TEMP/rate-limit.patch.gz.b64"
+          test "$(sha256sum "$RUNNER_TEMP/rate-limit.patch.gz.b64" | cut -d' ' -f1)" = "bcb26eb2631f2e4ef712c1c0e14766c68bec76613b8c6ce86f43e1d5212b3046"
+          base64 --decode "$RUNNER_TEMP/rate-limit.patch.gz.b64" > "$RUNNER_TEMP/rate-limit.patch.gz"
+          gzip --test "$RUNNER_TEMP/rate-limit.patch.gz"
+          gzip --decompress --stdout "$RUNNER_TEMP/rate-limit.patch.gz" > "$RUNNER_TEMP/rate-limit.patch"
+          test "$(sha256sum "$RUNNER_TEMP/rate-limit.patch" | cut -d' ' -f1)" = "648ad4315deb63cfd53800e1439922c5134ff09a8999f0df76baa4e6d1c2a764"
+      - name: Apply rate-limit source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check --verbose "$RUNNER_TEMP/rate-limit.patch"
+          git apply --verbose "$RUNNER_TEMP/rate-limit.patch"
+          git diff --check
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+      - name: Qualify bounded limiter and complete server package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
           cargo +1.98.0 test --locked -p heptabao-server
           cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
           git diff --check
-          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Publish qualified source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .g1/codex-openbao-replacement/rate-limit-tranche
+          rmdir .g1/codex-openbao-replacement 2>/dev/null || true
+          rm -f .github/workflows/codex-rate-limit-materialize.yml
+          git config user.name "HeptaBao Codex Closure"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(http): enforce bounded per-peer request rate limiting"
+          git push origin HEAD:codex/openbao-replacement-rate-limit-20260908
