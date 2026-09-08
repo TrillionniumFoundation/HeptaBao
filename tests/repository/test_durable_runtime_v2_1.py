@@ -17,6 +17,13 @@ REGISTER = ROOT / "planning" / "HEPTABAO_BLOCKER_REGISTER_V2_0.yaml"
 WORKFLOW = ROOT / ".github" / "workflows" / "v2-1-main-convergence.yml"
 
 
+def function_body(source: str, function: str) -> str:
+    """Return one top-level Rust function body for structural contract checks."""
+    start = source.index(f"fn {function}")
+    next_function = source.find("\nfn ", start + 4)
+    return source[start : next_function if next_function != -1 else None]
+
+
 class DurableRuntimeV21Tests(unittest.TestCase):
     def test_source_manifest_docs_plan_and_truth_are_bound(self) -> None:
         required = [
@@ -106,18 +113,28 @@ class DurableRuntimeV21Tests(unittest.TestCase):
     def test_all_persisted_payloads_cross_the_barrier(self) -> None:
         source = (CRATE / "src" / "lib.rs").read_text(encoding="utf-8")
         for function in ("sealed_snapshot", "sealed_journal_record", "sealed_ledger"):
-            start = source.index(f"fn {function}")
-            next_function = source.find("\nfn ", start + 4)
-            body = source[start : next_function if next_function != -1 else None]
+            body = function_body(source, function)
             self.assertIn("barrier", body)
             self.assertIn(".seal(", body)
 
-        for function in ("load_snapshot", "load_journal", "load_ledger"):
-            start = source.index(f"fn {function}")
-            next_function = source.find("\nfn ", start + 4)
-            body = source[start : next_function if next_function != -1 else None]
-            self.assertIn("barrier", body)
-            self.assertIn(".open(", body)
+        # Snapshot and ledger loaders deliberately delegate authenticated decode
+        # to one frame decoder.  Check the call graph and the cryptographic
+        # operation instead of requiring `.open(` to remain textually in the
+        # thin file-reading wrapper.
+        for loader, decoder in (
+            ("load_snapshot", "decode_snapshot_frame"),
+            ("load_ledger", "decode_ledger_frame"),
+        ):
+            loader_body = function_body(source, loader)
+            self.assertIn("barrier", loader_body)
+            self.assertIn(f"{decoder}(", loader_body)
+            decoder_body = function_body(source, decoder)
+            self.assertIn("barrier", decoder_body)
+            self.assertIn(".open(", decoder_body)
+
+        journal = function_body(source, "load_journal")
+        self.assertIn("barrier", journal)
+        self.assertIn(".open(", journal)
 
     def test_executable_recovery_and_security_regressions_exist(self) -> None:
         source = (CRATE / "src" / "lib.rs").read_text(encoding="utf-8")
@@ -151,7 +168,6 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("ExclusiveDirectory::open(root)", source)
         self.assertIn('b"HBS2"', source)
         self.assertNotIn('format!("{namespace}/{resource}")', source)
-
 
     def test_current_workflow_is_read_only_and_main_bound(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8")
