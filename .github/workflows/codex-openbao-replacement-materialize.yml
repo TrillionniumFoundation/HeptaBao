@@ -45,12 +45,74 @@ jobs:
           gzip --decompress --stdout "$RUNNER_TEMP/seal.patch.gz" > "$RUNNER_TEMP/seal.patch"
           test "$(sha256sum "$RUNNER_TEMP/seal.patch" | cut -d' ' -f1)" = "c17e8d5ddd16f9d8f699f307f68c318c3b5b54b9d43c5462f379685ffd3f759a"
 
-      - name: Apply bounded source patch
+      - name: Apply bounded source patch and strict-lint equivalences
         shell: bash
         run: |
           set -euo pipefail
           git apply --check --verbose "$RUNNER_TEMP/seal.patch"
           git apply --verbose "$RUNNER_TEMP/seal.patch"
+          python - <<'PY'
+          from pathlib import Path
+
+          crypto = Path("crates/heptabao-server/src/crypto.rs")
+          text = crypto.read_text(encoding="utf-8")
+          old = '''    let mut secret = [0u8; SHARE_SECRET_BYTES];
+              for byte_index in 0..SHARE_SECRET_BYTES {
+                  let mut value = 0u8;
+                  for (position, share) in selected.iter().enumerate() {
+                      let mut basis = 1u8;
+                      for (other_position, other) in selected.iter().enumerate() {
+                          if position == other_position {
+                              continue;
+                          }
+                          let denominator = other.index ^ share.index;
+                          if denominator == 0 {
+                              return Err("duplicate Shamir share index");
+                          }
+                          basis = gf_mul(basis, gf_mul(other.index, gf_inverse(denominator)?));
+                      }
+                      value ^= gf_mul(share.value[byte_index], basis);
+                  }
+                  secret[byte_index] = value;
+              }
+          '''
+          new = '''    let mut secret = [0u8; SHARE_SECRET_BYTES];
+              for (byte_index, output) in secret.iter_mut().enumerate() {
+                  let mut value = 0u8;
+                  for (position, share) in selected.iter().enumerate() {
+                      let mut basis = 1u8;
+                      for (other_position, other) in selected.iter().enumerate() {
+                          if position == other_position {
+                              continue;
+                          }
+                          let denominator = other.index ^ share.index;
+                          if denominator == 0 {
+                              return Err("duplicate Shamir share index");
+                          }
+                          basis = gf_mul(basis, gf_mul(other.index, gf_inverse(denominator)?));
+                      }
+                      value ^= gf_mul(share.value[byte_index], basis);
+                  }
+                  *output = value;
+              }
+          '''
+          if old not in text:
+              raise SystemExit("expected Shamir combine loop not found")
+          crypto.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          service = Path("crates/heptabao-server/src/service.rs")
+          text = service.read_text(encoding="utf-8")
+          old = '''            match u8::try_from(self.unseal_shares.len()) {
+                          Ok(value) => value,
+                          Err(_) => u8::MAX,
+                      }
+          '''
+          new = '''            u8::try_from(self.unseal_shares.len()).unwrap_or(u8::MAX)
+          '''
+          if old not in text:
+              raise SystemExit("expected unseal progress conversion not found")
+          service.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
           git diff --check
           git diff --stat
 
