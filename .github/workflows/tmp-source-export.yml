@@ -20,20 +20,29 @@ jobs:
         run: |
           set -euo pipefail
           git archive --format=tar.gz --prefix=HeptaBao/ --output=heptabao-full-closure.tar.gz 82248057743b43c45e663299d41236897e9115d4
-          git diff --binary 82248057743b43c45e663299d41236897e9115d4..a5f7f633ca54115c99824392eab45ecd68a906ff > security-closure.patch
+          git diff --binary b798e88c98a7a9ab93a50abc1502c0a869233fda..a5f7f633ca54115c99824392eab45ecd68a906ff > security-closure.patch
           git show origin/codex/openbao-replacement-wrapping-20260908:.g1/codex-openbao-replacement/wrapping-tranche/part-00 > wrapping.patch.gz.b64
           base64 --decode wrapping.patch.gz.b64 > wrapping.patch.gz
           gzip --test wrapping.patch.gz
           gzip --decompress --stdout wrapping.patch.gz > wrapping.patch
-          sha256sum heptabao-full-closure.tar.gz security-closure.patch wrapping.patch > convergence-inputs.sha256
-      - name: Upload exact source and patches
+          git bundle create heptabao-convergence.bundle \
+            refs/remotes/origin/main \
+            refs/remotes/origin/codex/bao-service-closure-20260908 \
+            refs/remotes/origin/codex/openbao-replacement-full-closure-20260908 \
+            refs/remotes/origin/codex/openbao-replacement-gap-closure-r1-20260908 \
+            refs/remotes/origin/codex/h02-openraft-inmemory-cluster-v1 \
+            refs/remotes/origin/codex/h02-openraft-hostile-faults-linearizability-v1 \
+            refs/remotes/origin/exec/v2.1-51-package-materializer-20260908
+          sha256sum heptabao-full-closure.tar.gz security-closure.patch wrapping.patch heptabao-convergence.bundle > convergence-inputs.sha256
+      - name: Upload exact source, patches and history
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: heptabao-convergence-inputs-${{ github.run_id }}
+          name: heptabao-convergence-bundle-${{ github.run_id }}
           path: |
             heptabao-full-closure.tar.gz
             security-closure.patch
             wrapping.patch
+            heptabao-convergence.bundle
             convergence-inputs.sha256
           if-no-files-found: error
           retention-days: 1
