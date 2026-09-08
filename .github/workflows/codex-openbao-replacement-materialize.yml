@@ -14,7 +14,6 @@ concurrency:
 
 jobs:
   materialize:
-    if: ${{ hashFiles('.g1/codex-openbao-replacement/seal.patch.gz.b64') != '' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
