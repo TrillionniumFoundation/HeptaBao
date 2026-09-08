@@ -8,7 +8,7 @@ use std::{
     collections::BTreeMap,
     fs::OpenOptions,
     io::{self, BufReader, Read, Write},
-    net::{SocketAddr, TcpListener, TcpStream},
+    net::{IpAddr, SocketAddr, TcpListener, TcpStream},
     path::PathBuf,
     sync::{
         Arc, Mutex,
@@ -35,6 +35,12 @@ pub struct Config {
     pub max_connections: usize,
     #[serde(default = "default_timeout")]
     pub timeout_seconds: u64,
+    #[serde(default = "default_rate_limit_per_second")]
+    pub rate_limit_per_second: u32,
+    #[serde(default = "default_rate_limit_burst")]
+    pub rate_limit_burst: u32,
+    #[serde(default = "default_rate_limit_entries")]
+    pub rate_limit_entries: usize,
 }
 fn default_connections() -> usize {
     16
@@ -42,11 +48,90 @@ fn default_connections() -> usize {
 fn default_timeout() -> u64 {
     15
 }
+fn default_rate_limit_per_second() -> u32 {
+    200
+}
+fn default_rate_limit_burst() -> u32 {
+    400
+}
+fn default_rate_limit_entries() -> usize {
+    4_096
+}
+
+const TOKEN_SCALE: u128 = 1_000_000_000;
+const RATE_BUCKET_IDLE_NANOS: u128 = 60 * TOKEN_SCALE;
+
+#[derive(Clone, Copy)]
+struct RateBucket {
+    tokens: u128,
+    last_nanos: u128,
+}
+
+struct RateLimiter {
+    rate_per_second: u128,
+    burst_tokens: u128,
+    max_entries: usize,
+    started: Instant,
+    buckets: BTreeMap<IpAddr, RateBucket>,
+}
+
+impl RateLimiter {
+    fn new(rate_per_second: u32, burst: u32, max_entries: usize) -> Result<Self, String> {
+        if rate_per_second == 0
+            || rate_per_second > 100_000
+            || burst == 0
+            || burst > 1_000_000
+            || !(64..=65_536).contains(&max_entries)
+        {
+            return Err("invalid bounded rate-limit policy".into());
+        }
+        Ok(Self {
+            rate_per_second: u128::from(rate_per_second),
+            burst_tokens: u128::from(burst) * TOKEN_SCALE,
+            max_entries,
+            started: Instant::now(),
+            buckets: BTreeMap::new(),
+        })
+    }
+
+    fn allow(&mut self, peer: IpAddr) -> bool {
+        self.allow_at(peer, self.started.elapsed().as_nanos())
+    }
+
+    fn allow_at(&mut self, peer: IpAddr, now_nanos: u128) -> bool {
+        if !self.buckets.contains_key(&peer) && self.buckets.len() >= self.max_entries {
+            self.buckets.retain(|_, bucket| {
+                now_nanos.saturating_sub(bucket.last_nanos) < RATE_BUCKET_IDLE_NANOS
+            });
+            if self.buckets.len() >= self.max_entries {
+                return false;
+            }
+        }
+        let bucket = self.buckets.entry(peer).or_insert(RateBucket {
+            tokens: self.burst_tokens,
+            last_nanos: now_nanos,
+        });
+        let elapsed = now_nanos.saturating_sub(bucket.last_nanos);
+        let refill = elapsed.saturating_mul(self.rate_per_second);
+        bucket.tokens = bucket.tokens.saturating_add(refill).min(self.burst_tokens);
+        bucket.last_nanos = now_nanos;
+        if bucket.tokens < TOKEN_SCALE {
+            return false;
+        }
+        bucket.tokens -= TOKEN_SCALE;
+        true
+    }
+}
 
 pub fn serve(config: Config) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
+    let limiter = Arc::new(Mutex::new(RateLimiter::new(
+        config.rate_limit_per_second,
+        config.rate_limit_burst,
+        config.rate_limit_entries,
+    )?));
     if !config.tls_cert_file.is_absolute() || !config.tls_key_file.is_absolute() {
         return Err("TLS paths must be absolute".into());
     }
@@ -98,6 +183,13 @@ pub fn serve(config: Config) -> Result<(), String> {
             continue;
         }
         let guard = ConnectionGuard(Arc::clone(&connections));
+        let peer = stream
+            .peer_addr()
+            .map_err(|_| "cannot identify accepted peer")?
+            .ip();
+        let rate_limited = limiter
+            .lock()
+            .map_or(true, |mut limiter| !limiter.allow(peer));
         let service = Arc::clone(&service);
         let tls = Arc::clone(&tls);
         let timeout = Duration::from_secs(config.timeout_seconds);
@@ -120,6 +212,14 @@ pub fn serve(config: Config) -> Result<(), String> {
                         deadline: Instant::now() + timeout,
                     },
                 );
+                if rate_limited {
+                    let _ = write_response(
+                        &mut stream,
+                        Response::error(429, "request rate limit exceeded"),
+                        false,
+                    );
+                    return;
+                }
                 let parsed = read_request(&mut stream, timeout);
                 let (response, head) = match parsed {
                     Ok(mut request) => {
@@ -495,9 +595,14 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
         507 => "Insufficient Storage",
         _ => "Error",
     };
+    let retry_after = if status == 429 {
+        "Retry-After: 1\r\n"
+    } else {
+        ""
+    };
     write!(
         writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n{retry_after}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
         bytes.len()
     )?;
     if !head {
@@ -509,6 +614,36 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn rate_limiter_enforces_burst_refill_and_bounded_peer_table() -> Result<(), String> {
+        let mut limiter = RateLimiter::new(2, 3, 64)?;
+        let first: IpAddr = "192.0.2.1".parse().map_err(|_| "invalid test address")?;
+        assert!(limiter.allow_at(first, 0));
+        assert!(limiter.allow_at(first, 0));
+        assert!(limiter.allow_at(first, 0));
+        assert!(!limiter.allow_at(first, 0));
+        assert!(!limiter.allow_at(first, TOKEN_SCALE / 4));
+        assert!(limiter.allow_at(first, TOKEN_SCALE / 2));
+
+        for suffix in 2..=64 {
+            let peer: IpAddr = format!("192.0.2.{suffix}")
+                .parse()
+                .map_err(|_| "invalid test address")?;
+            assert!(limiter.allow_at(peer, TOKEN_SCALE / 2));
+        }
+        let overflow: IpAddr = "198.51.100.1".parse().map_err(|_| "invalid test address")?;
+        assert!(!limiter.allow_at(overflow, TOKEN_SCALE / 2));
+        assert!(limiter.allow_at(overflow, RATE_BUCKET_IDLE_NANOS + TOKEN_SCALE));
+        Ok(())
+    }
+
+    #[test]
+    fn rate_limit_configuration_rejects_disabled_or_unbounded_values() {
+        assert!(RateLimiter::new(0, 1, 64).is_err());
+        assert!(RateLimiter::new(10, 10, 63).is_err());
+        assert!(RateLimiter::new(100_001, 100_001, 64).is_err());
+    }
     #[test]
     fn rejects_smuggling_duplicate_headers_and_ambiguous_paths() {
         for request in [
