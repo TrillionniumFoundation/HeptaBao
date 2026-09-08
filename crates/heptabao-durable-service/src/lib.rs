@@ -29,6 +29,9 @@ const JOURNAL_MAGIC: &[u8; 4] = b"HBJ2";
 const LEDGER_MAGIC: &[u8; 4] = b"HBL2";
 const LEDGER_PLAINTEXT_MAGIC: &[u8; 4] = b"HBC2";
 const MAX_FILE_BYTES: usize = 64 * 1024 * 1024;
+const BACKUP_MAGIC: &[u8; 4] = b"HBB2";
+const BACKUP_VERSION: u16 = 1;
+const MAX_BACKUP_BYTES: usize = MAX_FILE_BYTES * 2 + 2 * 1024 * 1024;
 const MAX_STRING_BYTES: usize = 4 * 1024;
 const MAX_SECRET_BYTES: usize = 1024 * 1024;
 const MAX_RECORDS: usize = 1_000_000;
@@ -222,6 +225,21 @@ pub enum ReconciliationStatus {
     Unknown,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CompactionOutcome {
+    pub generation: u64,
+    pub retained_requests: usize,
+    pub journal_bytes_before: usize,
+    pub journal_bytes_after: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RestoreOutcome {
+    pub previous_generation: u64,
+    pub restored_generation: u64,
+    pub retained_requests: usize,
+}
+
 #[derive(Debug)]
 pub enum ServiceError {
     InvalidRoot,
@@ -238,6 +256,7 @@ pub enum ServiceError {
     InvalidAuthorizationDigest,
     RequestBindingConflict,
     RequestCapacityExhausted,
+    BackupRollbackRejected,
     GenerationOverflow,
     OutcomeUnknown { recovery_reference: String },
     CorruptState,
@@ -273,6 +292,9 @@ impl fmt::Display for ServiceError {
             }
             Self::RequestCapacityExhausted => {
                 formatter.write_str("retained request capacity exhausted")
+            }
+            Self::BackupRollbackRejected => {
+                formatter.write_str("backup generation is older than the live state")
             }
             Self::GenerationOverflow => formatter.write_str("generation overflow"),
             Self::OutcomeUnknown { .. } => formatter.write_str("mutation outcome is unknown"),
@@ -357,6 +379,14 @@ struct LedgerRecord {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+struct CheckpointMarker {
+    generation: u64,
+    retained_requests: u64,
+    last_commit: Option<CommitMarker>,
+    ledger_digest: [u8; 32],
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct Snapshot {
     generation: u64,
     entries: BTreeMap<(String, String), Secret>,
@@ -368,6 +398,7 @@ enum JournalEvent {
     Intent(CommitMarker),
     Commit(CommitMarker),
     Abort(CommitMarker),
+    Checkpoint(CheckpointMarker),
 }
 
 pub struct DurableService<B: Barrier> {
@@ -382,6 +413,15 @@ pub struct DurableService<B: Barrier> {
     journal_limit: usize,
     max_retained_requests: usize,
     unresolved: bool,
+}
+
+struct BackupComponents {
+    snapshot_bytes: Vec<u8>,
+    journal_bytes: Vec<u8>,
+    ledger_bytes: Vec<u8>,
+    snapshot: Snapshot,
+    ledger: BTreeMap<RequestKey, LedgerRecord>,
+    journal_sequence: u64,
 }
 
 impl<B: Barrier> fmt::Debug for DurableService<B> {
@@ -591,6 +631,121 @@ impl<B: Barrier> DurableService<B> {
         self.ledger.len()
     }
 
+    /// Replace the replay journal with one authenticated checkpoint for the
+    /// currently committed snapshot and complete request ledger.
+    ///
+    /// The snapshot and ledger remain unchanged. A failure after replacement
+    /// starts fences this live instance; reopening accepts either the old or
+    /// new complete journal and rejects mixed or unauthenticated state.
+    pub fn compact(&mut self) -> Result<CompactionOutcome, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.directory.verify().map_err(map_guard_error)?;
+        validate_committed_state(&self.snapshot, self.snapshot.generation, &self.ledger)?;
+        let checkpoint = checkpoint_marker(&self.snapshot, &self.ledger)?;
+        let frame = sealed_journal_record(&self.barrier, 1, &JournalEvent::Checkpoint(checkpoint))?;
+        let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + frame.len());
+        journal.extend_from_slice(JOURNAL_MAGIC);
+        journal.extend_from_slice(&frame);
+        if journal.len() > self.journal_limit {
+            return Err(ServiceError::JournalCapacityExhausted);
+        }
+        let before = self.journal_bytes;
+        self.unresolved = true;
+        atomic_write(&self.root, &journal_path(&self.root), &journal)?;
+        self.journal_sequence = 1;
+        self.journal_bytes = journal.len();
+        self.unresolved = false;
+        Ok(CompactionOutcome {
+            generation: self.snapshot.generation,
+            retained_requests: self.ledger.len(),
+            journal_bytes_before: before,
+            journal_bytes_after: journal.len(),
+        })
+    }
+
+    /// Export a self-authenticating, still-barrier-encrypted backup of the
+    /// exact committed snapshot and request ledger. The bundle contains no
+    /// barrier key and can be opened only with the original barrier provider.
+    pub fn export_backup(&self) -> Result<Vec<u8>, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.directory.verify().map_err(map_guard_error)?;
+        validate_committed_state(&self.snapshot, self.snapshot.generation, &self.ledger)?;
+        let snapshot = sealed_snapshot(&self.barrier, &self.snapshot)?;
+        let ledger = sealed_ledger(&self.barrier, self.snapshot.generation, &self.ledger)?;
+        let checkpoint = sealed_journal_record(
+            &self.barrier,
+            1,
+            &JournalEvent::Checkpoint(checkpoint_marker(&self.snapshot, &self.ledger)?),
+        )?;
+        let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + checkpoint.len());
+        journal.extend_from_slice(JOURNAL_MAGIC);
+        journal.extend_from_slice(&checkpoint);
+        encode_backup(self.snapshot.generation, &snapshot, &journal, &ledger)
+    }
+
+    /// Restore one previously exported backup into this exclusively owned
+    /// directory. Rollback is rejected unless `allow_rollback` is explicit.
+    ///
+    /// Replacement uses independently atomic files. A crash or I/O failure can
+    /// leave a mixed set, which is deliberately rejected on reopen rather than
+    /// being guessed or automatically reset.
+    pub fn restore_backup(
+        &mut self,
+        backup: &[u8],
+        allow_rollback: bool,
+    ) -> Result<RestoreOutcome, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.directory.verify().map_err(map_guard_error)?;
+        let restored = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
+        if restored.snapshot.generation < self.snapshot.generation && !allow_rollback {
+            return Err(ServiceError::BackupRollbackRejected);
+        }
+        let previous_generation = self.snapshot.generation;
+        self.unresolved = true;
+        atomic_write(
+            &self.root,
+            &snapshot_path(&self.root),
+            &restored.snapshot_bytes,
+        )?;
+        atomic_write(&self.root, &ledger_path(&self.root), &restored.ledger_bytes)?;
+        atomic_write(
+            &self.root,
+            &journal_path(&self.root),
+            &restored.journal_bytes,
+        )?;
+        self.snapshot = restored.snapshot;
+        self.ledger = restored.ledger;
+        self.journal_sequence = restored.journal_sequence;
+        self.journal_bytes = restored.journal_bytes.len();
+        self.rebuild_reconciliation()?;
+        self.unresolved = false;
+        Ok(RestoreOutcome {
+            previous_generation,
+            restored_generation: self.snapshot.generation,
+            retained_requests: self.ledger.len(),
+        })
+    }
+
+    fn rebuild_reconciliation(&mut self) -> Result<(), ServiceError> {
+        self.reconciliation.clear();
+        for record in self.ledger.values() {
+            validate_ledger_record(record)?;
+            self.reconciliation.insert(
+                record.recovery_reference.clone(),
+                ReconciliationStatus::Committed {
+                    generation: record.generation,
+                },
+            );
+        }
+        Ok(())
+    }
+
     fn execute(
         &mut self,
         binding: Binding,
@@ -752,15 +907,39 @@ impl<B: Barrier> DurableService<B> {
         ledger_generation: u64,
         incomplete_tail: bool,
     ) -> Result<(), ServiceError> {
+        validate_ledger_generation(&self.ledger, ledger_generation)?;
         let mut pending: Option<CommitMarker> = None;
         let mut committed: BTreeMap<RequestKey, CommitMarker> = BTreeMap::new();
         let mut last_commit: Option<CommitMarker> = None;
         let mut committed_generation = 0_u64;
         let mut references = std::collections::BTreeSet::new();
+        let mut saw_checkpoint = false;
+
         for (offset, event) in events.into_iter().enumerate() {
             match event {
+                JournalEvent::Checkpoint(checkpoint) => {
+                    if offset != 0 || saw_checkpoint || pending.is_some() || !committed.is_empty() {
+                        return Err(ServiceError::CorruptState);
+                    }
+                    saw_checkpoint = true;
+                    let prefix = ledger_prefix(&self.ledger, checkpoint.generation)?;
+                    validate_checkpoint(&checkpoint, &prefix)?;
+                    committed_generation = checkpoint.generation;
+                    last_commit = checkpoint.last_commit.clone();
+                    for (key, record) in prefix {
+                        let marker = marker_from_ledger(&key, &record)?;
+                        if !references.insert(marker.recovery_reference.clone()) {
+                            return Err(ServiceError::CorruptState);
+                        }
+                        committed.insert(key, marker);
+                    }
+                }
                 JournalEvent::Intent(marker) => {
                     validate_marker(&marker)?;
+                    let sequence = u64::try_from(offset)
+                        .ok()
+                        .and_then(|value| value.checked_add(1))
+                        .ok_or(ServiceError::GenerationOverflow)?;
                     if pending.is_some()
                         || committed.contains_key(&marker.key)
                         || marker.generation
@@ -771,7 +950,7 @@ impl<B: Barrier> DurableService<B> {
                             != recovery_reference(
                                 &marker.binding_digest,
                                 marker.generation,
-                                offset as u64 + 1,
+                                sequence,
                             )
                         || !references.insert(marker.recovery_reference.clone())
                     {
@@ -798,6 +977,9 @@ impl<B: Barrier> DurableService<B> {
                 }
             }
         }
+        if committed.len() as u64 != committed_generation {
+            return Err(ServiceError::CorruptState);
+        }
         // The snapshot must be precisely the journal's committed frontier, or
         // the sole pending intent's publication. A valid older snapshot is a
         // rollback, not a reason to acknowledge the newer ledger.
@@ -820,7 +1002,6 @@ impl<B: Barrier> DurableService<B> {
         // records cannot independently drift forward, backwards or develop gaps.
         if ledger_generation > committed_generation
             || ledger_generation.saturating_add(1) < committed_generation
-            || self.ledger.len() as u64 != ledger_generation
         {
             return Err(ServiceError::CorruptState);
         }
@@ -890,6 +1071,145 @@ impl<B: Barrier> DurableService<B> {
         self.unresolved = false;
         Ok(())
     }
+}
+
+fn validate_ledger_record(record: &LedgerRecord) -> Result<(), ServiceError> {
+    if record.binding_digest == [0; 32]
+        || record.generation == 0
+        || record.recovery_reference.len() != 32
+        || !record
+            .recovery_reference
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit())
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    Ok(())
+}
+
+fn validate_ledger_generation(
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+    generation: u64,
+) -> Result<(), ServiceError> {
+    if ledger.len() as u64 != generation {
+        return Err(ServiceError::CorruptState);
+    }
+    let mut generations = std::collections::BTreeSet::new();
+    let mut references = std::collections::BTreeSet::new();
+    for (key, record) in ledger {
+        validate_identifier(&key.principal)?;
+        validate_namespace(&key.namespace)?;
+        validate_identifier(&key.request_id)?;
+        validate_ledger_record(record)?;
+        if record.generation > generation
+            || !generations.insert(record.generation)
+            || !references.insert(record.recovery_reference.clone())
+        {
+            return Err(ServiceError::CorruptState);
+        }
+    }
+    if generations.iter().copied().ne(1..=generation) {
+        return Err(ServiceError::CorruptState);
+    }
+    Ok(())
+}
+
+fn validate_committed_state(
+    snapshot: &Snapshot,
+    ledger_generation: u64,
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+) -> Result<(), ServiceError> {
+    if snapshot.generation != ledger_generation {
+        return Err(ServiceError::CorruptState);
+    }
+    validate_ledger_generation(ledger, ledger_generation)?;
+    if ledger_generation == 0 {
+        if snapshot.last_commit.is_some() || !ledger.is_empty() {
+            return Err(ServiceError::CorruptState);
+        }
+        return Ok(());
+    }
+    let (key, record) = ledger
+        .iter()
+        .find(|(_, record)| record.generation == ledger_generation)
+        .ok_or(ServiceError::CorruptState)?;
+    if snapshot.last_commit.as_ref() != Some(&marker_from_ledger(key, record)?) {
+        return Err(ServiceError::CorruptState);
+    }
+    Ok(())
+}
+
+fn marker_from_ledger(
+    key: &RequestKey,
+    record: &LedgerRecord,
+) -> Result<CommitMarker, ServiceError> {
+    validate_ledger_record(record)?;
+    let marker = CommitMarker {
+        key: key.clone(),
+        binding_digest: record.binding_digest,
+        recovery_reference: record.recovery_reference.clone(),
+        generation: record.generation,
+    };
+    validate_marker(&marker)?;
+    Ok(marker)
+}
+
+fn ledger_prefix(
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+    generation: u64,
+) -> Result<BTreeMap<RequestKey, LedgerRecord>, ServiceError> {
+    let prefix = ledger
+        .iter()
+        .filter(|(_, record)| record.generation <= generation)
+        .map(|(key, record)| (key.clone(), record.clone()))
+        .collect::<BTreeMap<_, _>>();
+    validate_ledger_generation(&prefix, generation)?;
+    Ok(prefix)
+}
+
+fn checkpoint_marker(
+    snapshot: &Snapshot,
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+) -> Result<CheckpointMarker, ServiceError> {
+    validate_committed_state(snapshot, snapshot.generation, ledger)?;
+    let encoded = Zeroizing::new(encode_ledger(ledger)?);
+    Ok(CheckpointMarker {
+        generation: snapshot.generation,
+        retained_requests: ledger.len() as u64,
+        last_commit: snapshot.last_commit.clone(),
+        ledger_digest: digest32(b"heptabao.durable-service.checkpoint-ledger.v1", &encoded),
+    })
+}
+
+fn validate_checkpoint(
+    checkpoint: &CheckpointMarker,
+    prefix: &BTreeMap<RequestKey, LedgerRecord>,
+) -> Result<(), ServiceError> {
+    if checkpoint.retained_requests != checkpoint.generation
+        || checkpoint.retained_requests != prefix.len() as u64
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    validate_ledger_generation(prefix, checkpoint.generation)?;
+    let encoded = Zeroizing::new(encode_ledger(prefix)?);
+    let expected = digest32(b"heptabao.durable-service.checkpoint-ledger.v1", &encoded);
+    if !constant_time_eq(&checkpoint.ledger_digest, &expected) {
+        return Err(ServiceError::CorruptState);
+    }
+    if checkpoint.generation == 0 {
+        if checkpoint.last_commit.is_some() {
+            return Err(ServiceError::CorruptState);
+        }
+    } else {
+        let (key, record) = prefix
+            .iter()
+            .find(|(_, record)| record.generation == checkpoint.generation)
+            .ok_or(ServiceError::CorruptState)?;
+        if checkpoint.last_commit.as_ref() != Some(&marker_from_ledger(key, record)?) {
+            return Err(ServiceError::CorruptState);
+        }
+    }
+    Ok(())
 }
 
 fn validate_capacity(capacity: usize) -> Result<(), ServiceError> {
@@ -1015,6 +1335,13 @@ fn sealed_snapshot<B: Barrier>(barrier: &B, snapshot: &Snapshot) -> Result<Vec<u
 
 fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, ServiceError> {
     let encoded = read_bounded(&snapshot_path(root))?;
+    decode_snapshot_frame(&encoded, barrier)
+}
+
+fn decode_snapshot_frame<B: Barrier>(
+    encoded: &[u8],
+    barrier: &B,
+) -> Result<Snapshot, ServiceError> {
     if encoded.starts_with(b"HBS1") {
         return Err(ServiceError::LegacySchema);
     }
@@ -1094,6 +1421,13 @@ fn load_journal<B: Barrier>(
     barrier: &B,
 ) -> Result<(u64, Vec<JournalEvent>, usize, bool), ServiceError> {
     let encoded = read_bounded(&journal_path(root))?;
+    decode_journal_frames(&encoded, barrier)
+}
+
+fn decode_journal_frames<B: Barrier>(
+    encoded: &[u8],
+    barrier: &B,
+) -> Result<(u64, Vec<JournalEvent>, usize, bool), ServiceError> {
     if !encoded.starts_with(JOURNAL_MAGIC) {
         return Err(ServiceError::CorruptState);
     }
@@ -1185,6 +1519,13 @@ fn load_ledger<B: Barrier>(
     barrier: &B,
 ) -> Result<(u64, BTreeMap<RequestKey, LedgerRecord>), ServiceError> {
     let encoded = read_bounded(&ledger_path(root))?;
+    decode_ledger_frame(&encoded, barrier)
+}
+
+fn decode_ledger_frame<B: Barrier>(
+    encoded: &[u8],
+    barrier: &B,
+) -> Result<(u64, BTreeMap<RequestKey, LedgerRecord>), ServiceError> {
     if encoded.len() < 4 + 8 + 4 + 32 || &encoded[..4] != LEDGER_MAGIC {
         return Err(ServiceError::CorruptState);
     }
@@ -1208,6 +1549,104 @@ fn load_ledger<B: Barrier>(
         .map_err(|_| ServiceError::BarrierFailure)?;
     let plaintext = Zeroizing::new(plaintext);
     Ok((generation, decode_ledger(&plaintext)?))
+}
+
+fn encode_backup(
+    generation: u64,
+    snapshot: &[u8],
+    journal: &[u8],
+    ledger: &[u8],
+) -> Result<Vec<u8>, ServiceError> {
+    if snapshot.len() > MAX_FILE_BYTES
+        || journal.len() > MAX_FILE_BYTES
+        || ledger.len() > MAX_FILE_BYTES
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    let mut encoded = Vec::new();
+    encoded.extend_from_slice(BACKUP_MAGIC);
+    write_u16(&mut encoded, BACKUP_VERSION);
+    write_u16(&mut encoded, 0);
+    write_u64(&mut encoded, generation);
+    write_bytes(&mut encoded, snapshot)?;
+    write_bytes(&mut encoded, journal)?;
+    write_bytes(&mut encoded, ledger)?;
+    if encoded
+        .len()
+        .checked_add(32)
+        .is_none_or(|length| length > MAX_BACKUP_BYTES)
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    let checksum = digest32(b"heptabao.durable-service.backup.v1", &encoded);
+    encoded.extend_from_slice(&checksum);
+    Ok(encoded)
+}
+
+fn decode_backup<B: Barrier>(
+    barrier: &B,
+    encoded: &[u8],
+    max_retained_requests: usize,
+) -> Result<BackupComponents, ServiceError> {
+    if encoded.len() < 4 + 2 + 2 + 8 + 4 * 3 + 32 || encoded.len() > MAX_BACKUP_BYTES {
+        return Err(ServiceError::CorruptState);
+    }
+    let payload_len = encoded
+        .len()
+        .checked_sub(32)
+        .ok_or(ServiceError::CorruptState)?;
+    let expected = digest32(
+        b"heptabao.durable-service.backup.v1",
+        &encoded[..payload_len],
+    );
+    if !constant_time_eq(&expected, &encoded[payload_len..]) {
+        return Err(ServiceError::CorruptState);
+    }
+    let mut cursor = Cursor::new(&encoded[..payload_len]);
+    if cursor.read_exact(4)? != BACKUP_MAGIC
+        || cursor.read_u16()? != BACKUP_VERSION
+        || cursor.read_u16()? != 0
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    let generation = cursor.read_u64()?;
+    let snapshot_bytes = cursor.read_bytes(MAX_FILE_BYTES)?.to_vec();
+    let journal_bytes = cursor.read_bytes(MAX_FILE_BYTES)?.to_vec();
+    let ledger_bytes = cursor.read_bytes(MAX_FILE_BYTES)?.to_vec();
+    cursor.finish()?;
+
+    let snapshot = decode_snapshot_frame(&snapshot_bytes, barrier)?;
+    let (ledger_generation, ledger) = decode_ledger_frame(&ledger_bytes, barrier)?;
+    let (journal_sequence, events, journal_verified_bytes, incomplete_tail) =
+        decode_journal_frames(&journal_bytes, barrier)?;
+    if incomplete_tail
+        || journal_verified_bytes != journal_bytes.len()
+        || journal_sequence != 1
+        || events.len() != 1
+        || generation != snapshot.generation
+        || generation != ledger_generation
+        || ledger.len() > max_retained_requests
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    validate_committed_state(&snapshot, ledger_generation, &ledger)?;
+    match &events[0] {
+        JournalEvent::Checkpoint(checkpoint) => {
+            validate_checkpoint(checkpoint, &ledger)?;
+            if checkpoint.generation != generation {
+                return Err(ServiceError::CorruptState);
+            }
+        }
+        _ => return Err(ServiceError::CorruptState),
+    }
+    Ok(BackupComponents {
+        snapshot_bytes,
+        journal_bytes,
+        ledger_bytes,
+        snapshot,
+        ledger,
+        journal_sequence,
+    })
 }
 
 fn atomic_write(root: &Path, target: &Path, bytes: &[u8]) -> Result<(), ServiceError> {
@@ -1328,6 +1767,19 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
             bytes.push(3);
             encode_marker(&mut bytes, marker)?;
         }
+        JournalEvent::Checkpoint(checkpoint) => {
+            bytes.push(4);
+            write_u64(&mut bytes, checkpoint.generation);
+            write_u64(&mut bytes, checkpoint.retained_requests);
+            match &checkpoint.last_commit {
+                Some(marker) => {
+                    bytes.push(1);
+                    encode_marker(&mut bytes, marker)?;
+                }
+                None => bytes.push(0),
+            }
+            bytes.extend_from_slice(&checkpoint.ledger_digest);
+        }
     }
     Ok(bytes)
 }
@@ -1335,14 +1787,30 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
 fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
     let mut cursor = Cursor::new(bytes);
     let kind = cursor.read_u8()?;
-    let marker = decode_marker(&mut cursor)?;
+    let event = match kind {
+        1 => JournalEvent::Intent(decode_marker(&mut cursor)?),
+        2 => JournalEvent::Commit(decode_marker(&mut cursor)?),
+        3 => JournalEvent::Abort(decode_marker(&mut cursor)?),
+        4 => {
+            let generation = cursor.read_u64()?;
+            let retained_requests = cursor.read_u64()?;
+            let last_commit = match cursor.read_u8()? {
+                0 => None,
+                1 => Some(decode_marker(&mut cursor)?),
+                _ => return Err(ServiceError::CorruptState),
+            };
+            let ledger_digest = cursor.read_array_32()?;
+            JournalEvent::Checkpoint(CheckpointMarker {
+                generation,
+                retained_requests,
+                last_commit,
+                ledger_digest,
+            })
+        }
+        _ => return Err(ServiceError::CorruptState),
+    };
     cursor.finish()?;
-    match kind {
-        1 => Ok(JournalEvent::Intent(marker)),
-        2 => Ok(JournalEvent::Commit(marker)),
-        3 => Ok(JournalEvent::Abort(marker)),
-        _ => Err(ServiceError::CorruptState),
-    }
+    Ok(event)
 }
 
 fn encode_ledger(ledger: &BTreeMap<RequestKey, LedgerRecord>) -> Result<Vec<u8>, ServiceError> {
@@ -1468,6 +1936,10 @@ fn write_u32(output: &mut Vec<u8>, value: u32) {
     output.extend_from_slice(&value.to_le_bytes());
 }
 
+fn write_u16(output: &mut Vec<u8>, value: u16) {
+    output.extend_from_slice(&value.to_le_bytes());
+}
+
 fn write_u64(output: &mut Vec<u8>, value: u64) {
     output.extend_from_slice(&value.to_le_bytes());
 }
@@ -1510,6 +1982,14 @@ impl<'a> Cursor<'a> {
             .try_into()
             .map_err(|_| ServiceError::CorruptState)?;
         Ok(u32::from_le_bytes(bytes))
+    }
+
+    fn read_u16(&mut self) -> Result<u16, ServiceError> {
+        let bytes: [u8; 2] = self
+            .read_exact(2)?
+            .try_into()
+            .map_err(|_| ServiceError::CorruptState)?;
+        Ok(u16::from_le_bytes(bytes))
     }
 
     fn read_u64(&mut self) -> Result<u64, ServiceError> {
@@ -2108,6 +2588,115 @@ mod tests {
         assert!(!service.recovery_required());
         service.journal_limit = MAX_FILE_BYTES;
         service.put(put_request("accepted", b"value")?)?;
+        Ok(())
+    }
+
+    #[test]
+    fn compaction_checkpoints_complete_ledger_and_allows_future_commits() -> Result<(), ServiceError>
+    {
+        let _serial = serial_test();
+        let root = TestRoot::new("compaction")?;
+        let barrier = TestBarrier::new();
+        let mut service = DurableService::create_new(&root.0, barrier.clone(), 64)?;
+        let first = put_request("compact-0", b"value-0")?;
+        service.put(first.clone())?;
+        for number in 1..12 {
+            service.put(put_request(
+                &format!("compact-{number}"),
+                format!("value-{number}").as_bytes(),
+            )?)?;
+        }
+        let before = fs::metadata(journal_path(&root.0))?.len() as usize;
+        let outcome = service.compact()?;
+        assert_eq!(outcome.generation, 12);
+        assert_eq!(outcome.retained_requests, 12);
+        assert_eq!(outcome.journal_bytes_before, before);
+        assert!(outcome.journal_bytes_after < before);
+        assert!(matches!(
+            service.put(first)?,
+            MutationOutcome::Duplicate { generation: 1, .. }
+        ));
+        service.put(put_request("after-compact", b"future")?)?;
+        drop(service);
+
+        let mut reopened = DurableService::reopen(&root.0, barrier, 64)?;
+        assert_eq!(reopened.generation(), 13);
+        assert_eq!(reopened.retained_request_count(), 13);
+        assert_eq!(
+            reopened
+                .get("root/team-a", "secret/application")?
+                .ok_or(ServiceError::CorruptState)?
+                .expose(),
+            b"future"
+        );
+        reopened.put(put_request("after-reopen", b"still-live")?)?;
+        Ok(())
+    }
+
+    #[test]
+    fn encrypted_backup_restores_exact_generation_and_requires_explicit_rollback()
+    -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("backup")?;
+        let barrier = TestBarrier::new();
+        let first = put_request("backup-one", b"one")?;
+        let second = put_request("backup-two", b"two")?;
+        let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
+        let first_outcome = service.put(first.clone())?;
+        let first_reference = match first_outcome {
+            MutationOutcome::Committed {
+                recovery_reference, ..
+            } => recovery_reference,
+            _ => return Err(ServiceError::CorruptState),
+        };
+        let backup = service.export_backup()?;
+        service.put(second)?;
+        assert!(matches!(
+            service.restore_backup(&backup, false),
+            Err(ServiceError::BackupRollbackRejected)
+        ));
+        let outcome = service.restore_backup(&backup, true)?;
+        assert_eq!(outcome.previous_generation, 2);
+        assert_eq!(outcome.restored_generation, 1);
+        assert_eq!(outcome.retained_requests, 1);
+        assert_eq!(
+            service
+                .get("root/team-a", "secret/application")?
+                .ok_or(ServiceError::CorruptState)?
+                .expose(),
+            b"one"
+        );
+        assert_eq!(
+            service.reconcile(&first_reference),
+            ReconciliationStatus::Committed { generation: 1 }
+        );
+        assert!(matches!(
+            service.put(first)?,
+            MutationOutcome::Duplicate { generation: 1, .. }
+        ));
+        drop(service);
+        assert_eq!(
+            DurableService::reopen(&root.0, barrier, 16)?.generation(),
+            1
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn backup_tampering_fails_before_live_state_is_fenced() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("backup-tamper")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+        service.put(put_request("backup-source", b"value")?)?;
+        let mut backup = service.export_backup()?;
+        let index = backup.len() / 2;
+        backup[index] ^= 1;
+        assert!(matches!(
+            service.restore_backup(&backup, true),
+            Err(ServiceError::CorruptState)
+        ));
+        assert!(!service.recovery_required());
+        service.put(put_request("backup-after-tamper", b"safe")?)?;
         Ok(())
     }
 
