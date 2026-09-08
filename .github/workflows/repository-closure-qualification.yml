@@ -1,0 +1,90 @@
+name: repository-closure-qualification
+on:
+  push:
+    branches: [codex/openbao-replacement-repository-closure-20260909]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  qualify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: rust
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: repository validators
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+      - name: fmt
+        shell: bash
+        run: cargo +1.98.0 fmt --all -- --check
+      - name: test
+        shell: bash
+        run: cargo +1.98.0 test --workspace --all-targets --locked
+      - name: clippy
+        shell: bash
+        run: cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+      - name: doc
+        shell: bash
+        run: cargo +1.98.0 doc --workspace --no-deps --locked
+      - name: server
+        shell: bash
+        run: cargo +1.98.0 build --locked -p heptabao-server
+      - name: clean
+        shell: bash
+        run: test -z "$(git status --porcelain=v1 --untracked-files=all)"
+  prospective-main-merge:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name heptabao-ci
+          git config user.email heptabao-ci@invalid
+          git fetch --no-tags origin '${{ github.event.pull_request.base.sha }}'
+          git merge --no-commit --no-ff '${{ github.event.pull_request.base.sha }}'
+      - name: rust
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: qualify merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --workspace --all-targets --locked
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 build --locked -p heptabao-server
