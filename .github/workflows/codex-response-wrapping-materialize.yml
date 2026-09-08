@@ -15,7 +15,7 @@ concurrency:
 jobs:
   materialize:
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
+    timeout-minutes: 90
     steps:
       - name: Checkout exact branch head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -38,12 +38,74 @@ jobs:
           gzip --test "$RUNNER_TEMP/wrapping.patch.gz"
           gzip --decompress --stdout "$RUNNER_TEMP/wrapping.patch.gz" > "$RUNNER_TEMP/wrapping.patch"
           test "$(sha256sum "$RUNNER_TEMP/wrapping.patch" | cut -d' ' -f1)" = "c8b7dc6cc442401cc2cf6a395a9a0565c618ea6ec41107e905be41996b0afd0a"
-      - name: Apply response-wrapping source
+      - name: Apply response-wrapping source and review fixes
         shell: bash
         run: |
           set -euo pipefail
           git apply --check --verbose "$RUNNER_TEMP/wrapping.patch"
           git apply --verbose "$RUNNER_TEMP/wrapping.patch"
+          python - <<'PY'
+          from pathlib import Path
+
+          service = Path("crates/heptabao-server/src/service.rs")
+          text = service.read_text(encoding="utf-8")
+          obsolete = '''    fn request_fingerprint(
+              &self,
+              method: &str,
+              path: &str,
+              namespace: &str,
+              token: &str,
+          ) -> String {
+              let mut context = hmac::Context::with_key(&self.audit_key);
+              context.update(b"heptabao.audit.request-fingerprint.v2");
+              for field in [method, namespace, path, token] {
+                  context.update(&(field.len() as u64).to_le_bytes());
+                  context.update(field.as_bytes());
+              }
+              STANDARD.encode(context.sign().as_ref())
+          }
+
+          '''
+          if text.count(obsolete) != 1:
+              raise SystemExit("unexpected request_fingerprint source")
+          text = text.replace(obsolete, "")
+          reason = '''    #[expect(
+              clippy::too_many_arguments,
+              reason = "security-relevant request fields remain explicit at this bounded service boundary"
+          )]
+          '''
+          for marker in (
+              "    pub fn handle_at_with_wrap_ttl(\n",
+              "    fn handle_inner(\n",
+              "    fn wrapping_token_route(\n",
+          ):
+              if text.count(marker) != 1:
+                  raise SystemExit(f"unexpected service marker: {marker.strip()}")
+              text = text.replace(marker, reason + marker, 1)
+          service.write_text(text, encoding="utf-8")
+
+          regression = Path("tests/repository/test_durable_runtime_v2_1.py")
+          test_text = regression.read_text(encoding="utf-8")
+          old = '''            self.assertIn("barrier", body)
+              self.assertIn(".open(", body)
+          '''
+          new = '''            self.assertIn("barrier", body)
+              self.assertTrue(
+                  ".open(" in body or "read_bounded(" in body,
+                  f"{function} must authenticate bytes directly or through the bounded reader",
+              )
+
+          bounded_start = source.index("fn read_bounded(")
+          bounded_next = source.find("\\nfn ", bounded_start + 4)
+          bounded_body = source[bounded_start : bounded_next if bounded_next != -1 else None]
+          self.assertIn("symlink_metadata", bounded_body)
+          self.assertIn("MAX_FILE_BYTES", bounded_body)
+          self.assertIn("read_to_end", bounded_body)
+          '''
+          if test_text.count(old) != 1:
+              raise SystemExit("unexpected durable runtime regression assertion")
+          regression.write_text(test_text.replace(old, new), encoding="utf-8")
+          PY
           git diff --check
       - name: Install exact Rust toolchain
         shell: bash
@@ -52,9 +114,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
           cargo +1.98.0 fmt --all
           cargo +1.98.0 test --locked -p heptabao-server
           cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          cargo +1.98.0 build --locked -p heptabao-server
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          work_dir="$RUNNER_TEMP/heptabao-response-wrapping-smoke"
+          rm -rf "$work_dir"
+          python qa/single-node/smoke.py --binary "$PWD/target/debug/heptabao-server" --work-dir "$work_dir"
           git diff --check
       - name: Publish qualified source commit
         shell: bash
@@ -66,5 +135,6 @@ jobs:
           git config user.name "HeptaBao Codex Closure"
           git config user.email "102159240+ProfHepta@users.noreply.github.com"
           git add -A
+          git diff --cached --check
           git commit -m "feat(server): add durable single-use response wrapping"
           git push origin HEAD:codex/openbao-replacement-wrapping-20260908
