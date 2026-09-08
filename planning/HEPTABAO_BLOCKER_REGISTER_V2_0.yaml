@@ -181,6 +181,8 @@ repository_blockers:
   - implement and test bounded-tls-network-service
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
+  - every HTTP parse rejection is authenticated-audited without raw wire bytes
+  - initialization credentials remain recoverable across result-audit capacity or I/O failure until explicit caller acknowledgement
 - id: HB-V2-REP-012
   class: REPOSITORY_CONTROLLED
   severity: CRITICAL

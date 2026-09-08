@@ -34,7 +34,7 @@ fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::err
         "PUT",
         "sys/init",
         "",
-        json!({"secret_shares":1,"secret_threshold":1}),
+        json!({"secret_shares":1,"secret_threshold":1,"recovery_nonce":STANDARD.encode([91_u8;32])}),
     );
     assert_eq!(response.status, 200);
     let key = response.body["keys_base64"][0]
@@ -45,6 +45,21 @@ fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::err
         .as_str()
         .ok_or("missing token")?
         .to_owned();
+    let ack_token = response.body["init_ack_token"]
+        .as_str()
+        .ok_or("missing initialization acknowledgement token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "sys/init/ack",
+            "",
+            json!({"recovery_nonce":STANDARD.encode([91_u8;32]),"ack_token":ack_token})
+        )
+        .status,
+        204
+    );
     assert!(service.state.is_none());
     assert_eq!(
         call(service, "PUT", "sys/unseal", "", json!({"key":key})).status,
@@ -484,5 +499,126 @@ fn legacy_unkeyed_audit_and_partial_audit_tail_are_rejected()
         .open(&audit)?
         .set_len(length - 2)?;
     assert!(root.service().is_err());
+    Ok(())
+}
+
+#[test]
+fn transport_rejections_are_authenticated_without_raw_wire_material()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let before = service.audit_sequence;
+    let response = service.handle_transport_rejection_at(
+        501,
+        "synthetic-wire-secret-must-not-enter-audit",
+        100,
+    );
+    assert_eq!(response.status, 501);
+    assert_eq!(service.audit_sequence, before + 2);
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    assert!(
+        !audit
+            .windows(b"synthetic-wire-secret-must-not-enter-audit".len())
+            .any(|window| window == b"synthetic-wire-secret-must-not-enter-audit")
+    );
+    Ok(())
+}
+
+#[test]
+fn initialization_credentials_are_recoverable_after_response_audit_failures()
+-> Result<(), Box<dyn std::error::Error>> {
+    let body = json!({
+        "secret_shares": 1,
+        "secret_threshold": 1,
+        "recovery_nonce": STANDARD.encode([73_u8; 32])
+    });
+
+    let capacity_root = Root::new();
+    let mut service = capacity_root.service()?;
+    let fingerprint = service.request_fingerprint("PUT", "sys/init", "", "");
+    let event = AuditUnsigned {
+        schema: 2,
+        sequence: service.audit_sequence + 1,
+        previous: STANDARD.encode(service.audit_previous),
+        time: 100,
+        kind: "request".into(),
+        path_digest: fingerprint,
+        status: None,
+    };
+    let payload = serde_json::to_vec(&event)?;
+    let mac = STANDARD.encode(hmac::sign(&service.audit_key, &payload).as_ref());
+    let next = serde_json::to_vec(&AuditRecord { event, mac })?.len() + 1;
+    service.audit_capacity = service.audit.metadata()?.len() + next as u64;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/init", "", body.clone()).status,
+        503
+    );
+    assert!(service.init_escrow_path.exists());
+    service.audit_capacity = MAX_AUDIT_BYTES;
+    let recovered = call(&mut service, "PUT", "sys/init", "", body.clone());
+    assert_eq!(recovered.status, 200);
+    let key = recovered.body["keys_base64"][0]
+        .as_str()
+        .ok_or("missing recovered key")?
+        .to_owned();
+    let token = recovered.body["root_token"]
+        .as_str()
+        .ok_or("missing recovered root token")?
+        .to_owned();
+    let ack = recovered.body["init_ack_token"]
+        .as_str()
+        .ok_or("missing recovered ack token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/init/ack",
+            "",
+            json!({"recovery_nonce":STANDARD.encode([73_u8;32]),"ack_token":ack})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", &token, json!({})).status,
+        200
+    );
+
+    let io_root = Root::new();
+    let mut service = io_root.service()?;
+    service.fail_response_audit_io = true;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/init", "", body.clone()).status,
+        503
+    );
+    assert!(service.audit_failed);
+    assert!(service.init_escrow_path.exists());
+    drop(service);
+    let mut service = io_root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/init",
+            "",
+            json!({
+                "secret_shares":1,
+                "secret_threshold":1,
+                "recovery_nonce":STANDARD.encode([74_u8;32])
+            })
+        )
+        .status,
+        403,
+        "a different recovery nonce must not disclose initialization credentials"
+    );
+    let recovered = call(&mut service, "PUT", "sys/init", "", body);
+    assert_eq!(recovered.status, 200);
+    assert!(recovered.body["root_token"].is_string());
+    assert!(recovered.body["keys_base64"][0].is_string());
     Ok(())
 }

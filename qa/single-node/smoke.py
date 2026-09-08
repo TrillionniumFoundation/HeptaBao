@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 from pathlib import Path
@@ -79,6 +80,23 @@ class Instance:
             self.log.close()
             self.process = None
 
+    def raw_call(self, request: bytes) -> int:
+        with socket.create_connection(("127.0.0.1", self.port), timeout=10) as plain:
+            with self.context.wrap_socket(plain, server_hostname="localhost") as stream:
+                stream.sendall(request)
+                response = bytearray()
+                while True:
+                    chunk = stream.recv(4096)
+                    if not chunk:
+                        break
+                    response.extend(chunk)
+                    if len(response) > 1024 * 1024:
+                        raise RuntimeError("unbounded raw response")
+        first = bytes(response).split(b"\r\n", 1)[0].split()
+        if len(first) < 2 or not first[1].isdigit():
+            raise RuntimeError("invalid raw HTTP response")
+        return int(first[1])
+
     def call(self, method, path, body=None, *, token=None, namespace="", extra_headers=None):
         headers = {"Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
         if namespace:
@@ -106,10 +124,21 @@ def run(binary: Path, root: Path, keep_running: bool):
     try:
         instance.start()
         check("uninitialized_health", instance.call("GET", "sys/health")[0] == 501)
-        status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
+        raw_marker = ("wire-secret-" + secrets.token_hex(16)).encode()
+        audit_before = len((root / "audit.jsonl").read_bytes().splitlines())
+        raw_request = (b"POST /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n"
+                       + b"X-Vault-Token: " + raw_marker
+                       + b"\r\nContent-Length: 2\r\nContent-Length: 2\r\n\r\n{}")
+        raw_status = instance.raw_call(raw_request)
+        audit_after = (root / "audit.jsonl").read_bytes()
+        check("wire_rejection_audited", raw_status == 400 and len(audit_after.splitlines()) == audit_before + 2 and raw_marker not in audit_after)
+        recovery_nonce = base64.b64encode(secrets.token_bytes(32)).decode()
+        status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1, "recovery_nonce": recovery_nonce})
         check("initialize_once", status == 200 and bool(initialized.get("root_token")))
         instance.token = initialized["root_token"]
         key = initialized["keys_base64"][0]
+        ack_token = initialized["init_ack_token"]
+        check("initialize_ack", instance.call("POST", "sys/init/ack", {"recovery_nonce": recovery_nonce, "ack_token": ack_token})[0] == 204)
         private_write(root / "root-token", instance.token)
         private_write(root / "unseal-key", key)
         check("initialized_stays_sealed", instance.call("GET", "sys/health")[0] == 503)

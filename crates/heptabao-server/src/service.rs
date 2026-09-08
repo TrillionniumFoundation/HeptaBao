@@ -4,21 +4,24 @@ use crate::{
     engines::EngineState,
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD};
-use heptabao_durable_service::{DurableService, PutRequest, Secret, ServiceError};
+use heptabao_durable_service::{Barrier, DurableService, PutRequest, Secret, ServiceError};
 use ring::hmac;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
     fs::{self, File, OpenOptions},
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
     time::{SystemTime, UNIX_EPOCH},
 };
+use subtle::ConstantTimeEq;
 use zeroize::{Zeroize, Zeroizing};
 
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
+const MAX_INIT_ESCROW_BYTES: u64 = 2 * 1024 * 1024;
+const INIT_ESCROW_CONTEXT: &[u8] = b"heptabao.server.init-escrow.v1";
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -27,6 +30,27 @@ struct State {
     cluster_id: String,
     auth: AuthState,
     engines: EngineState,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct InitEscrow {
+    schema: u32,
+    recovery_nonce_digest: [u8; 32],
+    ack_token_digest: [u8; 32],
+    unseal_key: [u8; 32],
+    state_bytes: Vec<u8>,
+    response_bytes: Vec<u8>,
+}
+
+impl Drop for InitEscrow {
+    fn drop(&mut self) {
+        self.recovery_nonce_digest.zeroize();
+        self.ack_token_digest.zeroize();
+        self.unseal_key.zeroize();
+        self.state_bytes.zeroize();
+        self.response_bytes.zeroize();
+    }
 }
 
 pub struct Response {
@@ -54,6 +78,9 @@ impl Response {
 pub struct Service {
     data_dir: PathBuf,
     audit: File,
+    #[cfg(test)]
+    audit_path: PathBuf,
+    init_escrow_path: PathBuf,
     audit_key: hmac::Key,
     audit_sequence: u64,
     audit_previous: [u8; 32],
@@ -65,6 +92,8 @@ pub struct Service {
     state_capacity: usize,
     #[cfg(test)]
     audit_capacity: u64,
+    #[cfg(test)]
+    fail_response_audit_io: bool,
 }
 
 impl Service {
@@ -77,6 +106,18 @@ impl Service {
         }
         if fs::symlink_metadata(audit_path).is_ok_and(|m| m.file_type().is_symlink()) {
             return Err("audit symlinks are forbidden");
+        }
+        let audit_name = audit_path
+            .file_name()
+            .ok_or("invalid audit path")?
+            .to_string_lossy();
+        let init_escrow_path = audit_path.with_file_name(format!("{audit_name}.init-escrow"));
+        let init_escrow_next = sibling_with_suffix(&init_escrow_path, ".next")
+            .map_err(|_| "invalid initialization escrow path")?;
+        for path in [&init_escrow_path, &init_escrow_next] {
+            if fs::symlink_metadata(path).is_ok_and(|m| m.file_type().is_symlink()) {
+                return Err("initialization escrow symlinks are forbidden");
+            }
         }
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
@@ -102,6 +143,9 @@ impl Service {
         Ok(Self {
             data_dir,
             audit,
+            #[cfg(test)]
+            audit_path: audit_path.to_path_buf(),
+            init_escrow_path,
             audit_key,
             audit_sequence,
             audit_previous,
@@ -113,6 +157,8 @@ impl Service {
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
             audit_capacity: MAX_AUDIT_BYTES,
+            #[cfg(test)]
+            fail_response_audit_io: false,
         })
     }
 
@@ -128,6 +174,44 @@ impl Service {
             .duration_since(UNIX_EPOCH)
             .map_or(0, |d| d.as_secs());
         self.handle_at(method, path, namespace, token, body, now)
+    }
+
+    pub(crate) fn handle_transport_rejection(
+        &mut self,
+        status: u16,
+        reason: &'static str,
+    ) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |d| d.as_secs());
+        self.handle_transport_rejection_at(status, reason, now)
+    }
+
+    fn handle_transport_rejection_at(
+        &mut self,
+        status: u16,
+        reason: &'static str,
+        now: u64,
+    ) -> Response {
+        let fingerprint = self.transport_rejection_fingerprint(status, reason);
+        if self
+            .audit_event("request", &fingerprint, now, None)
+            .is_err()
+        {
+            return Response::error(503, "audit unavailable before transport rejection");
+        }
+        let response = Response::error(status, reason);
+        if self
+            .audit_event("response", &fingerprint, now, Some(response.status))
+            .is_err()
+        {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "transport-rejection audit failed; offline audit recovery required",
+            );
+        }
+        response
     }
 
     pub fn handle_at(
@@ -152,6 +236,14 @@ impl Service {
         }
         let response = self.handle_inner(method, path, namespace, token, &body, now);
         erase_json(&mut body);
+        #[cfg(test)]
+        if self.fail_response_audit_io {
+            self.fail_response_audit_io = false;
+            match OpenOptions::new().read(true).open(&self.audit_path) {
+                Ok(file) => self.audit = file,
+                Err(_) => self.audit_failed = true,
+            }
+        }
         if self
             .audit_event("response", &fingerprint, now, Some(response.status))
             .is_err()
@@ -195,13 +287,19 @@ impl Service {
             };
         }
         if path == "sys/init" && method == "GET" {
-            return Response::ok(json!({"initialized":self.initialized()}));
+            return Response::ok(json!({
+                "initialized": self.initialized(),
+                "pending_ack": self.init_escrow_path.exists()
+            }));
         }
         if path == "sys/seal-status" && method == "GET" {
             return self.seal_status();
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
             return self.initialize(body, now);
+        }
+        if path == "sys/init/ack" && matches!(method, "PUT" | "POST") {
+            return self.ack_initialization(body);
         }
         if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
             return self.unseal(body);
@@ -378,17 +476,19 @@ impl Service {
     }
     fn seal_status(&self) -> Response {
         Response::ok(
-            json!({"type":"single-key","initialized":self.initialized(),"sealed":self.state.is_none(),"t":1,"n":1,"progress":0,"nonce":"","version":"HeptaBao-0.1.0","migration":false,"recovery_seal":false,"storage_type":"heptabao-durable-v2"}),
+            json!({"type":"single-key","initialized":self.initialized(),"sealed":self.state.is_none(),"t":1,"n":1,"progress":0,"nonce":"","version":"HeptaBao-0.1.0","migration":false,"recovery_seal":false,"storage_type":"heptabao-durable-v2","init_ack_pending":self.init_escrow_path.exists()}),
         )
     }
 
     fn initialize(&mut self, body: &Value, now: u64) -> Response {
-        if self.initialized() {
-            return Response::error(400, "already initialized");
-        }
-        if body.as_object().is_none_or(|m| {
-            m.keys()
-                .any(|k| !matches!(k.as_str(), "secret_shares" | "secret_threshold"))
+        let Some(fields) = body.as_object() else {
+            return Response::error(400, "initialization request must be a JSON object");
+        };
+        if fields.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "secret_shares" | "secret_threshold" | "recovery_nonce"
+            )
         }) {
             return Response::error(400, "unsupported initialization options");
         }
@@ -400,21 +500,33 @@ impl Service {
                 "single-node profile requires secret_shares=1 and secret_threshold=1; Shamir is not implemented",
             );
         }
-        let key = match crypto::random::<32>() {
-            Ok(k) => Zeroizing::new(k),
-            Err(e) => return Response::error(503, e),
+        let Some(recovery_nonce) = body.get("recovery_nonce").and_then(Value::as_str) else {
+            return Response::error(
+                400,
+                "a 256-bit recovery_nonce is required for interruption-safe initialization",
+            );
         };
-        let barrier = match AeadBarrier::new(*key) {
-            Ok(b) => b,
-            Err(_) => return Response::error(503, "cannot construct storage provider"),
+        let Some(recovery_nonce) = decode_secret_32(recovery_nonce) else {
+            return Response::error(400, "invalid initialization recovery nonce");
+        };
+        if self.init_escrow_path.exists() {
+            return self.resume_initialization(&recovery_nonce);
+        }
+        if self.initialized() {
+            return Response::error(400, "already initialized");
+        }
+
+        let key = match crypto::random::<32>() {
+            Ok(key) => Zeroizing::new(key),
+            Err(error) => return Response::error(503, error),
         };
         let (auth, root_token) = match AuthState::bootstrap(now) {
             Ok((auth, token)) => (auth, Zeroizing::new(token)),
-            Err(e) => return Response::error(e.status, &e.message),
+            Err(error) => return Response::error(error.status, &error.message),
         };
         let cluster_id = match crypto::random::<16>() {
-            Ok(v) => STANDARD.encode(v),
-            Err(e) => return Response::error(503, e),
+            Ok(value) => STANDARD.encode(value),
+            Err(error) => return Response::error(503, error),
         };
         let state = State {
             schema: 1,
@@ -422,37 +534,324 @@ impl Service {
             auth,
             engines: EngineState::default(),
         };
-        if let Err(_error) = private_directory(&self.data_dir) {
+        let state_bytes = match serde_json::to_vec(&state) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => return Response::error(500, "state serialization failed"),
+        };
+        let ack_token = match crypto::random::<32>() {
+            Ok(value) => Zeroizing::new(value),
+            Err(error) => return Response::error(503, error),
+        };
+        let encoded_key = Zeroizing::new(STANDARD.encode(*key));
+        let encoded_ack = Zeroizing::new(STANDARD.encode(*ack_token));
+        let response_body = json!({
+        "keys": [hex(key.as_ref())],
+        "keys_base64": [encoded_key.as_str()],
+        "root_token": root_token.as_str(),
+        "recovery_keys": [],
+        "recovery_keys_base64": [],
+        "init_ack_required": true,
+        "init_ack_token": encoded_ack.as_str()
+              });
+        let response_bytes = match serde_json::to_vec(&response_body) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => return Response::error(500, "initialization response serialization failed"),
+        };
+        let escrow = InitEscrow {
+            schema: 1,
+            recovery_nonce_digest: crypto::digest(recovery_nonce.as_ref()),
+            ack_token_digest: crypto::digest(ack_token.as_ref()),
+            unseal_key: *key,
+            state_bytes: state_bytes.to_vec(),
+            response_bytes: response_bytes.to_vec(),
+        };
+        if self.write_init_escrow(&escrow).is_err() {
+            return Response::error(
+                503,
+                "cannot persist recoverable initialization escrow; inspect audit directory",
+            );
+        }
+        if private_directory(&self.data_dir).is_err() {
             return Response::error(503, "cannot create private data directory");
         }
+        let barrier = match AeadBarrier::new(*key) {
+            Ok(barrier) => barrier,
+            Err(_) => return Response::error(503, "cannot construct storage provider"),
+        };
         let durable = match DurableService::create_new(&self.data_dir, barrier, MAX_OPERATIONS) {
-            Ok(v) => v,
+            Ok(value) => value,
             Err(_) => {
                 return Response::error(
                     503,
-                    "cannot initialize durable state; inspect data directory",
+                    "cannot initialize durable state; retry with the same recovery nonce after inspection",
                 );
             }
         };
         self.durable = Some(durable);
-        let bytes = match serde_json::to_vec(&state) {
-            Ok(v) => Zeroizing::new(v),
-            Err(_) => return Response::error(500, "state serialization failed"),
-        };
-        let result = self.commit_state_bytes(&bytes);
-        if let Err(error) = result {
+        if let Err(error) = self.commit_state_bytes(&state_bytes) {
+            self.durable = None;
             return error;
         }
-        self.state = Some(state);
-        // Initialization returns key material only over the configured TLS
-        // response. It is never emitted to stdout, the audit stream or a config.
-        let encoded = Zeroizing::new(STANDARD.encode(*key));
-        let response = Response::ok(
-            json!({"keys":[hex(key.as_ref())],"keys_base64":[encoded.as_str()],"root_token":root_token.as_str(),"recovery_keys":[],"recovery_keys_base64":[]}),
-        );
         self.state = None;
         self.durable = None;
-        response
+        Response::ok(response_body)
+    }
+
+    fn resume_initialization(&mut self, recovery_nonce: &[u8; 32]) -> Response {
+        let escrow = match self.read_init_escrow() {
+            Ok(escrow) => escrow,
+            Err(_) => {
+                return Response::error(
+                    503,
+                    "initialization escrow is unavailable or corrupt; preserve files for recovery",
+                );
+            }
+        };
+        if !constant_time_equal(
+            &escrow.recovery_nonce_digest,
+            &crypto::digest(recovery_nonce),
+        ) {
+            return Response::error(403, "initialization recovery nonce rejected");
+        }
+        match serde_json::from_slice::<State>(&escrow.state_bytes) {
+            Ok(state) if state.schema == 1 => {}
+            _ => return Response::error(503, "initialization escrow state is invalid"),
+        }
+        let response_body: Value = match serde_json::from_slice(&escrow.response_bytes) {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "initialization escrow response is invalid"),
+        };
+        if private_directory(&self.data_dir).is_err() {
+            return Response::error(503, "unsafe initialization data directory");
+        }
+        let barrier = match AeadBarrier::new(escrow.unseal_key) {
+            Ok(barrier) => barrier,
+            Err(_) => return Response::error(503, "initialization escrow key is invalid"),
+        };
+        let durable = if self.data_dir.join("state.hbs").exists() {
+            match DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS) {
+                Ok(value) => value,
+                Err(_) => {
+                    return Response::error(
+                        503,
+                        "initialization state recovery failed; preserve files for inspection",
+                    );
+                }
+            }
+        } else {
+            match DurableService::create_new(&self.data_dir, barrier, MAX_OPERATIONS) {
+                Ok(value) => value,
+                Err(_) => {
+                    return Response::error(
+                        503,
+                        "initialization state recreation failed; preserve escrow for retry",
+                    );
+                }
+            }
+        };
+        let existing = match durable.get("system", "state") {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "cannot inspect initialization state"),
+        };
+        if let Some(existing) = existing {
+            if existing.expose() != escrow.state_bytes.as_slice() {
+                return Response::error(503, "initialization escrow does not match durable state");
+            }
+        } else {
+            self.durable = Some(durable);
+            if let Err(error) = self.commit_state_bytes(&escrow.state_bytes) {
+                self.durable = None;
+                return error;
+            }
+            self.durable = None;
+        }
+        self.state = None;
+        Response::ok(response_body)
+    }
+
+    fn ack_initialization(&mut self, body: &Value) -> Response {
+        let Some(fields) = body.as_object() else {
+            return Response::error(400, "initialization acknowledgement must be a JSON object");
+        };
+        if fields.len() != 2
+            || !fields.contains_key("recovery_nonce")
+            || !fields.contains_key("ack_token")
+        {
+            return Response::error(400, "recovery_nonce and ack_token are required");
+        }
+        let Some(recovery_nonce) = fields
+            .get("recovery_nonce")
+            .and_then(Value::as_str)
+            .and_then(decode_secret_32)
+        else {
+            return Response::error(400, "invalid initialization recovery nonce");
+        };
+        let Some(ack_token) = fields
+            .get("ack_token")
+            .and_then(Value::as_str)
+            .and_then(decode_secret_32)
+        else {
+            return Response::error(400, "invalid initialization acknowledgement token");
+        };
+        let escrow = match self.read_init_escrow() {
+            Ok(value) => value,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                return Response::error(409, "initialization acknowledgement is not pending");
+            }
+            Err(_) => return Response::error(503, "cannot read initialization escrow"),
+        };
+        if !constant_time_equal(
+            &escrow.recovery_nonce_digest,
+            &crypto::digest(recovery_nonce.as_ref()),
+        ) || !constant_time_equal(
+            &escrow.ack_token_digest,
+            &crypto::digest(ack_token.as_ref()),
+        ) {
+            return Response::error(403, "initialization acknowledgement rejected");
+        }
+        match self.initialization_state_matches(&escrow) {
+            Ok(true) => {}
+            Ok(false) => {
+                return Response::error(503, "initialization escrow does not match durable state");
+            }
+            Err(_) => return Response::error(503, "initialization state is not durably readable"),
+        }
+        if self.remove_init_escrow().is_err() {
+            return Response::error(503, "cannot finalize initialization acknowledgement");
+        }
+        Response {
+            status: 204,
+            body: Value::Null,
+        }
+    }
+
+    fn initialization_state_matches(&self, escrow: &InitEscrow) -> Result<bool, std::io::Error> {
+        if let Some(durable) = self.durable.as_ref() {
+            return durable
+                .get("system", "state")
+                .map(|value| {
+                    value.is_some_and(|state| state.expose() == escrow.state_bytes.as_slice())
+                })
+                .map_err(|_| std::io::Error::other("cannot inspect active durable state"));
+        }
+        if !self.initialized() {
+            return Ok(false);
+        }
+        let barrier = AeadBarrier::new(escrow.unseal_key)
+            .map_err(|_| std::io::Error::other("initialization escrow key is invalid"))?;
+        let durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
+            .map_err(|_| std::io::Error::other("cannot reopen initialization state"))?;
+        durable
+            .get("system", "state")
+            .map(|value| value.is_some_and(|state| state.expose() == escrow.state_bytes.as_slice()))
+            .map_err(|_| std::io::Error::other("cannot inspect initialization state"))
+    }
+
+    fn init_escrow_barrier(&self) -> Result<AeadBarrier, std::io::Error> {
+        let tag = hmac::sign(&self.audit_key, b"heptabao.server.init-escrow-key.v1");
+        let mut key = [0_u8; 32];
+        key.copy_from_slice(tag.as_ref());
+        AeadBarrier::new(key).map_err(|_| std::io::Error::other("cannot derive escrow key"))
+    }
+
+    fn write_init_escrow(&self, escrow: &InitEscrow) -> Result<(), std::io::Error> {
+        let next_path = sibling_with_suffix(&self.init_escrow_path, ".next")?;
+        if self.init_escrow_path.exists() || next_path.exists() {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::AlreadyExists,
+                "initialization escrow already exists",
+            ));
+        }
+        let plaintext = Zeroizing::new(
+            serde_json::to_vec(escrow)
+                .map_err(|_| std::io::Error::other("cannot serialize initialization escrow"))?,
+        );
+        if plaintext.len() as u64 > MAX_INIT_ESCROW_BYTES {
+            return Err(std::io::Error::other("initialization escrow exceeds limit"));
+        }
+        let protected = Zeroizing::new(
+            self.init_escrow_barrier()?
+                .seal(INIT_ESCROW_CONTEXT, &plaintext)
+                .map_err(|_| std::io::Error::other("cannot seal initialization escrow"))?,
+        );
+        if protected.len() as u64 > MAX_INIT_ESCROW_BYTES {
+            return Err(std::io::Error::other(
+                "sealed initialization escrow exceeds limit",
+            ));
+        }
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+        }
+        let result = (|| {
+            let mut file = options.open(&next_path)?;
+            check_private_file(&file)?;
+            file.write_all(&protected)?;
+            file.sync_all()?;
+            fs::rename(&next_path, &self.init_escrow_path)?;
+            sync_parent(&self.init_escrow_path)
+        })();
+        if result.is_err() {
+            let _ = fs::remove_file(&next_path);
+        }
+        result
+    }
+
+    fn read_init_escrow(&self) -> Result<InitEscrow, std::io::Error> {
+        let next_path = sibling_with_suffix(&self.init_escrow_path, ".next")?;
+        if next_path.exists() {
+            return Err(std::io::Error::other(
+                "incomplete initialization escrow requires recovery",
+            ));
+        }
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        }
+        let file = options.open(&self.init_escrow_path)?;
+        check_private_file(&file)?;
+        if file.metadata()?.len() > MAX_INIT_ESCROW_BYTES {
+            return Err(std::io::Error::other("initialization escrow exceeds limit"));
+        }
+        let mut protected = Zeroizing::new(Vec::new());
+        file.take(MAX_INIT_ESCROW_BYTES + 1)
+            .read_to_end(&mut protected)?;
+        if protected.len() as u64 > MAX_INIT_ESCROW_BYTES {
+            return Err(std::io::Error::other(
+                "initialization escrow grew beyond limit",
+            ));
+        }
+        let plaintext = Zeroizing::new(
+            self.init_escrow_barrier()?
+                .open(INIT_ESCROW_CONTEXT, &protected)
+                .map_err(|_| {
+                    std::io::Error::other("initialization escrow authentication failed")
+                })?,
+        );
+        let escrow: InitEscrow = serde_json::from_slice(&plaintext)
+            .map_err(|_| std::io::Error::other("cannot decode initialization escrow"))?;
+        if escrow.schema != 1
+            || escrow.state_bytes.len() as u64 > MAX_INIT_ESCROW_BYTES
+            || escrow.response_bytes.len() as u64 > MAX_INIT_ESCROW_BYTES
+        {
+            return Err(std::io::Error::other(
+                "invalid initialization escrow schema",
+            ));
+        }
+        Ok(escrow)
+    }
+
+    fn remove_init_escrow(&self) -> Result<(), std::io::Error> {
+        fs::remove_file(&self.init_escrow_path)?;
+        sync_parent(&self.init_escrow_path)
     }
 
     fn unseal(&mut self, body: &Value) -> Response {
@@ -547,6 +946,15 @@ impl Service {
         }
     }
 
+    fn transport_rejection_fingerprint(&self, status: u16, reason: &str) -> String {
+        let mut context = hmac::Context::with_key(&self.audit_key);
+        context.update(b"heptabao.audit.transport-rejection.v1");
+        context.update(&status.to_le_bytes());
+        context.update(&(reason.len() as u64).to_le_bytes());
+        context.update(reason.as_bytes());
+        STANDARD.encode(context.sign().as_ref())
+    }
+
     fn request_fingerprint(
         &self,
         method: &str,
@@ -616,6 +1024,42 @@ impl Service {
         self.audit_previous.copy_from_slice(tag.as_ref());
         Ok(())
     }
+}
+
+fn constant_time_equal(left: &[u8; 32], right: &[u8; 32]) -> bool {
+    bool::from(left.as_slice().ct_eq(right.as_slice()))
+}
+
+fn decode_secret_32(value: &str) -> Option<Zeroizing<[u8; 32]>> {
+    let decoded = if value.len() == 64 {
+        decode_hex(value)
+    } else {
+        STANDARD.decode(value).ok()
+    }?;
+    let mut decoded = Zeroizing::new(decoded);
+    if decoded.len() != 32 {
+        return None;
+    }
+    let mut output = Zeroizing::new([0_u8; 32]);
+    output.copy_from_slice(&decoded);
+    decoded.zeroize();
+    Some(output)
+}
+
+fn sibling_with_suffix(path: &Path, suffix: &str) -> Result<PathBuf, std::io::Error> {
+    let name = path
+        .file_name()
+        .ok_or_else(|| std::io::Error::other("path has no file name"))?
+        .to_string_lossy();
+    Ok(path.with_file_name(format!("{name}{suffix}")))
+}
+
+fn sync_parent(path: &Path) -> Result<(), std::io::Error> {
+    File::open(
+        path.parent()
+            .ok_or_else(|| std::io::Error::other("path has no parent"))?,
+    )?
+    .sync_all()
 }
 
 fn private_directory(path: &Path) -> Result<(), std::io::Error> {

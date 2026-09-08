@@ -135,7 +135,15 @@ pub fn serve(config: Config) -> Result<(), String> {
                         };
                         (response, is_head)
                     }
-                    Err(error) => (Response::error(error.status, error.message), false),
+                    Err(error) => {
+                        let response = match service.lock() {
+                            Ok(mut service) => {
+                                service.handle_transport_rejection(error.status, error.message)
+                            }
+                            Err(_) => Response::error(503, "service state is unavailable"),
+                        };
+                        (response, false)
+                    }
                 };
                 let _ = write_response(&mut stream, response, head);
             });
