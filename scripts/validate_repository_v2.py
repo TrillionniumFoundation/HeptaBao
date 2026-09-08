@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import glob
+import importlib.util
 import re
 import sys
 import tomllib
@@ -57,6 +58,16 @@ FALSE_CLAIMS = {
 }
 
 CURRENT_DOCUMENTS = (README_PATH, CURRENT_DOCUMENTATION_PATH, MODULE_INDEX_PATH)
+
+
+def validate_compatibility_corpus() -> list[str]:
+    path = ROOT / "scripts/validate_compatibility_corpus.py"
+    spec = importlib.util.spec_from_file_location("heptabao_compatibility_corpus", path)
+    if spec is None or spec.loader is None:
+        return ["unable to load compatibility corpus validator"]
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return list(module.validate(ROOT))
 
 
 def display_path(path: Path) -> str:
@@ -373,6 +384,8 @@ def validate() -> list[str]:
             errors.append("capability matrix cannot list implemented packages as planned")
     errors.extend(validate_g4_contracts(package_names, by_name, planned))
     errors.extend(validate_current_documentation(plan_id, package_names))
+
+    errors.extend(validate_compatibility_corpus())
 
     entries = blockers.get("repository_blockers", [])
     if not isinstance(entries, list):

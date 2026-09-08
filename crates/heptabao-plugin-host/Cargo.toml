@@ -1,0 +1,15 @@
+[package]
+name = "heptabao-plugin-host"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+heptabao-domain = { path = "../heptabao-domain" }
+heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
+ring = "=0.17.14"
+zeroize = "=1.8.1"
+
+[lints]
+workspace = true

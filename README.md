@@ -6,11 +6,11 @@ Do not use this source to protect real secrets. Do not place live credentials, u
 
 ## Current repository state
 
-The current workspace contains **44 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **45 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
-The current candidate now includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests. It still lacks the production peer network/server composition, provider qualification, the complete network/operator surface, complete identity/MFA/external-auth methods, real format migration, a sandboxed dynamic-secrets plugin runtime, a complete independently observed compatibility corpus and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin process boundary; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. It still lacks production Raft peer/server composition, qualified sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration, fixtures for 54 compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
 ## Current source of truth
 
@@ -64,6 +64,8 @@ The read-only V2.1 workflows validate the immutable exact PR head and the real p
 - `docs/architecture/HEPTABAO_V2_1_DURABLE_RUNTIME_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md`
+- `docs/modules/heptabao-plugin-host.md`
+- `qa/openbao-acceptance/complete_surface_corpus_v1.json`
 - `docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md`
 
 Every workspace package has exactly one module guide. V3 guides contain module-specific API ownership, state, invariants, failure/reconciliation, concurrency, security, persistence, observability, operations, tests and evolution boundaries.

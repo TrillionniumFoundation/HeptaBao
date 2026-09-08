@@ -1,6 +1,6 @@
 # HeptaBao module documentation index
 
-Current status: `V2.2 / 44 WORKSPACE PACKAGES`
+Current status: `V2.3 / 45 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -40,6 +40,7 @@ The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`
 | `heptabao-platform-bakeoff` | dependency bakeoff contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-platform-bakeoff.md` |
 | `heptabao-platform-contracts` | runtime TLS and Raft provider contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-platform-contracts.md` |
 | `heptabao-plugin-contracts` | plugin lifecycle and outcome contracts | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-plugin-contracts.md` |
+| `heptabao-plugin-host` | sandbox-wrapper process boundary and dynamic lease coordination | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-plugin-host.md` |
 | `heptabao-policy` | default deny path authorization | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-policy.md` |
 | `heptabao-protocol` | protocol and request contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-protocol.md` |
 | `heptabao-proxy` | local proxy credential and header boundary | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-proxy.md` |

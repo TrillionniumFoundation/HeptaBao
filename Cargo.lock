@@ -653,6 +653,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-plugin-host"
+version = "0.1.0"
+dependencies = [
+ "heptabao-domain",
+ "heptabao-plugin-contracts",
+ "ring",
+ "zeroize",
+]
+
+[[package]]
 name = "heptabao-policy"
 version = "0.1.0"
 dependencies = [

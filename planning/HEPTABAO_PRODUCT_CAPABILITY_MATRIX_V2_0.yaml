@@ -183,6 +183,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-plugin-contracts/src/lib.rs
   guide: docs/modules/heptabao-plugin-contracts.md
+- crate: heptabao-plugin-host
+  domain: sandbox-wrapper process boundary and dynamic lease coordination
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-plugin-host/src/lib.rs
+  guide: docs/modules/heptabao-plugin-host.md
 - crate: heptabao-policy
   domain: default deny path authorization
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -270,12 +276,12 @@ modules:
 planned_modules:
 - production-barrier-and-kms-provider
 - production-storage-journal-anchor-conformance
-- complete-network-operator-surface-and-rate-limiting
+- production-network-load-slo-and-platform-qualification
 - complete-identity-mfa-and-external-auth-methods
 - networked-raft-ha-service-integration
 - interruption-safe-format-migration
-- sandboxed-plugin-host-and-dynamic-secrets
-- complete-compatibility-corpus
+- qualified-sandbox-provider-and-durable-plugin-service-integration
+- remaining-compatibility-fixtures-and-independent-exact-head-observation
 - destructive-platform-qualification
 claims:
   qualification: false

@@ -169,18 +169,20 @@ repository_blockers:
 - id: HB-V2-REP-011
   class: REPOSITORY_CONTROLLED
   severity: CRITICAL
-  title: bounded production TLS network and operator query surface is incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
+  title: bounded TLS network and operator query surface is implemented and awaiting unchanged-head review
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - crates/heptabao-server/src/http.rs
   - crates/heptabao-server/src/service.rs
   - docs/modules/heptabao-server.md
+  - docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md
   - qa/single-node/smoke.py
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
-  - implement and test bounded-tls-network-service
+  - preserve bounded TLS parsing connection deadlines peer rate limiting audited rejections and root-only operator queries
   - bind source guide exact-head and prospective-main-merge evidence
-  - retain authority false until independent admission
+  - obtain eligible non-author review on the unchanged exact head
+  - retain production authority false until external load platform and security admission
 - id: HB-V2-REP-012
   class: REPOSITORY_CONTROLLED
   severity: CRITICAL
@@ -230,25 +232,40 @@ repository_blockers:
 - id: HB-V2-REP-015
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: sandboxed plugin host and dynamic secret lease lifecycle are incomplete
+  title: plugin host foundation exists but durable service integration and qualified sandbox providers are incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - crates/heptabao-plugin-contracts/src/lib.rs
+  - crates/heptabao-plugin-host/src/lib.rs
+  - crates/heptabao-lease/src/lib.rs
+  - docs/modules/heptabao-plugin-host.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
-  - implement and test sandboxed-plugin-host-and-dynamic-secrets
+  - preserve checksum-pinned wrapper-only process entry bounded framing environment clearing timeout classification and uncertainty fencing
+  - persist plugin invocation and dynamic lease intent outcome and reconciliation through the durable service
+  - qualify real operating-system sandbox providers and at least one dynamic provider connector
+  - execute crash timeout revocation restart and rolling-upgrade destructive qualification
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
 - id: HB-V2-REP-016
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: complete independently observed OpenBao compatibility corpus is incomplete
+  title: exact compatibility denominator is enforced but 54 surface fixtures remain incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
+  - crates/heptabao-compatibility/src/lib.rs
   - qa/openbao-acceptance/acceptance.py
+  - qa/openbao-acceptance/complete_surface_corpus_v1.json
+  - scripts/validate_compatibility_corpus.py
+  - tests/repository/test_compatibility_corpus_v2_3.py
+  - docs/modules/heptabao-compatibility.md
   - docs/compatibility/HEPTABAO_SINGLE_NODE_ACCEPTANCE.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
-  - implement and test complete-compatibility-corpus
+  - retain all 60 inventoried surfaces exactly once and map every implemented case exactly once
+  - implement executable positive hostile and side-effect fixtures for the remaining 54 surfaces
+  - require exact inventory Oracle artifact candidate artifact and independent-origin binding before admission
+  - execute the complete corpus against an independently deployed Oracle and current exact candidate head
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
 external_blockers:

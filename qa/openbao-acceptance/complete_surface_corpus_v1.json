@@ -1,0 +1,614 @@
+{
+  "schema": "heptabao.compatibility-corpus.v1",
+  "profile_id": "openbao_v2_6_2_complete_surface_denominator",
+  "target": {
+    "product": "OpenBao",
+    "version": "2.6.2",
+    "baseline_id": "HB-ORACLE-OPENBAO-V2_6_2"
+  },
+  "inventory": {
+    "path": "oracle/inventory/openbao-v2.6.2/surface-catalog.yaml",
+    "sha256": "50ee59140ba9f69a69dd1e1f965c0b7cad63e47455cac6e50def0659bff40869",
+    "surface_count": 60,
+    "category_count": 11
+  },
+  "coverage_summary": {
+    "implemented_surface_count": 6,
+    "defined_not_implemented_surface_count": 54,
+    "fixture_case_count": 38,
+    "independently_observed_current_exact_head_surface_count": 0
+  },
+  "surfaces": [
+    {
+      "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 2,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kv.mount",
+        "transit.mount"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 3,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "token.policy",
+        "token.write_denied",
+        "token.denial_no_effect"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-IDENTITY",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-TOKEN",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "token.create",
+        "token.revoke",
+        "token.create_expiring",
+        "token.expired_denied"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "category": "core_system",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-TOKEN",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 3,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "token.read_allowed",
+        "token.revoked_denied",
+        "token.invalid_denied"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-USERPASS",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-APPROLE",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-CERT",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-LDAP",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-RADIUS",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KERBEROS",
+      "category": "auth_methods",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KV",
+      "category": "secret_engines",
+      "criticality": "DATA_DURABILITY_CRITICAL",
+      "minimum_observations": 17,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kv.write_v1",
+        "kv.read_v1",
+        "kv.write_v2",
+        "kv.read_old_version",
+        "kv.cas_rejected",
+        "kv.cas_no_effect",
+        "kv.list",
+        "kv.soft_delete",
+        "kv.deleted_read",
+        "kv.deleted_metadata",
+        "kv.undelete",
+        "kv.restored_read",
+        "kv.destroy_v1",
+        "kv.destroyed_read",
+        "kv.destroyed_metadata",
+        "kv.metadata_write",
+        "kv.metadata_read"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TRANSIT",
+      "category": "secret_engines",
+      "criticality": "CRYPTO_CRITICAL",
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "transit.create_key",
+        "transit.read_key",
+        "transit.encrypt_v1",
+        "transit.decrypt_v1",
+        "transit.rotate",
+        "transit.read_rotated_key",
+        "transit.encrypt_v2",
+        "transit.decrypt_v2",
+        "transit.decrypt_old_after_rotation"
+      ],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TOTP",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKI",
+      "category": "secret_engines",
+      "criticality": "CRYPTO_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKIEXT",
+      "category": "secret_engines",
+      "criticality": "CRYPTO_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-SSH",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-DATABASE",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
+      "category": "secret_engines",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-POSTGRESQL",
+      "category": "database_providers",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-MYSQL",
+      "category": "database_providers",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-CASSANDRA",
+      "category": "database_providers",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-INFLUXDB",
+      "category": "database_providers",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-VALKEY",
+      "category": "database_providers",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-FILE",
+      "category": "audit_devices",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-HTTP",
+      "category": "audit_devices",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SOCKET",
+      "category": "audit_devices",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
+      "category": "audit_devices",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
+      "category": "storage_backends",
+      "criticality": "DATA_DURABILITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-RAFT",
+      "category": "storage_backends",
+      "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-AUTH",
+      "category": "plugin_classes",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-SECRET",
+      "category": "plugin_classes",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
+      "category": "plugin_classes",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-KMS",
+      "category": "plugin_classes",
+      "criticality": "CRYPTO_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-MTLS",
+      "category": "cluster_ha",
+      "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-FORWARDING",
+      "category": "cluster_ha",
+      "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-READ-STANDBY",
+      "category": "cluster_ha",
+      "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-STEPDOWN",
+      "category": "cluster_ha",
+      "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
+      "category": "cluster_ha",
+      "criticality": "OPERATOR_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-EDGE-HTTP-TLS",
+      "category": "client_operator",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-CLI-ROOT",
+      "category": "client_operator",
+      "criticality": "OPERATOR_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-AGENT",
+      "category": "client_operator",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PROXY",
+      "category": "client_operator",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-OPENAPI-UI",
+      "category": "client_operator",
+      "criticality": "COMPATIBILITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-OPERATIONS",
+      "category": "client_operator",
+      "criticality": "OPERATOR_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-TREE",
+      "category": "namespace_workflow",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
+      "category": "namespace_workflow",
+      "criticality": "CRYPTO_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
+      "category": "namespace_workflow",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-SELF-INIT",
+      "category": "namespace_workflow",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
+      "category": "migration",
+      "criticality": "OPERATOR_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
+      "category": "migration",
+      "criticality": "DATA_DURABILITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
+      "category": "migration",
+      "criticality": "SECURITY_CRITICAL",
+      "minimum_observations": 1,
+      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+      "fixture_case_ids": [],
+      "independent_observation_state": "EXTERNAL_REQUIRED"
+    }
+  ],
+  "claims": {
+    "complete_fixture_coverage": false,
+    "independent_observation_complete": false,
+    "compatibility_claim": false,
+    "production_authority": false,
+    "authority_effect": "NONE"
+  }
+}
