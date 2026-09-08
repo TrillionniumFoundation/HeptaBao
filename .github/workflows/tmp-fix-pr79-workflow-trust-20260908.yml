@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Patch the closed upload registry
+      - name: Patch and remove the temporary controller
         shell: bash
         run: |
           set -euo pipefail
@@ -35,10 +35,11 @@ jobs:
 
           registry_path = Path("scripts/workflow_trust_action_registry_v2.json")
           registry = json.loads(registry_path.read_text(encoding="utf-8"))
+          literal_runner_path = "$" + "{{ runner.temp }}/heptabao-openbao-replacement-source/"
           entry = {
               "file": "codex-openbao-replacement-source-export.yml",
               "location": "workflow.jobs.export.steps[2]",
-              "path": "${{ runner.temp }}/heptabao-openbao-replacement-source/",
+              "path": literal_runner_path,
           }
           uploads = registry.get("uploads")
           if not isinstance(uploads, list):
@@ -70,8 +71,9 @@ jobs:
               tests = tests.replace(old, new)
           test_path.write_text(tests, encoding="utf-8")
           PY
+          git rm .github/workflows/tmp-fix-pr79-workflow-trust-20260908.yml
 
-      - name: Validate the exact repair
+      - name: Validate the exact repair without the write controller
         shell: bash
         run: |
           set -euo pipefail
@@ -82,13 +84,13 @@ jobs:
           python scripts/validate_workflow_trust.py
           python -m compileall -q scripts tests
           git diff --check
+          git diff --cached --check
 
       - name: Publish one reviewed source repair
         shell: bash
         run: |
           set -euo pipefail
           branch=codex/openbao-replacement-full-closure-20260908
-          git rm .github/workflows/tmp-fix-pr79-workflow-trust-20260908.yml
           changed="$(git status --short | sed 's/^...//')"
           test -n "$changed"
           while IFS= read -r path; do
