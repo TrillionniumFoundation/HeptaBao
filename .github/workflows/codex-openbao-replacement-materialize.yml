@@ -26,9 +26,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(sha256sum .g1/codex-openbao-replacement/seal.patch.gz.b64 | cut -d' ' -f1)" = "2b23e39d115ae6a478364e9d1219fbec327de1aa2b4c246dff4664e948dc5620"
+          test "$(sha256sum .g1/codex-openbao-replacement/seal.patch.gz.b64 | cut -d' ' -f1)" = "c22fc6f3624b9825f63cc44470aadb2bb84367dac6bc3d9b782db72497a5962b"
           base64 --decode .g1/codex-openbao-replacement/seal.patch.gz.b64 | gzip --decompress > "$RUNNER_TEMP/seal.patch"
-          test "$(sha256sum "$RUNNER_TEMP/seal.patch" | cut -d' ' -f1)" = "368caf21aa2dbd78f90edb7925a7d0b38dbd55d2a6767b52b4d60d91a963acee"
+          test "$(sha256sum "$RUNNER_TEMP/seal.patch" | cut -d' ' -f1)" = "c17e8d5ddd16f9d8f699f307f68c318c3b5b54b9d43c5462f379685ffd3f759a"
           git apply --check "$RUNNER_TEMP/seal.patch"
           git apply "$RUNNER_TEMP/seal.patch"
           git diff --check
