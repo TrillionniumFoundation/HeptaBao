@@ -38,6 +38,50 @@ jobs:
           Path('/tmp/patch.py').write_bytes(lzma.decompress(base64.b64decode(encoded)))
           PY
           python /tmp/patch.py
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          cargo = Path('crates/heptabao-server/Cargo.toml')
+          cargo_text = cargo.read_text(encoding='utf-8')
+          old = 'zeroize = "=1.8.1"\n'
+          if cargo_text.count(old) != 1:
+              raise SystemExit('unexpected heptabao-server dependency block')
+          cargo.write_text(cargo_text.replace(old, old + 'subtle = "=2.6.1"\n'), encoding='utf-8')
+
+          service = Path('crates/heptabao-server/src/service.rs')
+          text = service.read_text(encoding='utf-8')
+          import_anchor = 'use serde_json::{Value, json};\n'
+          if text.count(import_anchor) != 1:
+              raise SystemExit('unexpected serde_json import')
+          text = text.replace(import_anchor, import_anchor + 'use subtle::ConstantTimeEq;\n')
+          text = text.replace(
+              'ring::constant_time::verify_slices_are_equal(',
+              'constant_time_equal(',
+          )
+          text, count = re.subn(
+              r'constant_time_equal\((.*?)\)\s*\.is_err\(\)',
+              lambda match: '!constant_time_equal(' + match.group(1) + ')',
+              text,
+              flags=re.DOTALL,
+          )
+          if count != 3:
+              raise SystemExit(f'expected three constant-time comparisons, found {count}')
+          helper_anchor = 'fn decode_secret_32(value: &str) -> Option<Zeroizing<[u8; 32]>> {'
+          if text.count(helper_anchor) != 1:
+              raise SystemExit('unexpected secret decoder location')
+          helper = '''fn constant_time_equal(left: &[u8; 32], right: &[u8; 32]) -> bool {
+              bool::from(left.as_slice().ct_eq(right.as_slice()))
+          }
+
+          '''
+          text = text.replace(helper_anchor, helper + helper_anchor)
+          mutable = 'let mut file = options.open(&self.init_escrow_path)?;'
+          if text.count(mutable) != 1:
+              raise SystemExit('unexpected escrow file open')
+          text = text.replace(mutable, 'let file = options.open(&self.init_escrow_path)?;')
+          service.write_text(text, encoding='utf-8')
+          PY
           rm -rf .g1/openbao-gap-r1
           rm .github/workflows/tmp-openbao-gap-closure-r1.yml
           python -m compileall -q qa scripts tests
