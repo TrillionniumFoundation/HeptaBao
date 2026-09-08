@@ -1,6 +1,6 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service};
+use crate::{Response, Service, crypto, service::WireRejection};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -212,12 +212,19 @@ pub fn serve(config: Config) -> Result<(), String> {
                         deadline: Instant::now() + timeout,
                     },
                 );
+                let attempt_id = match crypto::random::<16>() {
+                    Ok(value) => value,
+                    Err(_) => return,
+                };
                 if rate_limited {
-                    let _ = write_response(
-                        &mut stream,
-                        Response::error(429, "request rate limit exceeded"),
-                        false,
+                    let response = audited_wire_rejection(
+                        &service,
+                        &attempt_id,
+                        WireRejection::RateLimited,
+                        429,
+                        "request rate limit exceeded",
                     );
+                    let _ = write_response(&mut stream, response, false);
                     return;
                 }
                 let parsed = read_request(&mut stream, timeout);
@@ -236,7 +243,16 @@ pub fn serve(config: Config) -> Result<(), String> {
                         };
                         (response, is_head)
                     }
-                    Err(error) => (Response::error(error.status, error.message), false),
+                    Err(error) => (
+                        audited_wire_rejection(
+                            &service,
+                            &attempt_id,
+                            WireRejection::ParseRejected,
+                            error.status,
+                            error.message,
+                        ),
+                        false,
+                    ),
                 };
                 let _ = write_response(&mut stream, response, head);
             });
@@ -245,6 +261,21 @@ pub fn serve(config: Config) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+fn audited_wire_rejection(
+    service: &Arc<Mutex<Service>>,
+    attempt_id: &[u8; 16],
+    rejection: WireRejection,
+    status: u16,
+    message: &'static str,
+) -> Response {
+    match service.lock() {
+        Ok(mut service) => {
+            service.handle_wire_rejection(attempt_id, rejection, status, message)
+        }
+        Err(_) => Response::error(503, "service state is unavailable"),
+    }
 }
 
 struct ConnectionGuard(Arc<AtomicUsize>);

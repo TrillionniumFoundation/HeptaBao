@@ -992,6 +992,77 @@ fn result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_r
 }
 
 #[test]
+fn wire_rejections_are_audited_without_request_material()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let before = service.audit_sequence;
+    let response = service.handle_wire_rejection(
+        &[7; 16],
+        WireRejection::ParseRejected,
+        400,
+        "invalid wire request",
+    );
+    assert_eq!(response.status, 400);
+    assert_eq!(service.audit_sequence, before + 2);
+    drop(service);
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    for forbidden in ["secret/data/private", "bearer-secret", "request-body-secret"] {
+        assert!(!audit.windows(forbidden.len()).any(|bytes| bytes == forbidden.as_bytes()));
+    }
+    let _ = root.service()?;
+    Ok(())
+}
+
+#[test]
+fn initialization_response_audit_failure_publishes_no_state_and_is_retryable()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let body = json!({"secret_shares":3,"secret_threshold":2});
+    let fingerprint = service.request_fingerprint("PUT", "sys/init", "", "");
+    let event = AuditUnsigned {
+        schema: 2,
+        sequence: service.audit_sequence + 1,
+        previous: STANDARD.encode(service.audit_previous),
+        time: 100,
+        kind: "request".into(),
+        path_digest: fingerprint,
+        status: None,
+    };
+    let payload = serde_json::to_vec(&event)?;
+    let mac = STANDARD.encode(hmac::sign(&service.audit_key, &payload).as_ref());
+    let next = serde_json::to_vec(&AuditRecord { event, mac })?.len() + 1;
+    service.audit_capacity = service.audit.metadata()?.len() + next as u64;
+    let response = call(&mut service, "PUT", "sys/init", "", body.clone());
+    assert_eq!(response.status, 503);
+    assert!(!service.initialized());
+    assert!(service.seal.is_none());
+    assert!(!root.path.join("data").exists());
+    assert!(
+        fs::read_dir(&root.path)?
+            .filter_map(Result::ok)
+            .all(|entry| !entry.file_name().to_string_lossy().starts_with(".heptabao-init-"))
+    );
+    drop(service);
+
+    let mut service = root.service()?;
+    let response = call(&mut service, "PUT", "sys/init", "", body);
+    assert_eq!(response.status, 200);
+    let key = response.body["keys_base64"][0]
+        .as_str()
+        .ok_or("missing retry key")?
+        .to_owned();
+    assert!(response.body["root_token"].as_str().is_some());
+    assert!(service.initialized());
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
 fn root_maintenance_routes_compact_snapshot_restore_and_reconcile()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();

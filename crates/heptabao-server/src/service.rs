@@ -13,7 +13,7 @@ use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
     fs::{self, File, OpenOptions},
-    io::{Read, Write},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -144,6 +144,80 @@ impl Response {
     }
 }
 
+#[derive(Clone, Copy)]
+pub(crate) enum WireRejection {
+    RateLimited,
+    ParseRejected,
+}
+
+impl WireRejection {
+    fn code(self) -> &'static [u8] {
+        match self {
+            Self::RateLimited => b"rate-limited",
+            Self::ParseRejected => b"parse-rejected",
+        }
+    }
+}
+
+struct InitializationStage {
+    path: PathBuf,
+    published: bool,
+}
+
+impl InitializationStage {
+    fn create(final_path: &Path) -> Result<Self, io::Error> {
+        if final_path.exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target already exists",
+            ));
+        }
+        let parent = final_path
+            .parent()
+            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+        let metadata = fs::symlink_metadata(parent)?;
+        if !metadata.is_dir() || metadata.file_type().is_symlink() {
+            return Err(io::Error::other("initialization parent is unsafe"));
+        }
+        let suffix = hex(&crypto::random::<16>().map_err(io::Error::other)?);
+        let path = parent.join(format!(".heptabao-init-{suffix}"));
+        let mut builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder.create(&path)?;
+        Ok(Self {
+            path,
+            published: false,
+        })
+    }
+
+    fn publish(&mut self, final_path: &Path) -> Result<bool, io::Error> {
+        if final_path.exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target appeared before publication",
+            ));
+        }
+        fs::rename(&self.path, final_path)?;
+        self.published = true;
+        let parent = final_path
+            .parent()
+            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+        Ok(File::open(parent).and_then(|directory| directory.sync_all()).is_ok())
+    }
+}
+
+impl Drop for InitializationStage {
+    fn drop(&mut self) {
+        if !self.published {
+            let _ = fs::remove_dir_all(&self.path);
+        }
+    }
+}
+
 pub struct Service {
     data_dir: PathBuf,
     audit: File,
@@ -245,6 +319,34 @@ impl Service {
         self.handle_at(method, path, namespace, token, body, now)
     }
 
+    pub(crate) fn handle_wire_rejection(
+        &mut self,
+        attempt_id: &[u8; 16],
+        rejection: WireRejection,
+        status: u16,
+        message: &'static str,
+    ) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
+        let fingerprint = self.wire_rejection_fingerprint(attempt_id, rejection, status);
+        if self
+            .audit_event("wire-rejection", &fingerprint, now, None)
+            .is_err()
+        {
+            return Response::error(503, "wire rejection audit unavailable");
+        }
+        let response = Response::error(status, message);
+        if self
+            .audit_event("wire-response", &fingerprint, now, Some(status))
+            .is_err()
+        {
+            self.recovery_required = true;
+            return Response::error(503, "wire rejection response audit unavailable");
+        }
+        response
+    }
+
     pub fn handle_at(
         &mut self,
         method: &str,
@@ -264,6 +366,19 @@ impl Service {
         {
             erase_json(&mut body);
             return Response::error(503, "audit unavailable before entry");
+        }
+        if path == "sys/init" && matches!(method, "PUT" | "POST") {
+            let (response, response_audited) = self.initialize(&body, now, &fingerprint);
+            erase_json(&mut body);
+            if !response_audited
+                && self
+                    .audit_event("response", &fingerprint, now, Some(response.status))
+                    .is_err()
+            {
+                self.recovery_required = self.initialized();
+                return Response::error(503, "initialization response audit unavailable");
+            }
+            return response;
         }
         let response = self.handle_inner(method, path, namespace, token, &body, now);
         erase_json(&mut body);
@@ -314,9 +429,6 @@ impl Service {
         }
         if path == "sys/seal-status" && method == "GET" {
             return self.seal_status();
-        }
-        if path == "sys/init" && matches!(method, "PUT" | "POST") {
-            return self.initialize(body, now);
         }
         if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
             return self.unseal(body);
@@ -564,43 +676,54 @@ impl Service {
         }))
     }
 
-    fn initialize(&mut self, body: &Value, now: u64) -> Response {
+    fn initialize(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+    ) -> (Response, bool) {
         if self.initialized() {
-            return Response::error(400, "already initialized");
+            return (Response::error(400, "already initialized"), false);
         }
         if body.as_object().is_none_or(|object| {
             object
                 .keys()
                 .any(|key| !matches!(key.as_str(), "secret_shares" | "secret_threshold"))
         }) {
-            return Response::error(400, "unsupported initialization options");
+            return (
+                Response::error(400, "unsupported initialization options"),
+                false,
+            );
         }
         let shares = match bounded_u8_field(body, "secret_shares", 5) {
             Ok(value) => value,
-            Err(message) => return Response::error(400, message),
+            Err(message) => return (Response::error(400, message), false),
         };
         let threshold = match bounded_u8_field(body, "secret_threshold", 3) {
             Ok(value) => value,
-            Err(message) => return Response::error(400, message),
+            Err(message) => return (Response::error(400, message), false),
         };
         if shares == 0 || shares > MAX_SEAL_SHARES || threshold == 0 || threshold > shares {
-            return Response::error(
-                400,
-                "secret shares must be 1..=16 and threshold must be within that set",
+            return (
+                Response::error(
+                    400,
+                    "secret shares must be 1..=16 and threshold must be within that set",
+                ),
+                false,
             );
         }
 
         let seal_key = match crypto::random::<32>() {
             Ok(value) => Zeroizing::new(value),
-            Err(error) => return Response::error(503, error),
+            Err(error) => return (Response::error(503, error), false),
         };
         let barrier_key = match crypto::random::<32>() {
             Ok(value) => Zeroizing::new(value),
-            Err(error) => return Response::error(503, error),
+            Err(error) => return (Response::error(503, error), false),
         };
         let generated_shares = match crypto::split_secret(&seal_key, shares, threshold) {
             Ok(value) => value,
-            Err(error) => return Response::error(503, error),
+            Err(error) => return (Response::error(503, error), false),
         };
         let mut seal = SealMetadata {
             schema: 1,
@@ -613,23 +736,28 @@ impl Service {
         let wrapped =
             match crypto::wrap_barrier_key(&seal_key, &seal.associated_data(), &barrier_key) {
                 Ok(value) => Zeroizing::new(value),
-                Err(error) => return Response::error(503, error),
+                Err(error) => return (Response::error(503, error), false),
             };
         seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
         if let Err(error) = seal.validate() {
-            return Response::error(500, error);
+            return (Response::error(500, error), false);
         }
         let barrier = match AeadBarrier::new(*barrier_key) {
             Ok(value) => value,
-            Err(_) => return Response::error(503, "cannot construct storage provider"),
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot construct storage provider"),
+                    false,
+                );
+            }
         };
         let (auth, root_token) = match AuthState::bootstrap(now) {
             Ok((auth, token)) => (auth, Zeroizing::new(token)),
-            Err(error) => return Response::error(error.status, &error.message),
+            Err(error) => return (Response::error(error.status, &error.message), false),
         };
         let cluster_id = match crypto::random::<16>() {
             Ok(value) => STANDARD.encode(value),
-            Err(error) => return Response::error(503, error),
+            Err(error) => return (Response::error(503, error), false),
         };
         let state = State {
             schema: 1,
@@ -637,37 +765,71 @@ impl Service {
             auth,
             engines: EngineState::default(),
         };
-        if private_directory(&self.data_dir).is_err() {
-            return Response::error(503, "cannot create private data directory");
-        }
-        let durable = match DurableService::create_new(&self.data_dir, barrier, MAX_OPERATIONS) {
+        let mut stage = match InitializationStage::create(&self.data_dir) {
             Ok(value) => value,
             Err(_) => {
-                return Response::error(
-                    503,
-                    "cannot initialize durable state; inspect data directory",
+                return (
+                    Response::error(503, "cannot create private initialization stage"),
+                    false,
                 );
             }
         };
-        self.durable = Some(durable);
+        let mut durable = match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot prepare durable initialization state"),
+                    false,
+                );
+            }
+        };
         let bytes = match serde_json::to_vec(&state) {
             Ok(value) => Zeroizing::new(value),
-            Err(_) => return Response::error(500, "state serialization failed"),
+            Err(_) => return (Response::error(500, "state serialization failed"), false),
         };
-        if let Err(error) = self.commit_state_bytes(&bytes) {
-            return error;
-        }
-        if persist_seal_metadata(&self.data_dir, &seal).is_err() {
-            self.recovery_required = true;
-            self.state = None;
-            self.durable = None;
-            return Response::error(
-                503,
-                "seal metadata persistence failed after initialization; preserve data for recovery",
+        if bytes.len() > MAX_STATE_BYTES {
+            return (
+                Response::error(507, "single-node state capacity exhausted"),
+                false,
             );
         }
-        self.seal = Some(seal);
-        self.state = Some(state);
+        let operation_id = match crypto::random::<16>() {
+            Ok(value) => value,
+            Err(error) => return (Response::error(503, error), false),
+        };
+        let value = match Secret::new(bytes.to_vec()) {
+            Ok(value) => value,
+            Err(_) => return (Response::error(507, "state capacity exhausted"), false),
+        };
+        let request = match PutRequest::new(
+            "heptabao-server",
+            "system",
+            hex(&operation_id),
+            "state",
+            crypto::digest(&bytes),
+            value,
+        ) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(500, "invalid server commit envelope"),
+                    false,
+                );
+            }
+        };
+        if durable.put(request).is_err() {
+            return (
+                Response::error(503, "staged initialization state was rejected"),
+                false,
+            );
+        }
+        if persist_seal_metadata(&stage.path, &seal).is_err() {
+            return (
+                Response::error(503, "cannot prepare seal metadata"),
+                false,
+            );
+        }
+        drop(durable);
 
         let mut keys = Vec::with_capacity(generated_shares.len());
         let mut keys_base64 = Vec::with_capacity(generated_shares.len());
@@ -676,19 +838,58 @@ impl Service {
             keys.push(hex(&encoded));
             keys_base64.push(STANDARD.encode(encoded.as_slice()));
         }
-        let response = Response::ok(json!({
+        let mut response = Response::ok(json!({
             "keys": keys,
             "keys_base64": keys_base64,
             "root_token": root_token.as_str(),
             "recovery_keys": [],
             "recovery_keys_base64": [],
         }));
+        // This is the final secret-release audit gate. It is durable before the
+        // staged directory becomes the active initialized state, so an audit
+        // failure leaves no active state and the exact request is safely retryable.
+        if self
+            .audit_event(
+                "initialization-response-prepared",
+                response_fingerprint,
+                now,
+                Some(200),
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "initialization response audit unavailable; no active state published",
+                ),
+                true,
+            );
+        }
+        let parent_synced = match stage.publish(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "initialization publication failed before activation"),
+                    false,
+                );
+            }
+        };
+        self.seal = Some(seal);
         self.state = None;
         self.durable = None;
         self.barrier_key = None;
         self.unseal_shares.clear();
         self.rekey = None;
-        response
+        if !parent_synced {
+            self.recovery_required = true;
+            if let Some(object) = response.body.as_object_mut() {
+                object.insert(
+                    "warnings".into(),
+                    json!(["initialization published but parent directory sync requires recovery review"]),
+                );
+            }
+        }
+        (response, true)
     }
 
     fn unseal(&mut self, body: &Value) -> Response {
@@ -1464,6 +1665,21 @@ impl Service {
                 "durable state rejected; no response released",
             )),
         }
+    }
+
+    fn wire_rejection_fingerprint(
+        &self,
+        attempt_id: &[u8; 16],
+        rejection: WireRejection,
+        status: u16,
+    ) -> String {
+        let mut context = hmac::Context::with_key(&self.audit_key);
+        context.update(b"heptabao.audit.wire-rejection.v1");
+        context.update(&(rejection.code().len() as u64).to_le_bytes());
+        context.update(rejection.code());
+        context.update(&status.to_le_bytes());
+        context.update(attempt_id);
+        STANDARD.encode(context.sign().as_ref())
     }
 
     fn request_fingerprint(

@@ -79,6 +79,23 @@ class Instance:
             self.log.close()
             self.process = None
 
+    def raw_tls_request(self, payload: bytes):
+        with socket.create_connection(("127.0.0.1", self.port), timeout=10) as raw:
+            with self.context.wrap_socket(raw, server_hostname="localhost") as tls:
+                tls.sendall(payload)
+                response = bytearray()
+                while True:
+                    chunk = tls.recv(4096)
+                    if not chunk:
+                        break
+                    response.extend(chunk)
+                    if len(response) > 1024 * 1024:
+                        raise RuntimeError("unbounded raw response")
+        first = bytes(response).split(b"\r\n", 1)[0].split()
+        if len(first) < 2:
+            raise RuntimeError("invalid raw HTTP response")
+        return int(first[1])
+
     def call(self, method, path, body=None, *, token=None, namespace="", extra_headers=None):
         headers = {"Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
         if namespace:
@@ -117,6 +134,28 @@ def run(binary: Path, root: Path, keep_running: bool):
         check("wrong_unseal_denied", instance.call("POST", "sys/unseal", {"key": "00" * 32})[0] >= 400)
         check("unseal", instance.call("POST", "sys/unseal", {"key": key})[0] == 200)
         check("active_health", instance.call("GET", "sys/health")[0] == 200)
+        audit_path = root / "audit.jsonl"
+        audit_before = len(audit_path.read_bytes().splitlines())
+        leaked_token = "wire-token-must-not-appear"
+        leaked_body = "wire-body-must-not-appear"
+        raw_request = (
+            "POST /v1/secret/data/wire-sensitive HTTP/1.1\r\n"
+            "Host: localhost\r\n"
+            f"X-Vault-Token: {leaked_token}\r\n"
+            "Content-Length: 25\r\n"
+            "Content-Length: 25\r\n\r\n"
+            f'{{"value":"{leaked_body}"}}'
+        ).encode()
+        check("wire_parse_rejection_status", instance.raw_tls_request(raw_request) == 400)
+        audit_bytes = audit_path.read_bytes()
+        check(
+            "wire_parse_rejection_audited",
+            len(audit_bytes.splitlines()) == audit_before + 2,
+        )
+        check(
+            "wire_rejection_audit_redacted",
+            all(value.encode() not in audit_bytes for value in (leaked_token, leaked_body, "wire-sensitive")),
+        )
         marker = "synthetic-secret-" + secrets.token_hex(32)
         check("kv_write", instance.call("POST", "secret/data/item", {"data": {"value": marker}})[0] == 200)
         status, read = instance.call("GET", "secret/data/item?version=1")
