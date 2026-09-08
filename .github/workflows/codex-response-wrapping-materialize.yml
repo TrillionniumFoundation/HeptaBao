@@ -60,16 +60,19 @@ jobs:
           audit_start = text.rfind("\n", 0, audit_event) + 1
           text = text[:fingerprint_start] + text[audit_start:]
 
-          for signature in (
-              "pub fn handle_at_with_wrap_ttl(",
-              "fn handle_inner(",
-              "fn wrapping_token_route(",
+          for function_name in (
+              "handle_at_with_wrap_ttl(",
+              "handle_inner(",
+              "wrapping_token_route(",
           ):
-              offset = text.find(signature)
+              offset = text.find(function_name)
               if offset < 0:
-                  raise SystemExit(f"service signature not found: {signature}")
+                  raise SystemExit(f"service function not found: {function_name}")
               line_start = text.rfind("\n", 0, offset) + 1
-              indent = text[line_start:offset]
+              indent_end = line_start
+              while indent_end < len(text) and text[indent_end] in " \t":
+                  indent_end += 1
+              indent = text[line_start:indent_end]
               attribute = (
                   f"{indent}#[expect(\n"
                   f"{indent}    clippy::too_many_arguments,\n"
