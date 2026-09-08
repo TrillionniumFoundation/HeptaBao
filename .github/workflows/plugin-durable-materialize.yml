@@ -32,8 +32,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          mapfile -t parts < <(find .github/payload/plugin-durable -maxdepth 1 -type f -name 'part-*' -print | LC_ALL=C sort)
-          test "${#parts[@]}" -eq 4
+          parts=(
+            .github/payload/plugin-durable/part-000
+            .github/payload/plugin-durable/part-001a
+            .github/payload/plugin-durable/part-001b
+            .github/payload/plugin-durable/part-002
+            .github/payload/plugin-durable/part-003
+          )
+          for part in "${parts[@]}"; do test -f "$part"; done
           cat "${parts[@]}" > "$RUNNER_TEMP/plugin-durable.b64"
           base64 --decode "$RUNNER_TEMP/plugin-durable.b64" > "$RUNNER_TEMP/plugin-durable.tar.gz"
           echo "$OVERLAY_SHA256  $RUNNER_TEMP/plugin-durable.tar.gz" | sha256sum --check --strict
