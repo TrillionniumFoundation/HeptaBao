@@ -31,7 +31,7 @@ jobs:
           test "$(sha256sum crates/heptabao-server/src/service_tests.rs | cut -d' ' -f1)" = "1831f1e04211568780df47aa88b101023761fd16e21fb49c6f93c5e27a4694ae"
           sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/server-maintenance-tranche/payload.sha256)
           cat .g1/codex-openbao-replacement/server-maintenance-tranche/part-* > "$RUNNER_TEMP/server-maintenance.patch.gz.b64"
-          test "$(sha256sum "$RUNNER_TEMP/server-maintenance.patch.gz.b64" | cut -d' ' -f1)" = "544b4cc2f4c9f525e31924e5f9757932b0849c20447193e3f4573860c116120d"
+          test "$(sha256sum "$RUNNER_TEMP/server-maintenance.patch.gz.b64" | cut -d' ' -f1)" = "bc898b1f4ad7db975485c56f74c9a2e3405d5569bb11b84e3d09a761e69a7d42"
           base64 --decode "$RUNNER_TEMP/server-maintenance.patch.gz.b64" > "$RUNNER_TEMP/server-maintenance.patch.gz"
           gzip --test "$RUNNER_TEMP/server-maintenance.patch.gz"
           gzip --decompress --stdout "$RUNNER_TEMP/server-maintenance.patch.gz" > "$RUNNER_TEMP/server-maintenance.patch"
