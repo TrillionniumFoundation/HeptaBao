@@ -80,6 +80,216 @@ fn limited_token(
 }
 
 #[test]
+fn shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let initialized = call(
+        &mut service,
+        "PUT",
+        "sys/init",
+        "",
+        json!({"secret_shares":5,"secret_threshold":3}),
+    );
+    assert_eq!(initialized.status, 200);
+    let old_keys = initialized.body["keys_base64"]
+        .as_array()
+        .ok_or("missing Shamir shares")?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .ok_or("invalid Shamir share")
+                .map(str::to_owned)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let root_token = initialized.body["root_token"]
+        .as_str()
+        .ok_or("missing root token")?
+        .to_owned();
+    assert_eq!(old_keys.len(), 5);
+
+    let first = call(
+        &mut service,
+        "PUT",
+        "sys/unseal",
+        "",
+        json!({"key":old_keys[0]}),
+    );
+    assert_eq!(first.status, 200);
+    assert_eq!(first.body["sealed"], true);
+    assert_eq!(first.body["progress"], 1);
+    let nonce = first.body["nonce"].as_str().ok_or("missing unseal nonce")?;
+    let duplicate = call(
+        &mut service,
+        "PUT",
+        "sys/unseal",
+        "",
+        json!({"key":old_keys[0]}),
+    );
+    assert_eq!(duplicate.body["progress"], 1);
+    assert_eq!(duplicate.body["nonce"], nonce);
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":old_keys[2]}),
+        )
+        .body["progress"],
+        2
+    );
+    let unsealed = call(
+        &mut service,
+        "PUT",
+        "sys/unseal",
+        "",
+        json!({"key":old_keys[4]}),
+    );
+    assert_eq!(unsealed.status, 200);
+    assert_eq!(unsealed.body["sealed"], false);
+
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/rekey",
+            &root_token,
+            json!({"data":{"value":"survives-rekey"}}),
+        )
+        .status,
+        200
+    );
+    let start = call(
+        &mut service,
+        "POST",
+        "sys/rekey/init",
+        &root_token,
+        json!({"secret_shares":4,"secret_threshold":2}),
+    );
+    assert_eq!(start.status, 200);
+    let rekey_nonce = start.body["nonce"]
+        .as_str()
+        .ok_or("missing rekey nonce")?
+        .to_owned();
+    let first_update = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":rekey_nonce,"key":old_keys[1]}),
+    );
+    assert_eq!(first_update.status, 200);
+    assert_eq!(first_update.body["complete"], false);
+    let second_update = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":rekey_nonce,"key":old_keys[3]}),
+    );
+    assert_eq!(second_update.status, 200);
+    assert_eq!(second_update.body["complete"], false);
+    let completed = call(
+        &mut service,
+        "POST",
+        "sys/rekey/update",
+        &root_token,
+        json!({"nonce":rekey_nonce,"key":old_keys[4]}),
+    );
+    assert_eq!(completed.status, 200);
+    assert_eq!(completed.body["complete"], true);
+    let new_keys = completed.body["keys_base64"]
+        .as_array()
+        .ok_or("missing rekey shares")?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .ok_or("invalid rekey share")
+                .map(str::to_owned)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    assert_eq!(new_keys.len(), 4);
+
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":old_keys[0]}),
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_keys[0]}),
+        )
+        .body["progress"],
+        1
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_keys[2]}),
+        )
+        .body["sealed"],
+        false
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/rekey",
+            &root_token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "survives-rekey"
+    );
+    drop(service);
+
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_keys[1]}),
+        )
+        .body["progress"],
+        1
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_keys[3]}),
+        )
+        .body["sealed"],
+        false
+    );
+    Ok(())
+}
+
+#[test]
 fn init_seal_wrong_key_root_policy_kv_restart_and_no_plaintext_disk()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
@@ -149,6 +359,7 @@ fn init_seal_wrong_key_root_policy_kv_restart_and_no_plaintext_disk()
         "data/state.hbs",
         "data/journal.hbj",
         "data/ledger.hbl",
+        "data/seal.json",
         "audit.jsonl",
     ] {
         let bytes = fs::read(root.path.join(file))?;
