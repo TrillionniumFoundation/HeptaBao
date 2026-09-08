@@ -22,11 +22,13 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify exact parent source
+      - name: Verify exact source ancestry and bounded delta
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "8c5f9151585309f79b62be47c3bbc2ca8002b126"
+          base="8c5f9151585309f79b62be47c3bbc2ca8002b126"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git diff --name-only "$base"...HEAD)" = ".github/workflows/openbao-gap-closure-cargo-cache-export.yml"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
       - name: Install exact Rust toolchain and fetch locked dependencies
         shell: bash
@@ -44,7 +46,7 @@ jobs:
           tar -C "$CARGO_HOME" -czf "$output/cargo-home-registry.tar.gz" registry
           cp Cargo.lock "$output/Cargo.lock"
           cp "$RUNNER_TEMP/metadata.json" "$output/metadata.json"
-          printf 'repository=TrillionniumFoundation/HeptaBao\nsource_parent=8c5f9151585309f79b62be47c3bbc2ca8002b126\nworkflow_commit=%s\n' "$(git rev-parse HEAD)" > "$output/source-binding.txt"
+          printf 'repository=TrillionniumFoundation/HeptaBao\nsource_base=8c5f9151585309f79b62be47c3bbc2ca8002b126\nworkflow_commit=%s\n' "$(git rev-parse HEAD)" > "$output/source-binding.txt"
           (cd "$output" && sha256sum cargo-home-registry.tar.gz Cargo.lock metadata.json source-binding.txt > SHA256SUMS)
       - name: Upload exact bounded cache
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
