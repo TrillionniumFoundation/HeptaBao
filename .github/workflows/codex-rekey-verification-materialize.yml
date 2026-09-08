@@ -1,0 +1,78 @@
+name: Codex materialize verified rekey closure
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-full-closure-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-rekey-verification-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Verify and assemble exact patch payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/parts.sha256" <<'EOF'
+          8e5fad037228fac556ddfe67ebba665a21fcdedd1905b0d5b44b5b1862d53465  .g1/codex-openbao-replacement/rekey-verify/part-00
+          4a88ab90f0a30d3888b74d0b647ae5fc9b3be03689e9b63b2114bf1885f4a984  .g1/codex-openbao-replacement/rekey-verify/part-01
+          a7e05affb55562bcf291263513fcb71500d4795369170916a6d4e592afcf01dc  .g1/codex-openbao-replacement/rekey-verify/part-02
+          6bbe7e5f1ff3d1785920ab977f30aef7a4edb64bf44932264a889c5e72f1f462  .g1/codex-openbao-replacement/rekey-verify/part-03
+          d465c8843f424310f8ab62d764eea6491bb58be67157111bcad2875599c42acb  .g1/codex-openbao-replacement/rekey-verify/part-04
+          EOF
+          sha256sum --check "$RUNNER_TEMP/parts.sha256"
+          cat .g1/codex-openbao-replacement/rekey-verify/part-* > "$RUNNER_TEMP/rekey.patch.gz.b64"
+          test "$(sha256sum "$RUNNER_TEMP/rekey.patch.gz.b64" | cut -d' ' -f1)" = "5c615cb9054caebe9cacb3c911926a3966f77bd7d31f7d6ccd09f7ccc23c06d2"
+          base64 --decode "$RUNNER_TEMP/rekey.patch.gz.b64" > "$RUNNER_TEMP/rekey.patch.gz"
+          gzip --test "$RUNNER_TEMP/rekey.patch.gz"
+          gzip --decompress --stdout "$RUNNER_TEMP/rekey.patch.gz" > "$RUNNER_TEMP/rekey.patch"
+          test "$(sha256sum "$RUNNER_TEMP/rekey.patch" | cut -d' ' -f1)" = "f41f0eebde0dd9ba4a19f9aec4c758537cb4f18ce258bc73b940ca2b70ad5eed"
+
+      - name: Apply bounded source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check --verbose "$RUNNER_TEMP/rekey.patch"
+          git apply --verbose "$RUNNER_TEMP/rekey.patch"
+          git diff --check
+          git diff --stat
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Format and qualify verified rekey
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          python scripts/validate_repository_v2.py
+          cargo +1.98.0 test --locked -p heptabao-server
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          git diff --check
+
+      - name: Publish qualified source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .g1/codex-openbao-replacement/rekey-verify
+          rmdir .g1/codex-openbao-replacement 2>/dev/null || true
+          rm -f .github/workflows/codex-rekey-verification-materialize.yml
+          git config user.name "HeptaBao Codex Closure"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(seal): make rekey verification restart-safe"
+          git push origin HEAD:codex/openbao-replacement-full-closure-20260908
