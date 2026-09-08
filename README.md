@@ -6,11 +6,11 @@ Do not use this source to protect real secrets. Do not place live credentials, u
 
 ## Current repository state
 
-The current workspace contains **43 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **44 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
-The current candidate still lacks production provider qualification, the complete network/operator surface, complete identity/MFA/external-auth methods, production Raft/HA, real format migration, a sandboxed dynamic-secrets plugin runtime, a complete independently observed compatibility corpus and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+The current candidate now includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests. It still lacks the production peer network/server composition, provider qualification, the complete network/operator surface, complete identity/MFA/external-auth methods, real format migration, a sandboxed dynamic-secrets plugin runtime, a complete independently observed compatibility corpus and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
 ## Current source of truth
 
