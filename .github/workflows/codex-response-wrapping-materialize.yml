@@ -44,7 +44,6 @@ jobs:
 
           service = Path("crates/heptabao-server/src/service.rs")
           text = service.read_text(encoding="utf-8")
-
           fingerprint = text.find("fn request_fingerprint(")
           if fingerprint < 0:
               raise SystemExit("request_fingerprint function not found")
@@ -101,11 +100,11 @@ jobs:
               raise SystemExit("unexpected wrapping smoke assertion")
           value = value.replace(old, new)
 
-          old_line = '    print("single-node smoke failed: " + type(error).__name__, file=sys.stderr)\n'
+          old_line = '        print("single-node smoke failed: " + type(error).__name__, file=sys.stderr)\n'
           diagnostic = (
-              '    message = str(error)\n'
-              '    safe = message.startswith(("failed scenario: ", "server exited during startup", "TLS listener did not become ready"))\n'
-              '    print("single-node smoke failed: " + (message if safe else type(error).__name__), file=sys.stderr)\n'
+              '        message = str(error)\n'
+              '        safe = message.startswith(("failed scenario: ", "server exited during startup", "TLS listener did not become ready"))\n'
+              '        print("single-node smoke failed: " + (message if safe else type(error).__name__), file=sys.stderr)\n'
           )
           if value.count(old_line) != 1:
               raise SystemExit("unexpected smoke diagnostic line")
