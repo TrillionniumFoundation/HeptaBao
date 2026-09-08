@@ -1,0 +1,39 @@
+name: HeptaBao all-gaps cargo cache export
+
+on:
+  push:
+    branches:
+      - exec/all-gaps-cargo-cache-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust toolchain and fetch lockfile dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 fetch --locked
+          test -d "$CARGO_HOME/registry"
+          mkdir -p "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache"
+          tar -C "$CARGO_HOME" -czf "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache/cargo-home-registry.tar.gz" registry
+          cp Cargo.lock "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache/Cargo.lock"
+          sha256sum "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache/cargo-home-registry.tar.gz" "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache/Cargo.lock" > "$RUNNER_TEMP/heptabao-all-gaps-cargo-cache/SHA256SUMS"
+      - name: Upload bounded cache artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-all-gaps-cargo-cache
+          path: ${{ runner.temp }}/heptabao-all-gaps-cargo-cache/
+          if-no-files-found: error
+          retention-days: 3
