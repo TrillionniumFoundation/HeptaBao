@@ -38,15 +38,17 @@ jobs:
         run: |
           set -euo pipefail
           base="633848024e5315f3def23c035a1dec53f83a62b3"
+          cargo_home="${CARGO_HOME:-$HOME/.cargo}"
           source_out="$RUNNER_TEMP/heptabao-total-gap-source"
           cache_out="$RUNNER_TEMP/heptabao-total-gap-cargo-cache"
           mkdir -p "$source_out" "$cache_out"
+          test -d "$cargo_home/registry"
           git branch --force exact-total-gap "$base"
           git bundle create "$source_out/heptabao-total-gap.bundle" exact-total-gap
           git bundle verify "$source_out/heptabao-total-gap.bundle"
           printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' "$base" "$(git rev-parse "$base^{tree}")" > "$source_out/source-binding.txt"
           (cd "$source_out" && sha256sum heptabao-total-gap.bundle source-binding.txt > SHA256SUMS)
-          tar -C "$CARGO_HOME" -czf "$cache_out/cargo-home-registry.tar.gz" registry
+          tar -C "$cargo_home" -czf "$cache_out/cargo-home-registry.tar.gz" registry
           cp Cargo.lock "$cache_out/Cargo.lock"
           cp "$RUNNER_TEMP/metadata.json" "$cache_out/metadata.json"
           printf 'repository=TrillionniumFoundation/HeptaBao\nsource=%s\n' "$base" > "$cache_out/source-binding.txt"
