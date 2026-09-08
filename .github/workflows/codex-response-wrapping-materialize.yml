@@ -45,7 +45,6 @@ jobs:
 
           service = Path("crates/heptabao-server/src/service.rs")
           text = service.read_text(encoding="utf-8")
-
           fingerprint = text.find("fn request_fingerprint(")
           if fingerprint < 0:
               raise SystemExit("request_fingerprint function not found")
@@ -55,7 +54,6 @@ jobs:
               indent_end += 1
           indent = text[line:indent_end]
           text = text[:line] + f"{indent}#[cfg(test)]\n" + text[line:]
-
           for name in (
               "fn handle_at_with_wrap_ttl(",
               "fn handle_inner(",
@@ -100,6 +98,21 @@ jobs:
           )
           if value.count(old) != 1:
               raise SystemExit("unexpected wrapping smoke assertion")
+          value = value.replace(old, new)
+          old = '''    except Exception as error:
+              # Never print HTTP payloads, bearer credentials, or private key material.
+              print("single-node smoke failed: " + type(error).__name__, file=sys.stderr)
+              raise SystemExit(1) from None
+          '''
+          new = '''    except Exception as error:
+              # Print only fixed scenario/startup classifications, never HTTP payloads or credentials.
+              message = str(error)
+              safe = message.startswith(("failed scenario: ", "server exited during startup", "TLS listener did not become ready"))
+              print("single-node smoke failed: " + (message if safe else type(error).__name__), file=sys.stderr)
+              raise SystemExit(1) from None
+          '''
+          if value.count(old) != 1:
+              raise SystemExit("unexpected smoke error boundary")
           smoke.write_text(value.replace(old, new), encoding="utf-8")
           PY
           git diff --check
