@@ -206,7 +206,9 @@ impl InitializationStage {
         let parent = final_path
             .parent()
             .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
-        Ok(File::open(parent).and_then(|directory| directory.sync_all()).is_ok())
+        Ok(File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .is_ok())
     }
 }
 
@@ -824,10 +826,7 @@ impl Service {
             );
         }
         if persist_seal_metadata(&stage.path, &seal).is_err() {
-            return (
-                Response::error(503, "cannot prepare seal metadata"),
-                false,
-            );
+            return (Response::error(503, "cannot prepare seal metadata"), false);
         }
         drop(durable);
 

@@ -992,8 +992,8 @@ fn result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_r
 }
 
 #[test]
-fn wire_rejections_are_audited_without_request_material()
--> Result<(), Box<dyn std::error::Error>> {
+fn wire_rejections_are_audited_without_request_material() -> Result<(), Box<dyn std::error::Error>>
+{
     let root = Root::new();
     let mut service = root.service()?;
     let before = service.audit_sequence;
@@ -1007,8 +1007,16 @@ fn wire_rejections_are_audited_without_request_material()
     assert_eq!(service.audit_sequence, before + 2);
     drop(service);
     let audit = fs::read(root.path.join("audit.jsonl"))?;
-    for forbidden in ["secret/data/private", "bearer-secret", "request-body-secret"] {
-        assert!(!audit.windows(forbidden.len()).any(|bytes| bytes == forbidden.as_bytes()));
+    for forbidden in [
+        "secret/data/private",
+        "bearer-secret",
+        "request-body-secret",
+    ] {
+        assert!(
+            !audit
+                .windows(forbidden.len())
+                .any(|bytes| bytes == forbidden.as_bytes())
+        );
     }
     let _ = root.service()?;
     Ok(())
@@ -1042,7 +1050,10 @@ fn initialization_response_audit_failure_publishes_no_state_and_is_retryable()
     assert!(
         fs::read_dir(&root.path)?
             .filter_map(Result::ok)
-            .all(|entry| !entry.file_name().to_string_lossy().starts_with(".heptabao-init-"))
+            .all(|entry| !entry
+                .file_name()
+                .to_string_lossy()
+                .starts_with(".heptabao-init-"))
     );
     drop(service);
 

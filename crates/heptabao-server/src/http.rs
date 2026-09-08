@@ -271,9 +271,7 @@ fn audited_wire_rejection(
     message: &'static str,
 ) -> Response {
     match service.lock() {
-        Ok(mut service) => {
-            service.handle_wire_rejection(attempt_id, rejection, status, message)
-        }
+        Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
         Err(_) => Response::error(503, "service state is unavailable"),
     }
 }
