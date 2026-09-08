@@ -1,0 +1,41 @@
+name: Codex OpenBao replacement closure source export
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-full-closure-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact branch head without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bundle exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-openbao-replacement-source"
+          mkdir -p "$output"
+          git bundle create "$output/heptabao-openbao-replacement.bundle" HEAD
+          git bundle verify "$output/heptabao-openbao-replacement.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$output/source-binding.txt"
+          (cd "$output" && sha256sum heptabao-openbao-replacement.bundle > heptabao-openbao-replacement.bundle.sha256)
+
+      - name: Upload bounded exact-source artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-openbao-replacement-source
+          path: ${{ runner.temp }}/heptabao-openbao-replacement-source/
+          if-no-files-found: error
+          retention-days: 3
