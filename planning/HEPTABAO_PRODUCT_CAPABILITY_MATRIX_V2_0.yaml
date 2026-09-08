@@ -184,7 +184,7 @@ modules:
   source: crates/heptabao-plugin-contracts/src/lib.rs
   guide: docs/modules/heptabao-plugin-contracts.md
 - crate: heptabao-plugin-host
-  domain: sandbox-wrapper process boundary and dynamic lease coordination
+  domain: durable sandbox-wrapper invocation and dynamic lease lifecycle
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-plugin-host/src/lib.rs

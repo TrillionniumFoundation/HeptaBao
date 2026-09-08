@@ -7,6 +7,7 @@ publish = false
 
 [dependencies]
 heptabao-domain = { path = "../heptabao-domain" }
+heptabao-durable-service = { path = "../heptabao-durable-service" }
 heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
 ring = "=0.17.14"
 zeroize = "=1.8.1"

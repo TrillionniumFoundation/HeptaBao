@@ -8,11 +8,11 @@ This package owns a fail-closed process boundary between HeptaBao and an externa
 
 ## Public API and ownership
 
-`PluginManifest` binds one enabled `PluginDescriptor` to a checksum-pinned sandbox wrapper, resource limits, an operation allowlist and a bounded environment-name allowlist. `PluginHost<R>` owns host admission and uncertainty fencing for a `SandboxRunner`; `CommandSandboxRunner` is the concrete subprocess transport. `DynamicSecretBroker<R>` owns lease metadata and returns plaintext only in the one-shot `DynamicSecretIssue` result.
+`PluginManifest` binds one enabled `PluginDescriptor` to a checksum-pinned sandbox wrapper, resource limits, an operation allowlist and a bounded environment-name allowlist. `PluginHost<R>` owns host admission and uncertainty fencing for a `SandboxRunner`; `CommandSandboxRunner` is the concrete subprocess transport. `DynamicSecretBroker<R>` owns the in-memory lease state machine. `DurableDynamicSecretBroker<B, R>` composes it with `heptabao-durable-service`, accepts only a validated `PluginMutationContext`, persists an encrypted invocation intent before process entry and returns plaintext only in the one-shot `DynamicSecretIssue` result after durable publication and intent clearance.
 
 ## State and data model
 
-The host is `Active`, `ReconciliationRequired` or `Revoked`. A dynamic lease is `Active`, `Expired`, `Revoked` or `ReconciliationRequired`, and carries owner, canonical scope, issuance and expiry ticks, renewable flag, generation and a SHA-256 digest of the last returned secret. Secret request and response bytes are held in `SecretValue` or `Zeroizing` buffers and are not stored in lease records.
+The host is `Active`, `ReconciliationRequired` or `Revoked`. A dynamic lease is `Active`, `Expired`, `Revoked` or `ReconciliationRequired`, and carries owner, canonical scope, issuance and expiry ticks, renewable flag, generation and a SHA-256 digest of the last returned secret. `HBDI` records contain only operation, lease metadata, previous projection and a request digest; `HBDL` records contain only the bounded lease projection. Both cross the injected authenticated Barrier through the durable service. Secret request and response bytes are held in `SecretValue` or `Zeroizing` buffers and are never stored in either record.
 
 ## Invariants and authorization
 
@@ -20,11 +20,11 @@ Only operations declared by the enabled descriptor and manifest can cross the bo
 
 ## Failure, retry and reconciliation
 
-Failure before process entry is retry-classifiable. Any failure after request publication, timeout, non-success exit, malformed response or over-bound response fences the host as outcome-unknown. No subsequent call is accepted until an explicit proof is supplied and both executable bindings pass admission again. The current proof object is repository-side metadata; a production service must obtain authoritative provider readback before constructing it.
+Failure before process entry is retry-classifiable only after the durable invocation intent has itself been durably removed. Any failure after request publication, timeout, non-success exit, malformed response, over-bound response, lease-publication failure or intent-clear failure fences the host as outcome-unknown. The pending `HBDI` survives restart and blocks every later call. Reconciliation revalidates both executable bindings, validates an authoritative provider decision, durably publishes or restores the lease projection, durably clears the intent and only then reactivates the host. Repository code cannot manufacture provider readback.
 
 ## Concurrency and ordering
 
-`PluginHost` and `DynamicSecretBroker` require exclusive mutable access and contain no interior synchronization. Callers must serialize one plugin generation or place the host behind a bounded actor. The request frame is written completely before response observation; lease generation changes only after a completed response or an explicit reconciliation decision.
+`PluginHost`, `DynamicSecretBroker` and `DurableDynamicSecretBroker` require exclusive mutable access and contain no interior synchronization. Exactly one durable plugin invocation may be pending; a second operation is rejected rather than queued. Ordering is durable intent → sandbox entry → bounded response → encrypted lease publication → encrypted intent deletion → plaintext release. Reconciliation uses the same single-writer ordering.
 
 ## Security and privacy
 
@@ -32,7 +32,7 @@ The concrete runner invokes only the sandbox wrapper and supplies the plugin pat
 
 ## Persistence and compatibility
 
-The wire format is versioned by the descriptor. Requests use `HBP1`, protocol version, operation tag, payload length and payload; responses use `HBR1`, payload length and payload, with exact-length validation and no trailing bytes. The package currently owns no durable lease journal. A service integration must persist invocation intent and reconciliation state through the existing durable operation ledger before production use.
+The process wire format is versioned by the descriptor. Requests use `HBP1`, protocol version, operation tag, payload length and payload; responses use `HBR1`, payload length and payload, with exact-length validation and no trailing bytes. Durable records use strict `HBDI` and `HBDL` version 1 encodings with exact-length and trailing-byte rejection. The existing durable service owns snapshot, journal, replay ledger, writer fencing and Barrier authentication; this package owns the plugin-specific intent and lease semantics layered on it.
 
 ## Observability
 
@@ -44,8 +44,8 @@ Operators install the plugin executable and sandbox wrapper outside the reposito
 
 ## Tests and executable evidence
 
-`cargo +1.98.0 test -p heptabao-plugin-host` covers undeclared operations and environment names, pre-entry versus post-entry failure, mandatory reconciliation, monotonic dynamic lease issue/renew/revoke and secret-redacted debug output. On Unix, `command_runner_uses_the_verified_wrapper_and_bounded_frame` launches a real checksum-pinned wrapper process, verifies inherited environment clearing and round-trips the bounded `HBP1`/`HBR1` frame.
+`cargo +1.98.0 test -p heptabao-plugin-host` covers undeclared operations and environment names, pre-entry versus post-entry failure, mandatory reconciliation, monotonic dynamic lease issue/renew/revoke, durable intent recovery, encrypted lease reopen, capacity failure after process entry, plaintext withholding and secret-redacted debug output. On Unix, `command_runner_uses_the_verified_wrapper_and_bounded_frame` launches a real checksum-pinned wrapper process, verifies inherited environment clearing and round-trips the bounded `HBP1`/`HBR1` frame.
 
 ## Evolution and open boundaries
 
-Open work includes an independently qualified Linux/macOS/Windows sandbox provider, process-tree termination guarantees, authenticated multiplexed transport, durable invocation and lease journaling, server routing, database and cloud provider connectors, rolling plugin upgrades and destructive provider qualification. These remain explicit in `HB-V2-REP-015`; this package alone grants no production or dynamic-secret authority.
+Repository-controlled durable invocation and lease journaling are implemented and remain review-required. External work includes independently qualified Linux/macOS/Windows sandbox providers, process-tree termination guarantees, authenticated multiplexed transport, server routing, real database and cloud provider connectors, rolling plugin upgrades and destructive provider qualification. Those observations are tracked as external completion and this package alone grants no production or dynamic-secret authority.

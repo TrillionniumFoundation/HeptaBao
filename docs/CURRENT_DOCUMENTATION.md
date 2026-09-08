@@ -26,7 +26,7 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment adds a checksum-pinned sandbox-wrapper process boundary and a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator; durable plugin service composition, production peer networking, destructive HA, complete fixtures, migration and independent compatibility qualification remain separate blockers.
+The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment adds a checksum-pinned sandbox-wrapper process boundary, encrypted restart-safe plugin invocation intents and dynamic-lease projections, plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator. Qualified operating-system sandbox/provider observations, production peer networking, destructive HA, complete fixtures, migration and independent compatibility qualification remain separate gates.
 
 ## Module documentation
 

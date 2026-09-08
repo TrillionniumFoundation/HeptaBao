@@ -657,6 +657,7 @@ name = "heptabao-plugin-host"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
+ "heptabao-durable-service",
  "heptabao-plugin-contracts",
  "ring",
  "zeroize",

@@ -23,6 +23,12 @@ use heptabao_plugin_contracts::{PluginDescriptor, PluginKind, PluginStatus};
 use ring::digest::{Context, SHA256};
 use zeroize::Zeroizing;
 
+mod durable;
+pub use durable::{
+    DurableDynamicSecretBroker, DurableReconciliationDecision, PendingPluginInvocation,
+    PluginMutationContext,
+};
+
 const MAX_EXECUTABLE_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_REQUEST_BYTES: usize = 1024 * 1024;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
@@ -898,6 +904,10 @@ pub enum PluginHostError {
     MissingLease,
     LeaseNotRenewable,
     LeaseNotActive,
+    InvalidAuthorizationDigest,
+    PendingPluginInvocation,
+    CorruptDurablePluginState,
+    Durable(heptabao_durable_service::ServiceError),
     GenerationOverflow,
 }
 
@@ -925,12 +935,26 @@ impl fmt::Display for PluginHostError {
             Self::MissingLease => "dynamic secret lease does not exist",
             Self::LeaseNotRenewable => "dynamic secret lease cannot be renewed",
             Self::LeaseNotActive => "dynamic secret lease is not active",
+            Self::InvalidAuthorizationDigest => "plugin durable authorization digest is invalid",
+            Self::PendingPluginInvocation => {
+                "a durable plugin invocation is pending reconciliation"
+            }
+            Self::CorruptDurablePluginState => "durable plugin state failed closed",
+            Self::Durable(_) => "durable plugin transition failed",
             Self::GenerationOverflow => "plugin or lease generation overflow",
         })
     }
 }
 
-impl Error for PluginHostError {}
+impl Error for PluginHostError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Domain(error) => Some(error),
+            Self::Durable(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 impl From<DomainError> for PluginHostError {
     fn from(value: DomainError) -> Self {

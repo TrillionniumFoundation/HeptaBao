@@ -232,19 +232,21 @@ repository_blockers:
 - id: HB-V2-REP-015
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: plugin host foundation exists but durable service integration and qualified sandbox providers are incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
+  title: durable plugin invocation and dynamic lease lifecycle
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - crates/heptabao-plugin-contracts/src/lib.rs
   - crates/heptabao-plugin-host/src/lib.rs
-  - crates/heptabao-lease/src/lib.rs
+  - crates/heptabao-plugin-host/src/durable.rs
+  - crates/heptabao-durable-service/src/lib.rs
+  - tests/repository/test_plugin_durable_v2_3.py
   - docs/modules/heptabao-plugin-host.md
-  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - preserve checksum-pinned wrapper-only process entry bounded framing environment clearing timeout classification and uncertainty fencing
-  - persist plugin invocation and dynamic lease intent outcome and reconciliation through the durable service
-  - qualify real operating-system sandbox providers and at least one dynamic provider connector
-  - execute crash timeout revocation restart and rolling-upgrade destructive qualification
+  - persist encrypted plugin invocation intent before effect entry
+  - persist only bounded lease metadata and digests before releasing plaintext
+  - retain pending intent and fence admission across restart on any post-entry uncertainty
+  - require authoritative readback plus durable resolution before reactivation
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
 - id: HB-V2-REP-016
@@ -292,6 +294,9 @@ external_blockers:
   state: EXTERNAL_COMPLETION_REQUIRED
 - id: HB-BLK-EXT-007
   class: INDEPENDENT_REPRODUCTION
+  state: EXTERNAL_COMPLETION_REQUIRED
+- id: HB-BLK-EXT-008
+  class: PLUGIN_SANDBOX_AND_PROVIDER_QUALIFICATION
   state: EXTERNAL_COMPLETION_REQUIRED
 claims:
   qualification: false
