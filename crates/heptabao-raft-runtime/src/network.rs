@@ -41,6 +41,7 @@ impl DurableRouter {
         self.inner.nodes.write().await.remove(&id);
     }
 
+    #[cfg(test)]
     pub async fn isolate(&self, id: u64) {
         let ids = self
             .inner
@@ -59,19 +60,23 @@ impl DurableRouter {
         }
     }
 
+    #[cfg(test)]
     pub async fn pause(&self, id: u64) {
         self.inner.paused.write().await.insert(id);
     }
 
+    #[cfg(test)]
     pub async fn resume(&self, id: u64) {
         self.inner.paused.write().await.remove(&id);
     }
 
+    #[cfg(test)]
     pub async fn heal_all(&self) {
         self.inner.blocked.write().await.clear();
         self.inner.paused.write().await.clear();
     }
 
+    #[cfg(test)]
     pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {
         self.inner.rpc_counts.read().await.clone()
     }

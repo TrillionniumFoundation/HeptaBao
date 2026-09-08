@@ -17,6 +17,7 @@ mod network;
 #[allow(clippy::expect_used)]
 mod store;
 
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
 use std::path::Path;
@@ -42,9 +43,9 @@ impl ReplicatedEnvelope {
         let operation_id = operation_id.into();
         if operation_id.is_empty()
             || operation_id.len() > MAX_OPERATION_ID_BYTES
-            || !operation_id
-                .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
+            || !operation_id.bytes().all(|byte| {
+                byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':')
+            })
             || digest == [0; 32]
             || sealed.is_empty()
             || sealed.len() > MAX_SEALED_ENVELOPE_BYTES
@@ -101,7 +102,9 @@ pub enum RaftRuntimeError {
 impl fmt::Display for RaftRuntimeError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidEnvelope => formatter.write_str("replicated envelope is invalid or unbounded"),
+            Self::InvalidEnvelope => {
+                formatter.write_str("replicated envelope is invalid or unbounded")
+            }
             Self::InvalidSerial => formatter.write_str("client serial must be nonzero"),
             Self::Shutdown => formatter.write_str("Raft runtime is shut down"),
             Self::Consensus(message) => write!(formatter, "Raft consensus failed: {message}"),
@@ -138,7 +141,10 @@ impl RaftRuntime {
 
     pub async fn reopen(root: impl AsRef<Path>) -> Result<Self, RaftRuntimeError> {
         let mut cluster = DurableCluster::new(root).map_err(consensus_error)?;
-        cluster.reopen_three_voters().await.map_err(consensus_error)?;
+        cluster
+            .reopen_three_voters()
+            .await
+            .map_err(consensus_error)?;
         Ok(Self {
             cluster: Some(cluster),
         })
@@ -181,6 +187,19 @@ impl RaftRuntime {
         let leader = cluster.consensus_leader().await.map_err(consensus_error)?;
         cluster.read_index(leader).await.map_err(consensus_error)?;
         Ok(leader)
+    }
+
+    pub async fn trigger_snapshot(&self, minimum_index: u64) -> Result<(), RaftRuntimeError> {
+        let cluster = self.cluster()?;
+        let leader = cluster.consensus_leader().await.map_err(consensus_error)?;
+        cluster
+            .trigger_snapshot(leader, minimum_index)
+            .await
+            .map_err(consensus_error)
+    }
+
+    pub async fn snapshot_status(&self) -> Result<BTreeMap<u64, (bool, u64)>, RaftRuntimeError> {
+        Ok(self.cluster()?.snapshot_status().await)
     }
 
     pub async fn states_converged(&self) -> Result<bool, RaftRuntimeError> {
@@ -248,8 +267,22 @@ mod tests {
         let receipt = runtime.replicate(1, &envelope).await?;
         assert!(receipt.log_index > 0);
         assert!(runtime.states_converged().await?);
+        runtime.trigger_snapshot(receipt.log_index).await?;
+        let snapshot_status = runtime.snapshot_status().await?;
+        assert_eq!(snapshot_status.len(), 3);
+        assert!(
+            snapshot_status
+                .values()
+                .all(|(present, generation)| *present && *generation > 0)
+        );
+        let artifacts = runtime.cluster()?.artifact_paths();
+        assert_eq!(artifacts.len(), 9);
+        assert!(artifacts.values().all(|path| path.is_file()));
+        let rpc_counts = runtime.cluster()?.rpc_counts().await;
+        assert!(rpc_counts.values().copied().sum::<u64>() > 0);
         let leader = runtime.ensure_linearizable().await?;
-        let (rejected, committed_not_advanced) = runtime.cluster()?.exercise_partition(leader).await?;
+        let (rejected, committed_not_advanced) =
+            runtime.cluster()?.exercise_partition(leader).await?;
         assert!(rejected);
         assert!(committed_not_advanced);
         runtime.shutdown().await?;

@@ -5,10 +5,13 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+#[cfg(test)]
+use openraft::LogIdOptionExt;
+#[cfg(test)]
 use openraft::async_runtime::WatchReceiver;
 use openraft::errors::decompose::DecomposeResult;
 use openraft::errors::{ClientWriteError, LinearizableReadError};
-use openraft::{Config, LogIdOptionExt, ReadPolicy, SnapshotPolicy};
+use openraft::{Config, ReadPolicy, SnapshotPolicy};
 use openraft_memstore::{ClientRequest, MemStoreStateMachine};
 use tokio::task::spawn_blocking;
 use tokio::time::{sleep, timeout};
@@ -35,6 +38,7 @@ enum StoreLifecycle {
 
 pub struct DurableNode {
     pub raft: DurableRaft,
+    #[cfg(test)]
     pub log_store: DurableLogStore,
     pub state_machine: DurableStateMachine,
 }
@@ -112,6 +116,7 @@ impl DurableCluster {
             id,
             DurableNode {
                 raft,
+                #[cfg(test)]
                 log_store,
                 state_machine,
             },
@@ -375,6 +380,21 @@ impl DurableCluster {
         true
     }
 
+    pub async fn snapshot_status(&self) -> BTreeMap<u64, (bool, u64)> {
+        let mut result = BTreeMap::new();
+        for (id, node) in &self.nodes {
+            result.insert(
+                *id,
+                (
+                    node.state_machine.has_current_snapshot().await,
+                    node.state_machine.generation().await,
+                ),
+            );
+        }
+        result
+    }
+
+    #[cfg(test)]
     pub fn artifact_paths(&self) -> BTreeMap<String, PathBuf> {
         let mut result = BTreeMap::new();
         for (id, node) in &self.nodes {
@@ -394,10 +414,12 @@ impl DurableCluster {
         result
     }
 
+    #[cfg(test)]
     pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {
         self.router.rpc_counts().await
     }
 
+    #[cfg(test)]
     pub async fn exercise_partition(&self, leader: u64) -> AnyResult<(bool, bool)> {
         let before = self.nodes[&leader]
             .raft

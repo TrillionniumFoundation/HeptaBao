@@ -464,6 +464,7 @@ impl DurableLogStore {
         })
     }
 
+    #[cfg(test)]
     pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {
         let root = root.as_ref();
         require_real_directory(root, "legacy raft log store root")?;
@@ -504,6 +505,7 @@ impl DurableLogStore {
         write_json(&self.state_path, LOG_MAGIC, state)
     }
 
+    #[cfg(test)]
     pub fn state_path(&self) -> &Path {
         &self.state_path
     }
@@ -769,6 +771,7 @@ impl DurableStateMachine {
         })
     }
 
+    #[cfg(test)]
     pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {
         let root = root.as_ref();
         require_real_directory(root, "legacy state-machine store root")?;
@@ -824,6 +827,7 @@ impl DurableStateMachine {
         self.bundle.lock().await.generation
     }
 
+    #[cfg(test)]
     pub fn state_path(&self) -> &Path {
         &self.bundle_path
     }
@@ -970,6 +974,7 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
     }
 }
 
+#[cfg(test)]
 pub fn flip_first_payload_byte(path: &Path) -> io::Result<()> {
     let mut bytes = fs::read(path)?;
     if bytes.len() <= 20 {
@@ -997,6 +1002,17 @@ mod tests {
     use tokio::sync::Mutex;
 
     static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+    #[test]
+    fn payload_corruption_helper_produces_rejected_envelope() {
+        let log_root = root("payload-corruption-helper");
+        let log = DurableLogStore::create(&log_root).expect("create log store");
+        drop(log);
+        flip_first_payload_byte(&log_root.join("raft-log.bin"))
+            .expect("corrupt one authenticated envelope byte");
+        DurableLogStore::open_existing(&log_root).expect_err("corrupted envelope must fail closed");
+        fs::remove_dir_all(log_root).expect("remove payload corruption fixture");
+    }
 
     fn root(label: &str) -> std::path::PathBuf {
         std::env::temp_dir().join(format!(
