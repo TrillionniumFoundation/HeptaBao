@@ -117,12 +117,12 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             self.assertIn("barrier", body)
             self.assertIn(".seal(", body)
 
-        # Snapshot and ledger loaders deliberately delegate authenticated decode
-        # to one frame decoder.  Check the call graph and the cryptographic
-        # operation instead of requiring `.open(` to remain textually in the
-        # thin file-reading wrapper.
+        # File loaders deliberately delegate authenticated decoding to frame
+        # decoders. Verify the call graph plus the actual cryptographic operation
+        # instead of requiring `.open(` to stay textually inside thin wrappers.
         for loader, decoder in (
             ("load_snapshot", "decode_snapshot_frame"),
+            ("load_journal", "decode_journal_frames"),
             ("load_ledger", "decode_ledger_frame"),
         ):
             loader_body = function_body(source, loader)
@@ -131,10 +131,6 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             decoder_body = function_body(source, decoder)
             self.assertIn("barrier", decoder_body)
             self.assertIn(".open(", decoder_body)
-
-        journal = function_body(source, "load_journal")
-        self.assertIn("barrier", journal)
-        self.assertIn(".open(", journal)
 
     def test_executable_recovery_and_security_regressions_exist(self) -> None:
         source = (CRATE / "src" / "lib.rs").read_text(encoding="utf-8")
