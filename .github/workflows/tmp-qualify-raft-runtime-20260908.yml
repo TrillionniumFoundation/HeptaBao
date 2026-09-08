@@ -1,0 +1,176 @@
+name: Temporary qualify durable Raft runtime
+
+on:
+  push:
+    branches:
+      - codex/v2-2-raft-runtime-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-qualify-durable-raft-runtime
+  cancel-in-progress: true
+
+jobs:
+  qualify-and-materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install validation toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Bind package to current documentation and blocker truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('docs/CURRENT_DOCUMENTATION.md')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('all 43 workspace packages', 'all 44 workspace packages')
+          s = s.replace('complete index for all 43 workspace packages', 'complete index for all 44 workspace packages')
+          s = s.replace('current 43-package implementation', 'current 44-package implementation')
+          pointer = '- `docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md`\n'
+          anchor = '- `docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md`\n'
+          if pointer not in s:
+              if anchor not in s:
+                  raise SystemExit('current-documentation architecture anchor missing')
+              s = s.replace(anchor, anchor + pointer)
+          old = 'The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. Complete provider, network/operator, HA, migration and compatibility qualification remain separate blockers.'
+          new = 'The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. The V2.2 repository slice adds durable three-voter consensus and ReadIndex behind an opaque sealed-envelope boundary; production peer networking, server composition, destructive HA, migration and compatibility qualification remain separate blockers.'
+          if old not in s and new not in s:
+              raise SystemExit('current-documentation status paragraph missing')
+          p.write_text(s.replace(old, new), encoding='utf-8')
+
+          p = Path('docs/modules/README.md')
+          s = p.read_text(encoding='utf-8').replace('V2.1 / 43 WORKSPACE PACKAGES', 'V2.2 / 44 WORKSPACE PACKAGES')
+          anchor = '| `heptabao-ha-contracts` | HA term membership and writer fences | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-contracts.md` |\n'
+          row = '| `heptabao-raft-runtime` | durable three-voter consensus, ReadIndex and restart recovery | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-raft-runtime.md` |\n'
+          if row not in s:
+              if anchor not in s:
+                  raise SystemExit('module index anchor missing')
+              s = s.replace(anchor, anchor + row)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml')
+          s = p.read_text(encoding='utf-8')
+          anchor = '''- crate: heptabao-ha-contracts
+            domain: HA term membership and writer fences
+            state: IMPLEMENTED_REVIEW_REQUIRED
+            documentation_standard: V3
+            source: crates/heptabao-ha-contracts/src/lib.rs
+            guide: docs/modules/heptabao-ha-contracts.md
+          '''
+          entry = '''- crate: heptabao-raft-runtime
+            domain: durable three-voter consensus, ReadIndex and restart recovery
+            state: IMPLEMENTED_REVIEW_REQUIRED
+            documentation_standard: V3
+            source: crates/heptabao-raft-runtime/src/lib.rs
+            guide: docs/modules/heptabao-raft-runtime.md
+          '''
+          if entry not in s:
+              if anchor not in s:
+                  raise SystemExit('capability matrix anchor missing')
+              s = s.replace(anchor, anchor + entry)
+          s = s.replace('- raft-ha-runtime\n', '- networked-raft-ha-service-integration\n')
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml')
+          s = p.read_text(encoding='utf-8')
+          old = '''- id: HB-V2-REP-013
+            class: REPOSITORY_CONTROLLED
+            severity: CRITICAL
+            title: production Raft HA replication and linearizable read path are incomplete
+            state: IMPLEMENTATION_IN_PROGRESS
+            evidence:
+            - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
+            closure_criteria:
+            - implement and test raft-ha-runtime
+            - bind source guide exact-head and prospective-main-merge evidence
+            - retain authority false until independent admission
+          '''
+          new = '''- id: HB-V2-REP-013
+            class: REPOSITORY_CONTROLLED
+            severity: CRITICAL
+            title: production Raft HA replication and linearizable read path are incomplete
+            state: IMPLEMENTATION_IN_PROGRESS
+            evidence:
+            - crates/heptabao-raft-runtime/src/lib.rs
+            - crates/heptabao-raft-runtime/src/cluster.rs
+            - crates/heptabao-raft-runtime/src/network.rs
+            - crates/heptabao-raft-runtime/src/store.rs
+            - docs/modules/heptabao-raft-runtime.md
+            - docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md
+            - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
+            closure_criteria:
+            - repository-owned durable three-voter OpenRaft core passes restart, ReadIndex, snapshot and quorum-loss tests
+            - replace the qualification router with authenticated bounded inter-process peer transport
+            - compose the runtime into heptabao-server with leader forwarding and linearizable reads
+            - execute destructive three-process failover, quorum-loss, snapshot-transfer and rolling-upgrade qualification
+            - bind source guide exact-head and prospective-main-merge evidence
+            - retain authority false until independent admission
+          '''
+          if new not in s:
+              if old not in s:
+                  raise SystemExit('blocker HB-V2-REP-013 block missing')
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Resolve exact lock and compile package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 check -p heptabao-raft-runtime
+          cargo +1.98.0 fmt --all
+          git diff --check
+
+      - name: Run closed-world and consensus qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          cargo +1.98.0 test --locked -p heptabao-raft-runtime
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+
+      - name: Commit only validated product truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/v2-2-raft-runtime-20260908
+          changed="$(git status --short | sed 's/^...//')"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              Cargo.lock|README.md|docs/CURRENT_DOCUMENTATION.md|docs/modules/README.md|planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml|planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml|crates/heptabao-raft-runtime/*|crates/heptabao-raft-runtime/src/*|docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md|docs/modules/heptabao-raft-runtime.md) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          git fetch origin "$branch"
+          test "$(git rev-parse "refs/remotes/origin/$branch")" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Cargo.lock README.md docs/CURRENT_DOCUMENTATION.md docs/modules/README.md \
+            planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml \
+            planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml \
+            crates/heptabao-raft-runtime docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md \
+            docs/modules/heptabao-raft-runtime.md
+          git commit -m 'feat(raft): qualify durable three-voter runtime'
+          git push origin "HEAD:refs/heads/$branch"
