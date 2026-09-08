@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify, apply, validate, and self-delete
+      - name: Verify, apply, and validate product changes
         shell: bash
         run: |
           set -euo pipefail
@@ -38,14 +38,13 @@ jobs:
             bc77053c1e949ec419be0c6badb37782ac9dfe08aa4791eb426edb325dd349c0 \
             "$patch" | sha256sum --check --strict
 
-          git apply --check "$patch"
-          git apply --index "$patch"
-          rm -f .tmp/openbao-p0-patch-* .github/workflows/tmp-apply-openbao-p0-20260908.yml
+          git apply --check --exclude=.github/workflows/codex-openbao-replacement-ci.yml "$patch"
+          git apply --index --exclude=.github/workflows/codex-openbao-replacement-ci.yml "$patch"
+          rm -f .tmp/openbao-p0-patch-*
           git add -A
           git diff --cached --check
 
           for path in \
-            .github/workflows/codex-openbao-replacement-ci.yml \
             crates/heptabao-server/src/http.rs \
             crates/heptabao-server/src/service.rs \
             crates/heptabao-server/src/service_tests.rs \
@@ -53,8 +52,11 @@ jobs:
           do
             git diff --cached --name-only | grep -Fx "$path"
           done
-          test ! -e .github/workflows/tmp-apply-openbao-p0-20260908.yml
           test -z "$(find .tmp -maxdepth 1 -name 'openbao-p0-patch-*' -print -quit 2>/dev/null || true)"
+          if git diff --cached --name-only | grep -Fx .github/workflows/codex-openbao-replacement-ci.yml; then
+            echo 'permanent workflow must be updated only by the administrator connector' >&2
+            exit 1
+          fi
 
           python -m py_compile qa/single-node/smoke.py
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
