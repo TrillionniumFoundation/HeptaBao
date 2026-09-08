@@ -65,7 +65,7 @@ def _load_registry() -> tuple[dict[tuple[str, str], str], dict[tuple[str, str], 
         if key in downloads:
             raise base.PolicyError("duplicate download registry entry")
         downloads[key] = {name: entry[name] for name in ("pattern", "path", "merge-multiple")}
-    if len(uploads) != 27 or len(downloads) != 1:
+    if len(uploads) != 28 or len(downloads) != 1:
         raise base.PolicyError("workflow action registry cardinality mismatch")
     return uploads, downloads
 

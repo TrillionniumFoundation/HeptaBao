@@ -222,7 +222,7 @@ class WorkflowReviewTests(unittest.TestCase):
                 policy.check_upload_path(value, {}, "fixture.path", lambda *_: False, {})
 
     def test_upload_registry_is_closed_and_contains_no_unsafe_paths(self):
-        self.assertEqual(27, len(policy.APPROVED_UPLOAD_PATHS))
+        self.assertEqual(28, len(policy.APPROVED_UPLOAD_PATHS))
         for key, value in policy.APPROVED_UPLOAD_PATHS.items():
             with self.subTest(invocation=key):
                 self.assertNotIn("*", value)

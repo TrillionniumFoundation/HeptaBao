@@ -11,6 +11,11 @@
   "schema": "heptabao.workflow-trust-action-registry.v2",
   "uploads": [
     {
+      "file": "codex-openbao-replacement-source-export.yml",
+      "location": "workflow.jobs.export.steps[2]",
+      "path": "${{ runner.temp }}/heptabao-openbao-replacement-source/"
+    },
+    {
       "file": "export-exact-audit-source-macos.yml",
       "location": "workflow.jobs.export.steps[2]",
       "path": "${{ runner.temp }}/source-binding.txt\n${{ runner.temp }}/heptabao-exact-source.tar\n${{ runner.temp }}/heptabao-exact-source.tar.sha256\n"
