@@ -1,0 +1,59 @@
+name: Temporary exact-source recovery
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-full-closure-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-exact-source-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the exact damaged head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Restore reviewed bytes and replay the one-line fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git checkout 2b763cab06bf530f8e80bd65a144c5a5cb14c6a0 -- crates/heptabao-runtime-service/src/lib.rs
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("crates/heptabao-runtime-service/src/lib.rs")
+          text = path.read_text(encoding="utf-8")
+          old = """        ServiceError::RequestBindingConflict
+                  | ServiceError::RequestCapacityExhausted
+                  | ServiceError::GenerationOverflow
+          """
+          new = """        ServiceError::RequestBindingConflict
+                  | ServiceError::RequestCapacityExhausted
+                  | ServiceError::BackupRollbackRejected
+                  | ServiceError::GenerationOverflow
+          """
+          if text.count(old) != 1:
+              raise SystemExit("expected exact durable-error match arm not found once")
+          path.write_text(text.replace(old, new), encoding="utf-8")
+          path.read_text(encoding="utf-8")
+          PY
+          rm .github/workflows/tmp-recover-runtime-source-20260908.yml
+          git diff --check
+          test "$(git diff --numstat 2b763cab06bf530f8e80bd65a144c5a5cb14c6a0 -- crates/heptabao-runtime-service/src/lib.rs)" = $'1\t0\tcrates/heptabao-runtime-service/src/lib.rs'
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add crates/heptabao-runtime-service/src/lib.rs .github/workflows/tmp-recover-runtime-source-20260908.yml
+          git commit -m "fix(runtime): restore source and classify backup rollback"
+          git push origin HEAD:refs/heads/codex/openbao-replacement-full-closure-20260908
