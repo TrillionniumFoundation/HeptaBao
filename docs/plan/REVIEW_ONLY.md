@@ -1,0 +1,1 @@
+Review-only exact-head generation. Repository-controlled evidence only; no production authority.
