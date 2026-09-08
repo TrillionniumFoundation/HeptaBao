@@ -75,6 +75,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-ha-contracts/src/lib.rs
   guide: docs/modules/heptabao-ha-contracts.md
+- crate: heptabao-raft-runtime
+  domain: durable three-voter consensus, ReadIndex and restart recovery
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-raft-runtime/src/lib.rs
+  guide: docs/modules/heptabao-raft-runtime.md
 - crate: heptabao-identity
   domain: entity alias and group resolution
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -266,7 +272,7 @@ planned_modules:
 - production-storage-journal-anchor-conformance
 - complete-network-operator-surface-and-rate-limiting
 - complete-identity-mfa-and-external-auth-methods
-- raft-ha-runtime
+- networked-raft-ha-service-integration
 - interruption-safe-format-migration
 - sandboxed-plugin-host-and-dynamic-secrets
 - complete-compatibility-corpus

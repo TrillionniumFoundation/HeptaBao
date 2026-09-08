@@ -4,7 +4,7 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 43 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current entry point for all 44 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 ## Canonical current truth
 
@@ -22,14 +22,15 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_1_DURABLE_RUNTIME_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md`
+- `docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md`
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. Complete provider, network/operator, HA, migration and compatibility qualification remain separate blockers.
+The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. The V2.2 repository slice adds durable three-voter consensus and ReadIndex behind an opaque sealed-envelope boundary; production peer networking, server composition, destructive HA, migration and compatibility qualification remain separate blockers.
 
 ## Module documentation
 
-- `docs/modules/README.md` — complete index for all 43 workspace packages.
+- `docs/modules/README.md` — complete index for all 44 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited standard for historical V1.4.7 packages.
 - `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared engineering contracts.
@@ -84,4 +85,4 @@ authority_effect: NONE
 
 ## Main-line reconciliation
 
-`docs/operations/HEPTABAO_MAIN_RECONCILIATION_2026_09_08.md` records reconciliation with main `92894aa52de06f2f4ba7d5f234a0a55f93314474`: current 43-package implementation and mandatory validation remain intact; inherited legal/security obligations and the historical V1.4.6 recovery baseline remain applicable within their original scope. Archived runner-probe material is historical evidence and is not an admitted workflow.
+`docs/operations/HEPTABAO_MAIN_RECONCILIATION_2026_09_08.md` records reconciliation with main `92894aa52de06f2f4ba7d5f234a0a55f93314474`: current 44-package implementation and mandatory validation remain intact; inherited legal/security obligations and the historical V1.4.6 recovery baseline remain applicable within their original scope. Archived runner-probe material is historical evidence and is not an admitted workflow.
