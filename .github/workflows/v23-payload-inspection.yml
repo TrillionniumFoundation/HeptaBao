@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Decode and classify payload
+      - name: Decode, salvage, and classify payload
         shell: bash
         run: |
           set -euo pipefail
@@ -31,36 +31,55 @@ jobs:
           test "${#parts[@]}" -eq 8
           cat "${parts[@]}" > "$RUNNER_TEMP/v23.b64"
           base64 --decode "$RUNNER_TEMP/v23.b64" > "$RUNNER_TEMP/v23.gz"
-          gzip -t "$RUNNER_TEMP/v23.gz"
-          gzip -dc "$RUNNER_TEMP/v23.gz" > "$RUNNER_TEMP/v23.payload"
+          set +e
+          gzip -dc "$RUNNER_TEMP/v23.gz" > "$RUNNER_TEMP/v23.partial"
+          gzip_status=$?
+          set -e
+          echo "gzip_status=$gzip_status"
           echo "compressed_sha256=$(sha256sum "$RUNNER_TEMP/v23.gz" | cut -d' ' -f1)"
-          echo "payload_sha256=$(sha256sum "$RUNNER_TEMP/v23.payload" | cut -d' ' -f1)"
+          echo "partial_sha256=$(sha256sum "$RUNNER_TEMP/v23.partial" | cut -d' ' -f1)"
           echo "compressed_bytes=$(wc -c < "$RUNNER_TEMP/v23.gz")"
-          echo "payload_bytes=$(wc -c < "$RUNNER_TEMP/v23.payload")"
-          file "$RUNNER_TEMP/v23.payload"
+          echo "partial_bytes=$(wc -c < "$RUNNER_TEMP/v23.partial")"
+          file "$RUNNER_TEMP/v23.partial"
           python - <<'PY'
           from pathlib import Path
-          p = Path(__import__('os').environ['RUNNER_TEMP']) / 'v23.payload'
+          import os
+          p = Path(os.environ['RUNNER_TEMP']) / 'v23.partial'
           data = p.read_bytes()
           print('first_256_repr=', repr(data[:256]))
+          print('last_256_repr=', repr(data[-256:]))
           try:
               text = data.decode('utf-8')
           except UnicodeDecodeError as exc:
               print('utf8=false', exc)
           else:
+              lines = text.splitlines()
               print('utf8=true')
-              print('first_80_lines:')
-              print('\n'.join(text.splitlines()[:80]))
+              print(f'lines={len(lines)}')
+              print('first_120_lines:')
+              print('\n'.join(lines[:120]))
+              print('last_120_lines:')
+              print('\n'.join(lines[-120:]))
           PY
-          if tar -tf "$RUNNER_TEMP/v23.payload" > "$RUNNER_TEMP/tar.list" 2>/dev/null; then
+          if tar -tf "$RUNNER_TEMP/v23.partial" > "$RUNNER_TEMP/tar.list" 2>/dev/null; then
             echo "payload_is_tar=true"
-            head -100 "$RUNNER_TEMP/tar.list"
+            head -200 "$RUNNER_TEMP/tar.list"
           else
             echo "payload_is_tar=false"
           fi
-          if git apply --check "$RUNNER_TEMP/v23.payload" >/dev/null 2>&1; then
-            echo "payload_is_git_patch=true"
-            git apply --numstat "$RUNNER_TEMP/v23.payload" | head -100
+          if git apply --check "$RUNNER_TEMP/v23.partial" >/dev/null 2>&1; then
+            echo "payload_is_complete_git_patch=true"
+            git apply --numstat "$RUNNER_TEMP/v23.partial" | head -200
           else
-            echo "payload_is_git_patch=false"
+            echo "payload_is_complete_git_patch=false"
           fi
+      - name: Upload salvage for bounded inspection
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v23-partial-payload
+          path: |
+            ${{ runner.temp }}/v23.b64
+            ${{ runner.temp }}/v23.gz
+            ${{ runner.temp }}/v23.partial
+          if-no-files-found: error
+          retention-days: 1
