@@ -65,9 +65,9 @@ jobs:
           )
 
           for function_name in (
-              "handle_at_with_wrap_ttl(",
-              "handle_inner(",
-              "wrapping_token_route(",
+              "fn handle_at_with_wrap_ttl(",
+              "fn handle_inner(",
+              "fn wrapping_token_route(",
           ):
               offset = text.find(function_name)
               if offset < 0:
