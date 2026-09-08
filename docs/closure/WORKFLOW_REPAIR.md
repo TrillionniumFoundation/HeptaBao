@@ -1,0 +1,1 @@
+The temporary closure workflow from the interrupted automation attempt is non-authoritative. It must be removed or replaced by an ordinary read-only exact-head and prospective-main-merge gate before this lane can be reviewed.
