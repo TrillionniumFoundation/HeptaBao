@@ -109,6 +109,21 @@ jobs:
           if value.count(old_line) != 1:
               raise SystemExit("unexpected smoke diagnostic line")
           smoke.write_text(value.replace(old_line, diagnostic), encoding="utf-8")
+
+          runtime = Path("crates/heptabao-runtime-service/src/lib.rs")
+          value = runtime.read_text(encoding="utf-8")
+          old = '''        | ServiceError::UnsupportedProfile
+              | ServiceError::JournalCapacityExhausted
+              | ServiceError::Io(_) => RuntimeError::DurableRejected,
+          '''
+          new = '''        | ServiceError::UnsupportedProfile
+              | ServiceError::JournalCapacityExhausted
+              | ServiceError::BackupRollbackRejected
+              | ServiceError::Io(_) => RuntimeError::DurableRejected,
+          '''
+          if value.count(old) != 1:
+              raise SystemExit("unexpected durable runtime error mapping")
+          runtime.write_text(value.replace(old, new), encoding="utf-8")
           PY
           git diff --check
 
