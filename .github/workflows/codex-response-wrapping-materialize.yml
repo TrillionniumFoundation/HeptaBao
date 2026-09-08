@@ -1,0 +1,70 @@
+name: Codex materialize durable response wrapping
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-wrapping-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codex-openbao-replacement-response-wrapping
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Verify source baseline and assemble payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "337cd0f9d42a4f27f2ccc15cffb327a6230a1bdc554e59a48551db4399869e87"
+          test "$(sha256sum crates/heptabao-server/src/engines.rs | cut -d' ' -f1)" = "a13c88cec6799c60ec7a0e8c8f46c40535827ef8da8b7553326a05714c69f887"
+          test "$(sha256sum crates/heptabao-server/src/lib.rs | cut -d' ' -f1)" = "e494b6d8ad65b944074f3c8201a4deef19b8b4fd43ef1a786b35497da98df70d"
+          test "$(sha256sum crates/heptabao-server/src/service.rs | cut -d' ' -f1)" = "eeb2975e6cd2ab80a31c504b0520caf0a8b4be0b0c0bea6d7cdc22f4e9b07638"
+          test "$(sha256sum crates/heptabao-server/src/service_tests.rs | cut -d' ' -f1)" = "19ee60c5f77c4c9f7450587ae868ff11f2d3cacc2546dfd762f150edb5f1d6af"
+          test ! -e crates/heptabao-server/src/wrapping.rs
+          sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/wrapping-tranche/payload.sha256)
+          cat .g1/codex-openbao-replacement/wrapping-tranche/part-* > "$RUNNER_TEMP/wrapping.patch.gz.b64"
+          test "$(sha256sum "$RUNNER_TEMP/wrapping.patch.gz.b64" | cut -d' ' -f1)" = "d17804bddf163ee21c76a8f138dc27b3d463835edb4b9934b9a5527aa41dc494"
+          base64 --decode "$RUNNER_TEMP/wrapping.patch.gz.b64" > "$RUNNER_TEMP/wrapping.patch.gz"
+          gzip --test "$RUNNER_TEMP/wrapping.patch.gz"
+          gzip --decompress --stdout "$RUNNER_TEMP/wrapping.patch.gz" > "$RUNNER_TEMP/wrapping.patch"
+          test "$(sha256sum "$RUNNER_TEMP/wrapping.patch" | cut -d' ' -f1)" = "c8b7dc6cc442401cc2cf6a395a9a0565c618ea6ec41107e905be41996b0afd0a"
+      - name: Apply response-wrapping source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --check --verbose "$RUNNER_TEMP/wrapping.patch"
+          git apply --verbose "$RUNNER_TEMP/wrapping.patch"
+          git diff --check
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+      - name: Qualify wrapping state HTTP semantics and restart behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-server
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          git diff --check
+      - name: Publish qualified source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .g1/codex-openbao-replacement/wrapping-tranche
+          rmdir .g1/codex-openbao-replacement 2>/dev/null || true
+          rm -f .github/workflows/codex-response-wrapping-materialize.yml
+          git config user.name "HeptaBao Codex Closure"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(server): add durable single-use response wrapping"
+          git push origin HEAD:codex/openbao-replacement-wrapping-20260908
