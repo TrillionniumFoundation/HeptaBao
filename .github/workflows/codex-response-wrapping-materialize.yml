@@ -53,12 +53,16 @@ jobs:
           fingerprint = text.find("fn request_fingerprint(")
           if fingerprint < 0:
               raise SystemExit("request_fingerprint function not found")
-          fingerprint_start = text.rfind("\n", 0, fingerprint) + 1
-          audit_event = text.find("fn audit_event(", fingerprint)
-          if audit_event < 0:
-              raise SystemExit("audit_event boundary not found")
-          audit_start = text.rfind("\n", 0, audit_event) + 1
-          text = text[:fingerprint_start] + text[audit_start:]
+          fingerprint_line = text.rfind("\n", 0, fingerprint) + 1
+          fingerprint_indent_end = fingerprint_line
+          while fingerprint_indent_end < len(text) and text[fingerprint_indent_end] in " \t":
+              fingerprint_indent_end += 1
+          fingerprint_indent = text[fingerprint_line:fingerprint_indent_end]
+          text = (
+              text[:fingerprint_line]
+              + f"{fingerprint_indent}#[cfg(test)]\n"
+              + text[fingerprint_line:]
+          )
 
           for function_name in (
               "handle_at_with_wrap_ttl(",
