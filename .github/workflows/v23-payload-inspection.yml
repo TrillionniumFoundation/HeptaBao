@@ -1,0 +1,66 @@
+name: Inspect staged V2.3 payload
+
+on:
+  push:
+    branches:
+      - ops/v23-payload-inspection-20260908
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v23-payload-inspection-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Decode and classify payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mapfile -t parts < <(find .github/payload/v23 -maxdepth 1 -type f -name 'part-*' -print | LC_ALL=C sort)
+          test "${#parts[@]}" -eq 8
+          cat "${parts[@]}" > "$RUNNER_TEMP/v23.b64"
+          base64 --decode "$RUNNER_TEMP/v23.b64" > "$RUNNER_TEMP/v23.gz"
+          gzip -t "$RUNNER_TEMP/v23.gz"
+          gzip -dc "$RUNNER_TEMP/v23.gz" > "$RUNNER_TEMP/v23.payload"
+          echo "compressed_sha256=$(sha256sum "$RUNNER_TEMP/v23.gz" | cut -d' ' -f1)"
+          echo "payload_sha256=$(sha256sum "$RUNNER_TEMP/v23.payload" | cut -d' ' -f1)"
+          echo "compressed_bytes=$(wc -c < "$RUNNER_TEMP/v23.gz")"
+          echo "payload_bytes=$(wc -c < "$RUNNER_TEMP/v23.payload")"
+          file "$RUNNER_TEMP/v23.payload"
+          python - <<'PY'
+          from pathlib import Path
+          p = Path(__import__('os').environ['RUNNER_TEMP']) / 'v23.payload'
+          data = p.read_bytes()
+          print('first_256_repr=', repr(data[:256]))
+          try:
+              text = data.decode('utf-8')
+          except UnicodeDecodeError as exc:
+              print('utf8=false', exc)
+          else:
+              print('utf8=true')
+              print('first_80_lines:')
+              print('\n'.join(text.splitlines()[:80]))
+          PY
+          if tar -tf "$RUNNER_TEMP/v23.payload" > "$RUNNER_TEMP/tar.list" 2>/dev/null; then
+            echo "payload_is_tar=true"
+            head -100 "$RUNNER_TEMP/tar.list"
+          else
+            echo "payload_is_tar=false"
+          fi
+          if git apply --check "$RUNNER_TEMP/v23.payload" >/dev/null 2>&1; then
+            echo "payload_is_git_patch=true"
+            git apply --numstat "$RUNNER_TEMP/v23.payload" | head -100
+          else
+            echo "payload_is_git_patch=false"
+          fi
