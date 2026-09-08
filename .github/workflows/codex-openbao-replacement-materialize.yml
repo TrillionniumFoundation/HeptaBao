@@ -22,16 +22,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify staged patch payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(sha256sum .g1/codex-openbao-replacement/seal.patch.gz.b64 | cut -d' ' -f1)"
+          echo "staged_base64_sha256=$actual"
+          test "$actual" = "c22fc6f3624b9825f63cc44470aadb2bb84367dac6bc3d9b782db72497a5962b"
+          base64 --decode .g1/codex-openbao-replacement/seal.patch.gz.b64 > "$RUNNER_TEMP/seal.patch.gz"
+          gzip --test "$RUNNER_TEMP/seal.patch.gz"
+          gzip --decompress --stdout "$RUNNER_TEMP/seal.patch.gz" > "$RUNNER_TEMP/seal.patch"
+          actual_patch="$(sha256sum "$RUNNER_TEMP/seal.patch" | cut -d' ' -f1)"
+          echo "decoded_patch_sha256=$actual_patch"
+          test "$actual_patch" = "c17e8d5ddd16f9d8f699f307f68c318c3b5b54b9d43c5462f379685ffd3f759a"
+
       - name: Apply bounded source patch
         shell: bash
         run: |
           set -euo pipefail
-          test "$(sha256sum .g1/codex-openbao-replacement/seal.patch.gz.b64 | cut -d' ' -f1)" = "c22fc6f3624b9825f63cc44470aadb2bb84367dac6bc3d9b782db72497a5962b"
-          base64 --decode .g1/codex-openbao-replacement/seal.patch.gz.b64 | gzip --decompress > "$RUNNER_TEMP/seal.patch"
-          test "$(sha256sum "$RUNNER_TEMP/seal.patch" | cut -d' ' -f1)" = "c17e8d5ddd16f9d8f699f307f68c318c3b5b54b9d43c5462f379685ffd3f759a"
-          git apply --check "$RUNNER_TEMP/seal.patch"
-          git apply "$RUNNER_TEMP/seal.patch"
+          git apply --check --verbose "$RUNNER_TEMP/seal.patch"
+          git apply --verbose "$RUNNER_TEMP/seal.patch"
           git diff --check
+          git diff --stat
 
       - name: Install exact Rust toolchain
         shell: bash
