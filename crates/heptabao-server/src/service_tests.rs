@@ -992,6 +992,175 @@ fn result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_r
 }
 
 #[test]
+fn root_maintenance_routes_compact_snapshot_restore_and_reconcile()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/maintenance",
+            &token,
+            json!({"data":{"value":"before-snapshot"}}),
+        )
+        .status,
+        200
+    );
+    let snapshot_response = call(
+        &mut service,
+        "GET",
+        "sys/storage/raft/snapshot",
+        &token,
+        json!({}),
+    );
+    assert_eq!(snapshot_response.status, 200);
+    let snapshot = snapshot_response.body["data"]["snapshot"]
+        .as_str()
+        .ok_or("missing encrypted snapshot")?
+        .to_owned();
+    assert_eq!(
+        snapshot_response.body["data"]["format"],
+        "heptabao-encrypted-backup-v1"
+    );
+
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/maintenance",
+            &token,
+            json!({"data":{"value":"after-snapshot"}}),
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/storage/raft/snapshot",
+            &token,
+            json!({"snapshot":snapshot.clone()}),
+        )
+        .status,
+        400
+    );
+    let restored = call(
+        &mut service,
+        "POST",
+        "sys/storage/raft/snapshot-force",
+        &token,
+        json!({"snapshot":snapshot}),
+    );
+    assert_eq!(restored.status, 200);
+    assert_eq!(restored.body["data"]["rollback"], true);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/maintenance",
+            &token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "before-snapshot"
+    );
+
+    for number in 0..8 {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                &format!("secret/data/compact-{number}"),
+                &token,
+                json!({"data":{"number":number}}),
+            )
+            .status,
+            200
+        );
+    }
+    let compacted = call(
+        &mut service,
+        "POST",
+        "sys/storage/raft/compact",
+        &token,
+        json!({}),
+    );
+    assert_eq!(compacted.status, 200);
+    assert!(
+        compacted.body["data"]["journal_bytes_after"]
+            .as_u64()
+            .ok_or("missing compacted journal size")?
+            < compacted.body["data"]["journal_bytes_before"]
+                .as_u64()
+                .ok_or("missing original journal size")?
+    );
+
+    let recovery_reference = match service
+        .durable
+        .as_mut()
+        .ok_or("missing durable service")?
+        .put(PutRequest::new(
+            "maintenance-test",
+            "system",
+            "recovery-lookup",
+            "maintenance-probe",
+            crypto::digest(b"maintenance-probe"),
+            Secret::new(b"probe".to_vec())?,
+        )?)? {
+        heptabao_durable_service::MutationOutcome::Committed {
+            recovery_reference, ..
+        } => recovery_reference,
+        _ => return Err("unexpected duplicate maintenance probe".into()),
+    };
+    let lookup = call(
+        &mut service,
+        "GET",
+        &format!("sys/internal/recovery/{recovery_reference}"),
+        &token,
+        json!({}),
+    );
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["status"], "committed");
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/recovery/00000000000000000000000000000000",
+            &token,
+            json!({}),
+        )
+        .status,
+        404
+    );
+
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/maintenance",
+            &token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "before-snapshot"
+    );
+    Ok(())
+}
+
+#[test]
 fn legacy_unkeyed_audit_and_partial_audit_tail_are_rejected()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();

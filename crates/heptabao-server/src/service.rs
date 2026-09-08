@@ -4,7 +4,9 @@ use crate::{
     engines::EngineState,
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD};
-use heptabao_durable_service::{DurableService, PutRequest, Secret, ServiceError};
+use heptabao_durable_service::{
+    DurableService, PutRequest, ReconciliationStatus, Secret, ServiceError,
+};
 use ring::hmac;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -25,6 +27,7 @@ const SEAL_METADATA_FILE: &str = "seal.json";
 const PENDING_REKEY_FILE: &str = "seal-rekey.json";
 const SEAL_METADATA_LIMIT: u64 = 64 * 1024;
 const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
+const MAX_BACKUP_TRANSFER_BYTES: usize = 20 * 1024 * 1024;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -353,6 +356,19 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             return self.rekey_route(method, path, body);
+        }
+        if path.starts_with("sys/internal/recovery/")
+            || matches!(
+                path,
+                "sys/storage/raft/compact"
+                    | "sys/storage/raft/snapshot"
+                    | "sys/storage/raft/snapshot-force"
+            )
+        {
+            if !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.maintenance_route(method, path, body);
         }
         if path == "sys/seal" && matches!(method, "PUT" | "POST") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -1231,6 +1247,177 @@ impl Service {
         }))
     }
 
+    fn maintenance_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
+        if let Some(reference) = path.strip_prefix("sys/internal/recovery/") {
+            if method != "GET" {
+                return Response::error(405, "recovery lookup requires GET");
+            }
+            if !valid_recovery_reference(reference) {
+                return Response::error(400, "invalid recovery reference");
+            }
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            return match durable.reconcile(reference) {
+                ReconciliationStatus::Committed { generation } => Response::ok(json!({
+                    "data": {
+                        "recovery_reference": reference,
+                        "status": "committed",
+                        "generation": generation,
+                    }
+                })),
+                ReconciliationStatus::Aborted => Response::ok(json!({
+                    "data": {
+                        "recovery_reference": reference,
+                        "status": "aborted",
+                    }
+                })),
+                ReconciliationStatus::Unknown => Response {
+                    status: 404,
+                    body: json!({"errors":["recovery reference is unknown"]}),
+                },
+            };
+        }
+
+        if path == "sys/storage/raft/compact" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "storage compaction requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "storage compaction accepts an empty JSON object");
+            }
+            let (result, fenced) = {
+                let Some(durable) = self.durable.as_mut() else {
+                    return Response::error(503, "server is sealed");
+                };
+                let result = durable.compact();
+                (result, durable.recovery_required())
+            };
+            if fenced {
+                self.recovery_required = true;
+            }
+            return match result {
+                Ok(outcome) => Response::ok(json!({
+                    "data": {
+                        "generation": outcome.generation,
+                        "retained_requests": outcome.retained_requests,
+                        "journal_bytes_before": outcome.journal_bytes_before,
+                        "journal_bytes_after": outcome.journal_bytes_after,
+                    }
+                })),
+                Err(_) => Response::error(503, "storage compaction failed; inspect durable state"),
+            };
+        }
+
+        if path == "sys/storage/raft/snapshot" && method == "GET" {
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            let backup = match durable.export_backup() {
+                Ok(value) => Zeroizing::new(value),
+                Err(_) => return Response::error(503, "cannot export durable snapshot"),
+            };
+            if backup.len() > MAX_BACKUP_TRANSFER_BYTES {
+                return Response::error(507, "durable snapshot exceeds transfer limit");
+            }
+            let digest = hex(&crypto::digest(&backup));
+            return Response::ok(json!({
+                "data": {
+                    "snapshot": STANDARD.encode(backup.as_slice()),
+                    "sha256": digest,
+                    "generation": durable.generation(),
+                    "retained_requests": durable.retained_request_count(),
+                    "format": "heptabao-encrypted-backup-v1",
+                }
+            }));
+        }
+
+        if matches!(
+            path,
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        ) {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "snapshot restore requires POST or PUT");
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "snapshot restore requires a JSON object");
+            };
+            if object.keys().any(|key| key != "snapshot") {
+                return Response::error(400, "unsupported snapshot restore field");
+            }
+            let Some(encoded) = object.get("snapshot").and_then(Value::as_str) else {
+                return Response::error(400, "snapshot is required");
+            };
+            if encoded.len() > MAX_BACKUP_TRANSFER_BYTES * 2 {
+                return Response::error(413, "encoded snapshot exceeds transfer limit");
+            }
+            let backup = match STANDARD.decode(encoded) {
+                Ok(value) if value.len() <= MAX_BACKUP_TRANSFER_BYTES => Zeroizing::new(value),
+                Ok(_) => return Response::error(413, "snapshot exceeds transfer limit"),
+                Err(_) => return Response::error(400, "invalid snapshot encoding"),
+            };
+            let allow_rollback = path == "sys/storage/raft/snapshot-force";
+            let outcome = {
+                let Some(durable) = self.durable.as_mut() else {
+                    return Response::error(503, "server is sealed");
+                };
+                match durable.restore_backup(&backup, allow_rollback) {
+                    Ok(value) => value,
+                    Err(ServiceError::BackupRollbackRejected) => {
+                        return Response::error(
+                            400,
+                            "snapshot is older than live state; use snapshot-force only after review",
+                        );
+                    }
+                    Err(ServiceError::CorruptState | ServiceError::BarrierFailure) => {
+                        return Response::error(400, "snapshot authentication or structure failed");
+                    }
+                    Err(_) => {
+                        if durable.recovery_required() {
+                            self.recovery_required = true;
+                        }
+                        return Response::error(
+                            503,
+                            "snapshot restore failed; authoritative recovery required",
+                        );
+                    }
+                }
+            };
+            if let Err(response) = self.refresh_state_from_durable() {
+                self.recovery_required = true;
+                return response;
+            }
+            return Response::ok(json!({
+                "data": {
+                    "previous_generation": outcome.previous_generation,
+                    "restored_generation": outcome.restored_generation,
+                    "retained_requests": outcome.retained_requests,
+                    "rollback": outcome.restored_generation < outcome.previous_generation,
+                }
+            }));
+        }
+
+        Response::error(404, "unsupported maintenance path")
+    }
+
+    fn refresh_state_from_durable(&mut self) -> Result<(), Response> {
+        let bytes = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?
+            .get("system", "state")
+            .map_err(|_| Response::error(503, "server state is unavailable"))?
+            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
+        let state: State = serde_json::from_slice(bytes.expose())
+            .map_err(|_| Response::error(503, "server state schema is invalid"))?;
+        if state.schema != 1 {
+            return Err(Response::error(503, "unsupported server state schema"));
+        }
+        self.state = Some(state);
+        self.recovery_required = false;
+        Ok(())
+    }
+
     fn verify_active_barrier(&self, candidate: &[u8; 32]) -> Result<(), Response> {
         let Some(active_key) = self.barrier_key.as_ref() else {
             return Err(Response::error(503, "server must be unsealed for rekey"));
@@ -1559,6 +1746,10 @@ fn delete_pending_rekey(data_dir: &Path) -> Result<(), std::io::Error> {
 }
 
 fn valid_nonce(value: &str) -> bool {
+    value.len() == 32 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+}
+
+fn valid_recovery_reference(value: &str) -> bool {
     value.len() == 32 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
 }
 

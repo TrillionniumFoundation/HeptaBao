@@ -20,7 +20,8 @@ use zeroize::Zeroizing;
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
-const MAX_RESPONSE: usize = 1024 * 1024;
+const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
+const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -334,7 +335,12 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
-    if length > MAX_BODY {
+    let maximum_body = if target.starts_with("/v1/sys/storage/raft/snapshot") {
+        MAX_SNAPSHOT_BODY
+    } else {
+        MAX_BODY
+    };
+    if length > maximum_body {
         return Err(ParseError {
             status: 413,
             message: "request body exceeds limit",
