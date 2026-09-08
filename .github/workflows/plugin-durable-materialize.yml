@@ -1,0 +1,121 @@
+name: Materialize durable plugin boundary
+
+on:
+  push:
+    branches:
+      - ops/plugin-durable-materialize-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plugin-durable-materialize-20260908
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BASE_SHA: 2337a49b1352275b7a88c74f0ea06e29aba2afe3
+      TARGET_BRANCH: codex/openbao-replacement-total-gap-closure-20260908
+      OVERLAY_SHA256: 0f1833fcb798a67f17bd89a074c5fff1c02e854438253325498b0155c3daf0da
+    steps:
+      - name: Checkout materializer source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify bounded overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mapfile -t parts < <(find .github/payload/plugin-durable -maxdepth 1 -type f -name 'part-*' -print | LC_ALL=C sort)
+          test "${#parts[@]}" -eq 4
+          cat "${parts[@]}" > "$RUNNER_TEMP/plugin-durable.b64"
+          base64 --decode "$RUNNER_TEMP/plugin-durable.b64" > "$RUNNER_TEMP/plugin-durable.tar.gz"
+          echo "$OVERLAY_SHA256  $RUNNER_TEMP/plugin-durable.tar.gz" | sha256sum --check --strict
+          python - <<'PY'
+          import os
+          import tarfile
+          from pathlib import PurePosixPath
+
+          expected = {
+              "README.md",
+              "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml",
+              "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml",
+              "docs/modules/heptabao-plugin-host.md",
+              "docs/CURRENT_DOCUMENTATION.md",
+              "tests/repository/test_plugin_durable_v2_3.py",
+              "crates/heptabao-plugin-host/Cargo.toml",
+              "crates/heptabao-plugin-host/src/lib.rs",
+              "crates/heptabao-plugin-host/src/durable.rs",
+          }
+          archive = os.path.join(os.environ["RUNNER_TEMP"], "plugin-durable.tar.gz")
+          with tarfile.open(archive, "r:gz") as bundle:
+              members = bundle.getmembers()
+              names = {member.name for member in members}
+              if names != expected:
+                  raise SystemExit(
+                      f"overlay path set mismatch: missing={sorted(expected-names)} extra={sorted(names-expected)}"
+                  )
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  if path.is_absolute() or ".." in path.parts or not member.isfile():
+                      raise SystemExit(f"unsafe overlay member: {member.name}")
+          PY
+
+      - name: Rebase overlay onto exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          target_sha="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$target_sha" = "$BASE_SHA"
+          git reset --hard "$BASE_SHA"
+          git clean -ffd
+          tar -xzf "$RUNNER_TEMP/plugin-durable.tar.gz"
+          git diff --check
+
+      - name: Install exact validation toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Refresh lockfile for the new path dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 check --workspace --all-targets
+          grep -A12 '^name = "heptabao-plugin-host"$' Cargo.lock | grep 'heptabao-durable-service'
+
+      - name: Qualify exact recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_compatibility_corpus.py
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          git diff --check
+
+      - name: Publish one direct-child candidate commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "HeptaBao Durable Plugin Materializer"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add --all
+          test -n "$(git status --porcelain=v1)"
+          git commit -m "feat(v2.3): persist plugin invocation and lease reconciliation"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH" --force-with-lease="refs/heads/$TARGET_BRANCH:$BASE_SHA"
