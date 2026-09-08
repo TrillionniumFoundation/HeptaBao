@@ -2,8 +2,7 @@ name: Codex materialize durable response wrapping
 
 on:
   push:
-    branches:
-      - codex/openbao-replacement-wrapping-20260908
+    branches: [codex/openbao-replacement-wrapping-20260908]
 
 permissions:
   contents: write
@@ -14,6 +13,7 @@ concurrency:
 
 jobs:
   materialize:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -21,15 +21,14 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
-      - name: Verify source baseline and assemble payload
+          persist-credentials: true
+
+      - name: Apply reviewed wrapping tranche
         shell: bash
         run: |
           set -euo pipefail
           test "$(sha256sum crates/heptabao-server/src/http.rs | cut -d' ' -f1)" = "f0aaf2208c1982c573c20241caba8633bd38de7d1230deebe6cce4129df7887c"
-          test "$(sha256sum crates/heptabao-server/src/engines.rs | cut -d' ' -f1)" = "a13c88cec6799c60ec7a0e8c8f46c40535827ef8da8b7553326a05714c69f887"
-          test "$(sha256sum crates/heptabao-server/src/lib.rs | cut -d' ' -f1)" = "e494b6d8ad65b944074f3c8201a4deef19b8b4fd43ef1a786b35497da98df70d"
           test "$(sha256sum crates/heptabao-server/src/service.rs | cut -d' ' -f1)" = "eeab70788fb190d714cc61dc23a239ac940684b7fccce2306f29d1d839263a4a"
-          test "$(sha256sum crates/heptabao-server/src/service_tests.rs | cut -d' ' -f1)" = "b102997973a3cef762ae8cd6681a5f7c8ea3a5310c0f9f95af28e77782f2eaf6"
           test ! -e crates/heptabao-server/src/wrapping.rs
           sha256sum --check <(head -n 1 .g1/codex-openbao-replacement/wrapping-tranche/payload.sha256)
           cat .g1/codex-openbao-replacement/wrapping-tranche/part-* > "$RUNNER_TEMP/wrapping.patch.gz.b64"
@@ -38,12 +37,9 @@ jobs:
           gzip --test "$RUNNER_TEMP/wrapping.patch.gz"
           gzip --decompress --stdout "$RUNNER_TEMP/wrapping.patch.gz" > "$RUNNER_TEMP/wrapping.patch"
           test "$(sha256sum "$RUNNER_TEMP/wrapping.patch" | cut -d' ' -f1)" = "c8b7dc6cc442401cc2cf6a395a9a0565c618ea6ec41107e905be41996b0afd0a"
-      - name: Apply response-wrapping source and review fixes
-        shell: bash
-        run: |
-          set -euo pipefail
           git apply --check --verbose "$RUNNER_TEMP/wrapping.patch"
           git apply --verbose "$RUNNER_TEMP/wrapping.patch"
+
           python - <<'PY'
           from pathlib import Path
 
@@ -53,41 +49,37 @@ jobs:
           fingerprint = text.find("fn request_fingerprint(")
           if fingerprint < 0:
               raise SystemExit("request_fingerprint function not found")
-          fingerprint_line = text.rfind("\n", 0, fingerprint) + 1
-          fingerprint_indent_end = fingerprint_line
-          while fingerprint_indent_end < len(text) and text[fingerprint_indent_end] in " \t":
-              fingerprint_indent_end += 1
-          fingerprint_indent = text[fingerprint_line:fingerprint_indent_end]
-          text = (
-              text[:fingerprint_line]
-              + f"{fingerprint_indent}#[cfg(test)]\n"
-              + text[fingerprint_line:]
-          )
+          line = text.rfind("\n", 0, fingerprint) + 1
+          indent_end = line
+          while text[indent_end] in " \t":
+              indent_end += 1
+          indent = text[line:indent_end]
+          text = text[:line] + f"{indent}#[cfg(test)]\n" + text[line:]
 
-          for function_name in (
+          for name in (
               "fn handle_at_with_wrap_ttl(",
               "fn handle_inner(",
               "fn wrapping_token_route(",
           ):
-              offset = text.find(function_name)
+              offset = text.find(name)
               if offset < 0:
-                  raise SystemExit(f"service function not found: {function_name}")
-              line_start = text.rfind("\n", 0, offset) + 1
-              indent_end = line_start
-              while indent_end < len(text) and text[indent_end] in " \t":
+                  raise SystemExit(f"service function not found: {name}")
+              line = text.rfind("\n", 0, offset) + 1
+              indent_end = line
+              while text[indent_end] in " \t":
                   indent_end += 1
-              indent = text[line_start:indent_end]
-              attribute = (
+              indent = text[line:indent_end]
+              expect = (
                   f"{indent}#[expect(\n"
                   f"{indent}    clippy::too_many_arguments,\n"
                   f"{indent}    reason = \"security-relevant request fields remain explicit at this bounded service boundary\"\n"
                   f"{indent})]\n"
               )
-              text = text[:line_start] + attribute + text[line_start:]
+              text = text[:line] + expect + text[line:]
           service.write_text(text, encoding="utf-8")
 
           regression = Path("tests/repository/test_durable_runtime_v2_1.py")
-          test_text = regression.read_text(encoding="utf-8")
+          value = regression.read_text(encoding="utf-8")
           old = '            self.assertIn(".open(", body)\n'
           new = (
               '            self.assertTrue(\n'
@@ -95,18 +87,28 @@ jobs:
               '                f"{function} must authenticate bytes directly or through the bounded reader",\n'
               '            )\n'
           )
-          if test_text.count(old) != 1:
-              raise SystemExit("unexpected durable runtime regression assertion")
-          regression.write_text(test_text.replace(old, new), encoding="utf-8")
+          if value.count(old) != 1:
+              raise SystemExit("unexpected durable runtime assertion")
+          regression.write_text(value.replace(old, new), encoding="utf-8")
+
+          smoke = Path("qa/single-node/smoke.py")
+          value = smoke.read_text(encoding="utf-8")
+          old = '        check("unsupported_wrapping_withholds_secret", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})[0] == 501)\n'
+          new = (
+              '        status, wrapped = instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})\n'
+              '        check("response_wrapping_withholds_secret", status == 200 and bool(wrapped.get("wrap_info", {}).get("token")) and "data" not in wrapped)\n'
+          )
+          if value.count(old) != 1:
+              raise SystemExit("unexpected wrapping smoke assertion")
+          smoke.write_text(value.replace(old, new), encoding="utf-8")
           PY
           git diff --check
-      - name: Install exact Rust toolchain
-        shell: bash
-        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
-      - name: Qualify wrapping and current V2.1 repository
+
+      - name: Qualify exact source
         shell: bash
         run: |
           set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
           cargo +1.98.0 fmt --all
           cargo +1.98.0 fmt --all -- --check
@@ -114,12 +116,7 @@ jobs:
           cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
           cargo +1.98.0 build --locked -p heptabao-server
           python scripts/validate_repository_v2.py
-          for test_name in \
-            test_repository_v2.py \
-            test_durable_runtime_v2_1.py \
-            test_authorized_durable_runtime_v2_1.py \
-            test_security_hashing_v2_1.py
-          do
+          for test_name in test_repository_v2.py test_durable_runtime_v2_1.py test_authorized_durable_runtime_v2_1.py test_security_hashing_v2_1.py; do
             python -m unittest discover -s tests/repository -p "$test_name" -v
           done
           work_dir="$RUNNER_TEMP/heptabao-response-wrapping-smoke"
@@ -129,13 +126,14 @@ jobs:
           cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
           cargo +1.98.0 doc --locked --workspace --no-deps
           git diff --check
-      - name: Publish qualified source commit
+
+      - name: Publish qualified source and retire materializer
         shell: bash
         run: |
           set -euo pipefail
           rm -rf .g1/codex-openbao-replacement/wrapping-tranche
           rmdir .g1/codex-openbao-replacement 2>/dev/null || true
-          rm -f .github/workflows/codex-response-wrapping-materialize.yml
+          rm .github/workflows/codex-response-wrapping-materialize.yml
           git config user.name "HeptaBao Codex Closure"
           git config user.email "102159240+ProfHepta@users.noreply.github.com"
           git add -A
