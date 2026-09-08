@@ -1,0 +1,255 @@
+name: Temporary clean Raft runtime qualification surface
+
+on:
+  push:
+    branches:
+      - codex/v2-2-raft-runtime-20260908
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-clean-raft-runtime-lints
+  cancel-in-progress: false
+
+jobs:
+  clean-and-push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Promote operational APIs and scope fault helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/v2-2-raft-runtime-20260908
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              if new in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(f"{path}: expected one replacement for {old[:80]!r}")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+
+          lib = Path("crates/heptabao-raft-runtime/src/lib.rs")
+          replace_once(
+              lib,
+              "use std::error::Error;\nuse std::fmt;\nuse std::path::Path;",
+              "use std::collections::BTreeMap;\nuse std::error::Error;\nuse std::fmt;\nuse std::path::Path;",
+          )
+          replace_once(
+              lib,
+              '''    pub async fn ensure_linearizable(&self) -> Result<u64, RaftRuntimeError> {
+                  let cluster = self.cluster()?;
+                  let leader = cluster.consensus_leader().await.map_err(consensus_error)?;
+                  cluster.read_index(leader).await.map_err(consensus_error)?;
+                  Ok(leader)
+              }
+
+              pub async fn states_converged(&self) -> Result<bool, RaftRuntimeError> {
+          ''',
+              '''    pub async fn ensure_linearizable(&self) -> Result<u64, RaftRuntimeError> {
+                  let cluster = self.cluster()?;
+                  let leader = cluster.consensus_leader().await.map_err(consensus_error)?;
+                  cluster.read_index(leader).await.map_err(consensus_error)?;
+                  Ok(leader)
+              }
+
+              pub async fn trigger_snapshot(&self, minimum_index: u64) -> Result<(), RaftRuntimeError> {
+                  let cluster = self.cluster()?;
+                  let leader = cluster.consensus_leader().await.map_err(consensus_error)?;
+                  cluster
+                      .trigger_snapshot(leader, minimum_index)
+                      .await
+                      .map_err(consensus_error)
+              }
+
+              pub async fn snapshot_status(
+                  &self,
+              ) -> Result<BTreeMap<u64, (bool, u64)>, RaftRuntimeError> {
+                  Ok(self.cluster()?.snapshot_status().await)
+              }
+
+              pub async fn states_converged(&self) -> Result<bool, RaftRuntimeError> {
+          ''',
+          )
+          replace_once(
+              lib,
+              '''        let receipt = runtime.replicate(1, &envelope).await?;
+                  assert!(receipt.log_index > 0);
+                  assert!(runtime.states_converged().await?);
+                  let leader = runtime.ensure_linearizable().await?;
+          ''',
+              '''        let receipt = runtime.replicate(1, &envelope).await?;
+                  assert!(receipt.log_index > 0);
+                  assert!(runtime.states_converged().await?);
+                  runtime.trigger_snapshot(receipt.log_index).await?;
+                  let snapshot_status = runtime.snapshot_status().await?;
+                  assert_eq!(snapshot_status.len(), 3);
+                  assert!(snapshot_status.values().all(|(present, generation)| *present && *generation > 0));
+                  let artifacts = runtime.cluster()?.artifact_paths();
+                  assert_eq!(artifacts.len(), 9);
+                  assert!(artifacts.values().all(|path| path.is_file()));
+                  let rpc_counts = runtime.cluster()?.rpc_counts().await;
+                  assert!(rpc_counts.values().copied().sum::<u64>() > 0);
+                  let leader = runtime.ensure_linearizable().await?;
+          ''',
+          )
+
+          cluster = Path("crates/heptabao-raft-runtime/src/cluster.rs")
+          replace_once(
+              cluster,
+              "    pub log_store: DurableLogStore,\n",
+              "    #[cfg(test)]\n    pub log_store: DurableLogStore,\n",
+          )
+          replace_once(
+              cluster,
+              "                raft,\n                log_store,\n                state_machine,",
+              "                raft,\n                #[cfg(test)]\n                log_store,\n                state_machine,",
+          )
+          replace_once(
+              cluster,
+              '''    pub async fn all_states_equal(&self) -> bool {
+                  let baseline = self.state(1).await;
+                  for id in [2_u64, 3] {
+                      let state = self.state(id).await;
+                      if state.last_applied_log != baseline.last_applied_log
+                          || state.client_status != baseline.client_status
+                      {
+                          return false;
+                      }
+                  }
+                  true
+              }
+
+              pub fn artifact_paths(&self) -> BTreeMap<String, PathBuf> {
+          ''',
+              '''    pub async fn all_states_equal(&self) -> bool {
+                  let baseline = self.state(1).await;
+                  for id in [2_u64, 3] {
+                      let state = self.state(id).await;
+                      if state.last_applied_log != baseline.last_applied_log
+                          || state.client_status != baseline.client_status
+                      {
+                          return false;
+                      }
+                  }
+                  true
+              }
+
+              pub async fn snapshot_status(&self) -> BTreeMap<u64, (bool, u64)> {
+                  let mut result = BTreeMap::new();
+                  for (id, node) in &self.nodes {
+                      result.insert(
+                          *id,
+                          (
+                              node.state_machine.has_current_snapshot().await,
+                              node.state_machine.generation().await,
+                          ),
+                      );
+                  }
+                  result
+              }
+
+              #[cfg(test)]
+              pub fn artifact_paths(&self) -> BTreeMap<String, PathBuf> {
+          ''',
+          )
+          replace_once(
+              cluster,
+              "    pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {\n",
+              "    #[cfg(test)]\n    pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {\n",
+          )
+          replace_once(
+              cluster,
+              "    pub async fn exercise_partition(&self, leader: u64) -> AnyResult<(bool, bool)> {\n",
+              "    #[cfg(test)]\n    pub async fn exercise_partition(&self, leader: u64) -> AnyResult<(bool, bool)> {\n",
+          )
+
+          network = Path("crates/heptabao-raft-runtime/src/network.rs")
+          for signature in (
+              "    pub async fn isolate(&self, id: u64) {\n",
+              "    pub async fn pause(&self, id: u64) {\n",
+              "    pub async fn resume(&self, id: u64) {\n",
+              "    pub async fn heal_all(&self) {\n",
+              "    pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {\n",
+          ):
+              replace_once(network, signature, "    #[cfg(test)]\n" + signature)
+
+          store = Path("crates/heptabao-raft-runtime/src/store.rs")
+          text = store.read_text(encoding="utf-8")
+          if "#[cfg(test)]\n    pub fn adopt_legacy" not in text:
+              count = text.count("    pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {\n")
+              if count != 2:
+                  raise SystemExit(f"expected two legacy adoption methods, found {count}")
+              text = text.replace(
+                  "    pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {\n",
+                  "    #[cfg(test)]\n    pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {\n",
+              )
+          if "#[cfg(test)]\npub fn flip_first_payload_byte" not in text:
+              text = text.replace(
+                  "pub fn flip_first_payload_byte(path: &Path) -> io::Result<()> {\n",
+                  "#[cfg(test)]\npub fn flip_first_payload_byte(path: &Path) -> io::Result<()> {\n",
+                  1,
+              )
+          marker = "    static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);\n"
+          regression = '''
+
+              #[test]
+              fn payload_corruption_helper_produces_rejected_envelope() {
+                  let log_root = root("payload-corruption-helper");
+                  let log = DurableLogStore::create(&log_root).expect("create log store");
+                  drop(log);
+                  flip_first_payload_byte(&log_root.join("raft-log.bin"))
+                      .expect("corrupt one authenticated envelope byte");
+                  DurableLogStore::open_existing(&log_root)
+                      .expect_err("corrupted envelope must fail closed");
+                  fs::remove_dir_all(log_root).expect("remove payload corruption fixture");
+              }
+          '''
+          if "fn payload_corruption_helper_produces_rejected_envelope" not in text:
+              if text.count(marker) != 1:
+                  raise SystemExit("store test sequence marker missing")
+              text = text.replace(marker, marker + regression)
+          store.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Qualify the cleaned package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test -p heptabao-raft-runtime
+          cargo +1.98.0 clippy -p heptabao-raft-runtime --all-targets -- -D warnings
+          git diff --check
+
+      - name: Commit exact source cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=codex/v2-2-raft-runtime-20260908
+          changed="$(git diff --name-only)"
+          for path in $changed; do
+            case "$path" in
+              crates/heptabao-raft-runtime/src/lib.rs|crates/heptabao-raft-runtime/src/cluster.rs|crates/heptabao-raft-runtime/src/network.rs|crates/heptabao-raft-runtime/src/store.rs) ;;
+              *) echo "unexpected cleanup path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git fetch origin "$branch"
+          test "$(git rev-parse "refs/remotes/origin/$branch")" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add crates/heptabao-raft-runtime/src
+          git commit -m 'refactor(raft): expose snapshot status and scope fault helpers'
+          git push origin "HEAD:refs/heads/$branch"
