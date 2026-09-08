@@ -55,10 +55,7 @@ jobs:
           if text.count(import_anchor) != 1:
               raise SystemExit('unexpected serde_json import')
           text = text.replace(import_anchor, import_anchor + 'use subtle::ConstantTimeEq;\n')
-          text = text.replace(
-              'ring::constant_time::verify_slices_are_equal(',
-              'constant_time_equal(',
-          )
+          text = text.replace('ring::constant_time::verify_slices_are_equal(', 'constant_time_equal(')
           text, count = re.subn(
               r'constant_time_equal\((.*?)\)\s*\.is_err\(\)',
               lambda match: '!constant_time_equal(' + match.group(1) + ')',
@@ -94,11 +91,12 @@ jobs:
           rustc +1.98.0 --version --verbose
           cargo +1.98.0 --version --verbose
 
-      - name: Format and verify focused server closure
+      - name: Normalize lock and verify focused server closure
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          cargo +1.98.0 metadata --format-version 1 >/dev/null
           cargo +1.98.0 fmt --all
           cargo +1.98.0 fmt --all -- --check
           git diff --check
