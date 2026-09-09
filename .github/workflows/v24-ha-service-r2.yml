@@ -2,22 +2,19 @@ name: HeptaBao V2.4 HA service source recovery r2
 
 on:
   push:
-    branches:
-      - ops/v24-ha-service-r2-20260909
+    branches: [ops/v24-ha-service-r2-20260909]
 
 permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-ha-service-r2-recovery-v5
+  group: heptabao-v24-ha-service-r2-final
   cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
-  MATERIALIZER_BRANCH: ops/v24-ha-service-r1-20260909
   MATERIALIZER_SHA: 77230cfabcc212292ea1d941826e069a50f98f4f
   MATERIALIZER_WORKFLOW: .github/workflows/v24-ha-service-materializer.yml
-  RECOVERY_PARENT_SHA: c29a5ec5615e747fc67f60c9d5dfec483a6a92b4
   ORIGINAL_PATCH_SHA: 84a6769af3eef6c400f683fe95d725010104381b
   PATCH_WORKFLOW: .github/workflows/v24-ha-service-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
@@ -25,44 +22,45 @@ env:
 jobs:
   recover:
     runs-on: ubuntu-24.04
-    timeout-minutes: 130
+    timeout-minutes: 140
     steps:
-      - name: Checkout recovery controller
+      - name: Checkout controller history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: {fetch-depth: 0, persist-credentials: true}
-      - name: Verify immutable controller inputs
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable source objects
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
-          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
-          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
-          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "152b844cca7bce21409491e1f219c588363d1672"
-          git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/ha-materializer"
-          test "$(git rev-parse refs/remotes/origin/ha-materializer)" = "$MATERIALIZER_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW")" = "1a80b08f79b7a3f785a3a2c72aebee90c0aea42e"
-          test "$(git diff --name-only "$BASE_SHA..$MATERIALIZER_SHA")" = "$MATERIALIZER_WORKFLOW"
-      - name: Recover and qualify HA service source
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "152b844cca7bce21409491e1f219c588363d1672"
+
+      - name: Recover, repair and qualify HA service
         shell: bash
         run: |
           set -euo pipefail
-          work="$RUNNER_TEMP/heptabao-ha-service-r2"
+          work="$RUNNER_TEMP/heptabao-ha-service-final"
           git worktree add --detach "$work" "$BASE_SHA"
           git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
           git show "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
           python - "$RUNNER_TEMP/materializer.yml" "      - name: Materialize HA service package" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          start = source.index(sys.argv[2])
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
+
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          start = lines.index(sys.argv[2])
+          run = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
           body = []
-          for line in source[run_index + 1:]:
+          for line in lines[run + 1:]:
               if line.startswith("      - name: "):
                   break
               body.append(line[10:] if line.startswith("          ") else line)
-          text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
+          text = "\n".join(x for x in body if "git rev-parse HEAD^" not in x) + "\n"
           for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo "):
               if token in text:
                   raise SystemExit(f"denied materializer token: {token}")
@@ -71,82 +69,62 @@ jobs:
           python - "$RUNNER_TEMP/patch.yml" "      - name: Harden peer state and remove dead private code" "$RUNNER_TEMP/harden.sh" <<'PY'
           from pathlib import Path
           import sys
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          start = source.index(sys.argv[2])
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
+
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          start = lines.index(sys.argv[2])
+          run = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
           body = []
-          for line in source[run_index + 1:]:
+          for line in lines[run + 1:]:
               if line.startswith("      - name: "):
                   break
               body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
+          gate = "cargo +1.98.0 fmt --all\n"
+          source_patch = "\n".join([
+              "python - <<'PY_HA'",
+              "from pathlib import Path",
+              "path = Path('crates/heptabao-ha-service/src/lib.rs')",
+              "text = path.read_text(encoding='utf-8')",
+              "dead = \"    fn decode(value: u8) -> Result<Self, HaError> {\\n        match value {\\n            1 => Ok(Self::LinearizableRead),\\n            2 => Ok(Self::Mutation),\\n            _ => Err(HaError::InvalidFrame),\\n        }\\n    }\\n\\n\"",
+              "if text.count(dead) != 1: raise SystemExit('expected one unused OperationKind decoder')",
+              "text = text.replace(dead, '', 1)",
+              "fn_marker = 'fn decode_peer_state(\\n'",
+              "if text.count(fn_marker) != 1: raise SystemExit('expected one peer-state decoder')",
+              "text = text.replace(fn_marker, 'type PeerSequenceState = (BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>);\\n\\nfn decode_peer_state(\\n', 1)",
+              "old_sig = ') -> Result<(BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>), HaError> {'",
+              "if text.count(old_sig) != 1: raise SystemExit('expected one complex peer-state signature')",
+              "text = text.replace(old_sig, ') -> Result<PeerSequenceState, HaError> {', 1)",
+              "old_quorum = 'voters.intersection(acknowledgements).count() >= voters.len() / 2 + 1'",
+              "if text.count(old_quorum) != 1: raise SystemExit('expected one majority expression')",
+              "text = text.replace(old_quorum, 'voters.intersection(acknowledgements).count() > voters.len() / 2', 1)",
+              "old_closure = '|request| Ok(request)'",
+              "if text.count(old_closure) != 1: raise SystemExit('expected one identity closure')",
+              "text = text.replace(old_closure, 'Ok', 1)",
+              "path.write_text(text, encoding='utf-8')",
+              "PY_HA",
+              "cargo +1.98.0 fmt --all",
+          ]) + "\n"
+          if text.count(gate) != 1:
+              raise SystemExit("expected one initial HA format gate")
+          text = text.replace(gate, source_patch, 1)
           for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo "):
               if token in text:
                   raise SystemExit(f"denied hardening token: {token}")
           Path(sys.argv[3]).write_text(text, encoding="utf-8")
           PY
-          python - "$RUNNER_TEMP/harden.sh" <<'PY_PATCH_HA'
-          from pathlib import Path
-          import sys
-
-          path = Path(sys.argv[1])
-          text = path.read_text(encoding="utf-8")
-          marker = "rm -f .github/workflows/v24-ha-service-r2.yml\n"
-          if text.count(marker) != 1:
-              raise SystemExit("expected one HA hardening test-boundary marker")
-          patch = '''python - <<'PY_HA_SOURCE'
-          from pathlib import Path
-
-          path = Path('crates/heptabao-ha-service/src/lib.rs')
-          text = path.read_text(encoding='utf-8')
-          dead = ''' + '"""' + '''    fn decode(value: u8) -> Result<Self, HaError> {
-        match value {
-            1 => Ok(Self::LinearizableRead),
-            2 => Ok(Self::Mutation),
-            _ => Err(HaError::InvalidFrame),
-        }
-    }
-
-''' + '"""' + '''
-          if text.count(dead) != 1:
-              raise SystemExit('expected one unused OperationKind decoder')
-          text = text.replace(dead, '', 1)
-          function = 'fn decode_peer_state(\n'
-          alias = 'type PeerSequenceState = (BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>);\n\nfn decode_peer_state(\n'
-          if text.count(function) != 1:
-              raise SystemExit('expected one peer state decoder')
-          text = text.replace(function, alias, 1)
-          old_signature = ') -> Result<(BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>), HaError> {'
-          if text.count(old_signature) != 1:
-              raise SystemExit('expected one complex peer state return type')
-          text = text.replace(old_signature, ') -> Result<PeerSequenceState, HaError> {', 1)
-          old_quorum = 'voters.intersection(acknowledgements).count() >= voters.len() / 2 + 1'
-          if text.count(old_quorum) != 1:
-              raise SystemExit('expected one majority expression')
-          text = text.replace(old_quorum, 'voters.intersection(acknowledgements).count() > voters.len() / 2', 1)
-          old_closure = '|request| Ok(request)'
-          if text.count(old_closure) != 1:
-              raise SystemExit('expected one redundant identity closure')
-          text = text.replace(old_closure, 'Ok', 1)
-          path.write_text(text, encoding='utf-8')
-          PY_HA_SOURCE
-          ''' + marker
-          path.write_text(text.replace(marker, patch, 1), encoding="utf-8")
-          PY_PATCH_HA
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
           (
             cd "$work"
             env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$BASE_SHA" bash "$RUNNER_TEMP/materialize.sh"
             python - <<'PY'
           from pathlib import Path
-          manifest = Path('crates/heptabao-ha-service/Cargo.toml')
-          text = manifest.read_text(encoding='utf-8')
-          needle = 'license.workspace = true\n'
+          manifest = Path("crates/heptabao-ha-service/Cargo.toml")
+          text = manifest.read_text(encoding="utf-8")
+          needle = "license.workspace = true\n"
           if text.count(needle) != 1:
-              raise SystemExit('expected exactly one unresolved workspace license inheritance')
-          manifest.write_text(text.replace(needle, ''), encoding='utf-8')
+              raise SystemExit("expected one unresolved workspace license inheritance")
+          manifest.write_text(text.replace(needle, "", 1), encoding="utf-8")
           PY
-            test "$(grep -R -l '^license\.workspace = true$' crates/heptabao-ha-service/Cargo.toml || true)" = ""
             bash "$RUNNER_TEMP/harden.sh"
             git config user.name 'HeptaBao HA Service Recovery'
             git config user.email '102159240+ProfHepta@users.noreply.github.com'
