@@ -1,4 +1,4 @@
-name: HeptaBao V2.4 federated auth source repair r3
+name: HeptaBao V2.4 federated auth source recovery r3
 
 on:
   push:
@@ -9,194 +9,77 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r3
+  group: heptabao-v24-federated-auth-r3-recovery
   cancel-in-progress: false
 
 env:
-  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
+  ORIGINAL_CONTROLLER_SHA: eaf82ea9528a068dadccbd1700fe03da688fd324
+  ORIGINAL_WORKFLOW: .github/workflows/v24-federated-auth-r3.yml
 
 jobs:
-  repair:
+  recover:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 150
     steps:
-      - name: Checkout repair controller
+      - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Verify immutable hardening source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$ORIGINAL_CONTROLLER_SHA"
+          test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW")" = "732051f7b4ad29023efa9dc70b521afcdada8572"
+
       - name: Wait for package-qualified r2 source
         shell: bash
         run: |
           set -euo pipefail
-          deadline=$((SECONDS + 5400))
+          deadline=$((SECONDS + 7200))
           while [ "$SECONDS" -lt "$deadline" ]; do
-            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/$INPUT_BRANCH" || true
-            if git show-ref --verify --quiet "refs/remotes/origin/$INPUT_BRANCH"; then
-              source_sha="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH")"
-              git merge-base --is-ancestor "$EXACT_PARENT" "$source_sha"
+            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/federated-r2" || true
+            if git show-ref --verify --quiet refs/remotes/origin/federated-r2; then
+              source_sha="$(git rev-parse refs/remotes/origin/federated-r2)"
+              git merge-base --is-ancestor "$BASE_SHA" "$source_sha"
               printf 'SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
               exit 0
             fi
-            sleep 30
+            sleep 20
           done
           echo 'federated-auth r2 source did not materialize' >&2
           exit 1
 
-      - name: Harden replay ledger in isolated source worktree
+      - name: Execute exact r3 hardening block
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          work="$RUNNER_TEMP/heptabao-fed-auth-r3"
-          git worktree add --detach "$work" "$SOURCE_SHA"
-          (
-            cd "$work"
-            python - <<'PY'
+          git show "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW" > "$RUNNER_TEMP/original-r3.yml"
+          python - "$RUNNER_TEMP/original-r3.yml" "$RUNNER_TEMP/harden-r3.sh" <<'PY'
           from pathlib import Path
+          import sys
 
-          path=Path('crates/heptabao-federated-auth/src/lib.rs')
-          text=path.read_text(encoding='utf-8')
-          marker='''pub struct PersistentReplayLedger {
-'''
-          insertion='''#[derive(Debug)]
-struct WriterLock {
-    path: PathBuf,
-    _file: File,
-}
-
-impl Drop for WriterLock {
-    fn drop(&mut self) {
-        let _ = fs::remove_file(&self.path);
-    }
-}
-
-pub struct PersistentReplayLedger {
-'''
-          if marker not in text:
-              raise SystemExit('PersistentReplayLedger marker missing')
-          text=text.replace(marker,insertion,1)
-          text=text.replace('    _lock: File,\n','    _lock: WriterLock,\n',1)
-          text=text.replace(
-              'fn create_lock(path: &Path) -> Result<File, AuthError> {',
-              'fn create_lock(path: &Path) -> Result<WriterLock, AuthError> {',
-              1,
-          )
-          old='''    Ok(file)
-}
-
-fn open_ledger(path: &Path) -> Result<File, AuthError> {
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    options.open(path).map_err(|_| AuthError::Io)
-}
-'''
-          new='''    Ok(WriterLock {
-        path: path.to_path_buf(),
-        _file: file,
-    })
-}
-
-fn open_ledger(path: &Path) -> Result<File, AuthError> {
-    if path.exists() {
-        let metadata = fs::symlink_metadata(path).map_err(|_| AuthError::Io)?;
-        if metadata.file_type().is_symlink() || !metadata.is_file() {
-            return Err(AuthError::InvalidRoot);
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            if metadata.permissions().mode() & 0o077 != 0 {
-                return Err(AuthError::InvalidRoot);
-            }
-        }
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    #[cfg(target_os = "linux")]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000);
-    }
-    options.open(path).map_err(|_| AuthError::Io)
-}
-'''
-          if old not in text:
-              raise SystemExit('create_lock/open_ledger block missing')
-          text=text.replace(old,new,1)
-          old='''        assert!(matches!(PersistentReplayLedger::open(&root, [12; 32]), Err(AuthError::Tampered)));
-        let _ = fs::remove_file(root.join("writer.lock"));
-        fs::remove_dir_all(root).unwrap();
-'''
-          new='''        assert!(matches!(PersistentReplayLedger::open(&root, [12; 32]), Err(AuthError::Tampered)));
-        assert!(!root.join("writer.lock").exists());
-        fs::remove_dir_all(root).unwrap();
-'''
-          if old not in text:
-              raise SystemExit('tamper test block missing')
-          text=text.replace(old,new,1)
-          marker='''    #[test]
-    fn tampered_replay_ledger_is_rejected() {
-'''
-          extra='''    #[test]
-    fn permissive_existing_replay_ledger_is_rejected_without_stranding_lock() {
-        let root = root("permissions");
-        let path = root.join("replay.ledger");
-        fs::write(&path, b"").unwrap();
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
-            assert!(matches!(
-                PersistentReplayLedger::open(&root, [16; 32]),
-                Err(AuthError::InvalidRoot)
-            ));
-            assert!(!root.join("writer.lock").exists());
-        }
-        fs::remove_dir_all(root).unwrap();
-    }
-
-    #[test]
-    fn tampered_replay_ledger_is_rejected() {
-'''
-          if marker not in text:
-              raise SystemExit('test insertion marker missing')
-          text=text.replace(marker,extra,1)
-          path.write_text(text,encoding='utf-8')
-
-          guide=Path('docs/modules/heptabao-federated-auth.md')
-          guide_text=guide.read_text(encoding='utf-8')
-          if 'RAII-owned replay writer lock' not in guide_text:
-              guide_text += '\nThe replay writer lock is RAII-owned; failed ledger admission cannot strand it. Existing ledger files must be non-symlink regular files with owner-private Unix permissions before HMAC recovery.\n'
-              guide.write_text(guide_text,encoding='utf-8')
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = "      - name: Harden replay ledger in isolated source worktree"
+          start = lines.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit("invalid r3 workflow indentation")
+              body.append(line[10:] if line else "")
+          text = "\n".join(body) + "\n"
+          if chr(36) + "{{" in text:
+              raise SystemExit("unresolved workflow expression in extracted hardening block")
+          Path(sys.argv[2]).write_text(text, encoding="utf-8")
           PY
-            cargo +1.98.0 fmt --all
-            cargo +1.98.0 test --locked -p heptabao-federated-auth --all-targets
-            cargo +1.98.0 clippy --locked -p heptabao-federated-auth --all-targets -- -D warnings
-            python -m unittest tests.repository.test_federated_auth_v2_4
-            git config user.name 'HeptaBao V2.4 Federated Auth R3'
-            git config user.email '102159240+ProfHepta@users.noreply.github.com'
-            git add -A
-            git commit -m 'fix(auth): harden replay ledger lock and file admission'
-            new_sha="$(git rev-parse HEAD)"
-            if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-              test "$observed" = "$new_sha"
-            else
-              git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
-            fi
-          )
-          git worktree remove --force "$work"
+          chmod 0700 "$RUNNER_TEMP/harden-r3.sh"
+          bash "$RUNNER_TEMP/harden-r3.sh"
