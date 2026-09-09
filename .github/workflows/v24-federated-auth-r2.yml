@@ -9,15 +9,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r2-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-federated-auth-r2-recovery-v3
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   MATERIALIZER_BRANCH: ops/v24-federated-auth-r1-20260909
   MATERIALIZER_SHA: db77577dca611f4c6ad3f19b7a3627b5b230f817
   MATERIALIZER_WORKFLOW: .github/workflows/v24-federated-auth-materializer.yml
-  PATCH_CONTROLLER_SHA: b1ee8bf53241e64b034509d3c2ac49ea97544cf9
+  RECOVERY_PARENT_SHA: b07d49677c6ae3d98e84dcb98b2c5ed50809ad63
+  ORIGINAL_PATCH_SHA: 4a217be15255fbed544f0c059a752f8bb390273d
   PATCH_WORKFLOW: .github/workflows/v24-federated-auth-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
 
@@ -36,9 +37,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
-          test "$(git merge-base "$PATCH_CONTROLLER_SHA" "$BASE_SHA")" = "$BASE_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "9a08601b46bf768c81a1d2a3161d11d287e22ce6"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "aaa7ef0f18f7394de98dc5f8d655d7bea6dd21d7"
           git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/federated-materializer"
           test "$(git rev-parse refs/remotes/origin/federated-materializer)" = "$MATERIALIZER_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
@@ -52,7 +54,7 @@ jobs:
           work="$RUNNER_TEMP/heptabao-federated-auth-r2"
           git worktree add --detach "$work" "$BASE_SHA"
           git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
-          git show "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
+          git show "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
           python - "$RUNNER_TEMP/materializer.yml" "      - name: Materialize federated auth package" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
