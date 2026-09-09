@@ -1,0 +1,115 @@
+name: HeptaBao V2.4 clean tree republisher
+
+on:
+  push:
+    branches:
+      - ops/v24-clean-republisher-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-clean-republisher-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  INPUT_BRANCH: codex/openbao-replacement-v2.4-converged-candidate-20260909
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-clean-candidate-20260909
+
+jobs:
+  republish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 210
+    steps:
+      - name: Checkout republisher controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for a qualified converged tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/heptabao-v24-clean"
+          deadline=$((SECONDS + 9000))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/$INPUT_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$INPUT_BRANCH"; then
+              git merge-base --is-ancestor "$EXACT_PARENT" "refs/remotes/origin/$INPUT_BRANCH"
+              input_sha="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH")"
+              input_tree="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH^{tree}")"
+              printf 'INPUT_SHA=%s\nINPUT_TREE=%s\n' "$input_sha" "$input_tree" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'converged input did not materialize before timeout' >&2
+          exit 1
+
+      - name: Rebuild the exact tree as one clean source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-v24-clean-work"
+          git worktree add --detach "$work" "$INPUT_SHA"
+          (
+            cd "$work"
+            test "$(git rev-parse 'HEAD^{tree}')" = "$INPUT_TREE"
+            test ! -e .github/workflows/v24-source-convergence.yml
+            test ! -e .github/workflows/v24-source-convergence-r2.yml
+            test ! -e .github/workflows/v24-inplace-integration-materializer.yml
+            test ! -e .github/workflows/v24-plugin-toctou-materializer.yml
+            test ! -e .github/workflows/v24-migration-journal-materializer.yml
+            test ! -e .github/workflows/v24-federated-auth-materializer.yml
+            test ! -e .github/workflows/v24-ha-service-materializer.yml
+            test ! -e .github/workflows/v24-compat-capture-materializer.yml
+            git config user.name 'HeptaBao V2.4 Clean Tree Republisher'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git reset --soft "$EXACT_PARENT"
+            git commit -m 'feat(v2.4): converge repository-controlled replacement blocker repairs'
+            clean_sha="$(git rev-parse HEAD)"
+            clean_tree="$(git rev-parse 'HEAD^{tree}')"
+            test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+            test "$clean_tree" = "$INPUT_TREE"
+            printf 'input=%s\ninput_tree=%s\nclean=%s\nclean_tree=%s\nparent=%s\n' \
+              "$INPUT_SHA" "$INPUT_TREE" "$clean_sha" "$clean_tree" "$(git rev-parse HEAD^)" \
+              > "$RUNNER_TEMP/heptabao-v24-clean/tree-binding.txt"
+          )
+
+      - name: Qualify clean single-commit source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          work="$RUNNER_TEMP/heptabao-v24-clean-work"
+          out="$RUNNER_TEMP/heptabao-v24-clean"
+          (
+            cd "$work"
+            python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+            python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+            python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+            cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+            timeout --signal=TERM --kill-after=30s 5400s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+            cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+            cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+            cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+            test -z "$(git status --porcelain=v1 --untracked-files=all)"
+            clean_sha="$(git rev-parse HEAD)"
+            if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+              echo 'clean candidate already exists; preserving first qualified writer'
+            else
+              git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$clean_sha:refs/heads/$OUTPUT_BRANCH"
+            fi
+          )
+          git worktree remove --force "$work"
+
+      - name: Upload bounded clean-lineage evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-clean-republication
+          path: ${{ runner.temp }}/heptabao-v24-clean/
+          if-no-files-found: warn
+          retention-days: 14
