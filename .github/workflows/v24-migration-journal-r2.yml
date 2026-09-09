@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-migration-journal-r2-recovery-v3
+  group: heptabao-v24-migration-journal-r2-recovery-v4
   cancel-in-progress: true
 
 env:
@@ -16,7 +16,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-migration-journal-r1-20260909
   MATERIALIZER_SHA: 25dce79d68292f8a6bdbed05eb759274bbf01cf2
   MATERIALIZER_WORKFLOW: .github/workflows/v24-migration-journal-materializer.yml
-  RECOVERY_PARENT_SHA: 209a5785c56733dc834b99a848750f32d80e74e3
+  RECOVERY_PARENT_SHA: f7890df1bbcd5a2c3600da3a01dabb710b462f6f
   ORIGINAL_PATCH_SHA: c1df5aac5d196294620ad8b170be254e6f398821
   PATCH_WORKFLOW: .github/workflows/v24-migration-journal-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-migration-journal-source-20260909
@@ -78,6 +78,16 @@ jobs:
           (
             cd "$work"
             env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$BASE_SHA" bash "$RUNNER_TEMP/materialize.sh"
+            python - <<'PY'
+          from pathlib import Path
+          manifest = Path('crates/heptabao-migration-journal/Cargo.toml')
+          text = manifest.read_text(encoding='utf-8')
+          needle = 'license.workspace = true\n'
+          if text.count(needle) != 1:
+              raise SystemExit('expected exactly one unresolved workspace license inheritance')
+          manifest.write_text(text.replace(needle, ''), encoding='utf-8')
+          PY
+            test "$(grep -R -l '^license\.workspace = true$' crates/heptabao-migration-journal/Cargo.toml || true)" = ""
             bash "$RUNNER_TEMP/harden.sh"
             git config user.name 'HeptaBao Migration Journal Recovery'
             git config user.email '102159240+ProfHepta@users.noreply.github.com'
