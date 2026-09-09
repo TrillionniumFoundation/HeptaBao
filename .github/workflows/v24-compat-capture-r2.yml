@@ -1,0 +1,206 @@
+name: HeptaBao V2.4 compatibility capture source repair r2
+
+on:
+  push:
+    branches:
+      - ops/v24-compat-capture-r2-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-compat-capture-r2
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SOURCE_BRANCH: ops/v24-compat-capture-r1-20260909
+  SOURCE_WORKFLOW: .github/workflows/v24-compat-capture-materializer.yml
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-compat-capture-source-20260909
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact repair controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Recover exact authored compatibility source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/source-materializer"
+          first_commit="$(git rev-list --ancestry-path --reverse "$EXACT_PARENT..refs/remotes/origin/source-materializer" | head -1)"
+          test -n "$first_commit"
+          test "$(git rev-parse "$first_commit^")" = "$EXACT_PARENT"
+          test "$(git diff --name-only "$EXACT_PARENT..$first_commit")" = "$SOURCE_WORKFLOW"
+          git show "$first_commit:$SOURCE_WORKFLOW" > "$RUNNER_TEMP/source.yml"
+          python - "$RUNNER_TEMP/source.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
+          marker='      - name: Materialize differential capture runner'
+          start=lines.index(marker)
+          run_index=next(i for i in range(start+1,start+8) if lines[i]=='        run: |')
+          body=[]
+          for line in lines[run_index+1:]:
+              if line.startswith('      - name: '): break
+              if line and not line.startswith('          '): raise SystemExit('invalid indentation')
+              body.append(line[10:] if line else '')
+          text='\n'.join(line for line in body if 'git rev-parse HEAD^' not in line)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.','${{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied token: {token}')
+          Path(sys.argv[2]).write_text(text,encoding='utf-8')
+          PY
+          chmod 0700 "$RUNNER_TEMP/materialize.sh"
+          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$RUNNER_TEMP/materialize.sh"
+
+      - name: Enforce artifact self-integrity and observation bounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          script=Path('scripts/openbao_differential_runner_v2_4.py')
+          text=script.read_text(encoding='utf-8')
+          marker='''def compare_artifacts(candidate: dict[str, Any], oracle: dict[str, Any]) -> dict[str, Any]:
+'''
+          helper='''def _validate_capture_artifact(artifact: dict[str, Any], expected_mode: str) -> dict[str, dict[str, Any]]:
+    if not isinstance(artifact, dict) or artifact.get("mode") != expected_mode:
+        raise CaptureError(f"capture artifact mode is not {expected_mode}")
+    supplied_hash = artifact.get("artifact_sha256")
+    if not isinstance(supplied_hash, str) or len(supplied_hash) != 64:
+        raise CaptureError("capture artifact digest is invalid")
+    unsigned = dict(artifact)
+    unsigned.pop("artifact_sha256", None)
+    if _sha256(_canonical_json_bytes(unsigned)) != supplied_hash:
+        raise CaptureError("capture artifact digest mismatch")
+    rows = artifact.get("observations")
+    count = artifact.get("surface_count")
+    if not isinstance(rows, list) or not isinstance(count, int) or count != len(rows):
+        raise CaptureError("capture artifact observation count mismatch")
+    if count <= 0 or count > MAX_SURFACES:
+        raise CaptureError("capture artifact observation count is out of bounds")
+    result: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise CaptureError("capture artifact observation is invalid")
+        surface_id = _checked_surface_id(row.get("surface_id"))
+        if surface_id in result:
+            raise CaptureError(f"duplicate artifact surface: {surface_id}")
+        status = row.get("status")
+        response_bytes = row.get("response_bytes")
+        canonical = row.get("canonical_sha256")
+        if not isinstance(status, int) or not 100 <= status <= 599:
+            raise CaptureError(f"invalid status for surface {surface_id}")
+        if not isinstance(response_bytes, int) or not 0 <= response_bytes <= MAX_RESPONSE_BYTES:
+            raise CaptureError(f"invalid response size for surface {surface_id}")
+        if (
+            not isinstance(canonical, str)
+            or len(canonical) != 64
+            or any(character not in "0123456789abcdef" for character in canonical)
+        ):
+            raise CaptureError(f"invalid canonical digest for surface {surface_id}")
+        result[surface_id] = row
+    return result
+
+
+def compare_artifacts(candidate: dict[str, Any], oracle: dict[str, Any]) -> dict[str, Any]:
+'''
+          if marker not in text: raise SystemExit('comparison marker missing')
+          text=text.replace(marker,helper,1)
+          old='''    if candidate.get("mode") != "candidate" or oracle.get("mode") != "oracle":
+        raise CaptureError("candidate/oracle modes are invalid")
+    if oracle.get("producer") == "repository-controlled":
+        raise CaptureError("oracle artifact is not independently produced")
+'''
+          new='''    candidate_rows = _validate_capture_artifact(candidate, "candidate")
+    oracle_rows = _validate_capture_artifact(oracle, "oracle")
+    if oracle.get("producer") == "repository-controlled":
+        raise CaptureError("oracle artifact is not independently produced")
+'''
+          if old not in text: raise SystemExit('mode validation marker missing')
+          text=text.replace(old,new,1)
+          old='''    def by_surface(artifact: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        rows = artifact.get("observations")
+        if not isinstance(rows, list):
+            raise CaptureError("artifact observations are invalid")
+        result: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            if not isinstance(row, dict):
+                raise CaptureError("artifact observation is invalid")
+            surface_id = _checked_surface_id(row.get("surface_id"))
+            if surface_id in result:
+                raise CaptureError(f"duplicate artifact surface: {surface_id}")
+            result[surface_id] = row
+        return result
+    candidate_rows = by_surface(candidate)
+    oracle_rows = by_surface(oracle)
+'''
+          if old not in text: raise SystemExit('by_surface block missing')
+          text=text.replace(old,'',1)
+          script.write_text(text,encoding='utf-8')
+
+          test=Path('tests/repository/test_openbao_differential_runner_v2_4.py')
+          t=test.read_text(encoding='utf-8')
+          if 'sys.modules[SPEC.name] = MODULE' not in t:
+              t=t.replace('import tempfile\n','import tempfile\nimport sys\n')
+              t=t.replace('MODULE = importlib.util.module_from_spec(SPEC)\n','MODULE = importlib.util.module_from_spec(SPEC)\nsys.modules[SPEC.name] = MODULE\n')
+          old='''        candidate = {"mode": "candidate", "producer": "repository-controlled", "profile_sha256": "a", "denominator_sha256": "b", "surface_count": 1, "artifact_sha256": "c", "observations": [{"surface_id": "A", "canonical_sha256": "d"}]}
+        oracle = {"mode": "oracle", "producer": "independent-lab", "profile_sha256": "a", "denominator_sha256": "b", "surface_count": 1, "artifact_sha256": "e", "observations": [{"surface_id": "A", "canonical_sha256": "d"}]}
+        result = MODULE.compare_artifacts(candidate, oracle)
+'''
+          new='''        candidate = {"mode": "candidate", "producer": "repository-controlled", "profile_sha256": "a", "denominator_sha256": "b", "surface_count": 1, "observations": [{"surface_id": "A", "status": 200, "response_bytes": 2, "canonical_sha256": "d" * 64}]}
+        oracle = {"mode": "oracle", "producer": "independent-lab", "profile_sha256": "a", "denominator_sha256": "b", "surface_count": 1, "observations": [{"surface_id": "A", "status": 200, "response_bytes": 2, "canonical_sha256": "d" * 64}]}
+        candidate["artifact_sha256"] = MODULE._sha256(MODULE._canonical_json_bytes(candidate))
+        oracle["artifact_sha256"] = MODULE._sha256(MODULE._canonical_json_bytes(oracle))
+        result = MODULE.compare_artifacts(candidate, oracle)
+'''
+          if old not in t: raise SystemExit('comparison test fixture missing')
+          t=t.replace(old,new,1)
+          marker='''
+
+if __name__ == "__main__":
+'''
+          extra='''
+    def test_tampered_artifact_digest_is_rejected(self):
+        artifact = {"mode": "candidate", "producer": "repository-controlled", "profile_sha256": "a", "denominator_sha256": "b", "surface_count": 1, "observations": [{"surface_id": "A", "status": 200, "response_bytes": 0, "canonical_sha256": "0" * 64}]}
+        artifact["artifact_sha256"] = MODULE._sha256(MODULE._canonical_json_bytes(artifact))
+        artifact["observations"][0]["status"] = 201
+        with self.assertRaises(MODULE.CaptureError):
+            MODULE._validate_capture_artifact(artifact, "candidate")
+
+
+if __name__ == "__main__":
+'''
+          if marker not in t: raise SystemExit('test footer missing')
+          t=t.replace(marker,extra,1)
+          test.write_text(t,encoding='utf-8')
+          docs=Path('docs/architecture/HEPTABAO_V2_4_DIFFERENTIAL_CAPTURE.md')
+          d=docs.read_text(encoding='utf-8')
+          if 'self-authenticates its canonical JSON structure' not in d:
+              d += '\nBefore comparison, each capture artifact self-authenticates its canonical JSON structure and validates every bounded observation. This integrity check detects accidental or adversarial modification but does not replace an independent signature or admission authority.\n'
+              docs.write_text(d,encoding='utf-8')
+          PY
+          rm -f .github/workflows/v24-compat-capture-r2.yml
+          python -m unittest tests.repository.test_openbao_differential_runner_v2_4
+          python -m py_compile scripts/openbao_differential_runner_v2_4.py
+
+      - name: Publish package-qualified source when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            echo 'qualified source branch already exists; preserving first writer'
+            exit 0
+          fi
+          git config user.name 'HeptaBao V2.4 Compatibility Repair'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(compat): validate differential artifact integrity and bounds'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
