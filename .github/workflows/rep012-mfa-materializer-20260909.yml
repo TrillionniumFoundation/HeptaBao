@@ -48,7 +48,10 @@ jobs:
           cat \
             .materializer/rep012/patch.part00 \
             .materializer/rep012/patch.part01 \
-            .materializer/rep012/patch.part02 \
+            .materializer/rep012/patch.part02.00 \
+            .materializer/rep012/patch.part02.01 \
+            .materializer/rep012/patch.part02.02 \
+            .materializer/rep012/patch.part02.03 \
             > "$patch"
           test "$(wc -c < "$patch" | tr -d ' ')" = "$PATCH_BYTES"
           printf '%s  %s\n' "$PATCH_SHA256" "$patch" | sha256sum --check --strict
