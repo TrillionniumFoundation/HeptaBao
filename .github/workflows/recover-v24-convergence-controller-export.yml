@@ -1,0 +1,37 @@
+name: Recover V2.4 convergence controller source
+
+on:
+  push:
+    branches:
+      - exec/recover-v24-convergence-controller-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          out="$RUNNER_TEMP/v24-convergence-controller"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/source.tar.gz" HEAD
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$out/source-binding.txt"
+          (cd "$out" && sha256sum source.tar.gz source-binding.txt > SHA256SUMS)
+      - name: Upload source
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: v24-convergence-controller-source
+          path: ${{ runner.temp }}/v24-convergence-controller/
+          if-no-files-found: error
+          retention-days: 3
