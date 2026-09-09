@@ -1,0 +1,87 @@
+name: HeptaBao V2.4 final draft PR opener
+
+on:
+  push:
+    branches:
+      - ops/v24-final-pr-opener-r1-20260909
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: heptabao-v24-final-pr-opener-r1
+  cancel-in-progress: false
+
+env:
+  FINAL_BRANCH: codex/openbao-replacement-v2.4-final-candidate-20260909
+  REQUIRED_ANCESTOR: 633848024e5315f3def23c035a1dec53f83a62b3
+
+jobs:
+  open-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Checkout PR controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Wait for exact final candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 7200))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "+refs/heads/$FINAL_BRANCH:refs/remotes/origin/$FINAL_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$FINAL_BRANCH"; then
+              git merge-base --is-ancestor "$REQUIRED_ANCESTOR" "refs/remotes/origin/$FINAL_BRANCH"
+              final_sha="$(git rev-parse "refs/remotes/origin/$FINAL_BRANCH")"
+              final_tree="$(git rev-parse "refs/remotes/origin/$FINAL_BRANCH^{tree}")"
+              printf 'FINAL_SHA=%s\nFINAL_TREE=%s\n' "$final_sha" "$final_tree" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'final candidate did not materialize before timeout' >&2
+          exit 1
+
+      - name: Create one draft PR when none exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          owner="${GITHUB_REPOSITORY%%/*}"
+          existing="$(gh api --paginate \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${owner}:${FINAL_BRANCH}&base=main&per_page=100" \
+            --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "draft PR already exists: #$existing"
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/body.md" <<EOF
+          ## Exact V2.4 repository candidate
+
+          - source branch: \`$FINAL_BRANCH\`
+          - exact head: \`$FINAL_SHA\`
+          - exact tree: \`$FINAL_TREE\`
+          - required ancestor: \`$REQUIRED_ANCESTOR\`
+
+          This branch is emitted only after the final qualifier completes both the immutable exact-head gate and a prospective merge into the then-current \`main\`. It incorporates repository-controlled work for immutable plugin execution, durable migration transactions, signed federated identity/MFA replay admission, service-level HA routing/fencing, and bounded differential compatibility capture.
+
+          ## Authority boundary
+
+          This is a draft repository-development candidate. It does not self-issue legal approval, independent security/cryptographic review, production KMS/HSM or signer custody, independent OpenBao Oracle admission, destructive multi-platform/multi-node qualification, 24x7 operations evidence, independent reproduction, compatibility authority, migration authority, release authority, or production authority.
+
+          Review and required checks must attach to this exact head. Do not inherit approvals or green checks from earlier PRs.
+          EOF
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --base main \
+            --head "$FINAL_BRANCH" \
+            --title 'feat(v2.4): converge remaining repository-controlled OpenBao replacement blockers' \
+            --body-file "$RUNNER_TEMP/body.md"
