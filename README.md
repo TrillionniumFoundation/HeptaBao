@@ -6,7 +6,7 @@ Do not use this source to protect real secrets. Do not place live credentials, u
 
 ## Current repository state
 
-The current workspace contains **45 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **46 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
