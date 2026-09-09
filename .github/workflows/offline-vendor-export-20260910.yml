@@ -20,16 +20,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - name: Checkout exact source without persisted credentials
+      - name: Checkout exact controller without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          fetch-depth: 3
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Bind product source and vendor locked dependencies
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$PRODUCT_SHA"
           git cat-file -e "$PRODUCT_SHA^{commit}"
           test "$(git diff --name-only "$PRODUCT_SHA" HEAD)" = ".github/workflows/offline-vendor-export-20260910.yml"
           rustup toolchain install 1.98.0 --profile minimal
