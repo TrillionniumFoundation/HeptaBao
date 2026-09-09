@@ -38,6 +38,12 @@ jobs:
             "$(git rev-parse HEAD)" \
             "$(git rev-parse 'HEAD^{tree}')"
 
+      - name: Install pinned Python plan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
       - name: Install exact Rust 1.98 toolchain
         shell: bash
         run: |
@@ -80,7 +86,6 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-
   repository-linux-arm64:
     name: repository / ubuntu-24.04-arm
     runs-on: ubuntu-24.04-arm
@@ -102,6 +107,12 @@ jobs:
             "$(git rev-parse HEAD)" \
             "$(git rev-parse 'HEAD^{tree}')"
 
+      - name: Install pinned Python plan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
       - name: Install exact Rust 1.98 toolchain
         shell: bash
         run: |
@@ -117,6 +128,61 @@ jobs:
           python scripts/validate_repository_v2.py
           python scripts/validate_compatibility_corpus.py
           python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Probe durable filesystem primitives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import fcntl
+          import os
+          import pathlib
+          import tempfile
+
+          root = pathlib.Path(tempfile.mkdtemp(prefix="heptabao-fs-probe-"))
+          flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+          print({
+              "root": str(root),
+              "machine": os.uname().machine,
+              "O_DIRECTORY": os.O_DIRECTORY,
+              "O_NOFOLLOW": os.O_NOFOLLOW,
+              "O_CLOEXEC": os.O_CLOEXEC,
+              "combined": flags,
+          })
+          fd = os.open(root, flags)
+          print("open-directory: PASS", fd)
+          for label, operation in (
+              ("flock-directory", lambda: fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)),
+              ("fsync-directory", lambda: os.fsync(fd)),
+          ):
+              try:
+                  operation()
+                  print(f"{label}: PASS")
+              except OSError as error:
+                  print(f"{label}: FAIL errno={error.errno} repr={error!r}")
+          reopened = os.open(f"/proc/self/fd/{fd}", os.O_RDONLY | os.O_CLOEXEC)
+          try:
+              try:
+                  os.fsync(reopened)
+                  print("fsync-proc-reopen: PASS")
+              except OSError as error:
+                  print(f"fsync-proc-reopen: FAIL errno={error.errno} repr={error!r}")
+          finally:
+              os.close(reopened)
+          temporary = pathlib.Path(f"/proc/self/fd/{fd}") / "probe.tmp"
+          target = pathlib.Path(f"/proc/self/fd/{fd}") / "probe.dat"
+          with open(temporary, "xb") as handle:
+              handle.write(b"probe")
+              handle.flush()
+              os.fsync(handle.fileno())
+          os.replace(temporary, target)
+          try:
+              os.fsync(fd)
+              print("atomic-file-plus-parent-fsync: PASS")
+          except OSError as error:
+              print(f"atomic-file-plus-parent-fsync: FAIL errno={error.errno} repr={error!r}")
+          os.close(fd)
+          PY
 
       - name: Check formatting and all targets
         shell: bash
@@ -144,7 +210,6 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-
   repository-macos:
     name: repository / macos-15
     runs-on: macos-15
@@ -165,6 +230,12 @@ jobs:
           printf 'runner=macos-15\ncommit=%s\ntree=%s\n' \
             "$(git rev-parse HEAD)" \
             "$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install pinned Python plan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
 
       - name: Install exact Rust 1.98 toolchain
         shell: bash
