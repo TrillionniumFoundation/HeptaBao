@@ -1,0 +1,195 @@
+name: HeptaBao V2.4 HA service source repair r2
+
+on:
+  push:
+    branches:
+      - ops/v24-ha-service-r2-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-ha-service-r2
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SOURCE_BRANCH: ops/v24-ha-service-r1-20260909
+  SOURCE_WORKFLOW: .github/workflows/v24-ha-service-materializer.yml
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - name: Checkout exact repair controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Recover exact authored package source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/source-materializer"
+          first_commit="$(git rev-list --ancestry-path --reverse "$EXACT_PARENT..refs/remotes/origin/source-materializer" | head -1)"
+          test -n "$first_commit"
+          test "$(git rev-parse "$first_commit^")" = "$EXACT_PARENT"
+          test "$(git diff --name-only "$EXACT_PARENT..$first_commit")" = "$SOURCE_WORKFLOW"
+          git show "$first_commit:$SOURCE_WORKFLOW" > "$RUNNER_TEMP/source.yml"
+          python - "$RUNNER_TEMP/source.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
+          marker='      - name: Materialize HA service package'
+          start=lines.index(marker)
+          run_index=next(i for i in range(start+1,start+8) if lines[i]=='        run: |')
+          body=[]
+          for line in lines[run_index+1:]:
+              if line.startswith('      - name: '): break
+              if line and not line.startswith('          '): raise SystemExit('invalid indentation')
+              body.append(line[10:] if line else '')
+          text='\n'.join(line for line in body if 'git rev-parse HEAD^' not in line)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.','${{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied token: {token}')
+          Path(sys.argv[2]).write_text(text,encoding='utf-8')
+          PY
+          chmod 0700 "$RUNNER_TEMP/materialize.sh"
+          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$RUNNER_TEMP/materialize.sh"
+
+      - name: Harden peer state and remove dead private code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('crates/heptabao-ha-service/src/lib.rs')
+          text=path.read_text(encoding='utf-8')
+          text,count=re.subn(
+              r'\n    fn decode\(value: u8\) -> Result<Self, HaError> \{\n        match value \{\n            1 => Ok\(Self::LinearizableRead\),\n            2 => Ok\(Self::Mutation\),\n            _ => Err\(HaError::InvalidFrame\),\n        \}\n    \}\n',
+              '\n',
+              text,
+              count=1,
+          )
+          if count not in (0,1): raise SystemExit('unexpected OperationKind decoder count')
+          marker='''pub struct PersistentPeerSequences {
+'''
+          insertion='''#[derive(Debug)]
+struct WriterLock {
+    path: PathBuf,
+    _file: File,
+}
+
+impl Drop for WriterLock {
+    fn drop(&mut self) {
+        let _ = fs::remove_file(&self.path);
+    }
+}
+
+pub struct PersistentPeerSequences {
+'''
+          if marker not in text: raise SystemExit('peer sequence marker missing')
+          text=text.replace(marker,insertion,1)
+          text=text.replace('    _lock: File,\n','    _lock: WriterLock,\n',1)
+          text=text.replace(
+              'fn create_lock(path: &Path) -> Result<File, HaError> {',
+              'fn create_lock(path: &Path) -> Result<WriterLock, HaError> {',
+              1,
+          )
+          old='''    Ok(file)
+}
+
+fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
+'''
+          new='''    Ok(WriterLock {
+        path: path.to_path_buf(),
+        _file: file,
+    })
+}
+
+fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
+'''
+          if old not in text: raise SystemExit('create_lock return marker missing')
+          text=text.replace(old,new,1)
+          old='''        let (incoming, outgoing) = if state_path.exists() {
+            decode_peer_state(&fs::read(&state_path).map_err(|_| HaError::Io)?, key)?
+        } else {
+            (BTreeMap::new(), BTreeMap::new())
+        };
+'''
+          new='''        let (incoming, outgoing) = if state_path.exists() {
+            let metadata = fs::symlink_metadata(&state_path).map_err(|_| HaError::Io)?;
+            if metadata.file_type().is_symlink() || !metadata.is_file() {
+                return Err(HaError::InvalidRoot);
+            }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if metadata.permissions().mode() & 0o077 != 0 {
+                    return Err(HaError::InvalidRoot);
+                }
+            }
+            decode_peer_state(&fs::read(&state_path).map_err(|_| HaError::Io)?, key)?
+        } else {
+            (BTreeMap::new(), BTreeMap::new())
+        };
+'''
+          if old not in text: raise SystemExit('state admission marker missing')
+          text=text.replace(old,new,1)
+          marker='''    #[test]
+    fn tcp_transport_uses_bounded_framing() {
+'''
+          extra='''    #[test]
+    fn tampered_state_open_cleans_writer_lock() {
+        let root = root("state-tamper");
+        {
+            let mut sequences = PersistentPeerSequences::open(&root, [20; 32]).unwrap();
+            sequences.next_outgoing(&node("n2")).unwrap();
+        }
+        let path = root.join("peer-sequences.state");
+        let mut bytes = fs::read(&path).unwrap();
+        let index = bytes.len() / 2;
+        bytes[index] ^= 0x40;
+        fs::write(&path, bytes).unwrap();
+        assert!(matches!(PersistentPeerSequences::open(&root, [20; 32]), Err(HaError::Tampered)));
+        assert!(!root.join("writer.lock").exists());
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn tcp_transport_uses_bounded_framing() {
+'''
+          if marker not in text: raise SystemExit('test insertion marker missing')
+          text=text.replace(marker,extra,1)
+          path.write_text(text,encoding='utf-8')
+          guide=Path('docs/modules/heptabao-ha-service.md')
+          g=guide.read_text(encoding='utf-8')
+          if 'RAII-owned peer-state lock' not in g:
+              g += '\nThe peer-state lock is RAII-owned; failed state admission cannot strand it. Existing state files must be non-symlink regular files with owner-private Unix permissions before HMAC decoding.\n'
+              guide.write_text(g,encoding='utf-8')
+          PY
+          rm -f .github/workflows/v24-ha-service-r2.yml
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-ha-service --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-ha-service --all-targets -- -D warnings
+          python -m unittest tests.repository.test_ha_service_v2_4
+
+      - name: Publish package-qualified source when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            echo 'qualified source branch already exists; preserving first writer'
+            exit 0
+          fi
+          git config user.name 'HeptaBao V2.4 HA Repair'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(ha): harden peer state admission and lock lifetime'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
