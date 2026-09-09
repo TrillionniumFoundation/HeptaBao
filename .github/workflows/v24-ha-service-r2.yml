@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-ha-service-r2-recovery-v4
+  group: heptabao-v24-ha-service-r2-recovery-v5
   cancel-in-progress: true
 
 env:
@@ -17,7 +17,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-ha-service-r1-20260909
   MATERIALIZER_SHA: 77230cfabcc212292ea1d941826e069a50f98f4f
   MATERIALIZER_WORKFLOW: .github/workflows/v24-ha-service-materializer.yml
-  RECOVERY_PARENT_SHA: 1e498c9f7975848cd27873b70fcd33307b9d241b
+  RECOVERY_PARENT_SHA: c29a5ec5615e747fc67f60c9d5dfec483a6a92b4
   ORIGINAL_PATCH_SHA: 84a6769af3eef6c400f683fe95d725010104381b
   PATCH_WORKFLOW: .github/workflows/v24-ha-service-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
@@ -85,6 +85,54 @@ jobs:
                   raise SystemExit(f"denied hardening token: {token}")
           Path(sys.argv[3]).write_text(text, encoding="utf-8")
           PY
+          python - "$RUNNER_TEMP/harden.sh" <<'PY_PATCH_HA'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding="utf-8")
+          marker = "rm -f .github/workflows/v24-ha-service-r2.yml\n"
+          if text.count(marker) != 1:
+              raise SystemExit("expected one HA hardening test-boundary marker")
+          patch = '''python - <<'PY_HA_SOURCE'
+          from pathlib import Path
+
+          path = Path('crates/heptabao-ha-service/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          dead = ''' + '"""' + '''    fn decode(value: u8) -> Result<Self, HaError> {
+        match value {
+            1 => Ok(Self::LinearizableRead),
+            2 => Ok(Self::Mutation),
+            _ => Err(HaError::InvalidFrame),
+        }
+    }
+
+''' + '"""' + '''
+          if text.count(dead) != 1:
+              raise SystemExit('expected one unused OperationKind decoder')
+          text = text.replace(dead, '', 1)
+          function = 'fn decode_peer_state(\n'
+          alias = 'type PeerSequenceState = (BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>);\n\nfn decode_peer_state(\n'
+          if text.count(function) != 1:
+              raise SystemExit('expected one peer state decoder')
+          text = text.replace(function, alias, 1)
+          old_signature = ') -> Result<(BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>), HaError> {'
+          if text.count(old_signature) != 1:
+              raise SystemExit('expected one complex peer state return type')
+          text = text.replace(old_signature, ') -> Result<PeerSequenceState, HaError> {', 1)
+          old_quorum = 'voters.intersection(acknowledgements).count() >= voters.len() / 2 + 1'
+          if text.count(old_quorum) != 1:
+              raise SystemExit('expected one majority expression')
+          text = text.replace(old_quorum, 'voters.intersection(acknowledgements).count() > voters.len() / 2', 1)
+          old_closure = '|request| Ok(request)'
+          if text.count(old_closure) != 1:
+              raise SystemExit('expected one redundant identity closure')
+          text = text.replace(old_closure, 'Ok', 1)
+          path.write_text(text, encoding='utf-8')
+          PY_HA_SOURCE
+          ''' + marker
+          path.write_text(text.replace(marker, patch, 1), encoding="utf-8")
+          PY_PATCH_HA
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
           (
             cd "$work"
