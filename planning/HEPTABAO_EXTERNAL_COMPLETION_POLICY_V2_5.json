@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.external-completion-policy.v2.5",
+  "profile": "HB-OPENBAO-REPLACEMENT-V2.5",
+  "authority_effect": "NONE",
+  "gates": [
+    {
+      "id": "HB-BLK-CTRL-001",
+      "cases": [
+        "branch-delete-denied",
+        "direct-push-admin-denied",
+        "direct-push-member-denied",
+        "force-push-denied",
+        "insufficient-approvals-denied",
+        "missing-check-merge-denied",
+        "unresolved-conversation-denied"
+      ],
+      "roles": {
+        "control-auditor": 1,
+        "repository-administrator": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-001",
+      "cases": [
+        "critical-findings-zero",
+        "high-findings-zero",
+        "program-review-pass",
+        "security-review-pass",
+        "storage-review-pass"
+      ],
+      "roles": {
+        "program-reviewer": 1,
+        "security-reviewer": 1,
+        "storage-reviewer": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-002",
+      "cases": [
+        "export-disposition-signed",
+        "license-disposition-signed",
+        "patent-disposition-signed",
+        "trademark-disposition-signed"
+      ],
+      "roles": {
+        "legal-counsel": 1,
+        "license-counsel": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-003",
+      "cases": [
+        "disclosure-channel-operational",
+        "incident-drill-pass",
+        "oncall-coverage-verified",
+        "revocation-drill-pass"
+      ],
+      "roles": {
+        "incident-commander": 1,
+        "security-operations": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-004",
+      "cases": [
+        "emergency-revocation-pass",
+        "hsm-key-generated",
+        "rotation-ceremony-pass",
+        "signer-custody-separated",
+        "transparency-checkpoint-published"
+      ],
+      "roles": {
+        "hsm-custodian": 1,
+        "release-custodian": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-005",
+      "cases": [
+        "cli-client-covered",
+        "oracle-capture-complete",
+        "sanitized-fixtures-complete",
+        "side-effects-covered",
+        "transfer-signed"
+      ],
+      "roles": {
+        "compatibility-reviewer": 1,
+        "oracle-custodian": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-006",
+      "cases": [
+        "corruption-recovery-pass",
+        "disaster-recovery-pass",
+        "fsync-loss-pass",
+        "linux-amd64-pass",
+        "linux-arm64-pass",
+        "macos-arm64-pass",
+        "power-cut-pass",
+        "rolling-upgrade-pass",
+        "windows-amd64-pass"
+      ],
+      "roles": {
+        "platform-qualifier": 1,
+        "storage-qualifier": 1
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-007",
+      "cases": [
+        "artifact-digest-match",
+        "clean-room-build-a-pass",
+        "clean-room-build-b-pass",
+        "test-reproduction-pass"
+      ],
+      "roles": {
+        "independent-reproducer": 2
+      }
+    }
+  ]
+}
