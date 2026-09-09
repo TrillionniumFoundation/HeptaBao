@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-plugin-toctou-r2-recovery-v4
+  group: heptabao-v24-plugin-toctou-r2-recovery-v5
   cancel-in-progress: true
 
 env:
@@ -16,7 +16,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-plugin-toctou-fix-r1-20260909
   MATERIALIZER_SHA: 8dc6520b0b1bd4dbf01fb755df0aad9340248d63
   MATERIALIZER_WORKFLOW: .github/workflows/v24-plugin-toctou-materializer.yml
-  RECOVERY_PARENT_SHA: 246dd4b42ccaba6e0af5cdaacb23d9c95c1c2fc4
+  RECOVERY_PARENT_SHA: 6a48cfefd1650d9e06ce8de0eba55caf9d813360
   ORIGINAL_PATCH_SHA: 955b9b5c42d497558bd904a7830f5622672689d9
   PATCH_WORKFLOW: .github/workflows/v24-plugin-toctou-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-source-20260909
@@ -83,12 +83,8 @@ jobs:
 
           path = Path('crates/heptabao-plugin-host/src/command.rs')
           text = path.read_text(encoding='utf-8')
-          old = '''            directory
-                .sync_all()
-                .map_err(|_| HostError::Io)?;
-'''
-          new = '''            directory.sync_all().map_err(|_| HostError::Io)?;
-'''
+          old = "            directory\n                .sync_all()\n                .map_err(|_| HostError::Io)?;\n"
+          new = "            directory.sync_all().map_err(|_| HostError::Io)?;\n"
           if text.count(old) != 1:
               raise SystemExit('expected exactly one staged-directory sync chain')
           path.write_text(text.replace(old, new, 1), encoding='utf-8')
