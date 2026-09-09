@@ -1,0 +1,367 @@
+name: HeptaBao V2.4 compatibility signature materializer
+
+on:
+  push:
+    branches:
+      - ops/v24-compat-signature-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-compat-signature-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-compat-signature-source-20260909
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - name: Checkout exact controller head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Add signed evidence admission to existing compatibility package
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest=Path('crates/heptabao-compatibility/Cargo.toml')
+          manifest_text=manifest.read_text(encoding='utf-8')
+          if not re.search(r'^\s*ring\s*=',manifest_text,flags=re.M):
+              if '[dependencies]' in manifest_text:
+                  manifest_text=manifest_text.replace('[dependencies]','[dependencies]\nring = "0.17.14"',1)
+              else:
+                  manifest_text=manifest_text.rstrip()+'\n\n[dependencies]\nring = "0.17.14"\n'
+              manifest.write_text(manifest_text,encoding='utf-8')
+
+          lib=Path('crates/heptabao-compatibility/src/lib.rs')
+          text=lib.read_text(encoding='utf-8')
+          if 'pub struct SignedEvidenceBindingV24' in text:
+              raise SystemExit('signed evidence V2.4 already exists')
+          addition=r'''
+
+/// Domain separator for signatures over compatibility evidence bindings.
+pub const SIGNED_EVIDENCE_DOMAIN_V2_4: &[u8] =
+    b"heptabao-openbao-compatibility-evidence-v2.4\0";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SignerControlV24 {
+    RepositoryControlled,
+    Independent,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TrustedSignerV24 {
+    pub signer_id: Id,
+    pub control: SignerControlV24,
+    pub ed25519_public_key: Vec<u8>,
+}
+
+impl TrustedSignerV24 {
+    pub fn new(
+        signer_id: Id,
+        control: SignerControlV24,
+        ed25519_public_key: Vec<u8>,
+    ) -> Result<Self, SignedEvidenceErrorV24> {
+        if ed25519_public_key.len() != 32 {
+            return Err(SignedEvidenceErrorV24::InvalidPublicKey);
+        }
+        Ok(Self {
+            signer_id,
+            control,
+            ed25519_public_key,
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SignedEvidenceBindingV24 {
+    pub profile_sha256: [u8; 32],
+    pub inventory_sha256: [u8; 32],
+    pub oracle_artifact_sha256: [u8; 32],
+    pub candidate_artifact_sha256: [u8; 32],
+    pub comparison_artifact_sha256: [u8; 32],
+}
+
+impl SignedEvidenceBindingV24 {
+    pub fn validate(self) -> Result<Self, SignedEvidenceErrorV24> {
+        let digests = [
+            self.profile_sha256,
+            self.inventory_sha256,
+            self.oracle_artifact_sha256,
+            self.candidate_artifact_sha256,
+            self.comparison_artifact_sha256,
+        ];
+        if digests.iter().any(|digest| *digest == [0; 32])
+            || self.oracle_artifact_sha256 == self.candidate_artifact_sha256
+        {
+            return Err(SignedEvidenceErrorV24::InvalidBinding);
+        }
+        Ok(self)
+    }
+
+    pub fn signing_message(&self, signer_id: &Id) -> Result<Vec<u8>, SignedEvidenceErrorV24> {
+        self.validate()?;
+        let signer = signer_id.as_str().as_bytes();
+        let signer_len = u16::try_from(signer.len())
+            .map_err(|_| SignedEvidenceErrorV24::InvalidSigner)?;
+        let mut message = Vec::with_capacity(
+            SIGNED_EVIDENCE_DOMAIN_V2_4.len() + 2 + signer.len() + 32 * 5,
+        );
+        message.extend_from_slice(SIGNED_EVIDENCE_DOMAIN_V2_4);
+        message.extend_from_slice(&signer_len.to_be_bytes());
+        message.extend_from_slice(signer);
+        message.extend_from_slice(&self.profile_sha256);
+        message.extend_from_slice(&self.inventory_sha256);
+        message.extend_from_slice(&self.oracle_artifact_sha256);
+        message.extend_from_slice(&self.candidate_artifact_sha256);
+        message.extend_from_slice(&self.comparison_artifact_sha256);
+        Ok(message)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EvidenceSignatureV24 {
+    pub signer_id: Id,
+    pub signature: Vec<u8>,
+}
+
+impl EvidenceSignatureV24 {
+    pub fn new(signer_id: Id, signature: Vec<u8>) -> Result<Self, SignedEvidenceErrorV24> {
+        if signature.len() != 64 {
+            return Err(SignedEvidenceErrorV24::InvalidSignature);
+        }
+        Ok(Self {
+            signer_id,
+            signature,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SignedEvidenceAdmissionV24 {
+    pub binding: SignedEvidenceBindingV24,
+    pub admitted_signers: Vec<Id>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SignedEvidenceErrorV24 {
+    InvalidBinding,
+    InvalidSigner,
+    InvalidPublicKey,
+    InvalidSignature,
+    DuplicateSigner,
+    UnknownSigner,
+    RepositoryControlledSigner,
+    SignatureVerificationFailed,
+    InsufficientIndependentSignatures,
+}
+
+impl fmt::Display for SignedEvidenceErrorV24 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Self::InvalidBinding => "signed compatibility evidence binding is invalid",
+            Self::InvalidSigner => "signed compatibility evidence signer is invalid",
+            Self::InvalidPublicKey => "signed compatibility evidence public key is invalid",
+            Self::InvalidSignature => "signed compatibility evidence signature is invalid",
+            Self::DuplicateSigner => "signed compatibility evidence signer is duplicated",
+            Self::UnknownSigner => "signed compatibility evidence signer is unknown",
+            Self::RepositoryControlledSigner => {
+                "repository-controlled signer cannot satisfy independent admission"
+            }
+            Self::SignatureVerificationFailed => {
+                "signed compatibility evidence signature verification failed"
+            }
+            Self::InsufficientIndependentSignatures => {
+                "signed compatibility evidence lacks the required independent signers"
+            }
+        })
+    }
+}
+
+impl Error for SignedEvidenceErrorV24 {}
+
+/// Verifies domain-separated Ed25519 signatures over one exact evidence binding.
+///
+/// This function proves key possession and byte binding. Whether a configured
+/// key is actually controlled by an independent organization remains an
+/// external governance fact and is deliberately not inferred from signatures.
+pub fn admit_signed_evidence_v2_4(
+    binding: SignedEvidenceBindingV24,
+    trusted_signers: impl IntoIterator<Item = TrustedSignerV24>,
+    signatures: impl IntoIterator<Item = EvidenceSignatureV24>,
+    minimum_independent_signers: usize,
+) -> Result<SignedEvidenceAdmissionV24, SignedEvidenceErrorV24> {
+    let binding = binding.validate()?;
+    if minimum_independent_signers == 0 || minimum_independent_signers > 16 {
+        return Err(SignedEvidenceErrorV24::InsufficientIndependentSignatures);
+    }
+    let mut trusted = BTreeMap::new();
+    for signer in trusted_signers {
+        if trusted.insert(signer.signer_id.clone(), signer).is_some() {
+            return Err(SignedEvidenceErrorV24::DuplicateSigner);
+        }
+    }
+    let mut admitted = BTreeSet::new();
+    for signature in signatures {
+        if !admitted.insert(signature.signer_id.clone()) {
+            return Err(SignedEvidenceErrorV24::DuplicateSigner);
+        }
+        let signer = trusted
+            .get(&signature.signer_id)
+            .ok_or(SignedEvidenceErrorV24::UnknownSigner)?;
+        if signer.control != SignerControlV24::Independent {
+            return Err(SignedEvidenceErrorV24::RepositoryControlledSigner);
+        }
+        let message = binding.signing_message(&signature.signer_id)?;
+        ring::signature::UnparsedPublicKey::new(
+            &ring::signature::ED25519,
+            &signer.ed25519_public_key,
+        )
+        .verify(&message, &signature.signature)
+        .map_err(|_| SignedEvidenceErrorV24::SignatureVerificationFailed)?;
+    }
+    if admitted.len() < minimum_independent_signers {
+        return Err(SignedEvidenceErrorV24::InsufficientIndependentSignatures);
+    }
+    Ok(SignedEvidenceAdmissionV24 {
+        binding,
+        admitted_signers: admitted.into_iter().collect(),
+    })
+}
+
+#[cfg(test)]
+mod signed_evidence_v2_4_tests {
+    use super::*;
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+
+    fn binding() -> SignedEvidenceBindingV24 {
+        SignedEvidenceBindingV24 {
+            profile_sha256: [1; 32],
+            inventory_sha256: [2; 32],
+            oracle_artifact_sha256: [3; 32],
+            candidate_artifact_sha256: [4; 32],
+            comparison_artifact_sha256: [5; 32],
+        }
+    }
+
+    fn signer(seed: u8, id: &str, control: SignerControlV24) -> (TrustedSignerV24, EvidenceSignatureV24) {
+        let pair = Ed25519KeyPair::from_seed_unchecked(&[seed; 32]).unwrap();
+        let signer_id = Id::parse(id).unwrap();
+        let message = binding().signing_message(&signer_id).unwrap();
+        let trusted = TrustedSignerV24::new(
+            signer_id.clone(),
+            control,
+            pair.public_key().as_ref().to_vec(),
+        )
+        .unwrap();
+        let signature = EvidenceSignatureV24::new(
+            signer_id,
+            pair.sign(&message).as_ref().to_vec(),
+        )
+        .unwrap();
+        (trusted, signature)
+    }
+
+    #[test]
+    fn two_independent_signers_admit_one_exact_binding() {
+        let (first, first_signature) = signer(7, "oracle-lab-a", SignerControlV24::Independent);
+        let (second, second_signature) = signer(8, "security-lab-b", SignerControlV24::Independent);
+        let admission = admit_signed_evidence_v2_4(
+            binding(),
+            [first, second],
+            [first_signature, second_signature],
+            2,
+        )
+        .unwrap();
+        assert_eq!(admission.admitted_signers.len(), 2);
+    }
+
+    #[test]
+    fn repository_signer_and_tampered_binding_fail_closed() {
+        let (repository, signature) = signer(
+            9,
+            "repository-owner",
+            SignerControlV24::RepositoryControlled,
+        );
+        assert_eq!(
+            admit_signed_evidence_v2_4(binding(), [repository], [signature], 1),
+            Err(SignedEvidenceErrorV24::RepositoryControlledSigner)
+        );
+
+        let (independent, signature) = signer(10, "oracle-lab", SignerControlV24::Independent);
+        let mut changed = binding();
+        changed.candidate_artifact_sha256 = [11; 32];
+        assert_eq!(
+            admit_signed_evidence_v2_4(changed, [independent], [signature], 1),
+            Err(SignedEvidenceErrorV24::SignatureVerificationFailed)
+        );
+    }
+
+    #[test]
+    fn insufficient_or_duplicate_signers_are_rejected() {
+        let (trusted, signature) = signer(12, "oracle-lab", SignerControlV24::Independent);
+        assert_eq!(
+            admit_signed_evidence_v2_4(binding(), [trusted.clone()], [signature.clone()], 2),
+            Err(SignedEvidenceErrorV24::InsufficientIndependentSignatures)
+        );
+        assert_eq!(
+            admit_signed_evidence_v2_4(
+                binding(),
+                [trusted],
+                [signature.clone(), signature],
+                1,
+            ),
+            Err(SignedEvidenceErrorV24::DuplicateSigner)
+        );
+    }
+}
+'''
+          lib.write_text(text.rstrip()+addition+'\n',encoding='utf-8')
+
+          guide=Path('docs/modules/heptabao-compatibility.md')
+          guide_text=guide.read_text(encoding='utf-8')
+          block='''
+## V2.4 signed evidence admission
+
+`SignedEvidenceBindingV24` domain-separates and binds the exact profile, inventory, Oracle artifact, candidate artifact and comparison artifact digests. `admit_signed_evidence_v2_4` verifies configured Ed25519 signatures, rejects duplicate, unknown and repository-controlled signers, and can require multiple distinct independent signer keys. Cryptographic verification proves key possession and exact bytes only; organizational independence, signer custody and admission policy remain external governance facts.
+'''
+          if '## V2.4 signed evidence admission' not in guide_text:
+              guide.write_text(guide_text.rstrip()+block,encoding='utf-8')
+
+          Path('tests/repository/test_compatibility_signature_v2_4.py').write_text('''from pathlib import Path\nimport unittest\n\n\nclass CompatibilitySignatureV24Tests(unittest.TestCase):\n    def test_domain_separated_multi_signer_admission_is_materialized(self):\n        source=Path("crates/heptabao-compatibility/src/lib.rs").read_text(encoding="utf-8")\n        for marker in ("SIGNED_EVIDENCE_DOMAIN_V2_4", "RepositoryControlledSigner", "minimum_independent_signers", "ED25519", "comparison_artifact_sha256"):\n            self.assertIn(marker,source)\n\n    def test_governance_boundary_is_explicit(self):\n        guide=Path("docs/modules/heptabao-compatibility.md").read_text(encoding="utf-8")\n        self.assertIn("organizational independence",guide)\n        self.assertIn("external governance facts",guide)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''',encoding='utf-8')
+          PY
+
+      - name: Remove controller and qualify compatibility package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-compat-signature-materializer.yml
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-compatibility --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-compatibility --all-targets -- -D warnings
+          python -m unittest tests.repository.test_compatibility_signature_v2_4
+          git config user.name 'HeptaBao V2.4 Compatibility Signature Materializer'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(compat): verify domain-separated independent evidence signatures'
+          new_sha="$(git rev-parse HEAD)"
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+            test "$observed" = "$new_sha"
+          else
+            git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
+          fi
