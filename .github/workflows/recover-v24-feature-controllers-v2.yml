@@ -1,0 +1,68 @@
+name: Recover V2.4 feature controller sources v2
+
+on:
+  push:
+    branches:
+      - exec/recover-v24-feature-controllers-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact recovery branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Collect every V2.4 controller delta read-only
+        shell: bash
+        env:
+          EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-feature-controllers-v2"
+          mkdir -p "$out/branches"
+          git ls-remote --heads https://github.com/TrillionniumFoundation/HeptaBao.git 'refs/heads/ops/v24-*' \
+            | sort -k2 > "$out/remote-heads.tsv"
+          test -s "$out/remote-heads.tsv"
+          while IFS=$'\t' read -r sha ref; do
+            branch="${ref#refs/heads/}"
+            safe="${branch//\//__}"
+            dest="$out/branches/$safe"
+            mkdir -p "$dest"
+            git -c protocol.version=2 fetch --no-tags --depth=2 \
+              https://github.com/TrillionniumFoundation/HeptaBao.git \
+              "$sha:refs/recovery/$safe"
+            git merge-base --is-ancestor "$EXACT_PARENT" "$sha"
+            printf 'branch=%s\ncommit=%s\ntree=%s\n' \
+              "$branch" "$sha" "$(git rev-parse "$sha^{tree}")" > "$dest/binding.txt"
+            git diff --name-status "$EXACT_PARENT" "$sha" > "$dest/delta.tsv"
+            while IFS=$'\t' read -r status first second; do
+              case "$status" in
+                A|M) path="$first" ;;
+                R*) path="$second" ;;
+                D) continue ;;
+                *) continue ;;
+              esac
+              mapped="$path"
+              if [[ "$mapped" == .* ]]; then mapped="__dot__${mapped:1}"; fi
+              target="$dest/repo-files/$mapped"
+              mkdir -p "$(dirname "$target")"
+              git show "$sha:$path" > "$target"
+            done < "$dest/delta.tsv"
+          done < "$out/remote-heads.tsv"
+          find "$out" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
+          test "$(find "$out/branches" -path '*/repo-files/*' -type f | wc -l)" -ge 40
+
+      - name: Upload bounded controller collection
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-feature-controller-collection-v2
+          path: ${{ runner.temp }}/heptabao-v24-feature-controllers-v2/
+          if-no-files-found: error
+          retention-days: 3
