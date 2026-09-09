@@ -1,0 +1,286 @@
+name: HeptaBao V2.4 full hardened source convergence r4
+
+on:
+  push:
+    branches:
+      - ops/v24-source-convergence-r4-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-source-convergence-r4
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-converged-candidate-r4-20260909
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Checkout exact convergence controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for complete hardened source set
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          out="$RUNNER_TEMP/heptabao-v24-source-convergence-r4"
+          mkdir -p "$out"
+          required=(
+            codex/openbao-replacement-v2.4-plugin-host-source-r3-20260909
+            codex/openbao-replacement-v2.4-migration-source-r3-20260909
+            codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
+            codex/openbao-replacement-v2.4-ha-service-source-r3-20260909
+            codex/openbao-replacement-v2.4-compat-capture-source-20260909
+            codex/openbao-replacement-v2.4-compat-signature-source-20260909
+          )
+          deadline=$((SECONDS + 14400))
+          while :; do
+            git fetch --no-tags --prune origin '+refs/heads/*:refs/remotes/origin/*'
+            : > "$out/missing.txt"
+            for branch in "${required[@]}"; do
+              ref="refs/remotes/origin/$branch"
+              if ! git show-ref --verify --quiet "$ref"; then
+                echo "$branch" >> "$out/missing.txt"
+                continue
+              fi
+              if ! git merge-base --is-ancestor "$EXACT_PARENT" "$ref"; then
+                echo "$branch:not-descendant" >> "$out/missing.txt"
+              fi
+            done
+            if [ ! -s "$out/missing.txt" ]; then break; fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              cat "$out/missing.txt" >&2
+              exit 1
+            fi
+            sleep 30
+          done
+
+      - name: Merge complete hardened source set
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          git config user.name 'HeptaBao V2.4 Full Hardened Convergence'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          out="$RUNNER_TEMP/heptabao-v24-source-convergence-r4"
+          branches=(
+            codex/openbao-replacement-v2.4-plugin-host-source-r3-20260909
+            codex/openbao-replacement-v2.4-migration-source-r3-20260909
+            codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
+            codex/openbao-replacement-v2.4-ha-service-source-r3-20260909
+            codex/openbao-replacement-v2.4-compat-capture-source-20260909
+            codex/openbao-replacement-v2.4-compat-signature-source-20260909
+          )
+          : > "$out/merged.tsv"
+          for branch in "${branches[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            git merge --no-ff --no-edit -X ours "$ref" > "$out/${branch##*/}.merge.log" 2>&1
+            printf '%s\t%s\t%s\n' "$branch" "$(git rev-parse "$ref")" "$(git rev-parse "$ref^{tree}")" >> "$out/merged.tsv"
+          done
+
+      - name: Fold hardened capability crates into existing package boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import shutil
+
+          def add_module(crate: str, source_path: str, module: str, doc: str) -> Path:
+              source=Path(source_path)
+              if not source.exists():
+                  raise SystemExit(f'missing source: {source}')
+              target=Path('crates')/crate/'src'/f'{module}.rs'
+              target.write_bytes(source.read_bytes())
+              lib=Path('crates')/crate/'src/lib.rs'
+              text=lib.read_text(encoding='utf-8')
+              declaration=f'pub mod {module};'
+              if declaration not in text:
+                  lib.write_text(text.rstrip()+f'\n\n/// {doc}\n{declaration}\n',encoding='utf-8')
+              return target
+
+          def ensure_dep(crate: str, key: str, value: str) -> None:
+              path=Path('crates')/crate/'Cargo.toml'
+              text=path.read_text(encoding='utf-8')
+              if re.search(rf'^\s*{re.escape(key)}\s*=',text,flags=re.M):
+                  return
+              if '[dependencies]' in text:
+                  text=text.replace('[dependencies]',f'[dependencies]\n{key} = {value}',1)
+              else:
+                  text=text.rstrip()+f'\n\n[dependencies]\n{key} = {value}\n'
+              path.write_text(text,encoding='utf-8')
+
+          add_module(
+              'heptabao-migration',
+              'crates/heptabao-migration-journal/src/lib.rs',
+              'migration_journal_v2_4',
+              'Authenticated migration journal and complete object inventory.',
+          )
+          ensure_dep('heptabao-migration','ring','"0.17.14"')
+
+          add_module(
+              'heptabao-identity',
+              'crates/heptabao-federated-auth/src/lib.rs',
+              'federated_auth_v2_4',
+              'Signed federated identity and durable MFA replay admission.',
+          )
+          ensure_dep('heptabao-identity','base64','"0.22.1"')
+          ensure_dep('heptabao-identity','ring','"0.17.14"')
+          ensure_dep('heptabao-identity','serde','{ version = "1.0.229", features = ["derive"] }')
+          ensure_dep('heptabao-identity','serde_json','"1.0.151"')
+
+          add_module(
+              'heptabao-raft-runtime',
+              'crates/heptabao-ha-service/src/lib.rs',
+              'ha_service_v2_4',
+              'Authenticated quorum and mutual-TLS service HA composition.',
+          )
+          ensure_dep('heptabao-raft-runtime','ring','"0.17.14"')
+          ensure_dep('heptabao-raft-runtime','rustls','"0.23.44"')
+
+          compat_test=Path('tests/repository/test_openbao_differential_runner_v2_4.py')
+          compat_text=compat_test.read_text(encoding='utf-8')
+          if 'sys.modules[SPEC.name] = MODULE' not in compat_text:
+              compat_text=compat_text.replace('import tempfile\n','import tempfile\nimport sys\n')
+              compat_text=compat_text.replace(
+                  'MODULE = importlib.util.module_from_spec(SPEC)\n',
+                  'MODULE = importlib.util.module_from_spec(SPEC)\nsys.modules[SPEC.name] = MODULE\n',
+              )
+              compat_test.write_text(compat_text,encoding='utf-8')
+
+          replacements={
+              'tests/repository/test_migration_journal_v2_4.py':[
+                  ('crates/heptabao-migration-journal/src/lib.rs','crates/heptabao-migration/src/migration_journal_v2_4.rs'),
+                  ('docs/modules/heptabao-migration-journal.md','docs/modules/heptabao-migration.md'),
+              ],
+              'tests/repository/test_migration_inventory_v2_4.py':[
+                  ('crates/heptabao-migration-journal/src/lib.rs','crates/heptabao-migration/src/migration_journal_v2_4.rs'),
+                  ('docs/modules/heptabao-migration-journal.md','docs/modules/heptabao-migration.md'),
+              ],
+              'tests/repository/test_federated_auth_v2_4.py':[
+                  ('crates/heptabao-federated-auth/src/lib.rs','crates/heptabao-identity/src/federated_auth_v2_4.rs'),
+                  ('docs/modules/heptabao-federated-auth.md','docs/modules/heptabao-identity.md'),
+              ],
+              'tests/repository/test_ha_service_v2_4.py':[
+                  ('crates/heptabao-ha-service/src/lib.rs','crates/heptabao-raft-runtime/src/ha_service_v2_4.rs'),
+                  ('docs/modules/heptabao-ha-service.md','docs/modules/heptabao-raft-runtime.md'),
+              ],
+              'tests/repository/test_ha_mtls_v2_4.py':[
+                  ('crates/heptabao-ha-service/src/lib.rs','crates/heptabao-raft-runtime/src/ha_service_v2_4.rs'),
+                  ('docs/modules/heptabao-ha-service.md','docs/modules/heptabao-raft-runtime.md'),
+              ],
+          }
+          for file_name,pairs in replacements.items():
+              path=Path(file_name)
+              text=path.read_text(encoding='utf-8')
+              for old,new in pairs:
+                  text=text.replace(old,new)
+              path.write_text(text,encoding='utf-8')
+
+          guide_blocks={
+              'docs/modules/heptabao-plugin-host.md':'''## V2.4 immutable provider and attestation boundary
+
+The host copies checksum-verified provider/plugin bytes into an owner-private executable stage and invokes only staged bytes. `ProviderAttestationV24` additionally binds provider ID, wrapper digest, sandbox profile ID/profile digest, platform, validity interval and a configured independent Ed25519 signer. Independent profile enforcement and production qualification remain external facts.
+''',
+              'docs/modules/heptabao-migration.md':'''## V2.4 authenticated migration transaction and object inventory
+
+The public `migration_journal_v2_4` module provides an HMAC-chained, RAII single-writer, restart-safe transaction state machine and explicit uncertain-outcome reconciliation. `MigrationInventoryV24` requires namespace, policy, auth/secret mount, identity, token, Transit, PKI, database, dynamic lease, audit, seal and Raft metadata object kinds, validates dependencies, rejects cycles and emits deterministic order. Semantic adapter fixtures and cutover evidence remain required.
+''',
+              'docs/modules/heptabao-identity.md':'''## V2.4 signed federated identity and MFA
+
+The public `federated_auth_v2_4` module verifies pinned Ed25519/ES256 JWS keys with strict JOSE and JSON parsing, issuer/audience/namespace/time binding, stable issuer/subject/namespace/`jti` replay identity, channel-bound MFA, RAII replay locking and strict file admission. Kubernetes, LDAP, TLS certificate and cloud-IAM adapters plus independent provider qualification remain separate gates.
+''',
+              'docs/modules/heptabao-raft-runtime.md':'''## V2.4 quorum, authenticated envelopes and mutual TLS
+
+The public `ha_service_v2_4` module adds quorum-gated leader execution, follower forwarding contracts, operation conflict fencing, term/index checks, authenticated peer envelopes, durable replay sequences, bounded framing, snapshot integrity and joint membership. `MutualTlsPeerTransport` verifies server names; the server side requires a caller-supplied rustls client-certificate verifier and pins the presented leaf certificate SHA-256 to a `NodeId`. Certificate lifecycle and concrete production server/Raft adapter qualification remain explicit gates.
+''',
+              'docs/modules/heptabao-compatibility.md':'''## V2.4 capture and signed admission
+
+The differential runner requires an exact denominator, HTTPS, no redirects, bounded I/O, secret redaction, canonical artifact hashing and exact candidate/Oracle comparison. `SignedEvidenceBindingV24` domain-separates profile, inventory, Oracle, candidate and comparison artifact digests and supports multiple configured independent Ed25519 signer keys. Organizational independence and signer custody remain external governance facts.
+''',
+          }
+          for file_name,block in guide_blocks.items():
+              path=Path(file_name)
+              text=path.read_text(encoding='utf-8')
+              heading=block.splitlines()[0]
+              if heading not in text:
+                  path.write_text(text.rstrip()+'\n\n'+block,encoding='utf-8')
+
+          for directory in (
+              'crates/heptabao-migration-journal',
+              'crates/heptabao-federated-auth',
+              'crates/heptabao-ha-service',
+          ):
+              shutil.rmtree(directory)
+          for guide in (
+              'docs/modules/heptabao-migration-journal.md',
+              'docs/modules/heptabao-federated-auth.md',
+              'docs/modules/heptabao-ha-service.md',
+          ):
+              Path(guide).unlink(missing_ok=True)
+          PY
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          git add -A
+          git commit -m 'feat(v2.4): fold full hardened sources into existing package boundaries'
+
+      - name: Remove controller and run full exact qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-source-convergence-r4.yml
+          out="$RUNNER_TEMP/heptabao-v24-source-convergence-r4"
+          python -m unittest \
+            tests.repository.test_plugin_executable_staging_v2_4 \
+            tests.repository.test_plugin_provider_attestation_v2_4 \
+            tests.repository.test_migration_journal_v2_4 \
+            tests.repository.test_migration_inventory_v2_4 \
+            tests.repository.test_federated_auth_v2_4 \
+            tests.repository.test_ha_service_v2_4 \
+            tests.repository.test_ha_mtls_v2_4 \
+            tests.repository.test_openbao_differential_runner_v2_4 \
+            tests.repository.test_compatibility_signature_v2_4 \
+            2>&1 | tee "$out/new-regressions.log"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+          cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+          timeout --signal=TERM --kill-after=30s 7200s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+          cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+          test -z "$(git status --porcelain=v1 --untracked-files=all | grep '^??' || true)"
+
+      - name: Publish source-only full hardened converged candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/v24-source-convergence-r4.yml
+          git add -A
+          git commit -m 'ci(v2.4): remove full hardened convergence controller before review'
+          new_sha="$(git rev-parse HEAD)"
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+            test "$observed" = "$new_sha"
+          else
+            git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
+          fi
+
+      - name: Upload bounded convergence evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-source-convergence-r4
+          path: ${{ runner.temp }}/heptabao-v24-source-convergence-r4/
+          if-no-files-found: warn
+          retention-days: 21
