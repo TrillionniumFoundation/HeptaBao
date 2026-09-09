@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/heptabao-external-evidence-v2.5.schema.json",
+  "title": "HeptaBao external evidence package V2.5",
+  "description": "A source-bound, role-separated evidence envelope. Validation never grants qualification or production authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "gate_id",
+    "subject",
+    "issuer",
+    "separation",
+    "artifacts",
+    "cases",
+    "signatures",
+    "created_at",
+    "expires_at",
+    "authority_effect",
+    "claims"
+  ],
+  "properties": {
+    "schema_id": {"const": "HEPTABAO_EXTERNAL_EVIDENCE_V2_5"},
+    "gate_id": {
+      "enum": [
+        "HB-BLK-CTRL-001",
+        "HB-BLK-EXT-001",
+        "HB-BLK-EXT-002",
+        "HB-BLK-EXT-003",
+        "HB-BLK-EXT-004",
+        "HB-BLK-EXT-005",
+        "HB-BLK-EXT-006",
+        "HB-BLK-EXT-007"
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "tree", "profile"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1, "maxLength": 192},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "profile": {"$ref": "#/$defs/token"}
+      }
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "role", "organization", "public_key_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/token"},
+        "role": {"$ref": "#/$defs/token"},
+        "organization": {"$ref": "#/$defs/token"},
+        "public_key_id": {"$ref": "#/$defs/token"}
+      }
+    },
+    "separation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_author_ids",
+        "implementation_control_root",
+        "evidence_control_root",
+        "runner_control_root",
+        "signing_control_root"
+      ],
+      "properties": {
+        "source_author_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/token"}
+        },
+        "implementation_control_root": {"$ref": "#/$defs/token"},
+        "evidence_control_root": {"$ref": "#/$defs/token"},
+        "runner_control_root": {"$ref": "#/$defs/token"},
+        "signing_control_root": {"$ref": "#/$defs/token"}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1024,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "bytes", "media_type"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^(?!/)(?!~)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+          },
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "bytes": {"type": "integer", "minimum": 1, "maximum": 1099511627776},
+          "media_type": {"$ref": "#/$defs/token"}
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "artifact_sha256", "observed_at"],
+        "properties": {
+          "id": {"$ref": "#/$defs/token"},
+          "status": {"const": "PASS"},
+          "artifact_sha256": {"$ref": "#/$defs/sha256"},
+          "observed_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signer_actor_id",
+          "role",
+          "public_key_id",
+          "signed_at",
+          "algorithm",
+          "signature",
+          "payload_sha256"
+        ],
+        "properties": {
+          "signer_actor_id": {"$ref": "#/$defs/token"},
+          "role": {"$ref": "#/$defs/token"},
+          "public_key_id": {"$ref": "#/$defs/token"},
+          "signed_at": {"type": "string", "format": "date-time"},
+          "algorithm": {"enum": ["ed25519", "ecdsa-p256-sha256"]},
+          "signature": {"type": "string", "minLength": 32, "maxLength": 8192},
+          "payload_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "authority_effect": {"const": "NONE"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualification",
+        "compatibility_claim",
+        "production_authority",
+        "migration_authority",
+        "release_authority"
+      ],
+      "properties": {
+        "qualification": {"const": false},
+        "compatibility_claim": {"const": false},
+        "production_authority": {"const": false},
+        "migration_authority": {"const": false},
+        "release_authority": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 192,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+\\-]{0,191}$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
