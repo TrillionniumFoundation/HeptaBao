@@ -1,0 +1,102 @@
+name: HeptaBao V2.4 plugin TOCTOU source repair r2
+
+on:
+  push:
+    branches:
+      - ops/v24-plugin-toctou-fix-r2-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-plugin-toctou-r2
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SOURCE_BRANCH: ops/v24-plugin-toctou-fix-r1-20260909
+  SOURCE_WORKFLOW: .github/workflows/v24-plugin-toctou-materializer.yml
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-source-20260909
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact repair controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Recover exact authored materialization step
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/source-materializer"
+          first_commit="$(git rev-list --ancestry-path --reverse "$EXACT_PARENT..refs/remotes/origin/source-materializer" | head -1)"
+          test -n "$first_commit"
+          test "$(git rev-parse "$first_commit^")" = "$EXACT_PARENT"
+          test "$(git diff --name-only "$EXACT_PARENT..$first_commit")" = "$SOURCE_WORKFLOW"
+          git show "$first_commit:$SOURCE_WORKFLOW" > "$RUNNER_TEMP/source.yml"
+          python - "$RUNNER_TEMP/source.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
+          marker='      - name: Apply immutable executable staging repair'
+          start=lines.index(marker)
+          run_index=next(i for i in range(start+1,start+8) if lines[i]=='        run: |')
+          body=[]
+          for line in lines[run_index+1:]:
+              if line.startswith('      - name: '): break
+              if line and not line.startswith('          '): raise SystemExit('invalid indentation')
+              body.append(line[10:] if line else '')
+          text='\n'.join(line for line in body if 'git rev-parse HEAD^' not in line)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.','${{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied token: {token}')
+          Path(sys.argv[2]).write_text(text,encoding='utf-8')
+          PY
+          chmod 0700 "$RUNNER_TEMP/materialize.sh"
+          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$RUNNER_TEMP/materialize.sh"
+
+      - name: Remove obsolete wrapper and qualify package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('crates/heptabao-plugin-host/src/lib.rs')
+          text=path.read_text(encoding='utf-8')
+          text,count=re.subn(
+              r'\nfn verify_file\(path: &Path, expected: \[u8; 32\]\) -> Result<\(\), SandboxFailure> \{\n    read_verified_executable\(path, expected\)\.map\(\|_\| \(\)\)\n\}\n',
+              '\n',
+              text,
+              count=1,
+          )
+          if count not in (0,1): raise SystemExit('unexpected verifier count')
+          if 'Command::new(manifest.sandbox().command.as_str())' in text:
+              raise SystemExit('direct source-path execution remains')
+          path.write_text(text,encoding='utf-8')
+          PY
+          rm -f .github/workflows/v24-plugin-toctou-r2.yml
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-plugin-host --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-plugin-host --all-targets -- -D warnings
+          python -m unittest tests.repository.test_plugin_executable_staging_v2_4
+
+      - name: Publish package-qualified source when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            echo 'qualified source branch already exists; preserving first writer'
+            exit 0
+          fi
+          git config user.name 'HeptaBao V2.4 Plugin Repair'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(plugin): remove obsolete verifier after immutable staging'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
