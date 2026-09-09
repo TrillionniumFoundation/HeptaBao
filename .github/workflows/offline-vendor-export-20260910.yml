@@ -26,34 +26,45 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Bind product source and vendor locked dependencies
+      - name: Bind product source and export locked offline inputs
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$PRODUCT_SHA"
           git cat-file -e "$PRODUCT_SHA^{commit}"
           test "$(git diff --name-only "$PRODUCT_SHA" HEAD)" = ".github/workflows/offline-vendor-export-20260910.yml"
-          rustup toolchain install 1.98.0 --profile minimal
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           git worktree add --detach "$RUNNER_TEMP/product" "$PRODUCT_SHA"
           cargo +1.98.0 vendor \
             --manifest-path "$RUNNER_TEMP/product/Cargo.toml" \
             --locked "$RUNNER_TEMP/vendor" > "$RUNNER_TEMP/vendor-config.toml"
-          printf 'source_commit=%s\nsource_tree=%s\nrustc=%s\n' \
+          sysroot="$(rustc +1.98.0 --print sysroot)"
+          test -x "$sysroot/bin/cargo"
+          test -x "$sysroot/bin/rustc"
+          test -x "$sysroot/bin/rustfmt"
+          test -x "$sysroot/bin/clippy-driver"
+          printf 'source_commit=%s\nsource_tree=%s\nrustc=%s\nsysroot_name=%s\n' \
             "$PRODUCT_SHA" \
             "$(git rev-parse "$PRODUCT_SHA^{tree}")" \
-            "$(rustc +1.98.0 --version)" > "$RUNNER_TEMP/source-binding.txt"
+            "$(rustc +1.98.0 --version)" \
+            "$(basename "$sysroot")" > "$RUNNER_TEMP/source-binding.txt"
           tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
             vendor vendor-config.toml source-binding.txt
-          sha256sum "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
-            > "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz.sha256"
+          tar -C "$(dirname "$sysroot")" -czf "$RUNNER_TEMP/rust-1.98.0-linux-x86_64.tar.gz" \
+            "$(basename "$sysroot")"
+          sha256sum \
+            "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
+            "$RUNNER_TEMP/rust-1.98.0-linux-x86_64.tar.gz" \
+            > "$RUNNER_TEMP/offline-inputs.sha256"
 
-      - name: Upload bounded offline vendor bundle
+      - name: Upload bounded offline inputs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: heptabao-offline-vendor-6300d63
+          name: heptabao-offline-inputs-6300d63
           path: |
             ${{ runner.temp }}/heptabao-vendor-6300d63.tar.gz
-            ${{ runner.temp }}/heptabao-vendor-6300d63.tar.gz.sha256
+            ${{ runner.temp }}/rust-1.98.0-linux-x86_64.tar.gz
+            ${{ runner.temp }}/offline-inputs.sha256
             ${{ runner.temp }}/source-binding.txt
           if-no-files-found: error
           retention-days: 3
