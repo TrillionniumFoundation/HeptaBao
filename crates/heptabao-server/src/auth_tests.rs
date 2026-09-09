@@ -736,6 +736,283 @@ fn accessors_allow_revocation_without_revealing_token() {
 }
 
 #[test]
+fn userpass_totp_mfa_is_required_replay_safe_and_restart_persistent() {
+    let (mut state, _, root) = setup();
+    let password = "correct-horse-battery-staple";
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice",
+        json!({"password": password, "token_ttl": 60}),
+        100,
+    );
+    let enrollment = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice/mfa",
+        json!({}),
+        100,
+    );
+    let exported_secret = enrollment.body["data"]["secret_base32"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(enrollment.body["data"]["algorithm"], "SHA256");
+    assert_eq!(enrollment.body["data"]["digits"], 6);
+    assert_eq!(enrollment.body["data"]["period"], 30);
+    let secret = state.users["team"]["alice"]
+        .mfa
+        .as_ref()
+        .unwrap()
+        .secret
+        .clone();
+    assert_eq!(exported_secret, base32_no_padding(&secret));
+
+    for body in [
+        json!({"password": password}),
+        json!({"password": password, "totp_code": "000000"}),
+        json!({"password": password, "totp_code": 123456}),
+    ] {
+        assert!(
+            state
+                .handle(
+                    None,
+                    "team",
+                    "POST",
+                    "auth/userpass/login/alice",
+                    &body,
+                    120,
+                )
+                .is_err()
+        );
+    }
+
+    let code = std::str::from_utf8(&totp_code(&secret, 120 / MFA_PERIOD_SECONDS))
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/userpass/login/alice",
+            &json!({"password": password, "totp_code": code}),
+            120,
+        )
+        .unwrap()
+        .unwrap();
+    assert!(login.body["auth"]["client_token"].as_str().is_some());
+
+    let saved = serde_json::to_string(&state).unwrap();
+    assert!(!saved.contains(&exported_secret));
+    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
+    assert!(
+        restarted
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password": password, "totp_code": code}),
+                121,
+            )
+            .is_err()
+    );
+    let next = std::str::from_utf8(&totp_code(&secret, 150 / MFA_PERIOD_SECONDS))
+        .unwrap()
+        .to_owned();
+    assert!(
+        restarted
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password": password, "totp_code": next}),
+                150,
+            )
+            .is_ok()
+    );
+}
+
+#[test]
+fn totp_mfa_reset_is_explicit_sudo_only_and_status_never_returns_seed() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice",
+        json!({"password": "correct-horse-battery-staple"}),
+        100,
+    );
+    let first = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice/mfa",
+        json!({}),
+        100,
+    );
+    let first_seed = first.body["data"]["secret_base32"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "team",
+                "POST",
+                "auth/userpass/users/alice/mfa",
+                &json!({}),
+                101,
+            )
+            .is_err()
+    );
+    let status = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/userpass/users/alice/mfa",
+        json!({}),
+        101,
+    );
+    assert_eq!(status.body["data"]["enabled"], true);
+    assert!(status.body["data"].get("secret_base32").is_none());
+
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "mfa-manager",
+        json!(
+            r#"path "auth/userpass/users/+/mfa" { capabilities = ["read", "update", "delete"] }"#
+        ),
+    );
+    let manager_raw = token(
+        &mut state,
+        &root,
+        "team",
+        json!({"policies": ["mfa-manager"]}),
+        101,
+    );
+    let manager = state.authenticate(&manager_raw, 102).unwrap();
+    for (method, body) in [("POST", json!({"regenerate": true})), ("DELETE", json!({}))] {
+        assert!(
+            state
+                .handle(
+                    Some(&manager),
+                    "team",
+                    method,
+                    "auth/userpass/users/alice/mfa",
+                    &body,
+                    102,
+                )
+                .is_err()
+        );
+    }
+
+    let replacement = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice/mfa",
+        json!({"regenerate": true}),
+        103,
+    );
+    let replacement_seed = replacement.body["data"]["secret_base32"].as_str().unwrap();
+    assert_ne!(first_seed, replacement_seed);
+    call(
+        &mut state,
+        &root,
+        "team",
+        "DELETE",
+        "auth/userpass/users/alice/mfa",
+        json!({}),
+        104,
+    );
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password": "correct-horse-battery-staple"}),
+                105,
+            )
+            .is_ok()
+    );
+}
+
+#[test]
+fn totp_mfa_rejects_clock_rollback_after_future_window_acceptance() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice",
+        json!({"password": "correct-horse-battery-staple"}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice/mfa",
+        json!({}),
+        100,
+    );
+    let secret = state.users["team"]["alice"]
+        .mfa
+        .as_ref()
+        .unwrap()
+        .secret
+        .clone();
+    let future_counter = 151 / MFA_PERIOD_SECONDS;
+    let future = std::str::from_utf8(&totp_code(&secret, future_counter))
+        .unwrap()
+        .to_owned();
+    state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/userpass/login/alice",
+            &json!({"password": "correct-horse-battery-staple", "totp_code": future}),
+            121,
+        )
+        .unwrap();
+    let current = std::str::from_utf8(&totp_code(&secret, 121 / MFA_PERIOD_SECONDS))
+        .unwrap()
+        .to_owned();
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password": "correct-horse-battery-staple", "totp_code": current}),
+                121,
+            )
+            .is_err()
+    );
+}
+
+#[test]
 fn administrative_tidy_frees_only_inactive_credentials_in_its_namespace() {
     let (mut state, _, root) = setup();
     let expired = token(

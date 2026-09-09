@@ -6,8 +6,8 @@ not a separate crate or an independent production authority grant.
 
 ## Responsibility and durable transaction boundary
 
-`AuthState` owns token verifiers, ACL policies, user password verifiers, AppRole
-configuration and secret-ID verifiers. It derives `Clone`, `Serialize` and
+`AuthState` owns token verifiers, ACL policies, user password verifiers,
+user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers. It derives `Clone`, `Serialize` and
 `Deserialize`; neither this state nor credential-bearing records implements
 `Debug`. The surrounding service serializes it inside the encrypted durable
 server state. It is not a separate plaintext authentication database.
@@ -133,8 +133,8 @@ closed. There is no silently ignored HCL or JSON policy attribute.
 ## Userpass
 
 User records contain a random 32-byte salt, a 32-byte PBKDF2-HMAC-SHA256 verifier,
-the KDF iteration count (600,000 for new passwords), token policies and TTL/use
-limits. Passwords must contain 12–1024 bytes. Login uses `ring::pbkdf2::verify`;
+the KDF iteration count (600,000 for new passwords), token policies, TTL/use
+limits and an optional persistent TOTP MFA enrollment. Passwords must contain 12–1024 bytes. Login uses `ring::pbkdf2::verify`;
 the unknown-user path performs an equivalent dummy KDF. Error messages never
 contain the password, verifier, bearer token or secret ID. Password rotation
 replaces salt and verifier. The plaintext password is never serialized into
@@ -150,6 +150,31 @@ of their own token policies. User configuration updates accept explicit
 `policies`/`token_policies`, `ttl`/`token_ttl` and `max_ttl`/`token_max_ttl` aliases;
 specifying both aliases is rejected. Password and policies subroutes enforce
 their respective field boundaries.
+
+## Userpass TOTP MFA
+
+`auth/userpass/users/:name/mfa` owns a bounded user-specific TOTP enrollment.
+POST/PUT creates a 256-bit random seed and returns its unpadded base32 form only
+in that successful response. Re-enrollment refuses to replace an existing seed
+unless the caller explicitly sends `regenerate=true`. Enrollment, regeneration
+and deletion require both the route's normal capability and `sudo`. GET returns
+only status and fixed algorithm parameters; it never returns the seed.
+
+The implemented profile is TOTP with HMAC-SHA-256, six decimal digits and a
+30-second period. Userpass login requires `totp_code` whenever the selected user
+has an enrollment. The verifier accepts only the current counter and a one-step
+clock window, compares fixed-width ASCII codes with a constant-time primitive,
+and durably records the greatest accepted counter. The same or an older counter
+can never authenticate again, including after restart or wall-clock rollback.
+A future-window code, once accepted, fences the current and previous counters.
+Password verification succeeds before MFA evaluation, and every MFA failure
+returns the same permission-denied class as an invalid credential.
+
+The MFA seed is serialized only inside the barrier-encrypted service state and is
+zeroized when its owned record is dropped. This does not make the seed recoverable
+through an API. Administrators must retain their enrollment handoff securely;
+regeneration invalidates the old seed immediately. There is no recovery-code,
+push, WebAuthn or external MFA-provider implementation in this bounded profile.
 
 ## AppRole
 
@@ -170,7 +195,8 @@ its initial successful creation response.
 
 Not supported: custom secret IDs, CIDR binding, response wrapping, entity/group
 mapping, batch tokens, LDAP, OIDC/JWT, Kubernetes, cloud IAM, certificate auth,
-MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown
+WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount
+tuning. Unknown
 security-relevant request fields are rejected. Userpass and AppRole currently
 have fixed paths. Login throttling is not implemented in this module; the
 bounded single-node server must not be advertised as production authentication
@@ -191,7 +217,8 @@ parity without separate abuse-resistance work.
 | `auth/userpass/users` | LIST/GET list |
 | `auth/userpass/users/:name` | GET, POST/PUT, DELETE |
 | `auth/userpass/users/:name/password`, `.../policies` | POST/PUT bounded update |
-| `auth/userpass/login/:name` | unauthenticated POST/PUT |
+| `auth/userpass/users/:name/mfa` | GET status; POST/PUT enroll or explicit regenerate; DELETE disable; write/delete require sudo |
+| `auth/userpass/login/:name` | unauthenticated POST/PUT; enrolled users require `totp_code` |
 | `auth/approle/role` | LIST/GET list |
 | `auth/approle/role/:name` | GET, POST/PUT, DELETE |
 | `auth/approle/role/:name/role-id` | GET, POST/PUT |
@@ -213,8 +240,10 @@ restart serialization, no persisted bearer/password plaintext, exhausted uses,
 TTL boundaries, periodic renewal maximums, token revocation descendants, orphan
 survival, accessor revocation, namespace collision candidates, root-policy
 escalation rejection, deny precedence, sudo separation, wildcard boundaries,
-strict parser rejection, secret-ID expiry/consumption/destruction and failed
-transaction clone isolation. Administrative tidy tests verify expired/exhausted
+strict parser rejection, TOTP enrollment secrecy, required second-factor
+verification, replay and clock-rollback fencing, restart persistence, explicit
+sudo-only reset, secret-ID expiry/consumption/destruction and failed transaction
+clone isolation. Administrative tidy tests verify expired/exhausted
 credential removal, active-credential survival and exact namespace scoping.
 
 The synchronous tidy operations reclaim stale verifier records in the selected
