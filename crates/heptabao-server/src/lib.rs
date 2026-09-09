@@ -1,8 +1,16 @@
 #![forbid(unsafe_code)]
-//! A bounded, single-node TLS secrets service. All mutations, including login
-//! and finite-use token consumption, commit encrypted state before any result
-//! is delivered. Unsupported OpenBao operations remain explicit errors.
-pub mod auth;
+//! A bounded TLS secrets service. All mutations, including login and finite-use
+//! token consumption, commit encrypted state before any result is delivered.
+//! Unsupported OpenBao operations remain explicit errors.
+//!
+//! The raw authentication state and per-request capability are intentionally
+//! crate-private. External callers must enter through [`Service`], which creates
+//! the capability inside one request transaction and never returns it.
+//!
+//! ```compile_fail
+//! use heptabao_server::auth::Principal;
+//! ```
+mod auth;
 mod crypto;
 pub mod engines;
 pub mod http;
