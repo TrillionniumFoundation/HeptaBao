@@ -1,0 +1,44 @@
+name: HeptaBao V2.5 current exact source export
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-v2.4-authoritative-closure-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind and export exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-v25-current-source"
+          mkdir -p "$output"
+          git archive --format=tar.gz --output="$output/heptabao-v25-current-source.tar.gz" HEAD
+          git bundle create "$output/heptabao-v25-current-source.bundle" HEAD
+          git bundle verify "$output/heptabao-v25-current-source.bundle"
+          printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" \
+            > "$output/source-binding.txt"
+          (cd "$output" && sha256sum heptabao-v25-current-source.tar.gz heptabao-v25-current-source.bundle source-binding.txt > SHA256SUMS)
+
+      - name: Upload bounded source artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v25-current-exact-source
+          path: ${{ runner.temp }}/heptabao-v25-current-source/
+          if-no-files-found: error
+          retention-days: 3
