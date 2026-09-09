@@ -1,0 +1,353 @@
+name: HeptaBao V2.4 HA mTLS source repair r3
+
+on:
+  push:
+    branches:
+      - ops/v24-ha-mtls-r3-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-ha-mtls-r3
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  INPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-r3-20260909
+
+jobs:
+  harden:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Checkout controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for HA source r2
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 7200))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/$INPUT_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$INPUT_BRANCH"; then
+              source_sha="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH")"
+              git merge-base --is-ancestor "$EXACT_PARENT" "$source_sha"
+              printf 'SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'HA r2 source did not materialize' >&2
+          exit 1
+
+      - name: Add mTLS transport in isolated worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          work="$RUNNER_TEMP/heptabao-ha-mtls-r3"
+          git worktree add --detach "$work" "$SOURCE_SHA"
+          (
+            cd "$work"
+            python - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest=Path('crates/heptabao-ha-service/Cargo.toml')
+          mt=manifest.read_text(encoding='utf-8')
+          for key,value in (
+              ('rustls','"0.23.44"'),
+          ):
+              if not re.search(rf'^\s*{re.escape(key)}\s*=',mt,flags=re.M):
+                  mt=mt.replace('[dependencies]',f'[dependencies]\n{key} = {value}',1)
+          manifest.write_text(mt,encoding='utf-8')
+
+          path=Path('crates/heptabao-ha-service/src/lib.rs')
+          text=path.read_text(encoding='utf-8')
+          if 'pub struct MutualTlsPeerTransport' in text:
+              raise SystemExit('mTLS transport already exists')
+          text=text.replace('use std::net::{SocketAddr, TcpListener, TcpStream};\n','use std::net::{SocketAddr, TcpListener, TcpStream};\nuse std::sync::Arc;\n',1)
+          insertion=r'''
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TlsPeerEndpoint {
+    pub address: SocketAddr,
+    pub server_name: String,
+}
+
+impl TlsPeerEndpoint {
+    pub fn new(address: SocketAddr, server_name: impl Into<String>) -> Result<Self, HaError> {
+        let server_name = server_name.into();
+        if server_name.is_empty()
+            || server_name.len() > 253
+            || rustls::pki_types::ServerName::try_from(server_name.clone()).is_err()
+        {
+            return Err(HaError::InvalidCluster);
+        }
+        Ok(Self {
+            address,
+            server_name,
+        })
+    }
+}
+
+#[derive(Clone)]
+pub struct MutualTlsPeerTransport {
+    peers: BTreeMap<NodeId, TlsPeerEndpoint>,
+    client_config: Arc<rustls::ClientConfig>,
+    timeout: Duration,
+}
+
+impl MutualTlsPeerTransport {
+    pub fn new(
+        peers: BTreeMap<NodeId, TlsPeerEndpoint>,
+        client_config: Arc<rustls::ClientConfig>,
+        timeout: Duration,
+    ) -> Result<Self, HaError> {
+        if peers.is_empty()
+            || peers.len() > MAX_PEERS
+            || timeout.is_zero()
+            || timeout > Duration::from_secs(60)
+        {
+            return Err(HaError::InvalidCluster);
+        }
+        Ok(Self {
+            peers,
+            client_config,
+            timeout,
+        })
+    }
+
+    pub fn exchange(&self, peer: &NodeId, frame: &[u8]) -> Result<Vec<u8>, HaError> {
+        if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+            return Err(HaError::InvalidFrame);
+        }
+        let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
+        let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
+            .map_err(|_| HaError::InvalidCluster)?;
+        let stream = TcpStream::connect_timeout(&endpoint.address, self.timeout)
+            .map_err(|_| HaError::Transport)?;
+        stream
+            .set_read_timeout(Some(self.timeout))
+            .and_then(|()| stream.set_write_timeout(Some(self.timeout)))
+            .map_err(|_| HaError::Transport)?;
+        let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
+            .map_err(|_| HaError::Transport)?;
+        let mut tls = rustls::StreamOwned::new(connection, stream);
+        write_bounded_frame(&mut tls, frame)?;
+        read_bounded_frame(&mut tls)
+    }
+}
+
+impl fmt::Debug for MutualTlsPeerTransport {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("MutualTlsPeerTransport")
+            .field("peers", &self.peers)
+            .field("client_config", &"[RUSTLS_CONFIG]")
+            .field("timeout", &self.timeout)
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct PinnedClientCertificateMap {
+    by_leaf_sha256: BTreeMap<[u8; 32], NodeId>,
+}
+
+impl PinnedClientCertificateMap {
+    pub fn new(
+        by_leaf_sha256: BTreeMap<[u8; 32], NodeId>,
+    ) -> Result<Self, HaError> {
+        if by_leaf_sha256.is_empty()
+            || by_leaf_sha256.len() > MAX_PEERS
+            || by_leaf_sha256.keys().any(|digest| *digest == [0; 32])
+        {
+            return Err(HaError::InvalidCluster);
+        }
+        Ok(Self { by_leaf_sha256 })
+    }
+
+    pub fn identify(&self, leaf_der: &[u8]) -> Result<NodeId, HaError> {
+        if leaf_der.is_empty() || leaf_der.len() > 1024 * 1024 {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        self.by_leaf_sha256
+            .get(&sha256(leaf_der))
+            .cloned()
+            .ok_or(HaError::PeerAuthenticationFailed)
+    }
+}
+
+pub fn serve_one_mtls_peer_frame<H>(
+    listener: &TcpListener,
+    server_config: Arc<rustls::ServerConfig>,
+    identities: &PinnedClientCertificateMap,
+    timeout: Duration,
+    handler: H,
+) -> Result<(), HaError>
+where
+    H: FnOnce(NodeId, Vec<u8>) -> Result<Vec<u8>, HaError>,
+{
+    if timeout.is_zero() || timeout > Duration::from_secs(60) {
+        return Err(HaError::InvalidCluster);
+    }
+    let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
+    stream
+        .set_read_timeout(Some(timeout))
+        .and_then(|()| stream.set_write_timeout(Some(timeout)))
+        .map_err(|_| HaError::Transport)?;
+    let connection = rustls::ServerConnection::new(server_config)
+        .map_err(|_| HaError::Transport)?;
+    let mut tls = rustls::StreamOwned::new(connection, stream);
+    tls.conn
+        .complete_io(&mut tls.sock)
+        .map_err(|_| HaError::PeerAuthenticationFailed)?;
+    let certificates = tls
+        .conn
+        .peer_certificates()
+        .ok_or(HaError::PeerAuthenticationFailed)?;
+    if certificates.len() != 1 {
+        return Err(HaError::PeerAuthenticationFailed);
+    }
+    let peer = identities.identify(certificates[0].as_ref())?;
+    let request = read_bounded_frame(&mut tls)?;
+    let response = handler(peer, request)?;
+    write_bounded_frame(&mut tls, &response)
+}
+'''
+          marker='''#[derive(Clone, Debug)]
+pub struct TcpPeerTransport {
+'''
+          if marker not in text:
+              raise SystemExit('TcpPeerTransport marker missing')
+          text=text.replace(marker,insertion+'\n'+marker,1)
+
+          old='''fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
+    let length = u32::try_from(frame.len()).map_err(|_| HaError::InvalidFrame)?;
+    stream
+        .write_all(&length.to_be_bytes())
+        .and_then(|()| stream.write_all(frame))
+        .and_then(|()| stream.flush())
+        .map_err(|_| HaError::Transport)
+}
+
+fn read_frame(stream: &mut TcpStream) -> Result<Vec<u8>, HaError> {
+    let mut length = [0_u8; 4];
+    stream.read_exact(&mut length).map_err(|_| HaError::Transport)?;
+    let length = u32::from_be_bytes(length) as usize;
+    if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
+        return Err(HaError::InvalidFrame);
+    }
+    let mut frame = vec![0_u8; length];
+    stream.read_exact(&mut frame).map_err(|_| HaError::Transport)?;
+    Ok(frame)
+}
+'''
+          new='''fn write_bounded_frame(
+    writer: &mut impl Write,
+    frame: &[u8],
+) -> Result<(), HaError> {
+    if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+        return Err(HaError::InvalidFrame);
+    }
+    let length = u32::try_from(frame.len()).map_err(|_| HaError::InvalidFrame)?;
+    writer
+        .write_all(&length.to_be_bytes())
+        .and_then(|()| writer.write_all(frame))
+        .and_then(|()| writer.flush())
+        .map_err(|_| HaError::Transport)
+}
+
+fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
+    let mut length = [0_u8; 4];
+    reader.read_exact(&mut length).map_err(|_| HaError::Transport)?;
+    let length = u32::from_be_bytes(length) as usize;
+    if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
+        return Err(HaError::InvalidFrame);
+    }
+    let mut frame = vec![0_u8; length];
+    reader.read_exact(&mut frame).map_err(|_| HaError::Transport)?;
+    Ok(frame)
+}
+
+fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
+    write_bounded_frame(stream, frame)
+}
+
+fn read_frame(stream: &mut TcpStream) -> Result<Vec<u8>, HaError> {
+    read_bounded_frame(stream)
+}
+'''
+          if old not in text:
+              raise SystemExit('TCP framing functions missing')
+          text=text.replace(old,new,1)
+
+          test_marker='''    #[test]
+    fn tcp_transport_uses_bounded_framing() {
+'''
+          tests='''    #[test]
+    fn tls_endpoint_and_pinned_client_identity_are_strict() {
+        let address: SocketAddr = "127.0.0.1:8201".parse().unwrap();
+        assert!(TlsPeerEndpoint::new(address, "node-2.example.internal").is_ok());
+        assert_eq!(
+            TlsPeerEndpoint::new(address, "bad name with spaces"),
+            Err(HaError::InvalidCluster)
+        );
+        let certificate = b"synthetic-test-certificate-der";
+        let peer = node("n2");
+        let identities = PinnedClientCertificateMap::new(BTreeMap::from([(
+            sha256(certificate),
+            peer.clone(),
+        )]))
+        .unwrap();
+        assert_eq!(identities.identify(certificate).unwrap(), peer);
+        assert_eq!(
+            identities.identify(b"different-certificate"),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn tcp_transport_uses_bounded_framing() {
+'''
+          if test_marker not in text:
+              raise SystemExit('test marker missing')
+          text=text.replace(test_marker,tests,1)
+          path.write_text(text,encoding='utf-8')
+
+          guide=Path('docs/modules/heptabao-ha-service.md')
+          g=guide.read_text(encoding='utf-8')
+          block='''
+## V2.4 mutual TLS peer transport
+
+`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, then binds the single presented leaf certificate SHA-256 to an expected `NodeId`. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Certificate issuance, revocation, rotation, trust-root custody and destructive multi-node qualification remain external operational gates.
+'''
+          if '## V2.4 mutual TLS peer transport' not in g:
+              guide.write_text(g.rstrip()+block,encoding='utf-8')
+          Path('tests/repository/test_ha_mtls_v2_4.py').write_text('''from pathlib import Path\nimport unittest\n\n\nclass HaMutualTlsV24Tests(unittest.TestCase):\n    def test_mtls_and_certificate_node_binding_exist(self):\n        source=Path("crates/heptabao-ha-service/src/lib.rs").read_text(encoding="utf-8")\n        for marker in ("MutualTlsPeerTransport", "ServerName::try_from", "peer_certificates", "PinnedClientCertificateMap", "complete_io"):\n            self.assertIn(marker,source)\n\n    def test_certificate_lifecycle_boundary_is_explicit(self):\n        guide=Path("docs/modules/heptabao-ha-service.md").read_text(encoding="utf-8")\n        self.assertIn("Certificate issuance, revocation, rotation",guide)\n        self.assertIn("external operational gates",guide)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''',encoding='utf-8')
+          PY
+            cargo +1.98.0 generate-lockfile
+            cargo +1.98.0 fmt --all
+            cargo +1.98.0 test --locked -p heptabao-ha-service --all-targets
+            cargo +1.98.0 clippy --locked -p heptabao-ha-service --all-targets -- -D warnings
+            python -m unittest tests.repository.test_ha_service_v2_4 tests.repository.test_ha_mtls_v2_4
+            git config user.name 'HeptaBao V2.4 HA mTLS Hardening'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git add -A
+            git commit -m 'feat(ha): add mTLS peer transport and certificate identity binding'
+            new_sha="$(git rev-parse HEAD)"
+            if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+              test "$observed" = "$new_sha"
+            else
+              git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
+            fi
+          )
+          git worktree remove --force "$work"
