@@ -1,0 +1,82 @@
+name: HeptaBao V2.4 main integrity audit
+
+on:
+  push:
+    branches:
+      - ops/v24-main-integrity-audit-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-main-integrity-audit-r1
+  cancel-in-progress: false
+
+env:
+  SAFE_MAIN: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  SAFE_TREE: 334b369bcfa4316d68a4520f1e0f57654c2982ba
+  PR79_HEAD: 8c5f9151585309f79b62be47c3bbc2ca8002b126
+  REVERT_BRANCH: ops/revert-accidental-pr79-20260909
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout audit controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Inspect current main without mutating it
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-main-integrity"
+          mkdir -p "$out"
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          main_sha="$(git rev-parse refs/remotes/origin/main)"
+          main_tree="$(git rev-parse 'refs/remotes/origin/main^{tree}')"
+          parents="$(git show -s --format=%P "$main_sha")"
+          printf 'main=%s\ntree=%s\nparents=%s\n' "$main_sha" "$main_tree" "$parents" > "$out/main-binding.txt"
+          if [ "$main_sha" = "$SAFE_MAIN" ] && [ "$main_tree" = "$SAFE_TREE" ]; then
+            echo 'state=safe_pre_accident_main' > "$out/verdict.txt"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor "$PR79_HEAD" "$main_sha"; then
+            echo 'state=main_changed_without_pr79_ancestry' > "$out/verdict.txt"
+            exit 0
+          fi
+          parent_count="$(printf '%s\n' "$parents" | wc -w)"
+          if [ "$parent_count" -ne 2 ] || ! grep -qw "$SAFE_MAIN" <<<"$parents" || ! grep -qw "$PR79_HEAD" <<<"$parents"; then
+            echo 'state=pr79_ancestry_present_but_not_exact_accidental_merge_shape' > "$out/verdict.txt"
+            exit 1
+          fi
+          echo 'state=exact_accidental_pr79_merge_shape_detected' > "$out/verdict.txt"
+          printf 'ACCIDENTAL_MERGE_SHA=%s\n' "$main_sha" >> "$GITHUB_ENV"
+
+      - name: Build non-destructive revert candidate only for exact accident shape
+        if: env.ACCIDENTAL_MERGE_SHA != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$ACCIDENTAL_MERGE_SHA"
+          git config user.name 'HeptaBao Main Integrity Recovery'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git revert -m 1 --no-edit "$ACCIDENTAL_MERGE_SHA"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$SAFE_TREE"
+          if git ls-remote --exit-code origin "refs/heads/$REVERT_BRANCH" >/dev/null 2>&1; then
+            echo 'revert candidate already exists; preserving first writer'
+          else
+            git push --force-with-lease="refs/heads/$REVERT_BRANCH:" origin "HEAD:refs/heads/$REVERT_BRANCH"
+          fi
+
+      - name: Upload bounded audit evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-main-integrity
+          path: ${{ runner.temp }}/heptabao-v24-main-integrity/
+          if-no-files-found: error
+          retention-days: 14
