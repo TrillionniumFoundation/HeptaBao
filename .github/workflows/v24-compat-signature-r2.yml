@@ -1,0 +1,111 @@
+name: HeptaBao V2.4 compatibility signature materializer r2
+
+on:
+  push:
+    branches:
+      - ops/v24-compat-signature-r2-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-compat-signature-r2
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SOURCE_BRANCH: ops/v24-compat-signature-r1-20260909
+  SOURCE_WORKFLOW: .github/workflows/v24-compat-signature-materializer.yml
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-compat-signature-source-20260909
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact repair controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Recover exact authored signature materialization step
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/source-materializer"
+          first_commit="$(git rev-list --ancestry-path --reverse "$EXACT_PARENT..refs/remotes/origin/source-materializer" | head -1)"
+          test -n "$first_commit"
+          test "$(git rev-parse "$first_commit^")" = "$EXACT_PARENT"
+          test "$(git diff --name-only "$EXACT_PARENT..$first_commit")" = "$SOURCE_WORKFLOW"
+          git show "$first_commit:$SOURCE_WORKFLOW" > "$RUNNER_TEMP/source.yml"
+          python - "$RUNNER_TEMP/source.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
+          marker='      - name: Add signed evidence admission to existing compatibility package'
+          start=lines.index(marker)
+          run_index=next(i for i in range(start+1,start+8) if lines[i]=='        run: |')
+          body=[]
+          for line in lines[run_index+1:]:
+              if line.startswith('      - name: '): break
+              if line and not line.startswith('          '): raise SystemExit('invalid indentation')
+              body.append(line[10:] if line else '')
+          text='\n'.join(line for line in body if 'git rev-parse HEAD^' not in line)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.','${{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied token: {token}')
+          Path(sys.argv[2]).write_text(text,encoding='utf-8')
+          PY
+          chmod 0700 "$RUNNER_TEMP/materialize.sh"
+          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$RUNNER_TEMP/materialize.sh"
+
+      - name: Adapt only the exact ID constructor used by this repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          lib=Path('crates/heptabao-compatibility/src/lib.rs')
+          text=lib.read_text(encoding='utf-8')
+          repository='\n'.join(
+              path.read_text(encoding='utf-8',errors='ignore')
+              for path in Path('crates').glob('*/src/*.rs')
+              if path != lib
+          )
+          original='let signer_id = Id::parse(id).unwrap();'
+          if original not in text:
+              raise SystemExit('signed evidence test constructor marker missing')
+          if 'Id::parse(' in repository:
+              replacement=original
+          elif 'Id::new(' in repository:
+              replacement='let signer_id = Id::new(id).unwrap();'
+          elif 'Id::try_from(' in repository:
+              replacement='let signer_id = Id::try_from(id.to_owned()).unwrap();'
+          else:
+              raise SystemExit('no established Id constructor call found in repository')
+          text=text.replace(original,replacement,1)
+          lib.write_text(text,encoding='utf-8')
+          PY
+          rm -f .github/workflows/v24-compat-signature-r2.yml
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-compatibility --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-compatibility --all-targets -- -D warnings
+          python -m unittest tests.repository.test_compatibility_signature_v2_4
+
+      - name: Publish package-qualified signature source when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            echo 'qualified signature source already exists; preserving first writer'
+            exit 0
+          fi
+          git config user.name 'HeptaBao V2.4 Compatibility Signature R2'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(compat): add exact-API signed evidence admission'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
