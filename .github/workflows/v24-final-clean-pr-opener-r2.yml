@@ -1,0 +1,128 @@
+name: HeptaBao V2.4 final clean draft PR opener r2
+
+on:
+  push:
+    branches:
+      - ops/v24-final-clean-pr-opener-r2-20260909
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: heptabao-v24-final-clean-pr-opener-r2
+  cancel-in-progress: false
+
+env:
+  FINAL_BRANCH: codex/openbao-replacement-v2.4-final-clean-candidate-r2-20260909
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+
+jobs:
+  open-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout PR controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Wait for safe-main-qualified clean ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-pr-r2"
+          mkdir -p "$out"
+          deadline=$((SECONDS + 12600))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "+refs/heads/$FINAL_BRANCH:refs/remotes/origin/$FINAL_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$FINAL_BRANCH"; then
+              final_sha="$(git rev-parse "refs/remotes/origin/$FINAL_BRANCH")"
+              parents="$(git show -s --format=%P "$final_sha")"
+              test "$(printf '%s\n' "$parents" | wc -w)" -eq 1
+              test "$parents" = "$EXACT_PARENT"
+              final_tree="$(git rev-parse "$final_sha^{tree}")"
+              printf 'branch=%s\nsha=%s\nparent=%s\ntree=%s\n' \
+                "$FINAL_BRANCH" "$final_sha" "$parents" "$final_tree" > "$out/source-binding.txt"
+              printf 'FINAL_SHA=%s\nFINAL_TREE=%s\n' "$final_sha" "$final_tree" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'safe-main-qualified clean ref did not materialize before timeout' >&2
+          exit 1
+
+      - name: Verify final source tree has no V2.4 controller transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          git ls-tree -r --name-only "$FINAL_SHA" > "$RUNNER_TEMP/final-tree-paths.txt"
+          if grep -E '(^|/)(v24-.*(materializer|orchestrator|republisher|qualifier|opener|cleanup)\.ya?ml|payload/|part-[0-9]+$)' "$RUNNER_TEMP/final-tree-paths.txt"; then
+            echo 'final source tree contains a controller transport or staged payload' >&2
+            exit 1
+          fi
+
+      - name: Create or verify one exact draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-pr-r2"
+          owner="${GITHUB_REPOSITORY%%/*}"
+          existing="$(gh api --paginate \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${owner}:${FINAL_BRANCH}&base=main&per_page=100" \
+            --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" > "$out/existing-pr.json"
+            observed="$(gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" --jq '.head.sha')"
+            draft="$(gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" --jq '.draft')"
+            test "$observed" = "$FINAL_SHA"
+            test "$draft" = 'true'
+            printf '%s\n' "$existing" > "$out/pr-number.txt"
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/body.md" <<EOF
+          ## Exact clean V2.4 repository candidate
+
+          - branch: \`$FINAL_BRANCH\`
+          - head: \`$FINAL_SHA\`
+          - parent: \`$EXACT_PARENT\`
+          - tree: \`$FINAL_TREE\`
+          - history: one source commit above the reviewed total-gap baseline
+
+          This ref is emitted only after clean-tree identity verification, immutable exact-head qualification, an unpolluted \`main\` lineage check, and a prospective merge qualification against the then-current \`main\`. The source tree contains no V2.4 write materializer, convergence controller, republisher, qualifier, PR opener, cleanup workflow, or staged payload chunk.
+
+          ### Repository-controlled implementation
+
+          - checksum-verified plugin executables run only from owner-private immutable staging;
+          - migration operations use authenticated restart-safe phase journaling and explicit reconciliation;
+          - federated JWS identity and channel-bound MFA use durable replay admission before authentication release;
+          - service HA contracts enforce quorum, leader routing, term/index checks, authenticated peer envelopes, persistent sequence fencing, bounded framing, snapshot integrity, and joint membership;
+          - differential compatibility capture is HTTPS-only, bounded, secret-redacting, denominator-bound, and self-integrity checked.
+
+          ### External authority still required
+
+          This draft does not self-issue legal approval, independent security or cryptographic review, production KMS/HSM and signer custody, independently controlled OpenBao Oracle admission, complete data-migration qualification, destructive multi-platform/multi-node qualification, 24x7 operations evidence, independent reproduction, compatibility authority, migration authority, release authority, or production authority.
+
+          Review and required checks must bind this exact head. No approval or check is inherited from PR #79 or any staging branch.
+          EOF
+          url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --base main \
+            --head "$FINAL_BRANCH" \
+            --title 'feat(v2.4): safe-main-qualified repository blocker convergence' \
+            --body-file "$RUNNER_TEMP/body.md")"
+          printf '%s\n' "$url" > "$out/created-pr-url.txt"
+
+      - name: Upload bounded PR evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-final-clean-pr-r2
+          path: ${{ runner.temp }}/heptabao-v24-final-clean-pr-r2/
+          if-no-files-found: warn
+          retention-days: 14
