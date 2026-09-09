@@ -1,0 +1,128 @@
+name: REP-012 bounded MFA materializer 20260909
+
+on:
+  push:
+    branches:
+      - ops/heptabao-rep012-mfa-materializer-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rep012-mfa-materializer-20260909
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ef6b7e3836ac163401538fbbf9a29919c192fda3
+  TARGET_BRANCH: codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  PATCH_SHA256: 4c0ecfba106527773da5739f86fbad752a1eb27a6b2b823a81d062bde6be797b
+  PATCH_BYTES: "25157"
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact controller with bounded credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind controller and immutable candidate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/ops/heptabao-rep012-mfa-materializer-20260909"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          observed="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$observed" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Reconstruct and apply byte-pinned patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="$RUNNER_TEMP/rep012-mfa.patch"
+          cat \
+            .materializer/rep012/patch.part00 \
+            .materializer/rep012/patch.part01 \
+            .materializer/rep012/patch.part02 \
+            > "$patch"
+          test "$(wc -c < "$patch" | tr -d ' ')" = "$PATCH_BYTES"
+          printf '%s  %s\n' "$PATCH_SHA256" "$patch" | sha256sum --check --strict
+          candidate="$RUNNER_TEMP/heptabao-rep012-candidate"
+          git worktree add --detach "$candidate" "$SOURCE_SHA"
+          git -C "$candidate" apply --check "$patch"
+          git -C "$candidate" apply "$patch"
+          git -C "$candidate" diff --check
+
+      - name: Install exact validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement "$RUNNER_TEMP/heptabao-rep012-candidate/requirements-plan.txt"
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Format and validate repository truth
+        working-directory: ${{ runner.temp }}/heptabao-rep012-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          git diff --check
+
+      - name: Test durable MFA and surrounding server targets
+        working-directory: ${{ runner.temp }}/heptabao-rep012-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-server --all-targets -- --test-threads=1
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+
+      - name: Seal exact source-only candidate commit
+        id: candidate
+        working-directory: ${{ runner.temp }}/heptabao-rep012-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            crates/heptabao-server/src/auth.rs \
+            crates/heptabao-server/src/auth_tests.rs \
+            docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md | sort)"
+          test "$changed" = "$expected"
+          git diff --check
+          git config user.name "heptabao-rep012-materializer"
+          git config user.email "heptabao-rep012-materializer@users.noreply.github.com"
+          git add \
+            crates/heptabao-server/src/auth.rs \
+            crates/heptabao-server/src/auth_tests.rs \
+            docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m "feat(auth): add durable replay-safe TOTP MFA" \
+            -m "Add user-bound HMAC-SHA256 TOTP enrollment, one-shot seed disclosure, sudo-only reset, persisted replay fencing, restart and clock-rollback tests, and atomic MFA-counter plus token publication. This is repository implementation evidence only and grants no production or compatibility authority." \
+            -m "Signed-off-by: OpenAI Codex <noreply@openai.com>"
+          sealed="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          printf 'sha=%s\ntree=%s\n' "$sealed" "$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
+
+      - name: Publish only under exact source lease
+        env:
+          SEALED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SEALED_SHA"
+          observed="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$observed" = "$SOURCE_SHA"
+          git push \
+            --force-with-lease="refs/heads/$TARGET_BRANCH:$SOURCE_SHA" \
+            origin "$SEALED_SHA:refs/heads/$TARGET_BRANCH"
