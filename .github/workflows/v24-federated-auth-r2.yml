@@ -1,4 +1,4 @@
-name: HeptaBao V2.4 federated auth source repair r2
+name: HeptaBao V2.4 federated auth source recovery r2
 
 on:
   push:
@@ -9,200 +9,110 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r2
+  group: heptabao-v24-federated-auth-r2-recovery
   cancel-in-progress: false
 
 env:
-  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
-  SOURCE_BRANCH: ops/v24-federated-auth-r1-20260909
-  SOURCE_WORKFLOW: .github/workflows/v24-federated-auth-materializer.yml
+  BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
+  MATERIALIZER_BRANCH: ops/v24-federated-auth-r1-20260909
+  MATERIALIZER_SHA: db77577dca611f4c6ad3f19b7a3627b5b230f817
+  MATERIALIZER_WORKFLOW: .github/workflows/v24-federated-auth-materializer.yml
+  PATCH_CONTROLLER_SHA: 4a217be15255fbed544f0c059a752f8bb390273d
+  PATCH_WORKFLOW: .github/workflows/v24-federated-auth-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
 
 jobs:
-  repair:
+  recover:
     runs-on: ubuntu-24.04
-    timeout-minutes: 70
+    timeout-minutes: 120
     steps:
-      - name: Checkout exact repair controller
+      - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Recover exact authored package source
+      - name: Verify immutable controller inputs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
-          git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/source-materializer"
-          first_commit="$(git rev-list --ancestry-path --reverse "$EXACT_PARENT..refs/remotes/origin/source-materializer" | head -1)"
-          test -n "$first_commit"
-          test "$(git rev-parse "$first_commit^")" = "$EXACT_PARENT"
-          test "$(git diff --name-only "$EXACT_PARENT..$first_commit")" = "$SOURCE_WORKFLOW"
-          git show "$first_commit:$SOURCE_WORKFLOW" > "$RUNNER_TEMP/source.yml"
-          python - "$RUNNER_TEMP/source.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
+          test "$(git rev-parse "$PATCH_CONTROLLER_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "aaa7ef0f18f7394de98dc5f8d655d7bea6dd21d7"
+          git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/federated-materializer"
+          test "$(git rev-parse refs/remotes/origin/federated-materializer)" = "$MATERIALIZER_SHA"
+          test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW")" = "41eb01743dcb22607a3f5a43e1f0c4e4292d3bc7"
+          test "$(git diff --name-only "$BASE_SHA..$MATERIALIZER_SHA")" = "$MATERIALIZER_WORKFLOW"
+
+      - name: Recover and qualify federated auth source
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-federated-auth-r2"
+          git worktree add --detach "$work" "$BASE_SHA"
+          git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
+          git show "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
+          python - "$RUNNER_TEMP/materializer.yml" "      - name: Materialize federated auth package" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
-          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
-          marker='      - name: Materialize federated auth package'
-          start=lines.index(marker)
-          run_index=next(i for i in range(start+1,start+8) if lines[i]=='        run: |')
-          body=[]
-          for line in lines[run_index+1:]:
-              if line.startswith('      - name: '): break
-              if line and not line.startswith('          '): raise SystemExit('invalid indentation')
-              body.append(line[10:] if line else '')
-          text='\n'.join(line for line in body if 'git rev-parse HEAD^' not in line)+'\n'
-          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.','${{','rm -rf','sudo '):
-              if token in text: raise SystemExit(f'denied token: {token}')
-          Path(sys.argv[2]).write_text(text,encoding='utf-8')
-          PY
-          chmod 0700 "$RUNNER_TEMP/materialize.sh"
-          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$RUNNER_TEMP/materialize.sh"
 
-      - name: Harden JOSE and durable replay semantics
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
+          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = sys.argv[2]
+          start = source.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
+          body = []
+          for line in source[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit("invalid source workflow indentation")
+              body.append(line[10:] if line else "")
+          text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
+          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
+          for token in denied:
+              if token in text:
+                  raise SystemExit(f"denied materializer token: {token}")
+          Path(sys.argv[3]).write_text(text, encoding="utf-8")
+          PY
+          python - "$RUNNER_TEMP/patch.yml" "      - name: Harden JOSE and durable replay semantics" "$RUNNER_TEMP/harden.sh" <<'PY'
           from pathlib import Path
-          path=Path('crates/heptabao-federated-auth/src/lib.rs')
-          text=path.read_text(encoding='utf-8')
-          old='''        if let Some(typ) = take_optional_string(&mut header, "typ")? {
-            if typ != "JWT" {
-                return Err(AuthError::MalformedToken);
-            }
-        }
-        let key = self.keys.get(&key_id).ok_or(AuthError::UnknownKeyId)?;
-'''
-          new='''        if let Some(typ) = take_optional_string(&mut header, "typ")? {
-            if typ != "JWT" {
-                return Err(AuthError::MalformedToken);
-            }
-        }
-        if !header.is_empty() {
-            return Err(AuthError::MalformedToken);
-        }
-        let key = self.keys.get(&key_id).ok_or(AuthError::UnknownKeyId)?;
-'''
-          if old not in text: raise SystemExit('JOSE header insertion point missing')
-          text=text.replace(old,new,1)
-          old='''        let fingerprint = digest_bytes(token.as_bytes());
-        replay.record_once(fingerprint, expires_at, now)?;
-        Ok(VerifiedPrincipal {
-'''
-          new='''        let mut replay_identity = Vec::with_capacity(
-            issuer.len()
-                + subject.len()
-                + token_id.len()
-                + namespace.as_ref().map_or(0, String::len)
-                + 4,
-        );
-        for value in [
-            issuer.as_str(),
-            subject.as_str(),
-            namespace.as_deref().unwrap_or(""),
-            token_id.as_str(),
-        ] {
-            replay_identity.extend_from_slice(value.as_bytes());
-            replay_identity.push(0);
-        }
-        replay.record_once(digest_bytes(&replay_identity), expires_at, now)?;
-        Ok(VerifiedPrincipal {
-'''
-          if old not in text: raise SystemExit('replay insertion point missing')
-          text=text.replace(old,new,1)
-          old='''fn parse_unique_object(bytes: &[u8]) -> Result<BTreeMap<String, Value>, AuthError> {
-    let mut deserializer = serde_json::Deserializer::from_slice(bytes);
-    UniqueObject::deserialize(&mut deserializer)
-        .map(|object| object.0)
-        .map_err(|error| {
-            if error.to_string().contains("duplicate JSON member") {
-                AuthError::DuplicateJsonKey
-            } else {
-                AuthError::InvalidJson
-            }
-        })
-}
-'''
-          new='''fn parse_unique_object(bytes: &[u8]) -> Result<BTreeMap<String, Value>, AuthError> {
-    let mut deserializer = serde_json::Deserializer::from_slice(bytes);
-    let object = UniqueObject::deserialize(&mut deserializer).map_err(|error| {
-        if error.to_string().contains("duplicate JSON member") {
-            AuthError::DuplicateJsonKey
-        } else {
-            AuthError::InvalidJson
-        }
-    })?;
-    deserializer.end().map_err(|_| AuthError::InvalidJson)?;
-    Ok(object.0)
-}
-'''
-          if old not in text: raise SystemExit('JSON parser insertion point missing')
-          text=text.replace(old,new,1)
-          marker='''    #[test]
-    fn mfa_is_channel_bound_and_persistently_single_use() {
-'''
-          test='''    #[test]
-    fn unknown_jose_headers_and_trailing_json_are_rejected() {
-        let pair = Ed25519KeyPair::from_seed_unchecked(&[14; 32]).unwrap();
-        let verifier = verifier(&pair);
-        let header = URL_SAFE_NO_PAD.encode(
-            br#"{"alg":"EdDSA","kid":"key-1","typ":"JWT","jku":"https://evil.example/jwks"}"#,
-        );
-        let claims = URL_SAFE_NO_PAD.encode(
-            br#"{"iss":"https://issuer.example","sub":"alice","aud":"heptabao","iat":1000,"exp":1200,"jti":"strict-1","heptabao_namespace":"team-a"}"#,
-        );
-        let input = format!("{header}.{claims}");
-        let token = format!(
-            "{input}.{}",
-            URL_SAFE_NO_PAD.encode(pair.sign(input.as_bytes()).as_ref())
-        );
-        let root = root("strict-header");
-        let mut replay = PersistentReplayLedger::open(&root, [15; 32]).unwrap();
-        assert_eq!(
-            verifier.verify_and_record(&token, 1050, &mut replay),
-            Err(AuthError::MalformedToken)
-        );
-        drop(replay);
-        fs::remove_dir_all(root).unwrap();
+          import sys
 
-        assert_eq!(
-            parse_unique_object(br#"{"a":1} trailing"#),
-            Err(AuthError::InvalidJson)
-        );
-    }
-
-    #[test]
-    fn mfa_is_channel_bound_and_persistently_single_use() {
-'''
-          if marker not in text: raise SystemExit('test insertion point missing')
-          text=text.replace(marker,test,1)
-          path.write_text(text,encoding='utf-8')
-          guide=Path('docs/modules/heptabao-federated-auth.md')
-          g=guide.read_text(encoding='utf-8')
-          if 'strict JOSE header allowlist' not in g:
-              g += '\nThe verifier uses a strict JOSE header allowlist, rejects trailing JSON, and binds durable replay identity to issuer, subject, namespace and `jti` rather than signature bytes.\n'
-              guide.write_text(g,encoding='utf-8')
+          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = sys.argv[2]
+          start = source.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
+          body = []
+          for line in source[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit("invalid patch workflow indentation")
+              body.append(line[10:] if line else "")
+          text = "\n".join(body) + "\n"
+          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
+          for token in denied:
+              if token in text:
+                  raise SystemExit(f"denied hardening token: {token}")
+          Path(sys.argv[3]).write_text(text, encoding="utf-8")
           PY
-          rm -f .github/workflows/v24-federated-auth-r2.yml
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          cargo +1.98.0 generate-lockfile
-          cargo +1.98.0 fmt --all
-          cargo +1.98.0 test --locked -p heptabao-federated-auth --all-targets
-          cargo +1.98.0 clippy --locked -p heptabao-federated-auth --all-targets -- -D warnings
-          python -m unittest tests.repository.test_federated_auth_v2_4
-
-      - name: Publish package-qualified source when absent
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-            echo 'qualified source branch already exists; preserving first writer'
-            exit 0
-          fi
-          git config user.name 'HeptaBao V2.4 Federated Auth Repair'
-          git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          git add -A
-          git commit -m 'fix(auth): enforce strict JOSE and stable replay identity'
-          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+          chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
+          (
+            cd "$work"
+            env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$BASE_SHA" bash "$RUNNER_TEMP/materialize.sh"
+            bash "$RUNNER_TEMP/harden.sh"
+            git config user.name 'HeptaBao Federated Auth Recovery'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git add -A
+            test -n "$(git status --porcelain)"
+            git commit -m 'feat(auth): materialize qualified federated identity boundary'
+            new_sha="$(git rev-parse HEAD)"
+            if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+              test "$observed" = "$new_sha"
+            else
+              git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
+            fi
+          )
+          git worktree remove --force "$work"
