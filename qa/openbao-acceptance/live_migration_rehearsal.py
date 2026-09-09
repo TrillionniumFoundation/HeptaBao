@@ -6,6 +6,7 @@ The launcher and binary are executable inputs, not downloaded or generated here.
 """
 from __future__ import annotations
 
+import base64
 import contextlib
 import hashlib
 import importlib.util
@@ -87,9 +88,11 @@ def run(binary, launcher_path, work_dir, oracle_port):
         oracle = launcher.start_oracle(port=oracle_port)
         instance = smoke.Instance(binary, work_dir / "candidate")
         instance.start()
-        status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
+        recovery_nonce = base64.b64encode(secrets.token_bytes(32)).decode()
+        status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1, "recovery_nonce": recovery_nonce})
         check("candidate_initialized", status == 200)
         instance.token, unseal = initialized["root_token"], initialized["keys_base64"][0]
+        check("candidate_init_ack", instance.call("POST", "sys/init/ack", {"recovery_nonce": recovery_nonce, "ack_token": initialized["init_ack_token"]})[0] == 204)
         private_text(work_dir / "candidate.token", instance.token)
         private_text(work_dir / "candidate-unseal.key", unseal)
         check("candidate_unsealed", instance.call("POST", "sys/unseal", {"key": unseal})[0] == 200)
