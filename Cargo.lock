@@ -599,6 +599,11 @@ name = "heptabao-migration"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
+ "heptabao-filesystem-guard",
+ "libc",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]

@@ -8,6 +8,9 @@ use std::fmt;
 
 use heptabao_domain::Id;
 
+mod durable;
+pub use durable::*;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MigrationPhase {
     Planned,
