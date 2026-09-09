@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://heptabao.invalid/schemas/heptabao-external-trust-store-v2.5.schema.json",
+  "title": "HeptaBao external trust store V2.5",
+  "description": "Externally enrolled Ed25519 identities used only to verify evidence. This object grants no authority by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "authority_effect", "keys"],
+  "properties": {
+    "schema_id": {"const": "HEPTABAO_EXTERNAL_TRUST_STORE_V2_5"},
+    "authority_effect": {"const": "NONE"},
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "public_key_id",
+          "actor_id",
+          "role",
+          "algorithm",
+          "public_key",
+          "valid_from",
+          "valid_until",
+          "revoked"
+        ],
+        "properties": {
+          "public_key_id": {"$ref": "#/$defs/token"},
+          "actor_id": {"$ref": "#/$defs/token"},
+          "role": {"$ref": "#/$defs/token"},
+          "algorithm": {"const": "ed25519"},
+          "public_key": {
+            "type": "string",
+            "minLength": 44,
+            "maxLength": 44,
+            "pattern": "^[A-Za-z0-9+/]{43}=$"
+          },
+          "valid_from": {"type": "string", "format": "date-time"},
+          "valid_until": {"type": "string", "format": "date-time"},
+          "revoked": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 192,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"
+    }
+  }
+}
