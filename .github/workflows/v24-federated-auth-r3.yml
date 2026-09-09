@@ -16,6 +16,7 @@ env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
+  RECOVERY_PARENT_SHA: 6fffbfd58589ebae1424b0e65da26738b2505c71
   ORIGINAL_CONTROLLER_SHA: eaf82ea9528a068dadccbd1700fe03da688fd324
   ORIGINAL_WORKFLOW: .github/workflows/v24-federated-auth-r3.yml
 
@@ -34,7 +35,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$ORIGINAL_CONTROLLER_SHA"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW")" = "732051f7b4ad29023efa9dc70b521afcdada8572"
 
@@ -73,9 +75,7 @@ jobs:
           for line in lines[run_index + 1:]:
               if line.startswith("      - name: "):
                   break
-              if line and not line.startswith("          "):
-                  raise SystemExit("invalid r3 workflow indentation")
-              body.append(line[10:] if line else "")
+              body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
           if chr(36) + "{{" in text:
               raise SystemExit("unresolved workflow expression in extracted hardening block")
