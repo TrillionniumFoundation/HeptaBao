@@ -9,15 +9,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-ha-service-r2-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-ha-service-r2-recovery-v3
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   MATERIALIZER_BRANCH: ops/v24-ha-service-r1-20260909
   MATERIALIZER_SHA: 77230cfabcc212292ea1d941826e069a50f98f4f
   MATERIALIZER_WORKFLOW: .github/workflows/v24-ha-service-materializer.yml
-  PATCH_CONTROLLER_SHA: ff622e18780f30b8895e2e0de48db17b186e4dfa
+  RECOVERY_PARENT_SHA: a7a17bd6af728a7938f69d74274a1ed1730af51a
+  ORIGINAL_PATCH_SHA: 84a6769af3eef6c400f683fe95d725010104381b
   PATCH_WORKFLOW: .github/workflows/v24-ha-service-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
 
@@ -36,9 +37,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
-          test "$(git merge-base "$PATCH_CONTROLLER_SHA" "$BASE_SHA")" = "$BASE_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "f931ca35ca11c4fc10e530a1c5c0360b09e25c5b"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "152b844cca7bce21409491e1f219c588363d1672"
           git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/ha-materializer"
           test "$(git rev-parse refs/remotes/origin/ha-materializer)" = "$MATERIALIZER_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
@@ -52,14 +54,12 @@ jobs:
           work="$RUNNER_TEMP/heptabao-ha-service-r2"
           git worktree add --detach "$work" "$BASE_SHA"
           git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
-          git show "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
+          git show "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
           python - "$RUNNER_TEMP/materializer.yml" "      - name: Materialize HA service package" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
-
           source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
+          start = source.index(sys.argv[2])
           run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
           body = []
           for line in source[run_index + 1:]:
@@ -67,8 +67,7 @@ jobs:
                   break
               body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
-          for token in denied:
+          for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo "):
               if token in text:
                   raise SystemExit(f"denied materializer token: {token}")
           Path(sys.argv[3]).write_text(text, encoding="utf-8")
@@ -76,10 +75,8 @@ jobs:
           python - "$RUNNER_TEMP/patch.yml" "      - name: Harden peer state and remove dead private code" "$RUNNER_TEMP/harden.sh" <<'PY'
           from pathlib import Path
           import sys
-
           source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
+          start = source.index(sys.argv[2])
           run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
           body = []
           for line in source[run_index + 1:]:
@@ -87,8 +84,7 @@ jobs:
                   break
               body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
-          for token in denied:
+          for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo "):
               if token in text:
                   raise SystemExit(f"denied hardening token: {token}")
           Path(sys.argv[3]).write_text(text, encoding="utf-8")
