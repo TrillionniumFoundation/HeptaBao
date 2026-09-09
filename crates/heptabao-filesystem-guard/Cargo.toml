@@ -5,6 +5,9 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[dependencies]
+libc = "=0.2.189"
+
 [lib]
 path = "src/lib.rs"
 doctest = false

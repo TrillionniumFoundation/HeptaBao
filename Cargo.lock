@@ -518,6 +518,7 @@ name = "heptabao-durable-service"
 version = "0.1.0"
 dependencies = [
  "heptabao-filesystem-guard",
+ "libc",
  "sha2",
  "zeroize",
 ]
@@ -525,6 +526,9 @@ dependencies = [
 [[package]]
 name = "heptabao-filesystem-guard"
 version = "0.1.0"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "heptabao-governance"
@@ -766,6 +770,7 @@ version = "0.1.0"
 dependencies = [
  "heptabao-filesystem-guard",
  "heptabao-journal-api",
+ "libc",
 ]
 
 [[package]]
@@ -774,6 +779,7 @@ version = "0.1.0"
 dependencies = [
  "heptabao-filesystem-guard",
  "heptabao-storage-api",
+ "libc",
 ]
 
 [[package]]

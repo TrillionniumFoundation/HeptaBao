@@ -35,10 +35,6 @@ const TAIL_MAGIC: &[u8] = b"HEPTABAO-JOURNAL-TAIL-V1\0";
 const ENTRY_MAGIC: &[u8] = b"HEPTABAO-JOURNAL-ENTRY-V1\0";
 const MAX_CONTROL_FILE_BYTES: usize = 64 * 1024;
 const ENTRY_OVERHEAD_BOUND: usize = 64 * 1024;
-#[cfg(target_os = "linux")]
-const O_NOFOLLOW: i32 = 0o400000;
-#[cfg(target_os = "linux")]
-const O_CLOEXEC: i32 = 0o2000000;
 pub const MAX_JOURNAL_RECORDS: u64 = 65_536;
 
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -611,7 +607,7 @@ where
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(target_os = "linux")]
-    options.custom_flags(O_NOFOLLOW | O_CLOEXEC);
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     let file = options.open(path).map_err(FileJournalError::Io)?;
     let metadata = file.metadata().map_err(FileJournalError::Io)?;
     if !metadata.is_file() {
@@ -642,7 +638,7 @@ fn secure_create_new(path: &Path) -> io::Result<File> {
     #[cfg(unix)]
     options.mode(0o600);
     #[cfg(target_os = "linux")]
-    options.custom_flags(O_NOFOLLOW | O_CLOEXEC);
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     options.open(path)
 }
 

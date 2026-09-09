@@ -34,10 +34,6 @@ const CURRENT_MAGIC: &[u8; 20] = b"HEPTABAO-CURRENT-V1\0";
 const BUNDLE_MAGIC: &[u8; 19] = b"HEPTABAO-BUNDLE-V1\0";
 const MAX_CONTROL_FILE_BYTES: usize = 64 * 1024;
 const BUNDLE_OVERHEAD_BOUND: usize = 64 * 1024;
-#[cfg(target_os = "linux")]
-const O_NOFOLLOW: i32 = 0o400000;
-#[cfg(target_os = "linux")]
-const O_CLOEXEC: i32 = 0o2000000;
 
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
@@ -727,7 +723,7 @@ where
     let mut options = OpenOptions::new();
     options.read(true);
     #[cfg(target_os = "linux")]
-    options.custom_flags(O_NOFOLLOW | O_CLOEXEC);
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     let file = options.open(path).map_err(FileStoreError::Io)?;
     let metadata = file.metadata().map_err(FileStoreError::Io)?;
     if !metadata.is_file() {
@@ -758,7 +754,7 @@ fn secure_create_new(path: &Path) -> io::Result<File> {
     #[cfg(unix)]
     options.mode(0o600);
     #[cfg(target_os = "linux")]
-    options.custom_flags(O_NOFOLLOW | O_CLOEXEC);
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     options.open(path)
 }
 

@@ -10,6 +10,7 @@ path = "src/lib.rs"
 doctest = false
 
 [dependencies]
+libc = "=0.2.189"
 heptabao-filesystem-guard = { path = "../heptabao-filesystem-guard" }
 heptabao-storage-api = { path = "../heptabao-storage-api" }
 

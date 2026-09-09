@@ -1290,11 +1290,16 @@ fn map_guard_error(error: DirectoryGuardError) -> ServiceError {
     }
 }
 
+#[cfg(target_os = "linux")]
 fn nofollow_options() -> OpenOptions {
     let mut options = OpenOptions::new();
-    #[cfg(target_os = "linux")]
-    options.custom_flags(0o400000 | 0o2000000); // O_NOFOLLOW | O_CLOEXEC
+    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     options
+}
+
+#[cfg(not(target_os = "linux"))]
+fn nofollow_options() -> OpenOptions {
+    OpenOptions::new()
 }
 
 fn snapshot_path(root: &Path) -> PathBuf {

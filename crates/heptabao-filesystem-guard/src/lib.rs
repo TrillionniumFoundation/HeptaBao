@@ -16,9 +16,13 @@
 
 use std::error::Error;
 use std::fmt;
-use std::fs::{self, File, OpenOptions, TryLockError};
+use std::fs::File;
+#[cfg(target_os = "linux")]
+use std::fs::{self, OpenOptions, TryLockError};
 use std::io;
-use std::path::{Component, Path, PathBuf};
+#[cfg(target_os = "linux")]
+use std::path::Component;
+use std::path::{Path, PathBuf};
 
 #[cfg(target_os = "linux")]
 use std::os::fd::AsRawFd;
@@ -29,12 +33,6 @@ pub const MAX_GUARDED_LEAF_BYTES: usize = 240;
 
 // Linux values from asm-generic/fcntl.h. They are used only on the Linux
 // implementation selected by this crate's explicit runtime profile.
-#[cfg(target_os = "linux")]
-const O_DIRECTORY: i32 = 0o200000;
-#[cfg(target_os = "linux")]
-const O_NOFOLLOW: i32 = 0o400000;
-#[cfg(target_os = "linux")]
-const O_CLOEXEC: i32 = 0o2000000;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct DirectoryIdentity {
@@ -269,7 +267,7 @@ fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGua
     let mut options = OpenOptions::new();
     options
         .read(true)
-        .custom_flags(O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
     let mut current = options.open("/").map_err(DirectoryGuardError::Io)?;
 
     for component in components {
