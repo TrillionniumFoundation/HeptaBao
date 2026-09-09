@@ -215,10 +215,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test_tmp_root="$RUNNER_TEMP/heptabao-canonical-tmp"
+          rm -rf "$test_tmp_root"
+          mkdir -p "$test_tmp_root"
+          export TMPDIR="$(cd "$test_tmp_root" && pwd -P)/"
+          test -d "$TMPDIR"
           python3 - <<'PY'
           import json
+          import os
+          import pathlib
           import subprocess
 
+          temp_root = pathlib.Path(os.environ["TMPDIR"])
+          if temp_root.is_symlink() or not temp_root.is_absolute():
+              raise SystemExit("TMPDIR must be an absolute non-symlink directory")
           metadata = json.loads(subprocess.check_output([
               "cargo", "+1.98.0", "metadata", "--format-version", "1", "--locked"
           ]))
@@ -253,6 +263,7 @@ jobs:
           )
           blocked = sorted(packages[package_id]["name"] for package_id in storage_closure)
           print(json.dumps({
+              "test_tmp_root": str(temp_root),
               "executed_packages": runnable,
               "compiled_but_storage_blocked_packages": blocked,
           }, sort_keys=True))
