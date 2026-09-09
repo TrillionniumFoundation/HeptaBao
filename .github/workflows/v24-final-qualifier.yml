@@ -1,0 +1,132 @@
+name: HeptaBao V2.4 final qualifier
+
+on:
+  push:
+    branches:
+      - ops/v24-final-qualifier-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-final-qualifier-r1
+  cancel-in-progress: false
+
+env:
+  REQUIRED_ANCESTOR: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-final-candidate-20260909
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout qualifier controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for a fully materialized candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/heptabao-v24-final"
+          candidates=(
+            codex/openbao-replacement-v2.4-inplace-candidate-20260909
+            codex/openbao-replacement-v2.4-converged-candidate-20260909
+          )
+          deadline=$((SECONDS + 5400))
+          selected=''
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags --prune origin '+refs/heads/*:refs/remotes/origin/*'
+            for branch in "${candidates[@]}"; do
+              ref="refs/remotes/origin/$branch"
+              if git show-ref --verify --quiet "$ref" && git merge-base --is-ancestor "$REQUIRED_ANCESTOR" "$ref"; then
+                selected="$branch"
+                break 2
+              fi
+            done
+            sleep 30
+          done
+          test -n "$selected"
+          selected_sha="$(git rev-parse "refs/remotes/origin/$selected")"
+          printf '%s\n' "$selected" > "$RUNNER_TEMP/heptabao-v24-final/selected-branch.txt"
+          printf '%s\n' "$selected_sha" > "$RUNNER_TEMP/heptabao-v24-final/selected-sha.txt"
+          printf 'SELECTED_BRANCH=%s\nSELECTED_SHA=%s\n' "$selected" "$selected_sha" >> "$GITHUB_ENV"
+
+      - name: Install exact toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Qualify immutable exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final/exact"
+          mkdir -p "$out"
+          work="$RUNNER_TEMP/heptabao-v24-exact"
+          git worktree add --detach "$work" "$SELECTED_SHA"
+          (
+            cd "$work"
+            test "$(git rev-parse HEAD)" = "$SELECTED_SHA"
+            python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+            python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+            python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+            cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+            timeout --signal=TERM --kill-after=30s 5400s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+            cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+            cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+            cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+            test -z "$(git status --porcelain=v1 --untracked-files=all)"
+            printf 'candidate=%s\ntree=%s\npackage_count=%s\n' \
+              "$SELECTED_SHA" \
+              "$(git rev-parse 'HEAD^{tree}')" \
+              "$(cargo +1.98.0 metadata --locked --no-deps --format-version 1 | python -c 'import json,sys; d=json.load(sys.stdin); w=set(d["workspace_members"]); print(sum(p["id"] in w for p in d["packages"]))')" \
+              > "$out/source-binding.txt"
+          )
+          git worktree remove --force "$work"
+
+      - name: Construct and qualify prospective merge into current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          main_sha="$(git rev-parse refs/remotes/origin/main)"
+          out="$RUNNER_TEMP/heptabao-v24-final/prospective-merge"
+          mkdir -p "$out"
+          work="$RUNNER_TEMP/heptabao-v24-prospective"
+          git worktree add --detach "$work" "$main_sha"
+          (
+            cd "$work"
+            git config user.name 'HeptaBao V2.4 Prospective Merge'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git merge --no-ff --no-edit "$SELECTED_SHA" 2>&1 | tee "$out/merge.log"
+            merge_sha="$(git rev-parse HEAD)"
+            python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+            python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+            python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+            cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+            timeout --signal=TERM --kill-after=30s 5400s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+            cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+            cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+            printf 'main=%s\ncandidate=%s\nprospective_merge=%s\ntree=%s\n' \
+              "$main_sha" "$SELECTED_SHA" "$merge_sha" "$(git rev-parse 'HEAD^{tree}')" \
+              > "$out/source-binding.txt"
+          )
+          git worktree remove --force "$work"
+
+      - name: Publish exact clean candidate ref only after both qualifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$SELECTED_SHA:refs/heads/$OUTPUT_BRANCH"
+
+      - name: Upload bounded final evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-final-qualification
+          path: ${{ runner.temp }}/heptabao-v24-final/
+          if-no-files-found: warn
+          retention-days: 7
