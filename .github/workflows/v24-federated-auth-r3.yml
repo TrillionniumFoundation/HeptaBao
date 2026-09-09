@@ -9,14 +9,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r3-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-federated-auth-r3-recovery-v2
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
-  RECOVERY_PARENT_SHA: 6fffbfd58589ebae1424b0e65da26738b2505c71
+  RECOVERY_PARENT_SHA: 6dbf8c3cac7beaad68010d4f1532847a8cf1db3a
   ORIGINAL_CONTROLLER_SHA: eaf82ea9528a068dadccbd1700fe03da688fd324
   ORIGINAL_WORKFLOW: .github/workflows/v24-federated-auth-r3.yml
 
