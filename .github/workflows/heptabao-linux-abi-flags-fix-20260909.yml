@@ -1,0 +1,226 @@
+name: HeptaBao Linux ABI open-flag repair 20260909
+
+on:
+  push:
+    branches:
+      - ops/heptabao-linux-abi-flags-fix-20260909-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-linux-abi-flags-fix-20260909-r1
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 72428ef0d6fec33dfb13f30f68fbf6630d530595
+  CANDIDATE_REF: refs/heads/codex/openbao-replacement-v2.4-authoritative-closure-20260909
+
+jobs:
+  repair-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact candidate with publish credential
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact source and live ref lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          current="$(git ls-remote --heads origin "$CANDIDATE_REF" | awk '{print $1}')"
+          test "$current" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install pinned repository dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 --version
+          rustc +1.98.0 --version
+
+      - name: Replace host-ABI constants and regenerate dependency edges
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          crates = (
+              "heptabao-filesystem-guard",
+              "heptabao-durable-service",
+              "heptabao-single-node-store",
+              "heptabao-single-node-journal",
+          )
+          for crate in crates:
+              manifest = Path("crates") / crate / "Cargo.toml"
+              text = manifest.read_text(encoding="utf-8")
+              if 'libc = "=0.2.189"' in text:
+                  raise SystemExit(f"{manifest}: libc dependency already present")
+              if "[dependencies]\n" in text:
+                  text = text.replace(
+                      "[dependencies]\n",
+                      '[dependencies]\nlibc = "=0.2.189"\n',
+                      1,
+                  )
+              else:
+                  marker = "\n[lib]\n"
+                  if text.count(marker) != 1:
+                      raise SystemExit(f"{manifest}: dependency insertion marker drifted")
+                  text = text.replace(
+                      marker,
+                      '\n[dependencies]\nlibc = "=0.2.189"\n\n[lib]\n',
+                      1,
+                  )
+              manifest.write_text(text, encoding="utf-8")
+
+          guard = Path("crates/heptabao-filesystem-guard/src/lib.rs")
+          text = guard.read_text(encoding="utf-8")
+          old_imports = '''use std::fs::{self, File, OpenOptions, TryLockError};
+          use std::io;
+          use std::path::{Component, Path, PathBuf};'''
+          new_imports = '''use std::fs::File;
+          #[cfg(target_os = "linux")]
+          use std::fs::{self, OpenOptions, TryLockError};
+          use std::io;
+          use std::path::{Path, PathBuf};
+          #[cfg(target_os = "linux")]
+          use std::path::Component;'''
+          if text.count(old_imports) != 1:
+              raise SystemExit("filesystem-guard import marker drifted")
+          text = text.replace(old_imports, new_imports, 1)
+          old_constants = '''#[cfg(target_os = "linux")]
+          const O_DIRECTORY: i32 = 0o200000;
+          #[cfg(target_os = "linux")]
+          const O_NOFOLLOW: i32 = 0o400000;
+          #[cfg(target_os = "linux")]
+          const O_CLOEXEC: i32 = 0o2000000;
+          '''
+          if text.count(old_constants) != 1:
+              raise SystemExit("filesystem-guard flag block drifted")
+          text = text.replace(old_constants, "", 1)
+          old_flags = "O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC"
+          new_flags = "libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC"
+          if text.count(old_flags) != 1:
+              raise SystemExit("filesystem-guard custom flag use drifted")
+          text = text.replace(old_flags, new_flags, 1)
+          guard.write_text(text, encoding="utf-8")
+
+          for crate in ("heptabao-single-node-store", "heptabao-single-node-journal"):
+              source = Path("crates") / crate / "src/lib.rs"
+              text = source.read_text(encoding="utf-8")
+              old_constants = '''#[cfg(target_os = "linux")]
+          const O_NOFOLLOW: i32 = 0o400000;
+          #[cfg(target_os = "linux")]
+          const O_CLOEXEC: i32 = 0o2000000;
+          '''
+              if text.count(old_constants) != 1:
+                  raise SystemExit(f"{source}: flag block drifted")
+              text = text.replace(old_constants, "", 1)
+              old_flags = "O_NOFOLLOW | O_CLOEXEC"
+              new_flags = "libc::O_NOFOLLOW | libc::O_CLOEXEC"
+              count = text.count(old_flags)
+              if count < 1:
+                  raise SystemExit(f"{source}: no custom flag uses found")
+              text = text.replace(old_flags, new_flags)
+              source.write_text(text, encoding="utf-8")
+
+          durable = Path("crates/heptabao-durable-service/src/lib.rs")
+          text = durable.read_text(encoding="utf-8")
+          old = '''fn nofollow_options() -> OpenOptions {
+              let mut options = OpenOptions::new();
+              #[cfg(target_os = "linux")]
+              options.custom_flags(0o400000 | 0o2000000); // O_NOFOLLOW | O_CLOEXEC
+              options
+          }'''
+          new = '''#[cfg(target_os = "linux")]
+          fn nofollow_options() -> OpenOptions {
+              let mut options = OpenOptions::new();
+              options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+              options
+          }
+
+          #[cfg(not(target_os = "linux"))]
+          fn nofollow_options() -> OpenOptions {
+              OpenOptions::new()
+          }'''
+          if text.count(old) != 1:
+              raise SystemExit("durable-service nofollow helper drifted")
+          durable.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
+          if grep -R -nE 'const O_(DIRECTORY|NOFOLLOW|CLOEXEC): i32 = 0o' \
+            crates/heptabao-filesystem-guard \
+            crates/heptabao-durable-service \
+            crates/heptabao-single-node-store \
+            crates/heptabao-single-node-journal; then
+            echo 'architecture-specific open flag remains' >&2
+            exit 1
+          fi
+
+          cargo +1.98.0 check --workspace --all-targets
+          cargo +1.98.0 fmt --all
+          git diff --check
+
+      - name: Closed repository and Rust qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 fmt --all -- --check
+          git diff --check
+
+      - name: Commit only the reviewed repair surface
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            Cargo.lock \
+            crates/heptabao-durable-service/Cargo.toml \
+            crates/heptabao-durable-service/src/lib.rs \
+            crates/heptabao-filesystem-guard/Cargo.toml \
+            crates/heptabao-filesystem-guard/src/lib.rs \
+            crates/heptabao-single-node-journal/Cargo.toml \
+            crates/heptabao-single-node-journal/src/lib.rs \
+            crates/heptabao-single-node-store/Cargo.toml \
+            crates/heptabao-single-node-store/src/lib.rs | sort)"
+          test "$changed" = "$expected"
+          git config user.name "heptabao-gap-materializer"
+          git config user.email "heptabao-gap-materializer@users.noreply.github.com"
+          git add $expected
+          git diff --cached --check
+          git commit \
+            -m "fix(storage): use target ABI open flags" \
+            -m "Replace x86_64 Linux flag literals with libc constants in all descriptor-anchored persistence crates. Preserve O_DIRECTORY, O_NOFOLLOW and O_CLOEXEC semantics while making aarch64 Linux use its actual ABI values. Also make non-Linux imports and nofollow construction warning-free without enabling an unsupported storage profile." \
+            -m "Signed-off-by: OpenAI Codex <noreply@openai.com>"
+          result="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          printf 'sha=%s\n' "$result" >> "$GITHUB_OUTPUT"
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Atomically publish verified candidate child
+        shell: bash
+        env:
+          RESULT_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$RESULT_SHA^")" = "$SOURCE_SHA"
+          git push \
+            --force-with-lease="${CANDIDATE_REF}:${SOURCE_SHA}" \
+            origin "${RESULT_SHA}:${CANDIDATE_REF}"
+          git rev-parse "$RESULT_SHA" "$RESULT_SHA^{tree}"
