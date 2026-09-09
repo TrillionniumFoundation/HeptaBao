@@ -1,0 +1,137 @@
+name: HeptaBao V2.4 full hardened final clean PR opener r4
+
+on:
+  push:
+    branches:
+      - ops/v24-final-clean-pr-opener-r4-20260909
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: heptabao-v24-final-clean-pr-opener-r4
+  cancel-in-progress: false
+
+env:
+  FINAL_BRANCH: codex/openbao-replacement-v2.4-final-clean-candidate-r4-20260909
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+
+jobs:
+  open-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 420
+    steps:
+      - name: Checkout PR controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Wait for full hardened final clean ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-pr-r4"
+          mkdir -p "$out"
+          deadline=$((SECONDS + 21600))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "+refs/heads/$FINAL_BRANCH:refs/remotes/origin/$FINAL_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$FINAL_BRANCH"; then
+              final_sha="$(git rev-parse "refs/remotes/origin/$FINAL_BRANCH")"
+              parents="$(git show -s --format=%P "$final_sha")"
+              test "$(printf '%s\n' "$parents" | wc -w)" -eq 1
+              test "$parents" = "$EXACT_PARENT"
+              final_tree="$(git rev-parse "$final_sha^{tree}")"
+              printf 'branch=%s\nsha=%s\nparent=%s\ntree=%s\n' \
+                "$FINAL_BRANCH" "$final_sha" "$parents" "$final_tree" > "$out/source-binding.txt"
+              printf 'FINAL_SHA=%s\nFINAL_TREE=%s\n' "$final_sha" "$final_tree" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'full hardened final clean ref did not materialize' >&2
+          exit 1
+
+      - name: Verify final source-only tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git ls-tree -r --name-only "$FINAL_SHA" > "$RUNNER_TEMP/final-tree-paths.txt"
+          if grep -E '(^|/)(v24-.*(materializer|orchestrator|republisher|qualifier|opener|cleanup|convergence)\.ya?ml|payload/|part-[0-9]+$)' "$RUNNER_TEMP/final-tree-paths.txt"; then
+            echo 'final tree contains a V2.4 controller transport or staged payload' >&2
+            exit 1
+          fi
+          changed="$(git diff --name-only "$EXACT_PARENT..$FINAL_SHA")"
+          if grep -E '^\.github/workflows/' <<<"$changed"; then
+            echo 'final source commit changes workflow files' >&2
+            exit 1
+          fi
+
+      - name: Create or verify exactly one draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-pr-r4"
+          owner="${GITHUB_REPOSITORY%%/*}"
+          existing="$(gh api --paginate \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${owner}:${FINAL_BRANCH}&base=main&per_page=100" \
+            --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            observed="$(gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" --jq '.head.sha')"
+            draft="$(gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" --jq '.draft')"
+            test "$observed" = "$FINAL_SHA"
+            test "$draft" = 'true'
+            gh api "/repos/$GITHUB_REPOSITORY/pulls/$existing" > "$out/existing-pr.json"
+            printf '%s\n' "$existing" > "$out/pr-number.txt"
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/body.md" <<EOF
+          ## Exact full-hardened clean V2.4 candidate
+
+          - branch: \`$FINAL_BRANCH\`
+          - head: \`$FINAL_SHA\`
+          - parent: \`$EXACT_PARENT\`
+          - tree: \`$FINAL_TREE\`
+          - lineage: one source-only commit above the reviewed total-gap baseline
+
+          The final ref is emitted only after package-level tests, full repository convergence, clean-tree identity republishing, safe-main ancestry validation, immutable exact-head qualification, and prospective-main-merge qualification. Its current tree contains no V2.4 materializer, convergence controller, republisher, qualifier, PR opener, cleanup workflow, or staged payload chunk.
+
+          ### Repository-controlled implementation in this candidate
+
+          - plugin executables are checksum-read from stable file descriptors, copied into owner-private immutable staging, and invoked only from staged bytes;
+          - sandbox providers support domain-separated Ed25519 attestations binding provider ID, binary digest, sandbox profile digest, platform and validity interval, while repository-controlled signers are rejected;
+          - migration transactions use HMAC-chained durable phases, RAII single-writer exclusion, strict journal admission, uncertain-outcome reconciliation, rollback and tamper detection;
+          - migration inventories enumerate namespace, policy, auth/secret mounts, identity, token, Transit, PKI, database, dynamic lease, audit, seal and Raft metadata, validate dependencies, reject cycles and produce deterministic order;
+          - federated Ed25519/ES256 JWS uses strict JOSE/JSON parsing, issuer/audience/namespace/time binding, stable replay identity, channel-bound MFA, RAII replay locking and strict ledger admission;
+          - HA service contracts enforce quorum, leader routing, term/index validation, operation-ID conflict fencing, HMAC peer envelopes, durable sequences, bounded framing, snapshot integrity and joint membership;
+          - rustls mTLS transport verifies peer server names and binds a verified client leaf-certificate digest to an expected NodeId while retaining message-level HMAC and replay fencing;
+          - compatibility capture is exact-denominator-bound, HTTPS-only, redirect-denying, bounded, secret-redacting and artifact-integrity checked;
+          - compatibility admission supports domain-separated Ed25519 signatures from multiple distinct configured independent signer keys.
+
+          ### Explicitly separate gates
+
+          This draft does not claim that generic contracts equal every OpenBao engine or provider. Complete object adapters and fixtures, a concrete production `heptabao-server`/Raft adapter, certificate issuance/revocation/rotation, independently controlled OpenBao Oracle captures, legal approval, independent product-security and cryptographic review, production KMS/HSM and signer custody, destructive multi-platform/multi-node qualification, 24x7 operations evidence, independent reproduction, compatibility authority, migration authority, release authority and production authority remain separate evidence gates.
+
+          Review and required checks must bind this exact head. No approval or green check is inherited from PR #79 or any staging branch.
+          EOF
+          url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --base main \
+            --head "$FINAL_BRANCH" \
+            --title 'feat(v2.4): full hardened safe-main-qualified blocker convergence' \
+            --body-file "$RUNNER_TEMP/body.md")"
+          printf '%s\n' "$url" > "$out/created-pr-url.txt"
+
+      - name: Upload bounded PR evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-final-clean-pr-r4
+          path: ${{ runner.temp }}/heptabao-v24-final-clean-pr-r4/
+          if-no-files-found: warn
+          retention-days: 30
