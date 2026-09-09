@@ -1,5 +1,16 @@
 # HeptaBao V2.5 `main` protection admission
 
+## Non-authority state
+
+```text
+qualification=false
+compatibility_claim=false
+migration_authority=false
+release_authority=false
+production_authority=false
+authority_effect=NONE
+```
+
 ## Purpose
 
 This runbook defines the repository-control portion of
