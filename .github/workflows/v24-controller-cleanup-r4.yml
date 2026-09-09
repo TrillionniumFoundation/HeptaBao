@@ -1,0 +1,137 @@
+name: HeptaBao V2.4 full hardened controller cleanup r4
+
+on:
+  push:
+    branches:
+      - ops/v24-controller-cleanup-r4-20260909
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: heptabao-v24-controller-cleanup-r4
+  cancel-in-progress: false
+
+env:
+  FINAL_BRANCH: codex/openbao-replacement-v2.4-final-clean-candidate-r4-20260909
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 480
+    steps:
+      - name: Checkout cleanup controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for exact open r4 final draft PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-controller-cleanup-r4"
+          mkdir -p "$out"
+          owner="${GITHUB_REPOSITORY%%/*}"
+          deadline=$((SECONDS + 25200))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            row="$(gh api --paginate \
+              -H 'Accept: application/vnd.github+json' \
+              "/repos/$GITHUB_REPOSITORY/pulls?state=open&head=${owner}:${FINAL_BRANCH}&base=main&per_page=100" \
+              --jq '.[0] | select(.draft == true) | [.number,.head.sha] | @tsv' || true)"
+            if [ -n "$row" ]; then
+              pr_number="${row%%$'\t'*}"
+              final_sha="${row#*$'\t'}"
+              git fetch --no-tags origin "+refs/heads/$FINAL_BRANCH:refs/remotes/origin/$FINAL_BRANCH"
+              test "$(git rev-parse "refs/remotes/origin/$FINAL_BRANCH")" = "$final_sha"
+              parents="$(git show -s --format=%P "$final_sha")"
+              test "$(printf '%s\n' "$parents" | wc -w)" -eq 1
+              test "$parents" = "$EXACT_PARENT"
+              printf 'pr=%s\nbranch=%s\nsha=%s\nparent=%s\n' \
+                "$pr_number" "$FINAL_BRANCH" "$final_sha" "$parents" > "$out/final-pr-binding.txt"
+              exit 0
+            fi
+            sleep 60
+          done
+          echo 'no exact r4 final draft PR; cleanup is not authorized' >&2
+          exit 1
+
+      - name: Delete only exact named V2.4 controller branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-controller-cleanup-r4"
+          controllers=(
+            ops/v24-feature-lineage-materialize-r1-20260909
+            ops/v24-feature-lineage-materialize-r2-20260909
+            ops/v24-provenance-union-r1-20260909
+            ops/v24-provenance-select-r1-20260909
+            ops/v24-plugin-toctou-fix-r1-20260909
+            ops/v24-plugin-toctou-fix-r2-20260909
+            ops/v24-plugin-attestation-r3-20260909
+            ops/v24-migration-journal-r1-20260909
+            ops/v24-migration-journal-r2-20260909
+            ops/v24-migration-inventory-r3-20260909
+            ops/v24-federated-auth-r1-20260909
+            ops/v24-federated-auth-r2-20260909
+            ops/v24-federated-auth-r3-20260909
+            ops/v24-ha-service-r1-20260909
+            ops/v24-ha-service-r2-20260909
+            ops/v24-ha-mtls-r3-20260909
+            ops/v24-compat-capture-r1-20260909
+            ops/v24-compat-capture-r2-20260909
+            ops/v24-compat-signature-r1-20260909
+            ops/v24-compat-signature-r2-20260909
+            ops/v24-convergence-orchestrator-r1-20260909
+            ops/v24-source-only-recovery-r1-20260909
+            ops/v24-inplace-integration-r1-20260909
+            ops/v24-source-convergence-r1-20260909
+            ops/v24-source-convergence-r2-20260909
+            ops/v24-source-convergence-r3-20260909
+            ops/v24-source-convergence-r4-20260909
+            ops/v24-final-qualifier-r1-20260909
+            ops/v24-final-clean-qualifier-r1-20260909
+            ops/v24-final-clean-qualifier-r2-20260909
+            ops/v24-final-clean-qualifier-r3-20260909
+            ops/v24-final-clean-qualifier-r4-20260909
+            ops/v24-final-pr-opener-r1-20260909
+            ops/v24-final-clean-pr-opener-r1-20260909
+            ops/v24-final-clean-pr-opener-r2-20260909
+            ops/v24-final-clean-pr-opener-r3-20260909
+            ops/v24-final-clean-pr-opener-r4-20260909
+            ops/v24-main-integrity-audit-r1-20260909
+            ops/v24-clean-republisher-r1-20260909
+            ops/v24-clean-republisher-r2-20260909
+            ops/v24-clean-republisher-r3-20260909
+            ops/v24-controller-cleanup-r1-20260909
+            ops/v24-controller-cleanup-r2-20260909
+            ops/v24-controller-cleanup-r3-20260909
+            ops/v24-controller-cleanup-r4-20260909
+          )
+          : > "$out/deleted.txt"
+          : > "$out/absent.txt"
+          for branch in "${controllers[@]}"; do
+            case "$branch" in
+              ops/v24-*-20260909) ;;
+              *) echo "branch outside exact cleanup allowlist shape: $branch" >&2; exit 1 ;;
+            esac
+            if git ls-remote --exit-code origin "refs/heads/$branch" >/dev/null 2>&1; then
+              git push origin --delete "$branch"
+              echo "$branch" >> "$out/deleted.txt"
+            else
+              echo "$branch" >> "$out/absent.txt"
+            fi
+          done
+
+      - name: Upload bounded cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-controller-cleanup-r4
+          path: ${{ runner.temp }}/heptabao-v24-controller-cleanup-r4/
+          if-no-files-found: warn
+          retention-days: 30
