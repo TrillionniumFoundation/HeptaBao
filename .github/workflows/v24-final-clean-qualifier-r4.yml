@@ -1,0 +1,181 @@
+name: HeptaBao V2.4 full hardened final clean qualifier r4
+
+on:
+  push:
+    branches:
+      - ops/v24-final-clean-qualifier-r4-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-final-clean-qualifier-r4
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SAFE_MAIN: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  PR79_HEAD: 8c5f9151585309f79b62be47c3bbc2ca8002b126
+  INPUT_BRANCH: codex/openbao-replacement-v2.4-clean-candidate-r4-20260909
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-final-clean-candidate-r4-20260909
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout qualifier controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind safe current main and full hardened source
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-r4"
+          mkdir -p "$out"
+          deadline=$((SECONDS + 18000))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin \
+              +refs/heads/main:refs/remotes/origin/main \
+              "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/$INPUT_BRANCH" || true
+            if git show-ref --verify --quiet "refs/remotes/origin/$INPUT_BRANCH"; then
+              main_sha="$(git rev-parse refs/remotes/origin/main)"
+              git merge-base --is-ancestor "$SAFE_MAIN" "$main_sha"
+              if git merge-base --is-ancestor "$PR79_HEAD" "$main_sha"; then
+                printf 'main=%s\nverdict=pr79-ancestry-detected\n' "$main_sha" > "$out/main-integrity.txt"
+                echo 'unadmitted PR79 ancestry detected in main' >&2
+                exit 1
+              fi
+              candidate="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH")"
+              parents="$(git show -s --format=%P "$candidate")"
+              test "$(printf '%s\n' "$parents" | wc -w)" -eq 1
+              test "$parents" = "$EXACT_PARENT"
+              tree="$(git rev-parse "$candidate^{tree}")"
+              printf 'main=%s\nsafe_main=%s\npr79_ancestor=false\ncandidate=%s\nparent=%s\ntree=%s\n' \
+                "$main_sha" "$SAFE_MAIN" "$candidate" "$parents" "$tree" > "$out/source-binding.txt"
+              printf 'MAIN_SHA=%s\nCANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' "$main_sha" "$candidate" "$tree" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo 'full hardened clean source did not materialize' >&2
+          exit 1
+
+      - name: Verify source-only history and mandatory implementation markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-r4"
+          git ls-tree -r --name-only "$CANDIDATE_SHA" > "$out/tree-paths.txt"
+          if grep -E '(^|/)(v24-.*(materializer|orchestrator|republisher|qualifier|opener|cleanup|convergence)\.ya?ml|payload/|part-[0-9]+$)' "$out/tree-paths.txt"; then
+            echo 'candidate tree contains a controller transport or payload' >&2
+            exit 1
+          fi
+          changed="$(git diff --name-only "$EXACT_PARENT..$CANDIDATE_SHA")"
+          test -n "$changed"
+          if grep -E '^\.github/workflows/' <<<"$changed"; then
+            echo 'candidate changes executable workflow files' >&2
+            exit 1
+          fi
+          for required in \
+            crates/heptabao-plugin-host/src/lib.rs \
+            crates/heptabao-migration/src/migration_journal_v2_4.rs \
+            crates/heptabao-identity/src/federated_auth_v2_4.rs \
+            crates/heptabao-raft-runtime/src/ha_service_v2_4.rs \
+            scripts/openbao_differential_runner_v2_4.py \
+            tests/repository/test_plugin_provider_attestation_v2_4.py \
+            tests/repository/test_migration_inventory_v2_4.py \
+            tests/repository/test_ha_mtls_v2_4.py \
+            tests/repository/test_compatibility_signature_v2_4.py; do
+            git cat-file -e "$CANDIDATE_SHA:$required"
+          done
+          git show "$CANDIDATE_SHA:crates/heptabao-plugin-host/src/lib.rs" | grep -q 'PROVIDER_ATTESTATION_DOMAIN_V2_4'
+          git show "$CANDIDATE_SHA:crates/heptabao-migration/src/migration_journal_v2_4.rs" | grep -q 'all_required_for_complete_profile'
+          git show "$CANDIDATE_SHA:crates/heptabao-identity/src/federated_auth_v2_4.rs" | grep -q 'RepositoryControlledSigner\|PersistentReplayLedger'
+          git show "$CANDIDATE_SHA:crates/heptabao-raft-runtime/src/ha_service_v2_4.rs" | grep -q 'MutualTlsPeerTransport'
+          git show "$CANDIDATE_SHA:crates/heptabao-compatibility/src/lib.rs" | grep -q 'SIGNED_EVIDENCE_DOMAIN_V2_4'
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Run immutable exact-head qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-v24-final-clean-r4-exact"
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-r4/exact"
+          mkdir -p "$out"
+          git worktree add --detach "$work" "$CANDIDATE_SHA"
+          (
+            cd "$work"
+            test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+            test "$(git rev-parse 'HEAD^{tree}')" = "$CANDIDATE_TREE"
+            python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+            python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+            python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+            cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+            timeout --signal=TERM --kill-after=30s 9000s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+            cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+            cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+            cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+            test -z "$(git status --porcelain=v1 --untracked-files=all)"
+            cargo +1.98.0 metadata --locked --no-deps --format-version 1 > "$out/cargo-metadata.json"
+            python - "$out/cargo-metadata.json" <<'PY'
+          import json, sys
+          metadata=json.load(open(sys.argv[1]))
+          workspace=set(metadata['workspace_members'])
+          packages=sorted(p['name'] for p in metadata['packages'] if p['id'] in workspace)
+          assert len(packages) == 45, packages
+          PY
+          )
+          git worktree remove --force "$work"
+
+      - name: Run current-main prospective merge qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-v24-final-clean-r4-merge"
+          out="$RUNNER_TEMP/heptabao-v24-final-clean-r4/prospective-merge"
+          mkdir -p "$out"
+          git worktree add --detach "$work" "$MAIN_SHA"
+          (
+            cd "$work"
+            git config user.name 'HeptaBao V2.4 Prospective Merge R4'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git merge --no-ff --no-edit "$CANDIDATE_SHA" 2>&1 | tee "$out/merge.log"
+            python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+            python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+            python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+            cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+            timeout --signal=TERM --kill-after=30s 9000s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+            cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+            cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+            cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+            printf 'main=%s\ncandidate=%s\nmerge=%s\ntree=%s\n' \
+              "$MAIN_SHA" "$CANDIDATE_SHA" "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$out/source-binding.txt"
+          )
+          git worktree remove --force "$work"
+
+      - name: Publish full hardened safe-main-qualified final ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
+            observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
+            test "$observed" = "$CANDIDATE_SHA"
+          else
+            git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$CANDIDATE_SHA:refs/heads/$OUTPUT_BRANCH"
+          fi
+
+      - name: Upload bounded final evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-final-clean-r4
+          path: ${{ runner.temp }}/heptabao-v24-final-clean-r4/
+          if-no-files-found: warn
+          retention-days: 30
