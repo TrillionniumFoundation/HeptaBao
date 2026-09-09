@@ -7,7 +7,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Mapping, Sequence
 
 from heptabao_external_evidence_io_v2_5 import (
     EvidenceIoError,
@@ -15,10 +15,48 @@ from heptabao_external_evidence_io_v2_5 import (
     sha256_hex,
     verify_artifacts,
 )
-from validate_external_evidence_v2_5 import EvidenceError, load_trust_store, validate_document
+from validate_external_evidence_v2_5 import (
+    EvidenceError,
+    REQUIRED_ROLE_COUNTS,
+    load_trust_store,
+    validate_document,
+)
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+REQUIRED_SIGNER_ROLES: dict[str, set[str]] = {
+    gate: set(counts) for gate, counts in REQUIRED_ROLE_COUNTS.items()
+}
+
+
+def _require_signer_role_denominator(
+    evidence: Mapping[str, Any],
+    gate_id: str,
+) -> None:
+    required_counts = REQUIRED_ROLE_COUNTS.get(gate_id)
+    if required_counts is None:
+        raise EvidenceIoError(f"unknown external evidence gate: {gate_id}")
+    signatures = evidence.get("signatures")
+    if not isinstance(signatures, list) or not signatures:
+        raise EvidenceIoError("evidence signatures are absent")
+    observed: set[str] = set()
+    for index, signature in enumerate(signatures):
+        if not isinstance(signature, dict):
+            raise EvidenceIoError(f"signatures[{index}] is not an object")
+        role = signature.get("role")
+        if not isinstance(role, str) or not role:
+            raise EvidenceIoError(f"signatures[{index}].role is invalid")
+        observed.add(role)
+
+    required = set(required_counts)
+    missing = sorted(required - observed)
+    extra = sorted(observed - required)
+    if missing or extra:
+        raise EvidenceIoError(
+            "signer role denominator mismatch: "
+            f"missing={missing} extra={extra}"
+        )
 
 
 def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -36,19 +74,32 @@ def _parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv or sys.argv[1:])
-    if not HEX40.fullmatch(args.expected_commit) or not HEX40.fullmatch(args.expected_tree):
-        print("REJECTED: expected commit/tree must be lowercase Git object IDs", file=sys.stderr)
+    if (
+        not HEX40.fullmatch(args.expected_commit)
+        or not HEX40.fullmatch(args.expected_tree)
+    ):
+        print(
+            "REJECTED: expected commit/tree must be lowercase Git object IDs",
+            file=sys.stderr,
+        )
         return 2
     if not HEX64.fullmatch(args.expected_trust_store_sha256):
-        print("REJECTED: trust-store digest must be lowercase SHA-256", file=sys.stderr)
+        print(
+            "REJECTED: trust-store digest must be lowercase SHA-256",
+            file=sys.stderr,
+        )
         return 2
     try:
-        evidence_raw, evidence = load_json_file(args.evidence)
-        del evidence_raw
+        _evidence_raw, evidence = load_json_file(args.evidence)
         trust_raw, trust_document = load_json_file(args.trust_store)
         observed_trust_digest = sha256_hex(trust_raw)
         if observed_trust_digest != args.expected_trust_store_sha256:
-            raise EvidenceIoError("external trust-store SHA-256 does not match the expected root")
+            raise EvidenceIoError(
+                "external trust-store SHA-256 does not match the expected root"
+            )
+        if not isinstance(evidence, dict):
+            raise EvidenceIoError("evidence JSON root is not an object")
+        _require_signer_role_denominator(evidence, args.expected_gate)
         trusted_keys = load_trust_store(trust_document)
         verify_artifacts(evidence, args.artifact_root)
         admission = validate_document(
@@ -68,7 +119,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "status": "ADMISSIBLE_EVIDENCE_NOT_AUTHORITY",
                 "gate_id": admission.gate_id,
                 "subject_commit": admission.subject_commit,
-                "canonical_payload_sha256": admission.canonical_payload_sha256,
+                "canonical_payload_sha256": (
+                    admission.canonical_payload_sha256
+                ),
                 "trust_store_sha256": args.expected_trust_store_sha256,
                 "artifact_count": admission.artifact_count,
                 "case_count": admission.case_count,

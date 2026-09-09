@@ -2,6 +2,15 @@
 
 Status: repository-owned candidate procedure; not production qualification.
 
+```yaml
+qualification: false
+compatibility_claim: false
+production_authority: false
+migration_authority: false
+release_authority: false
+authority_effect: NONE
+```
+
 ## Startup admission
 
 1. Bind the exact build commit, configuration digest and storage generation.
