@@ -2,21 +2,19 @@ name: HeptaBao V2.4 federated auth source recovery r3
 
 on:
   push:
-    branches:
-      - ops/v24-federated-auth-r3-20260909
+    branches: [ops/v24-federated-auth-r3-20260909]
 
 permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r3-recovery-v2
+  group: heptabao-v24-federated-auth-r3-final
   cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-r3-20260909
-  RECOVERY_PARENT_SHA: 6dbf8c3cac7beaad68010d4f1532847a8cf1db3a
   ORIGINAL_CONTROLLER_SHA: eaf82ea9528a068dadccbd1700fe03da688fd324
   ORIGINAL_WORKFLOW: .github/workflows/v24-federated-auth-r3.yml
 
@@ -25,40 +23,30 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     steps:
-      - name: Checkout recovery controller
+      - name: Checkout controller history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify immutable hardening source
+      - name: Verify immutable source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
-          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW")" = "732051f7b4ad29023efa9dc70b521afcdada8572"
 
-      - name: Wait for package-qualified r2 source
+      - name: Resolve qualified r2 source
         shell: bash
         run: |
           set -euo pipefail
-          deadline=$((SECONDS + 7200))
-          while [ "$SECONDS" -lt "$deadline" ]; do
-            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/federated-r2" || true
-            if git show-ref --verify --quiet refs/remotes/origin/federated-r2; then
-              source_sha="$(git rev-parse refs/remotes/origin/federated-r2)"
-              git merge-base --is-ancestor "$BASE_SHA" "$source_sha"
-              printf 'SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
-              exit 0
-            fi
-            sleep 20
-          done
-          echo 'federated-auth r2 source did not materialize' >&2
-          exit 1
+          git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/federated-r2"
+          source_sha="$(git rev-parse refs/remotes/origin/federated-r2)"
+          git merge-base --is-ancestor "$BASE_SHA" "$source_sha"
+          printf 'SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
 
-      - name: Execute exact r3 hardening block
+      - name: Harden and qualify replay ledger
         shell: bash
         run: |
           set -euo pipefail
@@ -70,15 +58,33 @@ jobs:
           lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
           marker = "      - name: Harden replay ledger in isolated source worktree"
           start = lines.index(marker)
-          run_index = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
-          body = []
-          for line in lines[run_index + 1:]:
-              if line.startswith("      - name: "):
+          run = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
+          body: list[str] = []
+          triple: str | None = None
+          for line in lines[run + 1:]:
+              if triple is None and line.startswith("      - name: "):
                   break
-              body.append(line[10:] if line.startswith("          ") else line)
+              if triple is None:
+                  cooked = line[10:] if line.startswith("          ") else line
+                  body.append(cooked)
+                  for token in ("'''", '"""'):
+                      if cooked.count(token) % 2 == 1:
+                          triple = token
+                          break
+              else:
+                  body.append(line)
+                  if line.count(triple) % 2 == 1:
+                      triple = None
+          if triple is not None:
+              raise SystemExit("unterminated generated Rust payload")
           text = "\n".join(body) + "\n"
+          original = "cargo +1.98.0 clippy --locked -p heptabao-federated-auth --all-targets -- -D warnings\n"
+          replacement = "cargo +1.98.0 clippy --fix --allow-dirty --allow-staged --locked -p heptabao-federated-auth --all-targets\ncargo +1.98.0 fmt --all\ncargo +1.98.0 test --locked -p heptabao-federated-auth --all-targets\ncargo +1.98.0 clippy --locked -p heptabao-federated-auth --all-targets -- -D warnings\n"
+          if text.count(original) != 1:
+              raise SystemExit("expected one terminal r3 Clippy gate")
+          text = text.replace(original, replacement, 1)
           if chr(36) + "{{" in text:
-              raise SystemExit("unresolved workflow expression in extracted hardening block")
+              raise SystemExit("unresolved workflow expression")
           Path(sys.argv[2]).write_text(text, encoding="utf-8")
           PY
           chmod 0700 "$RUNNER_TEMP/harden-r3.sh"
