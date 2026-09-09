@@ -6,15 +6,18 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+base64 = "=0.22.1"
 futures = "=0.3.34"
 openraft = { version = "=0.10.0-alpha.34", default-features = false, features = ["serde", "tokio-rt", "type-alias"] }
 openraft-memstore = { version = "=0.10.0-alpha.34" }
 openraft-rt = "=0.10.0-alpha.34"
 openraft-rt-tokio = "=0.10.0-alpha.34"
 openraft-macros = "=0.10.0-alpha.34"
+ring = "=0.17.14"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
-tokio = { version = "=1.53.1", default-features = false, features = ["macros", "rt-multi-thread", "sync", "time"] }
+tokio = { version = "=1.53.1", default-features = false, features = ["io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
+zeroize = "=1.8.1"
 
 [lints]
 workspace = true
