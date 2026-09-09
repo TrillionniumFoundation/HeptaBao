@@ -1,0 +1,23 @@
+diff --git a/crates/heptabao-server/src/auth.rs b/crates/heptabao-server/src/auth.rs
+--- a/crates/heptabao-server/src/auth.rs
++++ b/crates/heptabao-server/src/auth.rs
+@@ -4,7 +4,7 @@
+ //! changes before returning either successful data or a handler error.
+ use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+ use ring::{
+-    constant_time, digest, hmac, pbkdf2,
++    digest, hmac, pbkdf2,
+     rand::{SecureRandom, SystemRandom},
+ };
+ use serde::{Deserialize, Serialize};
+@@ -1674,7 +1674,9 @@
+             continue;
+         }
+         let expected = totp_code(&enrollment.secret, counter);
+-        if constant_time::verify_slices_are_equal(&expected, supplied.as_bytes()).is_ok() {
++        let comparison_key = hmac::Key::new(hmac::HMAC_SHA256, &enrollment.secret);
++        let expected_tag = hmac::sign(&comparison_key, &expected);
++        if hmac::verify(&comparison_key, supplied.as_bytes(), expected_tag.as_ref()).is_ok() {
+             accepted = Some(accepted.map_or(counter, |found: u64| found.max(counter)));
+         }
+     }

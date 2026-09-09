@@ -17,6 +17,8 @@ env:
   TARGET_BRANCH: codex/openbao-replacement-v2.4-authoritative-closure-20260909
   PATCH_SHA256: 4c0ecfba106527773da5739f86fbad752a1eb27a6b2b823a81d062bde6be797b
   PATCH_BYTES: "25157"
+  FIX_SHA256: c2704fb0e0f916ebde7538e779515046a53d34ec7a4f11f0fd59215c0e6fc19c
+  FIX_BYTES: "1060"
 
 jobs:
   qualify-and-publish:
@@ -40,11 +42,12 @@ jobs:
           test "$observed" = "$SOURCE_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
-      - name: Reconstruct and apply byte-pinned patch
+      - name: Reconstruct and apply byte-pinned patches
         shell: bash
         run: |
           set -euo pipefail
           patch="$RUNNER_TEMP/rep012-mfa.patch"
+          fix="$RUNNER_TEMP/rep012-clippy-fix.patch"
           cat \
             .materializer/rep012/patch.part00 \
             .materializer/rep012/patch.part01 \
@@ -53,12 +56,17 @@ jobs:
             .materializer/rep012/patch.part02.02 \
             .materializer/rep012/patch.part02.03 \
             > "$patch"
+          cp .materializer/rep012/clippy-fix.patch "$fix"
           test "$(wc -c < "$patch" | tr -d ' ')" = "$PATCH_BYTES"
+          test "$(wc -c < "$fix" | tr -d ' ')" = "$FIX_BYTES"
           printf '%s  %s\n' "$PATCH_SHA256" "$patch" | sha256sum --check --strict
+          printf '%s  %s\n' "$FIX_SHA256" "$fix" | sha256sum --check --strict
           candidate="$RUNNER_TEMP/heptabao-rep012-candidate"
           git worktree add --detach "$candidate" "$SOURCE_SHA"
           git -C "$candidate" apply --check "$patch"
           git -C "$candidate" apply "$patch"
+          git -C "$candidate" apply --check "$fix"
+          git -C "$candidate" apply "$fix"
           git -C "$candidate" diff --check
 
       - name: Install exact validation dependencies
