@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-ha-service-r2-recovery-v3
+  group: heptabao-v24-ha-service-r2-recovery-v4
   cancel-in-progress: true
 
 env:
@@ -17,7 +17,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-ha-service-r1-20260909
   MATERIALIZER_SHA: 77230cfabcc212292ea1d941826e069a50f98f4f
   MATERIALIZER_WORKFLOW: .github/workflows/v24-ha-service-materializer.yml
-  RECOVERY_PARENT_SHA: a7a17bd6af728a7938f69d74274a1ed1730af51a
+  RECOVERY_PARENT_SHA: 1e498c9f7975848cd27873b70fcd33307b9d241b
   ORIGINAL_PATCH_SHA: 84a6769af3eef6c400f683fe95d725010104381b
   PATCH_WORKFLOW: .github/workflows/v24-ha-service-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-ha-service-source-20260909
@@ -29,10 +29,7 @@ jobs:
     steps:
       - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
+        with: {fetch-depth: 0, persist-credentials: true}
       - name: Verify immutable controller inputs
         shell: bash
         run: |
@@ -46,7 +43,6 @@ jobs:
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW")" = "1a80b08f79b7a3f785a3a2c72aebee90c0aea42e"
           test "$(git diff --name-only "$BASE_SHA..$MATERIALIZER_SHA")" = "$MATERIALIZER_WORKFLOW"
-
       - name: Recover and qualify HA service source
         shell: bash
         run: |
@@ -93,6 +89,16 @@ jobs:
           (
             cd "$work"
             env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$BASE_SHA" bash "$RUNNER_TEMP/materialize.sh"
+            python - <<'PY'
+          from pathlib import Path
+          manifest = Path('crates/heptabao-ha-service/Cargo.toml')
+          text = manifest.read_text(encoding='utf-8')
+          needle = 'license.workspace = true\n'
+          if text.count(needle) != 1:
+              raise SystemExit('expected exactly one unresolved workspace license inheritance')
+          manifest.write_text(text.replace(needle, ''), encoding='utf-8')
+          PY
+            test "$(grep -R -l '^license\.workspace = true$' crates/heptabao-ha-service/Cargo.toml || true)" = ""
             bash "$RUNNER_TEMP/harden.sh"
             git config user.name 'HeptaBao HA Service Recovery'
             git config user.email '102159240+ProfHepta@users.noreply.github.com'
@@ -101,8 +107,7 @@ jobs:
             git commit -m 'feat(ha): materialize qualified authenticated HA service boundary'
             new_sha="$(git rev-parse HEAD)"
             if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-              test "$observed" = "$new_sha"
+              test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$new_sha"
             else
               git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
             fi
