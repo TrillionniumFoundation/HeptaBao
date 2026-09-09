@@ -1,0 +1,150 @@
+name: HeptaBao V2.4 deterministic feature-lineage materializer
+
+on:
+  push:
+    branches:
+      - ops/v24-feature-lineage-materialize-r2-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-feature-lineage-materializer-r2
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  SOURCE_REF: codex/plan-v1.7.0-service-ha-plugin-compatibility-v1
+  SOURCE_SHA: 8752e2797d3939b3d0f824ac4728f7b498707612
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-lineage-candidate-20260909
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact staging head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Import non-diverged feature files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          git fetch --no-tags origin "$SOURCE_REF:refs/remotes/origin/v17-source"
+          test "$(git rev-parse refs/remotes/origin/v17-source)" = "$SOURCE_SHA"
+          merge_base="$(git merge-base "$EXACT_PARENT" "$SOURCE_SHA")"
+          export MERGE_BASE="$merge_base"
+          python - <<'PY'
+          from pathlib import Path
+          import os, subprocess
+          current=os.environ['EXACT_PARENT']; source=os.environ['SOURCE_SHA']; base=os.environ['MERGE_BASE']
+          tokens=('ha','raft','plugin','compat','identity','migration','auth','mfa','operator','server','lease','cluster')
+          prefixes=('crates/','tests/','qa/','scripts/','planning/','docs/modules/','docs/architecture/','docs/operations/','docs/plan/')
+          def run(*args, check=True): return subprocess.run(args,text=True,capture_output=True,check=check)
+          def blob(commit,path):
+              p=run('git','rev-parse',f'{commit}:{path}',check=False)
+              return p.stdout.strip() if p.returncode==0 else None
+          changed=run('git','diff','--name-only','--diff-filter=AM',f'{base}..{source}').stdout.splitlines()
+          imported=[]; skipped=[]
+          for path in changed:
+              low=path.lower()
+              if not path.startswith(prefixes) or not any(t in low for t in tokens): continue
+              if path.startswith('.github/') or '/payload/' in low or 'materializ' in low: continue
+              cur=blob(current,path); old=blob(base,path); src=blob(source,path)
+              if src is None: continue
+              if cur is None or cur==old:
+                  target=Path(path); target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(run('git','show',f'{source}:{path}').stdout.encode())
+                  imported.append(path)
+              else: skipped.append(path)
+          Path('/tmp/imported.txt').write_text('\n'.join(imported)+'\n')
+          Path('/tmp/skipped.txt').write_text('\n'.join(skipped)+'\n')
+          if not imported:
+              raise SystemExit('no non-diverged feature-lineage files to import')
+          print(f'imported={len(imported)} skipped={len(skipped)}')
+          PY
+
+      - name: Normalize workspace documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 metadata --no-deps --format-version 1 > /tmp/metadata.json
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          m=json.loads(Path('/tmp/metadata.json').read_text())
+          workspace=set(m['workspace_members'])
+          packages=sorted((p for p in m['packages'] if p['id'] in workspace),key=lambda p:p['name'])
+          names=[p['name'] for p in packages]
+          required=['Purpose and boundaries','Public API and ownership','State and data model','Invariants and authorization','Failure, retry and reconciliation','Concurrency model','Security considerations','Persistence and compatibility','Observability','Operations','Tests and evidence','Evolution and open boundaries']
+          docs=Path('docs/modules'); docs.mkdir(parents=True,exist_ok=True)
+          for p in packages:
+              guide=docs/f"{p['name']}.md"
+              if guide.exists(): continue
+              rel=Path(p['manifest_path']).parent.relative_to(Path.cwd())
+              lines=[f"# {p['name']}",'',f"Package: `{p['name']}`",'',f"Source: `{rel}`",'']
+              for section in required:
+                  lines += [f"## {section}",'','Only behavior implemented and tested in this package is owned here. Compatibility, migration, production, and independent-admission authority remain fail-closed unless separately evidenced.','']
+              guide.write_text('\n'.join(lines),encoding='utf-8')
+          count=len(names)
+          for filename in ('README.md','docs/CURRENT_DOCUMENTATION.md','docs/modules/README.md'):
+              path=Path(filename)
+              if not path.exists(): continue
+              text=path.read_text(encoding='utf-8')
+              text=re.sub(r'current workspace contains \*\*\d+ packages\*\*',f'current workspace contains **{count} packages**',text,flags=re.I)
+              text=re.sub(r'workspace contains \*\*\d+ packages\*\*',f'workspace contains **{count} packages**',text,flags=re.I)
+              text=re.sub(r'Current workspace package count:\s*\d+',f'Current workspace package count: {count}',text)
+              path.write_text(text,encoding='utf-8')
+          index=Path('docs/modules/README.md')
+          text=index.read_text(encoding='utf-8') if index.exists() else '# Module guides\n'
+          missing=[n for n in names if f'`{n}`' not in text and f'/{n}.md' not in text]
+          if missing:
+              text+='\n## V2.4 workspace inventory additions\n\n'+'\n'.join(f'- [`{n}`](./{n}.md)' for n in missing)+'\n'
+              index.write_text(text,encoding='utf-8')
+          PY
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+
+      - name: Remove transport and qualify exact source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-feature-lineage-materializer-r2.yml
+          out="$RUNNER_TEMP/heptabao-v24-lineage"
+          mkdir -p "$out"
+          cp /tmp/imported.txt "$out/imported.txt"
+          cp /tmp/skipped.txt "$out/skipped-diverged.txt"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+          cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+          timeout --signal=TERM --kill-after=30s 3000s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+          cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+
+      - name: Publish deterministic source-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/v24-feature-lineage-materializer-r2.yml
+          git config user.name 'HeptaBao V2.4 Materializer'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'feat(v2.4): integrate non-diverged HA identity migration lineage'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-deterministic-lineage-materializer
+          path: ${{ runner.temp }}/heptabao-v24-lineage/
+          if-no-files-found: warn
+          retention-days: 3
