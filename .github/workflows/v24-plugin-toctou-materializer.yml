@@ -1,0 +1,402 @@
+name: HeptaBao V2.4 plugin TOCTOU materializer
+
+on:
+  push:
+    branches:
+      - ops/v24-plugin-toctou-fix-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-plugin-toctou-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-20260909
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact staging head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply immutable executable staging repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('crates/heptabao-plugin-host/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'use std::fs::{self, OpenOptions};',
+              'use std::fs::{self, File, OpenOptions};',
+          )
+          text = text.replace(
+              'use std::process::{Command, Stdio};',
+              'use std::process::{self, Command, Stdio};',
+          )
+          text = text.replace(
+              'use ring::digest::{Context, SHA256};',
+              'use ring::digest::{Context, SHA256};\nuse ring::rand::{SecureRandom, SystemRandom};',
+          )
+
+          replacement = r'''#[derive(Debug)]
+struct StagedExecutables {
+    root: PathBuf,
+    sandbox_provider: PathBuf,
+    plugin: PathBuf,
+}
+
+impl Drop for StagedExecutables {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.root);
+    }
+}
+
+fn executable_name(stem: &str, source: &Path) -> String {
+    match source.extension().and_then(|extension| extension.to_str()) {
+        Some(extension) if !extension.is_empty() => format!("{stem}.{extension}"),
+        _ => stem.to_owned(),
+    }
+}
+
+fn create_private_stage() -> Result<PathBuf, SandboxFailure> {
+    let parent = std::env::temp_dir();
+    if !parent.is_absolute() || !path_components_are_real(&parent) {
+        return Err(SandboxFailure::BeforeEntry);
+    }
+    let random = SystemRandom::new();
+    for _ in 0..32 {
+        let mut nonce = [0_u8; 16];
+        random
+            .fill(&mut nonce)
+            .map_err(|_| SandboxFailure::BeforeEntry)?;
+        let suffix = nonce
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let root = parent.join(format!(
+            "heptabao-plugin-stage-{}-{suffix}",
+            process::id()
+        ));
+        #[cfg(unix)]
+        let created = {
+            use std::os::unix::fs::DirBuilderExt;
+            let mut builder = fs::DirBuilder::new();
+            builder.mode(0o700);
+            builder.create(&root)
+        };
+        #[cfg(not(unix))]
+        let created = fs::create_dir(&root);
+        match created {
+            Ok(()) => return Ok(root),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => continue,
+            Err(_) => return Err(SandboxFailure::BeforeEntry),
+        }
+    }
+    Err(SandboxFailure::BeforeEntry)
+}
+
+fn read_verified_executable(
+    path: &Path,
+    expected: [u8; 32],
+) -> Result<Vec<u8>, SandboxFailure> {
+    if !path.is_absolute() || !path_components_are_real(path) {
+        return Err(SandboxFailure::BeforeEntry);
+    }
+    let metadata = fs::symlink_metadata(path).map_err(|_| SandboxFailure::BeforeEntry)?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.len() == 0
+        || metadata.len() > MAX_EXECUTABLE_BYTES
+    {
+        return Err(SandboxFailure::BeforeEntry);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mode = metadata.permissions().mode();
+        if mode & 0o022 != 0 || mode & 0o100 == 0 {
+            return Err(SandboxFailure::BeforeEntry);
+        }
+    }
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0o400000 | 0o2000000);
+    }
+    let mut file = options
+        .open(path)
+        .map_err(|_| SandboxFailure::BeforeEntry)?;
+    let opened = file.metadata().map_err(|_| SandboxFailure::BeforeEntry)?;
+    if !opened.is_file() || opened.len() != metadata.len() {
+        return Err(SandboxFailure::BeforeEntry);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+            return Err(SandboxFailure::BeforeEntry);
+        }
+    }
+    let capacity = usize::try_from(opened.len()).map_err(|_| SandboxFailure::BeforeEntry)?;
+    let mut bytes = Vec::with_capacity(capacity);
+    let mut digest = Context::new(&SHA256);
+    let mut buffer = [0_u8; 16 * 1024];
+    let mut observed = 0_u64;
+    loop {
+        let count = file
+            .read(&mut buffer)
+            .map_err(|_| SandboxFailure::BeforeEntry)?;
+        if count == 0 {
+            break;
+        }
+        observed = observed
+            .checked_add(count as u64)
+            .ok_or(SandboxFailure::BeforeEntry)?;
+        if observed > MAX_EXECUTABLE_BYTES {
+            return Err(SandboxFailure::BeforeEntry);
+        }
+        digest.update(&buffer[..count]);
+        bytes.extend_from_slice(&buffer[..count]);
+    }
+    if observed != opened.len() || digest.finish().as_ref() != expected {
+        return Err(SandboxFailure::BeforeEntry);
+    }
+    Ok(bytes)
+}
+
+fn write_staged_executable(path: &Path, bytes: &[u8]) -> Result<File, SandboxFailure> {
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o500);
+    }
+    let mut file = options
+        .open(path)
+        .map_err(|_| SandboxFailure::BeforeEntry)?;
+    file.write_all(bytes)
+        .and_then(|()| file.flush())
+        .and_then(|()| file.sync_all())
+        .map_err(|_| SandboxFailure::BeforeEntry)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o500))
+            .map_err(|_| SandboxFailure::BeforeEntry)?;
+    }
+    Ok(file)
+}
+
+fn stage_executables(manifest: &PluginManifest) -> Result<StagedExecutables, SandboxFailure> {
+    let sandbox_source = Path::new(manifest.sandbox().command.as_str());
+    let plugin_source = Path::new(manifest.descriptor().command().as_str());
+    let sandbox_bytes = read_verified_executable(
+        sandbox_source,
+        manifest.sandbox().command_sha256,
+    )?;
+    let plugin_bytes = read_verified_executable(
+        plugin_source,
+        *manifest.descriptor().checksum(),
+    )?;
+    let root = create_private_stage()?;
+    let sandbox_provider = root.join(executable_name("sandbox-provider", sandbox_source));
+    let plugin = root.join(executable_name("plugin", plugin_source));
+    let staged = (|| {
+        let sandbox_file = write_staged_executable(&sandbox_provider, &sandbox_bytes)?;
+        let plugin_file = write_staged_executable(&plugin, &plugin_bytes)?;
+        let directory = File::open(&root).map_err(|_| SandboxFailure::BeforeEntry)?;
+        directory
+            .sync_all()
+            .map_err(|_| SandboxFailure::BeforeEntry)?;
+        drop(sandbox_file);
+        drop(plugin_file);
+        Ok(StagedExecutables {
+            root: root.clone(),
+            sandbox_provider,
+            plugin,
+        })
+    })();
+    if staged.is_err() {
+        let _ = fs::remove_dir_all(&root);
+    }
+    staged
+}
+
+impl SandboxRunner for CommandSandboxRunner {
+    fn admit(&self, manifest: &PluginManifest) -> Result<(), SandboxFailure> {
+        let _staged = stage_executables(manifest)?;
+        Ok(())
+    }
+
+    fn invoke(
+        &self,
+        manifest: &PluginManifest,
+        operation: PluginOperation,
+        request: &SecretValue,
+        environment: &SecretEnvironment,
+    ) -> Result<SecretValue, SandboxFailure> {
+        if request.len() > manifest.limits().maximum_request_bytes {
+            return Err(SandboxFailure::BeforeEntry);
+        }
+        if environment
+            .iter()
+            .any(|(name, _)| !manifest.environment_allowlist().contains(name))
+        {
+            return Err(SandboxFailure::BeforeEntry);
+        }
+        let frame = encode_request(
+            manifest.descriptor().protocol_version(),
+            operation,
+            request.expose(),
+        )
+        .map_err(|_| SandboxFailure::BeforeEntry)?;
+        let staged = stage_executables(manifest)?;
+        let mut command = Command::new(&staged.sandbox_provider);
+        command
+            .arg("--heptabao-profile")
+            .arg(manifest.sandbox().profile_id.as_str())
+            .arg("--heptabao-plugin")
+            .arg(&staged.plugin)
+            .arg("--heptabao-protocol")
+            .arg(manifest.descriptor().protocol_version().to_string())
+            .arg("--heptabao-operation")
+            .arg(operation.as_str())
+            .env_clear()
+            .env(
+                "HEPTABAO_SANDBOX_PROVIDER",
+                manifest.sandbox().provider_id.as_str(),
+            )
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null());
+        for (name, value) in environment.iter() {
+            command.env(name, value);
+        }
+        let mut child = command.spawn().map_err(|_| SandboxFailure::BeforeEntry)?;
+        let mut stdin = child
+            .stdin
+            .take()
+            .ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
+        if stdin.write_all(&frame).is_err() || stdin.flush().is_err() {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(SandboxFailure::OutcomeUnknownAfterEntry);
+        }
+        drop(stdin);
+        let stdout = child
+            .stdout
+            .take()
+            .ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
+        let maximum = manifest
+            .limits()
+            .maximum_response_bytes
+            .checked_add(9)
+            .ok_or(SandboxFailure::BeforeEntry)?;
+        let reader = thread::spawn(move || read_bounded(stdout, maximum));
+        let deadline = Instant::now() + Duration::from_millis(manifest.limits().timeout_ms);
+        let status = loop {
+            match child.try_wait() {
+                Ok(Some(status)) => break status,
+                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
+                Ok(None) | Err(_) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    let _ = reader.join();
+                    return Err(SandboxFailure::OutcomeUnknownAfterEntry);
+                }
+            }
+        };
+        let output = reader
+            .join()
+            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)?
+            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)?;
+        if !status.success() {
+            return Err(SandboxFailure::OutcomeUnknownAfterEntry);
+        }
+        decode_response(&output, manifest.limits().maximum_response_bytes)
+            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)
+    }
+}
+
+fn verify_file(path: &Path, expected: [u8; 32]) -> Result<(), SandboxFailure> {
+    read_verified_executable(path, expected).map(|_| ())
+}
+
+fn path_components_are_real'''
+
+          pattern = re.compile(
+              r'impl SandboxRunner for CommandSandboxRunner \{.*?\n\}\n\nfn verify_file\(.*?\n\}\n\nfn path_components_are_real',
+              re.S,
+          )
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'plugin-host replacement matched {count} regions')
+          if 'Command::new(manifest.sandbox().command.as_str())' in text:
+              raise SystemExit('direct execution of the verified source path remains')
+          path.write_text(text, encoding='utf-8')
+
+          test_path = Path('tests/repository/test_plugin_executable_staging_v2_4.py')
+          test_path.write_text('''from pathlib import Path\nimport unittest\n\n\nclass PluginExecutableStagingV24Tests(unittest.TestCase):\n    def test_command_executes_private_staged_provider(self):\n        source = Path("crates/heptabao-plugin-host/src/lib.rs").read_text(encoding="utf-8")\n        self.assertIn("stage_executables(manifest)?", source)\n        self.assertIn("Command::new(&staged.sandbox_provider)", source)\n        self.assertIn(".arg(&staged.plugin)", source)\n        self.assertNotIn("Command::new(manifest.sandbox().command.as_str())", source)\n\n    def test_stage_is_private_create_new_and_synced(self):\n        source = Path("crates/heptabao-plugin-host/src/lib.rs").read_text(encoding="utf-8")\n        self.assertIn("builder.mode(0o700)", source)\n        self.assertIn("options.write(true).create_new(true)", source)\n        self.assertIn("file.sync_all()", source)\n        self.assertIn("directory.sync_all()", source)\n        self.assertIn("impl Drop for StagedExecutables", source)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''', encoding='utf-8')
+
+          guide = Path('docs/modules/heptabao-plugin-host.md')
+          guide_text = guide.read_text(encoding='utf-8')
+          note = '''\n## Immutable executable staging\n\nBefore invocation, the host reads each owner-controlled executable through a no-follow descriptor, validates metadata and SHA-256 over the same opened bytes, and writes those verified bytes into an atomically created owner-private staging directory. The child process executes only the staged sandbox provider and receives only the staged plugin path. Source-path replacement after validation therefore cannot change the invoked bytes. The stage is synchronized before spawn and removed on drop.\n'''
+          if '## Immutable executable staging' not in guide_text:
+              guide.write_text(guide_text.rstrip() + '\n' + note, encoding='utf-8')
+          PY
+
+      - name: Remove write transport and qualify repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-plugin-toctou-materializer.yml
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 fmt --all
+          out="$RUNNER_TEMP/heptabao-v24-plugin-toctou"
+          mkdir -p "$out"
+          python -m unittest tests.repository.test_plugin_executable_staging_v2_4 2>&1 | tee "$out/staging-regression.log"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+          cargo +1.98.0 test --locked -p heptabao-plugin-host --all-targets 2>&1 | tee "$out/plugin-host-tests.log"
+          cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+          timeout --signal=TERM --kill-after=30s 3600s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+          cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+
+      - name: Publish source-only TOCTOU repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/v24-plugin-toctou-materializer.yml
+          git config user.name 'HeptaBao V2.4 Plugin Security Materializer'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(plugin): execute immutable staged verified binaries'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+
+      - name: Upload bounded repair evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-plugin-toctou-repair
+          path: ${{ runner.temp }}/heptabao-v24-plugin-toctou/
+          if-no-files-found: warn
+          retention-days: 3
