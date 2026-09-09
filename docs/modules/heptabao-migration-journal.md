@@ -53,3 +53,6 @@ Tests cover restart recovery, reconciliation, torn-tail repair, authenticated co
 Adapters for every OpenBao mount, auth, identity, policy, lease, audit, and key format remain separate work. Independent cutover and rollback evidence is still required.
 
 The writer lock is RAII-owned, so failed open or recovery cannot strand a lock. Existing journal files are admitted only when they are non-symlink regular files with owner-private Unix permissions.
+## V2.4 complete object inventory
+
+`MigrationInventoryV24` requires an explicit bounded object set, validates every dependency, rejects duplicate IDs and cycles, produces a deterministic topological order, and can require the complete profile covering namespace, policy, auth/secret mounts, identity, token roles, Transit, PKI, database roles, dynamic leases, audit devices, seal metadata and Raft metadata. This proves inventory completeness and ordering, not semantic correctness of each object adapter; source/target fixtures and cutover evidence remain required.

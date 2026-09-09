@@ -9,7 +9,7 @@
 //! proof binds the observed target digest. Torn tails are repaired under the
 //! single-writer lock; authenticated-prefix corruption is rejected.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
 use std::fs::{self, File, OpenOptions};
@@ -843,5 +843,324 @@ mod tests {
         assert_eq!(first.sequence, 1);
         drop(journal);
         fs::remove_dir_all(root).unwrap();
+    }
+}
+
+const MAX_MIGRATION_OBJECTS_V2_4: usize = 1_000_000;
+const MAX_OBJECT_DEPENDENCIES_V2_4: usize = 1024;
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum MigrationObjectKindV24 {
+    Namespace,
+    Policy,
+    AuthMount,
+    SecretMount,
+    IdentityEntity,
+    IdentityGroup,
+    IdentityAlias,
+    TokenRole,
+    TransitKey,
+    PkiIssuer,
+    PkiRole,
+    DatabaseRole,
+    DynamicLease,
+    AuditDevice,
+    SealMetadata,
+    RaftMetadata,
+}
+
+impl MigrationObjectKindV24 {
+    pub const fn all_required_for_complete_profile() -> [Self; 16] {
+        [
+            Self::Namespace,
+            Self::Policy,
+            Self::AuthMount,
+            Self::SecretMount,
+            Self::IdentityEntity,
+            Self::IdentityGroup,
+            Self::IdentityAlias,
+            Self::TokenRole,
+            Self::TransitKey,
+            Self::PkiIssuer,
+            Self::PkiRole,
+            Self::DatabaseRole,
+            Self::DynamicLease,
+            Self::AuditDevice,
+            Self::SealMetadata,
+            Self::RaftMetadata,
+        ]
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MigrationObjectV24 {
+    pub object_id: MigrationObjectId,
+    pub kind: MigrationObjectKindV24,
+    pub source_digest: [u8; 32],
+    pub dependencies: BTreeSet<MigrationObjectId>,
+}
+
+impl MigrationObjectV24 {
+    pub fn new(
+        object_id: MigrationObjectId,
+        kind: MigrationObjectKindV24,
+        source_digest: [u8; 32],
+        dependencies: BTreeSet<MigrationObjectId>,
+    ) -> Result<Self, MigrationInventoryErrorV24> {
+        if source_digest == [0; 32]
+            || dependencies.len() > MAX_OBJECT_DEPENDENCIES_V2_4
+            || dependencies.contains(&object_id)
+        {
+            return Err(MigrationInventoryErrorV24::InvalidObject);
+        }
+        Ok(Self {
+            object_id,
+            kind,
+            source_digest,
+            dependencies,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MigrationInventoryV24 {
+    objects: BTreeMap<MigrationObjectId, MigrationObjectV24>,
+    required_kinds: BTreeSet<MigrationObjectKindV24>,
+    topological_order: Vec<MigrationObjectId>,
+}
+
+impl MigrationInventoryV24 {
+    pub fn complete_profile(
+        objects: impl IntoIterator<Item = MigrationObjectV24>,
+    ) -> Result<Self, MigrationInventoryErrorV24> {
+        Self::new(
+            objects,
+            MigrationObjectKindV24::all_required_for_complete_profile(),
+        )
+    }
+
+    pub fn new(
+        objects: impl IntoIterator<Item = MigrationObjectV24>,
+        required_kinds: impl IntoIterator<Item = MigrationObjectKindV24>,
+    ) -> Result<Self, MigrationInventoryErrorV24> {
+        let required_kinds = required_kinds.into_iter().collect::<BTreeSet<_>>();
+        if required_kinds.is_empty() {
+            return Err(MigrationInventoryErrorV24::EmptyRequiredKinds);
+        }
+        let mut by_id = BTreeMap::new();
+        for object in objects {
+            if by_id.len() >= MAX_MIGRATION_OBJECTS_V2_4 {
+                return Err(MigrationInventoryErrorV24::InventoryTooLarge);
+            }
+            if by_id.insert(object.object_id.clone(), object).is_some() {
+                return Err(MigrationInventoryErrorV24::DuplicateObject);
+            }
+        }
+        if by_id.is_empty() {
+            return Err(MigrationInventoryErrorV24::EmptyInventory);
+        }
+        for object in by_id.values() {
+            if object
+                .dependencies
+                .iter()
+                .any(|dependency| !by_id.contains_key(dependency))
+            {
+                return Err(MigrationInventoryErrorV24::MissingDependency);
+            }
+        }
+        let observed_kinds = by_id
+            .values()
+            .map(|object| object.kind)
+            .collect::<BTreeSet<_>>();
+        if !required_kinds.is_subset(&observed_kinds) {
+            return Err(MigrationInventoryErrorV24::MissingRequiredKind);
+        }
+        let topological_order = migration_topological_order_v2_4(&by_id)?;
+        Ok(Self {
+            objects: by_id,
+            required_kinds,
+            topological_order,
+        })
+    }
+
+    pub fn objects(&self) -> impl Iterator<Item = &MigrationObjectV24> {
+        self.topological_order
+            .iter()
+            .filter_map(|object_id| self.objects.get(object_id))
+    }
+
+    pub fn topological_order(&self) -> &[MigrationObjectId] {
+        &self.topological_order
+    }
+
+    pub fn required_kinds(&self) -> &BTreeSet<MigrationObjectKindV24> {
+        &self.required_kinds
+    }
+
+    pub fn len(&self) -> usize {
+        self.objects.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.objects.is_empty()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MigrationInventoryErrorV24 {
+    InvalidObject,
+    EmptyRequiredKinds,
+    EmptyInventory,
+    InventoryTooLarge,
+    DuplicateObject,
+    MissingDependency,
+    MissingRequiredKind,
+    DependencyCycle,
+}
+
+impl fmt::Display for MigrationInventoryErrorV24 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(match self {
+            Self::InvalidObject => "migration inventory object is invalid",
+            Self::EmptyRequiredKinds => "migration inventory required-kind set is empty",
+            Self::EmptyInventory => "migration inventory is empty",
+            Self::InventoryTooLarge => "migration inventory exceeds its bound",
+            Self::DuplicateObject => "migration inventory object is duplicated",
+            Self::MissingDependency => "migration inventory dependency is missing",
+            Self::MissingRequiredKind => "migration inventory omits a required object kind",
+            Self::DependencyCycle => "migration inventory contains a dependency cycle",
+        })
+    }
+}
+
+impl Error for MigrationInventoryErrorV24 {}
+
+fn migration_topological_order_v2_4(
+    objects: &BTreeMap<MigrationObjectId, MigrationObjectV24>,
+) -> Result<Vec<MigrationObjectId>, MigrationInventoryErrorV24> {
+    let mut remaining = objects
+        .iter()
+        .map(|(object_id, object)| (object_id.clone(), object.dependencies.clone()))
+        .collect::<BTreeMap<_, _>>();
+    let mut order = Vec::with_capacity(objects.len());
+    while !remaining.is_empty() {
+        let ready = remaining
+            .iter()
+            .filter(|(_, dependencies)| dependencies.is_empty())
+            .map(|(object_id, _)| object_id.clone())
+            .collect::<Vec<_>>();
+        if ready.is_empty() {
+            return Err(MigrationInventoryErrorV24::DependencyCycle);
+        }
+        for object_id in &ready {
+            remaining.remove(object_id);
+            order.push(object_id.clone());
+        }
+        for dependencies in remaining.values_mut() {
+            for object_id in &ready {
+                dependencies.remove(object_id);
+            }
+        }
+    }
+    Ok(order)
+}
+
+#[cfg(test)]
+mod migration_inventory_v2_4_tests {
+    use super::*;
+
+    fn object(id: &str, kind: MigrationObjectKindV24, dependencies: &[&str]) -> MigrationObjectV24 {
+        MigrationObjectV24::new(
+            MigrationObjectId::parse(id).unwrap(),
+            kind,
+            [id.as_bytes()[0]; 32],
+            dependencies
+                .iter()
+                .map(|value| MigrationObjectId::parse(*value).unwrap())
+                .collect(),
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn deterministic_dependency_order_is_enforced() {
+        let namespace = object("namespace/root", MigrationObjectKindV24::Namespace, &[]);
+        let policy = object(
+            "policy/default",
+            MigrationObjectKindV24::Policy,
+            &["namespace/root"],
+        );
+        let mount = object(
+            "mount/kv",
+            MigrationObjectKindV24::SecretMount,
+            &["namespace/root", "policy/default"],
+        );
+        let inventory = MigrationInventoryV24::new(
+            [mount, policy, namespace],
+            [
+                MigrationObjectKindV24::Namespace,
+                MigrationObjectKindV24::Policy,
+                MigrationObjectKindV24::SecretMount,
+            ],
+        )
+        .unwrap();
+        let order = inventory
+            .topological_order()
+            .iter()
+            .map(MigrationObjectId::as_str)
+            .collect::<Vec<_>>();
+        assert_eq!(order, ["namespace/root", "policy/default", "mount/kv"]);
+    }
+
+    #[test]
+    fn missing_kind_dependency_and_cycle_fail_closed() {
+        let namespace = object("namespace/root", MigrationObjectKindV24::Namespace, &[]);
+        assert_eq!(
+            MigrationInventoryV24::new(
+                [namespace.clone()],
+                [
+                    MigrationObjectKindV24::Namespace,
+                    MigrationObjectKindV24::Policy
+                ],
+            ),
+            Err(MigrationInventoryErrorV24::MissingRequiredKind)
+        );
+        let missing = object(
+            "policy/default",
+            MigrationObjectKindV24::Policy,
+            &["namespace/missing"],
+        );
+        assert_eq!(
+            MigrationInventoryV24::new(
+                [namespace.clone(), missing],
+                [MigrationObjectKindV24::Namespace]
+            ),
+            Err(MigrationInventoryErrorV24::MissingDependency)
+        );
+        let first = object(
+            "cycle/first",
+            MigrationObjectKindV24::Policy,
+            &["cycle/second"],
+        );
+        let second = object(
+            "cycle/second",
+            MigrationObjectKindV24::Policy,
+            &["cycle/first"],
+        );
+        assert_eq!(
+            MigrationInventoryV24::new([first, second], [MigrationObjectKindV24::Policy]),
+            Err(MigrationInventoryErrorV24::DependencyCycle)
+        );
+    }
+
+    #[test]
+    fn complete_profile_enumerates_all_required_object_kinds() {
+        let objects = MigrationObjectKindV24::all_required_for_complete_profile()
+            .into_iter()
+            .enumerate()
+            .map(|(index, kind)| object(&format!("kind/object-{index}"), kind, &[]))
+            .collect::<Vec<_>>();
+        let inventory = MigrationInventoryV24::complete_profile(objects).unwrap();
+        assert_eq!(inventory.required_kinds().len(), 16);
     }
 }
