@@ -2,22 +2,22 @@ name: HeptaBao V2.4 plugin TOCTOU source recovery r2
 
 on:
   push:
-    branches:
-      - ops/v24-plugin-toctou-fix-r2-20260909
+    branches: [ops/v24-plugin-toctou-fix-r2-20260909]
 
 permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-plugin-toctou-r2-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-plugin-toctou-r2-recovery-v3
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   MATERIALIZER_BRANCH: ops/v24-plugin-toctou-fix-r1-20260909
   MATERIALIZER_SHA: 8dc6520b0b1bd4dbf01fb755df0aad9340248d63
   MATERIALIZER_WORKFLOW: .github/workflows/v24-plugin-toctou-materializer.yml
-  PATCH_CONTROLLER_SHA: 328573da1c09fb4dab7184a543fb57eed8f50a2c
+  RECOVERY_PARENT_SHA: 020a1a3511d1f7b14023382c673b4b86c25ee4fd
+  ORIGINAL_PATCH_SHA: 955b9b5c42d497558bd904a7830f5622672689d9
   PATCH_WORKFLOW: .github/workflows/v24-plugin-toctou-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-source-20260909
 
@@ -28,23 +28,20 @@ jobs:
     steps:
       - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
+        with: {fetch-depth: 0, persist-credentials: true}
       - name: Verify immutable controller inputs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
-          test "$(git merge-base "$PATCH_CONTROLLER_SHA" "$BASE_SHA")" = "$BASE_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "867f7346b358a5cb3110760a1cecac7017a429fd"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "193e937edde243d4a2f3dfdbe78afedbd155415d"
           git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/plugin-materializer"
           test "$(git rev-parse refs/remotes/origin/plugin-materializer)" = "$MATERIALIZER_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW")" = "50597eed8981a36723d7b6b065fc735dfd5ed380"
           test "$(git diff --name-only "$BASE_SHA..$MATERIALIZER_SHA")" = "$MATERIALIZER_WORKFLOW"
-
       - name: Recover and qualify immutable executable staging
         shell: bash
         run: |
@@ -52,46 +49,30 @@ jobs:
           work="$RUNNER_TEMP/heptabao-plugin-toctou-r2"
           git worktree add --detach "$work" "$BASE_SHA"
           git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
-          git show "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
+          git show "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
           python - "$RUNNER_TEMP/materializer.yml" "      - name: Apply immutable executable staging repair" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
-
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
-          body = []
-          for line in source[run_index + 1:]:
-              if line.startswith("      - name: "):
-                  break
-              body.append(line[10:] if line.startswith("          ") else line)
-          text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "sudo ")
-          for token in denied:
-              if token in text:
-                  raise SystemExit(f"denied materializer token: {token}")
-          Path(sys.argv[3]).write_text(text, encoding="utf-8")
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines(); start=lines.index(sys.argv[2]); run=next(i for i in range(start+1,min(start+10,len(lines))) if lines[i]=='        run: |'); body=[]
+          for line in lines[run+1:]:
+              if line.startswith('      - name: '): break
+              body.append(line[10:] if line.startswith('          ') else line)
+          text='\n'.join(x for x in body if 'git rev-parse HEAD^' not in x)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','sudo '):
+              if token in text: raise SystemExit(f'denied materializer token: {token}')
+          Path(sys.argv[3]).write_text(text,encoding='utf-8')
           PY
           python - "$RUNNER_TEMP/patch.yml" "      - name: Remove obsolete wrapper and qualify package" "$RUNNER_TEMP/harden.sh" <<'PY'
           from pathlib import Path
           import sys
-
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
-          body = []
-          for line in source[run_index + 1:]:
-              if line.startswith("      - name: "):
-                  break
-              body.append(line[10:] if line.startswith("          ") else line)
-          text = "\n".join(body) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "sudo ")
-          for token in denied:
-              if token in text:
-                  raise SystemExit(f"denied hardening token: {token}")
-          Path(sys.argv[3]).write_text(text, encoding="utf-8")
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines(); start=lines.index(sys.argv[2]); run=next(i for i in range(start+1,min(start+10,len(lines))) if lines[i]=='        run: |'); body=[]
+          for line in lines[run+1:]:
+              if line.startswith('      - name: '): break
+              body.append(line[10:] if line.startswith('          ') else line)
+          text='\n'.join(body)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','sudo '):
+              if token in text: raise SystemExit(f'denied hardening token: {token}')
+          Path(sys.argv[3]).write_text(text,encoding='utf-8')
           PY
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
           (
@@ -100,13 +81,11 @@ jobs:
             bash "$RUNNER_TEMP/harden.sh"
             git config user.name 'HeptaBao Plugin TOCTOU Recovery'
             git config user.email '102159240+ProfHepta@users.noreply.github.com'
-            git add -A
-            test -n "$(git status --porcelain)"
+            git add -A && test -n "$(git status --porcelain)"
             git commit -m 'fix(plugin): execute only immutable staged binaries'
             new_sha="$(git rev-parse HEAD)"
             if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-              test "$observed" = "$new_sha"
+              test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$new_sha"
             else
               git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
             fi
