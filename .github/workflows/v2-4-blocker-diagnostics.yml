@@ -1,0 +1,176 @@
+name: HeptaBao V2.4 blocker diagnostics
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-v2.4-blocker-closure-r1-20260909
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-v2-4-blocker-diagnostics-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repository-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Validate repository and compatibility denominator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/heptabao-v2-4-diagnostics"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$RUNNER_TEMP/heptabao-v2-4-diagnostics/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$RUNNER_TEMP/heptabao-v2-4-diagnostics/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/heptabao-v2-4-diagnostics/repository-tests.log"
+      - name: Upload repository diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v2-4-repository-diagnostics
+          path: ${{ runner.temp }}/heptabao-v2-4-diagnostics/
+          if-no-files-found: warn
+          retention-days: 3
+
+  raft-test-isolation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Compile Raft runtime tests
+        shell: bash
+        run: cargo +1.98.0 test --locked -p heptabao-raft-runtime --no-run
+      - name: Run each Raft test with a hard deadline
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v2-4-raft"
+          mkdir -p "$out"
+          cargo +1.98.0 test --locked -p heptabao-raft-runtime -- --list > "$out/test-list.txt"
+          sed -n 's/: test$//p' "$out/test-list.txt" > "$out/test-names.txt"
+          : > "$out/results.tsv"
+          failed=0
+          while IFS= read -r test_name; do
+            [ -n "$test_name" ] || continue
+            safe_name="$(printf '%s' "$test_name" | tr -c 'A-Za-z0-9._-' '_')"
+            set +e
+            timeout --signal=TERM --kill-after=15s 180s \
+              cargo +1.98.0 test --locked -p heptabao-raft-runtime "$test_name" -- --exact --nocapture --test-threads=1 \
+              > "$out/${safe_name}.log" 2>&1
+            rc=$?
+            set -e
+            printf '%s\t%s\n' "$test_name" "$rc" >> "$out/results.tsv"
+            if [ "$rc" -ne 0 ]; then failed=1; fi
+          done < "$out/test-names.txt"
+          cat "$out/results.tsv"
+          exit "$failed"
+      - name: Upload Raft diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v2-4-raft-test-isolation
+          path: ${{ runner.temp }}/heptabao-v2-4-raft/
+          if-no-files-found: error
+          retention-days: 3
+
+  bounded-capability-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Run repository-owned capability crates
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/heptabao-v2-4-capabilities"
+          mkdir -p "$out"
+          cargo +1.98.0 metadata --locked --no-deps --format-version 1 > "$out/metadata.json"
+          packages="$(python - "$out/metadata.json" <<'PY'
+          import json, sys
+          names = {p['name'] for p in json.load(open(sys.argv[1]))['packages']}
+          wanted = [
+              'heptabao-identity',
+              'heptabao-migration',
+              'heptabao-plugin-host',
+              'heptabao-compatibility',
+              'heptabao-server',
+          ]
+          print(' '.join(name for name in wanted if name in names))
+          PY
+          )"
+          : > "$out/results.tsv"
+          failed=0
+          for package in $packages; do
+            set +e
+            timeout --signal=TERM --kill-after=15s 600s \
+              cargo +1.98.0 test --locked -p "$package" --all-targets -- --nocapture --test-threads=1 \
+              > "$out/${package}.log" 2>&1
+            rc=$?
+            set -e
+            printf '%s\t%s\n' "$package" "$rc" >> "$out/results.tsv"
+            if [ "$rc" -ne 0 ]; then failed=1; fi
+          done
+          cat "$out/results.tsv"
+          exit "$failed"
+      - name: Upload capability diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v2-4-capability-tests
+          path: ${{ runner.temp }}/heptabao-v2-4-capabilities/
+          if-no-files-found: error
+          retention-days: 3
+
+  workspace-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Formatting
+        run: cargo +1.98.0 fmt --all -- --check
+      - name: Workspace tests
+        run: timeout --signal=TERM --kill-after=30s 2700s cargo +1.98.0 test --workspace --all-targets --locked
+      - name: Strict Clippy
+        run: cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+      - name: Rustdoc
+        run: cargo +1.98.0 doc --workspace --no-deps --locked
+      - name: Server build
+        run: cargo +1.98.0 build --locked -p heptabao-server
+      - name: Final clean-tree check
+        shell: bash
+        run: test -z "$(git status --porcelain=v1 --untracked-files=all)"
