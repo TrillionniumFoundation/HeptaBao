@@ -1,0 +1,325 @@
+name: HeptaBao V2.4 in-place blocker integration
+
+on:
+  push:
+    branches:
+      - ops/v24-inplace-integration-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-inplace-integration-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-inplace-candidate-20260909
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact staging head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify controller and fetch exact authored materializers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          git fetch --no-tags --prune origin '+refs/heads/ops/v24-*:refs/remotes/origin/ops/v24-*'
+          mkdir -p "$RUNNER_TEMP/heptabao-v24-inplace"
+
+      - name: Extract and execute bounded source materialization steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/extract-step.py" <<'PY'
+          from pathlib import Path
+          import sys
+
+          workflow = Path(sys.argv[1])
+          step_name = sys.argv[2]
+          output = Path(sys.argv[3])
+          lines = workflow.read_text(encoding="utf-8").splitlines()
+          marker = f"      - name: {step_name}"
+          try:
+              start = lines.index(marker)
+          except ValueError as exc:
+              raise SystemExit(f"missing exact step: {step_name}") from exc
+          run_index = None
+          for index in range(start + 1, min(len(lines), start + 8)):
+              if lines[index] == "        run: |":
+                  run_index = index
+                  break
+          if run_index is None:
+              raise SystemExit("step has no literal run block")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit(f"unexpected indentation: {line!r}")
+              body.append(line[10:] if line else "")
+          body = [line for line in body if 'test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"' not in line]
+          text = "\n".join(body) + "\n"
+          denied = (
+              "curl ", "wget ", "gh api", "git push", "git remote", "GITHUB_TOKEN",
+              "secrets.", "${{", "/dev/tcp", "ssh ", "rm -rf", "sudo ",
+              "chmod 777", "base64 --decode",
+          )
+          for token in denied:
+              if token in text:
+                  raise SystemExit(f"denied materializer token: {token}")
+          output.write_text(text, encoding="utf-8")
+          PY
+
+          extract_and_run() {
+            source_branch="$1"
+            workflow_path="$2"
+            step_name="$3"
+            label="$4"
+            remote_ref="refs/remotes/origin/$source_branch"
+            git show-ref --verify --quiet "$remote_ref"
+            source_sha="$(git rev-parse "$remote_ref")"
+            test "$(git rev-parse "$source_sha^")" = "$EXACT_PARENT"
+            test "$(git diff --name-only "$EXACT_PARENT..$source_sha")" = "$workflow_path"
+            workflow="$RUNNER_TEMP/${label}.yml"
+            script="$RUNNER_TEMP/${label}.sh"
+            git show "$source_sha:$workflow_path" > "$workflow"
+            python "$RUNNER_TEMP/extract-step.py" "$workflow" "$step_name" "$script"
+            chmod 0700 "$script"
+            env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" EXACT_PARENT="$EXACT_PARENT" bash "$script"
+            printf '%s\t%s\t%s\n' "$label" "$source_branch" "$source_sha" >> "$RUNNER_TEMP/heptabao-v24-inplace/materializers.tsv"
+          }
+
+          extract_and_run \
+            ops/v24-plugin-toctou-fix-r1-20260909 \
+            .github/workflows/v24-plugin-toctou-materializer.yml \
+            'Apply immutable executable staging repair' \
+            plugin-toctou
+          extract_and_run \
+            ops/v24-migration-journal-r1-20260909 \
+            .github/workflows/v24-migration-journal-materializer.yml \
+            'Materialize durable migration journal package' \
+            migration-journal
+          extract_and_run \
+            ops/v24-federated-auth-r1-20260909 \
+            .github/workflows/v24-federated-auth-materializer.yml \
+            'Materialize federated auth package' \
+            federated-auth
+          extract_and_run \
+            ops/v24-ha-service-r1-20260909 \
+            .github/workflows/v24-ha-service-materializer.yml \
+            'Materialize HA service package' \
+            ha-service
+          extract_and_run \
+            ops/v24-compat-capture-r1-20260909 \
+            .github/workflows/v24-compat-capture-materializer.yml \
+            'Materialize differential capture runner' \
+            compat-capture
+
+      - name: Relocate new capabilities into existing package boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import shutil
+
+          def add_module(crate: str, source: Path, module: str, doc: str) -> Path:
+              destination = Path('crates') / crate / 'src' / f'{module}.rs'
+              if not source.exists():
+                  raise SystemExit(f'missing generated source: {source}')
+              destination.write_bytes(source.read_bytes())
+              lib = Path('crates') / crate / 'src' / 'lib.rs'
+              text = lib.read_text(encoding='utf-8')
+              declaration = f'pub mod {module};'
+              if declaration not in text:
+                  insertion = f'\n/// {doc}\n{declaration}\n'
+                  text = text.rstrip() + insertion
+                  lib.write_text(text, encoding='utf-8')
+              return destination
+
+          def ensure_dependency(crate: str, name: str, specification: str) -> None:
+              manifest = Path('crates') / crate / 'Cargo.toml'
+              text = manifest.read_text(encoding='utf-8')
+              if re.search(rf'^\s*{re.escape(name)}\s*=', text, flags=re.M):
+                  return
+              marker = '[dependencies]'
+              if marker in text:
+                  text = text.replace(marker, marker + f'\n{name} = {specification}', 1)
+              else:
+                  text = text.rstrip() + f'\n\n[dependencies]\n{name} = {specification}\n'
+              manifest.write_text(text, encoding='utf-8')
+
+          migration = add_module(
+              'heptabao-migration',
+              Path('crates/heptabao-migration-journal/src/lib.rs'),
+              'migration_journal_v2_4',
+              'Authenticated resumable migration transaction journal.',
+          )
+          migration_text = migration.read_text(encoding='utf-8')
+          old = '''        if length < TAG_BYTES || length > MAX_RECORD_BYTES || bytes.len() - offset - 4 < length {
+            break;
+        }
+'''
+          new = '''        if length < TAG_BYTES || length > MAX_RECORD_BYTES {
+            return Err(JournalError::Tampered);
+        }
+        if bytes.len() - offset - 4 < length {
+            break;
+        }
+'''
+          if old in migration_text:
+              migration_text = migration_text.replace(old, new, 1)
+          migration.write_text(migration_text, encoding='utf-8')
+          ensure_dependency('heptabao-migration', 'ring', '"0.17.14"')
+
+          federated = add_module(
+              'heptabao-identity',
+              Path('crates/heptabao-federated-auth/src/lib.rs'),
+              'federated_auth_v2_4',
+              'Signed federated identity and durable MFA replay admission.',
+          )
+          ensure_dependency('heptabao-identity', 'base64', '"0.22.1"')
+          ensure_dependency('heptabao-identity', 'ring', '"0.17.14"')
+          ensure_dependency('heptabao-identity', 'serde', '{ version = "1.0.229", features = ["derive"] }')
+          ensure_dependency('heptabao-identity', 'serde_json', '"1.0.151"')
+
+          ha = add_module(
+              'heptabao-raft-runtime',
+              Path('crates/heptabao-ha-service/src/lib.rs'),
+              'ha_service_v2_4',
+              'Authenticated service-level HA routing and persistent peer fencing.',
+          )
+          ha_text = ha.read_text(encoding='utf-8')
+          ha_text = re.sub(
+              r'\n    fn decode\(value: u8\) -> Result<Self, HaError> \{\n        match value \{\n            1 => Ok\(Self::LinearizableRead\),\n            2 => Ok\(Self::Mutation\),\n            _ => Err\(HaError::InvalidFrame\),\n        \}\n    \}\n',
+              '\n',
+              ha_text,
+              count=1,
+          )
+          ha.write_text(ha_text, encoding='utf-8')
+          ensure_dependency('heptabao-raft-runtime', 'ring', '"0.17.14"')
+
+          compat_test = Path('tests/repository/test_openbao_differential_runner_v2_4.py')
+          compat_text = compat_test.read_text(encoding='utf-8')
+          if 'sys.modules[SPEC.name] = MODULE' not in compat_text:
+              compat_text = compat_text.replace('import tempfile\n', 'import tempfile\nimport sys\n')
+              compat_text = compat_text.replace(
+                  'MODULE = importlib.util.module_from_spec(SPEC)\n',
+                  'MODULE = importlib.util.module_from_spec(SPEC)\nsys.modules[SPEC.name] = MODULE\n',
+              )
+          compat_test.write_text(compat_text, encoding='utf-8')
+
+          path_replacements = {
+              'tests/repository/test_migration_journal_v2_4.py': (
+                  'crates/heptabao-migration-journal/src/lib.rs',
+                  'crates/heptabao-migration/src/migration_journal_v2_4.rs',
+              ),
+              'tests/repository/test_federated_auth_v2_4.py': (
+                  'crates/heptabao-federated-auth/src/lib.rs',
+                  'crates/heptabao-identity/src/federated_auth_v2_4.rs',
+              ),
+              'tests/repository/test_ha_service_v2_4.py': (
+                  'crates/heptabao-ha-service/src/lib.rs',
+                  'crates/heptabao-raft-runtime/src/ha_service_v2_4.rs',
+              ),
+          }
+          for file_name, (old_path, new_path) in path_replacements.items():
+              path = Path(file_name)
+              text = path.read_text(encoding='utf-8').replace(old_path, new_path)
+              path.write_text(text, encoding='utf-8')
+
+          docs = {
+              'docs/modules/heptabao-migration.md': (
+                  '## V2.4 authenticated transaction journal',
+                  'The public `migration_journal_v2_4` module adds an HMAC-chained, single-writer, restart-safe migration state machine with planned, staged, verified, commit-pending, committed, rollback-pending and rolled-back phases. A commit with unknown client-visible outcome requires an explicit target-digest reconciliation proof. This does not claim that every OpenBao object adapter or production cutover has been independently qualified.',
+              ),
+              'docs/modules/heptabao-identity.md': (
+                  '## V2.4 signed federated identity and MFA',
+                  'The public `federated_auth_v2_4` module verifies explicitly configured Ed25519 or ES256 JWS keys, rejects duplicate JSON members, binds issuer, audience, namespace and token time, and durably records token/MFA fingerprints before releasing authentication. MFA proofs are subject-, factor-, nonce-, expiry- and channel-bound. Production OIDC discovery, Kubernetes, LDAP, certificate and cloud-IAM adapters remain separately qualified integrations.',
+              ),
+              'docs/modules/heptabao-raft-runtime.md': (
+                  '## V2.4 service-level HA composition',
+                  'The public `ha_service_v2_4` module adds quorum-gated leader execution, follower forwarding contracts, operation-ID conflict fencing, term/index response validation, HMAC-authenticated peer frames, persistent peer replay sequences, bounded TCP framing, snapshot integrity and joint-membership quorum checks. A concrete production server/Raft adapter and mTLS node lifecycle remain explicit integration gates.',
+              ),
+          }
+          for file_name, (heading, paragraph) in docs.items():
+              path = Path(file_name)
+              if not path.exists():
+                  raise SystemExit(f'missing existing module guide: {file_name}')
+              text = path.read_text(encoding='utf-8')
+              if heading not in text:
+                  text = text.rstrip() + f'\n\n{heading}\n\n{paragraph}\n'
+                  path.write_text(text, encoding='utf-8')
+
+          for directory in (
+              Path('crates/heptabao-migration-journal'),
+              Path('crates/heptabao-federated-auth'),
+              Path('crates/heptabao-ha-service'),
+          ):
+              shutil.rmtree(directory)
+          for guide in (
+              Path('docs/modules/heptabao-migration-journal.md'),
+              Path('docs/modules/heptabao-federated-auth.md'),
+              Path('docs/modules/heptabao-ha-service.md'),
+          ):
+              guide.unlink(missing_ok=True)
+          PY
+
+      - name: Remove write transport and run exact qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-inplace-integration-materializer.yml
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          out="$RUNNER_TEMP/heptabao-v24-inplace"
+          python -m unittest \
+            tests.repository.test_plugin_executable_staging_v2_4 \
+            tests.repository.test_migration_journal_v2_4 \
+            tests.repository.test_federated_auth_v2_4 \
+            tests.repository.test_ha_service_v2_4 \
+            tests.repository.test_openbao_differential_runner_v2_4 \
+            2>&1 | tee "$out/new-regressions.log"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+          cargo +1.98.0 test --locked -p heptabao-plugin-host --all-targets 2>&1 | tee "$out/plugin-host-tests.log"
+          cargo +1.98.0 test --locked -p heptabao-migration --all-targets 2>&1 | tee "$out/migration-tests.log"
+          cargo +1.98.0 test --locked -p heptabao-identity --all-targets 2>&1 | tee "$out/identity-tests.log"
+          timeout --signal=TERM --kill-after=30s 1800s cargo +1.98.0 test --locked -p heptabao-raft-runtime --all-targets -- --test-threads=1 2>&1 | tee "$out/raft-runtime-tests.log"
+          cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+          timeout --signal=TERM --kill-after=30s 5400s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+          cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+
+      - name: Publish source-only in-place candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/v24-inplace-integration-materializer.yml
+          git config user.name 'HeptaBao V2.4 In-place Integrator'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(v2.4): integrate durable auth migration HA and compatibility repairs'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+
+      - name: Upload bounded integration evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-inplace-integration
+          path: ${{ runner.temp }}/heptabao-v24-inplace/
+          if-no-files-found: warn
+          retention-days: 3
