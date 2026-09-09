@@ -1,0 +1,30 @@
+status and fixed algorithm parameters; it never returns the seed.
++
++The implemented profile is TOTP with HMAC-SHA-256, six decimal digits and a
++30-second period. Userpass login requires `totp_code` whenever the selected user
++has an enrollment. The verifier accepts only the current counter and a one-step
++clock window, compares fixed-width ASCII codes with a constant-time primitive,
++and durably records the greatest accepted counter. The same or an older counter
++can never authenticate again, including after restart or wall-clock rollback.
++A future-window code, once accepted, fences the current and previous counters.
++Password verification succeeds before MFA evaluation, and every MFA failure
++returns the same permission-denied class as an invalid credential.
++
++The MFA seed is serialized only inside the barrier-encrypted service state and is
++zeroized when its owned record is dropped. This does not make the seed recoverable
++through an API. Administrators must retain their enrollment handoff securely;
++regeneration invalidates the old seed immediately. There is no recovery-code,
++push, WebAuthn or external MFA-provider implementation in this bounded profile.
++
+ ## AppRole
+ 
+ Each role has an independent random role ID, token configuration, secret-ID
+@@ -170,7 +195,8 @@ its initial successful creation response.
+ 
+ Not supported: custom secret IDs, CIDR binding, response wrapping, entity/group
+ mapping, batch tokens, LDAP, OIDC/JWT, Kubernetes, cloud IAM, certificate auth,
+-MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown
++WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount
++tuning. Unknown
+ security-relevant request fields are rejected. Userpass and AppRole currently
+ have fixed paths. Login throttling is not impl

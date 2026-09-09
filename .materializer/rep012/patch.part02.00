@@ -1,0 +1,55 @@
+   "auth/userpass/users/alice/mfa",
++        json!({}),
++        100,
++    );
++    let secret = state.users["team"]["alice"]
++        .mfa
++        .as_ref()
++        .unwrap()
++        .secret
++        .clone();
++    let future_counter = 151 / MFA_PERIOD_SECONDS;
++    let future = std::str::from_utf8(&totp_code(&secret, future_counter))
++        .unwrap()
++        .to_owned();
++    state
++        .handle(
++            None,
++            "team",
++            "POST",
++            "auth/userpass/login/alice",
++            &json!({"password": "correct-horse-battery-staple", "totp_code": future}),
++            121,
++        )
++        .unwrap();
++    let current = std::str::from_utf8(&totp_code(&secret, 121 / MFA_PERIOD_SECONDS))
++        .unwrap()
++        .to_owned();
++    assert!(
++        state
++            .handle(
++                None,
++                "team",
++                "POST",
++                "auth/userpass/login/alice",
++                &json!({"password": "correct-horse-battery-staple", "totp_code": current}),
++                121,
++            )
++            .is_err()
++    );
++}
++
+ #[test]
+ fn administrative_tidy_frees_only_inactive_credentials_in_its_namespace() {
+     let (mut state, _, root) = setup();
+diff --git a/docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md b/docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
+index 3da9c3e..6b36643 100644
+--- a/docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
++++ b/docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
+@@ -6,8 +6,8 @@ not a separate crate or an independent production authority grant.
+ 
+ ## Responsibility and durable transaction boundary
+ 
+-`AuthState` owns token verifiers, ACL policies, user password verifiers, AppRole
+-configuration and secret-ID verifiers. It derives `Clone`, `Serialize` and
++`AuthState` owns token verifiers, ACL policies, u

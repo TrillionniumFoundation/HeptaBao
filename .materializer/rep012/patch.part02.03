@@ -1,0 +1,25 @@
+emented in this module; the
+ bounded single-node server must not be advertised as production authentication
+@@ -191,7 +217,8 @@ parity without separate abuse-resistance work.
+ | `auth/userpass/users` | LIST/GET list |
+ | `auth/userpass/users/:name` | GET, POST/PUT, DELETE |
+ | `auth/userpass/users/:name/password`, `.../policies` | POST/PUT bounded update |
+-| `auth/userpass/login/:name` | unauthenticated POST/PUT |
++| `auth/userpass/users/:name/mfa` | GET status; POST/PUT enroll or explicit regenerate; DELETE disable; write/delete require sudo |
++| `auth/userpass/login/:name` | unauthenticated POST/PUT; enrolled users require `totp_code` |
+ | `auth/approle/role` | LIST/GET list |
+ | `auth/approle/role/:name` | GET, POST/PUT, DELETE |
+ | `auth/approle/role/:name/role-id` | GET, POST/PUT |
+@@ -213,8 +240,10 @@ restart serialization, no persisted bearer/password plaintext, exhausted uses,
+ TTL boundaries, periodic renewal maximums, token revocation descendants, orphan
+ survival, accessor revocation, namespace collision candidates, root-policy
+ escalation rejection, deny precedence, sudo separation, wildcard boundaries,
+-strict parser rejection, secret-ID expiry/consumption/destruction and failed
+-transaction clone isolation. Administrative tidy tests verify expired/exhausted
++strict parser rejection, TOTP enrollment secrecy, required second-factor
++verification, replay and clock-rollback fencing, restart persistence, explicit
++sudo-only reset, secret-ID expiry/consumption/destruction and failed transaction
++clone isolation. Administrative tidy tests verify expired/exhausted
+ credential removal, active-credential survival and exact namespace scoping.
+ 
+ The synchronous tidy operations reclaim stale verifier records in the selected

@@ -1,0 +1,28 @@
+ser password verifiers,
++user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers. It derives `Clone`, `Serialize` and
+ `Deserialize`; neither this state nor credential-bearing records implements
+ `Debug`. The surrounding service serializes it inside the encrypted durable
+ server state. It is not a separate plaintext authentication database.
+@@ -133,8 +133,8 @@ closed. There is no silently ignored HCL or JSON policy attribute.
+ ## Userpass
+ 
+ User records contain a random 32-byte salt, a 32-byte PBKDF2-HMAC-SHA256 verifier,
+-the KDF iteration count (600,000 for new passwords), token policies and TTL/use
+-limits. Passwords must contain 12–1024 bytes. Login uses `ring::pbkdf2::verify`;
++the KDF iteration count (600,000 for new passwords), token policies, TTL/use
++limits and an optional persistent TOTP MFA enrollment. Passwords must contain 12–1024 bytes. Login uses `ring::pbkdf2::verify`;
+ the unknown-user path performs an equivalent dummy KDF. Error messages never
+ contain the password, verifier, bearer token or secret ID. Password rotation
+ replaces salt and verifier. The plaintext password is never serialized into
+@@ -151,6 +151,31 @@ of their own token policies. User configuration updates accept explicit
+ specifying both aliases is rejected. Password and policies subroutes enforce
+ their respective field boundaries.
+ 
++## Userpass TOTP MFA
++
++`auth/userpass/users/:name/mfa` owns a bounded user-specific TOTP enrollment.
++POST/PUT creates a 256-bit random seed and returns its unpadded base32 form only
++in that successful response. Re-enrollment refuses to replace an existing seed
++unless the caller explicitly sends `regenerate=true`. Enrollment, regeneration
++and deletion require both the route's normal capability and `sudo`. GET returns
++only 
