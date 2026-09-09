@@ -1,0 +1,117 @@
+schema_version: HEPTABAO_EXTERNAL_EVIDENCE_ADMISSION_REGISTER_V2_5
+status: IMPLEMENTED_REVIEW_REQUIRED
+authority_effect: NONE
+qualification: false
+compatibility_claim: false
+migration_authority: false
+release_authority: false
+production_authority: false
+
+repository_mechanism:
+  id: HB-V2-EVIDENCE-ADMISSION-001
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  exact_source_binding: true
+  external_trust_store_digest_binding: true
+  cryptographic_signature_verification: ed25519_strict
+  artifact_byte_rehash: sha256_streaming
+  duplicate_json_members_rejected: true
+  symlink_and_path_escape_rejected: true
+  role_separation_enforced: true
+  complete_case_denominator_required: true
+  admission_result: ADMISSIBLE_EVIDENCE_NOT_AUTHORITY
+  entrypoint: scripts/admit_external_evidence_v2_5.py
+  validation_core: scripts/validate_external_evidence_v2_5.py
+  io_boundary: scripts/heptabao_external_evidence_io_v2_5.py
+  crypto_boundary: scripts/heptabao_ed25519_v2_5.py
+  evidence_schema: schemas/heptabao-external-evidence-v2.5.schema.json
+  trust_store_schema: schemas/heptabao-external-trust-store-v2.5.schema.json
+  tests:
+    - tests/repository/test_external_evidence_v2_5.py
+    - tests/repository/test_external_evidence_io_v2_5.py
+    - tests/repository/test_external_evidence_v2_5_schema.py
+  closure_condition:
+    - current exact-head tests pass
+    - prospective-main tests pass
+    - eligible independent review approves the implementation
+  non_claims:
+    - no external evidence is produced by this mechanism
+    - no live trust store is enrolled by this mechanism
+    - no gate state is changed by validator success alone
+    - no production or compatibility authority is granted
+
+admission_gates:
+  - id: HB-BLK-CTRL-001
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: repository-control-auditor
+    evidence_denominator:
+      - main-ruleset-enforced
+      - required-checks-enforced
+      - non-admin-bypass-denied
+      - force-push-denied
+      - deletion-denied
+  - id: HB-BLK-EXT-001
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: independent-review-board
+    evidence_denominator:
+      - program-review
+      - product-security-review
+      - storage-distributed-review
+      - reviewer-independence
+      - current-head-binding
+  - id: HB-BLK-EXT-002
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: independent-legal-counsel
+    evidence_denominator:
+      - license-disposition
+      - trademark-disposition
+      - patent-disposition
+      - export-control-disposition
+      - clean-room-disposition
+  - id: HB-BLK-EXT-003
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: security-operations
+    evidence_denominator:
+      - private-disclosure-channel
+      - 24x7-roster
+      - incident-drill
+      - credential-revocation-drill
+      - forensic-retention-drill
+  - id: HB-BLK-EXT-004
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: production-custody-board
+    evidence_denominator:
+      - isolated-release-signer
+      - kms-hsm-custody
+      - key-rotation-ceremony
+      - emergency-revocation
+      - transparency-checkpoint
+  - id: HB-BLK-EXT-005
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: independent-oracle-custodian
+    evidence_denominator:
+      - restricted-oracle-capture
+      - deterministic-sanitization
+      - role-separated-transfer
+      - oracle-artifact-rehash
+      - candidate-artifact-rehash
+      - complete-surface-differential
+  - id: HB-BLK-EXT-006
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: destructive-platform-qualification
+    evidence_denominator:
+      - power-cut-campaign
+      - torn-write-campaign
+      - fsync-loss-campaign
+      - disk-stall-campaign
+      - filesystem-corruption-campaign
+      - multi-platform-destructive-campaign
+  - id: HB-BLK-EXT-007
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: independent-reproducer
+    evidence_denominator:
+      - independent-source-acquisition
+      - independent-toolchain
+      - independent-runner
+      - independent-cache-root
+      - independent-signing-root
+      - exact-output-reproduction
