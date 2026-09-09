@@ -1,0 +1,80 @@
+name: HeptaBao V2.5 external evidence admission
+
+on:
+  push:
+    branches:
+      - codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-v2-5-external-evidence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact workflow head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Validate evidence and trust-store schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for path in (
+              Path("schemas/heptabao-external-evidence-v2.5.schema.json"),
+              Path("schemas/heptabao-external-trust-store-v2.5.schema.json"),
+          ):
+              document = json.loads(path.read_text(encoding="utf-8"))
+              assert document["additionalProperties"] is False
+              assert document["properties"]["authority_effect"]["const"] == "NONE"
+          PY
+
+      - name: Execute V2.5 hostile admission regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest \
+            tests.repository.test_external_evidence_v2_5 \
+            tests.repository.test_external_evidence_io_v2_5 \
+            tests.repository.test_external_evidence_v2_5_schema \
+            tests.repository.test_external_evidence_register_v2_5
+
+      - name: Execute repository truth validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Verify unchanged clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf '%s\n' \
+            'qualification=false' \
+            'compatibility_claim=false' \
+            'migration_authority=false' \
+            'release_authority=false' \
+            'production_authority=false' \
+            'authority_effect=NONE'
