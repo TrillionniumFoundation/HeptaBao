@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-compat-signature-r2-recovery-v3
+  group: heptabao-v24-compat-signature-r2-recovery-v4
   cancel-in-progress: true
 
 env:
@@ -16,7 +16,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-compat-signature-r1-20260909
   MATERIALIZER_SHA: c70cc81986bf8e162b504c32bb04ecb3dde7d103
   MATERIALIZER_WORKFLOW: .github/workflows/v24-compat-signature-materializer.yml
-  RECOVERY_PARENT_SHA: dec49c1b5fe7113073b64a082d06a35f4c120e6c
+  RECOVERY_PARENT_SHA: 12594ac1c667a9fb0625b97fc33692a85dad1f77
   ORIGINAL_PATCH_SHA: 3024d2186f8d6bb9a134071a2bb74863f6081a34
   PATCH_WORKFLOW: .github/workflows/v24-compat-signature-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-compat-signature-source-20260909
@@ -73,6 +73,21 @@ jobs:
           for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','sudo '):
               if token in text: raise SystemExit(f'denied adaptation token: {token}')
           Path(sys.argv[3]).write_text(text,encoding='utf-8')
+          PY
+          python - "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+          path=Path(sys.argv[1]); text=path.read_text(encoding='utf-8')
+          replacements={
+            'required_roles.iter().any(|required| *required == role)':'required_roles.contains(&role)',
+            'SigningKey::from_pkcs8_der(ORACLE_PKCS8).unwrap()':'SigningKey::from_pkcs8_der(ORACLE_PKCS8).unwrap_or_else(|error| panic!("oracle PKCS#8 fixture must parse: {error}"))',
+            'SigningKey::from_pkcs8_der(SECURITY_PKCS8).unwrap()':'SigningKey::from_pkcs8_der(SECURITY_PKCS8).unwrap_or_else(|error| panic!("security PKCS#8 fixture must parse: {error}"))',
+            'VerifyingKey::from_public_key_der(ORACLE_SPKI).unwrap()':'VerifyingKey::from_public_key_der(ORACLE_SPKI).unwrap_or_else(|error| panic!("oracle SPKI fixture must parse: {error}"))',
+          }
+          for old,new in replacements.items():
+              if text.count(old)!=1: raise SystemExit(f'expected one generated strict-Clippy target: {old}')
+              text=text.replace(old,new,1)
+          path.write_text(text,encoding='utf-8')
           PY
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/adapt.sh"
           (
