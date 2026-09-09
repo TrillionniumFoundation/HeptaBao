@@ -1,0 +1,89 @@
+name: HeptaBao macOS descriptor-path probe 20260909
+
+on:
+  push:
+    branches:
+      - ops/heptabao-macos-descriptor-probe-20260909-r1
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 201fb23fe1bf2b5d811eac66cb5e4398f53b420c
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Probe descriptor-bound path and durability primitives
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "201fb23fe1bf2b5d811eac66cb5e4398f53b420c"
+          python3 - <<'PY'
+          import fcntl
+          import os
+          import pathlib
+          import tempfile
+
+          root = pathlib.Path(tempfile.mkdtemp(prefix="heptabao-macos-fd-", dir="/tmp"))
+          fd = os.open(
+              root,
+              os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+          )
+          try:
+              before = os.stat(root)
+              access = pathlib.Path(f"/dev/fd/{fd}")
+              observed = os.stat(access)
+              print({
+                  "root": str(root),
+                  "fd": fd,
+                  "access": str(access),
+                  "identity_match": (before.st_dev, before.st_ino) == (observed.st_dev, observed.st_ino),
+                  "mode": oct(observed.st_mode),
+              })
+              if (before.st_dev, before.st_ino) != (observed.st_dev, observed.st_ino):
+                  raise SystemExit("descriptor access identity mismatch")
+
+              fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+              contender = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+              try:
+                  try:
+                      fcntl.flock(contender, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                  except BlockingIOError:
+                      print("exclusive-lock-contender: BLOCKED")
+                  else:
+                      raise SystemExit("exclusive lock did not fence contender")
+              finally:
+                  os.close(contender)
+
+              temporary = access / "probe.tmp"
+              target = access / "probe.dat"
+              with open(temporary, "xb") as handle:
+                  handle.write(b"descriptor-bound-macos")
+                  handle.flush()
+                  os.fsync(handle.fileno())
+              os.replace(temporary, target)
+              os.fsync(fd)
+              if (root / "probe.dat").read_bytes() != b"descriptor-bound-macos":
+                  raise SystemExit("descriptor child traversal did not reach original directory")
+              print("child-create-rename-parent-fsync: PASS")
+
+              moved = root.with_name(root.name + "-moved")
+              os.rename(root, moved)
+              replacement = root
+              replacement.mkdir()
+              (access / "after-move.dat").write_bytes(b"anchored")
+              if not (moved / "after-move.dat").is_file():
+                  raise SystemExit("descriptor path followed replacement rather than opened inode")
+              if (replacement / "after-move.dat").exists():
+                  raise SystemExit("write escaped to replacement root")
+              print("rename-replacement-anchor: PASS")
+          finally:
+              os.close(fd)
+          PY
+          git diff --exit-code
