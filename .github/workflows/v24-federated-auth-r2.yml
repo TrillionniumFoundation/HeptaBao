@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-federated-auth-r2-recovery-v5
+  group: heptabao-v24-federated-auth-r2-recovery-v6
   cancel-in-progress: true
 
 env:
@@ -17,7 +17,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-federated-auth-r1-20260909
   MATERIALIZER_SHA: db77577dca611f4c6ad3f19b7a3627b5b230f817
   MATERIALIZER_WORKFLOW: .github/workflows/v24-federated-auth-materializer.yml
-  RECOVERY_PARENT_SHA: e6d9ff5b898faed801e8ce5617282fd2fdf4e7e6
+  RECOVERY_PARENT_SHA: adbb35204999ccbc91fdd07ce353f647fa4c4aab
   ORIGINAL_PATCH_SHA: 4a217be15255fbed544f0c059a752f8bb390273d
   PATCH_WORKFLOW: .github/workflows/v24-federated-auth-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-federated-auth-source-20260909
@@ -101,20 +101,8 @@ jobs:
 
           path = Path(sys.argv[1])
           text = path.read_text(encoding="utf-8")
-          old = '''        if let Some(typ) = take_optional_string(&mut header, "typ")? {
-            if typ != "JWT" {
-                return Err(AuthError::MalformedToken);
-            }
-        }
-        if !header.is_empty() {
-'''
-          new = '''        if let Some(typ) = take_optional_string(&mut header, "typ")?
-            && typ != "JWT"
-        {
-            return Err(AuthError::MalformedToken);
-        }
-        if !header.is_empty() {
-'''
+          old = "        if let Some(typ) = take_optional_string(&mut header, \"typ\")? {\n            if typ != \"JWT\" {\n                return Err(AuthError::MalformedToken);\n            }\n        }\n        if !header.is_empty() {\n"
+          new = "        if let Some(typ) = take_optional_string(&mut header, \"typ\")?\n            && typ != \"JWT\"\n        {\n            return Err(AuthError::MalformedToken);\n        }\n        if !header.is_empty() {\n"
           if text.count(old) != 1:
               raise SystemExit("expected exactly one generated collapsible JOSE type check")
           path.write_text(text.replace(old, new, 1), encoding="utf-8")
