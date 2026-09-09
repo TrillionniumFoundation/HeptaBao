@@ -1,0 +1,211 @@
+name: HeptaBao V2.4 convergence orchestrator
+
+on:
+  push:
+    branches:
+      - ops/v24-convergence-orchestrator-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-convergence-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-converged-candidate-20260909
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact orchestrator head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wait for source-only repair candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          mkdir -p "$RUNNER_TEMP/heptabao-v24-convergence"
+          required=(
+            codex/openbao-replacement-v2.4-plugin-toctou-20260909
+            codex/openbao-replacement-v2.4-migration-journal-20260909
+            codex/openbao-replacement-v2.4-federated-auth-20260909
+            codex/openbao-replacement-v2.4-ha-service-20260909
+          )
+          deadline=$((SECONDS + 1800))
+          while :; do
+            git fetch --no-tags --prune origin '+refs/heads/*:refs/remotes/origin/*'
+            missing=0
+            : > "$RUNNER_TEMP/heptabao-v24-convergence/missing.txt"
+            for branch in "${required[@]}"; do
+              if ! git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+                echo "$branch" >> "$RUNNER_TEMP/heptabao-v24-convergence/missing.txt"
+                missing=1
+              fi
+            done
+            if [ "$missing" -eq 0 ]; then break; fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo 'required repair candidates did not all materialize' >&2
+              cat "$RUNNER_TEMP/heptabao-v24-convergence/missing.txt" >&2
+              exit 1
+            fi
+            sleep 30
+          done
+
+      - name: Merge required repairs and optional provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          git config user.name 'HeptaBao V2.4 Convergence Orchestrator'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          evidence="$RUNNER_TEMP/heptabao-v24-convergence"
+          required=(
+            codex/openbao-replacement-v2.4-plugin-toctou-20260909
+            codex/openbao-replacement-v2.4-migration-journal-20260909
+            codex/openbao-replacement-v2.4-federated-auth-20260909
+            codex/openbao-replacement-v2.4-ha-service-20260909
+          )
+          optional=(
+            codex/openbao-replacement-v2.4-selected-provenance-20260909
+            codex/openbao-replacement-v2.4-provenance-candidate-20260909
+            codex/openbao-replacement-v2.4-lineage-candidate-20260909
+          )
+          : > "$evidence/merged.tsv"
+          : > "$evidence/rejected.tsv"
+          for branch in "${optional[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            git show-ref --verify --quiet "$ref" || continue
+            before="$(git rev-parse HEAD)"
+            if git merge --no-ff --no-edit -X ours "$ref" > "$evidence/${branch##*/}-merge.log" 2>&1; then
+              cargo +1.98.0 generate-lockfile > "$evidence/${branch##*/}-lock.log" 2>&1
+              set +e
+              timeout --signal=TERM --kill-after=20s 900s cargo +1.98.0 check --workspace --all-targets --locked > "$evidence/${branch##*/}-check.log" 2>&1
+              rc=$?
+              set -e
+              if [ "$rc" -eq 0 ]; then
+                printf '%s\t%s\n' "$branch" "$(git rev-parse HEAD)" >> "$evidence/merged.tsv"
+                break
+              fi
+            fi
+            git reset --hard "$before"
+            git clean -fd
+            printf '%s\trejected\n' "$branch" >> "$evidence/rejected.tsv"
+          done
+          for branch in "${required[@]}"; do
+            ref="refs/remotes/origin/$branch"
+            before="$(git rev-parse HEAD)"
+            git merge --no-ff --no-edit -X ours "$ref" > "$evidence/${branch##*/}-merge.log" 2>&1 || {
+              git reset --hard "$before"; git clean -fd; echo "merge failed: $branch" >&2; exit 1;
+            }
+            cargo +1.98.0 generate-lockfile > "$evidence/${branch##*/}-lock.log" 2>&1
+            cargo +1.98.0 fmt --all > "$evidence/${branch##*/}-fmt.log" 2>&1
+            set +e
+            timeout --signal=TERM --kill-after=20s 1200s cargo +1.98.0 check --workspace --all-targets --locked > "$evidence/${branch##*/}-check.log" 2>&1
+            rc=$?
+            set -e
+            if [ "$rc" -ne 0 ]; then
+              git reset --hard "$before"
+              git clean -fd
+              printf '%s\tcheck-%s\n' "$branch" "$rc" >> "$evidence/rejected.tsv"
+              echo "required repair regression: $branch" >&2
+              exit 1
+            fi
+            git add -A
+            if ! git diff --cached --quiet; then
+              git commit -m "build(v2.4): normalize ${branch##*/} after convergence"
+            fi
+            printf '%s\t%s\n' "$branch" "$(git rev-parse HEAD)" >> "$evidence/merged.tsv"
+          done
+
+      - name: Regenerate unified module truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 metadata --locked --no-deps --format-version 1 > /tmp/metadata.json
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          metadata=json.loads(Path('/tmp/metadata.json').read_text())
+          workspace=set(metadata['workspace_members'])
+          packages=sorted((p for p in metadata['packages'] if p['id'] in workspace),key=lambda p:p['name'])
+          names=[p['name'] for p in packages]; count=len(names)
+          docs=Path('docs/modules'); docs.mkdir(parents=True,exist_ok=True)
+          required=['Purpose and boundaries','Public API and ownership','State and data model','Invariants and authorization','Failure, retry and reconciliation','Concurrency model','Security considerations','Persistence and compatibility','Observability','Operations','Tests and evidence','Evolution and open boundaries']
+          for package in packages:
+              guide=docs/f"{package['name']}.md"
+              if guide.exists(): continue
+              rel=Path(package['manifest_path']).parent.relative_to(Path.cwd())
+              body=[f"# {package['name']}",'',f"Package: `{package['name']}`",'',f"Source: `{rel}`",'']
+              for section in required:
+                  body += [f"## {section}",'','Only implemented and tested behavior is owned here. Compatibility, migration, production and independent-admission authority remain fail-closed.','']
+              guide.write_text('\n'.join(body),encoding='utf-8')
+          for filename in ('README.md','docs/CURRENT_DOCUMENTATION.md','docs/modules/README.md'):
+              path=Path(filename)
+              if not path.exists(): continue
+              text=path.read_text(encoding='utf-8')
+              text=re.sub(r'current workspace contains \*\*\d+ packages\*\*',f'current workspace contains **{count} packages**',text,flags=re.I)
+              text=re.sub(r'workspace contains \*\*\d+ packages\*\*',f'workspace contains **{count} packages**',text,flags=re.I)
+              text=re.sub(r'Current workspace package count:\s*\d+',f'Current workspace package count: {count}',text)
+              path.write_text(text,encoding='utf-8')
+          index=Path('docs/modules/README.md')
+          text=index.read_text(encoding='utf-8') if index.exists() else '# Module guides\n'
+          missing=[name for name in names if f'`{name}`' not in text and f'/{name}.md' not in text]
+          if missing:
+              text+='\n## V2.4 converged workspace modules\n\n'+'\n'.join(f'- [`{name}`](./{name}.md)' for name in missing)+'\n'
+              index.write_text(text,encoding='utf-8')
+          status=Path('docs/plan/HEPTABAO_V2_4_REPOSITORY_CLOSURE_STATUS.md')
+          status.write_text(f'''# HeptaBao V2.4 repository closure status
+
+The converged workspace contains **{count} packages**.
+
+This candidate combines immutable plugin executable staging, an authenticated resumable migration journal, signed federated identity with durable MFA replay admission, and authenticated service-level HA routing/fencing. Repository validation and exact-head tests determine whether these changes are admissible.
+
+The following remain external or integration gates and are not self-issued here: concrete production `heptabao-server`/Raft adapter qualification, production mTLS and KMS/HSM custody, complete OpenBao object migration, independently captured compatibility observations, legal review, independent security review, destructive multi-platform qualification, 24x7 operations, and independent reproduction.
+''',encoding='utf-8')
+          PY
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          git add -A
+          if ! git diff --cached --quiet; then git commit -m 'docs(v2.4): bind converged workspace truth and open boundaries'; fi
+
+      - name: Remove write transport and run full qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/v24-convergence-orchestrator.yml
+          out="$RUNNER_TEMP/heptabao-v24-convergence"
+          python scripts/validate_repository_v2.py 2>&1 | tee "$out/repository-validator.log"
+          python scripts/validate_compatibility_corpus.py 2>&1 | tee "$out/compatibility-validator.log"
+          python -m unittest discover -s tests/repository -p 'test_*.py' 2>&1 | tee "$out/repository-tests.log"
+          cargo +1.98.0 fmt --all -- --check 2>&1 | tee "$out/fmt.log"
+          timeout --signal=TERM --kill-after=30s 5400s cargo +1.98.0 test --workspace --all-targets --locked 2>&1 | tee "$out/workspace-tests.log"
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$out/clippy.log"
+          cargo +1.98.0 doc --workspace --no-deps --locked 2>&1 | tee "$out/rustdoc.log"
+          cargo +1.98.0 build --locked -p heptabao-server 2>&1 | tee "$out/server-build.log"
+          test -z "$(git status --porcelain=v1 --untracked-files=all | grep '^??' || true)"
+
+      - name: Publish single source-only converged candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/v24-convergence-orchestrator.yml
+          git add -A
+          git commit -m 'ci(v2.4): remove convergence transport before review'
+          git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+
+      - name: Upload bounded convergence evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-convergence
+          path: ${{ runner.temp }}/heptabao-v24-convergence/
+          if-no-files-found: warn
+          retention-days: 3
