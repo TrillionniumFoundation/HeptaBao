@@ -2,22 +2,22 @@ name: HeptaBao V2.4 migration journal source recovery r2
 
 on:
   push:
-    branches:
-      - ops/v24-migration-journal-r2-20260909
+    branches: [ops/v24-migration-journal-r2-20260909]
 
 permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-migration-journal-r2-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-migration-journal-r2-recovery-v3
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   MATERIALIZER_BRANCH: ops/v24-migration-journal-r1-20260909
   MATERIALIZER_SHA: 25dce79d68292f8a6bdbed05eb759274bbf01cf2
   MATERIALIZER_WORKFLOW: .github/workflows/v24-migration-journal-materializer.yml
-  PATCH_CONTROLLER_SHA: f7fe978bc7bc2eff81a2fa325163658a9559789d
+  RECOVERY_PARENT_SHA: 209a5785c56733dc834b99a848750f32d80e74e3
+  ORIGINAL_PATCH_SHA: c1df5aac5d196294620ad8b170be254e6f398821
   PATCH_WORKFLOW: .github/workflows/v24-migration-journal-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-migration-journal-source-20260909
 
@@ -28,23 +28,20 @@ jobs:
     steps:
       - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
+        with: {fetch-depth: 0, persist-credentials: true}
       - name: Verify immutable controller inputs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
-          test "$(git merge-base "$PATCH_CONTROLLER_SHA" "$BASE_SHA")" = "$BASE_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "4562beff0876df6fa558edd7004da5fd147aa43d"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW")" = "0551a487128c81cadfb1a69b8223e42dafa89a1a"
           git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/migration-materializer"
           test "$(git rev-parse refs/remotes/origin/migration-materializer)" = "$MATERIALIZER_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW")" = "1c308486307ec4a50421b9d320a91abf14bea738"
           test "$(git diff --name-only "$BASE_SHA..$MATERIALIZER_SHA")" = "$MATERIALIZER_WORKFLOW"
-
       - name: Recover and qualify migration journal source
         shell: bash
         run: |
@@ -52,46 +49,30 @@ jobs:
           work="$RUNNER_TEMP/heptabao-migration-journal-r2"
           git worktree add --detach "$work" "$BASE_SHA"
           git show "$MATERIALIZER_SHA:$MATERIALIZER_WORKFLOW" > "$RUNNER_TEMP/materializer.yml"
-          git show "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
+          git show "$ORIGINAL_PATCH_SHA:$PATCH_WORKFLOW" > "$RUNNER_TEMP/patch.yml"
           python - "$RUNNER_TEMP/materializer.yml" "      - name: Materialize durable migration journal package" "$RUNNER_TEMP/materialize.sh" <<'PY'
           from pathlib import Path
           import sys
-
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
-          body = []
-          for line in source[run_index + 1:]:
-              if line.startswith("      - name: "):
-                  break
-              body.append(line[10:] if line.startswith("          ") else line)
-          text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
-          for token in denied:
-              if token in text:
-                  raise SystemExit(f"denied materializer token: {token}")
-          Path(sys.argv[3]).write_text(text, encoding="utf-8")
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines(); start=lines.index(sys.argv[2]); run=next(i for i in range(start+1,min(start+10,len(lines))) if lines[i]=='        run: |'); body=[]
+          for line in lines[run+1:]:
+              if line.startswith('      - name: '): break
+              body.append(line[10:] if line.startswith('          ') else line)
+          text='\n'.join(x for x in body if 'git rev-parse HEAD^' not in x)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied materializer token: {token}')
+          Path(sys.argv[3]).write_text(text,encoding='utf-8')
           PY
           python - "$RUNNER_TEMP/patch.yml" "      - name: Harden lock lifetime and journal file admission" "$RUNNER_TEMP/harden.sh" <<'PY'
           from pathlib import Path
           import sys
-
-          source = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
-          marker = sys.argv[2]
-          start = source.index(marker)
-          run_index = next(i for i in range(start + 1, min(start + 10, len(source))) if source[i] == "        run: |")
-          body = []
-          for line in source[run_index + 1:]:
-              if line.startswith("      - name: "):
-                  break
-              body.append(line[10:] if line.startswith("          ") else line)
-          text = "\n".join(body) + "\n"
-          denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
-          for token in denied:
-              if token in text:
-                  raise SystemExit(f"denied hardening token: {token}")
-          Path(sys.argv[3]).write_text(text, encoding="utf-8")
+          lines=Path(sys.argv[1]).read_text(encoding='utf-8').splitlines(); start=lines.index(sys.argv[2]); run=next(i for i in range(start+1,min(start+10,len(lines))) if lines[i]=='        run: |'); body=[]
+          for line in lines[run+1:]:
+              if line.startswith('      - name: '): break
+              body.append(line[10:] if line.startswith('          ') else line)
+          text='\n'.join(body)+'\n'
+          for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','rm -rf','sudo '):
+              if token in text: raise SystemExit(f'denied hardening token: {token}')
+          Path(sys.argv[3]).write_text(text,encoding='utf-8')
           PY
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
           (
@@ -100,13 +81,11 @@ jobs:
             bash "$RUNNER_TEMP/harden.sh"
             git config user.name 'HeptaBao Migration Journal Recovery'
             git config user.email '102159240+ProfHepta@users.noreply.github.com'
-            git add -A
-            test -n "$(git status --porcelain)"
+            git add -A && test -n "$(git status --porcelain)"
             git commit -m 'feat(migration): materialize qualified durable migration journal'
             new_sha="$(git rev-parse HEAD)"
             if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-              test "$observed" = "$new_sha"
+              test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$new_sha"
             else
               git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
             fi
