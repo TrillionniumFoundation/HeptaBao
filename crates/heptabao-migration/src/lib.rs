@@ -8,6 +8,10 @@ use std::fmt;
 
 use heptabao_domain::Id;
 
+// The durable filesystem profile is Linux-only. In non-Linux test builds the
+// production API is still compiled and the unsupported-platform path is tested,
+// while Linux-only test helpers are intentionally unreferenced.
+#[cfg_attr(all(test, not(target_os = "linux")), allow(dead_code))]
 mod durable;
 pub use durable::*;
 
