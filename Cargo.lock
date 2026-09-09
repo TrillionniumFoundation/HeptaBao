@@ -523,6 +523,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-federated-auth"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "ring",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "heptabao-filesystem-guard"
 version = "0.1.0"
 
