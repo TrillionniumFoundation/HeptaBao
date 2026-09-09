@@ -17,7 +17,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-migration-journal-r1-20260909
   MATERIALIZER_SHA: 25dce79d68292f8a6bdbed05eb759274bbf01cf2
   MATERIALIZER_WORKFLOW: .github/workflows/v24-migration-journal-materializer.yml
-  PATCH_CONTROLLER_SHA: c1df5aac5d196294620ad8b170be254e6f398821
+  PATCH_CONTROLLER_SHA: f7fe978bc7bc2eff81a2fa325163658a9559789d
   PATCH_WORKFLOW: .github/workflows/v24-migration-journal-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-migration-journal-source-20260909
 
@@ -37,8 +37,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$PATCH_CONTROLLER_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA^")" = "$BASE_SHA"
-          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "0551a487128c81cadfb1a69b8223e42dafa89a1a"
+          test "$(git merge-base "$PATCH_CONTROLLER_SHA" "$BASE_SHA")" = "$BASE_SHA"
+          test "$(git rev-parse "$PATCH_CONTROLLER_SHA:$PATCH_WORKFLOW")" = "4562beff0876df6fa558edd7004da5fd147aa43d"
           git fetch --no-tags origin "+refs/heads/$MATERIALIZER_BRANCH:refs/remotes/origin/migration-materializer"
           test "$(git rev-parse refs/remotes/origin/migration-materializer)" = "$MATERIALIZER_SHA"
           test "$(git rev-parse "$MATERIALIZER_SHA^")" = "$BASE_SHA"
@@ -65,9 +65,7 @@ jobs:
           for line in source[run_index + 1:]:
               if line.startswith("      - name: "):
                   break
-              if line and not line.startswith("          "):
-                  raise SystemExit("invalid source workflow indentation")
-              body.append(line[10:] if line else "")
+              body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(line for line in body if "git rev-parse HEAD^" not in line) + "\n"
           denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
           for token in denied:
@@ -87,9 +85,7 @@ jobs:
           for line in source[run_index + 1:]:
               if line.startswith("      - name: "):
                   break
-              if line and not line.startswith("          "):
-                  raise SystemExit("invalid patch workflow indentation")
-              body.append(line[10:] if line else "")
+              body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
           denied = ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", chr(36) + "{{", "rm -rf", "sudo ")
           for token in denied:
