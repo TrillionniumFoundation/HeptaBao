@@ -9,13 +9,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-plugin-attestation-r3-recovery
-  cancel-in-progress: false
+  group: heptabao-v24-plugin-attestation-r3-recovery-v2
+  cancel-in-progress: true
 
 env:
   BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-host-source-r3-20260909
+  RECOVERY_PARENT_SHA: 073e9d01310d21dd1c0bcac6eed62652ba4d30bd
   ORIGINAL_CONTROLLER_SHA: 968aa62a9d7409229883c0a15be1f6afb9775831
   ORIGINAL_WORKFLOW: .github/workflows/v24-plugin-attestation-r3.yml
 
@@ -34,7 +35,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$ORIGINAL_CONTROLLER_SHA"
+          test "$(git rev-parse HEAD^)" = "$RECOVERY_PARENT_SHA"
+          test "$(git merge-base "$RECOVERY_PARENT_SHA" "$BASE_SHA")" = "$BASE_SHA"
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA^")" = "$BASE_SHA"
           test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW")" = "506c28f9e3c0cdbd5081f066ba637fc95dc26986"
 
@@ -73,9 +75,7 @@ jobs:
           for line in lines[run_index + 1:]:
               if line.startswith("      - name: "):
                   break
-              if line and not line.startswith("          "):
-                  raise SystemExit("invalid provider-attestation workflow indentation")
-              body.append(line[10:] if line else "")
+              body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
           if chr(36) + "{{" in text:
               raise SystemExit("unresolved workflow expression in extracted attestation block")
