@@ -1,0 +1,53 @@
+name: HeptaBao exact-head offline vendor export 20260910
+
+on:
+  push:
+    branches:
+      - ops/heptabao-offline-vendor-export-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-offline-vendor-export-20260910
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind product parent and vendor locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          product_parent="$(git rev-parse HEAD^)"
+          test "$product_parent" = "6300d63abfbffc25af12b8254882436eef15ef1c"
+          test "$(git diff --name-only "$product_parent" HEAD)" = ".github/workflows/offline-vendor-export-20260910.yml"
+          rustup toolchain install 1.98.0 --profile minimal
+          cargo +1.98.0 vendor --locked "$RUNNER_TEMP/vendor" > "$RUNNER_TEMP/vendor-config.toml"
+          printf 'source_commit=%s\nsource_tree=%s\nrustc=%s\n' \
+            "$product_parent" \
+            "$(git rev-parse "$product_parent^{tree}")" \
+            "$(rustc +1.98.0 --version)" > "$RUNNER_TEMP/source-binding.txt"
+          tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
+            vendor vendor-config.toml source-binding.txt
+          sha256sum "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
+            > "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz.sha256"
+
+      - name: Upload bounded offline vendor bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-offline-vendor-6300d63
+          path: |
+            ${{ runner.temp }}/heptabao-vendor-6300d63.tar.gz
+            ${{ runner.temp }}/heptabao-vendor-6300d63.tar.gz.sha256
+            ${{ runner.temp }}/source-binding.txt
+          if-no-files-found: error
+          retention-days: 3
