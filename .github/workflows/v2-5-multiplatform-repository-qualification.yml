@@ -60,7 +60,7 @@ jobs:
           python scripts/validate_compatibility_corpus.py
           python -m unittest discover -s tests/repository -p 'test_*.py'
 
-      - name: Check formatting and all targets
+      - name: Execute all workspace targets
         shell: bash
         run: |
           set -euo pipefail
@@ -86,6 +86,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
   repository-linux-arm64:
     name: repository / ubuntu-24.04-arm
     runs-on: ubuntu-24.04-arm
@@ -129,65 +130,19 @@ jobs:
           python scripts/validate_compatibility_corpus.py
           python -m unittest discover -s tests/repository -p 'test_*.py'
 
-      - name: Probe durable filesystem primitives
+      - name: Execute all workspace targets with target ABI flags
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import fcntl
           import os
-          import pathlib
-          import tempfile
-
-          root = pathlib.Path(tempfile.mkdtemp(prefix="heptabao-fs-probe-"))
-          flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
           print({
-              "root": str(root),
               "machine": os.uname().machine,
               "O_DIRECTORY": os.O_DIRECTORY,
               "O_NOFOLLOW": os.O_NOFOLLOW,
               "O_CLOEXEC": os.O_CLOEXEC,
-              "combined": flags,
           })
-          fd = os.open(root, flags)
-          print("open-directory: PASS", fd)
-          for label, operation in (
-              ("flock-directory", lambda: fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)),
-              ("fsync-directory", lambda: os.fsync(fd)),
-          ):
-              try:
-                  operation()
-                  print(f"{label}: PASS")
-              except OSError as error:
-                  print(f"{label}: FAIL errno={error.errno} repr={error!r}")
-          reopened = os.open(f"/proc/self/fd/{fd}", os.O_RDONLY | os.O_CLOEXEC)
-          try:
-              try:
-                  os.fsync(reopened)
-                  print("fsync-proc-reopen: PASS")
-              except OSError as error:
-                  print(f"fsync-proc-reopen: FAIL errno={error.errno} repr={error!r}")
-          finally:
-              os.close(reopened)
-          temporary = pathlib.Path(f"/proc/self/fd/{fd}") / "probe.tmp"
-          target = pathlib.Path(f"/proc/self/fd/{fd}") / "probe.dat"
-          with open(temporary, "xb") as handle:
-              handle.write(b"probe")
-              handle.flush()
-              os.fsync(handle.fileno())
-          os.replace(temporary, target)
-          try:
-              os.fsync(fd)
-              print("atomic-file-plus-parent-fsync: PASS")
-          except OSError as error:
-              print(f"atomic-file-plus-parent-fsync: FAIL errno={error.errno} repr={error!r}")
-          os.close(fd)
           PY
-
-      - name: Check formatting and all targets
-        shell: bash
-        run: |
-          set -euo pipefail
           cargo +1.98.0 fmt --all -- --check
           cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
 
@@ -210,8 +165,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-  repository-macos:
-    name: repository / macos-15
+
+  repository-macos-portable:
+    name: portable contracts / macos-15; storage fail-closed
     runs-on: macos-15
     timeout-minutes: 150
     steps:
@@ -227,20 +183,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-          printf 'runner=macos-15\ncommit=%s\ntree=%s\n' \
+          printf 'runner=macos-15\nprofile=portable-contracts-storage-fail-closed\ncommit=%s\ntree=%s\n' \
             "$(git rev-parse HEAD)" \
             "$(git rev-parse 'HEAD^{tree}')"
 
-      - name: Install pinned Python plan dependencies
+      - name: Install pinned repository dependencies
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
-
-      - name: Install exact Rust 1.98 toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           cargo +1.98.0 --version
           rustc +1.98.0 --version
@@ -253,23 +204,99 @@ jobs:
           python scripts/validate_compatibility_corpus.py
           python -m unittest discover -s tests/repository -p 'test_*.py'
 
-      - name: Check formatting and all targets
+      - name: Compile every workspace target
         shell: bash
         run: |
           set -euo pipefail
           cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+          cargo +1.98.0 test --workspace --all-targets --locked --no-run
 
-      - name: Run strict Clippy
+      - name: Execute packages outside the Linux storage closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import subprocess
+
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "+1.98.0", "metadata", "--format-version", "1", "--locked"
+          ]))
+          workspace = set(metadata["workspace_members"])
+          packages = {
+              package["id"]: package
+              for package in metadata["packages"]
+              if package["id"] in workspace
+          }
+          dependency_ids = {
+              node["id"]: {dependency["pkg"] for dependency in node.get("deps", [])}
+              for node in metadata["resolve"]["nodes"]
+              if node["id"] in workspace
+          }
+          guard = next(
+              package_id
+              for package_id, package in packages.items()
+              if package["name"] == "heptabao-filesystem-guard"
+          )
+          storage_closure = {guard}
+          changed = True
+          while changed:
+              changed = False
+              for package_id in workspace - storage_closure:
+                  if dependency_ids.get(package_id, set()) & storage_closure:
+                      storage_closure.add(package_id)
+                      changed = True
+          runnable = sorted(
+              package["name"]
+              for package_id, package in packages.items()
+              if package_id not in storage_closure
+          )
+          blocked = sorted(packages[package_id]["name"] for package_id in storage_closure)
+          print(json.dumps({
+              "executed_packages": runnable,
+              "compiled_but_storage_blocked_packages": blocked,
+          }, sort_keys=True))
+          command = ["cargo", "+1.98.0", "test", "--locked", "--all-targets"]
+          for name in runnable:
+              command.extend(["-p", name])
+          command.extend(["--", "--test-threads=1"])
+          subprocess.run(command, check=True)
+          PY
+
+      - name: Prove unsupported storage profile fails closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/heptabao-storage-profile-probe"
+          rm -rf "$probe"
+          mkdir -p "$probe/src"
+          cat > "$probe/Cargo.toml" <<EOF
+          [package]
+          name = "heptabao-storage-profile-probe"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          heptabao-filesystem-guard = { path = "$GITHUB_WORKSPACE/crates/heptabao-filesystem-guard" }
+          EOF
+          cat > "$probe/src/main.rs" <<'EOF'
+          use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+
+          fn main() {
+              let root = std::env::current_dir().expect("absolute current directory");
+              match ExclusiveDirectory::open(root) {
+                  Err(DirectoryGuardError::UnsupportedPlatform) => {}
+                  other => panic!("macOS storage profile must fail closed, got {other:?}"),
+              }
+          }
+          EOF
+          cargo +1.98.0 run --offline --manifest-path "$probe/Cargo.toml"
+
+      - name: Run strict Clippy and build portable artifacts
         shell: bash
         run: |
           set -euo pipefail
           cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
-
-      - name: Build documentation and server
-        shell: bash
-        run: |
-          set -euo pipefail
           cargo +1.98.0 doc --workspace --no-deps --locked
           cargo +1.98.0 build --locked -p heptabao-server
 
