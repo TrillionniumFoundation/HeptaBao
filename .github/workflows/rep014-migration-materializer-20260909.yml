@@ -1,0 +1,136 @@
+name: REP-014 durable migration materializer 20260909
+
+on:
+  push:
+    branches:
+      - ops/heptabao-rep014-migration-materializer-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rep014-migration-materializer-20260909
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 48383a20c9e8f124c5e5301f2fa1584c46825aa2
+  TARGET_BRANCH: codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  PAYLOAD_SHA256: 2444cf7b13c98d46c6719223c485b791a835d1c020a443e1f0e663c8c2b116e0
+  PAYLOAD_BYTES: "14226"
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact controller with bounded credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind controller and immutable candidate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/ops/heptabao-rep014-migration-materializer-20260909"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          observed="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$observed" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Verify and materialize closed source payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload=.materializer/rep014/payload.tar.gz
+          test "$(wc -c < "$payload" | tr -d ' ')" = "$PAYLOAD_BYTES"
+          printf '%s  %s\n' "$PAYLOAD_SHA256" "$payload" | sha256sum --check --strict
+          expected_members="$(printf '%s\n' Cargo.toml durable.rs heptabao-migration.md lib.rs | sort)"
+          observed_members="$(tar -tzf "$payload" | sed 's#^\./##' | sort)"
+          test "$observed_members" = "$expected_members"
+          candidate="$RUNNER_TEMP/heptabao-rep014-candidate"
+          stage="$RUNNER_TEMP/heptabao-rep014-stage"
+          mkdir -p "$stage"
+          tar -xzf "$payload" -C "$stage" --no-same-owner --no-same-permissions
+          git worktree add --detach "$candidate" "$SOURCE_SHA"
+          install -m 0644 "$stage/durable.rs" "$candidate/crates/heptabao-migration/src/durable.rs"
+          install -m 0644 "$stage/lib.rs" "$candidate/crates/heptabao-migration/src/lib.rs"
+          install -m 0644 "$stage/Cargo.toml" "$candidate/crates/heptabao-migration/Cargo.toml"
+          install -m 0644 "$stage/heptabao-migration.md" "$candidate/docs/modules/heptabao-migration.md"
+          git -C "$candidate" diff --check
+
+      - name: Install exact validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement "$RUNNER_TEMP/heptabao-rep014-candidate/requirements-plan.txt"
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version --verbose
+
+      - name: Format, resolve direct dependencies and validate repository truth
+        working-directory: ${{ runner.temp }}/heptabao-rep014-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 check -p heptabao-migration --tests
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          git diff --check
+
+      - name: Execute durable migration hostile tests
+        working-directory: ${{ runner.temp }}/heptabao-rep014-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-migration --all-targets -- --test-threads=1
+          cargo +1.98.0 clippy --locked -p heptabao-migration --all-targets -- -D warnings
+
+      - name: Seal exact repository candidate
+        id: candidate
+        working-directory: ${{ runner.temp }}/heptabao-rep014-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git status --short | sed 's/^...//' | sort)"
+          expected="$(printf '%s\n' \
+            Cargo.lock \
+            crates/heptabao-migration/Cargo.toml \
+            crates/heptabao-migration/src/durable.rs \
+            crates/heptabao-migration/src/lib.rs \
+            docs/modules/heptabao-migration.md | sort)"
+          test "$changed" = "$expected"
+          git diff --check
+          git config user.name "heptabao-rep014-materializer"
+          git config user.email "heptabao-rep014-materializer@users.noreply.github.com"
+          git add \
+            Cargo.lock \
+            crates/heptabao-migration/Cargo.toml \
+            crates/heptabao-migration/src/durable.rs \
+            crates/heptabao-migration/src/lib.rs \
+            docs/modules/heptabao-migration.md
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m "feat(migration): add durable reconcile-only journal" \
+            -m "Add a closed migration inventory, exact source and target digest bindings, descriptor-fenced atomic generations, intent-before-entry operation records, sticky unknown outcomes, dependency ordering, verified cutover and receipt-bound rollback. This remains repository implementation evidence and grants no migration authority." \
+            -m "Signed-off-by: OpenAI Codex <noreply@openai.com>"
+          sealed="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          printf 'sha=%s\ntree=%s\n' "$sealed" "$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
+
+      - name: Publish only under exact source lease
+        env:
+          SEALED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SEALED_SHA"
+          observed="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$observed" = "$SOURCE_SHA"
+          git push \
+            --force-with-lease="refs/heads/$TARGET_BRANCH:$SOURCE_SHA" \
+            origin "$SEALED_SHA:refs/heads/$TARGET_BRANCH"
