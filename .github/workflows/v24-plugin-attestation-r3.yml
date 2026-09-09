@@ -1,4 +1,4 @@
-name: HeptaBao V2.4 plugin provider attestation r3
+name: HeptaBao V2.4 plugin provider attestation recovery r3
 
 on:
   push:
@@ -9,425 +9,77 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-plugin-attestation-r3
+  group: heptabao-v24-plugin-attestation-r3-recovery
   cancel-in-progress: false
 
 env:
-  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+  BASE_SHA: 633848024e5315f3def23c035a1dec53f83a62b3
   INPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-toctou-source-20260909
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-plugin-host-source-r3-20260909
+  ORIGINAL_CONTROLLER_SHA: 968aa62a9d7409229883c0a15be1f6afb9775831
+  ORIGINAL_WORKFLOW: .github/workflows/v24-plugin-attestation-r3.yml
 
 jobs:
-  harden:
+  recover:
     runs-on: ubuntu-24.04
-    timeout-minutes: 150
+    timeout-minutes: 180
     steps:
-      - name: Checkout controller
+      - name: Checkout recovery controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Wait for immutable plugin source
+      - name: Verify immutable provider-attestation source
         shell: bash
         run: |
           set -euo pipefail
-          deadline=$((SECONDS + 7200))
+          test "$(git rev-parse HEAD^)" = "$ORIGINAL_CONTROLLER_SHA"
+          test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA^")" = "$BASE_SHA"
+          test "$(git rev-parse "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW")" = "506c28f9e3c0cdbd5081f066ba637fc95dc26986"
+
+      - name: Wait for qualified immutable plugin source
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 9000))
           while [ "$SECONDS" -lt "$deadline" ]; do
-            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/$INPUT_BRANCH" || true
-            if git show-ref --verify --quiet "refs/remotes/origin/$INPUT_BRANCH"; then
-              source_sha="$(git rev-parse "refs/remotes/origin/$INPUT_BRANCH")"
-              git merge-base --is-ancestor "$EXACT_PARENT" "$source_sha"
+            git fetch --no-tags origin "+refs/heads/$INPUT_BRANCH:refs/remotes/origin/plugin-r2" || true
+            if git show-ref --verify --quiet refs/remotes/origin/plugin-r2; then
+              source_sha="$(git rev-parse refs/remotes/origin/plugin-r2)"
+              git merge-base --is-ancestor "$BASE_SHA" "$source_sha"
               printf 'SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
               exit 0
             fi
-            sleep 30
+            sleep 20
           done
-          echo 'immutable plugin source did not materialize' >&2
+          echo 'plugin TOCTOU r2 source did not materialize' >&2
           exit 1
 
-      - name: Add provider-attestation admission in isolated worktree
+      - name: Execute exact provider-attestation hardening block
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          work="$RUNNER_TEMP/heptabao-plugin-attestation-r3"
-          git worktree add --detach "$work" "$SOURCE_SHA"
-          (
-            cd "$work"
-            python - <<'PY'
+          git show "$ORIGINAL_CONTROLLER_SHA:$ORIGINAL_WORKFLOW" > "$RUNNER_TEMP/original-plugin-r3.yml"
+          python - "$RUNNER_TEMP/original-plugin-r3.yml" "$RUNNER_TEMP/harden-plugin-r3.sh" <<'PY'
           from pathlib import Path
+          import sys
 
-          path=Path('crates/heptabao-plugin-host/src/lib.rs')
-          text=path.read_text(encoding='utf-8')
-          if 'pub struct ProviderAttestationV24' in text:
-              raise SystemExit('provider attestation already exists')
-          addition=r'''
-
-pub const PROVIDER_ATTESTATION_DOMAIN_V2_4: &[u8] =
-    b"heptabao-sandbox-provider-attestation-v2.4\0";
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ProviderSignerControlV24 {
-    RepositoryControlled,
-    Independent,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TrustedProviderSignerV24 {
-    pub signer_id: Id,
-    pub control: ProviderSignerControlV24,
-    pub ed25519_public_key: Vec<u8>,
-}
-
-impl TrustedProviderSignerV24 {
-    pub fn new(
-        signer_id: Id,
-        control: ProviderSignerControlV24,
-        ed25519_public_key: Vec<u8>,
-    ) -> Result<Self, ProviderAttestationErrorV24> {
-        if ed25519_public_key.len() != 32 {
-            return Err(ProviderAttestationErrorV24::InvalidPublicKey);
-        }
-        Ok(Self {
-            signer_id,
-            control,
-            ed25519_public_key,
-        })
-    }
-}
-
-#[derive(Clone, Eq, PartialEq)]
-pub struct ProviderAttestationV24 {
-    pub provider_id: Id,
-    pub provider_binary_sha256: [u8; 32],
-    pub profile_id: Id,
-    pub profile_sha256: [u8; 32],
-    pub platform: String,
-    pub issued_at: u64,
-    pub expires_at: u64,
-    pub signer_id: Id,
-    signature: Vec<u8>,
-}
-
-impl ProviderAttestationV24 {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        provider_id: Id,
-        provider_binary_sha256: [u8; 32],
-        profile_id: Id,
-        profile_sha256: [u8; 32],
-        platform: impl Into<String>,
-        issued_at: u64,
-        expires_at: u64,
-        signer_id: Id,
-        signature: Vec<u8>,
-    ) -> Result<Self, ProviderAttestationErrorV24> {
-        let platform = platform.into();
-        if provider_binary_sha256 == [0; 32]
-            || profile_sha256 == [0; 32]
-            || platform.is_empty()
-            || platform.len() > 128
-            || !platform
-                .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b'/'))
-            || issued_at == 0
-            || expires_at <= issued_at
-            || expires_at - issued_at > 31 * 24 * 60 * 60
-            || signature.len() != 64
-        {
-            return Err(ProviderAttestationErrorV24::InvalidAttestation);
-        }
-        Ok(Self {
-            provider_id,
-            provider_binary_sha256,
-            profile_id,
-            profile_sha256,
-            platform,
-            issued_at,
-            expires_at,
-            signer_id,
-            signature,
-        })
-    }
-
-    pub fn signature(&self) -> &[u8] {
-        &self.signature
-    }
-
-    pub fn signing_message(&self) -> Result<Vec<u8>, ProviderAttestationErrorV24> {
-        let mut message = Vec::with_capacity(
-            PROVIDER_ATTESTATION_DOMAIN_V2_4.len()
-                + self.provider_id.as_str().len()
-                + self.profile_id.as_str().len()
-                + self.platform.len()
-                + self.signer_id.as_str().len()
-                + 32 * 2
-                + 32,
-        );
-        message.extend_from_slice(PROVIDER_ATTESTATION_DOMAIN_V2_4);
-        append_attestation_field(&mut message, self.provider_id.as_str().as_bytes())?;
-        message.extend_from_slice(&self.provider_binary_sha256);
-        append_attestation_field(&mut message, self.profile_id.as_str().as_bytes())?;
-        message.extend_from_slice(&self.profile_sha256);
-        append_attestation_field(&mut message, self.platform.as_bytes())?;
-        message.extend_from_slice(&self.issued_at.to_be_bytes());
-        message.extend_from_slice(&self.expires_at.to_be_bytes());
-        append_attestation_field(&mut message, self.signer_id.as_str().as_bytes())?;
-        Ok(message)
-    }
-}
-
-impl fmt::Debug for ProviderAttestationV24 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct("ProviderAttestationV24")
-            .field("provider_id", &self.provider_id)
-            .field("provider_binary_sha256", &self.provider_binary_sha256)
-            .field("profile_id", &self.profile_id)
-            .field("profile_sha256", &self.profile_sha256)
-            .field("platform", &self.platform)
-            .field("issued_at", &self.issued_at)
-            .field("expires_at", &self.expires_at)
-            .field("signer_id", &self.signer_id)
-            .field("signature", &"[REDACTED]")
-            .finish()
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ProviderAttestationErrorV24 {
-    InvalidAttestation,
-    InvalidPublicKey,
-    UnknownSigner,
-    RepositoryControlledSigner,
-    BindingMismatch,
-    NotYetValid,
-    Expired,
-    SignatureVerificationFailed,
-}
-
-impl fmt::Display for ProviderAttestationErrorV24 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Self::InvalidAttestation => "sandbox provider attestation is invalid",
-            Self::InvalidPublicKey => "sandbox provider signer public key is invalid",
-            Self::UnknownSigner => "sandbox provider signer is unknown",
-            Self::RepositoryControlledSigner => {
-                "repository-controlled signer cannot qualify a sandbox provider"
-            }
-            Self::BindingMismatch => "sandbox provider attestation binding does not match manifest",
-            Self::NotYetValid => "sandbox provider attestation is not yet valid",
-            Self::Expired => "sandbox provider attestation is expired",
-            Self::SignatureVerificationFailed => {
-                "sandbox provider attestation signature verification failed"
-            }
-        })
-    }
-}
-
-impl Error for ProviderAttestationErrorV24 {}
-
-pub fn verify_provider_attestation_v2_4(
-    manifest: &PluginManifest,
-    attestation: &ProviderAttestationV24,
-    trusted_signers: &BTreeMap<Id, TrustedProviderSignerV24>,
-    now: u64,
-) -> Result<(), ProviderAttestationErrorV24> {
-    if manifest.sandbox().provider_id != attestation.provider_id
-        || manifest.sandbox().command_sha256 != attestation.provider_binary_sha256
-        || manifest.sandbox().profile_id != attestation.profile_id
-    {
-        return Err(ProviderAttestationErrorV24::BindingMismatch);
-    }
-    if now < attestation.issued_at {
-        return Err(ProviderAttestationErrorV24::NotYetValid);
-    }
-    if now >= attestation.expires_at {
-        return Err(ProviderAttestationErrorV24::Expired);
-    }
-    let signer = trusted_signers
-        .get(&attestation.signer_id)
-        .ok_or(ProviderAttestationErrorV24::UnknownSigner)?;
-    if signer.control != ProviderSignerControlV24::Independent {
-        return Err(ProviderAttestationErrorV24::RepositoryControlledSigner);
-    }
-    ring::signature::UnparsedPublicKey::new(
-        &ring::signature::ED25519,
-        &signer.ed25519_public_key,
-    )
-    .verify(&attestation.signing_message()?, attestation.signature())
-    .map_err(|_| ProviderAttestationErrorV24::SignatureVerificationFailed)
-}
-
-fn append_attestation_field(
-    output: &mut Vec<u8>,
-    value: &[u8],
-) -> Result<(), ProviderAttestationErrorV24> {
-    let length = u16::try_from(value.len())
-        .map_err(|_| ProviderAttestationErrorV24::InvalidAttestation)?;
-    output.extend_from_slice(&length.to_be_bytes());
-    output.extend_from_slice(value);
-    Ok(())
-}
-
-#[cfg(test)]
-mod provider_attestation_v2_4_tests {
-    use super::*;
-    use ring::signature::{Ed25519KeyPair, KeyPair};
-
-    fn id(value: &str) -> Id {
-        Id::parse(value).unwrap()
-    }
-
-    fn manifest() -> PluginManifest {
-        let descriptor = PluginDescriptor::new(
-            id("database-plugin"),
-            PluginKind::Database,
-            CanonicalPath::parse("/opt/heptabao/plugins/database").unwrap(),
-            [3; 32],
-            1,
-            PluginStatus::Enabled,
-        )
-        .unwrap();
-        PluginManifest::new(
-            descriptor,
-            SandboxBinding::new(
-                id("sandbox-provider"),
-                CanonicalPath::parse("/opt/heptabao/bin/sandbox").unwrap(),
-                [4; 32],
-                id("profile-prod"),
-            )
-            .unwrap(),
-            PluginLimits {
-                maximum_request_bytes: 1024,
-                maximum_response_bytes: 1024,
-                timeout_ms: 1_000,
-            },
-            BTreeSet::from([PluginOperation::Issue, PluginOperation::Renew, PluginOperation::Revoke]),
-            BTreeSet::new(),
-        )
-        .unwrap()
-    }
-
-    fn signed_attestation(
-        pair: &Ed25519KeyPair,
-        control: ProviderSignerControlV24,
-    ) -> (ProviderAttestationV24, BTreeMap<Id, TrustedProviderSignerV24>) {
-        let signer_id = id("platform-security-lab");
-        let unsigned = ProviderAttestationV24::new(
-            id("sandbox-provider"),
-            [4; 32],
-            id("profile-prod"),
-            [5; 32],
-            "linux/x86_64",
-            1_000,
-            2_000,
-            signer_id.clone(),
-            vec![0; 64],
-        )
-        .unwrap();
-        let signature = pair.sign(&unsigned.signing_message().unwrap()).as_ref().to_vec();
-        let attestation = ProviderAttestationV24::new(
-            unsigned.provider_id,
-            unsigned.provider_binary_sha256,
-            unsigned.profile_id,
-            unsigned.profile_sha256,
-            unsigned.platform,
-            unsigned.issued_at,
-            unsigned.expires_at,
-            signer_id.clone(),
-            signature,
-        )
-        .unwrap();
-        let trusted = BTreeMap::from([(
-            signer_id.clone(),
-            TrustedProviderSignerV24::new(
-                signer_id,
-                control,
-                pair.public_key().as_ref().to_vec(),
-            )
-            .unwrap(),
-        )]);
-        (attestation, trusted)
-    }
-
-    #[test]
-    fn exact_independent_attestation_is_admitted() {
-        let pair = Ed25519KeyPair::from_seed_unchecked(&[21; 32]).unwrap();
-        let (attestation, trusted) =
-            signed_attestation(&pair, ProviderSignerControlV24::Independent);
-        verify_provider_attestation_v2_4(&manifest(), &attestation, &trusted, 1_500).unwrap();
-    }
-
-    #[test]
-    fn repository_signer_expiry_and_binding_changes_fail_closed() {
-        let pair = Ed25519KeyPair::from_seed_unchecked(&[22; 32]).unwrap();
-        let (attestation, repository_trust) =
-            signed_attestation(&pair, ProviderSignerControlV24::RepositoryControlled);
-        assert_eq!(
-            verify_provider_attestation_v2_4(
-                &manifest(),
-                &attestation,
-                &repository_trust,
-                1_500,
-            ),
-            Err(ProviderAttestationErrorV24::RepositoryControlledSigner)
-        );
-        let (_, independent_trust) =
-            signed_attestation(&pair, ProviderSignerControlV24::Independent);
-        assert_eq!(
-            verify_provider_attestation_v2_4(
-                &manifest(),
-                &attestation,
-                &independent_trust,
-                2_000,
-            ),
-            Err(ProviderAttestationErrorV24::Expired)
-        );
-        let mut changed = manifest();
-        changed.sandbox.command_sha256 = [9; 32];
-        assert_eq!(
-            verify_provider_attestation_v2_4(
-                &changed,
-                &attestation,
-                &independent_trust,
-                1_500,
-            ),
-            Err(ProviderAttestationErrorV24::BindingMismatch)
-        );
-    }
-}
-'''
-          path.write_text(text.rstrip()+addition+'\n',encoding='utf-8')
-
-          guide=Path('docs/modules/heptabao-plugin-host.md')
-          g=guide.read_text(encoding='utf-8')
-          block='''
-## V2.4 sandbox-provider attestation
-
-`ProviderAttestationV24` domain-separates and binds provider ID, wrapper binary SHA-256, profile ID/profile SHA-256, platform, validity interval and signer. `verify_provider_attestation_v2_4` rejects repository-controlled signers, unknown signers, expired evidence and any manifest mismatch before plugin admission. Signature verification proves key possession and exact byte binding; independent platform review, signer custody, profile enforcement and production qualification remain external facts.
-'''
-          if '## V2.4 sandbox-provider attestation' not in g:
-              guide.write_text(g.rstrip()+block,encoding='utf-8')
-          Path('tests/repository/test_plugin_provider_attestation_v2_4.py').write_text('''from pathlib import Path\nimport unittest\n\n\nclass PluginProviderAttestationV24Tests(unittest.TestCase):\n    def test_attestation_binds_provider_profile_platform_and_signer(self):\n        source=Path("crates/heptabao-plugin-host/src/lib.rs").read_text(encoding="utf-8")\n        for marker in ("PROVIDER_ATTESTATION_DOMAIN_V2_4", "provider_binary_sha256", "profile_sha256", "RepositoryControlledSigner", "ED25519"):\n            self.assertIn(marker,source)\n\n    def test_external_qualification_boundary_is_explicit(self):\n        guide=Path("docs/modules/heptabao-plugin-host.md").read_text(encoding="utf-8")\n        self.assertIn("independent platform review",guide)\n        self.assertIn("external facts",guide)\n\n\nif __name__ == "__main__":\n    unittest.main()\n''',encoding='utf-8')
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = "      - name: Add provider-attestation admission in isolated worktree"
+          start = lines.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit("invalid provider-attestation workflow indentation")
+              body.append(line[10:] if line else "")
+          text = "\n".join(body) + "\n"
+          if chr(36) + "{{" in text:
+              raise SystemExit("unresolved workflow expression in extracted attestation block")
+          Path(sys.argv[2]).write_text(text, encoding="utf-8")
           PY
-            cargo +1.98.0 fmt --all
-            cargo +1.98.0 test --locked -p heptabao-plugin-host --all-targets
-            cargo +1.98.0 clippy --locked -p heptabao-plugin-host --all-targets -- -D warnings
-            python -m unittest \
-              tests.repository.test_plugin_executable_staging_v2_4 \
-              tests.repository.test_plugin_provider_attestation_v2_4
-            git config user.name 'HeptaBao V2.4 Plugin Attestation Hardening'
-            git config user.email '102159240+ProfHepta@users.noreply.github.com'
-            git add -A
-            git commit -m 'feat(plugin): require signed sandbox-provider attestation binding'
-            new_sha="$(git rev-parse HEAD)"
-            if git ls-remote --exit-code origin "refs/heads/$OUTPUT_BRANCH" >/dev/null 2>&1; then
-              observed="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-              test "$observed" = "$new_sha"
-            else
-              git push --force-with-lease="refs/heads/$OUTPUT_BRANCH:" origin "$new_sha:refs/heads/$OUTPUT_BRANCH"
-            fi
-          )
-          git worktree remove --force "$work"
+          chmod 0700 "$RUNNER_TEMP/harden-plugin-r3.sh"
+          bash "$RUNNER_TEMP/harden-plugin-r3.sh"
