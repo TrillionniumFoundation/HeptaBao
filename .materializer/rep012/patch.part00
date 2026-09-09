@@ -1,0 +1,236 @@
+diff --git a/crates/heptabao-server/src/auth.rs b/crates/heptabao-server/src/auth.rs
+index 87be7da..1f62068 100644
+--- a/crates/heptabao-server/src/auth.rs
++++ b/crates/heptabao-server/src/auth.rs
+@@ -4,7 +4,7 @@
+ //! changes before returning either successful data or a handler error.
+ use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+ use ring::{
+-    digest, pbkdf2,
++    constant_time, digest, hmac, pbkdf2,
+     rand::{SecureRandom, SystemRandom},
+ };
+ use serde::{Deserialize, Serialize};
+@@ -18,6 +18,10 @@ use zeroize::{Zeroize, Zeroizing};
+ const DEFAULT_TTL: u64 = 3600;
+ const MAX_TTL: u64 = 32 * 24 * 3600;
+ const PASSWORD_ROUNDS: u32 = 600_000;
++const MFA_SEED_BYTES: usize = 32;
++const MFA_PERIOD_SECONDS: u64 = 30;
++const MFA_DIGITS: usize = 6;
++const MFA_DRIFT_STEPS: u64 = 1;
+ const CAPABILITIES: &[&str] = &[
+     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
+ ];
+@@ -117,6 +121,23 @@ struct User {
+     token_ttl: u64,
+     token_max_ttl: u64,
+     token_num_uses: u64,
++    #[serde(default)]
++    mfa: Option<TotpEnrollment>,
++}
++
++#[derive(Clone, Serialize, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct TotpEnrollment {
++    secret: Vec<u8>,
++    period_seconds: u64,
++    digits: u8,
++    last_accepted_counter: Option<u64>,
++}
++
++impl Drop for TotpEnrollment {
++    fn drop(&mut self) {
++        self.secret.zeroize();
++    }
+ }
+ 
+ impl Drop for User {
+@@ -483,8 +504,12 @@ impl AuthState {
+         Ok(principal.clone())
+     }
+ 
+-    fn issue(&mut self, token: Token, now: u64) -> Result<AuthResponse, AuthError> {
++    fn prepare_issue(
++        token: Token,
++        now: u64,
++    ) -> Result<(String, Token, AuthResponse), AuthError> {
+         let raw = Zeroizing::new(random_id("hvs.")?);
++        let token_id = hash(&raw);
+         let result = AuthResponse {
+             status: 200,
+             mutated: true,
+@@ -494,7 +519,12 @@ impl AuthState {
+                 "renewable": token.renewable, "token_type": "service", "orphan": token.parent.is_none(), "num_uses": token.uses_remaining.unwrap_or(0)
+             }}),
+         };
+-        self.tokens.insert(hash(&raw), token);
++        Ok((token_id, token, result))
++    }
++
++    fn issue(&mut self, token: Token, now: u64) -> Result<AuthResponse, AuthError> {
++        let (token_id, token, result) = Self::prepare_issue(token, now)?;
++        self.tokens.insert(token_id, token);
+         Ok(result)
+     }
+ 
+@@ -1026,7 +1056,7 @@ impl AuthState {
+                 .unwrap_or_default();
+             return Ok(response(json!({"keys": keys}), false));
+         }
+-        if !valid_name(name) || !["", "password", "policies"].contains(&subpath) {
++        if !valid_name(name) || !["", "password", "policies", "mfa"].contains(&subpath) {
+             return Err(bad("invalid user route"));
+         }
+         let existing = self
+@@ -1034,6 +1064,74 @@ impl AuthState {
+             .get(namespace)
+             .and_then(|users| users.get(name))
+             .cloned();
++        if subpath == "mfa" {
++            let mut user = existing.ok_or_else(|| err(404, "user not found"))?;
++            match capability {
++                "read" => {
++                    reject_unknown(body, &[])?;
++                    let enrollment = user
++                        .mfa
++                        .as_ref()
++                        .ok_or_else(|| err(404, "MFA enrollment not found"))?;
++                    return Ok(response(
++                        json!({
++                            "enabled": true,
++                            "type": "totp",
++                            "algorithm": "SHA256",
++                            "digits": enrollment.digits,
++                            "period": enrollment.period_seconds,
++                            "last_counter_present": enrollment.last_accepted_counter.is_some()
++                        }),
++                        false,
++                    ));
++                }
++                "delete" => {
++                    reject_unknown(body, &[])?;
++                    self.authorize(&actor, namespace, path, "sudo")?;
++                    let changed = user.mfa.take().is_some();
++                    self.users
++                        .entry(namespace.into())
++                        .or_default()
++                        .insert(name.into(), user);
++                    return Ok(empty(changed));
++                }
++                "update" => {
++                    reject_unknown(body, &["regenerate"])?;
++                    self.authorize(&actor, namespace, path, "sudo")?;
++                    let regenerate = boolean(body, "regenerate", false)?;
++                    if user.mfa.is_some() && !regenerate {
++                        return Err(bad(
++                            "MFA is already enrolled; explicit regenerate=true is required",
++                        ));
++                    }
++                    let secret = random_bytes(MFA_SEED_BYTES)?;
++                    let secret_base32 = Zeroizing::new(base32_no_padding(&secret));
++                    user.mfa = Some(TotpEnrollment {
++                        secret,
++                        period_seconds: MFA_PERIOD_SECONDS,
++                        digits: u8::try_from(MFA_DIGITS)
++                            .map_err(|_| err(500, "invalid MFA digit configuration"))?,
++                        last_accepted_counter: None,
++                    });
++                    self.users
++                        .entry(namespace.into())
++                        .or_default()
++                        .insert(name.into(), user);
++                    return Ok(response(
++                        json!({
++                            "enabled": true,
++                            "type": "totp",
++                            "algorithm": "SHA256",
++                            "digits": MFA_DIGITS,
++                            "period": MFA_PERIOD_SECONDS,
++                            "secret_base32": secret_base32.as_str()
++                        }),
++                        true,
++                    ));
++                }
++                _ => return Err(err(405, "method not allowed")),
++            }
++        }
+         if capability == "read" && subpath.is_empty() {
+             let user = existing.ok_or_else(|| err(404, "user not found"))?;
+             return Ok(response(
+@@ -1083,6 +1181,7 @@ impl AuthState {
+             token_ttl: DEFAULT_TTL,
+             token_max_ttl: MAX_TTL,
+             token_num_uses: 0,
++            mfa: None,
+         });
+         if let Some(password) = body.get("password") {
+             let password = password
+@@ -1174,7 +1273,7 @@ impl AuthState {
+         if !valid_name(name) {
+             return Err(denied());
+         }
+-        reject_unknown(body, &["password"])?;
++        reject_unknown(body, &["password", "totp_code"])?;
+         let password = string_field(body, "password")?;
+         if password.len() > 1024 {
+             return Err(denied());
+@@ -1201,16 +1300,43 @@ impl AuthState {
+         )
+         .is_ok();
+         let mut user = user.filter(|_| verified).ok_or_else(denied)?;
++        let accepted_counter = match user.mfa.as_ref() {
++            Some(enrollment) => Some(verify_totp(
++                enrollment,
++                body.get("totp_code")
++                    .and_then(Value::as_str)
++                    .ok_or_else(denied)?,
++                now,
++            )?),
++            None => {
++                if body.get("totp_code").is_some() {
++                    return Err(bad("MFA is not configured for this user"));
++                }
++                None
++            }
++        };
+         let token = login_token(
+             namespace,
+-            std::mem::take(&mut user.policies),
++            user.policies.clone(),
+             user.token_ttl,
+             user.token_max_ttl,
+             user.token_num_uses,
+             format!("userpass-{name}"),
+             now,
+         )?;
+-        self.issue(token, now)
++        let (token_id, token, response) = Self::prepare_issue(token, now)?;
++        if let Some(counter) = accepted_counter {
++            let enrollment = user.mfa.as_mut().ok_or_else(|| {
++                err(500, "MFA enrollment disappeared during login")
++            })?;
++            enrollment.last_accepted_counter = Some(counter);
++        }
++        self.users
++            .entry(namespace.into())
++            .or_default()
++            .insert(name.into(), user);
++        self.tokens.insert(token_id, token);
++        Ok(response)
+     }
+ 
+     fn role_route(
+@@ -1484,6 +1610,77 @@ impl AuthState {
+     }
+ }
+ 
++fn base32_no_padding(bytes: &[u8]) -> String {
++    const ALPHABET: &[u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
++    let mut output = String::with_capacity((bytes.len() * 8).div_ceil(5));
++    let mut buffer = 0_u32;
++    let mut bits = 0_u8;
++    for byte in bytes {
++        buffer = (buffer << 8) | u32::from(*byte);
++        bits += 8;
++        while bits >= 5

@@ -1,0 +1,314 @@
+ {
++            bits -= 5;
++            let index = usize::try_from((buffer >> bits) & 0x1f).unwrap_or(0);
++            output.push(char::from(ALPHABET[index]));
++        }
++    }
++    if bits > 0 {
++        let index = usize::try_from((buffer << (5 - bits)) & 0x1f).unwrap_or(0);
++        output.push(char::from(ALPHABET[index]));
++    }
++    output
++}
++
++fn totp_code(secret: &[u8], counter: u64) -> [u8; MFA_DIGITS] {
++    let key = hmac::Key::new(hmac::HMAC_SHA256, secret);
++    let tag = hmac::sign(&key, &counter.to_be_bytes());
++    let bytes = tag.as_ref();
++    let offset = usize::from(bytes[bytes.len() - 1] & 0x0f);
++    let binary = (u32::from(bytes[offset]) & 0x7f) << 24
++        | u32::from(bytes[offset + 1]) << 16
++        | u32::from(bytes[offset + 2]) << 8
++        | u32::from(bytes[offset + 3]);
++    let mut value = binary % 1_000_000;
++    let mut code = [b'0'; MFA_DIGITS];
++    for position in (0..MFA_DIGITS).rev() {
++        code[position] = b'0' + u8::try_from(value % 10).unwrap_or(0);
++        value /= 10;
++    }
++    code
++}
++
++fn verify_totp(
++    enrollment: &TotpEnrollment,
++    supplied: &str,
++    now: u64,
++) -> Result<u64, AuthError> {
++    if enrollment.secret.len() != MFA_SEED_BYTES
++        || enrollment.period_seconds != MFA_PERIOD_SECONDS
++        || usize::from(enrollment.digits) != MFA_DIGITS
++        || supplied.len() != MFA_DIGITS
++        || !supplied.bytes().all(|byte| byte.is_ascii_digit())
++    {
++        return Err(denied());
++    }
++    let current = now / enrollment.period_seconds;
++    let start = current.saturating_sub(MFA_DRIFT_STEPS);
++    let end = current.saturating_add(MFA_DRIFT_STEPS);
++    let mut accepted = None;
++    for counter in start..=end {
++        if enrollment
++            .last_accepted_counter
++            .is_some_and(|last| counter <= last)
++        {
++            continue;
++        }
++        let expected = totp_code(&enrollment.secret, counter);
++        if constant_time::verify_slices_are_equal(&expected, supplied.as_bytes()).is_ok() {
++            accepted = Some(accepted.map_or(counter, |found: u64| found.max(counter)));
++        }
++    }
++    accepted.ok_or_else(denied)
++}
++
+ fn route_capability(method: &str, collection: bool) -> Result<&'static str, AuthError> {
+     match method {
+         "GET" if collection => Ok("list"),
+diff --git a/crates/heptabao-server/src/auth_tests.rs b/crates/heptabao-server/src/auth_tests.rs
+index 7b5d1d1..bcc6314 100644
+--- a/crates/heptabao-server/src/auth_tests.rs
++++ b/crates/heptabao-server/src/auth_tests.rs
+@@ -735,6 +735,286 @@ fn accessors_allow_revocation_without_revealing_token() {
+     assert!(state.authenticate(&raw, 103).is_err());
+ }
+ 
++#[test]
++fn userpass_totp_mfa_is_required_replay_safe_and_restart_persistent() {
++    let (mut state, _, root) = setup();
++    let password = "correct-horse-battery-staple";
++    call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice",
++        json!({"password": password, "token_ttl": 60}),
++        100,
++    );
++    let enrollment = call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice/mfa",
++        json!({}),
++        100,
++    );
++    let exported_secret = enrollment.body["data"]["secret_base32"]
++        .as_str()
++        .unwrap()
++        .to_owned();
++    assert_eq!(enrollment.body["data"]["algorithm"], "SHA256");
++    assert_eq!(enrollment.body["data"]["digits"], 6);
++    assert_eq!(enrollment.body["data"]["period"], 30);
++    let secret = state.users["team"]["alice"]
++        .mfa
++        .as_ref()
++        .unwrap()
++        .secret
++        .clone();
++    assert_eq!(exported_secret, base32_no_padding(&secret));
++
++    for body in [
++        json!({"password": password}),
++        json!({"password": password, "totp_code": "000000"}),
++        json!({"password": password, "totp_code": 123456}),
++    ] {
++        assert!(
++            state
++                .handle(
++                    None,
++                    "team",
++                    "POST",
++                    "auth/userpass/login/alice",
++                    &body,
++                    120,
++                )
++                .is_err()
++        );
++    }
++
++    let code = std::str::from_utf8(&totp_code(&secret, 120 / MFA_PERIOD_SECONDS))
++        .unwrap()
++        .to_owned();
++    let login = state
++        .handle(
++            None,
++            "team",
++            "POST",
++            "auth/userpass/login/alice",
++            &json!({"password": password, "totp_code": code}),
++            120,
++        )
++        .unwrap()
++        .unwrap();
++    assert!(login.body["auth"]["client_token"].as_str().is_some());
++
++    let saved = serde_json::to_string(&state).unwrap();
++    assert!(!saved.contains(&exported_secret));
++    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
++    assert!(
++        restarted
++            .handle(
++                None,
++                "team",
++                "POST",
++                "auth/userpass/login/alice",
++                &json!({"password": password, "totp_code": code}),
++                121,
++            )
++            .is_err()
++    );
++    let next = std::str::from_utf8(&totp_code(&secret, 150 / MFA_PERIOD_SECONDS))
++        .unwrap()
++        .to_owned();
++    assert!(
++        restarted
++            .handle(
++                None,
++                "team",
++                "POST",
++                "auth/userpass/login/alice",
++                &json!({"password": password, "totp_code": next}),
++                150,
++            )
++            .is_ok()
++    );
++}
++
++#[test]
++fn totp_mfa_reset_is_explicit_sudo_only_and_status_never_returns_seed() {
++    let (mut state, _, root) = setup();
++    call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice",
++        json!({"password": "correct-horse-battery-staple"}),
++        100,
++    );
++    let first = call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice/mfa",
++        json!({}),
++        100,
++    );
++    let first_seed = first.body["data"]["secret_base32"]
++        .as_str()
++        .unwrap()
++        .to_owned();
++    assert!(
++        state
++            .handle(
++                Some(&root),
++                "team",
++                "POST",
++                "auth/userpass/users/alice/mfa",
++                &json!({}),
++                101,
++            )
++            .is_err()
++    );
++    let status = call(
++        &mut state,
++        &root,
++        "team",
++        "GET",
++        "auth/userpass/users/alice/mfa",
++        json!({}),
++        101,
++    );
++    assert_eq!(status.body["data"]["enabled"], true);
++    assert!(status.body["data"].get("secret_base32").is_none());
++
++    put_policy(
++        &mut state,
++        &root,
++        "team",
++        "mfa-manager",
++        json!(r#"path "auth/userpass/users/+/mfa" { capabilities = ["read", "update", "delete"] }"#),
++    );
++    let manager_raw = token(
++        &mut state,
++        &root,
++        "team",
++        json!({"policies": ["mfa-manager"]}),
++        101,
++    );
++    let manager = state.authenticate(&manager_raw, 102).unwrap();
++    for (method, body) in [
++        ("POST", json!({"regenerate": true})),
++        ("DELETE", json!({})),
++    ] {
++        assert!(
++            state
++                .handle(
++                    Some(&manager),
++                    "team",
++                    method,
++                    "auth/userpass/users/alice/mfa",
++                    &body,
++                    102,
++                )
++                .is_err()
++        );
++    }
++
++    let replacement = call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice/mfa",
++        json!({"regenerate": true}),
++        103,
++    );
++    let replacement_seed = replacement.body["data"]["secret_base32"]
++        .as_str()
++        .unwrap();
++    assert_ne!(first_seed, replacement_seed);
++    call(
++        &mut state,
++        &root,
++        "team",
++        "DELETE",
++        "auth/userpass/users/alice/mfa",
++        json!({}),
++        104,
++    );
++    assert!(
++        state
++            .handle(
++                None,
++                "team",
++                "POST",
++                "auth/userpass/login/alice",
++                &json!({"password": "correct-horse-battery-staple"}),
++                105,
++            )
++            .is_ok()
++    );
++}
++
++#[test]
++fn totp_mfa_rejects_clock_rollback_after_future_window_acceptance() {
++    let (mut state, _, root) = setup();
++    call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++        "auth/userpass/users/alice",
++        json!({"password": "correct-horse-battery-staple"}),
++        100,
++    );
++    call(
++        &mut state,
++        &root,
++        "team",
++        "POST",
++     
