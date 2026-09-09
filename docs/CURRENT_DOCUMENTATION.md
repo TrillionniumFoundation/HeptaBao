@@ -55,9 +55,12 @@ Every package has exactly one guide. The validator checks package, lockfile, sou
 - `docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md`
 - `docs/storage/HEPTABAO_DURABILITY_AND_CRASH_CONSISTENCY_CONTRACT_V1.md`
 - `docs/security/HEPTABAO_THREAT_MODEL_V1.md`
+- `docs/security/HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md`
 - `docs/compatibility/HEPTABAO_ORACLE_COMPATIBILITY_MATRIX_SPEC_V1.md`
 - `SECURITY.md`
 - `LICENSE-PLANNING.md`
+
+The raw authentication state and per-request `Principal` are deliberately non-exported. External callers enter only through `Service`, which creates one transaction-scoped capability and never returns it. Repository tests fail if that public boundary is reopened.
 
 Compatibility remains false until an isolated Oracle corpus and independent admission exist.
 
