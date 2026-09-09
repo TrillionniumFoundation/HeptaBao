@@ -1,0 +1,239 @@
+name: HeptaBao V2.4 source-only recovery
+
+on:
+  push:
+    branches:
+      - ops/v24-source-only-recovery-r1-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-v24-source-only-recovery-r1
+  cancel-in-progress: false
+
+env:
+  EXACT_PARENT: 633848024e5315f3def23c035a1dec53f83a62b3
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact recovery controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify and fetch authored materializers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          git fetch --no-tags --prune origin '+refs/heads/ops/v24-*:refs/remotes/origin/ops/v24-*'
+          mkdir -p "$RUNNER_TEMP/heptabao-v24-source-recovery"
+
+      - name: Recover package-qualified source branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          controller="$GITHUB_WORKSPACE"
+          evidence="$RUNNER_TEMP/heptabao-v24-source-recovery"
+          cat > "$RUNNER_TEMP/recover-one.sh" <<'BASH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          source_branch="$1"
+          workflow_path="$2"
+          step_name="$3"
+          output_branch="$4"
+          package="$5"
+          exact_parent="$EXACT_PARENT"
+          remote_ref="refs/remotes/origin/$source_branch"
+          git show-ref --verify --quiet "$remote_ref"
+          source_sha="$(git rev-parse "$remote_ref")"
+          test "$(git rev-parse "$source_sha^")" = "$exact_parent"
+          changed="$(git diff --name-only "$exact_parent..$source_sha")"
+          test "$changed" = "$workflow_path"
+          workflow="$RUNNER_TEMP/${package}-materializer.yml"
+          git show "$source_sha:$workflow_path" > "$workflow"
+          script="$RUNNER_TEMP/${package}-materialize.sh"
+          python - "$workflow" "$step_name" "$script" <<'PY'
+          from pathlib import Path
+          import sys
+
+          workflow = Path(sys.argv[1])
+          step_name = sys.argv[2]
+          output = Path(sys.argv[3])
+          lines = workflow.read_text(encoding="utf-8").splitlines()
+          marker = f"      - name: {step_name}"
+          try:
+              start = lines.index(marker)
+          except ValueError as exc:
+              raise SystemExit(f"missing exact materialization step: {step_name}") from exc
+          run_index = None
+          for index in range(start + 1, min(len(lines), start + 8)):
+              if lines[index] == "        run: |":
+                  run_index = index
+                  break
+          if run_index is None:
+              raise SystemExit("materialization step has no literal bash run block")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              if line and not line.startswith("          "):
+                  raise SystemExit(f"unexpected indentation in materializer: {line!r}")
+              body.append(line[10:] if line else "")
+          filtered = [
+              line for line in body
+              if 'test "$(git rev-parse HEAD^)" = "$EXACT_PARENT"' not in line
+          ]
+          text = "\n".join(filtered) + "\n"
+          denied = (
+              "curl ", "wget ", " gh ", "gh api", "git push", "git remote",
+              "GITHUB_TOKEN", "secrets.", "${{", "/dev/tcp", "ssh ",
+              "rm -rf", "sudo ", "chmod 777", "base64 --decode",
+          )
+          for token in denied:
+              if token in text:
+                  raise SystemExit(f"denied token in extracted materializer: {token}")
+          output.write_text(text, encoding="utf-8")
+          PY
+          chmod 0700 "$script"
+          work="$RUNNER_TEMP/work-${package}"
+          rm -rf "$work"
+          git worktree add --detach "$work" "$exact_parent"
+          (
+            cd "$work"
+            env -i \
+              PATH="$PATH" \
+              HOME="$HOME" \
+              RUNNER_TEMP="$RUNNER_TEMP" \
+              EXACT_PARENT="$exact_parent" \
+              bash "$script"
+
+            python - "$package" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          package = sys.argv[1]
+          if package == "heptabao-federated-auth":
+              path = Path("crates/heptabao-federated-auth/src/lib.rs")
+              text = path.read_text(encoding="utf-8")
+              text = text.replace(
+                  'let header = URL_SAFE_NO_PAD.encode(br#\\"{\\"alg\\":\\"EdDSA\\",\\"kid\\":\\"key-1\\",\\"typ\\":\\"JWT\\"}\\"#);',
+                  'let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key-1","typ":"JWT"}"#);',
+              )
+              text = text.replace(
+                  'let duplicate = r#\\"{\\"iss\\":\\"https://issuer.example\\",\\"iss\\":\\"https://evil.example\\",\\"sub\\":\\"alice\\",\\"aud\\":\\"heptabao\\",\\"iat\\":1000,\\"exp\\":1200,\\"jti\\":\\"x\\",\\"heptabao_namespace\\":\\"team-a\\"}\\"#;',
+                  'let duplicate = r#"{"iss":"https://issuer.example","iss":"https://evil.example","sub":"alice","aud":"heptabao","iat":1000,"exp":1200,"jti":"x","heptabao_namespace":"team-a"}"#;',
+              )
+              path.write_text(text, encoding="utf-8")
+          elif package == "heptabao-ha-service":
+              path = Path("crates/heptabao-ha-service/src/lib.rs")
+              text = path.read_text(encoding="utf-8")
+              text = re.sub(
+                  r'\n    fn decode\(value: u8\) -> Result<Self, HaError> \{\n        match value \{\n            1 => Ok\(Self::LinearizableRead\),\n            2 => Ok\(Self::Mutation\),\n            _ => Err\(HaError::InvalidFrame\),\n        \}\n    \}\n',
+                  "\n",
+                  text,
+                  count=1,
+              )
+              path.write_text(text, encoding="utf-8")
+          elif package == "compat-runner":
+              path = Path("tests/repository/test_openbao_differential_runner_v2_4.py")
+              text = path.read_text(encoding="utf-8")
+              if "sys.modules[SPEC.name] = MODULE" not in text:
+                  text = text.replace("import tempfile\n", "import tempfile\nimport sys\n")
+                  text = text.replace(
+                      "MODULE = importlib.util.module_from_spec(SPEC)\n",
+                      "MODULE = importlib.util.module_from_spec(SPEC)\nsys.modules[SPEC.name] = MODULE\n",
+                  )
+              path.write_text(text, encoding="utf-8")
+          elif package == "heptabao-migration-journal":
+              path = Path("crates/heptabao-migration-journal/src/lib.rs")
+              text = path.read_text(encoding="utf-8")
+              old = '''        if length < TAG_BYTES || length > MAX_RECORD_BYTES || bytes.len() - offset - 4 < length {
+            break;
+        }
+'''
+              new = '''        if length < TAG_BYTES || length > MAX_RECORD_BYTES {
+            return Err(JournalError::Tampered);
+        }
+        if bytes.len() - offset - 4 < length {
+            break;
+        }
+'''
+              if old in text:
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding="utf-8")
+          PY
+
+            if [ -f Cargo.toml ]; then
+              cargo +1.98.0 generate-lockfile
+              cargo +1.98.0 fmt --all
+            fi
+            if [ "$package" = "compat-runner" ]; then
+              python -m unittest tests.repository.test_openbao_differential_runner_v2_4
+            else
+              cargo +1.98.0 test --locked -p "$package" --all-targets
+              cargo +1.98.0 clippy --locked -p "$package" --all-targets -- -D warnings
+            fi
+            git config user.name 'HeptaBao V2.4 Source Recovery'
+            git config user.email '102159240+ProfHepta@users.noreply.github.com'
+            git add -A
+            test -n "$(git diff --cached --name-only)"
+            git commit -m "feat(v2.4): recover package-qualified ${package} source"
+            git push --force-with-lease="refs/heads/$output_branch:" origin "HEAD:refs/heads/$output_branch"
+            git diff --stat "$exact_parent..HEAD" > "$evidence/${package}-diffstat.txt"
+            git rev-parse HEAD > "$evidence/${package}-head.txt"
+          )
+          git worktree remove --force "$work"
+          BASH
+          chmod 0700 "$RUNNER_TEMP/recover-one.sh"
+
+          "$RUNNER_TEMP/recover-one.sh" \
+            ops/v24-plugin-toctou-fix-r1-20260909 \
+            .github/workflows/v24-plugin-toctou-materializer.yml \
+            'Apply immutable executable staging repair' \
+            codex/openbao-replacement-v2.4-plugin-toctou-source-20260909 \
+            heptabao-plugin-host
+
+          "$RUNNER_TEMP/recover-one.sh" \
+            ops/v24-migration-journal-r1-20260909 \
+            .github/workflows/v24-migration-journal-materializer.yml \
+            'Materialize durable migration journal package' \
+            codex/openbao-replacement-v2.4-migration-journal-source-20260909 \
+            heptabao-migration-journal
+
+          "$RUNNER_TEMP/recover-one.sh" \
+            ops/v24-federated-auth-r1-20260909 \
+            .github/workflows/v24-federated-auth-materializer.yml \
+            'Materialize federated auth package' \
+            codex/openbao-replacement-v2.4-federated-auth-source-20260909 \
+            heptabao-federated-auth
+
+          "$RUNNER_TEMP/recover-one.sh" \
+            ops/v24-ha-service-r1-20260909 \
+            .github/workflows/v24-ha-service-materializer.yml \
+            'Materialize HA service package' \
+            codex/openbao-replacement-v2.4-ha-service-source-20260909 \
+            heptabao-ha-service
+
+          "$RUNNER_TEMP/recover-one.sh" \
+            ops/v24-compat-capture-r1-20260909 \
+            .github/workflows/v24-compat-capture-materializer.yml \
+            'Materialize differential capture runner' \
+            codex/openbao-replacement-v2.4-compat-capture-source-20260909 \
+            compat-runner
+
+      - name: Upload bounded recovery evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-v24-source-only-recovery
+          path: ${{ runner.temp }}/heptabao-v24-source-recovery/
+          if-no-files-found: warn
+          retention-days: 3
