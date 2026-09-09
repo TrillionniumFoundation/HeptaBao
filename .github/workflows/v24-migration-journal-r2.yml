@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: heptabao-v24-migration-journal-r2-recovery-v4
+  group: heptabao-v24-migration-journal-r2-recovery-v5
   cancel-in-progress: true
 
 env:
@@ -16,7 +16,7 @@ env:
   MATERIALIZER_BRANCH: ops/v24-migration-journal-r1-20260909
   MATERIALIZER_SHA: 25dce79d68292f8a6bdbed05eb759274bbf01cf2
   MATERIALIZER_WORKFLOW: .github/workflows/v24-migration-journal-materializer.yml
-  RECOVERY_PARENT_SHA: f7890df1bbcd5a2c3600da3a01dabb710b462f6f
+  RECOVERY_PARENT_SHA: 517daea313141dbd262c413ca50c6e908bc83e62
   ORIGINAL_PATCH_SHA: c1df5aac5d196294620ad8b170be254e6f398821
   PATCH_WORKFLOW: .github/workflows/v24-migration-journal-r2.yml
   OUTPUT_BRANCH: codex/openbao-replacement-v2.4-migration-journal-source-20260909
@@ -73,6 +73,18 @@ jobs:
           for token in ('curl ','wget ','git push','GITHUB_TOKEN','secrets.',chr(36)+'{{','rm -rf','sudo '):
               if token in text: raise SystemExit(f'denied hardening token: {token}')
           Path(sys.argv[3]).write_text(text,encoding='utf-8')
+          PY
+          python - "$RUNNER_TEMP/harden.sh" <<'PY'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding='utf-8')
+          old = '        if length < TAG_BYTES || length > MAX_RECORD_BYTES {\n'
+          new = '        if !(TAG_BYTES..=MAX_RECORD_BYTES).contains(&length) {\n'
+          if text.count(old) != 1:
+              raise SystemExit('expected exactly one generated manual range comparison')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
           chmod 0700 "$RUNNER_TEMP/materialize.sh" "$RUNNER_TEMP/harden.sh"
           (
