@@ -86,12 +86,6 @@ impl Principal {
     pub fn is_root(&self) -> bool {
         self.token.root
     }
-    pub fn namespace(&self) -> &str {
-        &self.token.namespace
-    }
-    pub fn accessor(&self) -> &str {
-        &self.token.accessor
-    }
     pub fn policies(&self) -> &BTreeSet<String> {
         &self.token.policies
     }
