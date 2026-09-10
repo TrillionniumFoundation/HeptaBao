@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: heptabao-current-truth-materializer-20260911
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   SOURCE_SHA: 004d1983d06f32701e64d9884bfeb08047a9da3e
@@ -82,6 +82,7 @@ jobs:
               "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml",
               "scripts/_render_plan_v1_4_7_baseline.py",
               "scripts/render_plan_v1_4_7.py",
+              "scripts/validate_plan_v1_4_5.py",
               "tests/plan/test_current_entry_v1_4_7.py",
               "tests/plan/test_module_source_truth_v1_4_7.py",
           })
