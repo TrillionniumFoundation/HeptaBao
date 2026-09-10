@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/render_plan_v1_4_7.py
+          python scripts/render_plan_v1_4_7.py --write
           git diff --name-status
           test -n "$(git diff --name-only)"
           python - <<'PY'
