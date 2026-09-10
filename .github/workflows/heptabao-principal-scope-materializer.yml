@@ -39,15 +39,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          materializer="$RUNNER_TEMP/materialize_principal_scope.py"
+          materializer="$GITHUB_WORKSPACE/scripts/.materialize_principal_scope.py"
           cp scripts/materialize_principal_scope.py "$materializer"
 
-          test "$(git rev-parse "$OUTPUT_BRANCH")" = "$SOURCE_SHA" || \
-            test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           git checkout --detach "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
           python "$materializer"
+          rm -f "$materializer"
           cargo +1.98.0 fmt --all
           python scripts/validate_repository_v2.py
           python scripts/validate_compatibility_corpus.py
@@ -58,6 +58,7 @@ jobs:
 
           test ! -e .github/workflows/heptabao-principal-scope-materializer.yml
           test ! -e scripts/materialize_principal_scope.py
+          test ! -e scripts/.materialize_principal_scope.py
           git add \
             crates/heptabao-server/src/auth.rs \
             crates/heptabao-server/src/auth_tests.rs \
