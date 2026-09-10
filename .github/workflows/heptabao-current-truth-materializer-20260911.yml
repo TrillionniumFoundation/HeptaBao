@@ -81,6 +81,7 @@ jobs:
           spec.loader.exec_module(renderer)
           truth = renderer.build_truth(root)
           allowed = {path.as_posix() for path in renderer.normative_paths(truth)}
+          allowed.add("planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml")
           changed = {
               line
               for line in subprocess.check_output(
