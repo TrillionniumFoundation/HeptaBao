@@ -53,11 +53,34 @@ jobs:
 
           auth = Path("crates/heptabao-server/src/auth.rs")
           text = auth.read_text(encoding="utf-8")
+
           old = "    fn authorize_request(\n"
           new = "    pub(super) fn authorize_request(\n"
           if text.count(old) != 1:
               raise SystemExit(f"authorize_request visibility drift: {text.count(old)}")
-          auth.write_text(text.replace(old, new, 1), encoding="utf-8")
+          text = text.replace(old, new, 1)
+
+          old = "    request_time: u64,\n"
+          new = "    #[cfg(test)]\n    request_time: u64,\n"
+          if text.count(old) != 1:
+              raise SystemExit(f"request_time field drift: {text.count(old)}")
+          text = text.replace(old, new, 1)
+
+          old = "            request_time: now,\n"
+          new = "            #[cfg(test)]\n            request_time: now,\n"
+          if text.count(old) != 1:
+              raise SystemExit(f"request_time initializer drift: {text.count(old)}")
+          text = text.replace(old, new, 1)
+
+          needless_borrow = "self.authorize_request(&actor,"
+          if text.count(needless_borrow) != 6:
+              raise SystemExit(
+                  f"authorize_request actor borrow drift: {text.count(needless_borrow)}"
+              )
+          text = text.replace(needless_borrow, "self.authorize_request(actor,")
+          if needless_borrow in text:
+              raise SystemExit("needless actor borrow remains after repair")
+          auth.write_text(text, encoding="utf-8")
 
           guard = Path("tests/repository/test_auth_capability_boundary_v2_6.py")
           text = guard.read_text(encoding="utf-8")
