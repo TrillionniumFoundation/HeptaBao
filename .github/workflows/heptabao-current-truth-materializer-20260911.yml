@@ -3,8 +3,7 @@ name: HeptaBao current-truth materializer 20260911
 on:
   workflow_dispatch:
   push:
-    branches:
-      - ops/heptabao-current-truth-materializer-20260911
+    branches: [ops/heptabao-current-truth-materializer-20260911]
 
 permissions:
   contents: write
@@ -21,7 +20,6 @@ env:
 
 jobs:
   materialize-and-qualify:
-    name: deterministic current truth / full qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
@@ -35,93 +33,71 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp scripts/materialize_current_truth_tests.py \
-            "$RUNNER_TEMP/materialize_current_truth_tests.py"
+          cp scripts/materialize_current_truth_tests.py "$RUNNER_TEMP/patcher.py"
           test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           git checkout --detach "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -f "$RUNNER_TEMP/materialize_current_truth_tests.py"
+          test -f "$RUNNER_TEMP/patcher.py"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-          echo PASS_HEPTABAO_CURRENT_TRUTH_SOURCE_BINDING
+          echo PASS_SOURCE_BINDING
 
-      - name: Install exact Python and plan dependencies
+      - name: Install exact Python and Rust
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: requirements-plan.txt
 
-      - name: Install exact dependencies and Rust 1.98
+      - name: Install dependencies
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python -m pip install --disable-pip-version-check -r requirements-plan.txt
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          python --version
           cargo +1.98.0 --version
-          rustc +1.98.0 --version
 
-      - name: Materialize frozen V1.4.7 current truth
+      - name: Repair frozen templates and materialize V1.4.7 truth
         shell: bash
         run: |
           set -euo pipefail
-          cp "$RUNNER_TEMP/materialize_current_truth_tests.py" \
-            scripts/.materialize_current_truth_tests.py
-          python scripts/.materialize_current_truth_tests.py
-          rm -f scripts/.materialize_current_truth_tests.py
+          cp "$RUNNER_TEMP/patcher.py" scripts/.patcher.py
+          python scripts/.patcher.py
+          rm scripts/.patcher.py
           python scripts/render_plan_v1_4_7.py --write
           git diff --name-status
           test -n "$(git diff --name-only)"
           python - <<'PY'
-          from __future__ import annotations
-
           import importlib.util
           import subprocess
           from pathlib import Path
 
           root = Path.cwd()
-          spec = importlib.util.spec_from_file_location(
-              "renderer", root / "scripts/render_plan_v1_4_7.py"
-          )
+          spec = importlib.util.spec_from_file_location("renderer", root / "scripts/render_plan_v1_4_7.py")
           assert spec and spec.loader
           renderer = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(renderer)
           truth = renderer.build_truth(root)
           allowed = {path.as_posix() for path in renderer.normative_paths(truth)}
-          allowed.update(
-              {
-                  "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml",
-                  "tests/plan/test_current_entry_v1_4_7.py",
-                  "tests/plan/test_module_source_truth_v1_4_7.py",
-              }
-          )
-          changed = {
-              line
-              for line in subprocess.check_output(
-                  ["git", "diff", "--name-only"], text=True
-              ).splitlines()
-              if line
-          }
+          allowed.update({
+              "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml",
+              "scripts/_render_plan_v1_4_7_baseline.py",
+              "scripts/render_plan_v1_4_7.py",
+              "tests/plan/test_current_entry_v1_4_7.py",
+              "tests/plan/test_module_source_truth_v1_4_7.py",
+          })
+          changed = set(filter(None, subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()))
           unexpected = sorted(changed - allowed)
           if unexpected:
-              raise SystemExit(f"renderer changed non-normative files: {unexpected}")
-          if not changed:
-              raise SystemExit("renderer produced no current-truth changes")
-          for relative in sorted(changed):
+              raise SystemExit(f"unexpected generated changes: {unexpected}")
+          for relative in changed:
               path = root / relative
-              if not path.is_file() or path.is_symlink():
+              if not path.is_file() or path.is_symlink() or path.stat().st_size > 512_000:
                   raise SystemExit(f"invalid generated path: {relative}")
-              if path.stat().st_size > 512_000:
-                  raise SystemExit(
-                      f"generated path exceeds repository blob policy: "
-                      f"{relative}={path.stat().st_size}"
-                  )
-          print("PASS_HEPTABAO_CURRENT_TRUTH_CHANGESET")
-          print("\n".join(sorted(changed)))
+          print(f"PASS_CHANGESET files={len(changed)} modules={truth['module_count']}")
           PY
           git diff --check
 
-      - name: Validate current and inherited normative plan gates
+      - name: Validate current and inherited plan gates
         shell: bash
         run: |
           set -euo pipefail
@@ -135,9 +111,9 @@ jobs:
           python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
           python scripts/validate_module_documentation_v1_4_4.py
           python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
-          echo PASS_HEPTABAO_CURRENT_AND_INHERITED_PLAN_GATES
+          echo PASS_PLAN_GATES
 
-      - name: Validate repository security platform Oracle and source truth
+      - name: Validate repository security platform and Oracle gates
         shell: bash
         run: |
           set -euo pipefail
@@ -149,7 +125,7 @@ jobs:
           python -m unittest discover -s tests/platform -p 'test_*.py' -v
           python -m unittest discover -s tests/oracle -p 'test_*.py' -v
           python -m compileall -q scripts tests
-          echo PASS_HEPTABAO_REPOSITORY_AND_ORACLE_GATES
+          echo PASS_REPOSITORY_GATES
 
       - name: Execute locked Rust workspace and strict lint
         shell: bash
@@ -160,50 +136,35 @@ jobs:
           cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
           cargo +1.98.0 doc --locked --workspace --no-deps
           cargo +1.98.0 build --locked -p heptabao-server
-          echo PASS_HEPTABAO_LOCKED_RUST_GATES
+          echo PASS_RUST_GATES
 
-      - name: Execute acceptance harness and single-node smoke
+      - name: Execute acceptance and smoke
         shell: bash
         run: |
           set -euo pipefail
           python -m unittest discover -s qa/openbao-acceptance/tests -v
-          python qa/single-node/smoke.py \
-            --binary "$PWD/target/debug/heptabao-server" \
-            --work-dir "$RUNNER_TEMP/heptabao-single-node-current-truth"
-          echo PASS_HEPTABAO_ACCEPTANCE_AND_SMOKE
+          python qa/single-node/smoke.py --binary "$PWD/target/debug/heptabao-server" --work-dir "$RUNNER_TEMP/heptabao-smoke"
+          echo PASS_ACCEPTANCE_SMOKE
 
-      - name: Commit deterministic current-truth candidate
+      - name: Commit deterministic candidate
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
-          test -n "$(git diff --name-only)"
           git add --all
           test -n "$(git diff --cached --name-only)"
           test -z "$(git diff --name-only)"
-          git -c user.name='HeptaBao current truth materializer' \
-              -c user.email='current-truth@users.noreply.github.com' \
-              commit -m 'docs(plan): bind V1.4.7 truth to exact product head'
+          git -c user.name='HeptaBao current truth materializer' -c user.email='current-truth@users.noreply.github.com' commit -m 'docs(plan): bind V1.4.7 truth to exact product head'
           test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
-          candidate_sha="$(git rev-parse HEAD)"
-          echo "CANDIDATE_SHA=$candidate_sha" >> "$GITHUB_ENV"
-          echo "PASS_HEPTABAO_CURRENT_TRUTH_CANDIDATE=$candidate_sha"
+          echo "CANDIDATE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Revalidate output compare-and-swap
+      - name: Publish exact candidate
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin "$OUTPUT_BRANCH"
-          remote_sha="$(git rev-parse "origin/$OUTPUT_BRANCH")"
-          test "$remote_sha" = "$SOURCE_SHA"
+          test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          echo PASS_HEPTABAO_CURRENT_TRUTH_OUTPUT_CAS
-
-      - name: Publish exact current-truth candidate
-        shell: bash
-        run: |
-          set -euo pipefail
           git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
-          published_sha="$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)"
-          test "$published_sha" = "$CANDIDATE_SHA"
-          echo "PASS_HEPTABAO_CURRENT_TRUTH_PUBLISHED=$published_sha"
+          test "$(git ls-remote origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$CANDIDATE_SHA"
+          echo "PASS_PUBLISHED_SHA=$CANDIDATE_SHA"
