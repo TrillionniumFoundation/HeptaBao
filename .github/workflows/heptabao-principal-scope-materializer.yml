@@ -1,6 +1,7 @@
 name: HeptaBao affine request-principal materializer
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - ops/heptabao-principal-scope-materializer-20260910
