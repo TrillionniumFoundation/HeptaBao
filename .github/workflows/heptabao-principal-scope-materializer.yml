@@ -1,0 +1,74 @@
+name: HeptaBao affine request-principal materializer
+
+on:
+  push:
+    branches:
+      - ops/heptabao-principal-scope-materializer-20260910
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-principal-scope-materializer
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 6480504418eaa2222dc372844114adb44c703510
+  OUTPUT_BRANCH: codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout materializer source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Materialize, qualify, and publish clean product commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          materializer="$RUNNER_TEMP/materialize_principal_scope.py"
+          cp scripts/materialize_principal_scope.py "$materializer"
+
+          test "$(git rev-parse "$OUTPUT_BRANCH")" = "$SOURCE_SHA" || \
+            test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+          python "$materializer"
+          cargo +1.98.0 fmt --all
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python tests/repository/test_auth_capability_boundary_v2_6.py -v
+          cargo +1.98.0 test --locked -p heptabao-server --lib -- --test-threads=1
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          git diff --check
+
+          test ! -e .github/workflows/heptabao-principal-scope-materializer.yml
+          test ! -e scripts/materialize_principal_scope.py
+          git add \
+            crates/heptabao-server/src/auth.rs \
+            crates/heptabao-server/src/auth_tests.rs \
+            crates/heptabao-server/src/service.rs \
+            docs/modules/heptabao-server.md \
+            docs/security/HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md \
+            tests/repository/test_auth_capability_boundary_v2_6.py
+          test -n "$(git diff --cached --name-only)"
+          git -c user.name='HeptaBao security repair' \
+              -c user.email='security-repair@users.noreply.github.com' \
+              commit -m 'fix(auth): make request principal affine and live-time-bound'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
