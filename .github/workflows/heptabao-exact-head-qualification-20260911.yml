@@ -1,0 +1,304 @@
+name: HeptaBao exact-head authoritative qualification 20260911
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ops/heptabao-exact-head-qualification-20260911
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-exact-head-qualification-20260911
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: 004d1983d06f32701e64d9884bfeb08047a9da3e
+  BASE_SHA: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  exact-linux-x86-64:
+    name: exact head / ubuntu-24.04 / complete
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Checkout immutable target
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo "QUALIFIED_TARGET_SHA=$TARGET_SHA"
+          echo "QUALIFIED_TARGET_TREE=$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install pinned validation toolchains
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Install repository dependencies and Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          python --version
+          cargo +1.98.0 --version
+          rustc +1.98.0 --version
+
+      - name: Validate repository, security, platform, Oracle, plan and docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python scripts/validate_workflow_trust.py
+          python scripts/validate_module_documentation_v1_4_4.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          python -m unittest discover -s tests/platform -p 'test_*.py' -v
+          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
+          python -m unittest discover -s tests/plan -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+
+      - name: Execute locked Rust workspace and strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets -- --test-threads=1
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Execute acceptance harness and single-node smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qa/openbao-acceptance/tests -v
+          python qa/single-node/smoke.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-single-node-exact"
+
+      - name: Rebind exact clean result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo PASS_HEPTABAO_EXACT_HEAD_LINUX
+
+  exact-linux-arm64:
+    name: exact head / ubuntu-24.04-arm / workspace
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 150
+    steps:
+      - name: Checkout immutable target
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+
+      - name: Execute ARM64 workspace qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = "aarch64"
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets -- --test-threads=1
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          cargo +1.98.0 build --locked -p heptabao-server
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo PASS_HEPTABAO_EXACT_HEAD_ARM64
+
+  exact-macos-portable:
+    name: exact head / macos-15 / portable and storage fail-closed
+    runs-on: macos-15
+    timeout-minutes: 150
+    steps:
+      - name: Checkout immutable target
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact dependencies and validate repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Compile all targets and execute portable package closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets --no-run
+          test_tmp_root="$RUNNER_TEMP/heptabao-canonical-tmp"
+          rm -rf "$test_tmp_root"
+          mkdir -p "$test_tmp_root"
+          export TMPDIR="$(cd "$test_tmp_root" && pwd -P)/"
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          temp_root = pathlib.Path(os.environ["TMPDIR"])
+          if temp_root.is_symlink() or not temp_root.is_absolute():
+              raise SystemExit("TMPDIR must be an absolute non-symlink directory")
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "+1.98.0", "metadata", "--format-version", "1", "--locked"
+          ]))
+          workspace = set(metadata["workspace_members"])
+          packages = {
+              package["id"]: package
+              for package in metadata["packages"]
+              if package["id"] in workspace
+          }
+          dependency_ids = {
+              node["id"]: {dependency["pkg"] for dependency in node.get("deps", [])}
+              for node in metadata["resolve"]["nodes"]
+              if node["id"] in workspace
+          }
+          guard = next(
+              package_id
+              for package_id, package in packages.items()
+              if package["name"] == "heptabao-filesystem-guard"
+          )
+          storage_closure = {guard}
+          changed = True
+          while changed:
+              changed = False
+              for package_id in workspace - storage_closure:
+                  if dependency_ids.get(package_id, set()) & storage_closure:
+                      storage_closure.add(package_id)
+                      changed = True
+          runnable = sorted(
+              package["name"]
+              for package_id, package in packages.items()
+              if package_id not in storage_closure
+          )
+          command = ["cargo", "+1.98.0", "test", "--locked", "--all-targets"]
+          for name in runnable:
+              command.extend(["-p", name])
+          command.extend(["--", "--test-threads=1"])
+          subprocess.run(command, check=True)
+          PY
+
+      - name: Prove storage profile fails closed and lint all targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/heptabao-storage-profile-probe"
+          rm -rf "$probe"
+          mkdir -p "$probe/src"
+          cat > "$probe/Cargo.toml" <<EOF
+          [package]
+          name = "heptabao-storage-profile-probe"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          heptabao-filesystem-guard = { path = "$GITHUB_WORKSPACE/crates/heptabao-filesystem-guard" }
+          EOF
+          cat > "$probe/src/main.rs" <<'EOF'
+          use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+
+          fn main() {
+              let root = std::env::current_dir().expect("absolute current directory");
+              match ExclusiveDirectory::open(root) {
+                  Err(DirectoryGuardError::UnsupportedPlatform) => {}
+                  other => panic!("macOS storage profile must fail closed, got {other:?}"),
+              }
+          }
+          EOF
+          cargo +1.98.0 run --offline --manifest-path "$probe/Cargo.toml"
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+          cargo +1.98.0 build --locked -p heptabao-server
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo PASS_HEPTABAO_EXACT_HEAD_MACOS
+
+  prospective-main-merge:
+    name: prospective merge / current main + exact target
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Checkout immutable main baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.BASE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct and bind prospective merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git cat-file -e "$TARGET_SHA^{commit}"
+          git -c user.name='HeptaBao merge qualification' \
+              -c user.email='merge-qualification@users.noreply.github.com' \
+              merge --no-ff --no-edit "$TARGET_SHA"
+          test "$(git rev-parse HEAD^1)" = "$BASE_SHA"
+          test "$(git rev-parse HEAD^2)" = "$TARGET_SHA"
+          echo "PROSPECTIVE_MERGE_SHA=$(git rev-parse HEAD)"
+          echo "PROSPECTIVE_MERGE_TREE=$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install exact qualification dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Qualify prospective merge tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python scripts/validate_workflow_trust.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/security -p 'test_*.py' -v
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked --workspace --all-targets -- --test-threads=1
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 build --locked -p heptabao-server
+          python -m unittest discover -s qa/openbao-acceptance/tests -v
+          python qa/single-node/smoke.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-single-node-merge"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo PASS_HEPTABAO_PROSPECTIVE_MAIN_MERGE
