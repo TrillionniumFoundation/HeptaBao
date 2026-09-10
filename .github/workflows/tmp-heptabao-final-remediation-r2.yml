@@ -1,0 +1,142 @@
+name: tmp-heptabao-final-remediation-r2
+
+on:
+  push:
+    branches:
+      - ops/heptabao-final-remediation-r2-20260910
+    paths:
+      - .github/workflows/tmp-heptabao-final-remediation-r2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: heptabao-final-remediation-r2-20260910
+  cancel-in-progress: false
+
+env:
+  SOURCE_BRANCH: codex/openbao-replacement-v2.4-authoritative-closure-20260909
+  SOURCE_SHA: fb89c1aaaec879a027c10ade73bc66deab71449c
+  BASE_BRANCH: main
+  BASE_SHA: 92894aa52de06f2f4ba7d5f234a0a55f93314474
+  RUST_BACKTRACE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  remediate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify immutable inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          git fetch --no-tags origin "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/remediation-source"
+          git fetch --no-tags origin "+refs/heads/$BASE_BRANCH:refs/remotes/origin/remediation-base"
+          test "$(git rev-parse refs/remotes/origin/remediation-source)" = "$SOURCE_SHA"
+          test "$(git rev-parse refs/remotes/origin/remediation-base)" = "$BASE_SHA"
+          test "$(git merge-base "$BASE_SHA" "$SOURCE_SHA")" = "$BASE_SHA"
+          test -z "$(git ls-tree -r --name-only "$SOURCE_SHA" | grep '^.github/workflows/tmp-' || true)"
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Apply exact source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-final-remediation-r2"
+          git worktree add --detach "$work" "$SOURCE_SHA"
+          cd "$work"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("crates/heptabao-server/src/auth.rs")
+          text = path.read_text(encoding="utf-8")
+          old = "\n".join(
+              [
+                  "    pub fn namespace(&self) -> &str {",
+                  "        &self.token.namespace",
+                  "    }",
+                  "    pub fn accessor(&self) -> &str {",
+                  "        &self.token.accessor",
+                  "    }",
+              ]
+          ) + "\n"
+          if text.count(old) != 1:
+              raise SystemExit("expected exactly one unused Principal accessor block")
+          path.write_text(text.replace(old, "", 1), encoding="utf-8")
+          PY
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Run full repository qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-final-remediation-r2"
+          cd "$work"
+          python3 scripts/validate_repository_v2.py
+          python3 scripts/validate_compatibility_corpus.py
+          python3 -m unittest discover -s tests/repository -p 'test_*.py'
+          cargo +1.98.0 fmt --all -- --check
+          timeout --signal=TERM --kill-after=30s 5400s \
+            cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 build --locked -p heptabao-server
+          git diff --check
+          test "$(git diff --name-only)" = "crates/heptabao-server/src/auth.rs"
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'tmp-*' -print -quit)"
+
+      - name: Publish exact repaired head
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-final-remediation-r2"
+          cd "$work"
+          git config user.name 'HeptaBao final remediation'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add crates/heptabao-server/src/auth.rs
+          test "$(git diff --cached --name-only)" = "crates/heptabao-server/src/auth.rs"
+          git diff --cached --check
+          tree_sha="$(git write-tree)"
+          export GIT_AUTHOR_NAME='HeptaBao final remediation'
+          export GIT_AUTHOR_EMAIL='102159240+ProfHepta@users.noreply.github.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          new_sha="$(printf '%s\n' 'fix(server): remove unused principal accessors' | git commit-tree "$tree_sha" -p "$SOURCE_SHA")"
+          test "$(git rev-parse "$new_sha^")" = "$SOURCE_SHA"
+          observed="$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)"
+          test "$observed" = "$SOURCE_SHA"
+          git push --force-with-lease="refs/heads/$SOURCE_BRANCH:$SOURCE_SHA" \
+            origin "$new_sha:refs/heads/$SOURCE_BRANCH"
+          printf 'new_head=%s\nparent=%s\ntree=%s\n' "$new_sha" "$SOURCE_SHA" "$tree_sha"
+
+      - name: Dump diff on failure
+        if: failure()
+        shell: bash
+        run: |
+          work="$RUNNER_TEMP/heptabao-final-remediation-r2"
+          if test -e "$work/.git"; then
+            cd "$work"
+            git status --short || true
+            git diff --stat || true
+            git diff --check || true
+          fi
+
+      - name: Remove source worktree
+        if: always()
+        shell: bash
+        run: |
+          git worktree remove --force "$RUNNER_TEMP/heptabao-final-remediation-r2" || true
