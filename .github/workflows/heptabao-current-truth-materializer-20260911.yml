@@ -35,9 +35,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp scripts/materialize_current_truth_tests.py \
+            "$RUNNER_TEMP/materialize_current_truth_tests.py"
           test "$(git rev-parse "origin/$OUTPUT_BRANCH")" = "$SOURCE_SHA"
           git checkout --detach "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -f "$RUNNER_TEMP/materialize_current_truth_tests.py"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           echo PASS_HEPTABAO_CURRENT_TRUTH_SOURCE_BINDING
 
@@ -62,6 +65,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp "$RUNNER_TEMP/materialize_current_truth_tests.py" \
+            scripts/.materialize_current_truth_tests.py
+          python scripts/.materialize_current_truth_tests.py
+          rm -f scripts/.materialize_current_truth_tests.py
           python scripts/render_plan_v1_4_7.py --write
           git diff --name-status
           test -n "$(git diff --name-only)"
@@ -81,7 +88,13 @@ jobs:
           spec.loader.exec_module(renderer)
           truth = renderer.build_truth(root)
           allowed = {path.as_posix() for path in renderer.normative_paths(truth)}
-          allowed.add("planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml")
+          allowed.update(
+              {
+                  "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml",
+                  "tests/plan/test_current_entry_v1_4_7.py",
+                  "tests/plan/test_module_source_truth_v1_4_7.py",
+              }
+          )
           changed = {
               line
               for line in subprocess.check_output(
