@@ -12,13 +12,13 @@ Authentication consumes any finite-use token allowance before service dispatch. 
 
 `Service::handle` and `Service::handle_at` are the only public request entry points. The raw authentication module is **non-exported**. `AuthState`, `Principal`, and direct authorization methods therefore cannot be named by downstream crates.
 
-The service creates one transaction-scoped principal after request audit and before dispatch. It stores the finite-use decrement durably before the authorized operation proceeds. The principal remains a local value owned by that request invocation, is passed only by shared reference to the internal dispatcher, and is dropped before the public call returns. No public method accepts or returns it.
+The service creates one transaction-scoped principal after request audit and before dispatch. It stores the finite-use decrement durably before the authorized operation proceeds. The principal is non-cloneable and is consumed by value by exactly one internal dispatcher invocation; subsystems borrow it only inside that invocation. It is dropped before the public call returns, and no public method accepts or returns it.
 
 Repeated authorization checks inside the same request are permitted for layered capability checks such as `update` plus `sudo`. They do not create another token use and do not make the principal reusable by another request.
 
 ## Live authority checks
 
-Internal authorization re-resolves the authoritative token record and parent chain. Revocation, token replacement, parent removal, namespace mismatch, accessor mismatch, and policy denial fail closed. The request time captured during authentication is the service decision time for that synchronous request; a later request must authenticate again against a fresh service time.
+Internal authorization re-resolves the authoritative token record and parent chain at the live decision time supplied by the service dispatcher. Revocation, token replacement, parent removal or expiry, namespace mismatch, accessor mismatch, and policy denial fail closed. A later request must authenticate again and cannot recover or replay the consumed principal.
 
 Finite-use exhaustion after the admitted request is intentional: the current request has already paid and durably committed its use. A second request cannot obtain another principal after the counter reaches zero.
 
@@ -29,8 +29,10 @@ The following must remain true:
 1. `crates/heptabao-server/src/lib.rs` declares `mod auth;`, never `pub mod auth;` or `pub(crate) mod auth;`.
 2. The crate root does not re-export `AuthState`, `Principal`, or a direct authorization function.
 3. No public `Service` method accepts or returns an authentication capability.
-4. Authentication state is serialized only as part of the encrypted durable service state; the request principal itself is never serialized.
-5. Public callers receive only `Response` values and cannot recover a principal from a response.
+4. `Principal` is crate-internal, non-cloneable, non-serializable, and consumed by value by one dispatcher call.
+5. Every production authorization path receives the current request's live decision time.
+6. Authentication state is serialized only as part of the encrypted durable service state; the request principal itself is never serialized.
+7. Public callers receive only `Response` values and cannot recover a principal from a response.
 
 The crate-level `compile_fail` example and `tests/repository/test_auth_capability_boundary_v2_6.py` enforce the public shape. Exact-head Rust and repository checks are mandatory; an old-head pass does not admit a changed boundary.
 

@@ -515,15 +515,7 @@ impl Service {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
         };
-        let response = Self::dispatch(
-            &mut admitted,
-            principal.as_ref(),
-            namespace,
-            method,
-            path,
-            body,
-            now,
-        );
+        let response = Self::dispatch(&mut admitted, principal, namespace, method, path, body, now);
         let serialized = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
@@ -539,13 +531,16 @@ impl Service {
 
     fn dispatch(
         state: &mut State,
-        principal: Option<&Principal>,
+        principal: Option<Principal>,
         namespace: &str,
         method: &str,
         path: &str,
         body: &Value,
         now: u64,
     ) -> Response {
+        // Ownership of the affine principal is consumed at this single
+        // dispatcher boundary. Internal layers borrow it only here.
+        let principal = principal.as_ref();
         // Each subsystem operates on its own candidate. A returned Err or an
         // unsupported path discards all tentative changes, while admission
         // consumption has already been persisted independently.
@@ -567,7 +562,10 @@ impl Service {
             return Response::error(403, "missing client token");
         };
         if path == "sys/leader" && method == "GET" {
-            if let Err(error) = state.auth.authorize(principal, namespace, path, "read") {
+            if let Err(error) = state
+                .auth
+                .authorize_request(principal, namespace, path, "read", now)
+            {
                 return Response::error(error.status, &error.message);
             }
             return Response::ok(
@@ -593,11 +591,16 @@ impl Service {
             .unwrap_or(fallback);
         if path.starts_with("sys/mounts")
             && !matches!(method, "GET" | "LIST" | "HEAD")
-            && let Err(error) = state.auth.authorize(principal, namespace, path, "sudo")
+            && let Err(error) = state
+                .auth
+                .authorize_request(principal, namespace, path, "sudo", now)
         {
             return Response::error(error.status, &error.message);
         }
-        if let Err(error) = state.auth.authorize(principal, namespace, path, capability) {
+        if let Err(error) = state
+            .auth
+            .authorize_request(principal, namespace, path, capability, now)
+        {
             return Response::error(error.status, &error.message);
         }
         let mut engines = state.engines.clone();

@@ -1,7 +1,7 @@
 //! Durable authentication and a deliberately bounded, fail-closed ACL dialect.
 //!
-//! Every caller must transact a clone and durably commit authentication use-count
-//! changes before returning either successful data or a handler error.
+//! Every public service request owns one affine principal and durably commits any
+//! finite-use decrement before dispatch. Raw authorization remains crate-internal.
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use ring::{
     digest, hmac, pbkdf2,
@@ -67,13 +67,13 @@ impl Drop for Token {
     }
 }
 
-/// A capability to act for one authenticated request. Fields cannot be supplied
-/// by HTTP callers, and authorization rechecks the live authoritative record.
-#[derive(Clone)]
-pub struct Principal {
+/// An affine capability owned by exactly one service dispatcher invocation.
+/// It is non-cloneable, non-serializable and never crosses the public API.
+pub(super) struct Principal {
     digest: String,
     token: Token,
-    authenticated_at: u64,
+    #[cfg(test)]
+    request_time: u64,
 }
 
 impl Drop for Principal {
@@ -83,13 +83,13 @@ impl Drop for Principal {
 }
 
 impl Principal {
-    pub fn is_root(&self) -> bool {
+    pub(super) fn is_root(&self) -> bool {
         self.token.root
     }
-    pub fn policies(&self) -> &BTreeSet<String> {
+    fn policies(&self) -> &BTreeSet<String> {
         &self.token.policies
     }
-    pub fn consumed_use(&self) -> bool {
+    pub(super) fn consumed_use(&self) -> bool {
         self.token.uses_remaining.is_some()
     }
 }
@@ -369,7 +369,7 @@ fn policies(
 }
 
 impl AuthState {
-    pub fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
+    pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
@@ -418,7 +418,7 @@ impl AuthState {
         Ok(token)
     }
 
-    pub fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
+    pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
@@ -431,7 +431,8 @@ impl AuthState {
         Ok(Principal {
             digest: id,
             token: token.clone(),
-            authenticated_at: now,
+            #[cfg(test)]
+            request_time: now,
         })
     }
 
@@ -439,9 +440,10 @@ impl AuthState {
         &'a self,
         principal: &Principal,
         namespace: &str,
+        now: u64,
     ) -> Result<&'a Token, AuthError> {
         validate_namespace(namespace)?;
-        let token = self.active_token(&principal.digest, principal.authenticated_at, false)?;
+        let token = self.active_token(&principal.digest, now, false)?;
         if token.accessor != principal.token.accessor || !token.root && token.namespace != namespace
         {
             return Err(denied());
@@ -449,18 +451,19 @@ impl AuthState {
         Ok(token)
     }
 
-    pub fn authorize(
+    pub(super) fn authorize_request(
         &self,
         principal: &Principal,
         namespace: &str,
         path: &str,
         capability: &str,
+        now: u64,
     ) -> Result<(), AuthError> {
         validate_path(path, false)?;
         if !CAPABILITIES.contains(&capability) || capability == "deny" {
             return Err(denied());
         }
-        let token = self.check_principal(principal, namespace)?;
+        let token = self.check_principal(principal, namespace, now)?;
         if token.root {
             return Ok(());
         }
@@ -486,16 +489,34 @@ impl AuthState {
         if granted { Ok(()) } else { Err(denied()) }
     }
 
-    fn permission(
+    #[cfg(test)]
+    fn authorize_for_unit_test(
         &self,
-        principal: Option<&Principal>,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+    ) -> Result<(), AuthError> {
+        self.authorize_request(
+            principal,
+            namespace,
+            path,
+            capability,
+            principal.request_time,
+        )
+    }
+
+    fn permission<'principal>(
+        &self,
+        principal: Option<&'principal Principal>,
         namespace: &str,
         path: &str,
         cap: &str,
-    ) -> Result<Principal, AuthError> {
+        now: u64,
+    ) -> Result<&'principal Principal, AuthError> {
         let principal = principal.ok_or_else(denied)?;
-        self.authorize(principal, namespace, path, cap)?;
-        Ok(principal.clone())
+        self.authorize_request(principal, namespace, path, cap, now)?;
+        Ok(principal)
     }
 
     fn prepare_issue(token: Token, now: u64) -> Result<(String, Token, AuthResponse), AuthError> {
@@ -543,7 +564,7 @@ impl AuthState {
     }
 
     /// Returns None only for routes owned by another service subsystem.
-    pub fn handle(
+    pub(super) fn handle(
         &mut self,
         principal: Option<&Principal>,
         namespace: &str,
@@ -562,8 +583,8 @@ impl AuthState {
                 return Err(err(405, "method not allowed"));
             }
             reject_unknown(body, &[])?;
-            let actor = self.permission(principal, namespace, path, "update")?;
-            self.authorize(&actor, namespace, path, "sudo")?;
+            let actor = self.permission(principal, namespace, path, "update", now)?;
+            self.authorize_request(actor, namespace, path, "sudo", now)?;
             let mut removed = 0;
             if let Some(roles) = self.roles.get_mut(namespace) {
                 for role in roles.values_mut() {
@@ -606,12 +627,12 @@ impl AuthState {
             || path.starts_with("sys/policy/")
         {
             return self
-                .policy_route(principal, namespace, method, path, body)
+                .policy_route(principal, namespace, method, path, body, now)
                 .map(Some);
         }
         if path == "auth/userpass/users" || path.starts_with("auth/userpass/users/") {
             return self
-                .user_route(principal, namespace, method, path, body)
+                .user_route(principal, namespace, method, path, body, now)
                 .map(Some);
         }
         if path == "auth/approle/role" || path.starts_with("auth/approle/role/") {
@@ -648,10 +669,10 @@ impl AuthState {
             "accessors" => "list",
             _ => "update",
         };
-        let actor = self.permission(principal, namespace, path, capability)?;
+        let actor = self.permission(principal, namespace, path, capability, now)?;
         match operation {
             "create" | "create-orphan" => self.create_token(
-                &actor,
+                actor,
                 namespace,
                 path,
                 body,
@@ -677,7 +698,7 @@ impl AuthState {
                 Ok(response(token_info(token, now), false))
             }
             "accessors" => {
-                self.authorize(&actor, namespace, path, "sudo")?;
+                self.authorize_request(actor, namespace, path, "sudo", now)?;
                 let keys: Vec<&str> = self
                     .tokens
                     .values()
@@ -688,7 +709,7 @@ impl AuthState {
             }
             "tidy" => {
                 reject_unknown(body, &[])?;
-                self.authorize(&actor, namespace, path, "sudo")?;
+                self.authorize_request(actor, namespace, path, "sudo", now)?;
                 let stale: Vec<String> = self
                     .tokens
                     .iter()
@@ -849,7 +870,7 @@ impl AuthState {
         {
             return Err(bad("only service tokens are supported"));
         }
-        let parent = self.check_principal(actor, namespace)?.clone();
+        let parent = self.check_principal(actor, namespace, now)?.clone();
         if parent.uses_remaining.is_some() {
             return Err(bad("limited-use tokens cannot create child tokens"));
         }
@@ -865,7 +886,7 @@ impl AuthState {
         let no_parent = force_orphan || boolean(body, "no_parent", false)?;
         let period = duration(body, "period", 0)?;
         if no_parent || period > 0 {
-            self.authorize(actor, namespace, path, "sudo")?;
+            self.authorize_request(actor, namespace, path, "sudo", now)?;
         }
         if period > MAX_TTL {
             return Err(bad("period exceeds maximum TTL"));
@@ -948,6 +969,7 @@ impl AuthState {
         method: &str,
         path: &str,
         body: &Value,
+        now: u64,
     ) -> Result<AuthResponse, AuthError> {
         let suffix = path
             .strip_prefix("sys/policies/acl")
@@ -962,7 +984,7 @@ impl AuthState {
             "POST" | "PUT" => "update",
             _ => return Err(err(405, "method not allowed")),
         };
-        let actor = self.permission(principal, namespace, path, capability)?;
+        let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() {
             if capability != "list" {
                 return Err(bad("policy name required"));
@@ -999,7 +1021,7 @@ impl AuthState {
                 false,
             ));
         }
-        self.authorize(&actor, namespace, path, "sudo")?;
+        self.authorize_request(actor, namespace, path, "sudo", now)?;
         if capability == "delete" {
             if name == "default" {
                 return Err(bad("default policy cannot be deleted"));
@@ -1031,6 +1053,7 @@ impl AuthState {
         method: &str,
         path: &str,
         body: &Value,
+        now: u64,
     ) -> Result<AuthResponse, AuthError> {
         let suffix = path
             .strip_prefix("auth/userpass/users")
@@ -1038,7 +1061,7 @@ impl AuthState {
             .trim_start_matches('/');
         let (name, subpath) = suffix.split_once('/').unwrap_or((suffix, ""));
         let capability = route_capability(method, suffix.is_empty())?;
-        let actor = self.permission(principal, namespace, path, capability)?;
+        let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() && capability == "list" {
             let keys: Vec<&str> = self
                 .users
@@ -1078,7 +1101,7 @@ impl AuthState {
                 }
                 "delete" => {
                     reject_unknown(body, &[])?;
-                    self.authorize(&actor, namespace, path, "sudo")?;
+                    self.authorize_request(actor, namespace, path, "sudo", now)?;
                     let changed = user.mfa.take().is_some();
                     self.users
                         .entry(namespace.into())
@@ -1088,7 +1111,7 @@ impl AuthState {
                 }
                 "update" => {
                     reject_unknown(body, &["regenerate"])?;
-                    self.authorize(&actor, namespace, path, "sudo")?;
+                    self.authorize_request(actor, namespace, path, "sudo", now)?;
                     let regenerate = boolean(body, "regenerate", false)?;
                     if user.mfa.is_some() && !regenerate {
                         return Err(bad(
@@ -1210,7 +1233,7 @@ impl AuthState {
             &user.policies,
             true,
         )?;
-        self.validate_assignment(&actor, &user.policies)?;
+        self.validate_assignment(actor, &user.policies)?;
         user.token_ttl = duration(
             body,
             if body.get("token_ttl").is_some() {
@@ -1349,7 +1372,7 @@ impl AuthState {
             method,
             suffix.is_empty() || operation == "secret-id" && method == "LIST",
         )?;
-        let actor = self.permission(principal, namespace, path, capability)?;
+        let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() && capability == "list" {
             let keys: Vec<&str> = self
                 .roles
@@ -1421,7 +1444,7 @@ impl AuthState {
                 &role.policies,
                 true,
             )?;
-            self.validate_assignment(&actor, &role.policies)?;
+            self.validate_assignment(actor, &role.policies)?;
             role.token_ttl = duration(body, "token_ttl", role.token_ttl)?;
             role.token_max_ttl = duration(body, "token_max_ttl", role.token_max_ttl)?;
             normalize_ttl(&mut role.token_ttl, &mut role.token_max_ttl)?;

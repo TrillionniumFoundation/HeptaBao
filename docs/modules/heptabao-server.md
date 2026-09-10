@@ -62,3 +62,7 @@ migration_authority: false
 release_authority: false
 authority_effect: NONE
 ```
+
+## Affine request-principal closure
+
+The authenticated request principal is crate-internal, non-cloneable and non-serializable. `Service` moves it into exactly one dispatcher invocation; internal authorization layers borrow it only during that invocation. Every production authorization decision receives the current service request's live decision time, so subject and parent expiry, revocation, token replacement and policy replacement are re-evaluated without charging an unrelated fresh token use. Repository guards and hostile Rust tests reject a borrowed dispatcher signature, stale authentication-time authorization and a cloneable principal. This source-level closure remains subject to exact-head independent review and grants no production authority.

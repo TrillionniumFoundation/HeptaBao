@@ -71,7 +71,7 @@ fn no_cleartext_credentials_in_restart_state() {
     let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
     let second = restarted.authenticate(&raw, 102).unwrap();
     restarted
-        .authorize(&second, "", "auth/token/lookup-self", "read")
+        .authorize_for_unit_test(&second, "", "auth/token/lookup-self", "read")
         .unwrap();
     assert!(restarted.authenticate(&raw, 103).is_err());
     assert!(restarted.authenticate(&root_raw, 103).is_ok());
@@ -96,9 +96,19 @@ fn namespace_collision_and_cross_namespace_grants_are_rejected() {
     );
     let raw = token(&mut state, &root, "a", json!({"policies": ["reader"]}), 100);
     let actor = state.authenticate(&raw, 101).unwrap();
-    state.authorize(&actor, "a", "b/c", "read").unwrap();
-    assert!(state.authorize(&actor, "a/b", "c", "read").is_err());
-    assert!(state.authorize(&actor, "", "b/c", "read").is_err());
+    state
+        .authorize_for_unit_test(&actor, "a", "b/c", "read")
+        .unwrap();
+    assert!(
+        state
+            .authorize_for_unit_test(&actor, "a/b", "c", "read")
+            .is_err()
+    );
+    assert!(
+        state
+            .authorize_for_unit_test(&actor, "", "b/c", "read")
+            .is_err()
+    );
     assert!(
         state
             .handle(
@@ -111,7 +121,11 @@ fn namespace_collision_and_cross_namespace_grants_are_rejected() {
             )
             .is_err()
     );
-    assert!(state.authorize(&root, "../a", "b/c", "read").is_err());
+    assert!(
+        state
+            .authorize_for_unit_test(&root, "../a", "b/c", "read")
+            .is_err()
+    );
 }
 
 #[test]
@@ -131,21 +145,31 @@ fn policy_deny_overrides_grants_and_sudo_never_implies_read() {
     let raw = token(&mut state, &root, "", json!({"policies": ["reader"]}), 100);
     let actor = state.authenticate(&raw, 101).unwrap();
     state
-        .authorize(&actor, "", "secret/data/public/a", "read")
+        .authorize_for_unit_test(&actor, "", "secret/data/public/a", "read")
         .unwrap();
     assert!(
         state
-            .authorize(&actor, "", "secret/data/private/a", "read")
+            .authorize_for_unit_test(&actor, "", "secret/data/private/a", "read")
             .is_err()
     );
     assert!(
         state
-            .authorize(&actor, "", "secret/data/public/a", "update")
+            .authorize_for_unit_test(&actor, "", "secret/data/public/a", "update")
             .is_err()
     );
-    state.authorize(&actor, "", "sys/control", "sudo").unwrap();
-    assert!(state.authorize(&actor, "", "sys/control", "read").is_err());
-    assert!(state.authorize(&actor, "", "unlisted", "read").is_err());
+    state
+        .authorize_for_unit_test(&actor, "", "sys/control", "sudo")
+        .unwrap();
+    assert!(
+        state
+            .authorize_for_unit_test(&actor, "", "sys/control", "read")
+            .is_err()
+    );
+    assert!(
+        state
+            .authorize_for_unit_test(&actor, "", "unlisted", "read")
+            .is_err()
+    );
 }
 
 #[test]
@@ -264,7 +288,7 @@ fn token_parent_expiry_revoke_cascade_and_orphan_survival() {
     // A principal obtained before revocation cannot bypass authoritative state.
     assert!(
         state
-            .authorize(&parent2, "", "auth/token/create", "update")
+            .authorize_for_unit_test(&parent2, "", "auth/token/create", "update")
             .is_err()
     );
 }
@@ -446,7 +470,7 @@ fn actual_userpass_login_rotation_and_serde_restart() {
     let raw = login.body["auth"]["client_token"].as_str().unwrap();
     let actor = state.authenticate(raw, 102).unwrap();
     state
-        .authorize(&actor, "team", "auth/token/lookup-self", "read")
+        .authorize_for_unit_test(&actor, "team", "auth/token/lookup-self", "read")
         .unwrap();
     assert!(state.authenticate(raw, 103).is_err());
     call(
@@ -1119,4 +1143,110 @@ fn administrative_tidy_frees_only_inactive_credentials_in_its_namespace() {
     let stored = &state.roles["team"]["hepta"].secret_ids;
     assert!(!stored.contains_key(&hash(&expired_secret)));
     assert!(stored.contains_key(&hash(&active_secret)));
+}
+
+#[test]
+fn affine_request_principal_uses_live_subject_and_parent_time() {
+    let (mut state, _, root) = setup();
+    put_policy(
+        &mut state,
+        &root,
+        "",
+        "reader",
+        json!(r#"path "secret/data/a" { capabilities = ["read"] }"#),
+    );
+    let one_use = token(
+        &mut state,
+        &root,
+        "",
+        json!({"policies": ["reader"], "ttl": 2, "num_uses": 1}),
+        100,
+    );
+    let admitted = state.authenticate(&one_use, 101).unwrap();
+    state
+        .authorize_request(&admitted, "", "secret/data/a", "read", 101)
+        .unwrap();
+    assert!(
+        state
+            .authorize_request(&admitted, "", "secret/data/a", "read", 102)
+            .is_err()
+    );
+    assert!(state.authenticate(&one_use, 101).is_err());
+
+    put_policy(
+        &mut state,
+        &root,
+        "",
+        "issuer",
+        json!(r#"path "auth/token/create" { capabilities = ["update"] }"#),
+    );
+    let parent_raw = token(
+        &mut state,
+        &root,
+        "",
+        json!({"policies": ["issuer", "reader"], "ttl": 3}),
+        200,
+    );
+    let parent = state.authenticate(&parent_raw, 200).unwrap();
+    let child_raw = token(
+        &mut state,
+        &parent,
+        "",
+        json!({"policies": ["reader"], "ttl": 100}),
+        201,
+    );
+    let child = state.authenticate(&child_raw, 202).unwrap();
+    state
+        .authorize_request(&child, "", "secret/data/a", "read", 202)
+        .unwrap();
+    assert!(
+        state
+            .authorize_request(&child, "", "secret/data/a", "read", 203)
+            .is_err()
+    );
+
+    let policy_bound_raw = token(&mut state, &root, "", json!({"policies": ["reader"]}), 300);
+    let policy_bound = state.authenticate(&policy_bound_raw, 300).unwrap();
+    state
+        .authorize_request(&policy_bound, "", "secret/data/a", "read", 300)
+        .unwrap();
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "sys/policies/acl/reader",
+        json!({"policy": r#"path "secret/data/a" { capabilities = ["deny"] }"#}),
+        301,
+    );
+    assert!(
+        state
+            .authorize_request(&policy_bound, "", "secret/data/a", "read", 301)
+            .is_err()
+    );
+
+    put_policy(
+        &mut state,
+        &root,
+        "",
+        "fresh-reader",
+        json!(r#"path "secret/data/a" { capabilities = ["read"] }"#),
+    );
+    let fresh_raw = token(
+        &mut state,
+        &root,
+        "",
+        json!({"policies": ["fresh-reader"]}),
+        302,
+    );
+    let fresh = state.authenticate(&fresh_raw, 302).unwrap();
+    state
+        .authorize_request(&fresh, "", "secret/data/a", "read", 302)
+        .unwrap();
+    state.tokens.get_mut(&hash(&fresh_raw)).unwrap().accessor = "replacement".into();
+    assert!(
+        state
+            .authorize_request(&fresh, "", "secret/data/a", "read", 302)
+            .is_err()
+    );
 }
