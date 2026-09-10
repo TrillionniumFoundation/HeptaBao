@@ -47,6 +47,103 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
           python "$materializer"
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("crates/heptabao-server/src/auth_tests.rs")
+          text = path.read_text(encoding="utf-8")
+
+          old = '''    put_policy(
+              &mut state,
+              &root,
+              "team",
+              "mfa-manager",
+              json!(
+                  r#"path "auth/userpass/users/+/mfa" { capabilities = ["read", "update", "delete"] }"#
+              ),
+          );'''
+          new = '''    call(
+              &mut state,
+              &root,
+              "team",
+              "PUT",
+              "sys/policies/acl/mfa-manager",
+              json!({
+                  "policy": r#"path "auth/userpass/users/+/mfa" { capabilities = ["read", "update", "delete"] }"#
+              }),
+              101,
+          );'''
+          if text.count(old) != 1:
+              raise SystemExit(f"MFA policy fixture drift: {text.count(old)} matches")
+          text = text.replace(old, new, 1)
+
+          old = '''    call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta",
+              json!({"secret_id_ttl": 5}),
+              100,
+          );
+          let expired_secret = call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta/secret-id",
+              json!({}),
+              100,
+          )
+          .body["data"]["secret_id"]
+              .as_str()
+              .unwrap()
+              .to_owned();
+          let active_secret = call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta/secret-id",
+              json!({}),
+              110,
+          )'''
+          new = '''    call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta",
+              json!({"secret_id_ttl": 1}),
+              110,
+          );
+          let expired_secret = call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta/secret-id",
+              json!({}),
+              110,
+          )
+          .body["data"]["secret_id"]
+              .as_str()
+              .unwrap()
+              .to_owned();
+          let active_secret = call(
+              &mut state,
+              &root,
+              "team",
+              "POST",
+              "auth/approle/role/hepta/secret-id",
+              json!({}),
+              111,
+          )'''
+          if text.count(old) != 1:
+              raise SystemExit(f"AppRole tidy fixture drift: {text.count(old)} matches")
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
           rm -f "$materializer"
           cargo +1.98.0 fmt --all
           python scripts/validate_repository_v2.py
