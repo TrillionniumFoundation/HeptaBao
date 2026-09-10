@@ -48,6 +48,25 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
           python "$materializer"
+          python - <<'PY'
+          from pathlib import Path
+
+          auth = Path("crates/heptabao-server/src/auth.rs")
+          text = auth.read_text(encoding="utf-8")
+          old = "    fn authorize_request(\n"
+          new = "    pub(super) fn authorize_request(\n"
+          if text.count(old) != 1:
+              raise SystemExit(f"authorize_request visibility drift: {text.count(old)}")
+          auth.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          guard = Path("tests/repository/test_auth_capability_boundary_v2_6.py")
+          text = guard.read_text(encoding="utf-8")
+          old = 'self.assertRegex(text, r"(?m)^\\s*fn authorize_request\\(")'
+          new = 'self.assertRegex(text, r"(?m)^\\s*pub\\(super\\) fn authorize_request\\(")'
+          if text.count(old) != 1:
+              raise SystemExit(f"authorize_request guard drift: {text.count(old)}")
+          guard.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
           rm -f "$materializer"
           cargo +1.98.0 fmt --all
           python scripts/validate_repository_v2.py
