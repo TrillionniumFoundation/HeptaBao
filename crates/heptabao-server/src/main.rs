@@ -38,7 +38,9 @@ fn run() -> Result<(), String> {
     let ha_bytes = read_bounded_config(ha_path)?;
     let ha_config = serde_json::from_slice(&ha_bytes)
         .map_err(|_| "invalid HA configuration schema".to_owned())?;
-    let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(ha_config)?));
+    let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(
+        ha_config,
+    )?));
     heptabao_server::http::serve_with_ha(config, ha)
 }
 

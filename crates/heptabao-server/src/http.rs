@@ -170,11 +170,13 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
     let ha_enabled = ha.is_some();
-    let service = Arc::new(Mutex::new(match ha {
-        Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
-        None => Service::new(config.data_dir, &config.audit_file),
-    }
-    .map_err(str::to_owned)?));
+    let service = Arc::new(Mutex::new(
+        match ha {
+            Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
+            None => Service::new(config.data_dir, &config.audit_file),
+        }
+        .map_err(str::to_owned)?,
+    ));
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
     let connections = Arc::new(AtomicUsize::new(0));

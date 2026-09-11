@@ -206,7 +206,8 @@ impl ClusterStateCodec {
         digest: [u8; 32],
         sealed: &[u8],
     ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
-        let proposal = ReplicatedStateProposal::new(operation_id.to_owned(), digest, sealed.to_vec())?;
+        let proposal =
+            ReplicatedStateProposal::new(operation_id.to_owned(), digest, sealed.to_vec())?;
         let (base_digest, nonce, payload_offset) = validate_envelope(&proposal)?;
         self.open_validated(&proposal, base_digest, nonce, payload_offset)
     }
@@ -331,7 +332,11 @@ mod tests {
         ));
         assert_eq!(
             codec
-                .open_committed_parts(proposal.operation_id(), proposal.digest(), proposal.sealed())?
+                .open_committed_parts(
+                    proposal.operation_id(),
+                    proposal.digest(),
+                    proposal.sealed()
+                )?
                 .as_slice(),
             state
         );
