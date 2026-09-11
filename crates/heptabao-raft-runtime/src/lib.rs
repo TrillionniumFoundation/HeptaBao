@@ -93,7 +93,10 @@ impl ReplicatedEnvelope {
             let operation_len = length
                 .parse::<usize>()
                 .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
-            if operation_len == 0 || operation_len > MAX_OPERATION_ID_BYTES || rest.len() <= operation_len {
+            if operation_len == 0
+                || operation_len > MAX_OPERATION_ID_BYTES
+                || rest.len() <= operation_len
+            {
                 return Err(RaftRuntimeError::InvalidEnvelope);
             }
             let (operation_id, suffix) = rest.split_at(operation_len);
@@ -370,11 +373,7 @@ mod tests {
         assert!(encoded.starts_with("hbr2:"));
         assert_eq!(ReplicatedEnvelope::decode_status(&encoded)?, envelope);
 
-        let v1 = format!(
-            "hbr1:operation-1:{}:{}",
-            "07".repeat(32),
-            "aa".repeat(16)
-        );
+        let v1 = format!("hbr1:operation-1:{}:{}", "07".repeat(32), "aa".repeat(16));
         let decoded = ReplicatedEnvelope::decode_status(&v1)?;
         assert_eq!(decoded.operation_id(), "operation-1");
         assert_eq!(decoded.digest(), [7; 32]);
