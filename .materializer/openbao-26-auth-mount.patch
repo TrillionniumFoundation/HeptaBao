@@ -1,0 +1,291 @@
+diff --git a/crates/heptabao-server/src/auth.rs b/crates/heptabao-server/src/auth.rs
+index 53a8033..942b7ac 100644
+--- a/crates/heptabao-server/src/auth.rs
++++ b/crates/heptabao-server/src/auth.rs
+@@ -32,6 +32,46 @@ pub struct AuthState {
+     policies: BTreeMap<String, BTreeMap<String, Policy>>,
+     users: BTreeMap<String, BTreeMap<String, User>>,
+     roles: BTreeMap<String, BTreeMap<String, Role>>,
++    #[serde(default)]
++    auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
++}
++
++#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
++struct AuthMount {
++    kind: String,
++    description: String,
++}
++
++impl AuthMount {
++    fn new(kind: &str, description: &str) -> Self {
++        Self {
++            kind: kind.into(),
++            description: description.into(),
++        }
++    }
++
++    fn descriptor(&self) -> Value {
++        json!({
++            "type": self.kind,
++            "description": self.description,
++            "local": false,
++            "seal_wrap": false,
++            "options": {},
++            "config": {
++                "default_lease_ttl": 0,
++                "max_lease_ttl": 0,
++                "force_no_cache": false
++            }
++        })
++    }
++}
++
++fn legacy_auth_mounts() -> BTreeMap<String, AuthMount> {
++    BTreeMap::from([
++        ("token".into(), AuthMount::new("token", "token based credentials")),
++        ("userpass".into(), AuthMount::new("userpass", "username and password credentials")),
++        ("approle".into(), AuthMount::new("approle", "machine role credentials")),
++    ])
+ }
+ 
+ impl Drop for AuthState {
+@@ -375,6 +415,7 @@ impl AuthState {
+             policies: BTreeMap::new(),
+             users: BTreeMap::new(),
+             roles: BTreeMap::new(),
++            auth_mounts: BTreeMap::new(),
+         };
+         let token = Token {
+             accessor: random_id("a.")?,
+@@ -563,6 +604,110 @@ impl AuthState {
+         }
+     }
+ 
++    fn effective_auth_mounts(&self, namespace: &str) -> BTreeMap<String, AuthMount> {
++        self.auth_mounts
++            .get(namespace)
++            .cloned()
++            .unwrap_or_else(legacy_auth_mounts)
++    }
++
++    fn auth_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
++        self.auth_mounts
++            .get(namespace)
++            .map_or_else(
++                || legacy_auth_mounts().get(mount).is_some_and(|entry| entry.kind == kind),
++                |entries| entries.get(mount).is_some_and(|entry| entry.kind == kind),
++            )
++    }
++
++    fn auth_mount_route(
++        &mut self,
++        principal: Option<&Principal>,
++        namespace: &str,
++        method: &str,
++        path: &str,
++        body: &Value,
++        now: u64,
++    ) -> Result<AuthResponse, AuthError> {
++        let suffix = path.strip_prefix("sys/auth").ok_or_else(|| bad("invalid auth mount path"))?;
++        if suffix.is_empty() || suffix == "/" {
++            if !matches!(method, "GET" | "LIST") {
++                return Err(err(405, "method not allowed"));
++            }
++            self.permission(principal, namespace, "sys/auth", "read", now)?;
++            reject_unknown(body, &[])?;
++            let entries = self
++                .effective_auth_mounts(namespace)
++                .into_iter()
++                .map(|(name, mount)| (format!("{name}/"), mount.descriptor()))
++                .collect();
++            return Ok(response(Value::Object(entries), false));
++        }
++        let mount = suffix.trim_start_matches('/').trim_end_matches('/');
++        if !valid_name(mount) {
++            return Err(bad("auth mount path must be one canonical segment"));
++        }
++        let route = format!("sys/auth/{mount}");
++        match method {
++            "GET" => {
++                self.permission(principal, namespace, &route, "read", now)?;
++                reject_unknown(body, &[])?;
++                let entry = self
++                    .effective_auth_mounts(namespace)
++                    .get(mount)
++                    .cloned()
++                    .ok_or_else(|| err(404, "auth mount not found"))?;
++                Ok(response(entry.descriptor(), false))
++            }
++            "POST" | "PUT" => {
++                let actor = self.permission(principal, namespace, &route, "update", now)?;
++                self.authorize_request(actor, namespace, &route, "sudo", now)?;
++                reject_unknown(body, &["type", "description"])?;
++                let kind = body
++                    .get("type")
++                    .and_then(Value::as_str)
++                    .ok_or_else(|| bad("auth mount type is required"))?;
++                if !matches!(kind, "userpass" | "approle") {
++                    return Err(err(501, "auth method type is not implemented"));
++                }
++                if mount != kind {
++                    return Err(err(501, "custom auth mount paths require isolated method state"));
++                }
++                let description = body
++                    .get("description")
++                    .map(|value| value.as_str().ok_or_else(|| bad("description must be a string")))
++                    .transpose()?
++                    .unwrap_or("");
++                if description.len() > 512 || description.chars().any(char::is_control) {
++                    return Err(bad("invalid auth mount description"));
++                }
++                let mut entries = self.effective_auth_mounts(namespace);
++                let next = AuthMount::new(kind, description);
++                let mutated = entries.get(mount) != Some(&next);
++                entries.insert(mount.into(), next);
++                self.auth_mounts.insert(namespace.into(), entries);
++                Ok(empty(mutated))
++            }
++            "DELETE" => {
++                let actor = self.permission(principal, namespace, &route, "update", now)?;
++                self.authorize_request(actor, namespace, &route, "sudo", now)?;
++                reject_unknown(body, &[])?;
++                if mount == "token" {
++                    return Err(bad("the built-in token auth method cannot be disabled"));
++                }
++                let mut entries = self.effective_auth_mounts(namespace);
++                let mutated = entries.remove(mount).is_some();
++                self.auth_mounts.insert(namespace.into(), entries);
++                if mutated {
++                    Ok(empty(true))
++                } else {
++                    Err(err(404, "auth mount not found"))
++                }
++            }
++            _ => Err(err(405, "method not allowed")),
++        }
++    }
++
+     /// Returns None only for routes owned by another service subsystem.
+     pub(super) fn handle(
+         &mut self,
+@@ -575,6 +720,21 @@ impl AuthState {
+     ) -> Result<Option<AuthResponse>, AuthError> {
+         validate_namespace(namespace)?;
+         validate_path(path, false)?;
++        if path == "sys/auth" || path.starts_with("sys/auth/") {
++            return self
++                .auth_mount_route(principal, namespace, method, path, body, now)
++                .map(Some);
++        }
++        if path.starts_with("auth/userpass/")
++            && !self.auth_mount_enabled(namespace, "userpass", "userpass")
++        {
++            return Err(err(404, "userpass auth mount is disabled"));
++        }
++        if path.starts_with("auth/approle/")
++            && !self.auth_mount_enabled(namespace, "approle", "approle")
++        {
++            return Err(err(404, "approle auth mount is disabled"));
++        }
+         if path == "auth/approle/login" {
+             return self.login_approle(namespace, method, body, now).map(Some);
+         }
+diff --git a/crates/heptabao-server/src/auth_tests.rs b/crates/heptabao-server/src/auth_tests.rs
+index be9f73e..61c78fa 100644
+--- a/crates/heptabao-server/src/auth_tests.rs
++++ b/crates/heptabao-server/src/auth_tests.rs
+@@ -1250,3 +1250,94 @@ fn affine_request_principal_uses_live_subject_and_parent_time() {
+             .is_err()
+     );
+ }
++
++#[test]
++fn auth_mount_registry_is_persistent_sudo_gated_and_fail_closed() {
++    let (mut state, _, root) = setup();
++    let listed = call(&mut state, &root, "", "GET", "sys/auth", json!({}), 100);
++    assert_eq!(listed.status, 200);
++    assert_eq!(listed.body["data"]["token/"]["type"], "token");
++    assert_eq!(listed.body["data"]["userpass/"]["type"], "userpass");
++    assert_eq!(listed.body["data"]["approle/"]["type"], "approle");
++
++    let disabled = call(
++        &mut state,
++        &root,
++        "",
++        "DELETE",
++        "sys/auth/userpass",
++        json!({}),
++        100,
++    );
++    assert_eq!(disabled.status, 204);
++    assert!(state
++        .handle(None, "", "POST", "auth/userpass/login/alice", &json!({"password":"x"}), 101)
++        .is_err_and(|error| error.status == 404));
++
++    let saved = serde_json::to_string(&state).unwrap();
++    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
++    assert!(restarted
++        .handle(None, "", "POST", "auth/userpass/login/alice", &json!({"password":"x"}), 101)
++        .is_err_and(|error| error.status == 404));
++
++    let enabled = call(
++        &mut restarted,
++        &root,
++        "",
++        "POST",
++        "sys/auth/userpass",
++        json!({"type":"userpass","description":"synthetic userpass"}),
++        102,
++    );
++    assert_eq!(enabled.status, 204);
++    let descriptor = call(
++        &mut restarted,
++        &root,
++        "",
++        "GET",
++        "sys/auth/userpass",
++        json!({}),
++        102,
++    );
++    assert_eq!(descriptor.body["data"]["type"], "userpass");
++    assert_eq!(descriptor.body["data"]["description"], "synthetic userpass");
++
++    assert!(restarted
++        .handle(
++            Some(&root),
++            "",
++            "POST",
++            "sys/auth/team-login",
++            &json!({"type":"userpass"}),
++            103,
++        )
++        .is_err_and(|error| error.status == 501));
++    assert!(restarted
++        .handle(
++            Some(&root),
++            "",
++            "DELETE",
++            "sys/auth/token",
++            &json!({}),
++            103,
++        )
++        .is_err());
++}
++
++#[test]
++fn auth_mount_registry_requires_sudo_for_mutation() {
++    let (mut state, _, root) = setup();
++    let raw = token(&mut state, &root, "", json!({"policies":["default"]}), 100);
++    let actor = state.authenticate(&raw, 101).unwrap();
++    assert!(state
++        .handle(
++            Some(&actor),
++            "",
++            "DELETE",
++            "sys/auth/userpass",
++            &json!({}),
++            101,
++        )
++        .is_err());
++    assert!(state.auth_mount_enabled("", "userpass", "userpass"));
++}
