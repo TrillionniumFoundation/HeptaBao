@@ -219,9 +219,12 @@ repository_blockers:
 - id: HB-V2-REP-014
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: real persisted-format migration and interruption recovery are incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
+  title: interruption-safe persisted-format migration core is implemented and awaiting unchanged-head review
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
+  - crates/heptabao-migration/src/lib.rs
+  - crates/heptabao-migration/src/durable.rs
+  - docs/modules/heptabao-migration.md
   - qa/openbao-acceptance/migrate_kv2.py
   - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
@@ -252,7 +255,7 @@ repository_blockers:
 - id: HB-V2-REP-016
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: exact compatibility denominator is enforced but 54 surface fixtures remain incomplete
+  title: exact compatibility denominator is enforced but 51 surface fixtures remain incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
   - crates/heptabao-compatibility/src/lib.rs
@@ -265,7 +268,7 @@ repository_blockers:
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - retain all 60 inventoried surfaces exactly once and map every implemented case exactly once
-  - implement executable positive hostile and side-effect fixtures for the remaining 54 surfaces
+  - implement executable positive hostile and side-effect fixtures for the remaining 51 surfaces
   - require exact inventory Oracle artifact candidate artifact and independent-origin binding before admission
   - execute the complete corpus against an independently deployed Oracle and current exact candidate head
   - bind source guide exact-head and prospective-main-merge evidence
