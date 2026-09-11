@@ -555,9 +555,12 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
         .map_err(|_| "invalid HA TLS client identity".to_owned())?;
     client.alpn_protocols = vec![b"heptabao-raft/1".to_vec()];
 
-    let verifier = WebPkiClientVerifier::builder(Arc::new(root_store(&ca)?))
-        .build()
-        .map_err(|_| "invalid HA TLS client verifier".to_owned())?;
+    let verifier = WebPkiClientVerifier::builder_with_provider(
+        Arc::new(root_store(&ca)?),
+        Arc::new(rustls::crypto::ring::default_provider()),
+    )
+    .build()
+    .map_err(|_| "invalid HA TLS client verifier".to_owned())?;
     let mut server = ServerConfig::builder_with_provider(provider)
         .with_safe_default_protocol_versions()
         .map_err(|_| "HA TLS protocol versions unavailable".to_owned())?
