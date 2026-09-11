@@ -5,6 +5,7 @@ on:
     branches:
       - codex/openbao-replacement-full-closure-20260908
       - codex/openbao-2-6-production-replacement-closure-20260911-r1
+      - codex/openbao-2.6-production-gap-closure-20260911
   workflow_dispatch:
 
 permissions:
