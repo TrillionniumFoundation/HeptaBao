@@ -1,0 +1,62 @@
+name: PR88 standby unseal materializer
+
+on:
+  push:
+    branches:
+      - ops/pr88-standby-unseal-20260911-gpt56
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]' && github.actor != 'actions'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Allow fail-closed standby unseal without local ReadIndex
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('crates/heptabao-server/src/service.rs')
+          text = p.read_text()
+          old = '''        if self.ha.is_some()\n            && let Err(error) = self.sync_from_ha()\n        {\n            self.recovery_required = true;\n            return Err(error);\n        }\n'''
+          new = '''        let sync_as_leader = if let Some(ha) = self.ha.as_ref() {\n            match ha.lock() {\n                Ok(ha) => match ha.is_leader() {\n                    Ok(value) => value,\n                    Err(_) => {\n                        self.recovery_required = true;\n                        return Err(Response::error(503, "HA role is unavailable during unseal"));\n                    }\n                },\n                Err(_) => {\n                    self.recovery_required = true;\n                    return Err(Response::error(503, "HA role is unavailable during unseal"));\n                }\n            }\n        } else {\n            false\n        };\n        if sync_as_leader\n            && let Err(error) = self.sync_from_ha()\n        {\n            self.recovery_required = true;\n            return Err(error);\n        }\n'''
+          if text.count(old) != 1:
+              raise SystemExit(f'standby unseal patch target mismatch: {text.count(old)}')
+          p.write_text(text.replace(old, new, 1))
+          PY
+          cargo +1.98.0 fmt --all
+          git diff --check
+      - name: Validate server and Raft slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-server -p heptabao-raft-runtime --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-server -p heptabao-raft-runtime --all-targets -- -D warnings
+      - name: Publish source-only descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/pr88-standby-unseal-materializer.yml
+          git diff --check
+          paths="$(git diff --name-only | sort | tr '\n' ' ')"
+          test "$paths" = ".github/workflows/pr88-standby-unseal-materializer.yml crates/heptabao-server/src/service.rs "
+          git config user.name heptabao-materializer
+          git config user.email actions@users.noreply.github.com
+          git add -u
+          git commit -m "fix(ha): unseal standby without local ReadIndex"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
