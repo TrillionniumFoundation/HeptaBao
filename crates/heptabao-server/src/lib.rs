@@ -12,6 +12,8 @@
 //! ```
 mod auth;
 mod crypto;
+#[allow(clippy::expect_used, clippy::unwrap_used)]
+pub mod federated_auth;
 pub mod engines;
 pub mod http;
 mod service;
