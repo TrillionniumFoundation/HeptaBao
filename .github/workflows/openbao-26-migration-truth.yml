@@ -1,0 +1,86 @@
+name: OpenBao 2.6 migration core truth
+
+on:
+  push:
+    branches:
+      - ops/openbao-26-migration-truth-20260911-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openbao-26-migration-truth-20260911-r1
+  cancel-in-progress: true
+
+env:
+  OUTPUT_BRANCH: tmp/openbao-26-migration-truth-source-20260911-r1
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install exact Rust toolchain
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+      - name: Qualify migration core
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-migration --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-migration --all-targets -- -D warnings
+      - name: Reconcile blocker truth without granting authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml')
+          s=p.read_text(encoding='utf-8')
+          old='''- id: HB-V2-REP-014
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: real persisted-format migration and interruption recovery are incomplete
+  state: IMPLEMENTATION_IN_PROGRESS
+  evidence:
+  - qa/openbao-acceptance/migrate_kv2.py
+  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
+  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
+'''
+          new='''- id: HB-V2-REP-014
+  class: REPOSITORY_CONTROLLED
+  severity: HIGH
+  title: interruption-safe persisted-format migration core is implemented and awaiting unchanged-head review
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  evidence:
+  - crates/heptabao-migration/src/lib.rs
+  - crates/heptabao-migration/src/durable.rs
+  - docs/modules/heptabao-migration.md
+  - qa/openbao-acceptance/migrate_kv2.py
+  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
+  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
+'''
+          if s.count(old)!=1: raise SystemExit('REP-014 anchor mismatch')
+          s=s.replace(old,new,1)
+          s=s.replace('exact compatibility denominator is enforced but 54 surface fixtures remain incomplete','exact compatibility denominator is enforced but 51 surface fixtures remain incomplete',1)
+          s=s.replace('implement executable positive hostile and side-effect fixtures for the remaining 54 surfaces','implement executable positive hostile and side-effect fixtures for the remaining 51 surfaces',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          git diff --check
+      - name: Publish source-only truth candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenBao 2.6 Migration Closure'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
+          git commit -m 'docs(migration): mark durable migration core review-ready'
+          git branch -f "$OUTPUT_BRANCH" HEAD
+          git push --force-with-lease origin "$OUTPUT_BRANCH"
