@@ -16,13 +16,13 @@ use openraft::raft::{
 use openraft::type_config::alias::{SnapshotOf, VoteOf};
 use openraft::{OptionalSend, Snapshot};
 use openraft_memstore::TypeConfig;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use tokio::sync::Mutex;
 
 use super::snapshot::{
-    crc32, snapshot_transfer_id, IncomingSnapshot, SnapshotChunkAck, SnapshotChunkWire,
-    MAX_INCOMING_SNAPSHOTS, MAX_REMOTE_RPC_BYTES, MAX_REMOTE_SNAPSHOT_BYTES, SNAPSHOT_CHUNK_BYTES,
+    IncomingSnapshot, MAX_INCOMING_SNAPSHOTS, MAX_REMOTE_RPC_BYTES, MAX_REMOTE_SNAPSHOT_BYTES,
+    SNAPSHOT_CHUNK_BYTES, SnapshotChunkAck, SnapshotChunkWire, crc32, snapshot_transfer_id,
 };
 use crate::network::DurableRaft;
 
@@ -50,8 +50,12 @@ impl std::fmt::Display for RemoteRaftError {
             Self::InvalidTopology => formatter.write_str("remote Raft topology is invalid"),
             Self::InvalidRpc => formatter.write_str("remote Raft RPC is invalid"),
             Self::InvalidSnapshot => formatter.write_str("remote Raft snapshot is invalid"),
-            Self::Transport(message) => write!(formatter, "remote Raft transport failed: {message}"),
-            Self::Consensus(message) => write!(formatter, "remote Raft consensus failed: {message}"),
+            Self::Transport(message) => {
+                write!(formatter, "remote Raft transport failed: {message}")
+            }
+            Self::Consensus(message) => {
+                write!(formatter, "remote Raft consensus failed: {message}")
+            }
             Self::Io(message) => write!(formatter, "remote Raft durable store failed: {message}"),
         }
     }
@@ -348,20 +352,20 @@ impl RaftRpcService {
         }
         match kind {
             RaftRpcKind::AppendEntries => {
-                let request = serde_json::from_slice(&payload)
-                    .map_err(|_| RemoteRaftError::InvalidRpc)?;
+                let request =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
                 serde_json::to_vec(&self.raft.append_entries(request).await)
                     .map_err(|_| RemoteRaftError::InvalidRpc)
             }
             RaftRpcKind::Vote => {
-                let request = serde_json::from_slice(&payload)
-                    .map_err(|_| RemoteRaftError::InvalidRpc)?;
+                let request =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
                 serde_json::to_vec(&self.raft.vote(request).await)
                     .map_err(|_| RemoteRaftError::InvalidRpc)
             }
             RaftRpcKind::PreVote => {
-                let request = serde_json::from_slice(&payload)
-                    .map_err(|_| RemoteRaftError::InvalidRpc)?;
+                let request =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
                 serde_json::to_vec(&self.raft.pre_vote(request).await)
                     .map_err(|_| RemoteRaftError::InvalidRpc)
             }

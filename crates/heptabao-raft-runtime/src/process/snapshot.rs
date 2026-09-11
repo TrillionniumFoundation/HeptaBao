@@ -41,12 +41,7 @@ pub(super) struct IncomingSnapshot {
 }
 
 pub(super) fn snapshot_transfer_id(meta: &[u8], vote: &[u8], data_len: usize) -> String {
-    format!(
-        "{:08x}{:08x}-{}",
-        crc32(meta),
-        crc32(vote),
-        data_len
-    )
+    format!("{:08x}{:08x}-{}", crc32(meta), crc32(vote), data_len)
 }
 
 pub(super) fn crc32(bytes: &[u8]) -> u32 {
