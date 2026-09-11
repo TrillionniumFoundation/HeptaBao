@@ -527,24 +527,34 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
-        if self.ha.is_some() {
-            let (_, standby, ha_active, _, _) = self.ha_observation();
-            if standby {
+        if let Some(ha) = self.ha.as_ref().cloned() {
+            let (leader, local) = match ha.lock() {
+                Ok(ha) => {
+                    let leader = match ha.leader() {
+                        Ok(value) => value,
+                        Err(_) => return Response::error(503, "HA leader state is unavailable"),
+                    };
+                    let local = match ha.local_id() {
+                        Ok(value) => value,
+                        Err(_) => return Response::error(503, "HA local identity is unavailable"),
+                    };
+                    (leader, local)
+                }
+                Err(_) => return Response::error(503, "HA process lock is unavailable"),
+            };
+            if leader != Some(local) {
+                let Some(_) = leader else {
+                    return Response::error(503, "HA cluster has no elected leader");
+                };
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
-                let Some(ha) = self.ha.as_ref().cloned() else {
-                    return Response::error(503, "HA forwarding is unavailable");
-                };
                 return match ha.lock() {
                     Ok(ha) => ha
                         .forward_request(method, path, namespace, token, body)
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
                     Err(_) => Response::error(503, "HA process lock is unavailable"),
                 };
-            }
-            if !ha_active {
-                return Response::error(503, "HA node has no current linearizable authority");
             }
             if let Err(error) = self.sync_from_ha() {
                 return error;
