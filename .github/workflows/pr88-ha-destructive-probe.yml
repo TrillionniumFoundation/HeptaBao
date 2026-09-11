@@ -34,8 +34,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('qa/openbao-acceptance/ha_destructive.py')
+          text = path.read_text()
+          old = '''    except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError):\n        print("destructive HA fixture failed; inspect synthetic node logs", file=sys.stderr)\n        return 1\n'''
+          new = '''    except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError) as error:\n        print(f"destructive HA fixture failed: {type(error).__name__}: {error}", file=sys.stderr)\n        return 1\n'''
+          if text.count(old) != 1:
+              raise SystemExit('diagnostic patch target mismatch')
+          path.write_text(text.replace(old, new, 1))
+          PY
           BINARY="$(pwd)/target/debug/heptabao-server"
-          WORK="$(mktemp -d)/ha-destructive"
+          ROOT="$(mktemp -d)"
+          WORK="$ROOT/ha-destructive"
+          set +e
           timeout 360s python qa/openbao-acceptance/ha_destructive.py \
             --binary "$BINARY" \
             --work-dir "$WORK"
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ]; then
+            echo "--- synthetic server diagnostics ---"
+            find "$WORK" -type f -name server.log -print 2>/dev/null | sort | while read -r log; do
+              echo "--- $log ---"
+              tail -n 80 "$log"
+            done
+          fi
+          exit "$code"
