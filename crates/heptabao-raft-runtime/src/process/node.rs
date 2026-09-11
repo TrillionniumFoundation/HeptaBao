@@ -155,7 +155,7 @@ impl ProcessRaftNode {
         Ok(CommitReceipt {
             leader_id: self.id,
             log_index: response.log_id.index,
-            envelope_digest: envelope.digest,
+            envelope_digest: envelope.digest(),
         })
     }
 
@@ -177,6 +177,19 @@ impl ProcessRaftNode {
 
     pub async fn applied_state(&self) -> MemStoreStateMachine {
         self.state_machine.get_state_machine().await
+    }
+
+    /// Return the latest authoritative application envelope committed through
+    /// the production HA client identity. A malformed durable value is a hard
+    /// recovery error rather than an empty state or best-effort fallback.
+    pub async fn latest_envelope(&self) -> Result<Option<ReplicatedEnvelope>, RemoteRaftError> {
+        let state = self.state_machine.get_state_machine().await;
+        let Some(status) = state.client_status.get("heptabao-production-ha") else {
+            return Ok(None);
+        };
+        ReplicatedEnvelope::decode_status(status)
+            .map(Some)
+            .map_err(|error| RemoteRaftError::Io(format!("invalid committed application envelope: {error}")))
     }
 
     pub async fn shutdown(self) -> Result<(), RemoteRaftError> {
