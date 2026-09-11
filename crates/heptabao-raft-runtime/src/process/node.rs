@@ -189,7 +189,9 @@ impl ProcessRaftNode {
         };
         ReplicatedEnvelope::decode_status(status)
             .map(Some)
-            .map_err(|error| RemoteRaftError::Io(format!("invalid committed application envelope: {error}")))
+            .map_err(|error| {
+                RemoteRaftError::Io(format!("invalid committed application envelope: {error}"))
+            })
     }
 
     pub async fn shutdown(self) -> Result<(), RemoteRaftError> {
