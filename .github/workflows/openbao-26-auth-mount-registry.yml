@@ -1,0 +1,64 @@
+name: OpenBao 2.6 auth mount registry qualification
+
+on:
+  push:
+    branches:
+      - ops/openbao-26-auth-mount-registry-20260911-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openbao-26-auth-mount-registry-20260911-r1
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: 8c83b8ff6dfbf126290133cb3ce6cb4a3b55d7cb
+  OUTPUT_BRANCH: tmp/openbao-26-auth-mount-source-20260911-r1
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout controller and preserve reviewed patch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize source-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .materializer/openbao-26-auth-mount.patch "$RUNNER_TEMP/auth-mount.patch"
+          git checkout -B "$OUTPUT_BRANCH" "$BASE_SHA"
+          git apply --check "$RUNNER_TEMP/auth-mount.patch"
+          git apply "$RUNNER_TEMP/auth-mount.patch"
+          git diff --check
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Qualify server auth registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-server --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          git diff --check
+
+      - name: Publish source-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenBao 2.6 Auth Closure'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add crates/heptabao-server/src/auth.rs crates/heptabao-server/src/auth_tests.rs
+          git commit -m 'feat(auth): add persistent sudo-gated auth mount registry'
+          git push --force-with-lease origin "$OUTPUT_BRANCH"
