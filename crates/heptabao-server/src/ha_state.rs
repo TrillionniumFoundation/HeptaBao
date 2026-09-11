@@ -8,8 +8,7 @@
 //! reconstructed independently on followers.
 
 use ring::{
-    aead,
-    digest,
+    aead, digest,
     rand::{SecureRandom, SystemRandom},
 };
 use std::fmt;
@@ -127,9 +126,9 @@ impl ClusterStateCodec {
         let cluster_id = cluster_id.into();
         if cluster_id.is_empty()
             || cluster_id.len() > MAX_CLUSTER_ID_BYTES
-            || !cluster_id.bytes().all(|byte| {
-                byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.')
-            })
+            || !cluster_id
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
         {
             key.zeroize();
             return Err(ReplicatedStateError::InvalidCluster);
@@ -252,15 +251,10 @@ impl ClusterStateCodec {
         }
         let cluster_len = u16::try_from(self.cluster_id.len())
             .map_err(|_| ReplicatedStateError::InvalidCluster)?;
-        let operation_len = u16::try_from(operation_id.len())
-            .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+        let operation_len =
+            u16::try_from(operation_id.len()).map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
         let mut aad = Vec::with_capacity(
-            MAGIC.len()
-                + 2
-                + self.cluster_id.len()
-                + 2
-                + operation_id.len()
-                + DIGEST_BYTES * 2,
+            MAGIC.len() + 2 + self.cluster_id.len() + 2 + operation_id.len() + DIGEST_BYTES * 2,
         );
         aad.extend_from_slice(MAGIC);
         aad.extend_from_slice(&cluster_len.to_be_bytes());
