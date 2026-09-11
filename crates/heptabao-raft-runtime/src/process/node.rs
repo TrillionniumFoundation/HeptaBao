@@ -137,16 +137,19 @@ impl ProcessRaftNode {
         self.raft.current_leader().await
     }
 
-    /// Return the next serial for the durable production application client.
+    /// Return a nonzero monotonically increasing serial for the production
+    /// application client.
     ///
-    /// The serial is recovered from the replicated state machine rather than a
-    /// process-local counter. A restarted node or newly elected leader therefore
-    /// cannot accidentally reuse an old serial and receive a cached response for
-    /// a different state proposal.
+    /// The pinned memstore state machine does not retain client serials; it
+    /// persists the latest client status and the last applied Raft log id. The
+    /// latter survives restart and snapshot installation, so using its index + 1
+    /// prevents serial reuse after leader restart or failover. Membership and
+    /// blank entries may create harmless gaps but cannot make the serial regress.
     pub async fn next_production_client_serial(&self) -> Result<u64, RaftRuntimeError> {
         let state = self.state_machine.get_state_machine().await;
-        match state.client_serial_responses.get(PRODUCTION_CLIENT_ID) {
-            Some((serial, _)) => serial
+        match state.last_applied_log {
+            Some(log_id) => log_id
+                .index
                 .checked_add(1)
                 .filter(|value| *value != 0)
                 .ok_or(RaftRuntimeError::InvalidSerial),
