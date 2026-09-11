@@ -24,7 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt
-      - name: Materialize formatter diff only
+      - name: Materialize formatter diff and formatted source
         shell: bash
         run: |
           set -euo pipefail
@@ -32,10 +32,16 @@ jobs:
           git diff --binary > "$RUNNER_TEMP/rustfmt.patch"
           test -s "$RUNNER_TEMP/rustfmt.patch"
           git diff --check
-      - name: Upload formatter patch
+          mkdir -p "$RUNNER_TEMP/formatted"
+          cp crates/heptabao-server/src/ha.rs "$RUNNER_TEMP/formatted/ha.rs"
+          cp crates/heptabao-server/src/main.rs "$RUNNER_TEMP/formatted/main.rs"
+      - name: Upload formatter result
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: pr83-rustfmt-${{ github.event.pull_request.head.sha }}
-          path: ${{ runner.temp }}/rustfmt.patch
+          path: |
+            ${{ runner.temp }}/rustfmt.patch
+            ${{ runner.temp }}/formatted/ha.rs
+            ${{ runner.temp }}/formatted/main.rs
           if-no-files-found: error
           retention-days: 1
