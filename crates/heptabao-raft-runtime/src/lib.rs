@@ -324,9 +324,12 @@ fn decode_hex(encoded: &str) -> Result<Vec<u8>, RaftRuntimeError> {
     {
         return Err(RaftRuntimeError::InvalidEnvelope);
     }
-    encoded
-        .as_bytes()
-        .chunks_exact(2)
+    let (pairs, remainder) = encoded.as_bytes().as_chunks::<2>();
+    if !remainder.is_empty() {
+        return Err(RaftRuntimeError::InvalidEnvelope);
+    }
+    pairs
+        .iter()
         .map(|pair| {
             std::str::from_utf8(pair)
                 .ok()
