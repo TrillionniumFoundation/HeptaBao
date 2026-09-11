@@ -22,6 +22,8 @@ CASES = {
     "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",
                 "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],
     "totp": ["roundtrip"],
+    "userpass": ["login"],
+    "approle": ["login"],
 }
 
 
@@ -36,6 +38,9 @@ class Suite:
         self.results = {}
         self.requests = {}
         self.owned_mounts = []
+        self.owned_auth_mounts = []
+        self.owned_users = []
+        self.owned_roles = []
         self.policy_owned = False
         self.child_tokens = []
 
@@ -74,6 +79,22 @@ class Suite:
             payload["options"] = {"version": "2"}
         self.perform(kind + ".mount", "POST", "/v1/sys/mounts/" + mount, payload)
         self.owned_mounts.append(mount)
+
+    def ensure_auth_mount(self, kind):
+        inventory = self.client.request("GET", "/v1/sys/auth")
+        if inventory.status != 200:
+            raise BaoError("cannot_read_auth_mount_inventory")
+        existing = inventory.data().get(kind + "/")
+        if existing is not None:
+            if not isinstance(existing, dict) or existing.get("type") != kind:
+                raise BaoError("auth_mount_type_mismatch")
+            return
+        response = self.client.request(
+            "POST", "/v1/sys/auth/" + kind, {"type": kind, "description": self.marker}
+        )
+        if response.status != 204:
+            raise BaoError("auth_mount_enable_failed")
+        self.owned_auth_mounts.append(kind)
 
     def kv_cases(self):
         self.mount("kv", self.kv)
@@ -219,11 +240,87 @@ class Suite:
             validation_true=validation.data().get("valid") is True,
         )
 
+    def userpass_cases(self):
+        self.ensure_auth_mount("userpass")
+        username = "hbqa-" + self.run_id
+        password = "HeptaBao-QA-" + self.run_id + "-Password"
+        user_path = "/v1/auth/userpass/users/" + username
+        created = self.client.request(
+            "POST", user_path, {"password": password, "token_policies": ["default"]}
+        )
+        if created.status != 204:
+            raise BaoError("userpass_fixture_user_create_failed")
+        self.owned_users.append(username)
+        r = self.call("userpass.login", "POST", "/v1/auth/userpass/login/" + username, {"password": password})
+        auth = r.body.get("auth") or {}
+        child = auth.get("client_token")
+        if isinstance(child, str) and child:
+            self.child_tokens.append(child)
+        self.check(
+            "userpass.login", r, 200,
+            token_issued=isinstance(child, str) and bool(child),
+            default_policy="default" in auth.get("policies", []),
+        )
+
+    def approle_cases(self):
+        self.ensure_auth_mount("approle")
+        role = "hbqa-" + self.run_id
+        role_path = "/v1/auth/approle/role/" + role
+        created = self.client.request(
+            "POST", role_path, {"token_policies": ["default"], "secret_id_num_uses": 1}
+        )
+        if created.status != 204:
+            raise BaoError("approle_fixture_role_create_failed")
+        self.owned_roles.append(role)
+        role_id_response = self.client.request("GET", role_path + "/role-id")
+        role_id = role_id_response.data().get("role_id") if role_id_response.status == 200 else None
+        secret_response = self.client.request("POST", role_path + "/secret-id", {})
+        secret_id = secret_response.data().get("secret_id") if secret_response.status == 200 else None
+        payload = {
+            "role_id": role_id if isinstance(role_id, str) else "",
+            "secret_id": secret_id if isinstance(secret_id, str) else "",
+        }
+        r = self.call("approle.login", "POST", "/v1/auth/approle/login", payload)
+        auth = r.body.get("auth") or {}
+        child = auth.get("client_token")
+        if isinstance(child, str) and child:
+            self.child_tokens.append(child)
+        self.check(
+            "approle.login", r, 200,
+            role_id_observed=isinstance(role_id, str) and bool(role_id),
+            secret_id_observed=isinstance(secret_id, str) and bool(secret_id),
+            token_issued=isinstance(child, str) and bool(child),
+            default_policy="default" in auth.get("policies", []),
+        )
+
     def cleanup(self):
         failures = 0
         for token in self.child_tokens:
             try:
                 if self.client.request("POST", "/v1/auth/token/revoke", {"token": token}).status != 204:
+                    failures += 1
+            except BaoError:
+                failures += 1
+        for username in self.owned_users:
+            try:
+                if self.client.request("DELETE", "/v1/auth/userpass/users/" + username).status != 204:
+                    failures += 1
+            except BaoError:
+                failures += 1
+        for role in self.owned_roles:
+            try:
+                if self.client.request("DELETE", "/v1/auth/approle/role/" + role).status != 204:
+                    failures += 1
+            except BaoError:
+                failures += 1
+        for kind in reversed(self.owned_auth_mounts):
+            try:
+                inventory = self.client.request("GET", "/v1/sys/auth")
+                entry = inventory.data().get(kind + "/") if inventory.status == 200 else None
+                if not isinstance(entry, dict) or entry.get("type") != kind:
+                    failures += 1
+                    continue
+                if self.client.request("DELETE", "/v1/sys/auth/" + kind).status != 204:
                     failures += 1
             except BaoError:
                 failures += 1
@@ -249,7 +346,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("kv", "token", "transit", "totp"):
+            for module in ("kv", "token", "transit", "totp", "userpass", "approle"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -279,7 +376,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="kv,token,transit,totp")
+    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",
