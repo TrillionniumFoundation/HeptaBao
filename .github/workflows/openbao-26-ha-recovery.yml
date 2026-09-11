@@ -56,7 +56,8 @@ jobs:
                   continue
               body.append(value)
           text = "\n".join(body) + "\n"
-          for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", "${{"):
+          expression_prefix = chr(36) + "{{"
+          for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", expression_prefix):
               if token in text:
                   raise SystemExit(f"denied historical materializer token: {token}")
           Path(sys.argv[2]).write_text(text, encoding="utf-8")
@@ -148,7 +149,7 @@ jobs:
                   break
               body.append(line[10:] if line.startswith("          ") else line)
           text = "\n".join(body) + "\n"
-          if "${{" in text:
+          if chr(36) + "{{" in text:
               raise SystemExit("unresolved workflow expression in mTLS block")
           Path(sys.argv[2]).write_text(text, encoding="utf-8")
           PY
