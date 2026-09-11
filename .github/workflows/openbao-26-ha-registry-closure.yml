@@ -1,0 +1,113 @@
+name: OpenBao 2.6 HA registry closure
+
+on:
+  push:
+    branches:
+      - ops/openbao-26-ha-registry-closure-20260911-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openbao-26-ha-registry-closure-20260911-r1
+  cancel-in-progress: true
+
+env:
+  OUTPUT_BRANCH: tmp/openbao-26-ha-registry-source-20260911-r1
+
+jobs:
+  close:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact controller head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update only current V2 registry truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected one occurrence of {old!r}, got {text.count(old)}')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          matrix = Path('planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml')
+          text = matrix.read_text(encoding='utf-8')
+          anchor = '''- crate: heptabao-ha-contracts
+  domain: HA term membership and writer fences
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-ha-contracts/src/lib.rs
+  guide: docs/modules/heptabao-ha-contracts.md
+'''
+          addition = anchor + '''- crate: heptabao-ha-service
+  domain: authenticated HA service routing, peer transport and replay fencing
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-ha-service/src/lib.rs
+  guide: docs/modules/heptabao-ha-service.md
+'''
+          if text.count(anchor) != 1:
+              raise SystemExit('capability matrix HA anchor mismatch')
+          matrix.write_text(text.replace(anchor, addition, 1), encoding='utf-8')
+
+          replace_once('README.md', 'The current workspace contains **45 packages**.', 'The current workspace contains **46 packages**.')
+          replace_once('README.md', 'Current Cargo workspace documentation: **45 / 45** existing crates.', 'Current Cargo workspace documentation: **46 / 46** existing crates.')
+          replace_once(
+              'README.md',
+              'It still lacks production Raft peer/server composition, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration, fixtures for 54 compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.',
+              'The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. It still lacks the final `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` production composition, destructive three-process HA qualification, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.'
+          )
+
+          replace_once('docs/CURRENT_DOCUMENTATION.md', 'This is the current entry point for all 45 workspace packages.', 'This is the current entry point for all 46 workspace packages.')
+          replace_once('docs/CURRENT_DOCUMENTATION.md', '`docs/modules/README.md` — complete index for all 45 workspace packages.', '`docs/modules/README.md` — complete index for all 46 workspace packages.')
+          replace_once(
+              'docs/CURRENT_DOCUMENTATION.md',
+              'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment adds a checksum-pinned sandbox-wrapper process boundary, encrypted restart-safe plugin invocation intents and dynamic-lease projections, plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.',
+              'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment also adds an authenticated HA service boundary with mTLS peer identity binding, durable peer replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport; a checksum-pinned sandbox-wrapper process boundary; encrypted restart-safe plugin invocation intents and dynamic-lease projections; plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.'
+          )
+          replace_once(
+              'docs/CURRENT_DOCUMENTATION.md',
+              'current 45-package implementation and mandatory validation remain intact;',
+              'the 45-package implementation observed in that historical reconciliation and its mandatory validation remain intact;'
+          )
+
+          index = Path('docs/modules/README.md')
+          text = index.read_text(encoding='utf-8')
+          text = text.replace('Current status: `V2.3 / 45 WORKSPACE PACKAGES`', 'Current status: `V2.3 / 46 WORKSPACE PACKAGES`', 1)
+          row = '| `heptabao-ha-contracts` | HA term membership and writer fences | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-contracts.md` |\n'
+          newrow = row + '| `heptabao-ha-service` | authenticated HA service routing, peer transport and replay fencing | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-service.md` |\n'
+          if text.count(row) != 1:
+              raise SystemExit('module index HA row mismatch')
+          text = text.replace(row, newrow, 1)
+          index.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate registry closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          git diff --check
+
+      - name: Publish source-only registry candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenBao 2.6 Registry Closure'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add README.md docs/CURRENT_DOCUMENTATION.md docs/modules/README.md planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
+          git commit -m 'docs(ha): register authenticated HA service package'
+          git branch -f "$OUTPUT_BRANCH" HEAD
+          git push --force-with-lease origin "$OUTPUT_BRANCH"
