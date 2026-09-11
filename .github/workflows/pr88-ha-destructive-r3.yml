@@ -34,6 +34,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('qa/openbao-acceptance/ha_destructive.py')
+          text = p.read_text()
+          old = '''    except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError):\n        print("destructive HA fixture failed; inspect synthetic node logs", file=sys.stderr)\n        return 1\n'''
+          new = '''    except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError) as error:\n        print(f"destructive HA fixture failed: {type(error).__name__}: {error}", file=sys.stderr)\n        return 1\n'''
+          if text.count(old) != 1:
+              raise SystemExit('redacted diagnostic patch target mismatch')
+          p.write_text(text.replace(old, new, 1))
+          PY
           BINARY="$(pwd)/target/debug/heptabao-server"
           ROOT="$(mktemp -d)"
           WORK="$ROOT/ha-destructive"
