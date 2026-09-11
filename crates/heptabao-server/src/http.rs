@@ -16,7 +16,7 @@ use std::{
     },
     time::{Duration, Instant},
 };
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
