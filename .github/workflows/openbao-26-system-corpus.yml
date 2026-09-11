@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Checkout controller and preserve reviewed patch
+      - name: Checkout exact base and materialize fixtures
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
@@ -30,10 +30,60 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp .materializer/openbao-26-system-corpus.patch "$RUNNER_TEMP/system.patch"
           git checkout -B "$OUTPUT_BRANCH" "$BASE_SHA"
-          git apply --check "$RUNNER_TEMP/system.patch"
-          git apply "$RUNNER_TEMP/system.patch"
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          p=Path('qa/openbao-acceptance/acceptance.py')
+          s=p.read_text(encoding='utf-8')
+          old='    "approle": ["login"],\n}'
+          new='    "approle": ["login"],\n    "edge_tls": ["health"],\n    "system": ["init_status"],\n    "operations": ["seal_status"],\n}'
+          if s.count(old)!=1: raise SystemExit('CASES anchor mismatch')
+          s=s.replace(old,new,1)
+          anchor='    def cleanup(self):\n'
+          funcs='    def edge_tls_cases(self):\n        r = self.call("edge_tls.health", "GET", "/v1/sys/health")\n        self.check("edge_tls.health", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)\n\n    def system_cases(self):\n        r = self.call("system.init_status", "GET", "/v1/sys/init")\n        self.check("system.init_status", r, 200, initialized=r.body.get("initialized") is True)\n\n    def operations_cases(self):\n        r = self.call("operations.seal_status", "GET", "/v1/sys/seal-status")\n        self.check("operations.seal_status", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)\n\n'
+          if s.count(anchor)!=1: raise SystemExit('cleanup anchor mismatch')
+          s=s.replace(anchor,funcs+anchor,1)
+          old='for module in ("kv", "token", "transit", "totp", "userpass", "approle"):'
+          new='for module in ("kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):'
+          if s.count(old)!=1: raise SystemExit('module loop anchor mismatch')
+          s=s.replace(old,new,1)
+          old='default="kv,token,transit,totp,userpass,approle"'
+          new='default="kv,token,transit,totp,userpass,approle,edge_tls,system,operations"'
+          if s.count(old)!=1: raise SystemExit('default modules anchor mismatch')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+
+          cp=Path('qa/openbao-acceptance/complete_surface_corpus_v1.json')
+          d=json.loads(cp.read_text(encoding='utf-8'))
+          sm=d['coverage_summary']
+          if (sm['implemented_surface_count'],sm['defined_not_implemented_surface_count'],sm['fixture_case_count'])!=(9,51,41):
+              raise SystemExit('corpus summary baseline mismatch')
+          sm['implemented_surface_count']=12
+          sm['defined_not_implemented_surface_count']=48
+          sm['fixture_case_count']=44
+          mapping={'HB-SURFACE-EDGE-HTTP-TLS':'edge_tls.health','HB-SURFACE-SYSTEM-BACKEND':'system.init_status','HB-SURFACE-OPERATIONS':'operations.seal_status'}
+          for row in d['surfaces']:
+              case=mapping.get(row['surface_id'])
+              if case:
+                  if row['fixture_state']!='DEFINED_NOT_IMPLEMENTED' or row['fixture_case_ids']:
+                      raise SystemExit('surface baseline mismatch: '+row['surface_id'])
+                  row['fixture_state']='IMPLEMENTED_SCOPED'
+                  row['fixture_case_ids']=[case]
+          cp.write_text(json.dumps(d,indent=2)+'\n',encoding='utf-8')
+
+          vp=Path('scripts/validate_compatibility_corpus.py')
+          t=vp.read_text(encoding='utf-8')
+          old='60 surfaces, 41 scoped cases, 0 exact-head independent surfaces'
+          if t.count(old)!=1: raise SystemExit('validator summary anchor mismatch')
+          vp.write_text(t.replace(old,'60 surfaces, 44 scoped cases, 0 exact-head independent surfaces',1),encoding='utf-8')
+
+          tp=Path('tests/repository/test_compatibility_corpus_v2_3.py')
+          t=tp.read_text(encoding='utf-8')
+          old='self.assertEqual(41, len(mapped))'
+          if t.count(old)!=1: raise SystemExit('test count anchor mismatch')
+          tp.write_text(t.replace(old,'self.assertEqual(44, len(mapped))',1),encoding='utf-8')
+          PY
           git diff --check
       - name: Validate closed-world corpus
         shell: bash
