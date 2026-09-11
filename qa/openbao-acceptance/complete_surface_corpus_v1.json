@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 12,
-    "defined_not_implemented_surface_count": 48,
-    "fixture_case_count": 44,
+    "implemented_surface_count": 13,
+    "defined_not_implemented_surface_count": 47,
+    "fixture_case_count": 45,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -24,8 +24,10 @@
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "core.unknown_route_denied"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
