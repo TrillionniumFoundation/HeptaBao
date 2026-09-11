@@ -24,6 +24,9 @@ CASES = {
     "totp": ["roundtrip"],
     "userpass": ["login"],
     "approle": ["login"],
+    "edge_tls": ["health"],
+    "system": ["init_status"],
+    "operations": ["seal_status"],
 }
 
 
@@ -293,6 +296,18 @@ class Suite:
             default_policy="default" in auth.get("policies", []),
         )
 
+    def edge_tls_cases(self):
+        r = self.call("edge_tls.health", "GET", "/v1/sys/health")
+        self.check("edge_tls.health", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)
+
+    def system_cases(self):
+        r = self.call("system.init_status", "GET", "/v1/sys/init")
+        self.check("system.init_status", r, 200, initialized=r.body.get("initialized") is True)
+
+    def operations_cases(self):
+        r = self.call("operations.seal_status", "GET", "/v1/sys/seal-status")
+        self.check("operations.seal_status", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)
+
     def cleanup(self):
         failures = 0
         for token in self.child_tokens:
@@ -346,7 +361,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("kv", "token", "transit", "totp", "userpass", "approle"):
+            for module in ("kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -376,7 +391,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle")
+    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",

@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 9,
-    "defined_not_implemented_surface_count": 51,
-    "fixture_case_count": 41,
+    "implemented_surface_count": 12,
+    "defined_not_implemented_surface_count": 48,
+    "fixture_case_count": 44,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -33,8 +33,10 @@
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "system.init_status"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -497,8 +499,10 @@
       "category": "client_operator",
       "criticality": "SECURITY_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "edge_tls.health"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -542,8 +546,10 @@
       "category": "client_operator",
       "criticality": "OPERATOR_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "operations.seal_status"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
