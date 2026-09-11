@@ -1,0 +1,56 @@
+name: OpenBao 2.6 system compatibility fixtures
+
+on:
+  push:
+    branches:
+      - ops/openbao-26-system-corpus-20260911-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openbao-26-system-corpus-20260911-r1
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: 90f5df1fd8dc2dfb6b7bc676d41ad1bacae537d4
+  OUTPUT_BRANCH: tmp/openbao-26-system-corpus-source-20260911-r1
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout controller and preserve reviewed patch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize source-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .materializer/openbao-26-system-corpus.patch "$RUNNER_TEMP/system.patch"
+          git checkout -B "$OUTPUT_BRANCH" "$BASE_SHA"
+          git apply --check "$RUNNER_TEMP/system.patch"
+          git apply "$RUNNER_TEMP/system.patch"
+          git diff --check
+      - name: Validate closed-world corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest tests.repository.test_compatibility_corpus_v2_3 -v
+          python -m py_compile qa/openbao-acceptance/acceptance.py
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+      - name: Publish source-only candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenBao 2.6 Compatibility Closure'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add qa/openbao-acceptance/acceptance.py qa/openbao-acceptance/complete_surface_corpus_v1.json scripts/validate_compatibility_corpus.py tests/repository/test_compatibility_corpus_v2_3.py
+          git commit -m 'test(compat): add system and operator fixtures'
+          git push --force-with-lease origin "$OUTPUT_BRANCH"
