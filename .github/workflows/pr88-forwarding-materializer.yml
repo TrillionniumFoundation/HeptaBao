@@ -1,0 +1,150 @@
+name: PR88 mTLS forwarding materializer
+
+on:
+  push:
+    branches:
+      - ops/pr88-forwarding-materializer-20260911-gpt56
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]' && github.actor != 'actions'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Compose bounded one-hop forwarding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def one(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one exact match, got {count}')
+              return text.replace(old, new, 1)
+
+          lib = Path('crates/heptabao-server/src/lib.rs')
+          text = lib.read_text()
+          text = one(text, 'pub mod ha;\n', 'pub mod ha;\nmod ha_forward;\n', 'forward module declaration')
+          lib.write_text(text)
+
+          ha_path = Path('crates/heptabao-server/src/ha.rs')
+          ha = ha_path.read_text()
+          ha = one(ha, 'use std::sync::Arc;\n', 'use std::sync::{Arc, Mutex};\n', 'HA sync imports')
+          ha = one(
+              ha,
+              'use crate::ha_state::ClusterStateCodec;\n',
+              '''use crate::{\n    Response,\n    ha_forward::{\n        ForwardRequest, decode_request as decode_forward_request,\n        decode_response as decode_forward_response, encode_request as encode_forward_request,\n        encode_response as encode_forward_response, is_forward_request,\n    },\n    ha_state::ClusterStateCodec,\n};\n''',
+              'HA forward imports',
+          )
+          ha = one(
+              ha,
+              'type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);\n',
+              '''type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);\npub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send + Sync>;\n''',
+              'forward handler type',
+          )
+          ha = one(
+              ha,
+              '''pub struct HaProcess {\n    runtime: Runtime,\n    node: Option<ProcessRaftNode>,\n    codec: ClusterStateCodec,\n    cluster_id: String,\n    stop: Arc<AtomicBool>,\n    listener: Option<JoinHandle<()>>,\n}\n''',
+              '''pub struct HaProcess {\n    runtime: Runtime,\n    node: Option<ProcessRaftNode>,\n    codec: ClusterStateCodec,\n    cluster_id: String,\n    peers: Arc<BTreeMap<u64, NodeId>>,\n    forward_transport: MutualTlsPeerTransport,\n    forward_handler: Arc<Mutex<Option<ForwardHandler>>>,\n    stop: Arc<AtomicBool>,\n    listener: Option<JoinHandle<()>>,\n}\n''',
+              'HA process forwarding fields',
+          )
+          ha = one(
+              ha,
+              '''        let transport = MutualTlsPeerTransport::new(endpoint_map, client_tls, timeout)\n            .map_err(|error| error.to_string())?;\n        let rpc = Arc::new(MutualTlsRaftRpc {\n            local_id: config.node_id,\n            peers: Arc::new(nodes_by_id),\n            transport,\n            inflight: Arc::new(Semaphore::new(config.max_inflight)),\n        });\n''',
+              '''        let transport = MutualTlsPeerTransport::new(endpoint_map, client_tls, timeout)\n            .map_err(|error| error.to_string())?;\n        let peers = Arc::new(nodes_by_id);\n        let rpc = Arc::new(MutualTlsRaftRpc {\n            local_id: config.node_id,\n            peers: peers.clone(),\n            transport: transport.clone(),\n            inflight: Arc::new(Semaphore::new(config.max_inflight)),\n        });\n''',
+              'clone forward transport and peer map',
+          )
+          ha = one(
+              ha,
+              '''        let stop = Arc::new(AtomicBool::new(false));\n        let listener_stop = stop.clone();\n        let runtime_handle = runtime.handle().clone();\n        let local_id = config.node_id;\n''',
+              '''        let stop = Arc::new(AtomicBool::new(false));\n        let listener_stop = stop.clone();\n        let runtime_handle = runtime.handle().clone();\n        let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));\n        let listener_forward_handler = forward_handler.clone();\n        let local_id = config.node_id;\n''',
+              'listener forward handler state',
+          )
+          old_listener = '''                            let request = decode_raft_frame(&frame)\n                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;\n                            if request.role != RAFT_FRAME_REQUEST\n                                || request.source != source\n                                || request.target != local_id\n                            {\n                                return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);\n                            }\n                            let payload = handle\n                                .block_on(service.handle(source, request.kind, request.payload))\n                                .map_err(map_remote_service_error)?;\n                            encode_raft_frame(RaftWireFrame {\n                                role: RAFT_FRAME_RESPONSE,\n                                source: local_id,\n                                target: source,\n                                kind: request.kind,\n                                payload,\n                            })\n                            .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)\n'''
+          new_listener = '''                            if is_forward_request(&frame) {\n                                let request = decode_forward_request(&frame)\n                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;\n                                if request.source != source || request.target != local_id {\n                                    return Err(\n                                        heptabao_ha_service::HaError::PeerAuthenticationFailed,\n                                    );\n                                }\n                                let handler = listener_forward_handler\n                                    .lock()\n                                    .map_err(|_| heptabao_ha_service::HaError::Transport)?\n                                    .clone()\n                                    .ok_or(heptabao_ha_service::HaError::NotLeader)?;\n                                let response = handler(request);\n                                return encode_forward_response(\n                                    local_id,\n                                    source,\n                                    response.status,\n                                    &response.body,\n                                )\n                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);\n                            }\n                            let request = decode_raft_frame(&frame)\n                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;\n                            if request.role != RAFT_FRAME_REQUEST\n                                || request.source != source\n                                || request.target != local_id\n                            {\n                                return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);\n                            }\n                            let payload = handle\n                                .block_on(service.handle(source, request.kind, request.payload))\n                                .map_err(map_remote_service_error)?;\n                            encode_raft_frame(RaftWireFrame {\n                                role: RAFT_FRAME_RESPONSE,\n                                source: local_id,\n                                target: source,\n                                kind: request.kind,\n                                payload,\n                            })\n                            .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)\n'''
+          ha = one(ha, old_listener, new_listener, 'listener frame dispatch')
+          ha = one(
+              ha,
+              '''        Ok(Self {\n            runtime,\n            node: Some(node),\n            codec,\n            cluster_id: config.cluster_id,\n            stop,\n            listener: Some(listener_thread),\n        })\n''',
+              '''        Ok(Self {\n            runtime,\n            node: Some(node),\n            codec,\n            cluster_id: config.cluster_id,\n            peers,\n            forward_transport: transport,\n            forward_handler,\n            stop,\n            listener: Some(listener_thread),\n        })\n''',
+              'HA process construction',
+          )
+          marker = '''    pub fn local_id(&self) -> Result<u64, String> {\n'''
+          forwarding_methods = '''    pub(crate) fn register_forward_handler(\n        &mut self,\n        handler: ForwardHandler,\n    ) -> Result<(), String> {\n        let mut slot = self\n            .forward_handler\n            .lock()\n            .map_err(|_| "HA forward handler registry is unavailable".to_owned())?;\n        if slot.is_some() {\n            return Err("HA forward handler is already registered".into());\n        }\n        *slot = Some(handler);\n        Ok(())\n    }\n\n    pub(crate) fn forward_request(\n        &self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: &serde_json::Value,\n    ) -> Result<Response, String> {\n        let local = self.local_id()?;\n        let leader = self\n            .leader()?\n            .ok_or_else(|| "HA cluster has no elected leader".to_owned())?;\n        if leader == local {\n            return Err("HA forward request cannot target the local leader".into());\n        }\n        let target = self\n            .peers\n            .get(&leader)\n            .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;\n        let request = encode_forward_request(\n            local, leader, method, path, namespace, token, body,\n        )?;\n        let response = zeroize::Zeroizing::new(\n            self.forward_transport\n                .exchange(target, &request)\n                .map_err(|error| error.to_string())?,\n        );\n        let mut response = decode_forward_response(&response)?;\n        if response.source != leader || response.target != local {\n            return Err("HA forward response direction is invalid".into());\n        }\n        Ok(Response {\n            status: response.status,\n            body: std::mem::take(&mut response.body),\n        })\n    }\n\n'''
+          ha = one(ha, marker, forwarding_methods + marker, 'HA forwarding methods')
+          ha_path.write_text(ha)
+
+          http_path = Path('crates/heptabao-server/src/http.rs')
+          http = http_path.read_text()
+          http = one(
+              http,
+              '''    let ha_enabled = ha.is_some();\n    let service = Arc::new(Mutex::new(\n        match ha {\n            Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),\n            None => Service::new(config.data_dir, &config.audit_file),\n        }\n        .map_err(str::to_owned)?,\n    ));\n''',
+              '''    let ha_enabled = ha.is_some();\n    let forwarding_ha = ha.clone();\n    let service = Arc::new(Mutex::new(\n        match ha {\n            Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),\n            None => Service::new(config.data_dir, &config.audit_file),\n        }\n        .map_err(str::to_owned)?,\n    ));\n    if let Some(ha) = forwarding_ha {\n        let weak_service = Arc::downgrade(&service);\n        let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {\n            let Some(service) = weak_service.upgrade() else {\n                return Response::error(503, "HA forward service is unavailable");\n            };\n            let response = match service.lock() {\n                Ok(mut service) => service.handle_forwarded(\n                    &request.method,\n                    &request.path,\n                    &request.namespace,\n                    &request.token,\n                    std::mem::take(&mut request.body),\n                ),\n                Err(_) => Response::error(503, "HA forward service lock is unavailable"),\n            };\n            request.token.zeroize();\n            response\n        });\n        ha.lock()\n            .map_err(|_| "HA process lock is unavailable".to_owned())?\n            .register_forward_handler(handler)?;\n    }\n''',
+              'HTTP forwarding registration',
+          )
+          http_path.write_text(http)
+
+          service_path = Path('crates/heptabao-server/src/service.rs')
+          service = service_path.read_text()
+          old_handle_at = '''    pub fn handle_at(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        mut body: Value,\n        now: u64,\n    ) -> Response {\n'''
+          new_handle_at = '''    pub fn handle_at(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: Value,\n        now: u64,\n    ) -> Response {\n        self.handle_at_mode(method, path, namespace, token, body, now, true)\n    }\n\n    pub(crate) fn handle_forwarded(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: Value,\n    ) -> Response {\n        let now = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .map_or(0, |duration| duration.as_secs());\n        self.handle_at_mode(method, path, namespace, token, body, now, false)\n    }\n\n    fn handle_at_mode(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        mut body: Value,\n        now: u64,\n        allow_forward: bool,\n    ) -> Response {\n'''
+          service = one(service, old_handle_at, new_handle_at, 'service request mode split')
+          service = one(
+              service,
+              '        let response = self.handle_inner(method, path, namespace, token, &body, now);\n',
+              '        let response = self.handle_inner(method, path, namespace, token, &body, now, allow_forward);\n',
+              'service inner mode call',
+          )
+          service = one(
+              service,
+              '''    fn handle_inner(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: &Value,\n        now: u64,\n    ) -> Response {\n''',
+              '''    fn handle_inner(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: &Value,\n        now: u64,\n        allow_forward: bool,\n    ) -> Response {\n''',
+              'service inner signature',
+          )
+          service = one(
+              service,
+              '''        if self.ha.is_some()\n            && let Err(error) = self.sync_from_ha()\n        {\n            return error;\n        }\n''',
+              '''        if self.ha.is_some() {\n            let (_, standby, ha_active, _, _) = self.ha_observation();\n            if standby {\n                if !allow_forward {\n                    return Response::error(503, "forwarded request reached a standby node");\n                }\n                let Some(ha) = self.ha.as_ref().cloned() else {\n                    return Response::error(503, "HA forwarding is unavailable");\n                };\n                return match ha.lock() {\n                    Ok(ha) => ha\n                        .forward_request(method, path, namespace, token, body)\n                        .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),\n                    Err(_) => Response::error(503, "HA process lock is unavailable"),\n                };\n            }\n            if !ha_active {\n                return Response::error(503, "HA node has no current linearizable authority");\n            }\n            if let Err(error) = self.sync_from_ha() {\n                return error;\n            }\n        }\n''',
+              'service HA forward-or-sync path',
+          )
+          service_path.write_text(service)
+          PY
+          cargo +1.98.0 fmt --all
+          git diff --check
+      - name: Validate forwarding and HA slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-server -p heptabao-raft-runtime -p heptabao-ha-service --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-server -p heptabao-raft-runtime -p heptabao-ha-service --all-targets -- -D warnings
+      - name: Publish source-only descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/pr88-forwarding-materializer.yml
+          git diff --check
+          paths="$(git diff --name-only | sort | tr '\n' ' ')"
+          expected=".github/workflows/pr88-forwarding-materializer.yml crates/heptabao-server/src/ha.rs crates/heptabao-server/src/http.rs crates/heptabao-server/src/lib.rs crates/heptabao-server/src/service.rs "
+          test "$paths" = "$expected"
+          git config user.name heptabao-materializer
+          git config user.email actions@users.noreply.github.com
+          git add -u
+          git add crates/heptabao-server/src/ha_forward.rs
+          git commit -m "feat(ha): forward standby requests to linearizable leader"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
