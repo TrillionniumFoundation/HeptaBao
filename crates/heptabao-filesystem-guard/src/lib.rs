@@ -10,6 +10,13 @@
 //! `access_path()` for every filesystem operation and keep the guard alive for
 //! the complete store or journal lifetime.
 //!
+//! Writer acquisition is fail-closed but tolerates one bounded transient Linux
+//! `fork` to `exec` descriptor-inheritance window. `O_CLOEXEC` closes inherited
+//! descriptors at `exec`, not at `fork`; a just-released owner can therefore
+//! remain visible for a few scheduler ticks. Acquisition retries for at most
+//! 64 ms and still returns `WriterBusy` for a live or otherwise persistent
+//! competing writer.
+//!
 //! This is a Linux-only implementation profile. It intentionally returns
 //! `UnsupportedPlatform` elsewhere rather than silently falling back to
 //! path-relative operations.
@@ -23,6 +30,10 @@ use std::io;
 #[cfg(target_os = "linux")]
 use std::path::Component;
 use std::path::{Path, PathBuf};
+#[cfg(target_os = "linux")]
+use std::thread;
+#[cfg(target_os = "linux")]
+use std::time::Duration;
 
 #[cfg(target_os = "linux")]
 use std::os::fd::AsRawFd;
@@ -30,6 +41,11 @@ use std::os::fd::AsRawFd;
 use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 
 pub const MAX_GUARDED_LEAF_BYTES: usize = 240;
+
+#[cfg(target_os = "linux")]
+const WRITER_LOCK_RETRY_ATTEMPTS: usize = 32;
+#[cfg(target_os = "linux")]
+const WRITER_LOCK_RETRY_DELAY_MILLIS: u64 = 2;
 
 // Linux values from asm-generic/fcntl.h. They are used only on the Linux
 // implementation selected by this crate's explicit runtime profile.
@@ -174,10 +190,17 @@ impl ExclusiveDirectory {
             return Err(DirectoryGuardError::DescriptorPathUnavailable);
         }
 
-        match handle.try_lock() {
-            Ok(()) => {}
-            Err(TryLockError::WouldBlock) => return Err(DirectoryGuardError::WriterBusy),
-            Err(TryLockError::Error(error)) => return Err(DirectoryGuardError::Io(error)),
+        let mut retries_remaining = WRITER_LOCK_RETRY_ATTEMPTS;
+        loop {
+            match handle.try_lock() {
+                Ok(()) => break,
+                Err(TryLockError::WouldBlock) if retries_remaining > 0 => {
+                    retries_remaining -= 1;
+                    thread::sleep(Duration::from_millis(WRITER_LOCK_RETRY_DELAY_MILLIS));
+                }
+                Err(TryLockError::WouldBlock) => return Err(DirectoryGuardError::WriterBusy),
+                Err(TryLockError::Error(error)) => return Err(DirectoryGuardError::Io(error)),
+            }
         }
 
         let guard = Self {
@@ -419,6 +442,23 @@ mod tests {
         drop(first);
         let reacquired = ExclusiveDirectory::open(&temporary.path)?;
         reacquired.verify()?;
+        Ok(())
+    }
+
+    #[test]
+    fn bounded_retry_acquires_after_transient_owner_drop() -> Result<(), Box<dyn Error>> {
+        let _serial = serial_test();
+        let temporary = TemporaryDirectory::new("transient-lock")?;
+        let first = ExclusiveDirectory::open(&temporary.path)?;
+        let release = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(12));
+            drop(first);
+        });
+        let reacquired = ExclusiveDirectory::open(&temporary.path)?;
+        reacquired.verify()?;
+        release
+            .join()
+            .map_err(|_| io::Error::other("transient lock releaser panicked"))?;
         Ok(())
     }
 
