@@ -1250,3 +1250,111 @@ fn affine_request_principal_uses_live_subject_and_parent_time() {
             .is_err()
     );
 }
+
+#[test]
+fn auth_mount_registry_is_persistent_sudo_gated_and_fail_closed() {
+    let (mut state, _, root) = setup();
+    let listed = call(&mut state, &root, "", "GET", "sys/auth", json!({}), 100);
+    assert_eq!(listed.status, 200);
+    assert_eq!(listed.body["data"]["token/"]["type"], "token");
+    assert_eq!(listed.body["data"]["userpass/"]["type"], "userpass");
+    assert_eq!(listed.body["data"]["approle/"]["type"], "approle");
+
+    let disabled = call(
+        &mut state,
+        &root,
+        "",
+        "DELETE",
+        "sys/auth/userpass",
+        json!({}),
+        100,
+    );
+    assert_eq!(disabled.status, 204);
+    assert!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"x"}),
+                101
+            )
+            .is_err_and(|error| error.status == 404)
+    );
+
+    let saved = serde_json::to_string(&state).unwrap();
+    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
+    assert!(
+        restarted
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"x"}),
+                101
+            )
+            .is_err_and(|error| error.status == 404)
+    );
+
+    let enabled = call(
+        &mut restarted,
+        &root,
+        "",
+        "POST",
+        "sys/auth/userpass",
+        json!({"type":"userpass","description":"synthetic userpass"}),
+        102,
+    );
+    assert_eq!(enabled.status, 204);
+    let descriptor = call(
+        &mut restarted,
+        &root,
+        "",
+        "GET",
+        "sys/auth/userpass",
+        json!({}),
+        102,
+    );
+    assert_eq!(descriptor.body["data"]["type"], "userpass");
+    assert_eq!(descriptor.body["data"]["description"], "synthetic userpass");
+
+    assert!(
+        restarted
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/auth/team-login",
+                &json!({"type":"userpass"}),
+                103,
+            )
+            .is_err_and(|error| error.status == 501)
+    );
+    assert!(
+        restarted
+            .handle(Some(&root), "", "DELETE", "sys/auth/token", &json!({}), 103,)
+            .is_err()
+    );
+}
+
+#[test]
+fn auth_mount_registry_requires_sudo_for_mutation() {
+    let (mut state, _, root) = setup();
+    let raw = token(&mut state, &root, "", json!({"policies":["default"]}), 100);
+    let actor = state.authenticate(&raw, 101).unwrap();
+    assert!(
+        state
+            .handle(
+                Some(&actor),
+                "",
+                "DELETE",
+                "sys/auth/userpass",
+                &json!({}),
+                101,
+            )
+            .is_err()
+    );
+    assert!(state.auth_mount_enabled("", "userpass", "userpass"));
+}
