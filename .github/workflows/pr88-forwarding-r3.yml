@@ -1,0 +1,101 @@
+name: PR88 forwarding r3 strict validation
+
+on:
+  push:
+    branches:
+      - ops/pr88-forwarding-r3-20260911-gpt56
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]' && github.actor != 'actions'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Materialize forwarding with bounded request context
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/pr88-forwarding-materializer.yml').read_text()
+          marker = "          python - <<'PY'\n"
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index("\n          PY", start)
+          materializer = textwrap.dedent(workflow[start:end])
+          exec(compile(materializer, 'forwarding-materializer', 'exec'), {})
+
+          p = Path('crates/heptabao-server/src/service.rs')
+          text = p.read_text()
+
+          def one(old: str, new: str, label: str) -> None:
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, got {count}')
+              text = text.replace(old, new, 1)
+
+          one(
+              'pub struct Service {\n',
+              '''struct RequestDispatch<'a> {\n    method: &'a str,\n    path: &'a str,\n    namespace: &'a str,\n    token: &'a str,\n    body: Value,\n    now: u64,\n    allow_forward: bool,\n}\n\nstruct RequestView<'a> {\n    method: &'a str,\n    path: &'a str,\n    namespace: &'a str,\n    token: &'a str,\n    body: &'a Value,\n    now: u64,\n    allow_forward: bool,\n}\n\npub struct Service {\n''',
+              'request context structs',
+          )
+          one(
+              '        self.handle_at_mode(method, path, namespace, token, body, now, true)\n',
+              '''        self.handle_at_mode(RequestDispatch {\n            method,\n            path,\n            namespace,\n            token,\n            body,\n            now,\n            allow_forward: true,\n        })\n''',
+              'direct dispatch construction',
+          )
+          one(
+              '        self.handle_at_mode(method, path, namespace, token, body, now, false)\n',
+              '''        self.handle_at_mode(RequestDispatch {\n            method,\n            path,\n            namespace,\n            token,\n            body,\n            now,\n            allow_forward: false,\n        })\n''',
+              'forwarded dispatch construction',
+          )
+          one(
+              '''    fn handle_at_mode(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        mut body: Value,\n        now: u64,\n        allow_forward: bool,\n    ) -> Response {\n''',
+              '''    fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {\n        let RequestDispatch {\n            method,\n            path,\n            namespace,\n            token,\n            mut body,\n            now,\n            allow_forward,\n        } = request;\n''',
+              'handle_at_mode context',
+          )
+          one(
+              '        let response = self.handle_inner(method, path, namespace, token, &body, now, allow_forward);\n',
+              '''        let response = self.handle_inner(RequestView {\n            method,\n            path,\n            namespace,\n            token,\n            body: &body,\n            now,\n            allow_forward,\n        });\n''',
+              'inner dispatch construction',
+          )
+          one(
+              '''    fn handle_inner(\n        &mut self,\n        method: &str,\n        path: &str,\n        namespace: &str,\n        token: &str,\n        body: &Value,\n        now: u64,\n        allow_forward: bool,\n    ) -> Response {\n''',
+              '''    fn handle_inner(&mut self, request: RequestView<'_>) -> Response {\n        let RequestView {\n            method,\n            path,\n            namespace,\n            token,\n            body,\n            now,\n            allow_forward,\n        } = request;\n''',
+              'handle_inner context',
+          )
+          p.write_text(text)
+          PY
+          cargo +1.98.0 fmt --all
+          git diff --check
+      - name: Run strict targeted gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 test --locked -p heptabao-server -p heptabao-raft-runtime -p heptabao-ha-service --all-targets
+          cargo +1.98.0 clippy --locked -p heptabao-server -p heptabao-raft-runtime -p heptabao-ha-service --all-targets -- -D warnings
+      - name: Publish validated source bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name heptabao-materializer
+          git config user.email actions@users.noreply.github.com
+          git add crates/heptabao-server/src/ha.rs crates/heptabao-server/src/http.rs crates/heptabao-server/src/lib.rs crates/heptabao-server/src/service.rs crates/heptabao-server/src/ha_forward.rs
+          git commit -m "feat(ha): forward standby requests to linearizable leader"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
