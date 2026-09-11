@@ -21,6 +21,7 @@ CASES = {
               "revoke", "revoked_denied", "invalid_denied", "create_expiring", "expired_denied"],
     "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",
                 "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],
+    "totp": ["roundtrip"],
 }
 
 
@@ -28,7 +29,9 @@ class Suite:
     def __init__(self, client: Client, run_id: str, modules: set[str], allow_writes: bool):
         self.client, self.run_id, self.modules = client, run_id, modules
         self.allow_writes = allow_writes
-        self.kv, self.transit, self.policy = (f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "reader"))
+        self.kv, self.transit, self.totp, self.policy = (
+            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "totp", "reader")
+        )
         self.marker = "heptabao-synthetic-" + run_id
         self.results = {}
         self.requests = {}
@@ -64,7 +67,9 @@ class Suite:
         inventory = self.client.request("GET", "/v1/sys/mounts")
         if inventory.status != 200 or mount + "/" in inventory.data():
             raise BaoError("cannot_prove_synthetic_mount_absent")
-        payload = {"type": "kv" if kind == "kv" else "transit", "description": self.marker}
+        if kind not in {"kv", "transit", "totp"}:
+            raise BaoError("unsupported_fixture_mount_kind")
+        payload = {"type": kind, "description": self.marker}
         if kind == "kv":
             payload["options"] = {"version": "2"}
         self.perform(kind + ".mount", "POST", "/v1/sys/mounts/" + mount, payload)
@@ -181,6 +186,39 @@ class Suite:
         r = self.call("transit.decrypt_old_after_rotation", "POST", path + "/decrypt/item", {"ciphertext": ciphertexts[0]})
         self.check("transit.decrypt_old_after_rotation", r, 200, old_key_retained=r.data().get("plaintext") == plain)
 
+    def totp_cases(self):
+        self.mount("totp", self.totp)
+        path = "/v1/" + self.totp
+        key_name = "fixture"
+        imported = {
+            "key": "JBSWY3DPEHPK3PXP",
+            "issuer": "HeptaBao-QA",
+            "account_name": "synthetic@example.invalid",
+            "algorithm": "SHA1",
+            "digits": 6,
+            "period": 30,
+            "skew": 1,
+        }
+        created = self.call("totp.roundtrip", "POST", path + "/keys/" + key_name, imported)
+        if created.status not in (200, 204):
+            self.check("totp.roundtrip", created, (200, 204), key_created=False)
+            return
+        code_response = self.client.request("GET", path + "/code/" + key_name)
+        code = code_response.data().get("code") if code_response.status == 200 else None
+        validation = self.client.request(
+            "POST", path + "/code/" + key_name, {"code": code} if isinstance(code, str) else {"code": ""}
+        )
+        self.requests["totp.roundtrip"] = {
+            "method": "MULTI",
+            "path_template": path.replace(self.run_id, "{run_id}") + "/{keys,code}/fixture",
+        }
+        self.check(
+            "totp.roundtrip", validation, 200,
+            key_created=created.status in (200, 204),
+            code_generated=isinstance(code, str) and len(code) == 6 and code.isdigit(),
+            validation_true=validation.data().get("valid") is True,
+        )
+
     def cleanup(self):
         failures = 0
         for token in self.child_tokens:
@@ -211,7 +249,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("kv", "token", "transit"):
+            for module in ("kv", "token", "transit", "totp"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -241,7 +279,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="kv,token,transit")
+    parser.add_argument("--modules", default="kv,token,transit,totp")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",

@@ -230,7 +230,7 @@ def main() -> int:
         for error in errors:
             print(f"compatibility-corpus: ERROR: {error}", file=sys.stderr)
         return 1
-    print("compatibility-corpus: PASS (60 surfaces, 38 scoped cases, 0 exact-head independent surfaces)")
+    print("compatibility-corpus: PASS (60 surfaces, 39 scoped cases, 0 exact-head independent surfaces)")
     return 0
 
 
