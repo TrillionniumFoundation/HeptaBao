@@ -1,0 +1,41 @@
+name: PR83 rustfmt diagnostic
+
+on:
+  pull_request:
+    branches:
+      - codex/openbao-2.6-production-gap-closure-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  rustfmt-patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Rust 1.98 formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt
+      - name: Materialize formatter diff only
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          git diff --binary > "$RUNNER_TEMP/rustfmt.patch"
+          test -s "$RUNNER_TEMP/rustfmt.patch"
+          git diff --check
+      - name: Upload formatter patch
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr83-rustfmt-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/rustfmt.patch
+          if-no-files-found: error
+          retention-days: 1
