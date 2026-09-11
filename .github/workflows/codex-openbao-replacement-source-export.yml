@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/openbao-replacement-full-closure-20260908
+      - codex/openbao-2-6-production-replacement-closure-20260911-r1
   workflow_dispatch:
 
 permissions:
