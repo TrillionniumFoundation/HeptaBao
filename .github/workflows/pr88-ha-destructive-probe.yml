@@ -1,0 +1,41 @@
+name: PR88 destructive HA probe
+
+on:
+  push:
+    branches:
+      - ops/pr88-destructive-ha-fixture-20260911-gpt56
+
+permissions:
+  contents: read
+
+jobs:
+  destructive-ha:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact probe head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal
+      - name: Validate fixture syntax and build server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile qa/openbao-acceptance/ha_destructive.py
+          cargo +1.98.0 build --locked -p heptabao-server
+      - name: Run real three-process destructive fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          BINARY="$(pwd)/target/debug/heptabao-server"
+          WORK="$(mktemp -d)/ha-destructive"
+          timeout 360s python qa/openbao-acceptance/ha_destructive.py \
+            --binary "$BINARY" \
+            --work-dir "$WORK"
