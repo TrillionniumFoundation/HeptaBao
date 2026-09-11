@@ -1074,9 +1074,24 @@ impl Service {
         self.state = Some(state);
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
-        if self.ha.is_some()
-            && let Err(error) = self.sync_from_ha()
-        {
+        let sync_as_leader = if let Some(ha) = self.ha.as_ref() {
+            match ha.lock() {
+                Ok(ha) => match ha.is_leader() {
+                    Ok(value) => value,
+                    Err(_) => {
+                        self.recovery_required = true;
+                        return Err(Response::error(503, "HA role is unavailable during unseal"));
+                    }
+                },
+                Err(_) => {
+                    self.recovery_required = true;
+                    return Err(Response::error(503, "HA role is unavailable during unseal"));
+                }
+            }
+        } else {
+            false
+        };
+        if sync_as_leader && let Err(error) = self.sync_from_ha() {
             self.recovery_required = true;
             return Err(error);
         }
