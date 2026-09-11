@@ -25,18 +25,112 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-      - name: Apply reviewed TOTP corpus patch
-        shell: bash
-        env:
-          PATCH_B64: ZGlmZiAtLWdpdCBhL3FhL29wZW5iYW8tYWNjZXB0YW5jZS9hY2NlcHRhbmNlLnB5IGIvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2FjY2VwdGFuY2UucHkKaW5kZXggOWY3NjEwNi4uNWM1MzI1ZCAxMDA2NDQKLS0tIGEvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2FjY2VwdGFuY2UucHkKKysrIGIvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2FjY2VwdGFuY2UucHkKQEAgLTIxLDYgKzIxLDcgQEAgQ0FTRVMgPSB7CiAgICAgICAgICAgICAgICJyZXZva2UiLCAicmV2b2tlZF9kZW5pZWQiLCAiaW52YWxpZF9kZW5pZWQiLCAiY3JlYXRlX2V4cGlyaW5nIiwgImV4cGlyZWRfZGVuaWVkIl0sCiAgICAgInRyYW5zaXQiOiBbIm1vdW50IiwgImNyZWF0ZV9rZXkiLCAicmVhZF9rZXkiLCAiZW5jcnlwdF92MSIsICJkZWNyeXB0X3YxIiwgInJvdGF0ZSIsCiAgICAgICAgICAgICAgICAgInJlYWRfcm90YXRlZF9rZXkiLCAiZW5jcnlwdF92MiIsICJkZWNyeXB0X3YyIiwgImRlY3J5cHRfb2xkX2FmdGVyX3JvdGF0aW9uIl0sCisgICAgInRvdHAiOiBbInJvdW5kdHJpcCJdLAogfQogCiAKQEAgLTI4LDcgKzI5LDkgQEAgY2xhc3MgU3VpdGU6CiAgICAgZGVmIF9faW5pdF9fKHNlbGYsIGNsaWVudDogQ2xpZW50LCBydW5faWQ6IHN0ciwgbW9kdWxlczogc2V0W3N0cl0sIGFsbG93X3dyaXRlczogYm9vbCk6CiAgICAgICAgIHNlbGYuY2xpZW50LCBzZWxmLnJ1bl9pZCwgc2VsZi5tb2R1bGVzID0gY2xpZW50LCBydW5faWQsIG1vZHVsZXMKICAgICAgICAgc2VsZi5hbGxvd193cml0ZXMgPSBhbGxvd193cml0ZXMKLSAgICAgICAgc2VsZi5rdiwgc2VsZi50cmFuc2l0LCBzZWxmLnBvbGljeSA9IChmImhicWEte3J1bl9pZH0te3N1ZmZpeH0iIGZvciBzdWZmaXggaW4gKCJrdiIsICJ0cmFuc2l0IiwgInJlYWRlciIpKQorICAgICAgICBzZWxmLmt2LCBzZWxmLnRyYW5zaXQsIHNlbGYudG90cCwgc2VsZi5wb2xpY3kgPSAoCisgICAgICAgICAgICBmImhicWEte3J1bl9pZH0te3N1ZmZpeH0iIGZvciBzdWZmaXggaW4gKCJrdiIsICJ0cmFuc2l0IiwgInRvdHAiLCAicmVhZGVyIikKKyAgICAgICAgKQogICAgICAgICBzZWxmLm1hcmtlciA9ICJoZXB0YWJhby1zeW50aGV0aWMtIiArIHJ1bl9pZAogICAgICAgICBzZWxmLnJlc3VsdHMgPSB7fQogICAgICAgICBzZWxmLnJlcXVlc3RzID0ge30KQEAgLTY0LDcgKzY3LDkgQEAgY2xhc3MgU3VpdGU6CiAgICAgICAgIGludmVudG9yeSA9IHNlbGYuY2xpZW50LnJlcXVlc3QoIkdFVCIsICIvdjEvc3lzL21vdW50cyIpCiAgICAgICAgIGlmIGludmVudG9yeS5zdGF0dXMgIT0gMjAwIG9yIG1vdW50ICsgIi8iIGluIGludmVudG9yeS5kYXRhKCk6CiAgICAgICAgICAgICByYWlzZSBCYW9FcnJvcigiY2Fubm90X3Byb3ZlX3N5bnRoZXRpY19tb3VudF9hYnNlbnQiKQotICAgICAgICBwYXlsb2FkID0geyJ0eXBlIjogImt2IiBpZiBraW5kID09ICJrdiIgZWxzZSAidHJhbnNpdCIsICJkZXNjcmlwdGlvbiI6IHNlbGYubWFya2VyfQorICAgICAgICBpZiBraW5kIG5vdCBpbiB7Imt2IiwgInRyYW5zaXQiLCAidG90cCJ9OgorICAgICAgICAgICAgcmFpc2UgQmFvRXJyb3IoInVuc3VwcG9ydGVkX2ZpeHR1cmVfbW91bnRfa2luZCIpCisgICAgICAgIHBheWxvYWQgPSB7InR5cGUiOiBraW5kLCAiZGVzY3JpcHRpb24iOiBzZWxmLm1hcmtlcn0KICAgICAgICAgaWYga2luZCA9PSAia3YiOgogICAgICAgICAgICAgcGF5bG9hZFsib3B0aW9ucyJdID0geyJ2ZXJzaW9uIjogIjIifQogICAgICAgICBzZWxmLnBlcmZvcm0oa2luZCArICIubW91bnQiLCAiUE9TVCIsICIvdjEvc3lzL21vdW50cy8iICsgbW91bnQsIHBheWxvYWQpCkBAIC0xODEsNiArMTg2LDM5IEBAIGNsYXNzIFN1aXRlOgogICAgICAgICByID0gc2VsZi5jYWxsKCJ0cmFuc2l0LmRlY3J5cHRfb2xkX2FmdGVyX3JvdGF0aW9uIiwgIlBPU1QiLCBwYXRoICsgIi9kZWNyeXB0L2l0ZW0iLCB7ImNpcGhlcnRleHQiOiBjaXBoZXJ0ZXh0c1swXX0pCiAgICAgICAgIHNlbGYuY2hlY2soInRyYW5zaXQuZGVjcnlwdF9vbGRfYWZ0ZXJfcm90YXRpb24iLCByLCAyMDAsIG9sZF9rZXlfcmV0YWluZWQ9ci5kYXRhKCkuZ2V0KCJwbGFpbnRleHQiKSA9PSBwbGFpbikKIAorICAgIGRlZiB0b3RwX2Nhc2VzKHNlbGYpOgorICAgICAgICBzZWxmLm1vdW50KCJ0b3RwIiwgc2VsZi50b3RwKQorICAgICAgICBwYXRoID0gIi92MS8iICsgc2VsZi50b3RwCisgICAgICAgIGtleV9uYW1lID0gImZpeHR1cmUiCisgICAgICAgIGltcG9ydGVkID0geworICAgICAgICAgICAgImtleSI6ICJKQlNXWTNEUEVIUEszUFhQIiwKKyAgICAgICAgICAgICJpc3N1ZXIiOiAiSGVwdGFCYW8tUUEiLAorICAgICAgICAgICAgImFjY291bnRfbmFtZSI6ICJzeW50aGV0aWNAZXhhbXBsZS5pbnZhbGlkIiwKKyAgICAgICAgICAgICJhbGdvcml0aG0iOiAiU0hBMSIsCisgICAgICAgICAgICAiZGlnaXRzIjogNiwKKyAgICAgICAgICAgICJwZXJpb2QiOiAzMCwKKyAgICAgICAgICAgICJza2V3IjogMSwKKyAgICAgICAgfQorICAgICAgICBjcmVhdGVkID0gc2VsZi5jYWxsKCJ0b3RwLnJvdW5kdHJpcCIsICJQT1NUIiwgcGF0aCArICIva2V5cy8iICsga2V5X25hbWUsIGltcG9ydGVkKQorICAgICAgICBpZiBjcmVhdGVkLnN0YXR1cyBub3QgaW4gKDIwMCwgMjA0KToKKyAgICAgICAgICAgIHNlbGYuY2hlY2soInRvdHAucm91bmR0cmlwIiwgY3JlYXRlZCwgKDIwMCwgMjA0KSwga2V5X2NyZWF0ZWQ9RmFsc2UpCisgICAgICAgICAgICByZXR1cm4KKyAgICAgICAgY29kZV9yZXNwb25zZSA9IHNlbGYuY2xpZW50LnJlcXVlc3QoIkdFVCIsIHBhdGggKyAiL2NvZGUvIiArIGtleV9uYW1lKQorICAgICAgICBjb2RlID0gY29kZV9yZXNwb25zZS5kYXRhKCkuZ2V0KCJjb2RlIikgaWYgY29kZV9yZXNwb25zZS5zdGF0dXMgPT0gMjAwIGVsc2UgTm9uZQorICAgICAgICB2YWxpZGF0aW9uID0gc2VsZi5jbGllbnQucmVxdWVzdCgKKyAgICAgICAgICAgICJQT1NUIiwgcGF0aCArICIvY29kZS8iICsga2V5X25hbWUsIHsiY29kZSI6IGNvZGV9IGlmIGlzaW5zdGFuY2UoY29kZSwgc3RyKSBlbHNlIHsiY29kZSI6ICIifQorICAgICAgICApCisgICAgICAgIHNlbGYucmVxdWVzdHNbInRvdHAucm91bmR0cmlwIl0gPSB7CisgICAgICAgICAgICAibWV0aG9kIjogIk1VTFRJIiwKKyAgICAgICAgICAgICJwYXRoX3RlbXBsYXRlIjogcGF0aC5yZXBsYWNlKHNlbGYucnVuX2lkLCAie3J1bl9pZH0iKSArICIve2tleXMsY29kZX0vZml4dHVyZSIsCisgICAgICAgIH0KKyAgICAgICAgc2VsZi5jaGVjaygKKyAgICAgICAgICAgICJ0b3RwLnJvdW5kdHJpcCIsIHZhbGlkYXRpb24sIDIwMCwKKyAgICAgICAgICAgIGtleV9jcmVhdGVkPWNyZWF0ZWQuc3RhdHVzIGluICgyMDAsIDIwNCksCisgICAgICAgICAgICBjb2RlX2dlbmVyYXRlZD1pc2luc3RhbmNlKGNvZGUsIHN0cikgYW5kIGxlbihjb2RlKSA9PSA2IGFuZCBjb2RlLmlzZGlnaXQoKSwKKyAgICAgICAgICAgIHZhbGlkYXRpb25fdHJ1ZT12YWxpZGF0aW9uLmRhdGEoKS5nZXQoInZhbGlkIikgaXMgVHJ1ZSwKKyAgICAgICAgKQorCiAgICAgZGVmIGNsZWFudXAoc2VsZik6CiAgICAgICAgIGZhaWx1cmVzID0gMAogICAgICAgICBmb3IgdG9rZW4gaW4gc2VsZi5jaGlsZF90b2tlbnM6CkBAIC0yMTEsNyArMjQ5LDcgQEAgY2xhc3MgU3VpdGU6CiAgICAgZGVmIHJ1bihzZWxmKToKICAgICAgICAgY2xlYW51cCA9IHsicmVzdWx0IjogIm5vdF9ydW4iLCAicmVhc29uIjogIndyaXRlc19ub3RfYXV0aG9yaXplZCJ9CiAgICAgICAgIHRyeToKLSAgICAgICAgICAgIGZvciBtb2R1bGUgaW4gKCJrdiIsICJ0b2tlbiIsICJ0cmFuc2l0Iik6CisgICAgICAgICAgICBmb3IgbW9kdWxlIGluICgia3YiLCAidG9rZW4iLCAidHJhbnNpdCIsICJ0b3RwIik6CiAgICAgICAgICAgICAgICAgaWYgbW9kdWxlIG5vdCBpbiBzZWxmLm1vZHVsZXMgb3Igbm90IHNlbGYuYWxsb3dfd3JpdGVzOgogICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgIHRyeToKQEAgLTI0MSw3ICsyNzksNyBAQCBkZWYgbWFpbihhcmd2PU5vbmUpOgogICAgIHBhcnNlci5hZGRfYXJndW1lbnQoIi0tb3JhY2xlLXByZWZpeCIsIGRlZmF1bHQ9IkhCX09SQUNMRSIpCiAgICAgcGFyc2VyLmFkZF9hcmd1bWVudCgiLS1vcmFjbGUtaWRlbnRpdHktZmlsZSIpCiAgICAgcGFyc2VyLmFkZF9hcmd1bWVudCgiLS1hbGxvdy10ZXN0LXdyaXRlcyIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIpCi0gICAgcGFyc2VyLmFkZF9hcmd1bWVudCgiLS1tb2R1bGVzIiwgZGVmYXVsdD0ia3YsdG9rZW4sdHJhbnNpdCIpCisgICAgcGFyc2VyLmFkZF9hcmd1bWVudCgiLS1tb2R1bGVzIiwgZGVmYXVsdD0ia3YsdG9rZW4sdHJhbnNpdCx0b3RwIikKICAgICBwYXJzZXIuYWRkX2FyZ3VtZW50KCItLW91dHB1dCIsIGhlbHA9IjA2MDAgSlNPTiBpbiBhbiBleGlzdGluZyAwNzAwIGRpcmVjdG9yeSIpCiAgICAgYXJncyA9IHBhcnNlci5wYXJzZV9hcmdzKGFyZ3YpCiAgICAgcmVwb3J0ID0geyJzY2hlbWEiOiAiaGVwdGFiYW8ubGl2ZS1hY2NlcHRhbmNlLnYxIiwgInRhcmdldCI6ICJPcGVuQmFvIDIuNi4yIiwKZGlmZiAtLWdpdCBhL3FhL29wZW5iYW8tYWNjZXB0YW5jZS9jb21wbGV0ZV9zdXJmYWNlX2NvcnB1c192MS5qc29uIGIvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2NvbXBsZXRlX3N1cmZhY2VfY29ycHVzX3YxLmpzb24KaW5kZXggN2M1NWE1NS4uNTIwOTU2YSAxMDA2NDQKLS0tIGEvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2NvbXBsZXRlX3N1cmZhY2VfY29ycHVzX3YxLmpzb24KKysrIGIvcWEvb3BlbmJhby1hY2NlcHRhbmNlL2NvbXBsZXRlX3N1cmZhY2VfY29ycHVzX3YxLmpzb24KQEAgLTEzLDkgKzEzLDkgQEAKICAgICAiY2F0ZWdvcnlfY291bnQiOiAxMQogICB9LAogICAiY292ZXJhZ2Vfc3VtbWFyeSI6IHsKLSAgICAiaW1wbGVtZW50ZWRfc3VyZmFjZV9jb3VudCI6IDYsCi0gICAgImRlZmluZWRfbm90X2ltcGxlbWVudGVkX3N1cmZhY2VfY291bnQiOiA1NCwKLSAgICAiZml4dHVyZV9jYXNlX2NvdW50IjogMzgsCisgICAgImltcGxlbWVudGVkX3N1cmZhY2VfY291bnQiOiA3LAorICAgICJkZWZpbmVkX25vdF9pbXBsZW1lbnRlZF9zdXJmYWNlX2NvdW50IjogNTMsCisgICAgImZpeHR1cmVfY2FzZV9jb3VudCI6IDM5LAogICAgICJpbmRlcGVuZGVudGx5X29ic2VydmVkX2N1cnJlbnRfZXhhY3RfaGVhZF9zdXJmYWNlX2NvdW50IjogMAogICB9LAogICAic3VyZmFjZXMiOiBbCkBAIC0yMzksOCArMjM5LDEwIEBACiAgICAgICAiY2F0ZWdvcnkiOiAic2VjcmV0X2VuZ2luZXMiLAogICAgICAgImNyaXRpY2FsaXR5IjogIlNFQ1VSSVRZX0NSSVRJQ0FMIiwKICAgICAgICJtaW5pbXVtX29ic2VydmF0aW9ucyI6IDEsCi0gICAgICAiZml4dHVyZV9zdGF0ZSI6ICJERUZJTkVEX05PVF9JTVBMRU1FTlRFRCIsCi0gICAgICAiZml4dHVyZV9jYXNlX2lkcyI6IFtdLAorICAgICAgImZpeHR1cmVfc3RhdGUiOiAiSU1QTEVNRU5URURfU0NPUEVEIiwKKyAgICAgICJmaXh0dXJlX2Nhc2VfaWRzIjogWworICAgICAgICAidG90cC5yb3VuZHRyaXAiCisgICAgICBdLAogICAgICAgImluZGVwZW5kZW50X29ic2VydmF0aW9uX3N0YXRlIjogIkVYVEVSTkFMX1JFUVVJUkVEIgogICAgIH0sCiAgICAgewpkaWZmIC0tZ2l0IGEvc2NyaXB0cy92YWxpZGF0ZV9jb21wYXRpYmlsaXR5X2NvcnB1cy5weSBiL3NjcmlwdHMvdmFsaWRhdGVfY29tcGF0aWJpbGl0eV9jb3JwdXMucHkKaW5kZXggNWU4ZDRlYS4uMTg1Y2NmNCAxMDA3NTUKLS0tIGEvc2NyaXB0cy92YWxpZGF0ZV9jb21wYXRpYmlsaXR5X2NvcnB1cy5weQorKysgYi9zY3JpcHRzL3ZhbGlkYXRlX2NvbXBhdGliaWxpdHlfY29ycHVzLnB5CkBAIC0yMzAsNyArMjMwLDcgQEAgZGVmIG1haW4oKSAtPiBpbnQ6CiAgICAgICAgIGZvciBlcnJvciBpbiBlcnJvcnM6CiAgICAgICAgICAgICBwcmludChmImNvbXBhdGliaWxpdHktY29ycHVzOiBFUlJPUjoge2Vycm9yfSIsIGZpbGU9c3lzLnN0ZGVycikKICAgICAgICAgcmV0dXJuIDEKLSAgICBwcmludCgiY29tcGF0aWJpbGl0eS1jb3JwdXM6IFBBU1MgKDYwIHN1cmZhY2VzLCAzOCBzY29wZWQgY2FzZXMsIDAgZXhhY3QtaGVhZCBpbmRlcGVuZGVudCBzdXJmYWNlcykiKQorICAgIHByaW50KCJjb21wYXRpYmlsaXR5LWNvcnB1czogUEFTUyAoNjAgc3VyZmFjZXMsIDM5IHNjb3BlZCBjYXNlcywgMCBleGFjdC1oZWFkIGluZGVwZW5kZW50IHN1cmZhY2VzKSIpCiAgICAgcmV0dXJuIDAKIAogCmRpZmYgLS1naXQgYS90ZXN0cy9yZXBvc2l0b3J5L3Rlc3RfY29tcGF0aWJpbGl0eV9jb3JwdXNfdjJfMy5weSBiL3Rlc3RzL3JlcG9zaXRvcnkvdGVzdF9jb21wYXRpYmlsaXR5X2NvcnB1c192Ml8zLnB5CmluZGV4IDRmMmQwZTYuLjFiZjI4NGUgMTAwNjQ0Ci0tLSBhL3Rlc3RzL3JlcG9zaXRvcnkvdGVzdF9jb21wYXRpYmlsaXR5X2NvcnB1c192Ml8zLnB5CisrKyBiL3Rlc3RzL3JlcG9zaXRvcnkvdGVzdF9jb21wYXRpYmlsaXR5X2NvcnB1c192Ml8zLnB5CkBAIC02NCw3ICs2NCw3IEBAIGNsYXNzIENvbXBhdGliaWxpdHlDb3JwdXNWMjNUZXN0cyh1bml0dGVzdC5UZXN0Q2FzZSk6CiAgICAgICAgICAgICBmb3IgY2FzZSBpbiBlbnRyeS5nZXQoImZpeHR1cmVfY2FzZV9pZHMiLCBbXSkKICAgICAgICAgfQogICAgICAgICBzZWxmLmFzc2VydEVxdWFsKGFjY2VwdGFuY2VfY2FzZV9pZHMoKSwgbWFwcGVkKQotICAgICAgICBzZWxmLmFzc2VydEVxdWFsKDM4LCBsZW4obWFwcGVkKSkKKyAgICAgICAgc2VsZi5hc3NlcnRFcXVhbCgzOSwgbGVuKG1hcHBlZCkpCiAgICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwoCiAgICAgICAgICAgICAwLAogICAgICAgICAgICAgY29ycHVzWyJjb3ZlcmFnZV9zdW1tYXJ5Il1bCg==
-      - name: Decode and apply patch
+
+      - name: Materialize reviewed TOTP corpus fixture
         shell: bash
         run: |
           set -euo pipefail
-          printf '%s' "$PATCH_B64" | base64 --decode > "$RUNNER_TEMP/totp.patch"
-          git apply --check "$RUNNER_TEMP/totp.patch"
-          git apply "$RUNNER_TEMP/totp.patch"
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: patch anchor mismatch')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          p = Path('qa/openbao-acceptance/acceptance.py')
+          text = p.read_text(encoding='utf-8')
+          old = '    "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",\n                "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],\n}'
+          new = '    "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",\n                "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],\n    "totp": ["roundtrip"],\n}'
+          if text.count(old) != 1:
+              raise SystemExit('acceptance CASES anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          old = '        self.kv, self.transit, self.policy = (f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "reader"))'
+          new = '        self.kv, self.transit, self.totp, self.policy = (\n            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "totp", "reader")\n        )'
+          if text.count(old) != 1:
+              raise SystemExit('acceptance synthetic names anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          old = '        payload = {"type": "kv" if kind == "kv" else "transit", "description": self.marker}\n        if kind == "kv":'
+          new = '        if kind not in {"kv", "transit", "totp"}:\n            raise BaoError("unsupported_fixture_mount_kind")\n        payload = {"type": kind, "description": self.marker}\n        if kind == "kv":'
+          if text.count(old) != 1:
+              raise SystemExit('acceptance mount anchor mismatch')
+          text = text.replace(old, new, 1)
+
+          anchor = '    def cleanup(self):\n'
+          if text.count(anchor) != 1:
+              raise SystemExit('acceptance cleanup anchor mismatch')
+          function = (
+              '    def totp_cases(self):\n'
+              '        self.mount("totp", self.totp)\n'
+              '        path = "/v1/" + self.totp\n'
+              '        key_name = "fixture"\n'
+              '        imported = {\n'
+              '            "key": "JBSWY3DPEHPK3PXP",\n'
+              '            "issuer": "HeptaBao-QA",\n'
+              '            "account_name": "synthetic@example.invalid",\n'
+              '            "algorithm": "SHA1",\n'
+              '            "digits": 6,\n'
+              '            "period": 30,\n'
+              '            "skew": 1,\n'
+              '        }\n'
+              '        created = self.call("totp.roundtrip", "POST", path + "/keys/" + key_name, imported)\n'
+              '        if created.status not in (200, 204):\n'
+              '            self.check("totp.roundtrip", created, (200, 204), key_created=False)\n'
+              '            return\n'
+              '        code_response = self.client.request("GET", path + "/code/" + key_name)\n'
+              '        code = code_response.data().get("code") if code_response.status == 200 else None\n'
+              '        validation = self.client.request(\n'
+              '            "POST", path + "/code/" + key_name, {"code": code} if isinstance(code, str) else {"code": ""}\n'
+              '        )\n'
+              '        self.requests["totp.roundtrip"] = {\n'
+              '            "method": "MULTI",\n'
+              '            "path_template": path.replace(self.run_id, "{run_id}") + "/{keys,code}/fixture",\n'
+              '        }\n'
+              '        self.check(\n'
+              '            "totp.roundtrip", validation, 200,\n'
+              '            key_created=created.status in (200, 204),\n'
+              '            code_generated=isinstance(code, str) and len(code) == 6 and code.isdigit(),\n'
+              '            validation_true=validation.data().get("valid") is True,\n'
+              '        )\n\n'
+          )
+          text = text.replace(anchor, function + anchor, 1)
+
+          old = '            for module in ("kv", "token", "transit"):'
+          new = '            for module in ("kv", "token", "transit", "totp"):'
+          if text.count(old) != 1:
+              raise SystemExit('acceptance module loop anchor mismatch')
+          text = text.replace(old, new, 1)
+          old = '    parser.add_argument("--modules", default="kv,token,transit")'
+          new = '    parser.add_argument("--modules", default="kv,token,transit,totp")'
+          if text.count(old) != 1:
+              raise SystemExit('acceptance default modules anchor mismatch')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          cp = Path('qa/openbao-acceptance/complete_surface_corpus_v1.json')
+          corpus = json.loads(cp.read_text(encoding='utf-8'))
+          summary = corpus['coverage_summary']
+          if (summary['implemented_surface_count'], summary['defined_not_implemented_surface_count'], summary['fixture_case_count']) != (6, 54, 38):
+              raise SystemExit('compatibility summary baseline mismatch')
+          summary['implemented_surface_count'] = 7
+          summary['defined_not_implemented_surface_count'] = 53
+          summary['fixture_case_count'] = 39
+          row = next(entry for entry in corpus['surfaces'] if entry['surface_id'] == 'HB-SURFACE-SECRET-TOTP')
+          if row['fixture_state'] != 'DEFINED_NOT_IMPLEMENTED' or row['fixture_case_ids']:
+              raise SystemExit('TOTP surface baseline mismatch')
+          row['fixture_state'] = 'IMPLEMENTED_SCOPED'
+          row['fixture_case_ids'] = ['totp.roundtrip']
+          cp.write_text(json.dumps(corpus, indent=2) + '\n', encoding='utf-8')
+
+          replace_once('scripts/validate_compatibility_corpus.py', '60 surfaces, 38 scoped cases, 0 exact-head independent surfaces', '60 surfaces, 39 scoped cases, 0 exact-head independent surfaces')
+          replace_once('tests/repository/test_compatibility_corpus_v2_3.py', 'self.assertEqual(38, len(mapped))', 'self.assertEqual(39, len(mapped))')
+          PY
           git diff --check
+
       - name: Validate corpus and repository
         shell: bash
         run: |
@@ -46,6 +140,7 @@ jobs:
           python -m unittest tests.repository.test_compatibility_corpus_v2_3 -v
           python scripts/validate_repository_v2.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
+
       - name: Publish source-only corpus candidate
         shell: bash
         run: |
