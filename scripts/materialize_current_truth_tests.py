@@ -68,22 +68,32 @@ def patch_baseline_and_wrapper() -> None:
 
 
 def patch_inherited_validator() -> None:
+    # Keep the exact V1.4.6-pinned V1.4.5 semantic tokens in place. Add a
+    # namespace-insensitive fallback after the inherited exact comparison
+    # instead of rewriting that comparison, so both the historical integrity
+    # contract and current libc-qualified Rust source are admitted.
     replace_exact(
         V145_VALIDATOR,
         '    compact_value = "".join(value.split()) if path.endswith(".rs") else value\n',
-        '    compact_value = (\n'
-        '        "".join(value.split()).replace("libc::", "")\n'
+        '    compact_value = "".join(value.split()) if path.endswith(".rs") else value\n'
+        '    normalized_compact_value = (\n'
+        '        compact_value.replace("libc::", "")\n'
         '        if path.endswith(".rs")\n'
-        '        else value\n'
+        '        else compact_value\n'
         '    )\n',
     )
     replace_exact(
         V145_VALIDATOR,
-        '        if path.endswith(".rs") and "".join(token.split()) in compact_value:\n',
+        '        if path.endswith(".rs") and "".join(token.split()) in compact_value:\n'
+        '            continue\n',
+        '        if path.endswith(".rs") and "".join(token.split()) in compact_value:\n'
+        '            continue\n'
         '        if (\n'
         '            path.endswith(".rs")\n'
-        '            and "".join(token.split()).replace("libc::", "") in compact_value\n'
-        '        ):\n',
+        '            and "".join(token.split()).replace("libc::", "")\n'
+        '            in normalized_compact_value\n'
+        '        ):\n'
+        '            continue\n',
     )
     replace_exact(
         V145_VALIDATOR,
