@@ -2,6 +2,7 @@ use crate::{
     auth::{AuthState, Principal},
     crypto::{self, AeadBarrier, SecretShare},
     engines::EngineState,
+    ha::HaProcess,
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use heptabao_durable_service::{
@@ -15,6 +16,7 @@ use std::{
     fs::{self, File, OpenOptions},
     io::{self, Read, Write},
     path::{Path, PathBuf},
+    sync::{Arc, Mutex},
     time::{SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
@@ -235,6 +237,7 @@ pub struct Service {
     barrier_key: Option<Zeroizing<[u8; 32]>>,
     rekey: Option<RekeyState>,
     recovery_required: bool,
+    ha: Option<Arc<Mutex<HaProcess>>>,
     #[cfg(test)]
     state_capacity: usize,
     #[cfg(test)]
@@ -245,6 +248,22 @@ impl Service {
     /// The TLS private key and audit file belong outside the exclusively owned
     /// data directory. The directory is never initialized implicitly on serve.
     pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, None)
+    }
+
+    pub fn new_with_ha(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Arc<Mutex<HaProcess>>,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, Some(ha))
+    }
+
+    fn new_inner(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Option<Arc<Mutex<HaProcess>>>,
+    ) -> Result<Self, &'static str> {
         if !data_dir.is_absolute() || !audit_path.is_absolute() || audit_path.starts_with(&data_dir)
         {
             return Err("data and audit paths must be absolute and separate");
@@ -300,6 +319,7 @@ impl Service {
             barrier_key: None,
             rekey,
             recovery_required: false,
+            ha,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
@@ -359,9 +379,6 @@ impl Service {
         now: u64,
     ) -> Response {
         let fingerprint = self.request_fingerprint(method, path, namespace, token);
-        // Audit every attempted route, including malformed requests, health,
-        // failed authentication, initialization and wrong unseal keys. A failed
-        // audit append cannot itself be audited and blocks further dispatch.
         if self
             .audit_event("request", &fingerprint, now, None)
             .is_err()
@@ -389,8 +406,6 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
-            // Drop erases an initialized root token, plaintext read, login token
-            // or batch ciphertext before replacing it with the uncertainty error.
             return Response::error(
                 503,
                 "response audit failed; outcome unknown; authoritative recovery required",
@@ -414,16 +429,19 @@ impl Service {
         if path == "sys/health" && matches!(method, "GET" | "HEAD") {
             let initialized = self.initialized();
             let sealed = self.state.is_none();
+            let (ha_enabled, standby, _, _) = self.ha_observation();
             let status = if !initialized {
                 501
             } else if sealed || self.recovery_required {
                 503
+            } else if ha_enabled && standby {
+                429
             } else {
                 200
             };
             return Response {
                 status,
-                body: json!({"initialized":initialized,"sealed":sealed,"standby":false,"performance_standby":false,"replication_performance_mode":"disabled","replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":"heptabao-single-node","cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":false,"recovery_required":self.recovery_required}),
+                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"performance_standby":false,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"recovery_required":self.recovery_required}),
             };
         }
         if path == "sys/init" && method == "GET" {
@@ -437,6 +455,11 @@ impl Service {
         }
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
+        }
+        if self.ha.is_some()
+            && let Err(error) = self.sync_from_ha()
+        {
+            return error;
         }
         if self.recovery_required {
             return Response::error(
@@ -456,14 +479,23 @@ impl Service {
                 Err(error) => return Response::error(error.status, &error.message),
             }
         };
-        // Consumption is its own durable admission transaction. In particular,
-        // oversized writes, malformed engine/auth operations, ACL denial and
-        // subsequent storage failures cannot restore an authenticated token use.
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
             }
             self.state = Some(admitted.clone());
+        }
+        if path == "sys/leader" && method == "GET" {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(principal, namespace, path, "read", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            return self.leader_response();
         }
         if matches!(path, "sys/rekey/init" | "sys/rekey/update") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -538,12 +570,7 @@ impl Service {
         body: &Value,
         now: u64,
     ) -> Response {
-        // Ownership of the affine principal is consumed at this single
-        // dispatcher boundary. Internal layers borrow it only here.
         let principal = principal.as_ref();
-        // Each subsystem operates on its own candidate. A returned Err or an
-        // unsupported path discards all tentative changes, while admission
-        // consumption has already been persisted independently.
         let mut auth = state.auth.clone();
         match auth.handle(principal, namespace, method, path, body, now) {
             Ok(Some(response)) => {
@@ -562,20 +589,12 @@ impl Service {
             return Response::error(403, "missing client token");
         };
         if path == "sys/leader" && method == "GET" {
-            if let Err(error) = state
-                .auth
-                .authorize_request(principal, namespace, path, "read", now)
-            {
-                return Response::error(error.status, &error.message);
-            }
-            return Response::ok(
-                json!({"ha_enabled":false,"is_self":true,"leader_address":"","leader_cluster_address":""}),
-            );
+            return Response::error(500, "leader route escaped service HA boundary");
         }
         if path == "sys/step-down" || path.starts_with("sys/storage/raft") {
             return Response::error(
                 501,
-                "Raft and failover are not implemented by the single-node profile",
+                "Raft administrative route is not implemented by this request profile",
             );
         }
         let fallback = match method {
@@ -605,8 +624,6 @@ impl Service {
         }
         let mut engines = state.engines.clone();
         match engines.handle(namespace, method, path, body, now) {
-            // A batch may return HTTP 400 with individually successful encrypted
-            // outputs. The engine's explicit mutation flag owns that transaction.
             Ok(Some(mut response)) => {
                 if response.mutated {
                     state.engines = engines;
@@ -635,9 +652,22 @@ impl Service {
         #[cfg(test)]
         let capacity = self.state_capacity;
         if bytes.len() > capacity {
-            return Err(Response::error(507, "single-node state capacity exhausted"));
+            return Err(Response::error(507, "state capacity exhausted"));
         }
-        self.persist(bytes)
+        let base_digest = self.current_state_digest()?;
+        self.persist(bytes, base_digest)
+    }
+
+    fn current_state_digest(&self) -> Result<[u8; 32], Response> {
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let bytes = Zeroizing::new(
+            serde_json::to_vec(state)
+                .map_err(|_| Response::error(500, "state serialization failed"))?,
+        );
+        Ok(crypto::digest(&bytes))
     }
 
     fn initialized(&self) -> bool {
@@ -676,7 +706,7 @@ impl Service {
             "version": "HeptaBao-0.2.0",
             "migration": false,
             "recovery_seal": false,
-            "storage_type": "heptabao-durable-v2",
+            "storage_type": if self.ha.is_some() { "heptabao-raft-v1" } else { "heptabao-durable-v2" },
             "seal_generation": self.seal.as_ref().map_or(0, |seal| seal.generation),
         }))
     }
@@ -687,6 +717,15 @@ impl Service {
         now: u64,
         response_fingerprint: &str,
     ) -> (Response, bool) {
+        if self.ha.is_some() {
+            return (
+                Response::error(
+                    409,
+                    "initialize and unseal a node before enabling HA; HA initialization requires an existing durable state",
+                ),
+                false,
+            );
+        }
         if self.initialized() {
             return (Response::error(400, "already initialized"), false);
         }
@@ -847,9 +886,6 @@ impl Service {
             "recovery_keys": [],
             "recovery_keys_base64": [],
         }));
-        // This is the final secret-release audit gate. It is durable before the
-        // staged directory becomes the active initialized state, so an audit
-        // failure leaves no active state and the exact request is safely retryable.
         if self
             .audit_event(
                 "initialization-response-prepared",
@@ -1039,6 +1075,12 @@ impl Service {
         self.state = Some(state);
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
+        if self.ha.is_some()
+            && let Err(error) = self.sync_from_ha()
+        {
+            self.recovery_required = true;
+            return Err(error);
+        }
         Ok(())
     }
 
@@ -1489,6 +1531,15 @@ impl Service {
             if body.as_object().is_none_or(|object| !object.is_empty()) {
                 return Response::error(400, "storage compaction accepts an empty JSON object");
             }
+            if let Some(ha) = self.ha.as_ref() {
+                let result = ha
+                    .lock()
+                    .map_err(|_| ())
+                    .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
+                if result.is_err() {
+                    return Response::error(503, "HA snapshot trigger failed");
+                }
+            }
             let (result, fenced) = {
                 let Some(durable) = self.durable.as_mut() else {
                     return Response::error(503, "server is sealed");
@@ -1513,6 +1564,15 @@ impl Service {
         }
 
         if path == "sys/storage/raft/snapshot" && method == "GET" {
+            if let Some(ha) = self.ha.as_ref() {
+                let result = ha
+                    .lock()
+                    .map_err(|_| ())
+                    .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
+                if result.is_err() {
+                    return Response::error(503, "HA snapshot trigger failed");
+                }
+            }
             let Some(durable) = self.durable.as_ref() else {
                 return Response::error(503, "server is sealed");
             };
@@ -1539,6 +1599,12 @@ impl Service {
             path,
             "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
         ) {
+            if self.ha.is_some() {
+                return Response::error(
+                    409,
+                    "direct local snapshot restore is forbidden while HA is enabled",
+                );
+            }
             if !matches!(method, "POST" | "PUT") {
                 return Response::error(405, "snapshot restore requires POST or PUT");
             }
@@ -1636,14 +1702,36 @@ impl Service {
         .map_err(|_| Response::error(400, "seal shares do not match the active barrier"))
     }
 
-    fn persist(&mut self, bytes: &[u8]) -> Result<(), Response> {
+    fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
+        let operation_id = hex(&id);
+        if let Some(ha) = self.ha.as_ref() {
+            let commit = ha
+                .lock()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+                .commit_state(&operation_id, base_digest, bytes);
+            if let Err(error) = commit {
+                return Err(Response::error(503, &error));
+            }
+        }
+        match self.persist_local(bytes, &operation_id) {
+            Ok(()) => Ok(()),
+            Err(error) => {
+                if self.ha.is_some() {
+                    self.recovery_required = true;
+                }
+                Err(error)
+            }
+        }
+    }
+
+    fn persist_local(&mut self, bytes: &[u8], operation_id: &str) -> Result<(), Response> {
         let value = Secret::new(bytes.to_vec())
             .map_err(|_| Response::error(507, "state capacity exhausted"))?;
         let request = PutRequest::new(
             "heptabao-server",
             "system",
-            hex(&id),
+            operation_id,
             "state",
             crypto::digest(bytes),
             value,
@@ -1667,6 +1755,78 @@ impl Service {
                 "durable state rejected; no response released",
             )),
         }
+    }
+
+    fn sync_from_ha(&mut self) -> Result<(), Response> {
+        let Some(ha) = self.ha.as_ref().cloned() else {
+            return Ok(());
+        };
+        let committed = ha
+            .lock()
+            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+            .latest_committed_state()
+            .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
+        let Some(committed) = committed else {
+            return Ok(());
+        };
+        if self.current_state_digest()? == committed.digest {
+            return Ok(());
+        }
+        let state: State = serde_json::from_slice(&committed.bytes)
+            .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
+        if state.schema != 1 {
+            return Err(Response::error(503, "unsupported HA committed state schema"));
+        }
+        let expected_cluster = ha
+            .lock()
+            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+            .cluster_id()
+            .to_owned();
+        if state.cluster_id != expected_cluster {
+            return Err(Response::error(
+                503,
+                "HA committed state belongs to a different cluster",
+            ));
+        }
+        let operation_id = format!("hasync-{}", hex(&committed.digest));
+        self.persist_local(&committed.bytes, &operation_id)?;
+        self.state = Some(state);
+        self.recovery_required = false;
+        Ok(())
+    }
+
+    fn ha_observation(&self) -> (bool, bool, Option<u64>, Option<u64>) {
+        let Some(ha) = self.ha.as_ref() else {
+            return (false, false, None, None);
+        };
+        let Ok(ha) = ha.lock() else {
+            return (true, true, None, None);
+        };
+        let local = ha.local_id().ok();
+        let leader = ha.leader().ok().flatten();
+        (true, leader.is_some() && leader != local, leader, local)
+    }
+
+    fn leader_response(&self) -> Response {
+        let (ha_enabled, _, leader, local) = self.ha_observation();
+        if !ha_enabled {
+            return Response::ok(json!({
+                "ha_enabled": false,
+                "is_self": true,
+                "leader_address": "",
+                "leader_cluster_address": "",
+                "performance_standby": false,
+                "performance_standby_last_remote_wal": 0
+            }));
+        }
+        Response::ok(json!({
+            "ha_enabled": true,
+            "is_self": leader.is_some() && leader == local,
+            "leader_address": "",
+            "leader_cluster_address": "",
+            "performance_standby": false,
+            "performance_standby_last_remote_wal": 0
+        }))
     }
 
     fn wire_rejection_fingerprint(
