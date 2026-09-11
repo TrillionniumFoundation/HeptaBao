@@ -1,0 +1,156 @@
+name: OpenBao 2.6 HA service recovery
+
+on:
+  push:
+    branches:
+      - ops/openbao-26-ha-recovery-20260911-r1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: openbao-26-ha-recovery-20260911-r1
+  cancel-in-progress: true
+
+env:
+  MATERIALIZER_SHA: 77230cfabcc212292ea1d941826e069a50f98f4f
+  MATERIALIZER_PATH: .github/workflows/v24-ha-service-materializer.yml
+  MTLS_SHA: 0b604780c4e1d485b982a7c699999ab59525478c
+  MTLS_PATH: .github/workflows/v24-ha-mtls-r3.yml
+  OUTPUT_BRANCH: tmp/openbao-26-ha-mtls-source-20260911-r1
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout full repository history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Recover HA service source from immutable historical materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "$MATERIALIZER_SHA:$MATERIALIZER_PATH" > "$RUNNER_TEMP/materializer.yml"
+          python - "$RUNNER_TEMP/materializer.yml" "$RUNNER_TEMP/materialize.sh" <<'PY'
+          from pathlib import Path
+          import sys
+
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = "      - name: Materialize HA service package"
+          start = lines.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              value = line[10:] if line.startswith("          ") else line
+              if "git rev-parse HEAD^" in value:
+                  continue
+              body.append(value)
+          text = "\n".join(body) + "\n"
+          for token in ("curl ", "wget ", "git push", "GITHUB_TOKEN", "secrets.", "${{"):
+              if token in text:
+                  raise SystemExit(f"denied historical materializer token: {token}")
+          Path(sys.argv[2]).write_text(text, encoding="utf-8")
+          PY
+          chmod 0700 "$RUNNER_TEMP/materialize.sh"
+          env -i PATH="$PATH" HOME="$HOME" RUNNER_TEMP="$RUNNER_TEMP" bash "$RUNNER_TEMP/materialize.sh"
+
+      - name: Repair source robustly for current workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest = Path("crates/heptabao-ha-service/Cargo.toml")
+          text = manifest.read_text(encoding="utf-8")
+          text = text.replace("license.workspace = true\n", "")
+          manifest.write_text(text, encoding="utf-8")
+
+          path = Path("crates/heptabao-ha-service/src/lib.rs")
+          text = path.read_text(encoding="utf-8")
+
+          text, count = re.subn(
+              r"\n\s*fn decode\(value: u8\) -> Result<Self, HaError> \{\n\s*match value \{\n\s*1 => Ok\(Self::LinearizableRead\),\n\s*2 => Ok\(Self::Mutation\),\n\s*_ => Err\(HaError::InvalidFrame\),\n\s*\}\n\s*\}\n",
+              "\n",
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("OperationKind::decode repair did not match exactly once")
+
+          marker = "fn decode_peer_state(\n"
+          if marker not in text:
+              raise SystemExit("decode_peer_state marker missing")
+          text = text.replace(
+              marker,
+              "type PeerSequenceState = (BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>);\n\nfn decode_peer_state(\n",
+              1,
+          )
+          text, count = re.subn(
+              r"\) -> Result<\(BTreeMap<NodeId, u64>, BTreeMap<NodeId, u64>\), HaError> \{",
+              ") -> Result<PeerSequenceState, HaError> {",
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("peer sequence state signature repair did not match")
+          text = text.replace(
+              "voters.intersection(acknowledgements).count() >= voters.len() / 2 + 1",
+              "voters.intersection(acknowledgements).count() > voters.len() / 2",
+              1,
+          )
+          text = text.replace("|request| Ok(request)", "Ok", 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+          cargo +1.98.0 generate-lockfile
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test -p heptabao-ha-service --all-targets
+          cargo +1.98.0 clippy -p heptabao-ha-service --all-targets -- -D warnings
+          python -m unittest tests.repository.test_ha_service_v2_4 -v
+
+      - name: Commit recovered HA service source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenBao 2.6 HA Recovery'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add crates/heptabao-ha-service docs/modules/heptabao-ha-service.md tests/repository/test_ha_service_v2_4.py Cargo.lock
+          git commit -m 'feat(ha): recover authenticated HA service boundary'
+          printf 'SOURCE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Apply immutable historical mTLS hardening to recovered source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "$MTLS_SHA:$MTLS_PATH" > "$RUNNER_TEMP/mtls.yml"
+          python - "$RUNNER_TEMP/mtls.yml" "$RUNNER_TEMP/mtls.sh" <<'PY'
+          from pathlib import Path
+          import sys
+
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          marker = "      - name: Add mTLS transport in isolated worktree"
+          start = lines.index(marker)
+          run_index = next(i for i in range(start + 1, min(start + 10, len(lines))) if lines[i] == "        run: |")
+          body = []
+          for line in lines[run_index + 1:]:
+              if line.startswith("      - name: "):
+                  break
+              body.append(line[10:] if line.startswith("          ") else line)
+          text = "\n".join(body) + "\n"
+          if "${{" in text:
+              raise SystemExit("unresolved workflow expression in mTLS block")
+          Path(sys.argv[2]).write_text(text, encoding="utf-8")
+          PY
+          chmod 0700 "$RUNNER_TEMP/mtls.sh"
+          SOURCE_SHA="$SOURCE_SHA" OUTPUT_BRANCH="$OUTPUT_BRANCH" bash "$RUNNER_TEMP/mtls.sh"
