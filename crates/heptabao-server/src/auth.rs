@@ -2,6 +2,7 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
+use crate::federated_auth::{JwtAlgorithm, JwtVerifier, TrustPolicy, VerificationKey};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use ring::{
     digest, hmac, pbkdf2,
@@ -22,6 +23,7 @@ const MFA_SEED_BYTES: usize = 32;
 const MFA_PERIOD_SECONDS: u64 = 30;
 const MFA_DIGITS: usize = 6;
 const MFA_DRIFT_STEPS: u64 = 1;
+const MAX_EXTERNAL_REPLAY_ENTRIES: usize = 1_000_000;
 const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
@@ -34,6 +36,74 @@ pub struct AuthState {
     roles: BTreeMap<String, BTreeMap<String, Role>>,
     #[serde(default)]
     auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
+    #[serde(default)]
+    external_replay: BTreeMap<String, u64>,
+    #[serde(default)]
+    jwt_configs: BTreeMap<String, JwtConfig>,
+    #[serde(default)]
+    jwt_roles: BTreeMap<String, BTreeMap<String, JwtRole>>,
+    #[serde(default)]
+    external_identities: BTreeMap<String, ExternalIdentity>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtKeyRecord {
+    algorithm: String,
+    bytes: Vec<u8>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtConfig {
+    issuer: String,
+    audiences: BTreeSet<String>,
+    required_namespace: Option<String>,
+    clock_skew_seconds: u64,
+    maximum_token_lifetime_seconds: u64,
+    keys: BTreeMap<String, JwtKeyRecord>,
+}
+
+impl JwtConfig {
+    fn verifier(&self) -> Result<JwtVerifier, AuthError> {
+        let policy = TrustPolicy::new(
+            self.issuer.clone(),
+            self.audiences.clone(),
+            self.required_namespace.clone(),
+            self.clock_skew_seconds,
+            self.maximum_token_lifetime_seconds,
+        )
+        .map_err(|_| bad("invalid JWT trust policy"))?;
+        let mut keys = Vec::with_capacity(self.keys.len());
+        for (key_id, record) in &self.keys {
+            let algorithm = match record.algorithm.as_str() {
+                "EdDSA" => JwtAlgorithm::Ed25519,
+                "ES256" => JwtAlgorithm::Es256,
+                _ => return Err(bad("unsupported JWT algorithm")),
+            };
+            keys.push(
+                VerificationKey::new(key_id.clone(), algorithm, record.bytes.clone())
+                    .map_err(|_| bad("invalid JWT verification key"))?,
+            );
+        }
+        JwtVerifier::new(policy, keys).map_err(|_| bad("invalid JWT verifier configuration"))
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtRole {
+    bound_groups: BTreeSet<String>,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct ExternalIdentity {
+    issuer: String,
+    subject: String,
+    namespace: String,
+    groups: BTreeSet<String>,
+    last_seen: u64,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -87,6 +157,9 @@ impl Drop for AuthState {
     fn drop(&mut self) {
         for (mut verifier, _) in std::mem::take(&mut self.tokens) {
             verifier.zeroize();
+        }
+        for (mut fingerprint, _) in std::mem::take(&mut self.external_replay) {
+            fingerprint.zeroize();
         }
         // Nested User and Role destructors clear their owned verifier buffers.
     }
@@ -425,6 +498,10 @@ impl AuthState {
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
             auth_mounts: BTreeMap::new(),
+            external_replay: BTreeMap::new(),
+            jwt_configs: BTreeMap::new(),
+            jwt_roles: BTreeMap::new(),
+            external_identities: BTreeMap::new(),
         };
         let token = Token {
             accessor: random_id("a.")?,
@@ -443,6 +520,37 @@ impl AuthState {
         let raw = random_id("hvs.")?;
         state.tokens.insert(hash(&raw), token);
         Ok((state, raw))
+    }
+
+    fn admit_external_replay(
+        &mut self,
+        fingerprint: [u8; 32],
+        expires_at: u64,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        if expires_at <= now {
+            return Err(denied());
+        }
+        let mut retained = BTreeMap::new();
+        for (mut key, expiry) in std::mem::take(&mut self.external_replay) {
+            if expiry > now {
+                retained.insert(key, expiry);
+            } else {
+                key.zeroize();
+            }
+        }
+        self.external_replay = retained;
+        let mut key = URL_SAFE_NO_PAD.encode(fingerprint);
+        if self.external_replay.contains_key(&key) {
+            key.zeroize();
+            return Err(denied());
+        }
+        if self.external_replay.len() >= MAX_EXTERNAL_REPLAY_ENTRIES {
+            key.zeroize();
+            return Err(err(503, "external replay registry capacity exhausted"));
+        }
+        self.external_replay.insert(key, expires_at);
+        Ok(())
     }
 
     fn active_token(&self, id: &str, now: u64, consume_check: bool) -> Result<&Token, AuthError> {
@@ -680,7 +788,7 @@ impl AuthState {
                     .get("type")
                     .and_then(Value::as_str)
                     .ok_or_else(|| bad("auth mount type is required"))?;
-                if !matches!(kind, "userpass" | "approle") {
+                if !matches!(kind, "userpass" | "approle" | "jwt") {
                     return Err(err(501, "auth method type is not implemented"));
                 }
                 if mount != kind {
@@ -755,6 +863,14 @@ impl AuthState {
         {
             return Err(err(404, "approle auth mount is disabled"));
         }
+        if path.starts_with("auth/jwt/") && !self.auth_mount_enabled(namespace, "jwt", "jwt") {
+            return Err(err(404, "jwt auth mount is disabled"));
+        }
+        if path.starts_with("auth/jwt/") {
+            return self
+                .jwt_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
         if path == "auth/approle/login" {
             return self.login_approle(namespace, method, body, now).map(Some);
         }
@@ -821,6 +937,313 @@ impl AuthState {
                 .map(Some);
         }
         Ok(None)
+    }
+
+    fn jwt_route(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        if path == "auth/jwt/config" {
+            return self.jwt_config_route(principal, namespace, method, body, now);
+        }
+        if path == "auth/jwt/login" {
+            if !matches!(method, "POST" | "PUT") {
+                return Err(err(405, "method not allowed"));
+            }
+            reject_unknown(body, &["role", "jwt"])?;
+            let role_name = string_field(body, "role")?;
+            if !valid_name(role_name) {
+                return Err(bad("invalid JWT role name"));
+            }
+            let jwt = string_field(body, "jwt")?;
+            let config = self
+                .jwt_configs
+                .get(namespace)
+                .cloned()
+                .ok_or_else(|| err(503, "JWT auth is not configured"))?;
+            let role = self
+                .jwt_roles
+                .get(namespace)
+                .and_then(|roles| roles.get(role_name))
+                .cloned()
+                .ok_or_else(denied)?;
+            let verified = config.verifier()?.verify(jwt, now).map_err(|_| denied())?;
+            let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
+            if claimed_namespace != namespace
+                || !role.bound_groups.is_subset(&verified.groups)
+                || role.policies.contains("root")
+            {
+                return Err(denied());
+            }
+            let remaining = verified.expires_at.saturating_sub(now);
+            if remaining == 0 {
+                return Err(denied());
+            }
+            let ttl = role.token_ttl.min(remaining).max(1);
+            let max_ttl = role.token_max_ttl.min(remaining).max(ttl);
+            let fingerprint = verified.replay_fingerprint();
+            self.admit_external_replay(fingerprint, verified.expires_at, now)?;
+            let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
+            self.external_identities.insert(
+                identity_key,
+                ExternalIdentity {
+                    issuer: verified.issuer.clone(),
+                    subject: verified.subject.clone(),
+                    namespace: namespace.into(),
+                    groups: verified.groups.clone(),
+                    last_seen: now,
+                },
+            );
+            let display_hash = hash(&verified.subject);
+            let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
+            let token = Token {
+                accessor: random_id("a.")?,
+                namespace: namespace.into(),
+                policies: role.policies,
+                root: false,
+                parent: None,
+                created_at: now,
+                expires_at: Some(checked_expiry(now, ttl)?),
+                max_expires_at: Some(checked_expiry(now, max_ttl)?),
+                period: 0,
+                renewable: true,
+                uses_remaining: unlimited_zero(role.token_num_uses),
+                display_name: format!("jwt-{display_suffix}"),
+            };
+            return self.issue(token, now);
+        }
+        if path == "auth/jwt/role" {
+            if !matches!(method, "GET" | "LIST") {
+                return Err(err(405, "method not allowed"));
+            }
+            self.permission(principal, namespace, path, "list", now)?;
+            reject_unknown(body, &[])?;
+            let keys: Vec<&str> = self
+                .jwt_roles
+                .get(namespace)
+                .map(|roles| roles.keys().map(String::as_str).collect())
+                .unwrap_or_default();
+            return Ok(response(json!({"keys": keys}), false));
+        }
+        if let Some(name) = path.strip_prefix("auth/jwt/role/") {
+            if !valid_name(name) {
+                return Err(bad("invalid JWT role name"));
+            }
+            return self.jwt_role_route(principal, namespace, method, name, body, now);
+        }
+        Err(err(404, "JWT auth path is not implemented"))
+    }
+
+    fn jwt_config_route(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = "auth/jwt/config";
+        match method {
+            "GET" => {
+                self.permission(principal, namespace, path, "read", now)?;
+                reject_unknown(body, &[])?;
+                let config = self
+                    .jwt_configs
+                    .get(namespace)
+                    .ok_or_else(|| err(404, "JWT auth is not configured"))?;
+                let keys: Vec<Value> = config
+                    .keys
+                    .iter()
+                    .map(|(kid, key)| json!({"kid": kid, "algorithm": key.algorithm}))
+                    .collect();
+                Ok(response(
+                    json!({
+                        "issuer": config.issuer,
+                        "audiences": config.audiences,
+                        "required_namespace": config.required_namespace,
+                        "clock_skew_seconds": config.clock_skew_seconds,
+                        "maximum_token_lifetime_seconds": config.maximum_token_lifetime_seconds,
+                        "keys": keys
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                let actor = self.permission(principal, namespace, path, "update", now)?;
+                self.authorize_request(actor, namespace, path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "issuer",
+                        "audiences",
+                        "required_namespace",
+                        "clock_skew_seconds",
+                        "maximum_token_lifetime_seconds",
+                        "keys",
+                    ],
+                )?;
+                let issuer = string_field(body, "issuer")?.to_owned();
+                let audiences = policies(body, "audiences", &BTreeSet::new(), false)?;
+                let required_namespace = body
+                    .get("required_namespace")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("required_namespace must be a string"))
+                    })
+                    .transpose()?
+                    .map(str::to_owned);
+                if required_namespace
+                    .as_deref()
+                    .is_some_and(|value| value != namespace)
+                {
+                    return Err(bad(
+                        "required_namespace must equal the configured auth namespace",
+                    ));
+                }
+                let clock_skew_seconds = number(body, "clock_skew_seconds", 30)?;
+                let maximum_token_lifetime_seconds =
+                    number(body, "maximum_token_lifetime_seconds", 3600)?;
+                let key_values = body
+                    .get("keys")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| bad("JWT keys must be an array"))?;
+                if key_values.is_empty() || key_values.len() > 64 {
+                    return Err(bad("JWT key count is outside bounds"));
+                }
+                let mut keys = BTreeMap::new();
+                for value in key_values {
+                    reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
+                    let kid = string_field(value, "kid")?;
+                    if !valid_name(kid) || keys.contains_key(kid) {
+                        return Err(bad("invalid or duplicate JWT key id"));
+                    }
+                    let algorithm = string_field(value, "algorithm")?;
+                    if !matches!(algorithm, "EdDSA" | "ES256") {
+                        return Err(bad("unsupported JWT algorithm"));
+                    }
+                    let bytes = URL_SAFE_NO_PAD
+                        .decode(string_field(value, "key_base64")?)
+                        .map_err(|_| bad("invalid JWT key encoding"))?;
+                    if bytes.is_empty() || bytes.len() > 16 * 1024 {
+                        return Err(bad("JWT key is outside bounds"));
+                    }
+                    keys.insert(
+                        kid.into(),
+                        JwtKeyRecord {
+                            algorithm: algorithm.into(),
+                            bytes,
+                        },
+                    );
+                }
+                let config = JwtConfig {
+                    issuer,
+                    audiences,
+                    required_namespace,
+                    clock_skew_seconds,
+                    maximum_token_lifetime_seconds,
+                    keys,
+                };
+                config.verifier()?;
+                let mutated = self.jwt_configs.get(namespace) != Some(&config);
+                self.jwt_configs.insert(namespace.into(), config);
+                Ok(empty(mutated))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn jwt_role_route(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/jwt/role/{name}");
+        match method {
+            "GET" => {
+                self.permission(principal, namespace, &path, "read", now)?;
+                reject_unknown(body, &[])?;
+                let role = self
+                    .jwt_roles
+                    .get(namespace)
+                    .and_then(|roles| roles.get(name))
+                    .ok_or_else(|| err(404, "JWT role not found"))?;
+                Ok(response(
+                    json!({
+                        "bound_groups": role.bound_groups,
+                        "policies": role.policies,
+                        "token_ttl": role.token_ttl,
+                        "token_max_ttl": role.token_max_ttl,
+                        "token_num_uses": role.token_num_uses
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                let actor = self.permission(principal, namespace, &path, "update", now)?;
+                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "bound_groups",
+                        "policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                let bound_groups = policies(body, "bound_groups", &BTreeSet::new(), false)?;
+                let role_policies = policies(body, "policies", &BTreeSet::new(), true)?;
+                if role_policies.contains("root") {
+                    return Err(denied());
+                }
+                let token_ttl = duration(body, "token_ttl", DEFAULT_TTL)?;
+                let token_max_ttl = duration(body, "token_max_ttl", token_ttl)?;
+                let token_num_uses = number(body, "token_num_uses", 0)?;
+                if token_ttl == 0
+                    || token_ttl > MAX_TTL
+                    || token_max_ttl < token_ttl
+                    || token_max_ttl > MAX_TTL
+                {
+                    return Err(bad("JWT role token TTL is outside bounds"));
+                }
+                let role = JwtRole {
+                    bound_groups,
+                    policies: role_policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses,
+                };
+                let roles = self.jwt_roles.entry(namespace.into()).or_default();
+                let mutated = roles.get(name) != Some(&role);
+                roles.insert(name.into(), role);
+                Ok(empty(mutated))
+            }
+            "DELETE" => {
+                let actor = self.permission(principal, namespace, &path, "update", now)?;
+                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self
+                    .jwt_roles
+                    .get_mut(namespace)
+                    .and_then(|roles| roles.remove(name));
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "JWT role not found"))
+                }
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
     }
 
     fn token_route(
