@@ -41,29 +41,8 @@ jobs:
           from pathlib import Path
           p=Path('planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml')
           s=p.read_text(encoding='utf-8')
-          old='''- id: HB-V2-REP-014
-  class: REPOSITORY_CONTROLLED
-  severity: HIGH
-  title: real persisted-format migration and interruption recovery are incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
-  evidence:
-  - qa/openbao-acceptance/migrate_kv2.py
-  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
-  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
-'''
-          new='''- id: HB-V2-REP-014
-  class: REPOSITORY_CONTROLLED
-  severity: HIGH
-  title: interruption-safe persisted-format migration core is implemented and awaiting unchanged-head review
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  evidence:
-  - crates/heptabao-migration/src/lib.rs
-  - crates/heptabao-migration/src/durable.rs
-  - docs/modules/heptabao-migration.md
-  - qa/openbao-acceptance/migrate_kv2.py
-  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md
-  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
-'''
+          old='- id: HB-V2-REP-014\n  class: REPOSITORY_CONTROLLED\n  severity: HIGH\n  title: real persisted-format migration and interruption recovery are incomplete\n  state: IMPLEMENTATION_IN_PROGRESS\n  evidence:\n  - qa/openbao-acceptance/migrate_kv2.py\n  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md\n  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md\n'
+          new='- id: HB-V2-REP-014\n  class: REPOSITORY_CONTROLLED\n  severity: HIGH\n  title: interruption-safe persisted-format migration core is implemented and awaiting unchanged-head review\n  state: IMPLEMENTED_REVIEW_REQUIRED\n  evidence:\n  - crates/heptabao-migration/src/lib.rs\n  - crates/heptabao-migration/src/durable.rs\n  - docs/modules/heptabao-migration.md\n  - qa/openbao-acceptance/migrate_kv2.py\n  - docs/migration/HEPTABAO_OPENBAO_MIGRATION.md\n  - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md\n'
           if s.count(old)!=1: raise SystemExit('REP-014 anchor mismatch')
           s=s.replace(old,new,1)
           s=s.replace('exact compatibility denominator is enforced but 54 surface fixtures remain incomplete','exact compatibility denominator is enforced but 51 surface fixtures remain incomplete',1)
