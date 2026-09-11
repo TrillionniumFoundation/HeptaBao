@@ -1,0 +1,80 @@
+diff --git a/qa/openbao-acceptance/acceptance.py b/qa/openbao-acceptance/acceptance.py
+index 673eaf1..f775a3e 100644
+--- a/qa/openbao-acceptance/acceptance.py
++++ b/qa/openbao-acceptance/acceptance.py
+@@ -24,6 +24,9 @@ CASES = {
+     "totp": ["roundtrip"],
+     "userpass": ["login"],
+     "approle": ["login"],
++    "edge_tls": ["health"],
++    "system": ["init_status"],
++    "operations": ["seal_status"],
+ }
+@@ -293,6 +296,26 @@ class Suite:
+             default_policy="default" in auth.get("policies", []),
+         )
++
++    def edge_tls_cases(self):
++        r = self.call("edge_tls.health", "GET", "/v1/sys/health")
++        self.check("edge_tls.health", r, 200,
++                   initialized=r.body.get("initialized") is True,
++                   unsealed=r.body.get("sealed") is False)
++
++    def system_cases(self):
++        r = self.call("system.init_status", "GET", "/v1/sys/init")
++        self.check("system.init_status", r, 200,
++                   initialized=r.body.get("initialized") is True)
++
++    def operations_cases(self):
++        r = self.call("operations.seal_status", "GET", "/v1/sys/seal-status")
++        self.check("operations.seal_status", r, 200,
++                   initialized=r.body.get("initialized") is True,
++                   unsealed=r.body.get("sealed") is False)
+ 
+     def cleanup(self):
+@@ -346,7 +369,7 @@ class Suite:
+-            for module in ("kv", "token", "transit", "totp", "userpass", "approle"):
++            for module in ("kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
+@@ -376,7 +399,7 @@ def main(argv=None):
+-    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle")
++    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
+diff --git a/qa/openbao-acceptance/complete_surface_corpus_v1.json b/qa/openbao-acceptance/complete_surface_corpus_v1.json
+index 55c2cce..e8d6959 100644
+--- a/qa/openbao-acceptance/complete_surface_corpus_v1.json
++++ b/qa/openbao-acceptance/complete_surface_corpus_v1.json
+@@ -13,9 +13,9 @@
+-    "implemented_surface_count": 9,
+-    "defined_not_implemented_surface_count": 51,
+-    "fixture_case_count": 41,
++    "implemented_surface_count": 12,
++    "defined_not_implemented_surface_count": 48,
++    "fixture_case_count": 44,
+@@ -33,8 +33,10 @@
+-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+-      "fixture_case_ids": [],
++      "fixture_state": "IMPLEMENTED_SCOPED",
++      "fixture_case_ids": ["system.init_status"],
+@@ -497,8 +499,10 @@
+-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+-      "fixture_case_ids": [],
++      "fixture_state": "IMPLEMENTED_SCOPED",
++      "fixture_case_ids": ["edge_tls.health"],
+@@ -542,8 +546,10 @@
+-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
+-      "fixture_case_ids": [],
++      "fixture_state": "IMPLEMENTED_SCOPED",
++      "fixture_case_ids": ["operations.seal_status"],
+diff --git a/scripts/validate_compatibility_corpus.py b/scripts/validate_compatibility_corpus.py
+index 47c224a..2f7df0e 100755
+--- a/scripts/validate_compatibility_corpus.py
++++ b/scripts/validate_compatibility_corpus.py
+@@ -230,7 +230,7 @@ def main() -> int:
+-    print("compatibility-corpus: PASS (60 surfaces, 41 scoped cases, 0 exact-head independent surfaces)")
++    print("compatibility-corpus: PASS (60 surfaces, 44 scoped cases, 0 exact-head independent surfaces)")
+diff --git a/tests/repository/test_compatibility_corpus_v2_3.py b/tests/repository/test_compatibility_corpus_v2_3.py
+index 41ce3b9..b94fd73 100644
+--- a/tests/repository/test_compatibility_corpus_v2_3.py
++++ b/tests/repository/test_compatibility_corpus_v2_3.py
+@@ -64,7 +64,7 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
+-        self.assertEqual(41, len(mapped))
++        self.assertEqual(44, len(mapped))
