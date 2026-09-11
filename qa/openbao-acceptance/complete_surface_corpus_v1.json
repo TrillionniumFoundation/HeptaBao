@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 6,
-    "defined_not_implemented_surface_count": 54,
-    "fixture_case_count": 38,
+    "implemented_surface_count": 7,
+    "defined_not_implemented_surface_count": 53,
+    "fixture_case_count": 39,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -239,8 +239,10 @@
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "totp.roundtrip"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
