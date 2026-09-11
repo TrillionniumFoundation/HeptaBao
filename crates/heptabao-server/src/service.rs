@@ -222,6 +222,26 @@ impl Drop for InitializationStage {
     }
 }
 
+struct RequestDispatch<'a> {
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: Value,
+    now: u64,
+    allow_forward: bool,
+}
+
+struct RequestView<'a> {
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: &'a Value,
+    now: u64,
+    allow_forward: bool,
+}
+
 pub struct Service {
     data_dir: PathBuf,
     audit: File,
@@ -375,9 +395,52 @@ impl Service {
         path: &str,
         namespace: &str,
         token: &str,
-        mut body: Value,
+        body: Value,
         now: u64,
     ) -> Response {
+        self.handle_at_mode(RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: true,
+        })
+    }
+
+    pub(crate) fn handle_forwarded(
+        &mut self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+        body: Value,
+    ) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
+        self.handle_at_mode(RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: false,
+        })
+    }
+
+    fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {
+        let RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            mut body,
+            now,
+            allow_forward,
+        } = request;
         let fingerprint = self.request_fingerprint(method, path, namespace, token);
         if self
             .audit_event("request", &fingerprint, now, None)
@@ -399,7 +462,15 @@ impl Service {
             }
             return response;
         }
-        let response = self.handle_inner(method, path, namespace, token, &body, now);
+        let response = self.handle_inner(RequestView {
+            method,
+            path,
+            namespace,
+            token,
+            body: &body,
+            now,
+            allow_forward,
+        });
         erase_json(&mut body);
         if self
             .audit_event("response", &fingerprint, now, Some(response.status))
@@ -414,15 +485,16 @@ impl Service {
         response
     }
 
-    fn handle_inner(
-        &mut self,
-        method: &str,
-        path: &str,
-        namespace: &str,
-        token: &str,
-        body: &Value,
-        now: u64,
-    ) -> Response {
+    fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
+        let RequestView {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward,
+        } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
         }
@@ -455,10 +527,28 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
-        if self.ha.is_some()
-            && let Err(error) = self.sync_from_ha()
-        {
-            return error;
+        if self.ha.is_some() {
+            let (_, standby, ha_active, _, _) = self.ha_observation();
+            if standby {
+                if !allow_forward {
+                    return Response::error(503, "forwarded request reached a standby node");
+                }
+                let Some(ha) = self.ha.as_ref().cloned() else {
+                    return Response::error(503, "HA forwarding is unavailable");
+                };
+                return match ha.lock() {
+                    Ok(ha) => ha
+                        .forward_request(method, path, namespace, token, body)
+                        .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
+                    Err(_) => Response::error(503, "HA process lock is unavailable"),
+                };
+            }
+            if !ha_active {
+                return Response::error(503, "HA node has no current linearizable authority");
+            }
+            if let Err(error) = self.sync_from_ha() {
+                return error;
+            }
         }
         if self.recovery_required {
             return Response::error(

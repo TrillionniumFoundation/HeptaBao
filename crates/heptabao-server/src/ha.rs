@@ -4,8 +4,8 @@ use std::fs::OpenOptions;
 use std::io::{BufReader, Read};
 use std::net::{SocketAddr, TcpListener};
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
@@ -27,7 +27,15 @@ use tokio::runtime::{Builder as RuntimeBuilder, Runtime};
 use tokio::sync::Semaphore;
 use zeroize::Zeroizing;
 
-use crate::ha_state::ClusterStateCodec;
+use crate::{
+    Response,
+    ha_forward::{
+        ForwardRequest, decode_request as decode_forward_request,
+        decode_response as decode_forward_response, encode_request as encode_forward_request,
+        encode_response as encode_forward_response, is_forward_request,
+    },
+    ha_state::ClusterStateCodec,
+};
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
@@ -37,6 +45,7 @@ const MAX_TLS_FILE_BYTES: usize = 1024 * 1024;
 const REPLICATION_KEY_BYTES: usize = 32;
 
 type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);
+pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send + Sync>;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -172,6 +181,9 @@ pub struct HaProcess {
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
     cluster_id: String,
+    peers: Arc<BTreeMap<u64, NodeId>>,
+    forward_transport: MutualTlsPeerTransport,
+    forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
     stop: Arc<AtomicBool>,
     listener: Option<JoinHandle<()>>,
 }
@@ -227,10 +239,11 @@ impl HaProcess {
         }
         let transport = MutualTlsPeerTransport::new(endpoint_map, client_tls, timeout)
             .map_err(|error| error.to_string())?;
+        let peers = Arc::new(nodes_by_id);
         let rpc = Arc::new(MutualTlsRaftRpc {
             local_id: config.node_id,
-            peers: Arc::new(nodes_by_id),
-            transport,
+            peers: peers.clone(),
+            transport: transport.clone(),
             inflight: Arc::new(Semaphore::new(config.max_inflight)),
         });
         let network = RemoteNetworkFactory::new(config.node_id, peer_ids.clone(), rpc)
@@ -269,6 +282,8 @@ impl HaProcess {
         let stop = Arc::new(AtomicBool::new(false));
         let listener_stop = stop.clone();
         let runtime_handle = runtime.handle().clone();
+        let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
+        let listener_forward_handler = forward_handler.clone();
         let local_id = config.node_id;
         let listener_thread = thread::Builder::new()
             .name(format!("heptabao-raft-peer-{local_id}"))
@@ -286,6 +301,28 @@ impl HaProcess {
                             let source = *ids
                                 .get(&peer)
                                 .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
+                            if is_forward_request(&frame) {
+                                let request = decode_forward_request(&frame)
+                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                if request.source != source || request.target != local_id {
+                                    return Err(
+                                        heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                                    );
+                                }
+                                let handler = listener_forward_handler
+                                    .lock()
+                                    .map_err(|_| heptabao_ha_service::HaError::Transport)?
+                                    .clone()
+                                    .ok_or(heptabao_ha_service::HaError::NotLeader)?;
+                                let response = handler(request);
+                                return encode_forward_response(
+                                    local_id,
+                                    source,
+                                    response.status,
+                                    &response.body,
+                                )
+                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
+                            }
                             let request = decode_raft_frame(&frame)
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                             if request.role != RAFT_FRAME_REQUEST
@@ -348,8 +385,61 @@ impl HaProcess {
             node: Some(node),
             codec,
             cluster_id: config.cluster_id,
+            peers,
+            forward_transport: transport,
+            forward_handler,
             stop,
             listener: Some(listener_thread),
+        })
+    }
+
+    pub(crate) fn register_forward_handler(
+        &mut self,
+        handler: ForwardHandler,
+    ) -> Result<(), String> {
+        let mut slot = self
+            .forward_handler
+            .lock()
+            .map_err(|_| "HA forward handler registry is unavailable".to_owned())?;
+        if slot.is_some() {
+            return Err("HA forward handler is already registered".into());
+        }
+        *slot = Some(handler);
+        Ok(())
+    }
+
+    pub(crate) fn forward_request(
+        &self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+        body: &serde_json::Value,
+    ) -> Result<Response, String> {
+        let local = self.local_id()?;
+        let leader = self
+            .leader()?
+            .ok_or_else(|| "HA cluster has no elected leader".to_owned())?;
+        if leader == local {
+            return Err("HA forward request cannot target the local leader".into());
+        }
+        let target = self
+            .peers
+            .get(&leader)
+            .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
+        let request = encode_forward_request(local, leader, method, path, namespace, token, body)?;
+        let response = zeroize::Zeroizing::new(
+            self.forward_transport
+                .exchange(target, &request)
+                .map_err(|error| error.to_string())?,
+        );
+        let mut response = decode_forward_response(&response)?;
+        if response.source != leader || response.target != local {
+            return Err("HA forward response direction is invalid".into());
+        }
+        Ok(Response {
+            status: response.status,
+            body: std::mem::take(&mut response.body),
         })
     }
 

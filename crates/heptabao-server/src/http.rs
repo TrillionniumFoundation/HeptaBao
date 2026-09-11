@@ -16,7 +16,7 @@ use std::{
     },
     time::{Duration, Instant},
 };
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
@@ -170,6 +170,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
     let ha_enabled = ha.is_some();
+    let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
         match ha {
             Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
@@ -177,6 +178,29 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
+    if let Some(ha) = forwarding_ha {
+        let weak_service = Arc::downgrade(&service);
+        let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
+            let Some(service) = weak_service.upgrade() else {
+                return Response::error(503, "HA forward service is unavailable");
+            };
+            let response = match service.lock() {
+                Ok(mut service) => service.handle_forwarded(
+                    &request.method,
+                    &request.path,
+                    &request.namespace,
+                    &request.token,
+                    std::mem::take(&mut request.body),
+                ),
+                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
+            };
+            request.token.zeroize();
+            response
+        });
+        ha.lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .register_forward_handler(handler)?;
+    }
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
     let connections = Arc::new(AtomicUsize::new(0));

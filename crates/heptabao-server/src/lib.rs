@@ -16,6 +16,7 @@ pub mod engines;
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 pub mod federated_auth;
 pub mod ha;
+mod ha_forward;
 pub mod ha_state;
 pub mod http;
 mod service;
