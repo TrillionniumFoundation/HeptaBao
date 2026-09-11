@@ -6,11 +6,11 @@ Do not use this source to protect real secrets. Do not place live credentials, u
 
 ## Current repository state
 
-The current workspace contains **45 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **46 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
-The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. It still lacks production Raft peer/server composition, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration, fixtures for 54 compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. It still lacks the final `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` production composition, destructive three-process HA qualification, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
 ## Current source of truth
 
@@ -23,7 +23,7 @@ The current candidate includes a repository-owned durable three-voter Raft conse
 
 Historical V1.x and V2.0 artifacts remain exact-source evidence but are not current state authority.
 
-Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **45 / 45** existing crates. This candidate remains not production-deployable.
+Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **46 / 46** existing crates. This candidate remains not production-deployable.
 
 ## Mandatory path
 
