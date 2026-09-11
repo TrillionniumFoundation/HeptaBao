@@ -34,14 +34,14 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('crates/heptabao-server/src/service.rs')
-          text = path.read_text(encoding='utf-8')
-
           def replace_once(text: str, old: str, new: str, label: str) -> str:
               count = text.count(old)
               if count != 1:
                   raise SystemExit(f'{label}: expected one exact match, found {count}')
               return text.replace(old, new, 1)
+
+          path = Path('crates/heptabao-server/src/service.rs')
+          text = path.read_text(encoding='utf-8')
 
           text = replace_once(
               text,
@@ -49,28 +49,24 @@ jobs:
               '            let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();\n',
               'health observation binding',
           )
-
           text = replace_once(
               text,
               '''            let status = if !initialized {\n                501\n            } else if sealed || self.recovery_required {\n                503\n            } else if ha_enabled && standby {\n                429\n            } else {\n                200\n            };\n''',
               '''            let status = health_status(\n                initialized,\n                sealed,\n                self.recovery_required,\n                ha_enabled,\n                standby,\n                ha_active,\n            );\n''',
               'health status classifier',
           )
-
           text = replace_once(
               text,
               '"ha_enabled":ha_enabled,"recovery_required":self.recovery_required',
               '"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required',
               'health body authority field',
           )
-
           text = replace_once(
               text,
               '''    fn ha_observation(&self) -> (bool, bool, Option<u64>, Option<u64>) {\n        let Some(ha) = self.ha.as_ref() else {\n            return (false, false, None, None);\n        };\n        let Ok(ha) = ha.lock() else {\n            return (true, true, None, None);\n        };\n        let local = ha.local_id().ok();\n        let leader = ha.leader().ok().flatten();\n        (true, leader.is_some() && leader != local, leader, local)\n    }\n''',
               '''    fn ha_observation(&self) -> (bool, bool, bool, Option<u64>, Option<u64>) {\n        let Some(ha) = self.ha.as_ref() else {\n            return (false, false, true, None, None);\n        };\n        let Ok(ha) = ha.lock() else {\n            return (true, false, false, None, None);\n        };\n        let local = match ha.local_id() {\n            Ok(local) => Some(local),\n            Err(_) => return (true, false, false, None, None),\n        };\n        let leader = match ha.leader() {\n            Ok(leader) => leader,\n            Err(_) => return (true, false, false, None, local),\n        };\n        let standby = leader.is_some() && leader != local;\n        let active = leader.is_some()\n            && leader == local\n            && ha.ensure_linearizable().is_ok();\n        (true, standby, active, leader, local)\n    }\n''',
               'HA observation implementation',
           )
-
           text = replace_once(
               text,
               '        let (ha_enabled, _, leader, local) = self.ha_observation();\n',
@@ -99,8 +95,29 @@ jobs:
               tests + '#[cfg(test)]\n#[path = "service_tests.rs"]\nmod tests;\n',
               'HA health regression tests',
           )
-
           path.write_text(text, encoding='utf-8')
+
+          ha_path = Path('crates/heptabao-server/src/ha.rs')
+          ha = ha_path.read_text(encoding='utf-8')
+          ha = replace_once(
+              ha,
+              '    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory,\n',
+              '    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RemoteNetworkFactory,\n',
+              'unused raft service import',
+          )
+          ha = replace_once(
+              ha,
+              'const REPLICATION_KEY_BYTES: usize = 32;\n',
+              'const REPLICATION_KEY_BYTES: usize = 32;\n\ntype MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);\n',
+              'mutual TLS alias insertion',
+          )
+          ha = replace_once(
+              ha,
+              ') -> Result<(Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]), String> {\n',
+              ') -> Result<MutualTlsConfigs, String> {\n',
+              'mutual TLS return type',
+          )
+          ha_path.write_text(ha, encoding='utf-8')
           PY
 
       - name: Format and validate bounded HA slice
