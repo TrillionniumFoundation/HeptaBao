@@ -51,3 +51,6 @@ Tests cover leader execution, follower forwarding, deduplication, quorum loss, p
 ## Evolution and open boundaries
 
 A concrete `heptabao-raft-runtime` adapter, TLS mutual identity, server listener integration, rolling upgrade, process kill/failover and destructive multi-node qualification remain required.
+## V2.4 mutual TLS peer transport
+
+`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, then binds the single presented leaf certificate SHA-256 to an expected `NodeId`. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Certificate issuance, revocation, rotation, trust-root custody and destructive multi-node qualification remain external operational gates.
