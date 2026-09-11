@@ -4,7 +4,9 @@ Package: `heptabao-ha-service`
 
 Source: `crates/heptabao-ha-service`
 
-## Purpose and boundaries
+Engineering contract: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`
+
+## Purpose and non-goals
 
 Provides service-level leader routing, fail-closed quorum checks, authenticated peer framing, durable replay protection, snapshot integrity and membership-transition validation. It is not yet the concrete production `heptabao-server` Raft adapter or mTLS deployment.
 
@@ -24,11 +26,11 @@ Linearizable work requires quorum. Followers forward to the current leader. Resp
 
 Operation ID reuse with different bytes is rejected. Persist failures are outcome-unknown. Replayed peer frames remain denied after restart.
 
-## Concurrency model
+## Concurrency and ordering
 
 Consensus ordering is delegated to one driver. A single-writer state lock serializes peer sequence updates; TCP calls have explicit deadlines.
 
-## Security considerations
+## Security and privacy
 
 Keys and payloads are redacted from Debug. Frames are bounded and HMAC authenticated. Production mTLS and node certificate lifecycle remain mandatory external integration.
 
@@ -44,7 +46,7 @@ Typed errors distinguish quorum, leadership, stale response, replay, authenticat
 
 Operators configure stable node IDs, peer addresses, per-peer keys, timeouts, joint membership changes, snapshot transfer and audited stale-lock recovery.
 
-## Tests and evidence
+## Tests and executable evidence
 
 Tests cover leader execution, follower forwarding, deduplication, quorum loss, persistent replay, tampering, receiver binding, snapshots, joint quorum and TCP framing.
 

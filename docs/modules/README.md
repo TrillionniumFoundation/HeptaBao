@@ -1,6 +1,6 @@
 # HeptaBao module documentation index
 
-Current status: `V2.3 / 45 WORKSPACE PACKAGES`
+Current status: `V2.3 / 46 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -22,6 +22,7 @@ The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`
 | `heptabao-filesystem-guard` | local filesystem fencing | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-filesystem-guard.md` |
 | `heptabao-governance` | qualification and authority contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-governance.md` |
 | `heptabao-ha-contracts` | HA term membership and writer fences | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-contracts.md` |
+| `heptabao-ha-service` | authenticated HA service routing, peer transport and replay fencing | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-ha-service.md` |
 | `heptabao-raft-runtime` | durable three-voter consensus, ReadIndex and restart recovery | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-raft-runtime.md` |
 | `heptabao-identity` | entity alias and group resolution | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-identity.md` |
 | `heptabao-journal-api` | journal contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-journal-api.md` |
