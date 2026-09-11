@@ -15,7 +15,7 @@ use heptabao_ha_service::{
     serve_one_mtls_peer_frame,
 };
 use heptabao_raft_runtime::{
-    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory,
+    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RemoteNetworkFactory,
     RemoteRaftError, ReplicatedEnvelope,
 };
 use ring::digest;
@@ -35,6 +35,8 @@ const RAFT_FRAME_RESPONSE: u8 = 2;
 const MAX_RAFT_FRAME_BYTES: usize = 896 * 1024;
 const MAX_TLS_FILE_BYTES: usize = 1024 * 1024;
 const REPLICATION_KEY_BYTES: usize = 32;
+
+type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -262,8 +264,8 @@ impl HaProcess {
         listener
             .set_nonblocking(true)
             .map_err(|_| "cannot configure HA peer listener".to_owned())?;
-        let identities = PinnedClientCertificateMap::new(pinned)
-            .map_err(|error| error.to_string())?;
+        let identities =
+            PinnedClientCertificateMap::new(pinned).map_err(|error| error.to_string())?;
         let stop = Arc::new(AtomicBool::new(false));
         let listener_stop = stop.clone();
         let runtime_handle = runtime.handle().clone();
@@ -290,16 +292,10 @@ impl HaProcess {
                                 || request.source != source
                                 || request.target != local_id
                             {
-                                return Err(
-                                    heptabao_ha_service::HaError::PeerAuthenticationFailed,
-                                );
+                                return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
                             }
                             let payload = handle
-                                .block_on(service.handle(
-                                    source,
-                                    request.kind,
-                                    request.payload,
-                                ))
+                                .block_on(service.handle(source, request.kind, request.payload))
                                 .map_err(map_remote_service_error)?;
                             encode_raft_frame(RaftWireFrame {
                                 role: RAFT_FRAME_RESPONSE,
@@ -322,11 +318,7 @@ impl HaProcess {
             runtime
                 .block_on(node.initialize_single())
                 .map_err(|error| error.to_string())?;
-            for peer_id in peer_ids
-                .iter()
-                .copied()
-                .filter(|id| *id != config.node_id)
-            {
+            for peer_id in peer_ids.iter().copied().filter(|id| *id != config.node_id) {
                 runtime
                     .block_on(node.add_learner(peer_id))
                     .map_err(|error| error.to_string())?;
@@ -541,9 +533,7 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
     Ok(peers)
 }
 
-fn build_mutual_tls(
-    config: &HaProcessConfig,
-) -> Result<(Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]), String> {
+fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String> {
     let ca = load_certificates(&config.ca_file)?;
     let certificates = load_certificates(&config.cert_file)?;
     let local_leaf = certificates
@@ -654,11 +644,9 @@ fn read_bounded_regular_file_with_privacy(
         }
     }
     let mut bytes = Zeroizing::new(Vec::new());
-    file.take(
-        u64::try_from(maximum).map_err(|_| "HA file bound overflow".to_owned())? + 1,
-    )
-    .read_to_end(&mut bytes)
-    .map_err(|_| "cannot read HA TLS or replication-key file".to_owned())?;
+    file.take(u64::try_from(maximum).map_err(|_| "HA file bound overflow".to_owned())? + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|_| "cannot read HA TLS or replication-key file".to_owned())?;
     if bytes.len() > maximum {
         return Err("HA material exceeds limit".into());
     }
@@ -727,11 +715,7 @@ fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
             .try_into()
             .map_err(|_| RemoteRaftError::InvalidRpc)?,
     ) as usize;
-    if source == 0
-        || target == 0
-        || source == target
-        || length == 0
-        || encoded.len() != 27 + length
+    if source == 0 || target == 0 || source == target || length == 0 || encoded.len() != 27 + length
     {
         return Err(RemoteRaftError::InvalidRpc);
     }
@@ -810,7 +794,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>> {
+    fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>>
+    {
         let encoded = encode_raft_frame(RaftWireFrame {
             role: RAFT_FRAME_REQUEST,
             source: 1,
@@ -828,7 +813,8 @@ mod tests {
     }
 
     #[test]
-    fn raft_wire_frame_rejects_direction_and_length_drift() -> Result<(), Box<dyn std::error::Error>> {
+    fn raft_wire_frame_rejects_direction_and_length_drift() -> Result<(), Box<dyn std::error::Error>>
+    {
         let mut encoded = encode_raft_frame(RaftWireFrame {
             role: RAFT_FRAME_RESPONSE,
             source: 2,

@@ -429,19 +429,18 @@ impl Service {
         if path == "sys/health" && matches!(method, "GET" | "HEAD") {
             let initialized = self.initialized();
             let sealed = self.state.is_none();
-            let (ha_enabled, standby, _, _) = self.ha_observation();
-            let status = if !initialized {
-                501
-            } else if sealed || self.recovery_required {
-                503
-            } else if ha_enabled && standby {
-                429
-            } else {
-                200
-            };
+            let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();
+            let status = health_status(
+                initialized,
+                sealed,
+                self.recovery_required,
+                ha_enabled,
+                standby,
+                ha_active,
+            );
             return Response {
                 status,
-                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"performance_standby":false,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"recovery_required":self.recovery_required}),
+                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"performance_standby":false,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required}),
             };
         }
         if path == "sys/init" && method == "GET" {
@@ -1775,7 +1774,10 @@ impl Service {
         let state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         if state.schema != 1 {
-            return Err(Response::error(503, "unsupported HA committed state schema"));
+            return Err(Response::error(
+                503,
+                "unsupported HA committed state schema",
+            ));
         }
         let expected_cluster = ha
             .lock()
@@ -1795,20 +1797,28 @@ impl Service {
         Ok(())
     }
 
-    fn ha_observation(&self) -> (bool, bool, Option<u64>, Option<u64>) {
+    fn ha_observation(&self) -> (bool, bool, bool, Option<u64>, Option<u64>) {
         let Some(ha) = self.ha.as_ref() else {
-            return (false, false, None, None);
+            return (false, false, true, None, None);
         };
         let Ok(ha) = ha.lock() else {
-            return (true, true, None, None);
+            return (true, false, false, None, None);
         };
-        let local = ha.local_id().ok();
-        let leader = ha.leader().ok().flatten();
-        (true, leader.is_some() && leader != local, leader, local)
+        let local = match ha.local_id() {
+            Ok(local) => Some(local),
+            Err(_) => return (true, false, false, None, None),
+        };
+        let leader = match ha.leader() {
+            Ok(leader) => leader,
+            Err(_) => return (true, false, false, None, local),
+        };
+        let standby = leader.is_some() && leader != local;
+        let active = leader.is_some() && leader == local && ha.ensure_linearizable().is_ok();
+        (true, standby, active, leader, local)
     }
 
     fn leader_response(&self) -> Response {
-        let (ha_enabled, _, leader, local) = self.ha_observation();
+        let (ha_enabled, _, ha_active, leader, local) = self.ha_observation();
         if !ha_enabled {
             return Response::ok(json!({
                 "ha_enabled": false,
@@ -1821,7 +1831,7 @@ impl Service {
         }
         Response::ok(json!({
             "ha_enabled": true,
-            "is_self": leader.is_some() && leader == local,
+            "is_self": ha_active && leader.is_some() && leader == local,
             "leader_address": "",
             "leader_cluster_address": "",
             "performance_standby": false,
@@ -1912,6 +1922,26 @@ impl Service {
         self.audit_sequence = sequence;
         self.audit_previous.copy_from_slice(tag.as_ref());
         Ok(())
+    }
+}
+fn health_status(
+    initialized: bool,
+    sealed: bool,
+    recovery_required: bool,
+    ha_enabled: bool,
+    standby: bool,
+    ha_active: bool,
+) -> u16 {
+    if !initialized {
+        501
+    } else if sealed || recovery_required {
+        503
+    } else if ha_enabled && standby {
+        429
+    } else if ha_enabled && !ha_active {
+        503
+    } else {
+        200
     }
 }
 
@@ -2390,6 +2420,22 @@ pub(crate) fn erase_json(value: &mut Value) {
         _ => {}
     }
     *value = Value::Null;
+}
+
+#[cfg(test)]
+mod ha_health_status_tests {
+    use super::health_status;
+
+    #[test]
+    fn health_never_reports_active_without_current_linearizable_authority() {
+        assert_eq!(health_status(true, false, false, false, false, true), 200);
+        assert_eq!(health_status(true, false, false, true, false, true), 200);
+        assert_eq!(health_status(true, false, false, true, true, false), 429);
+        assert_eq!(health_status(true, false, false, true, false, false), 503);
+        assert_eq!(health_status(true, true, false, true, false, true), 503);
+        assert_eq!(health_status(true, false, true, true, false, true), 503);
+        assert_eq!(health_status(false, false, false, true, false, false), 501);
+    }
 }
 
 #[cfg(test)]
