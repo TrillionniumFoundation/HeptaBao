@@ -42,44 +42,20 @@ jobs:
 
           matrix = Path('planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml')
           text = matrix.read_text(encoding='utf-8')
-          anchor = '''- crate: heptabao-ha-contracts
-  domain: HA term membership and writer fences
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-ha-contracts/src/lib.rs
-  guide: docs/modules/heptabao-ha-contracts.md
-'''
-          addition = anchor + '''- crate: heptabao-ha-service
-  domain: authenticated HA service routing, peer transport and replay fencing
-  state: IMPLEMENTED_REVIEW_REQUIRED
-  documentation_standard: V3
-  source: crates/heptabao-ha-service/src/lib.rs
-  guide: docs/modules/heptabao-ha-service.md
-'''
+          anchor = '- crate: heptabao-ha-contracts\n  domain: HA term membership and writer fences\n  state: IMPLEMENTED_REVIEW_REQUIRED\n  documentation_standard: V3\n  source: crates/heptabao-ha-contracts/src/lib.rs\n  guide: docs/modules/heptabao-ha-contracts.md\n'
+          addition = anchor + '- crate: heptabao-ha-service\n  domain: authenticated HA service routing, peer transport and replay fencing\n  state: IMPLEMENTED_REVIEW_REQUIRED\n  documentation_standard: V3\n  source: crates/heptabao-ha-service/src/lib.rs\n  guide: docs/modules/heptabao-ha-service.md\n'
           if text.count(anchor) != 1:
               raise SystemExit('capability matrix HA anchor mismatch')
           matrix.write_text(text.replace(anchor, addition, 1), encoding='utf-8')
 
           replace_once('README.md', 'The current workspace contains **45 packages**.', 'The current workspace contains **46 packages**.')
           replace_once('README.md', 'Current Cargo workspace documentation: **45 / 45** existing crates.', 'Current Cargo workspace documentation: **46 / 46** existing crates.')
-          replace_once(
-              'README.md',
-              'It still lacks production Raft peer/server composition, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration, fixtures for 54 compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.',
-              'The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. It still lacks the final `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` production composition, destructive three-process HA qualification, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.'
-          )
+          replace_once('README.md', 'It still lacks production Raft peer/server composition, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration, fixtures for 54 compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.', 'The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. It still lacks the final `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` production composition, destructive three-process HA qualification, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification.')
 
           replace_once('docs/CURRENT_DOCUMENTATION.md', 'This is the current entry point for all 45 workspace packages.', 'This is the current entry point for all 46 workspace packages.')
           replace_once('docs/CURRENT_DOCUMENTATION.md', '`docs/modules/README.md` — complete index for all 45 workspace packages.', '`docs/modules/README.md` — complete index for all 46 workspace packages.')
-          replace_once(
-              'docs/CURRENT_DOCUMENTATION.md',
-              'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment adds a checksum-pinned sandbox-wrapper process boundary, encrypted restart-safe plugin invocation intents and dynamic-lease projections, plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.',
-              'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment also adds an authenticated HA service boundary with mTLS peer identity binding, durable peer replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport; a checksum-pinned sandbox-wrapper process boundary; encrypted restart-safe plugin invocation intents and dynamic-lease projections; plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.'
-          )
-          replace_once(
-              'docs/CURRENT_DOCUMENTATION.md',
-              'current 45-package implementation and mandatory validation remain intact;',
-              'the 45-package implementation observed in that historical reconciliation and its mandatory validation remain intact;'
-          )
+          replace_once('docs/CURRENT_DOCUMENTATION.md', 'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment adds a checksum-pinned sandbox-wrapper process boundary, encrypted restart-safe plugin invocation intents and dynamic-lease projections, plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.', 'The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment also adds an authenticated HA service boundary with mTLS peer identity binding, durable peer replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport; a checksum-pinned sandbox-wrapper process boundary; encrypted restart-safe plugin invocation intents and dynamic-lease projections; plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator.')
+          replace_once('docs/CURRENT_DOCUMENTATION.md', 'current 45-package implementation and mandatory validation remain intact;', 'the 45-package implementation observed in that historical reconciliation and its mandatory validation remain intact;')
 
           index = Path('docs/modules/README.md')
           text = index.read_text(encoding='utf-8')
