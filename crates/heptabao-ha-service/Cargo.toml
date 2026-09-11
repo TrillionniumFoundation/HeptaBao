@@ -1,0 +1,10 @@
+[package]
+name = "heptabao-ha-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+rustls = "0.23.44"
+ring = "0.17.14"
