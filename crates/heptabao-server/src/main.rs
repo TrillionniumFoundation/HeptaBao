@@ -16,7 +16,9 @@ fn run() -> Result<(), String> {
     let arguments: Vec<_> = std::env::args().skip(1).collect();
     let (server_path, ha_path) = match arguments.as_slice() {
         [config, path] if config == "--config" => (path.as_str(), None),
-        [config, path, ha_config, ha_path] if config == "--config" && ha_config == "--ha-config" => {
+        [config, path, ha_config, ha_path]
+            if config == "--config" && ha_config == "--ha-config" =>
+        {
             (path.as_str(), Some(ha_path.as_str()))
         }
         _ => {
