@@ -318,6 +318,21 @@ impl HaProcess {
             runtime
                 .block_on(node.initialize_single())
                 .map_err(|error| error.to_string())?;
+            runtime.block_on(async {
+                let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
+                loop {
+                    if node.current_leader().await == Some(config.node_id) {
+                        break Ok::<(), String>(());
+                    }
+                    if tokio::time::Instant::now() >= deadline {
+                        break Err(
+                            "HA bootstrap did not elect the local node before membership expansion"
+                                .into(),
+                        );
+                    }
+                    tokio::time::sleep(Duration::from_millis(20)).await;
+                }
+            })?;
             for peer_id in peer_ids.iter().copied().filter(|id| *id != config.node_id) {
                 runtime
                     .block_on(node.add_learner(peer_id))
