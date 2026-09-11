@@ -13,6 +13,7 @@ from bao_http import (BaoError, Client, SafeArgumentParser, digest, distinct_end
                       private_write, verify_oracle_identity)
 
 CASES = {
+    "core": ["unknown_route_denied"],
     "kv": ["mount", "write_v1", "read_v1", "write_v2", "read_old_version", "cas_rejected",
            "cas_no_effect", "list", "soft_delete", "deleted_read", "deleted_metadata",
            "undelete", "restored_read", "destroy_v1", "destroyed_read", "destroyed_metadata",
@@ -98,6 +99,16 @@ class Suite:
         if response.status != 204:
             raise BaoError("auth_mount_enable_failed")
         self.owned_auth_mounts.append(kind)
+
+    def core_cases(self):
+        path = "/v1/hbqa-" + self.run_id + "-unsupported"
+        r = self.call("core.unknown_route_denied", "GET", path)
+        self.check(
+            "core.unknown_route_denied",
+            r,
+            404,
+            error_envelope=isinstance(r.body.get("errors"), list) and bool(r.body["errors"]),
+        )
 
     def kv_cases(self):
         self.mount("kv", self.kv)
@@ -361,7 +372,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
+            for module in ("core", "kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -391,7 +402,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
+    parser.add_argument("--modules", default="core,kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",
