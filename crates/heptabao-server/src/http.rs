@@ -1,6 +1,6 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, service::WireRejection};
+use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -16,7 +16,7 @@ use std::{
     },
     time::{Duration, Instant},
 };
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
@@ -124,6 +124,14 @@ impl RateLimiter {
 }
 
 pub fn serve(config: Config) -> Result<(), String> {
+    serve_inner(config, None)
+}
+
+pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), String> {
+    serve_inner(config, Some(ha))
+}
+
+fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
@@ -161,14 +169,44 @@ pub fn serve(config: Config) -> Result<(), String> {
         .map_err(|_| "TLS key and certificate do not match")?;
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
+    let ha_enabled = ha.is_some();
+    let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
-        Service::new(config.data_dir, &config.audit_file).map_err(str::to_owned)?,
+        match ha {
+            Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
+            None => Service::new(config.data_dir, &config.audit_file),
+        }
+        .map_err(str::to_owned)?,
     ));
+    if let Some(ha) = forwarding_ha {
+        let weak_service = Arc::downgrade(&service);
+        let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
+            let Some(service) = weak_service.upgrade() else {
+                return Response::error(503, "HA forward service is unavailable");
+            };
+            let response = match service.lock() {
+                Ok(mut service) => service.handle_forwarded(
+                    &request.method,
+                    &request.path,
+                    &request.namespace,
+                    &request.token,
+                    std::mem::take(&mut request.body),
+                ),
+                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
+            };
+            request.token.zeroize();
+            response
+        });
+        ha.lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .register_forward_handler(handler)?;
+    }
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
-        "HeptaBao single-node TLS listener ready at {}",
+        "HeptaBao {} TLS listener ready at {}",
+        if ha_enabled { "HA" } else { "single-node" },
         config.listen
     );
     for stream in listener.incoming() {

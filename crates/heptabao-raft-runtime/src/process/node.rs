@@ -12,6 +12,8 @@ use crate::network::DurableRaft;
 use crate::store::{DurableLogStore, DurableStateMachine};
 use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 
+const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
+
 pub struct ProcessRaftNode {
     id: u64,
     raft: DurableRaft,
@@ -135,6 +137,26 @@ impl ProcessRaftNode {
         self.raft.current_leader().await
     }
 
+    /// Return a nonzero monotonically increasing serial for the production
+    /// application client.
+    ///
+    /// The pinned memstore state machine does not retain client serials; it
+    /// persists the latest client status and the last applied Raft log id. The
+    /// latter survives restart and snapshot installation, so using its index + 1
+    /// prevents serial reuse after leader restart or failover. Membership and
+    /// blank entries may create harmless gaps but cannot make the serial regress.
+    pub async fn next_production_client_serial(&self) -> Result<u64, RaftRuntimeError> {
+        let state = self.state_machine.get_state_machine().await;
+        match state.last_applied_log {
+            Some(log_id) => log_id
+                .index
+                .checked_add(1)
+                .filter(|value| *value != 0)
+                .ok_or(RaftRuntimeError::InvalidSerial),
+            None => Ok(1),
+        }
+    }
+
     pub async fn replicate(
         &self,
         client_serial: u64,
@@ -146,7 +168,7 @@ impl ProcessRaftNode {
         let response = self
             .raft
             .client_write(ClientRequest {
-                client: "heptabao-production-ha".to_owned(),
+                client: PRODUCTION_CLIENT_ID.to_owned(),
                 serial: client_serial,
                 status: envelope.encoded_status(),
             })
@@ -184,7 +206,7 @@ impl ProcessRaftNode {
     /// recovery error rather than an empty state or best-effort fallback.
     pub async fn latest_envelope(&self) -> Result<Option<ReplicatedEnvelope>, RemoteRaftError> {
         let state = self.state_machine.get_state_machine().await;
-        let Some(status) = state.client_status.get("heptabao-production-ha") else {
+        let Some(status) = state.client_status.get(PRODUCTION_CLIENT_ID) else {
             return Ok(None);
         };
         ReplicatedEnvelope::decode_status(status)

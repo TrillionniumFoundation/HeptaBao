@@ -147,7 +147,8 @@ impl ClusterStateCodec {
     }
 
     /// Build one immutable state proposal. `base_digest == [0; 32]` is reserved
-    /// for the first application-state commit in an otherwise empty HA state.
+    /// for a truly empty application state; a cluster enabled after single-node
+    /// initialization anchors its first proposal to the actual local state digest.
     pub fn seal(
         &self,
         operation_id: impl Into<String>,
@@ -181,36 +182,45 @@ impl ClusterStateCodec {
         ReplicatedStateProposal::new(operation_id, next_digest, sealed)
     }
 
-    /// Recover a committed candidate after checking that it extends the exact
-    /// state expected by this node. A stale base is never silently installed.
+    /// Recover a proposal after checking that it extends the exact state expected
+    /// by the caller. Leaders use this property to reject stale proposals.
     pub fn open(
         &self,
         proposal: &ReplicatedStateProposal,
         expected_base_digest: [u8; 32],
     ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
-        let sealed = proposal.sealed();
-        if sealed.len() < HEADER_BYTES + TAG_BYTES
-            || sealed.len() > HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES
-        {
-            return Err(ReplicatedStateError::InvalidEnvelope);
-        }
-        if &sealed[..MAGIC.len()] != MAGIC {
-            return Err(ReplicatedStateError::InvalidEnvelope);
-        }
-        let base_offset = MAGIC.len();
-        let nonce_offset = base_offset + DIGEST_BYTES;
-        let payload_offset = nonce_offset + NONCE_BYTES;
-        let base_digest: [u8; DIGEST_BYTES] = sealed[base_offset..nonce_offset]
-            .try_into()
-            .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+        let (base_digest, nonce, payload_offset) = validate_envelope(proposal)?;
         if base_digest != expected_base_digest {
             return Err(ReplicatedStateError::BaseStateConflict);
         }
-        let nonce: [u8; NONCE_BYTES] = sealed[nonce_offset..payload_offset]
-            .try_into()
-            .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+        self.open_validated(proposal, base_digest, nonce, payload_offset)
+    }
+
+    /// Authenticate the latest envelope already proven committed by the local
+    /// Raft state machine. Followers may use this to jump directly to the latest
+    /// complete state after ReadIndex, even when snapshots compacted intermediate
+    /// proposals. This must not be used to admit a new leader proposal.
+    pub(crate) fn open_committed_parts(
+        &self,
+        operation_id: &str,
+        digest: [u8; 32],
+        sealed: &[u8],
+    ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
+        let proposal =
+            ReplicatedStateProposal::new(operation_id.to_owned(), digest, sealed.to_vec())?;
+        let (base_digest, nonce, payload_offset) = validate_envelope(&proposal)?;
+        self.open_validated(&proposal, base_digest, nonce, payload_offset)
+    }
+
+    fn open_validated(
+        &self,
+        proposal: &ReplicatedStateProposal,
+        base_digest: [u8; 32],
+        nonce: [u8; NONCE_BYTES],
+        payload_offset: usize,
+    ) -> Result<Zeroizing<Vec<u8>>, ReplicatedStateError> {
         let aad = self.aad(proposal.operation_id(), base_digest, proposal.digest())?;
-        let mut ciphertext = Zeroizing::new(sealed[payload_offset..].to_vec());
+        let mut ciphertext = Zeroizing::new(proposal.sealed()[payload_offset..].to_vec());
         let plaintext = self
             .key
             .open_in_place(
@@ -231,13 +241,8 @@ impl ClusterStateCodec {
     pub fn base_digest(
         proposal: &ReplicatedStateProposal,
     ) -> Result<[u8; 32], ReplicatedStateError> {
-        let sealed = proposal.sealed();
-        if sealed.len() < HEADER_BYTES + TAG_BYTES || &sealed[..MAGIC.len()] != MAGIC {
-            return Err(ReplicatedStateError::InvalidEnvelope);
-        }
-        sealed[MAGIC.len()..MAGIC.len() + DIGEST_BYTES]
-            .try_into()
-            .map_err(|_| ReplicatedStateError::InvalidEnvelope)
+        let (base_digest, _, _) = validate_envelope(proposal)?;
+        Ok(base_digest)
     }
 
     fn aad(
@@ -277,6 +282,30 @@ impl fmt::Debug for ClusterStateCodec {
     }
 }
 
+fn validate_envelope(
+    proposal: &ReplicatedStateProposal,
+) -> Result<([u8; DIGEST_BYTES], [u8; NONCE_BYTES], usize), ReplicatedStateError> {
+    let sealed = proposal.sealed();
+    if sealed.len() < HEADER_BYTES + TAG_BYTES
+        || sealed.len() > HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES
+    {
+        return Err(ReplicatedStateError::InvalidEnvelope);
+    }
+    if &sealed[..MAGIC.len()] != MAGIC {
+        return Err(ReplicatedStateError::InvalidEnvelope);
+    }
+    let base_offset = MAGIC.len();
+    let nonce_offset = base_offset + DIGEST_BYTES;
+    let payload_offset = nonce_offset + NONCE_BYTES;
+    let base_digest = sealed[base_offset..nonce_offset]
+        .try_into()
+        .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+    let nonce = sealed[nonce_offset..payload_offset]
+        .try_into()
+        .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+    Ok((base_digest, nonce, payload_offset))
+}
+
 fn sha256(bytes: &[u8]) -> [u8; 32] {
     let value = digest::digest(&digest::SHA256, bytes);
     let mut output = [0_u8; 32];
@@ -301,6 +330,16 @@ mod tests {
             codec.open(&proposal, [4; 32]),
             Err(ReplicatedStateError::BaseStateConflict)
         ));
+        assert_eq!(
+            codec
+                .open_committed_parts(
+                    proposal.operation_id(),
+                    proposal.digest(),
+                    proposal.sealed()
+                )?
+                .as_slice(),
+            state
+        );
         Ok(())
     }
 
@@ -326,6 +365,14 @@ mod tests {
         )?;
         assert!(matches!(
             codec.open(&tampered, base),
+            Err(ReplicatedStateError::AuthenticationFailed)
+        ));
+        assert!(matches!(
+            codec.open_committed_parts(
+                tampered.operation_id(),
+                tampered.digest(),
+                tampered.sealed()
+            ),
             Err(ReplicatedStateError::AuthenticationFailed)
         ));
         Ok(())

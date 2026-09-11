@@ -799,12 +799,16 @@ name = "heptabao-server"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "futures",
  "heptabao-durable-service",
+ "heptabao-ha-service",
+ "heptabao-raft-runtime",
  "ring",
  "rustls",
  "rustls-pemfile",
  "serde",
  "serde_json",
+ "tokio",
  "zeroize",
 ]
 
