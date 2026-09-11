@@ -12,6 +12,7 @@
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 mod cluster;
 mod network;
+mod process;
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
@@ -23,6 +24,11 @@ use std::fmt;
 use std::path::Path;
 
 use cluster::DurableCluster;
+
+pub use process::{
+    ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory,
+    RemoteRaftError,
+};
 
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;
