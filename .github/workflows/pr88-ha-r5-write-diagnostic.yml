@@ -1,0 +1,41 @@
+name: PR88 destructive HA r5 write diagnostic
+
+on:
+  push:
+    branches: [ops/pr88-destructive-ha-r5-20260911-gpt56]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    if: github.actor != 'github-actions[bot]' && github.actor != 'actions'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+          persist-credentials: false
+      - run: rustup toolchain install 1.98.0 --profile minimal
+      - name: Build and expose synthetic error category only
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 build --locked -p heptabao-server
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('qa/openbao-acceptance/ha_destructive.py')
+          s=p.read_text()
+          s=s.replace('raise FixtureError(f"HA write failed on node {node.node_id} with status {status}")','raise FixtureError(f"HA write failed on node {node.node_id} with status {status}; errors={body.get(chr(101)+chr(114)+chr(114)+chr(111)+chr(114)+chr(115))!r}")')
+          s=s.replace('except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError):\n        print("destructive HA fixture failed; inspect synthetic node logs", file=sys.stderr)','except (FixtureError, OSError, subprocess.SubprocessError, urllib.error.URLError, ValueError, KeyError) as error:\n        print(f"destructive HA fixture failed: {type(error).__name__}: {error}", file=sys.stderr)')
+          p.write_text(s)
+          PY
+          BINARY="$(pwd)/target/debug/heptabao-server"
+          ROOT="$(mktemp -d)"; WORK="$ROOT/ha-destructive"
+          set +e
+          timeout 360s python qa/openbao-acceptance/ha_destructive.py --binary "$BINARY" --work-dir "$WORK"
+          code=$?
+          set -e
+          exit "$code"
