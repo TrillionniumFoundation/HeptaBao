@@ -1,6 +1,6 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, service::WireRejection};
+use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -124,6 +124,14 @@ impl RateLimiter {
 }
 
 pub fn serve(config: Config) -> Result<(), String> {
+    serve_inner(config, None)
+}
+
+pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), String> {
+    serve_inner(config, Some(ha))
+}
+
+fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
@@ -161,14 +169,18 @@ pub fn serve(config: Config) -> Result<(), String> {
         .map_err(|_| "TLS key and certificate do not match")?;
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
-    let service = Arc::new(Mutex::new(
-        Service::new(config.data_dir, &config.audit_file).map_err(str::to_owned)?,
-    ));
+    let ha_enabled = ha.is_some();
+    let service = Arc::new(Mutex::new(match ha {
+        Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
+        None => Service::new(config.data_dir, &config.audit_file),
+    }
+    .map_err(str::to_owned)?));
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
-        "HeptaBao single-node TLS listener ready at {}",
+        "HeptaBao {} TLS listener ready at {}",
+        if ha_enabled { "HA" } else { "single-node" },
         config.listen
     );
     for stream in listener.incoming() {
