@@ -15,8 +15,12 @@ mod crypto;
 pub mod engines;
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 pub mod federated_auth;
+#[rustfmt::skip]
 pub mod ha;
+#[rustfmt::skip]
 pub mod ha_state;
+#[rustfmt::skip]
 pub mod http;
+#[rustfmt::skip]
 mod service;
 pub use service::{Response, Service};
