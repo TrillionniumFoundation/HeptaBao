@@ -8,7 +8,27 @@ This package owns namespace-scoped longest-prefix routing from canonical request
 
 ## Public API and ownership
 
-`MountRouter` owns `Mount` records. A `Route` contains the selected mount, backend, relative path and mount generation required for dispatch-time consistency checks.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-mount-router`; Cargo SHA-256 `9a0fa2697289993cf1ce471fc686ee3aab42874a777a18424cef2bac58cde78e`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `Backend` | `crates/heptabao-mount-router/src/lib.rs:13` | `pub enum Backend {` |
+| `struct` | `Mount` | `crates/heptabao-mount-router/src/lib.rs:19` | `pub struct Mount {` |
+| `fn` | `id` | `crates/heptabao-mount-router/src/lib.rs:29` | `pub fn id(&self) -> &Id {` |
+| `fn` | `namespace_id` | `crates/heptabao-mount-router/src/lib.rs:33` | `pub fn namespace_id(&self) -> &Id {` |
+| `fn` | `path` | `crates/heptabao-mount-router/src/lib.rs:37` | `pub fn path(&self) -> &CanonicalPath {` |
+| `fn` | `backend` | `crates/heptabao-mount-router/src/lib.rs:41` | `pub fn backend(&self) -> &Backend {` |
+| `struct` | `Route` | `crates/heptabao-mount-router/src/lib.rs:47` | `pub struct Route {` |
+| `struct` | `MountRouter` | `crates/heptabao-mount-router/src/lib.rs:55` | `pub struct MountRouter {` |
+| `fn` | `mount` | `crates/heptabao-mount-router/src/lib.rs:60` | `pub fn mount(` |
+| `fn` | `set_enabled` | `crates/heptabao-mount-router/src/lib.rs:89` | `pub fn set_enabled(&mut self, id: &Id, enabled: bool) -> Result<(), MountError> {` |
+| `fn` | `unmount` | `crates/heptabao-mount-router/src/lib.rs:99` | `pub fn unmount(&mut self, id: &Id) -> Result<Mount, MountError> {` |
+| `fn` | `route` | `crates/heptabao-mount-router/src/lib.rs:103` | `pub fn route(&self, namespace_id: &Id, path: &CanonicalPath) -> Result<Route, MountError> {` |
+| `enum` | `MountError` | `crates/heptabao-mount-router/src/lib.rs:128` | `pub enum MountError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +69,18 @@ Disabling a mount immediately makes it unroutable. Safe production unmount addit
 ## Evolution and open boundaries
 
 Tune endpoints, remount, mount aliases, replication filters and plugin health-aware routing remain open and require explicit transition protocols.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-mount-router`
+- Crate path: `crates/heptabao-mount-router`
+- Cargo manifest SHA-256: `9a0fa2697289993cf1ce471fc686ee3aab42874a777a18424cef2bac58cde78e`
+- Rust source files: `1`
+- Public lexical declarations: `13`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

@@ -8,34 +8,60 @@ source_baseline:
 files:
 - path: .github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml
   sha256: 1cc4ea91a4d6760ae6c481b273a8a69c0cc8f8f0f53862fc4f445542eed612c6
-- path: README.md
-  sha256: a7bb316d4011dbdbb15114a5eb13639636477d7860dc3d028f743322c966eabf
-- path: docs/CURRENT_DOCUMENTATION.md
-  sha256: 76696acc1b1f535a7048b7cb12ddf1a9a6b7a8d0d5d978b1520bd9355b7d3869
 - path: docs/governance/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_PROTOCOL_V1.md
   sha256: f58b80b40bfe8e834cd7c61488ab8df687454c96c84524cf7fab20ddb6df1f87
 - path: docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md
   sha256: 709ab9f93b47eda5aea4a562f6e3d06fb878fc15108cc8b87ceefa8c549db020
 - path: docs/modules/README.md
-  sha256: 52974f02edb3a6438de44f315a50a57d45761492f2b5b915158a400c556f5988
+  sha256: ae7b3edbf4dd08395eabfc1b01b1886a665c6a8b0609211a803430cc77693877
+- path: docs/modules/heptabao-agent.md
+  sha256: f44a632c578bd1f7b8fbf2b806d0720993e875800eda74b9bebb034cb2e73e44
 - path: docs/modules/heptabao-authbus-contracts.md
   sha256: 53671f7bcf51184c107879dc3ea3357ef32c5b58e8483fe58a57835ee8b2cb06
 - path: docs/modules/heptabao-barrier-api.md
   sha256: 7095bef492a672800cf5a951dee51b609aeb2ed1c5f2286774a7cdb07b8e68bd
+- path: docs/modules/heptabao-cli-contracts.md
+  sha256: f54c669c41ab42c22bbd50c1d7cb6144d9bb392fde711afbc1d97680ab19f134
+- path: docs/modules/heptabao-client-contracts.md
+  sha256: e1c6817243fc38e18f8427d5d88e050de2b479293182220c4fca393248d29f0a
+- path: docs/modules/heptabao-compatibility.md
+  sha256: 7b4edbd10ab6d34becad1277532277f62817d05361a0858bfe48e62982bce211
+- path: docs/modules/heptabao-domain.md
+  sha256: 844fc318237f5a57699f086c2f27c28133f796d7fbafda6ab7927b6041c61206
 - path: docs/modules/heptabao-durable-core.md
   sha256: 62cb91961a7c0da79283693190b13a0c13288739d9fea31f4a37c0813c931a07
+- path: docs/modules/heptabao-durable-service.md
+  sha256: f9cf94aa7edb7af93ce466d6d5ad4b0503fd432822e1df88c69ccef2aa0ef078
 - path: docs/modules/heptabao-filesystem-guard.md
-  sha256: 053a63a10f840ffa165dff17ab3c9670c4f4ae45fa5280b3f0507073115c9789
+  sha256: d4eaa8c097eff907ba52439c51e08800c08c10d6cd40070b28c3359897676abc
 - path: docs/modules/heptabao-governance.md
   sha256: 8a3aaf9ac6e70dccc464b9d3f81fb1d72ae76b23367b6b82ed06d44bd8f3117d
+- path: docs/modules/heptabao-ha-contracts.md
+  sha256: c52e019e9f913976bf217b0cdf6db8ea70484fcdb9f3c6aeee5b2cd195b97b7f
+- path: docs/modules/heptabao-identity.md
+  sha256: 13311ead2b724fe749ad1d6089dc211648b1320ad558f1bb5790879387aa8440
 - path: docs/modules/heptabao-journal-api.md
   sha256: a6eac2320dfecb0d29564e26537a2cd5872c3fbf858118b17b4f9d01a2f3988c
 - path: docs/modules/heptabao-journaled-core.md
   sha256: 18f6e11874e172337d512db4f9487e8779de60396622c0f615c0a0620518156a
 - path: docs/modules/heptabao-key-lifecycle.md
   sha256: 8dc34388b57aea4482370dbe1a5bdbcf81668c47aa07ea8e802bacbd522fa8c1
+- path: docs/modules/heptabao-kms-contracts.md
+  sha256: c10a7e1b9185f11e2970863f1319c7cd5da5926f2683aa29d5cd5872aa9ae864
+- path: docs/modules/heptabao-kv-engine.md
+  sha256: 9714b535400f65e80640e68cdf7fd8de6b00bf99a698a57a881cdace670baa27
+- path: docs/modules/heptabao-lease.md
+  sha256: ba87d36a787c8b087de2de3bd081073e06623c6ed28c5687baa456b93f786f41
+- path: docs/modules/heptabao-migration.md
+  sha256: 5f9f865e2087226fa5b8de643926e11a3d8e1d4121fa899a4e6c0717ee92c22d
+- path: docs/modules/heptabao-mount-router.md
+  sha256: 4269ba718719a23e60238ae3073c70792a3f21741425e8cc9dcbf7291cf37f99
+- path: docs/modules/heptabao-namespace.md
+  sha256: a21fe50c8c3259a4db7b07cdbd5a7de33b4d63e8032742df169ffeae2b4b5b58
 - path: docs/modules/heptabao-operation-ledger.md
   sha256: 5afa58180d87e728ebe4d30e944b11e1934bafe77aeae87487d6e875f2203267
+- path: docs/modules/heptabao-operator-api.md
+  sha256: 0a7b3148025cf8b1c84cbbb1cbf3e1975445c484b7efe301decb2551ec4a6e20
 - path: docs/modules/heptabao-oracle-observer.md
   sha256: 2ff07ddeb1ab5db3adbe55c17c53e0db379838b64486c87b32ac2a649cc9ed2a
 - path: docs/modules/heptabao-p0-server.md
@@ -44,18 +70,40 @@ files:
   sha256: a111192540a6564d6f224553a43811ca26e7c1f4ea70c63b646be602fd9afc77
 - path: docs/modules/heptabao-platform-contracts.md
   sha256: 6b1acfb9d81dc86c1c6a4453c5a9954de1b6c42dfbf53f052c869a71ade5b33c
+- path: docs/modules/heptabao-plugin-contracts.md
+  sha256: 5bf9d095c7f1495ddcce1d2d1bd53283608d6afd02bc5104d42d59585cac7f55
+- path: docs/modules/heptabao-plugin-host.md
+  sha256: 5f537530c5cf105c165ad1a238b8096962aa881acf1cb0f383ee22acf3e7d28a
+- path: docs/modules/heptabao-policy.md
+  sha256: 2358a62c61d17075fcb39e26b2d46ac4bcf3a1867f211b3052ad9bc96bbf7067
 - path: docs/modules/heptabao-protocol.md
   sha256: 6fe5e1f2bbe97abf1b2f35cf471098540520168a05eddd794864551f95bcd58e
+- path: docs/modules/heptabao-proxy.md
+  sha256: c636f807d20c0706c77928998e25574902a753cf9f0afdf5f9155ef4b0c77898
+- path: docs/modules/heptabao-raft-runtime.md
+  sha256: a61fed7f60e4aba5ac5cdc7b9f85ece9118adbe30d425fc07203ee46c32d6ae1
 - path: docs/modules/heptabao-recovery-core.md
   sha256: a1ca0dbc1d2c0c5158d98f48722fd7ec04010b6ba519ad0c145bb9bbc3705a0e
+- path: docs/modules/heptabao-retention.md
+  sha256: 6de29f3760c93afa5708b3eda602ebf4972dff0df01e3c7a50fd533aa0715e31
 - path: docs/modules/heptabao-rollback-anchor.md
   sha256: 812779e7f340432384be7e2cf0a4f9e77a596ceb2fe088d35cf68addd9c22b3d
+- path: docs/modules/heptabao-runtime-service.md
+  sha256: c99002adde6218ffc28dec249c67668c4735b5b1bb1b6821af23bb54ad9d5fc4
+- path: docs/modules/heptabao-server.md
+  sha256: 21a6cd97a8faffc098608434e2711079dd687f413e7f102f2ebfaf9d2b2aab7b
+- path: docs/modules/heptabao-service-core.md
+  sha256: 2586fd91ab0855249232d3a8cda43d958e1182c9ebe7c810f2891582729c3049
 - path: docs/modules/heptabao-single-node-journal.md
-  sha256: b828bb50985b3b760e3992ea2c73fdd822a74f1d33e3744f6358d834946e0669
+  sha256: b19e2785c8b1ec6f053c54d1f4be38a520900d7ca6a42ceb8016c77c440a7177
 - path: docs/modules/heptabao-single-node-store.md
-  sha256: e4f571dcce9f65e060cc27132350c032f538abee08d982a215fddbe73dfb75d5
+  sha256: 9880faf5bdf18e27555bb2d14ef1c0ae0dc01df2573dd55a539799b6d0bd4ce9
 - path: docs/modules/heptabao-storage-api.md
   sha256: 64f2638d426a792d2831f1764de29c0136cd32544a1098e533b4826f7d002770
+- path: docs/modules/heptabao-telemetry.md
+  sha256: 91a7ad3e8373e463107f59c3ab95a311124f6063ec505a66a0e01641938822f2
+- path: docs/modules/heptabao-token.md
+  sha256: 64f86aec3a12ebada86cf864d51c8edfe41f0d71273c42e0a426e6efe168df8a
 - path: docs/plan/HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md
   sha256: ebc3055fe66337a4fdfb8d9a822fb3484b03d26c5afffbc5a3eb8fab4d65c4d4
 - path: planning/HEPTABAO_BLOCKER_REGISTER_V1_4_7.yaml
@@ -63,7 +111,7 @@ files:
 - path: planning/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_V1.yaml
   sha256: b8b410b0062d18ab19ef0a828165b8a3252a1fda56ec0f0c37c74d2041cff02f
 - path: planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml
-  sha256: 9d065f9dde154586347e2b24842977ff8b9d568d4a36c23046d020a9ce14c724
+  sha256: 4b88d830ad088b9b611f051164b1c202d3cfcee986d100ae67706c701f5c8cf7
 - path: planning/HEPTABAO_V1_4_7_POST_MERGE_TRUTH_STATUS.yaml
   sha256: 23f404750093229a15b9971a3e04a10aa34c8d46d19c70e07b711a3725dce157
 - path: planning/evidence/repository/HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml
@@ -87,15 +135,15 @@ files:
 - path: schemas/heptabao_external_completion_evidence_v1.schema.json
   sha256: 4aa0e3a69b96d03f31c3acd87927e58f326797580de19289f3754ed5c8f6cbe9
 - path: scripts/_render_plan_v1_4_7_baseline.py
-  sha256: ed72827409aac7da450dce4100365c49bb8ea3a2210fe0767030e2c5c9824aed
+  sha256: 274de8d4a99a85954244f0ce84fe6dda06ff05841afda0ee3a62af4bdebebd7b
 - path: scripts/render_plan_v1_4_7.py
-  sha256: fc44f4b65824de3302044e1db02263f48e246fb8cd66b6a15c2466a8d597a851
+  sha256: 169d4c0cb3ceb58659b72c39039c80d5bb336da41b7e947db18faeb3100db839
 - path: scripts/validate_external_completion_evidence_v1.py
   sha256: 2bd9d9e96638ec7e264f0bb38b9dba67509ab1b1a3addc9d68acb5ae9d57057f
 - path: scripts/validate_plan_v1_4_7.py
-  sha256: 9c750c0f9a1cd0f6ae020d249d91d21202088d366b02ebc8fb9aa997c184aeed
+  sha256: 426e649609e436431586bea6d9ae0b63e2959841efa26a45e60361fbd8fa4b79
 - path: tests/plan/test_current_entry_v1_4_7.py
-  sha256: e51e002eada4398150f814a328f8608f7d753ae16d77c001be7099a41ead73ee
+  sha256: 7c3d77dfae10d3ea0e22cc7d418a4f3f286ec2a5dc46a8e655cc814eb640e502
 - path: tests/plan/test_workflow_render_v1_4_7.py
   sha256: 4fc1e37e012d390379c6e00407dfb2efb65999bb8ea4303988939f216bced3c0
 claims:

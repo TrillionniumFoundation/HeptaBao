@@ -8,9 +8,47 @@ This package provides the runnable Linux single-node HTTPS secrets service. It j
 
 ## Public API and ownership
 
-Manifest: `crates/heptabao-server/Cargo.toml`; source: `crates/heptabao-server/src/`. `main` loads a bounded JSON configuration and invokes `http::serve(Config)`. `Service::new`, `handle` and deterministic-time `handle_at` own the sole durable writer, encrypted `State`, audit file, audit key and recovery fence. The sole direct internal dependency is `heptabao-durable-service`. Authentication and engines are submodules, with detailed contracts in `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md` and `docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md`. `Response` erases owned JSON strings on drop. Callers must not construct a second writer behind the service admission boundary.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-server`; Cargo SHA-256 `490216f98630a660661ec40865f476a1d6779868874c6a1a2c773aac569b97d1`.
 
-The raw `auth` module is deliberately private at the crate root. Downstream crates cannot name `AuthState`, `Principal`, or direct authorization methods. Public callers enter through `Service`, and no public service method accepts or returns a request capability. The normative boundary is `docs/security/HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md`.
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `AuthState` | `crates/heptabao-server/src/auth.rs:30` | `pub struct AuthState {` |
+| `struct` | `AuthResponse` | `crates/heptabao-server/src/auth.rs:171` | `pub struct AuthResponse {` |
+| `struct` | `AuthError` | `crates/heptabao-server/src/auth.rs:178` | `pub struct AuthError {` |
+| `struct` | `AeadBarrier` | `crates/heptabao-server/src/crypto.rs:20` | `pub struct AeadBarrier(aead::LessSafeKey);` |
+| `fn` | `new` | `crates/heptabao-server/src/crypto.rs:23` | `pub fn new(mut key: [u8; 32]) -> Result<Self, BarrierError> {` |
+| `struct` | `SecretShare` | `crates/heptabao-server/src/crypto.rs:77` | `pub struct SecretShare {` |
+| `const` | `fn` | `crates/heptabao-server/src/crypto.rs:104` | `pub const fn total(&self) -> u8 {` |
+| `const` | `fn` | `crates/heptabao-server/src/crypto.rs:109` | `pub const fn threshold(&self) -> u8 {` |
+| `const` | `fn` | `crates/heptabao-server/src/crypto.rs:114` | `pub const fn index(&self) -> u8 {` |
+| `fn` | `encode` | `crates/heptabao-server/src/crypto.rs:119` | `pub fn encode(&self) -> Vec<u8> {` |
+| `fn` | `decode` | `crates/heptabao-server/src/crypto.rs:129` | `pub fn decode(encoded: &[u8]) -> Result<Self, &'static str> {` |
+| `fn` | `split_secret` | `crates/heptabao-server/src/crypto.rs:157` | `pub fn split_secret(` |
+| `fn` | `combine_shares` | `crates/heptabao-server/src/crypto.rs:194` | `pub fn combine_shares(shares: &[SecretShare]) -> Result<[u8; SHARE_SECRET_BYTES], &'static str> {` |
+| `fn` | `wrap_barrier_key` | `crates/heptabao-server/src/crypto.rs:236` | `pub fn wrap_barrier_key(` |
+| `fn` | `unwrap_barrier_key` | `crates/heptabao-server/src/crypto.rs:264` | `pub fn unwrap_barrier_key(` |
+| `fn` | `random` | `crates/heptabao-server/src/crypto.rs:298` | `pub fn random<const N: usize>() -> Result<[u8; N], &'static str> {` |
+| `fn` | `digest` | `crates/heptabao-server/src/crypto.rs:306` | `pub fn digest(bytes: &[u8]) -> [u8; 32] {` |
+| `struct` | `EngineState` | `crates/heptabao-server/src/engines.rs:17` | `pub struct EngineState {` |
+| `struct` | `EngineResponse` | `crates/heptabao-server/src/engines.rs:134` | `pub struct EngineResponse {` |
+| `struct` | `EngineError` | `crates/heptabao-server/src/engines.rs:157` | `pub struct EngineError {` |
+| `fn` | `required_capability` | `crates/heptabao-server/src/engines.rs:292` | `pub fn required_capability(` |
+| `fn` | `handle` | `crates/heptabao-server/src/engines.rs:339` | `pub fn handle(` |
+| `struct` | `Config` | `crates/heptabao-server/src/http.rs:28` | `pub struct Config {` |
+| `fn` | `serve` | `crates/heptabao-server/src/http.rs:126` | `pub fn serve(config: Config) -> Result<(), String> {` |
+| `mod` | `engines` | `crates/heptabao-server/src/lib.rs:15` | `pub mod engines;` |
+| `mod` | `http` | `crates/heptabao-server/src/lib.rs:16` | `pub mod http;` |
+| `use` | `service::{Response, Service}` | `crates/heptabao-server/src/lib.rs:18` | `pub use service::{Response, Service};` |
+| `struct` | `Response` | `crates/heptabao-server/src/service.rs:125` | `pub struct Response {` |
+| `fn` | `error` | `crates/heptabao-server/src/service.rs:136` | `pub fn error(status: u16, message: &str) -> Self {` |
+| `struct` | `Service` | `crates/heptabao-server/src/service.rs:223` | `pub struct Service {` |
+| `fn` | `new` | `crates/heptabao-server/src/service.rs:247` | `pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {` |
+| `fn` | `handle` | `crates/heptabao-server/src/service.rs:310` | `pub fn handle(` |
+| `fn` | `handle_at` | `crates/heptabao-server/src/service.rs:352` | `pub fn handle_at(` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -66,3 +104,18 @@ authority_effect: NONE
 ## Affine request-principal closure
 
 The authenticated request principal is crate-internal, non-cloneable and non-serializable. `Service` moves it into exactly one dispatcher invocation; internal authorization layers borrow it only during that invocation. Every production authorization decision receives the current service request's live decision time, so subject and parent expiry, revocation, token replacement and policy replacement are re-evaluated without charging an unrelated fresh token use. Repository guards and hostile Rust tests reject a borrowed dispatcher signature, stale authentication-time authorization and a cloneable principal. This source-level closure remains subject to exact-head independent review and grants no production authority.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-server`
+- Crate path: `crates/heptabao-server`
+- Cargo manifest SHA-256: `490216f98630a660661ec40865f476a1d6779868874c6a1a2c773aac569b97d1`
+- Rust source files: `13`
+- Public lexical declarations: `33`
+- Discovered test functions: `44`
+- Workspace-internal dependencies: `heptabao-durable-service` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

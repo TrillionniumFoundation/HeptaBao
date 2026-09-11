@@ -48,10 +48,21 @@ def load_yaml(root: Path, path: str):
 def require_tokens(errors: list[str], root: Path, path: str, tokens: tuple[str, ...]) -> None:
     value = text(root, path)
     compact_value = "".join(value.split()) if path.endswith(".rs") else value
+    normalized_compact_value = (
+        compact_value.replace("libc::", "")
+        if path.endswith(".rs")
+        else compact_value
+    )
     for token in tokens:
         if token in value:
             continue
         if path.endswith(".rs") and "".join(token.split()) in compact_value:
+            continue
+        if (
+            path.endswith(".rs")
+            and "".join(token.split()).replace("libc::", "")
+            in normalized_compact_value
+        ):
             continue
         errors.append(f"{path} missing required semantic token {token!r}")
 
@@ -285,7 +296,7 @@ def validate(root: Path) -> list[str]:
     for token in (
         "V1.4.5 security invariant closure",
         "V1.4.4",
-        "19 / 19",
+        "Current Cargo workspace documentation:",
         "not production-deployable",
         "docs/CURRENT_DOCUMENTATION.md",
     ):

@@ -8,7 +8,45 @@ This crate owns the restart-safe single-node mutation boundary: durable intent, 
 
 ## Public API and ownership
 
-`DurableService<B>` is the sole writer for one absolute root while its writer fence is held. `PutRequest` and `DeleteRequest` carry an already-authorized principal, namespace, request identifier, resource and authorization digest. `get` and `list` expose committed state to an admission adapter; `list` returns immediate child names in exactly one namespace and appends `/` to directory names. Empty prefix denotes the namespace root. Neither API authenticates callers. `recovery_required` reports the poisoned-live-instance state. `Barrier` is injected and owns confidentiality/authenticity; `MutationOutcome`, `ServiceError` and `ReconciliationStatus` expose bounded outcome classifications without secret-bearing diagnostics.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-durable-service`; Cargo SHA-256 `c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `BarrierError` | `crates/heptabao-durable-service/src/lib.rs:40` | `pub struct BarrierError;` |
+| `trait` | `Barrier` | `crates/heptabao-durable-service/src/lib.rs:54` | `pub trait Barrier {` |
+| `struct` | `Secret` | `crates/heptabao-durable-service/src/lib.rs:60` | `pub struct Secret(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-durable-service/src/lib.rs:69` | `pub fn new(bytes: Vec<u8>) -> Result<Self, ServiceError> {` |
+| `fn` | `expose` | `crates/heptabao-durable-service/src/lib.rs:77` | `pub fn expose(&self) -> &[u8] {` |
+| `struct` | `PutRequest` | `crates/heptabao-durable-service/src/lib.rs:92` | `pub struct PutRequest {` |
+| `fn` | `new` | `crates/heptabao-durable-service/src/lib.rs:102` | `pub fn new(` |
+| `struct` | `DeleteRequest` | `crates/heptabao-durable-service/src/lib.rs:149` | `pub struct DeleteRequest {` |
+| `fn` | `new` | `crates/heptabao-durable-service/src/lib.rs:158` | `pub fn new(` |
+| `enum` | `Failpoint` | `crates/heptabao-durable-service/src/lib.rs:202` | `pub enum Failpoint {` |
+| `enum` | `MutationOutcome` | `crates/heptabao-durable-service/src/lib.rs:210` | `pub enum MutationOutcome {` |
+| `enum` | `ReconciliationStatus` | `crates/heptabao-durable-service/src/lib.rs:222` | `pub enum ReconciliationStatus {` |
+| `struct` | `CompactionOutcome` | `crates/heptabao-durable-service/src/lib.rs:229` | `pub struct CompactionOutcome {` |
+| `struct` | `RestoreOutcome` | `crates/heptabao-durable-service/src/lib.rs:237` | `pub struct RestoreOutcome {` |
+| `enum` | `ServiceError` | `crates/heptabao-durable-service/src/lib.rs:244` | `pub enum ServiceError {` |
+| `struct` | `DurableService` | `crates/heptabao-durable-service/src/lib.rs:404` | `pub struct DurableService<B: Barrier> {` |
+| `fn` | `create_new` | `crates/heptabao-durable-service/src/lib.rs:441` | `pub fn create_new(` |
+| `fn` | `reopen` | `crates/heptabao-durable-service/src/lib.rs:487` | `pub fn reopen(` |
+| `fn` | `put` | `crates/heptabao-durable-service/src/lib.rs:517` | `pub fn put(&mut self, request: PutRequest) -> Result<MutationOutcome, ServiceError> {` |
+| `fn` | `put_with_failpoint` | `crates/heptabao-durable-service/src/lib.rs:521` | `pub fn put_with_failpoint(` |
+| `fn` | `delete` | `crates/heptabao-durable-service/src/lib.rs:546` | `pub fn delete(&mut self, request: DeleteRequest) -> Result<MutationOutcome, ServiceError> {` |
+| `fn` | `delete_with_failpoint` | `crates/heptabao-durable-service/src/lib.rs:550` | `pub fn delete_with_failpoint(` |
+| `fn` | `get` | `crates/heptabao-durable-service/src/lib.rs:570` | `pub fn get(&self, namespace: &str, resource: &str) -> Result<Option<Secret>, ServiceError> {` |
+| `fn` | `list` | `crates/heptabao-durable-service/src/lib.rs:582` | `pub fn list(&self, namespace: &str, prefix: &str) -> Result<Vec<String>, ServiceError> {` |
+| `const` | `fn` | `crates/heptabao-durable-service/src/lib.rs:612` | `pub const fn recovery_required(&self) -> bool {` |
+| `fn` | `reconcile` | `crates/heptabao-durable-service/src/lib.rs:617` | `pub fn reconcile(&self, recovery_reference: &str) -> ReconciliationStatus {` |
+| `const` | `fn` | `crates/heptabao-durable-service/src/lib.rs:625` | `pub const fn generation(&self) -> u64 {` |
+| `fn` | `retained_request_count` | `crates/heptabao-durable-service/src/lib.rs:630` | `pub fn retained_request_count(&self) -> usize {` |
+| `fn` | `compact` | `crates/heptabao-durable-service/src/lib.rs:640` | `pub fn compact(&mut self) -> Result<CompactionOutcome, ServiceError> {` |
+| `fn` | `export_backup` | `crates/heptabao-durable-service/src/lib.rs:671` | `pub fn export_backup(&self) -> Result<Vec<u8>, ServiceError> {` |
+| `fn` | `restore_backup` | `crates/heptabao-durable-service/src/lib.rs:696` | `pub fn restore_backup(` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -58,3 +96,18 @@ migration_authority: false
 release_authority: false
 authority_effect: NONE
 ```
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-durable-service`
+- Crate path: `crates/heptabao-durable-service`
+- Cargo manifest SHA-256: `c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad`
+- Rust source files: `1`
+- Public lexical declarations: `31`
+- Discovered test functions: `21`
+- Workspace-internal dependencies: `heptabao-filesystem-guard` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

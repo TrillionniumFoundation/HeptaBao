@@ -37,18 +37,18 @@ The allowed direction follows the system crate graph: provider-neutral types and
 ## Public API index
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
-Source-bound lexical inventory: `crates/heptabao-single-node-journal`; Cargo SHA-256 `6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325`.
+Source-bound lexical inventory: `crates/heptabao-single-node-journal`; Cargo SHA-256 `d186d67be29572ea67c599e26b8d26021665025f39e812d607e5d45fe007d85b`.
 
 | Kind | Name | Source | Declaration |
 |---|---|---|---|
-| `const` | `MAX_JOURNAL_RECORDS` | `crates/heptabao-single-node-journal/src/lib.rs:42` | `pub const MAX_JOURNAL_RECORDS: u64 = 65_536;` |
-| `struct` | `FileDurableJournal` | `crates/heptabao-single-node-journal/src/lib.rs:46` | `pub struct FileDurableJournal<A: JournalAuthenticator> {` |
-| `fn` | `create_new` | `crates/heptabao-single-node-journal/src/lib.rs:68` | `pub fn create_new(` |
-| `fn` | `reopen_existing` | `crates/heptabao-single-node-journal/src/lib.rs:96` | `pub fn reopen_existing(` |
-| `fn` | `root` | `crates/heptabao-single-node-journal/src/lib.rs:119` | `pub fn root(&self) -> &Path {` |
-| `fn` | `root_identity` | `crates/heptabao-single-node-journal/src/lib.rs:123` | `pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {` |
-| `fn` | `reconcile_next_orphan` | `crates/heptabao-single-node-journal/src/lib.rs:127` | `pub fn reconcile_next_orphan(&mut self) -> Result<AppendReceipt, FileJournalError<A::Error>> {` |
-| `enum` | `FileJournalError` | `crates/heptabao-single-node-journal/src/lib.rs:429` | `pub enum FileJournalError<E>` |
+| `const` | `MAX_JOURNAL_RECORDS` | `crates/heptabao-single-node-journal/src/lib.rs:38` | `pub const MAX_JOURNAL_RECORDS: u64 = 65_536;` |
+| `struct` | `FileDurableJournal` | `crates/heptabao-single-node-journal/src/lib.rs:42` | `pub struct FileDurableJournal<A: JournalAuthenticator> {` |
+| `fn` | `create_new` | `crates/heptabao-single-node-journal/src/lib.rs:64` | `pub fn create_new(` |
+| `fn` | `reopen_existing` | `crates/heptabao-single-node-journal/src/lib.rs:92` | `pub fn reopen_existing(` |
+| `fn` | `root` | `crates/heptabao-single-node-journal/src/lib.rs:115` | `pub fn root(&self) -> &Path {` |
+| `fn` | `root_identity` | `crates/heptabao-single-node-journal/src/lib.rs:119` | `pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {` |
+| `fn` | `reconcile_next_orphan` | `crates/heptabao-single-node-journal/src/lib.rs:123` | `pub fn reconcile_next_orphan(&mut self) -> Result<AppendReceipt, FileJournalError<A::Error>> {` |
+| `enum` | `FileJournalError` | `crates/heptabao-single-node-journal/src/lib.rs:425` | `pub enum FileJournalError<E>` |
 
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
@@ -153,7 +153,7 @@ chain mismatch or tag failure is corruption and keeps the writer fenced.
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-single-node-journal`
 - Crate path: `crates/heptabao-single-node-journal`
-- Cargo manifest SHA-256: `6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325`
+- Cargo manifest SHA-256: `d186d67be29572ea67c599e26b8d26021665025f39e812d607e5d45fe007d85b`
 - Rust source files: `1`
 - Public lexical declarations: `8`
 - Discovered test functions: `9`

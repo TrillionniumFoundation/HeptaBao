@@ -8,7 +8,42 @@ This package owns an exact compatibility surface denominator, differential respo
 
 ## Public API and ownership
 
-`SurfaceCatalog` owns the immutable inventory digest and minimum observation count for every declared surface. `CompatibilityMatrix` owns globally unique operation observations for that catalog. Each observation binds a surface identifier plus expected and actual response and side-effect digests; `EvidenceBinding` binds the exact inventory, Oracle artifact and candidate artifact.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-compatibility`; Cargo SHA-256 `acb3b12563e57626ecc37ad0f01c0a0b47c113e17a6fee76a3ccaa1e44a0712f`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `SurfaceId` | `crates/heptabao-compatibility/src/lib.rs:23` | `pub struct SurfaceId(String);` |
+| `fn` | `parse` | `crates/heptabao-compatibility/src/lib.rs:26` | `pub fn parse(value: impl Into<String>) -> Result<Self, CompatibilityError> {` |
+| `fn` | `as_str` | `crates/heptabao-compatibility/src/lib.rs:44` | `pub fn as_str(&self) -> &str {` |
+| `enum` | `EvidenceOrigin` | `crates/heptabao-compatibility/src/lib.rs:62` | `pub enum EvidenceOrigin {` |
+| `struct` | `EvidenceBinding` | `crates/heptabao-compatibility/src/lib.rs:68` | `pub struct EvidenceBinding {` |
+| `fn` | `validate` | `crates/heptabao-compatibility/src/lib.rs:76` | `pub fn validate(self) -> Result<Self, CompatibilityError> {` |
+| `struct` | `SurfaceRequirement` | `crates/heptabao-compatibility/src/lib.rs:89` | `pub struct SurfaceRequirement {` |
+| `struct` | `SurfaceCatalog` | `crates/heptabao-compatibility/src/lib.rs:95` | `pub struct SurfaceCatalog {` |
+| `fn` | `new` | `crates/heptabao-compatibility/src/lib.rs:102` | `pub fn new(` |
+| `fn` | `profile_id` | `crates/heptabao-compatibility/src/lib.rs:132` | `pub fn profile_id(&self) -> &Id {` |
+| `const` | `fn` | `crates/heptabao-compatibility/src/lib.rs:136` | `pub const fn inventory_sha256(&self) -> [u8; 32] {` |
+| `fn` | `requirements` | `crates/heptabao-compatibility/src/lib.rs:140` | `pub fn requirements(&self) -> impl Iterator<Item = &SurfaceRequirement> {` |
+| `fn` | `len` | `crates/heptabao-compatibility/src/lib.rs:144` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-compatibility/src/lib.rs:148` | `pub fn is_empty(&self) -> bool {` |
+| `enum` | `ObservationResult` | `crates/heptabao-compatibility/src/lib.rs:154` | `pub enum ObservationResult {` |
+| `struct` | `Observation` | `crates/heptabao-compatibility/src/lib.rs:162` | `pub struct Observation {` |
+| `fn` | `result` | `crates/heptabao-compatibility/src/lib.rs:172` | `pub fn result(&self) -> ObservationResult {` |
+| `struct` | `CoverageReport` | `crates/heptabao-compatibility/src/lib.rs:190` | `pub struct CoverageReport {` |
+| `fn` | `complete` | `crates/heptabao-compatibility/src/lib.rs:200` | `pub fn complete(&self) -> bool {` |
+| `enum` | `ClaimStatus` | `crates/heptabao-compatibility/src/lib.rs:208` | `pub enum ClaimStatus {` |
+| `struct` | `CompatibilityClaim` | `crates/heptabao-compatibility/src/lib.rs:215` | `pub struct CompatibilityClaim {` |
+| `struct` | `CompatibilityMatrix` | `crates/heptabao-compatibility/src/lib.rs:224` | `pub struct CompatibilityMatrix {` |
+| `fn` | `new` | `crates/heptabao-compatibility/src/lib.rs:230` | `pub fn new(catalog: SurfaceCatalog) -> Self {` |
+| `fn` | `add` | `crates/heptabao-compatibility/src/lib.rs:237` | `pub fn add(&mut self, observation: Observation) -> Result<(), CompatibilityError> {` |
+| `fn` | `coverage` | `crates/heptabao-compatibility/src/lib.rs:256` | `pub fn coverage(&self) -> CoverageReport {` |
+| `fn` | `admit` | `crates/heptabao-compatibility/src/lib.rs:295` | `pub fn admit(` |
+| `fn` | `observed_surface_ids` | `crates/heptabao-compatibility/src/lib.rs:322` | `pub fn observed_surface_ids(&self) -> BTreeSet<SurfaceId> {` |
+| `enum` | `CompatibilityError` | `crates/heptabao-compatibility/src/lib.rs:331` | `pub enum CompatibilityError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +84,18 @@ Operators first validate the frozen 60-surface corpus, then collect the required
 ## Evolution and open boundaries
 
 Fifty-four inventoried surfaces still have no executable fixture, and no surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-compatibility`
+- Crate path: `crates/heptabao-compatibility`
+- Cargo manifest SHA-256: `acb3b12563e57626ecc37ad0f01c0a0b47c113e17a6fee76a3ccaa1e44a0712f`
+- Rust source files: `1`
+- Public lexical declarations: `28`
+- Discovered test functions: `5`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

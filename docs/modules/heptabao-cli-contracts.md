@@ -8,7 +8,24 @@ This package owns a bounded command-line invocation grammar that rejects secret 
 
 ## Public API and ownership
 
-`CliInvocation::parse` consumes an already separated argument vector and returns one bounded command, optional canonical target, optional `SecretInput` and output mode. `EnvironmentName` validates only the identifier of an environment variable; it never reads or stores that variable's value.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-cli-contracts`; Cargo SHA-256 `1e80ab6f04bb99c06a383bcc5ddb35e2389f0809f5e9732512f65cade046ef8b`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_ARGUMENTS` | `crates/heptabao-cli-contracts/src/lib.rs:11` | `pub const MAX_ARGUMENTS: usize = 128;` |
+| `const` | `MAX_ARGUMENT_BYTES` | `crates/heptabao-cli-contracts/src/lib.rs:12` | `pub const MAX_ARGUMENT_BYTES: usize = 4096;` |
+| `struct` | `EnvironmentName` | `crates/heptabao-cli-contracts/src/lib.rs:31` | `pub struct EnvironmentName(String);` |
+| `fn` | `parse` | `crates/heptabao-cli-contracts/src/lib.rs:34` | `pub fn parse(value: impl Into<String>) -> Result<Self, CliError> {` |
+| `fn` | `as_str` | `crates/heptabao-cli-contracts/src/lib.rs:49` | `pub fn as_str(&self) -> &str {` |
+| `enum` | `SecretInput` | `crates/heptabao-cli-contracts/src/lib.rs:61` | `pub enum SecretInput {` |
+| `enum` | `OutputMode` | `crates/heptabao-cli-contracts/src/lib.rs:81` | `pub enum OutputMode {` |
+| `struct` | `CliInvocation` | `crates/heptabao-cli-contracts/src/lib.rs:87` | `pub struct CliInvocation {` |
+| `fn` | `parse` | `crates/heptabao-cli-contracts/src/lib.rs:95` | `pub fn parse(arguments: &[String]) -> Result<Self, CliError> {` |
+| `enum` | `CliError` | `crates/heptabao-cli-contracts/src/lib.rs:204` | `pub enum CliError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +66,18 @@ Operator guidance should prefer standard input or an owner-controlled inherited 
 ## Evolution and open boundaries
 
 Interactive terminal handling, config layering, plugin commands, secure input readers, response rendering and a compatibility command catalog remain open. Future additions must preserve the invariant that live secret material is never accepted through `argv`.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-cli-contracts`
+- Crate path: `crates/heptabao-cli-contracts`
+- Cargo manifest SHA-256: `1e80ab6f04bb99c06a383bcc5ddb35e2389f0809f5e9732512f65cade046ef8b`
+- Rust source files: `1`
+- Public lexical declarations: `10`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

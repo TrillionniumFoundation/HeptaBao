@@ -13,7 +13,7 @@ from types import ModuleType
 from typing import Any
 
 BASELINE_PATH = Path(__file__).with_name("_render_plan_v1_4_7_baseline.py")
-BASELINE_SHA256 = "ed72827409aac7da450dce4100365c49bb8ea3a2210fe0767030e2c5c9824aed"
+BASELINE_SHA256 = "274de8d4a99a85954244f0ce84fe6dda06ff05841afda0ee3a62af4bdebebd7b"
 
 
 def _load_frozen_renderer() -> ModuleType:
@@ -145,14 +145,14 @@ The README and its regression suite are included in the current normative manife
 
 
 def static_files() -> dict[Path, str]:
-    values = _ORIGINAL_STATIC_FILES()
-    values[Path("README.md")] = readme_source()
-    return values
+    # V1.4.7 is retained as historical exact-source evidence. Current entry
+    # pages are owned by the active V2 repository truth and are never rewritten
+    # or read back as expected output by this historical renderer.
+    return _ORIGINAL_STATIC_FILES()
 
 
 def normative_paths(truth: dict[str, Any]) -> list[Path]:
     additions = {
-        Path("README.md"),
         Path("tests/plan/test_current_entry_v1_4_7.py"),
         Path("scripts/_render_plan_v1_4_7_baseline.py"),
         Path("tests/plan/test_workflow_render_v1_4_7.py"),

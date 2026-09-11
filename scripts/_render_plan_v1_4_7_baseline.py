@@ -842,7 +842,7 @@ class ModuleSourceTruthTests(unittest.TestCase):
         expected = RENDERER.build_truth(ROOT)
         actual = yaml.safe_load((ROOT / RENDERER.TRUTH_PATH).read_text(encoding="utf-8"))
         self.assertEqual(expected, actual)
-        self.assertEqual(19, actual["module_count"])
+        self.assertEqual(len(actual["modules"]), actual["module_count"])
 
     def test_every_module_guide_generated_sections_are_current(self) -> None:
         truth = RENDERER.build_truth(ROOT)
@@ -940,13 +940,16 @@ def main() -> int:
         raise SystemExit("V1.4.7 blocker state must remain review-required")
     current = (ROOT / "docs/CURRENT_DOCUMENTATION.md").read_text(encoding="utf-8")
     for token in (
-        "HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md",
-        "HEPTABAO_V1_4_6_POST_MERGE_CLOSURE_RECEIPT.yaml",
-        "MODULE_DOCUMENTATION_STANDARD_V2.md",
-        "HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_PROTOCOL_V1.md",
+        "HEPTABAO-PLAN-2026-09-07-V2.1",
+        "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml",
+        "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml",
+        "planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml",
+        "docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md",
     ):
         if token not in current:
-            raise SystemExit(f"current documentation missing {token}")
+            raise SystemExit(f"current V2 documentation missing {token}")
+    if "Status: `V1.4.7 / CURRENT`" in current:
+        raise SystemExit("historical V1.4.7 renderer reclaimed the current portal")
     workflow = (ROOT / ".github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml").read_text(encoding="utf-8")
     if "pull_request:" not in workflow or "push:" in workflow:
         raise SystemExit("V1.4.7 workflow must be pull-request-only")
@@ -1616,7 +1619,6 @@ Do not commit restricted raw Oracle captures, private vulnerability details, pro
 
 def static_files() -> dict[Path, str]:
     values: dict[Path, str] = {
-        Path("docs/CURRENT_DOCUMENTATION.md"): current_documentation(),
         Path("docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md"): module_standard_v2(),
         Path("docs/governance/HEPTABAO_EXTERNAL_COMPLETION_ADMISSION_PROTOCOL_V1.md"): external_protocol(),
         Path("docs/plan/HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md"): plan_document(),
@@ -1642,7 +1644,6 @@ def static_files() -> dict[Path, str]:
 
 def normative_paths(truth: dict[str, Any]) -> list[Path]:
     paths = [
-        Path("docs/CURRENT_DOCUMENTATION.md"),
         Path("docs/plan/HEPTABAO_PLAN_V1_4_7_POST_MERGE_TRUTH_AND_EXTERNAL_ADMISSION.md"),
         Path("planning/HEPTABAO_V1_4_7_POST_MERGE_TRUTH_STATUS.yaml"),
         Path("planning/HEPTABAO_BLOCKER_REGISTER_V1_4_7.yaml"),

@@ -13,8 +13,194 @@ parser:
   - rust name resolution
   - semantic API compatibility
   - production qualification
-module_count: 19
+module_count: 45
 modules:
+- crate: heptabao-agent
+  crate_path: crates/heptabao-agent
+  cargo_toml_sha256: 081f9b1eb2c4647064ae04f7f44d4328767af72cd133b491add40e8cb38fede5
+  source_files:
+  - path: crates/heptabao-agent/src/lib.rs
+    sha256: 8fddc42f67a6dab7dc2c3e8cb61187d8f06cf1a5e4935fec8f8e65a87d9f4a6c
+  module_guide: docs/modules/heptabao-agent.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: CredentialSource
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 14
+    signature: pub enum CredentialSource {
+  - kind: enum
+    name: TokenSinkKind
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 21
+    signature: pub enum TokenSinkKind {
+  - kind: struct
+    name: TokenSink
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 28
+    signature: pub struct TokenSink {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 34
+    signature: 'pub fn new(kind: TokenSinkKind, reference: Id) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 38
+    signature: pub const fn kind(&self) -> TokenSinkKind {
+  - kind: fn
+    name: reference
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 42
+    signature: pub fn reference(&self) -> &Id {
+  - kind: struct
+    name: AgentConfig
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 58
+    signature: pub struct AgentConfig {
+  - kind: enum
+    name: AgentState
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 80
+    signature: pub enum AgentState {
+  - kind: enum
+    name: ReconciledAgentState
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 91
+    signature: pub enum ReconciledAgentState {
+  - kind: struct
+    name: AgentSession
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 100
+    signature: pub struct AgentSession {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 111
+    signature: 'pub fn new(config: AgentConfig) -> Result<Self, AgentError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 124
+    signature: pub const fn state(&self) -> AgentState {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 128
+    signature: pub const fn retry_at(&self) -> Option<Tick> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 132
+    signature: pub const fn renewal_deadline(&self) -> Option<Tick> {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 136
+    signature: pub const fn token_generation(&self) -> u64 {
+  - kind: fn
+    name: requires_reconciliation
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 140
+    signature: pub fn requires_reconciliation(&self) -> bool {
+  - kind: fn
+    name: start
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 144
+    signature: pub fn start(&mut self) -> Result<(), AgentError> {
+  - kind: fn
+    name: authentication_succeeded
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 150
+    signature: pub fn authentication_succeeded(
+  - kind: fn
+    name: authentication_failed_before_entry
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 159
+    signature: 'pub fn authentication_failed_before_entry(&mut self, now: Tick) -> Result<Tick, AgentError> {'
+  - kind: fn
+    name: retry_authentication
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 180
+    signature: 'pub fn retry_authentication(&mut self, now: Tick) -> Result<(), AgentError> {'
+  - kind: fn
+    name: begin_renewal
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 191
+    signature: 'pub fn begin_renewal(&mut self, now: Tick) -> Result<(), AgentError> {'
+  - kind: fn
+    name: renewal_succeeded
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 202
+    signature: 'pub fn renewal_succeeded(&mut self, now: Tick, ttl_ticks: u64) -> Result<(), AgentError> {'
+  - kind: fn
+    name: begin_revocation
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 207
+    signature: pub fn begin_revocation(&mut self) -> Result<(), AgentError> {
+  - kind: fn
+    name: revocation_succeeded
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 213
+    signature: pub fn revocation_succeeded(&mut self) -> Result<(), AgentError> {
+  - kind: fn
+    name: mark_outcome_unknown_after_entry
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 221
+    signature: pub fn mark_outcome_unknown_after_entry(
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 237
+    signature: 'pub fn reconcile(&mut self, state: ReconciledAgentState) -> Result<(), AgentError> {'
+  - kind: enum
+    name: AgentError
+    modifier: null
+    path: crates/heptabao-agent/src/lib.rs
+    line: 325
+    signature: pub enum AgentError {
+  test_functions:
+  - name: authentication_renewal_and_revocation_are_monotonic
+    path: crates/heptabao-agent/src/lib.rs
+    line: 370
+  - name: retry_backoff_is_bounded_and_deadline_checked
+    path: crates/heptabao-agent/src/lib.rs
+    line: 386
+  - name: unknown_after_entry_blocks_blind_retry_until_reconciled
+    path: crates/heptabao-agent/src/lib.rs
+    line: 404
+  - name: debug_output_redacts_sink_and_reconciliation_references
+    path: crates/heptabao-agent/src/lib.rs
+    line: 419
 - crate: heptabao-authbus-contracts
   crate_path: crates/heptabao-authbus-contracts
   cargo_toml_sha256: b04a63f914e2dfae7be69c144ef43253b2b910107a2e7a8c3ec4e643a3916032
@@ -411,6 +597,499 @@ modules:
   - name: secret_and_envelope_debug_output_is_redacted
     path: crates/heptabao-barrier-api/src/lib.rs
     line: 533
+- crate: heptabao-cli-contracts
+  crate_path: crates/heptabao-cli-contracts
+  cargo_toml_sha256: 1e80ab6f04bb99c06a383bcc5ddb35e2389f0809f5e9732512f65cade046ef8b
+  source_files:
+  - path: crates/heptabao-cli-contracts/src/lib.rs
+    sha256: aa9b39b30abadfa0973a9bde247e8aadbe722276a9e2e2d7aafbc251cf0f538a
+  module_guide: docs/modules/heptabao-cli-contracts.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_ARGUMENTS
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 11
+    signature: 'pub const MAX_ARGUMENTS: usize = 128;'
+  - kind: const
+    name: MAX_ARGUMENT_BYTES
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 12
+    signature: 'pub const MAX_ARGUMENT_BYTES: usize = 4096;'
+  - kind: struct
+    name: EnvironmentName
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 31
+    signature: pub struct EnvironmentName(String);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 34
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, CliError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 49
+    signature: pub fn as_str(&self) -> &str {
+  - kind: enum
+    name: SecretInput
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 61
+    signature: pub enum SecretInput {
+  - kind: enum
+    name: OutputMode
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 81
+    signature: pub enum OutputMode {
+  - kind: struct
+    name: CliInvocation
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 87
+    signature: pub struct CliInvocation {
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 95
+    signature: 'pub fn parse(arguments: &[String]) -> Result<Self, CliError> {'
+  - kind: enum
+    name: CliError
+    modifier: null
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 204
+    signature: pub enum CliError {
+  test_functions:
+  - name: secret_bearing_arguments_fail_closed
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 251
+  - name: indirect_secret_sources_are_explicit_and_exclusive
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 265
+  - name: environment_source_carries_only_a_valid_name
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 293
+  - name: debug_output_redacts_target_and_environment_name
+    path: crates/heptabao-cli-contracts/src/lib.rs
+    line: 311
+- crate: heptabao-client-contracts
+  crate_path: crates/heptabao-client-contracts
+  cargo_toml_sha256: 3cb2674bb8da7d545ab93e3009c3e91c330a25e35cb88a4a1140fca6a0b81bad
+  source_files:
+  - path: crates/heptabao-client-contracts/src/lib.rs
+    sha256: 9440fb7c448879d9405d2d7c0c3a377e931e0a6a46c4a52d22472061e47c637d
+  module_guide: docs/modules/heptabao-client-contracts.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: OperationClass
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 9
+    signature: pub enum OperationClass {
+  - kind: enum
+    name: FailureClass
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 16
+    signature: pub enum FailureClass {
+  - kind: enum
+    name: RetryDecision
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 24
+    signature: pub enum RetryDecision {
+  - kind: struct
+    name: ClientAttempt
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 31
+    signature: pub struct ClientAttempt {
+  - kind: fn
+    name: decision
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 38
+    signature: 'pub fn decision(&self, failure: FailureClass) -> RetryDecision {'
+  - kind: fn
+    name: next_with_new_id
+    modifier: null
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 48
+    signature: 'pub fn next_with_new_id(&self, request_id: Id) -> Self {'
+  test_functions:
+  - name: unknown_after_entry_never_becomes_automatic_retry
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 63
+  - name: retry_uses_a_new_request_identifier
+    path: crates/heptabao-client-contracts/src/lib.rs
+    line: 77
+- crate: heptabao-compatibility
+  crate_path: crates/heptabao-compatibility
+  cargo_toml_sha256: acb3b12563e57626ecc37ad0f01c0a0b47c113e17a6fee76a3ccaa1e44a0712f
+  source_files:
+  - path: crates/heptabao-compatibility/src/lib.rs
+    sha256: b4a232119f339f72e037e16b9f32704347147d3d0b6bb7eb1b5e7e7d45c1732c
+  module_guide: docs/modules/heptabao-compatibility.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: SurfaceId
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 23
+    signature: pub struct SurfaceId(String);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 26
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, CompatibilityError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 44
+    signature: pub fn as_str(&self) -> &str {
+  - kind: enum
+    name: EvidenceOrigin
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 62
+    signature: pub enum EvidenceOrigin {
+  - kind: struct
+    name: EvidenceBinding
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 68
+    signature: pub struct EvidenceBinding {
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 76
+    signature: pub fn validate(self) -> Result<Self, CompatibilityError> {
+  - kind: struct
+    name: SurfaceRequirement
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 89
+    signature: pub struct SurfaceRequirement {
+  - kind: struct
+    name: SurfaceCatalog
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 95
+    signature: pub struct SurfaceCatalog {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 102
+    signature: pub fn new(
+  - kind: fn
+    name: profile_id
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 132
+    signature: pub fn profile_id(&self) -> &Id {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 136
+    signature: pub const fn inventory_sha256(&self) -> [u8; 32] {
+  - kind: fn
+    name: requirements
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 140
+    signature: pub fn requirements(&self) -> impl Iterator<Item = &SurfaceRequirement> {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 144
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 148
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: enum
+    name: ObservationResult
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 154
+    signature: pub enum ObservationResult {
+  - kind: struct
+    name: Observation
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 162
+    signature: pub struct Observation {
+  - kind: fn
+    name: result
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 172
+    signature: pub fn result(&self) -> ObservationResult {
+  - kind: struct
+    name: CoverageReport
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 190
+    signature: pub struct CoverageReport {
+  - kind: fn
+    name: complete
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 200
+    signature: pub fn complete(&self) -> bool {
+  - kind: enum
+    name: ClaimStatus
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 208
+    signature: pub enum ClaimStatus {
+  - kind: struct
+    name: CompatibilityClaim
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 215
+    signature: pub struct CompatibilityClaim {
+  - kind: struct
+    name: CompatibilityMatrix
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 224
+    signature: pub struct CompatibilityMatrix {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 230
+    signature: 'pub fn new(catalog: SurfaceCatalog) -> Self {'
+  - kind: fn
+    name: add
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 237
+    signature: 'pub fn add(&mut self, observation: Observation) -> Result<(), CompatibilityError> {'
+  - kind: fn
+    name: coverage
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 256
+    signature: pub fn coverage(&self) -> CoverageReport {
+  - kind: fn
+    name: admit
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 295
+    signature: pub fn admit(
+  - kind: fn
+    name: observed_surface_ids
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 322
+    signature: pub fn observed_surface_ids(&self) -> BTreeSet<SurfaceId> {
+  - kind: enum
+    name: CompatibilityError
+    modifier: null
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 331
+    signature: pub enum CompatibilityError {
+  test_functions:
+  - name: repository_cannot_self_admit_compatibility
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 413
+  - name: exact_denominator_and_minimum_count_are_mandatory
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 431
+  - name: complete_independent_matrix_is_exactly_bound_and_admitted
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 449
+  - name: side_effect_mismatch_blocks_admission
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 465
+  - name: unknown_surface_and_inventory_rebinding_fail_closed
+    path: crates/heptabao-compatibility/src/lib.rs
+    line: 483
+- crate: heptabao-domain
+  crate_path: crates/heptabao-domain
+  cargo_toml_sha256: d0c3fb4ef5719cc4add370b5188355008b6c269c57cefdced1d7dd026c339ec8
+  source_files:
+  - path: crates/heptabao-domain/src/lib.rs
+    sha256: ddc6bcfac7f7a180277cf7f801825cbe47eee812b6b35ad50bfe345833150108
+  module_guide: docs/modules/heptabao-domain.md
+  internal_dependencies: []
+  public_items:
+  - kind: const
+    name: MAX_ID_BYTES
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 9
+    signature: 'pub const MAX_ID_BYTES: usize = 64;'
+  - kind: const
+    name: MAX_PATH_BYTES
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 10
+    signature: 'pub const MAX_PATH_BYTES: usize = 1024;'
+  - kind: const
+    name: MAX_SECRET_BYTES
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 11
+    signature: 'pub const MAX_SECRET_BYTES: usize = 1024 * 1024;'
+  - kind: enum
+    name: DomainError
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 14
+    signature: pub enum DomainError {
+  - kind: struct
+    name: Id
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 51
+    signature: pub struct Id(String);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 54
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 77
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: CanonicalPath
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 95
+    signature: pub struct CanonicalPath(String);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 98
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {'
+  - kind: fn
+    name: root
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 128
+    signature: pub fn root() -> Self {
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 132
+    signature: pub fn as_str(&self) -> &str {
+  - kind: fn
+    name: child
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 136
+    signature: 'pub fn child(&self, child: &Id) -> Result<Self, DomainError> {'
+  - kind: fn
+    name: matches_prefix
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 145
+    signature: 'pub fn matches_prefix(&self, prefix: &Self) -> bool {'
+  - kind: fn
+    name: relative_to
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 156
+    signature: 'pub fn relative_to<''a>(&''a self, prefix: &Self) -> Option<&''a str> {'
+  - kind: struct
+    name: Tick
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 182
+    signature: pub struct Tick(u64);
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 185
+    signature: 'pub const fn new(value: u64) -> Self {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 189
+    signature: pub const fn as_u64(self) -> u64 {
+  - kind: fn
+    name: checked_add
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 193
+    signature: 'pub fn checked_add(self, delta: u64) -> Result<Self, DomainError> {'
+  - kind: struct
+    name: SecretValue
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 202
+    signature: pub struct SecretValue {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 207
+    signature: 'pub fn new(bytes: Vec<u8>) -> Result<Self, DomainError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 217
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 221
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-domain/src/lib.rs
+    line: 225
+    signature: pub fn is_empty(&self) -> bool {
+  test_functions:
+  - name: identifier_and_path_validation_are_fail_closed
+    path: crates/heptabao-domain/src/lib.rs
+    line: 251
+  - name: relative_paths_respect_segment_boundaries
+    path: crates/heptabao-domain/src/lib.rs
+    line: 263
+  - name: secret_debug_output_is_redacted
+    path: crates/heptabao-domain/src/lib.rs
+    line: 273
+  - name: tick_addition_detects_overflow
+    path: crates/heptabao-domain/src/lib.rs
+    line: 282
 - crate: heptabao-durable-core
   crate_path: crates/heptabao-durable-core
   cargo_toml_sha256: b47355056fc09de553586bc31dd34dc9b5d5a24294c12a6ec9e316ade064902f
@@ -515,12 +1194,273 @@ modules:
   - name: stale_expected_generation_is_rejected_before_sealing
     path: crates/heptabao-durable-core/src/lib.rs
     line: 638
+- crate: heptabao-durable-service
+  crate_path: crates/heptabao-durable-service
+  cargo_toml_sha256: c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad
+  source_files:
+  - path: crates/heptabao-durable-service/src/lib.rs
+    sha256: f8c3070f504a99d2fc9564b095295dc4e408d15fc46908652972c0244bb3ec05
+  module_guide: docs/modules/heptabao-durable-service.md
+  internal_dependencies:
+  - name: heptabao-filesystem-guard
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: BarrierError
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 40
+    signature: pub struct BarrierError;
+  - kind: trait
+    name: Barrier
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 54
+    signature: pub trait Barrier {
+  - kind: struct
+    name: Secret
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 60
+    signature: pub struct Secret(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 69
+    signature: 'pub fn new(bytes: Vec<u8>) -> Result<Self, ServiceError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 77
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: struct
+    name: PutRequest
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 92
+    signature: pub struct PutRequest {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 102
+    signature: pub fn new(
+  - kind: struct
+    name: DeleteRequest
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 149
+    signature: pub struct DeleteRequest {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 158
+    signature: pub fn new(
+  - kind: enum
+    name: Failpoint
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 202
+    signature: pub enum Failpoint {
+  - kind: enum
+    name: MutationOutcome
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 210
+    signature: pub enum MutationOutcome {
+  - kind: enum
+    name: ReconciliationStatus
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 222
+    signature: pub enum ReconciliationStatus {
+  - kind: struct
+    name: CompactionOutcome
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 229
+    signature: pub struct CompactionOutcome {
+  - kind: struct
+    name: RestoreOutcome
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 237
+    signature: pub struct RestoreOutcome {
+  - kind: enum
+    name: ServiceError
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 244
+    signature: pub enum ServiceError {
+  - kind: struct
+    name: DurableService
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 404
+    signature: 'pub struct DurableService<B: Barrier> {'
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 441
+    signature: pub fn create_new(
+  - kind: fn
+    name: reopen
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 487
+    signature: pub fn reopen(
+  - kind: fn
+    name: put
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 517
+    signature: 'pub fn put(&mut self, request: PutRequest) -> Result<MutationOutcome, ServiceError> {'
+  - kind: fn
+    name: put_with_failpoint
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 521
+    signature: pub fn put_with_failpoint(
+  - kind: fn
+    name: delete
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 546
+    signature: 'pub fn delete(&mut self, request: DeleteRequest) -> Result<MutationOutcome, ServiceError> {'
+  - kind: fn
+    name: delete_with_failpoint
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 550
+    signature: pub fn delete_with_failpoint(
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 570
+    signature: 'pub fn get(&self, namespace: &str, resource: &str) -> Result<Option<Secret>, ServiceError> {'
+  - kind: fn
+    name: list
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 582
+    signature: 'pub fn list(&self, namespace: &str, prefix: &str) -> Result<Vec<String>, ServiceError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 612
+    signature: pub const fn recovery_required(&self) -> bool {
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 617
+    signature: 'pub fn reconcile(&self, recovery_reference: &str) -> ReconciliationStatus {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 625
+    signature: pub const fn generation(&self) -> u64 {
+  - kind: fn
+    name: retained_request_count
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 630
+    signature: pub fn retained_request_count(&self) -> usize {
+  - kind: fn
+    name: compact
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 640
+    signature: pub fn compact(&mut self) -> Result<CompactionOutcome, ServiceError> {
+  - kind: fn
+    name: export_backup
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 671
+    signature: pub fn export_backup(&self) -> Result<Vec<u8>, ServiceError> {
+  - kind: fn
+    name: restore_backup
+    modifier: null
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 696
+    signature: pub fn restore_backup(
+  test_functions:
+  - name: put_restart_read_and_duplicate_are_durable
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2203
+  - name: published_snapshot_is_reconciled_after_restart
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2230
+  - name: intent_without_publication_is_aborted_and_retryable
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2254
+  - name: commit_journal_rebuilds_missing_ledger
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2286
+  - name: namespace_keys_do_not_collide
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2310
+  - name: capacity_never_evicts_committed_request_identity
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2349
+  - name: request_identity_is_exact_operation_bound
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2370
+  - name: writer_fence_and_secret_redaction_hold
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2384
+  - name: persisted_files_do_not_contain_plaintext_secret
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2401
+  - name: corruption_and_wrong_barrier_fail_closed
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2416
+  - name: ambiguous_namespace_resource_pairs_are_isolated_across_restart_and_delete
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2438
+  - name: legacy_schema_is_rejected_without_rewriting_it
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2480
+  - name: genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2497
+  - name: failed_append_does_not_consume_sequence_and_reopen_recovers
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2530
+  - name: authenticated_old_snapshot_and_contradictory_ledger_fail_closed
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2554
+  - name: journal_budget_reserves_terminal_record_before_entry
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2580
+  - name: compaction_checkpoints_complete_ledger_and_allows_future_commits
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2600
+  - name: encrypted_backup_restores_exact_generation_and_requires_explicit_rollback
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2642
+  - name: backup_tampering_fails_before_live_state_is_fenced
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2691
+  - name: actual_sigkill_releases_writer_and_recovers_pending_publication
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2710
+  - name: real_partial_write_efbig_tail_is_recovered
+    path: crates/heptabao-durable-service/src/lib.rs
+    line: 2773
 - crate: heptabao-filesystem-guard
   crate_path: crates/heptabao-filesystem-guard
-  cargo_toml_sha256: 273084bb18dc1d6e29ea9cfcd156e65d92a034a6c00657224fa7a23b47d98d25
+  cargo_toml_sha256: a9ea4b0d9f7a5284049fbbb60a81509260c4e675ea04d5933468363738da9cb8
   source_files:
   - path: crates/heptabao-filesystem-guard/src/lib.rs
-    sha256: 5ab1241afe48594aaef26b0451caffd205bd96bd7ea30719f702d25ba7cc9983
+    sha256: 651e8a58df5d9c899180085d140b833ee7a63864cd3402abb539887b23fb27a3
   module_guide: docs/modules/heptabao-filesystem-guard.md
   internal_dependencies: []
   public_items:
@@ -528,102 +1468,102 @@ modules:
     name: MAX_GUARDED_LEAF_BYTES
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 28
+    line: 32
     signature: 'pub const MAX_GUARDED_LEAF_BYTES: usize = 240;'
   - kind: struct
     name: DirectoryIdentity
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 40
+    line: 38
     signature: pub struct DirectoryIdentity {
   - kind: const
     name: fn
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 46
+    line: 44
     signature: pub const fn device(self) -> u64 {
   - kind: const
     name: fn
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 50
+    line: 48
     signature: pub const fn inode(self) -> u64 {
   - kind: struct
     name: ExclusiveDirectory
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 59
+    line: 57
     signature: pub struct ExclusiveDirectory {
   - kind: fn
     name: open
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 79
+    line: 77
     signature: 'pub fn open(root: impl AsRef<Path>) -> Result<Self, DirectoryGuardError> {'
   - kind: fn
     name: original_path
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 97
+    line: 95
     signature: pub fn original_path(&self) -> &Path {
   - kind: fn
     name: access_path
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 101
+    line: 99
     signature: pub fn access_path(&self) -> &Path {
   - kind: const
     name: fn
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 105
+    line: 103
     signature: pub const fn identity(&self) -> DirectoryIdentity {
   - kind: fn
     name: leaf_path
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 109
+    line: 107
     signature: 'pub fn leaf_path(&self, name: &str) -> Result<PathBuf, DirectoryGuardError> {'
   - kind: fn
     name: verify
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 114
+    line: 112
     signature: pub fn verify(&self) -> Result<(), DirectoryGuardError> {
   - kind: fn
     name: sync_all
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 141
+    line: 139
     signature: pub fn sync_all(&self) -> Result<(), DirectoryGuardError> {
   - kind: enum
     name: DirectoryGuardError
     modifier: null
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 197
+    line: 195
     signature: pub enum DirectoryGuardError {
   test_functions:
   - name: root_is_descriptor_bound_and_leaf_names_are_closed
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 392
+    line: 390
   - name: second_open_is_fenced_until_drop
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 415
+    line: 413
   - name: cooperating_processes_observe_writer_fence
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 428
+    line: 426
   - name: descriptor_survives_root_path_replacement
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 476
+    line: 474
   - name: symlink_root_is_rejected
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 500
+    line: 498
   - name: relative_root_is_rejected
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 512
+    line: 510
   - name: intermediate_symlink_is_rejected
     path: crates/heptabao-filesystem-guard/src/lib.rs
-    line: 522
+    line: 520
 - crate: heptabao-governance
   crate_path: crates/heptabao-governance
   cargo_toml_sha256: 2fae46fc7c92cf7fcaa6374a58b2be49de8e2c9ae03cdedb0bf5b9dc1194ef31
@@ -700,6 +1640,240 @@ modules:
   - name: every_h00_authority_flag_is_false
     path: crates/heptabao-governance/src/lib.rs
     line: 224
+- crate: heptabao-ha-contracts
+  crate_path: crates/heptabao-ha-contracts
+  cargo_toml_sha256: c16ed8d85802428a25d38a8de02e66165bfa81ce266bfd2777fffe42e000386e
+  source_files:
+  - path: crates/heptabao-ha-contracts/src/lib.rs
+    sha256: 9cd91d755a935a7b540a92c404414eddf81a8b731dd4a027dcb1b4748fc96a4e
+  module_guide: docs/modules/heptabao-ha-contracts.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: NodeRole
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 13
+    signature: pub enum NodeRole {
+  - kind: struct
+    name: WriterFence
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 20
+    signature: pub struct WriterFence {
+  - kind: struct
+    name: HaState
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 27
+    signature: pub struct HaState {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 38
+    signature: 'pub fn new(local_node: Id, voters: BTreeSet<Id>) -> Result<Self, HaError> {'
+  - kind: fn
+    name: role
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 53
+    signature: pub fn role(&self) -> NodeRole {
+  - kind: fn
+    name: term
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 57
+    signature: pub fn term(&self) -> u64 {
+  - kind: fn
+    name: local_node
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 61
+    signature: pub fn local_node(&self) -> &Id {
+  - kind: fn
+    name: voters
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 65
+    signature: pub fn voters(&self) -> &BTreeSet<Id> {
+  - kind: fn
+    name: observe_higher_term
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 69
+    signature: 'pub fn observe_higher_term(&mut self, term: u64) -> Result<(), HaError> {'
+  - kind: fn
+    name: grant_leadership
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 80
+    signature: 'pub fn grant_leadership(&mut self, leader_id: Id, term: u64) -> Result<WriterFence, HaError> {'
+  - kind: fn
+    name: validate_writer
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 102
+    signature: 'pub fn validate_writer(&self, fence: &WriterFence) -> Result<(), HaError> {'
+  - kind: fn
+    name: add_learner
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 114
+    signature: 'pub fn add_learner(&mut self, node_id: Id) -> Result<(), HaError> {'
+  - kind: fn
+    name: promote
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 122
+    signature: 'pub fn promote(&mut self, node_id: &Id) -> Result<(), HaError> {'
+  - kind: fn
+    name: remove_voter
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 131
+    signature: 'pub fn remove_voter(&mut self, node_id: &Id) -> Result<(), HaError> {'
+  - kind: enum
+    name: HaError
+    modifier: null
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 150
+    signature: pub enum HaError {
+  test_functions:
+  - name: stale_writer_fence_is_rejected_after_term_change
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 181
+  - name: learner_promotion_and_last_voter_guard_are_explicit
+    path: crates/heptabao-ha-contracts/src/lib.rs
+    line: 193
+- crate: heptabao-identity
+  crate_path: crates/heptabao-identity
+  cargo_toml_sha256: 2d2f6724ac89240dadb689e07e17b9422388c8bcff3e24efd1f2b6b317735deb
+  source_files:
+  - path: crates/heptabao-identity/src/lib.rs
+    sha256: 351ce321c50335174330224dc47d2739f21521ffca1d345e7756743fb609a5c9
+  module_guide: docs/modules/heptabao-identity.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: Entity
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 13
+    signature: pub struct Entity {
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 22
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: aliases
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 26
+    signature: pub fn aliases(&self) -> &BTreeSet<Id> {
+  - kind: fn
+    name: disabled
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 30
+    signature: pub fn disabled(&self) -> bool {
+  - kind: struct
+    name: Group
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 36
+    signature: pub struct Group {
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 43
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: members
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 47
+    signature: pub fn members(&self) -> &BTreeSet<Id> {
+  - kind: struct
+    name: IdentityStore
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 53
+    signature: pub struct IdentityStore {
+  - kind: fn
+    name: create_entity
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 60
+    signature: 'pub fn create_entity(&mut self, id: Id) -> Result<(), IdentityError> {'
+  - kind: fn
+    name: create_group
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 77
+    signature: 'pub fn create_group(&mut self, id: Id, policies: BTreeSet<Id>) -> Result<(), IdentityError> {'
+  - kind: fn
+    name: add_alias
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 92
+    signature: 'pub fn add_alias(&mut self, entity_id: &Id, alias: Id) -> Result<(), IdentityError> {'
+  - kind: fn
+    name: attach_policy
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 105
+    signature: 'pub fn attach_policy(&mut self, entity_id: &Id, policy_id: Id) -> Result<(), IdentityError> {'
+  - kind: fn
+    name: add_entity_to_group
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 114
+    signature: pub fn add_entity_to_group(
+  - kind: fn
+    name: set_disabled
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 134
+    signature: 'pub fn set_disabled(&mut self, entity_id: &Id, disabled: bool) -> Result<(), IdentityError> {'
+  - kind: fn
+    name: resolve_alias
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 143
+    signature: 'pub fn resolve_alias(&self, alias: &Id) -> Result<&Entity, IdentityError> {'
+  - kind: fn
+    name: entity
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 150
+    signature: 'pub fn entity(&self, entity_id: &Id) -> Result<&Entity, IdentityError> {'
+  - kind: fn
+    name: effective_policy_ids
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 156
+    signature: 'pub fn effective_policy_ids(&self, entity_id: &Id) -> Result<BTreeSet<Id>, IdentityError> {'
+  - kind: enum
+    name: IdentityError
+    modifier: null
+    path: crates/heptabao-identity/src/lib.rs
+    line: 174
+    signature: pub enum IdentityError {
+  test_functions:
+  - name: aliases_groups_and_direct_policies_expand_deterministically
+    path: crates/heptabao-identity/src/lib.rs
+    line: 205
+  - name: disabled_entities_fail_closed
+    path: crates/heptabao-identity/src/lib.rs
+    line: 229
 - crate: heptabao-journal-api
   crate_path: crates/heptabao-journal-api
   cargo_toml_sha256: ff34ae29a8c1c7148b47e50437c32e7f873ea22cd911f5ad71401df39ebb5dec
@@ -1296,6 +2470,946 @@ modules:
   - name: append_outcome_unknown_poison_requires_replay
     path: crates/heptabao-key-lifecycle/src/lib.rs
     line: 820
+- crate: heptabao-kms-contracts
+  crate_path: crates/heptabao-kms-contracts
+  cargo_toml_sha256: 06bf9f721dfcbfbde4222a5ca33d232c614be54e2ddcf337b26d2b967b0053fc
+  source_files:
+  - path: crates/heptabao-kms-contracts/src/lib.rs
+    sha256: cbf6e47aae3023f64b8b2fa118767532140f5b45948e910b17da1cc8d19b8fb4
+  module_guide: docs/modules/heptabao-kms-contracts.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_WRAPPED_VALUE_BYTES
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 12
+    signature: 'pub const MAX_WRAPPED_VALUE_BYTES: usize = 2 * 1024 * 1024;'
+  - kind: enum
+    name: KmsCapability
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 15
+    signature: pub enum KmsCapability {
+  - kind: enum
+    name: KeyState
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 22
+    signature: pub enum KeyState {
+  - kind: struct
+    name: KeyVersion
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 30
+    signature: pub struct KeyVersion(u64);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 33
+    signature: 'pub fn new(value: u64) -> Result<Self, KmsError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 40
+    signature: pub const fn as_u64(self) -> u64 {
+  - kind: struct
+    name: KeyRegistration
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 46
+    signature: pub struct KeyRegistration {
+  - kind: struct
+    name: KeyView
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 53
+    signature: pub struct KeyView {
+  - kind: struct
+    name: KeyCatalog
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 83
+    signature: pub struct KeyCatalog {
+  - kind: fn
+    name: register
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 88
+    signature: 'pub fn register(&mut self, registration: KeyRegistration) -> Result<KeyView, KmsError> {'
+  - kind: fn
+    name: view
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 107
+    signature: 'pub fn view(&self, key_id: &Id) -> Result<KeyView, KmsError> {'
+  - kind: fn
+    name: require_operation
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 114
+    signature: pub fn require_operation(
+  - kind: fn
+    name: disable
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 138
+    signature: 'pub fn disable(&mut self, key_id: &Id) -> Result<KeyView, KmsError> {'
+  - kind: fn
+    name: enable
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 151
+    signature: 'pub fn enable(&mut self, key_id: &Id) -> Result<KeyView, KmsError> {'
+  - kind: fn
+    name: schedule_destruction
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 164
+    signature: pub fn schedule_destruction(
+  - kind: fn
+    name: destroy
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 185
+    signature: 'pub fn destroy(&mut self, key_id: &Id, now: Tick) -> Result<KeyView, KmsError> {'
+  - kind: struct
+    name: WrappingContext
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 203
+    signature: pub struct WrappingContext {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 210
+    signature: pub fn new(
+  - kind: struct
+    name: WrappedValue
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 227
+    signature: pub struct WrappedValue(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 230
+    signature: 'pub fn new(bytes: Vec<u8>) -> Result<Self, KmsError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 237
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: fn
+    name: len
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 241
+    signature: pub fn len(&self) -> usize {
+  - kind: fn
+    name: is_empty
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 245
+    signature: pub fn is_empty(&self) -> bool {
+  - kind: struct
+    name: WrapCommand
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 267
+    signature: pub struct WrapCommand {
+  - kind: struct
+    name: UnwrapCommand
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 276
+    signature: pub struct UnwrapCommand {
+  - kind: enum
+    name: RetryDisposition
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 285
+    signature: pub enum RetryDisposition {
+  - kind: enum
+    name: KmsOutcome
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 292
+    signature: pub enum KmsOutcome<T> {
+  - kind: fn
+    name: retry_disposition
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 299
+    signature: pub fn retry_disposition(&self) -> RetryDisposition {
+  - kind: trait
+    name: KmsProvider
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 314
+    signature: pub trait KmsProvider {
+  - kind: enum
+    name: KmsError
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 320
+    signature: pub enum KmsError {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 341
+    signature: pub const fn is_retryable_before_entry(self) -> bool {
+  test_functions:
+  - name: key_lifecycle_is_fail_closed_and_monotonic
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 391
+  - name: key_version_capability_and_context_are_bound
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 419
+  - name: unknown_after_entry_is_reconcile_only
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 447
+  - name: secret_and_wrapped_debug_output_are_redacted
+    path: crates/heptabao-kms-contracts/src/lib.rs
+    line: 462
+- crate: heptabao-kv-engine
+  crate_path: crates/heptabao-kv-engine
+  cargo_toml_sha256: 1548333d3e46ddb77572406809229ef0e8ade28f39e10a84d2d76f0c096192d0
+  source_files:
+  - path: crates/heptabao-kv-engine/src/lib.rs
+    sha256: 709c180324706ecd60293c03f5fc2bbf487b95c3f8ef49e0fd72199f58c2c405
+  module_guide: docs/modules/heptabao-kv-engine.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: KvMetadata
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 13
+    signature: pub struct KvMetadata {
+  - kind: struct
+    name: KvRead
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 37
+    signature: pub struct KvRead<'a> {
+  - kind: struct
+    name: KvStore
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 54
+    signature: pub struct KvStore {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 60
+    signature: 'pub fn new(max_versions: usize) -> Result<Self, KvError> {'
+  - kind: fn
+    name: current_version
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 70
+    signature: 'pub fn current_version(&self, path: &CanonicalPath) -> u64 {'
+  - kind: fn
+    name: write
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 77
+    signature: pub fn write(
+  - kind: fn
+    name: read
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 112
+    signature: 'pub fn read(&self, path: &CanonicalPath, version: Option<u64>) -> Result<KvRead<''_>, KvError> {'
+  - kind: fn
+    name: delete_latest
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 134
+    signature: 'pub fn delete_latest(&mut self, path: &CanonicalPath) -> Result<KvMetadata, KvError> {'
+  - kind: fn
+    name: undelete
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 147
+    signature: 'pub fn undelete(&mut self, path: &CanonicalPath, version: u64) -> Result<KvMetadata, KvError> {'
+  - kind: fn
+    name: destroy
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 163
+    signature: 'pub fn destroy(&mut self, path: &CanonicalPath, versions: &[u64]) -> Result<usize, KvError> {'
+  - kind: fn
+    name: list
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 194
+    signature: 'pub fn list(&self, prefix: &CanonicalPath) -> Vec<CanonicalPath> {'
+  - kind: enum
+    name: KvError
+    modifier: null
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 204
+    signature: pub enum KvError {
+  test_functions:
+  - name: compare_and_set_and_version_lifecycle_are_enforced
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 237
+  - name: rejected_first_write_cas_does_not_publish_a_ghost_key
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 276
+  - name: rejected_multi_version_destroy_is_atomic_in_both_orders
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 297
+  - name: duplicate_destroy_versions_are_idempotent_and_count_once
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 323
+  - name: retention_prunes_old_versions_and_list_is_prefix_bounded
+    path: crates/heptabao-kv-engine/src/lib.rs
+    line: 340
+- crate: heptabao-lease
+  crate_path: crates/heptabao-lease
+  cargo_toml_sha256: 23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5
+  source_files:
+  - path: crates/heptabao-lease/src/lib.rs
+    sha256: 006311f3355e1448dfb77feaf932100f17e263c1d46065ec13c4e6fb34f66e53
+  module_guide: docs/modules/heptabao-lease.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: LeaseKind
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 13
+    signature: pub enum LeaseKind {
+  - kind: enum
+    name: LeaseState
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 19
+    signature: pub enum LeaseState {
+  - kind: struct
+    name: LeaseIssue
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 26
+    signature: pub struct LeaseIssue {
+  - kind: struct
+    name: LeaseView
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 37
+    signature: pub struct LeaseView {
+  - kind: struct
+    name: LeaseStore
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 79
+    signature: pub struct LeaseStore {
+  - kind: fn
+    name: issue
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 84
+    signature: 'pub fn issue(&mut self, command: LeaseIssue) -> Result<LeaseView, LeaseError> {'
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 111
+    signature: 'pub fn validate(&mut self, id: &Id, now: Tick) -> Result<LeaseView, LeaseError> {'
+  - kind: fn
+    name: renew
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 124
+    signature: 'pub fn renew(&mut self, id: &Id, now: Tick, ttl: u64) -> Result<LeaseView, LeaseError> {'
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 144
+    signature: 'pub fn revoke(&mut self, id: &Id) -> Result<(), LeaseError> {'
+  - kind: fn
+    name: revoke_prefix
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 158
+    signature: 'pub fn revoke_prefix(&mut self, prefix: &CanonicalPath) -> usize {'
+  - kind: enum
+    name: LeaseError
+    modifier: null
+    path: crates/heptabao-lease/src/lib.rs
+    line: 172
+    signature: pub enum LeaseError {
+  test_functions:
+  - name: lease_lifecycle_is_monotonic
+    path: crates/heptabao-lease/src/lib.rs
+    line: 201
+  - name: prefix_revocation_respects_path_boundaries
+    path: crates/heptabao-lease/src/lib.rs
+    line: 227
+- crate: heptabao-migration
+  crate_path: crates/heptabao-migration
+  cargo_toml_sha256: 77984cf865ac37a5a7d49c9746551c690b5fda21cd5030725d4f32fee0337e9d
+  source_files:
+  - path: crates/heptabao-migration/src/durable.rs
+    sha256: 065a6048a642282547e8873f718b210e376d9d1ac17550c1b603033e33db1bb5
+  - path: crates/heptabao-migration/src/lib.rs
+    sha256: 6c5b08fc70cb709f89db93ebfe5bc28c8627fee405e30c348f015201bb60fb4f
+  module_guide: docs/modules/heptabao-migration.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  - name: heptabao-filesystem-guard
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: MigrationObjectClass
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 31
+    signature: pub enum MigrationObjectClass {
+  - kind: struct
+    name: MigrationObject
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 51
+    signature: pub struct MigrationObject {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 61
+    signature: pub fn new(
+  - kind: struct
+    name: MigrationInventory
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 110
+    signature: pub struct MigrationInventory {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 116
+    signature: 'pub fn new(mut objects: Vec<MigrationObject>) -> Result<Self, MigrationJournalError> {'
+  - kind: fn
+    name: objects
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 182
+    signature: pub fn objects(&self) -> &[MigrationObject] {
+  - kind: fn
+    name: sha256
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 186
+    signature: pub fn sha256(&self) -> &str {
+  - kind: fn
+    name: execution_order
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 190
+    signature: pub fn execution_order(&self) -> Result<Vec<&MigrationObject>, MigrationJournalError> {
+  - kind: struct
+    name: MigrationBinding
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 244
+    signature: pub struct MigrationBinding {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 253
+    signature: pub fn new(
+  - kind: enum
+    name: MigrationObjectState
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 297
+    signature: pub enum MigrationObjectState {
+  - kind: fn
+    name: requires_reconciliation
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 322
+    signature: pub fn requires_reconciliation(&self) -> bool {
+  - kind: enum
+    name: DurableMigrationPhase
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 330
+    signature: pub enum DurableMigrationPhase {
+  - kind: struct
+    name: WriterFenceReceipt
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 343
+    signature: pub struct WriterFenceReceipt {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 351
+    signature: pub fn new(
+  - kind: struct
+    name: CopyIntent
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 382
+    signature: pub struct CopyIntent {
+  - kind: struct
+    name: DurableMigrationJournal
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 626
+    signature: pub struct DurableMigrationJournal {
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 647
+    signature: pub fn create_new(
+  - kind: fn
+    name: open
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 708
+    signature: pub fn open(
+  - kind: fn
+    name: binding
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 735
+    signature: pub fn binding(&self) -> MigrationBinding {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 739
+    signature: pub const fn generation(&self) -> u64 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 743
+    signature: pub const fn phase(&self) -> DurableMigrationPhase {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 747
+    signature: pub const fn source_writer_enabled(&self) -> bool {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 751
+    signature: pub const fn target_writer_enabled(&self) -> bool {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 755
+    signature: pub const fn recovered_from_previous(&self) -> bool {
+  - kind: fn
+    name: object_state
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 759
+    signature: 'pub fn object_state(&self, object_id: &str) -> Option<&MigrationObjectState> {'
+  - kind: fn
+    name: pending_reconciliation
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 763
+    signature: pub fn pending_reconciliation(&self) -> Vec<&str> {
+  - kind: fn
+    name: fence_source
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 775
+    signature: pub fn fence_source(
+  - kind: fn
+    name: begin_object
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 794
+    signature: pub fn begin_object(
+  - kind: fn
+    name: mark_outcome_unknown
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 859
+    signature: pub fn mark_outcome_unknown(
+  - kind: fn
+    name: confirm_committed
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 888
+    signature: pub fn confirm_committed(
+  - kind: fn
+    name: confirm_not_committed
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 920
+    signature: pub fn confirm_not_committed(
+  - kind: fn
+    name: fail_object
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 946
+    signature: pub fn fail_object(
+  - kind: fn
+    name: verify_copy
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 990
+    signature: pub fn verify_copy(&mut self) -> Result<(), MigrationJournalError> {
+  - kind: fn
+    name: activate_target
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1007
+    signature: pub fn activate_target(
+  - kind: fn
+    name: fence_target
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1031
+    signature: pub fn fence_target(
+  - kind: fn
+    name: rollback
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1054
+    signature: pub fn rollback(
+  - kind: enum
+    name: MigrationJournalError
+    modifier: null
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1138
+    signature: pub enum MigrationJournalError {
+  - kind: use
+    name: durable::*
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 16
+    signature: pub use durable::*;
+  - kind: enum
+    name: MigrationPhase
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 19
+    signature: pub enum MigrationPhase {
+  - kind: struct
+    name: MigrationState
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 31
+    signature: pub struct MigrationState {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 42
+    signature: 'pub fn new(migration_id: Id, source_id: Id, target_id: Id) -> Result<Self, MigrationError> {'
+  - kind: fn
+    name: fence_source
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 57
+    signature: pub fn fence_source(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: begin_copy
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 65
+    signature: pub fn begin_copy(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: verify_copy
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 72
+    signature: pub fn verify_copy(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: activate_target
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 79
+    signature: pub fn activate_target(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: fence_target
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 90
+    signature: pub fn fence_target(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: rollback
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 98
+    signature: pub fn rollback(&mut self) -> Result<(), MigrationError> {
+  - kind: fn
+    name: fail
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 117
+    signature: pub fn fail(&mut self) {
+  - kind: fn
+    name: validate_no_overlap
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 124
+    signature: pub fn validate_no_overlap(&self) -> Result<(), MigrationError> {
+  - kind: enum
+    name: MigrationError
+    modifier: null
+    path: crates/heptabao-migration/src/lib.rs
+    line: 144
+    signature: pub enum MigrationError {
+  test_functions:
+  - name: inventory_is_closed_sorted_dependency_checked_and_hashed
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1571
+  - name: intent_unknown_and_reconciliation_survive_restart
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1603
+  - name: cutover_requires_every_digest_and_never_overlaps_writers
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1637
+  - name: binding_tampering_and_second_writer_fail_closed
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1687
+  - name: previous_generation_is_recovered_but_conflicts_are_rejected
+    path: crates/heptabao-migration/src/durable.rs
+    line: 1717
+  - name: cutover_never_enables_both_writers
+    path: crates/heptabao-migration/src/lib.rs
+    line: 167
+  - name: rollback_requires_target_fencing_after_cutover
+    path: crates/heptabao-migration/src/lib.rs
+    line: 184
+- crate: heptabao-mount-router
+  crate_path: crates/heptabao-mount-router
+  cargo_toml_sha256: 9a0fa2697289993cf1ce471fc686ee3aab42874a777a18424cef2bac58cde78e
+  source_files:
+  - path: crates/heptabao-mount-router/src/lib.rs
+    sha256: 7ef9776e0c7fbc85b3e74b3f742a89e2713884b69073dc55f78c23df5ca81985
+  module_guide: docs/modules/heptabao-mount-router.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: Backend
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 13
+    signature: pub enum Backend {
+  - kind: struct
+    name: Mount
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 19
+    signature: pub struct Mount {
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 29
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: namespace_id
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 33
+    signature: pub fn namespace_id(&self) -> &Id {
+  - kind: fn
+    name: path
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 37
+    signature: pub fn path(&self) -> &CanonicalPath {
+  - kind: fn
+    name: backend
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 41
+    signature: pub fn backend(&self) -> &Backend {
+  - kind: struct
+    name: Route
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 47
+    signature: pub struct Route {
+  - kind: struct
+    name: MountRouter
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 55
+    signature: pub struct MountRouter {
+  - kind: fn
+    name: mount
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 60
+    signature: pub fn mount(
+  - kind: fn
+    name: set_enabled
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 89
+    signature: 'pub fn set_enabled(&mut self, id: &Id, enabled: bool) -> Result<(), MountError> {'
+  - kind: fn
+    name: unmount
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 99
+    signature: 'pub fn unmount(&mut self, id: &Id) -> Result<Mount, MountError> {'
+  - kind: fn
+    name: route
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 103
+    signature: 'pub fn route(&self, namespace_id: &Id, path: &CanonicalPath) -> Result<Route, MountError> {'
+  - kind: enum
+    name: MountError
+    modifier: null
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 128
+    signature: pub enum MountError {
+  test_functions:
+  - name: longest_prefix_wins_within_namespace
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 155
+  - name: namespace_and_enablement_are_fail_closed
+    path: crates/heptabao-mount-router/src/lib.rs
+    line: 181
+- crate: heptabao-namespace
+  crate_path: crates/heptabao-namespace
+  cargo_toml_sha256: ffbf4c8704c5c73c0c78a43833978258b35fbc6863a2afd8839b8125b9fca0ba
+  source_files:
+  - path: crates/heptabao-namespace/src/lib.rs
+    sha256: 08dcbf1079501c2b5cbe5977404060831e18f1749fc3c0ca695a4f0b63089b91
+  module_guide: docs/modules/heptabao-namespace.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: NamespaceState
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 13
+    signature: pub enum NamespaceState {
+  - kind: struct
+    name: Namespace
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 19
+    signature: pub struct Namespace {
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 28
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: parent_id
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 32
+    signature: pub fn parent_id(&self) -> Option<&Id> {
+  - kind: fn
+    name: path
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 36
+    signature: pub fn path(&self) -> &CanonicalPath {
+  - kind: fn
+    name: state
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 40
+    signature: pub fn state(&self) -> NamespaceState {
+  - kind: fn
+    name: generation
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 44
+    signature: pub fn generation(&self) -> u64 {
+  - kind: struct
+    name: NamespaceStore
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 50
+    signature: pub struct NamespaceStore {
+  - kind: fn
+    name: bootstrap_root
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 56
+    signature: 'pub fn bootstrap_root(&mut self, id: Id) -> Result<(), NamespaceError> {'
+  - kind: fn
+    name: create
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 75
+    signature: 'pub fn create(&mut self, id: Id, parent_id: &Id) -> Result<Namespace, NamespaceError> {'
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 102
+    signature: 'pub fn get(&self, id: &Id) -> Result<&Namespace, NamespaceError> {'
+  - kind: fn
+    name: disable
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 108
+    signature: 'pub fn disable(&mut self, id: &Id) -> Result<(), NamespaceError> {'
+  - kind: fn
+    name: resolve
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 124
+    signature: 'pub fn resolve(&self, path: &CanonicalPath) -> Result<&Namespace, NamespaceError> {'
+  - kind: fn
+    name: qualify
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 134
+    signature: pub fn qualify(
+  - kind: enum
+    name: NamespaceError
+    modifier: null
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 160
+    signature: pub enum NamespaceError {
+  test_functions:
+  - name: hierarchy_and_longest_prefix_resolution_are_deterministic
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 199
+  - name: disabled_namespace_fails_closed
+    path: crates/heptabao-namespace/src/lib.rs
+    line: 215
 - crate: heptabao-operation-ledger
   crate_path: crates/heptabao-operation-ledger
   cargo_toml_sha256: 5a71ca1f04ea41c380d78f02d2891bb962ab25b0dd3ca82ad96fba9d31a88354
@@ -1580,6 +3694,111 @@ modules:
   - name: append_outcome_unknown_after_persistence_requires_authoritative_replay
     path: crates/heptabao-operation-ledger/src/lib.rs
     line: 1278
+- crate: heptabao-operator-api
+  crate_path: crates/heptabao-operator-api
+  cargo_toml_sha256: 98574a3c782be1c8e837b7997d0e1f1356b661a4a041ac34bd1f737581366b15
+  source_files:
+  - path: crates/heptabao-operator-api/src/lib.rs
+    sha256: 163f5d9d96617f8d14757fdb42a07c09bd9cf5cf29387eb4e237453e447d15d4
+  module_guide: docs/modules/heptabao-operator-api.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: EffectPhase
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 13
+    signature: pub enum EffectPhase {
+  - kind: enum
+    name: CommitState
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 19
+    signature: pub enum CommitState {
+  - kind: enum
+    name: OperatorAction
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 26
+    signature: pub enum OperatorAction {
+  - kind: enum
+    name: Resolution
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 34
+    signature: pub enum Resolution {
+  - kind: struct
+    name: OutcomeRecord
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 41
+    signature: pub struct OutcomeRecord {
+  - kind: fn
+    name: before_entry
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 50
+    signature: 'pub fn before_entry(request_id: Id) -> Self {'
+  - kind: fn
+    name: committed
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 60
+    signature: 'pub fn committed(request_id: Id) -> Self {'
+  - kind: fn
+    name: unknown_after_entry
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 70
+    signature: 'pub fn unknown_after_entry(request_id: Id, recovery_reference: Id) -> Self {'
+  - kind: fn
+    name: action
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 80
+    signature: pub fn action(&self) -> OperatorAction {
+  - kind: struct
+    name: ReconciliationStore
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 96
+    signature: pub struct ReconciliationStore {
+  - kind: fn
+    name: record
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 101
+    signature: 'pub fn record(&mut self, record: OutcomeRecord) -> Result<(), OperatorError> {'
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 114
+    signature: 'pub fn get(&self, reference: &Id) -> Result<&OutcomeRecord, OperatorError> {'
+  - kind: fn
+    name: resolve
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 120
+    signature: 'pub fn resolve(&mut self, reference: &Id, resolution: Resolution) -> Result<(), OperatorError> {'
+  - kind: enum
+    name: OperatorError
+    modifier: null
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 134
+    signature: pub enum OperatorError {
+  test_functions:
+  - name: unknown_after_entry_forbids_retry_until_readback
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 157
+  - name: distinct_recovery_references_disambiguate_the_same_external_request_id
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 169
+  - name: before_entry_failure_allows_new_attempt
+    path: crates/heptabao-operator-api/src/lib.rs
+    line: 195
 - crate: heptabao-oracle-observer
   crate_path: crates/heptabao-oracle-observer
   cargo_toml_sha256: 389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429
@@ -2260,6 +4479,633 @@ modules:
   - name: snapshot_cannot_regress_applied_state
     path: crates/heptabao-platform-contracts/src/lib.rs
     line: 594
+- crate: heptabao-plugin-contracts
+  crate_path: crates/heptabao-plugin-contracts
+  cargo_toml_sha256: f65f8c26ed9b3989b8a2fece8b8bd2913d87697905e05ee6715fc1edbe2e4e02
+  source_files:
+  - path: crates/heptabao-plugin-contracts/src/lib.rs
+    sha256: f97aebd808a020f70a2d9cd0b5ea3fe38e92d4de2c4fbfea354b65f05b430ea4
+  module_guide: docs/modules/heptabao-plugin-contracts.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: PluginKind
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 13
+    signature: pub enum PluginKind {
+  - kind: enum
+    name: PluginStatus
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 21
+    signature: pub enum PluginStatus {
+  - kind: struct
+    name: PluginDescriptor
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 29
+    signature: pub struct PluginDescriptor {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 40
+    signature: pub fn new(
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 64
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: status
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 68
+    signature: pub fn status(&self) -> PluginStatus {
+  - kind: fn
+    name: generation
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 72
+    signature: pub fn generation(&self) -> u64 {
+  - kind: fn
+    name: kind
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 76
+    signature: pub fn kind(&self) -> PluginKind {
+  - kind: fn
+    name: command
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 80
+    signature: pub fn command(&self) -> &CanonicalPath {
+  - kind: fn
+    name: checksum
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 84
+    signature: pub fn checksum(&self) -> &[u8; 32] {
+  - kind: fn
+    name: protocol_version
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 88
+    signature: pub fn protocol_version(&self) -> u16 {
+  - kind: enum
+    name: PluginCallOutcome
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 94
+    signature: pub enum PluginCallOutcome<T> {
+  - kind: struct
+    name: PluginRegistry
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 101
+    signature: pub struct PluginRegistry {
+  - kind: fn
+    name: register
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 106
+    signature: 'pub fn register(&mut self, plugin: PluginDescriptor) -> Result<(), PluginError> {'
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 114
+    signature: 'pub fn get(&self, id: &Id) -> Result<&PluginDescriptor, PluginError> {'
+  - kind: fn
+    name: enable
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 118
+    signature: 'pub fn enable(&mut self, id: &Id) -> Result<(), PluginError> {'
+  - kind: fn
+    name: disable
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 131
+    signature: 'pub fn disable(&mut self, id: &Id) -> Result<(), PluginError> {'
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 141
+    signature: 'pub fn revoke(&mut self, id: &Id) -> Result<(), PluginError> {'
+  - kind: enum
+    name: PluginError
+    modifier: null
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 153
+    signature: pub enum PluginError {
+  test_functions:
+  - name: lifecycle_is_monotonic_after_revocation
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 190
+  - name: invalid_descriptor_is_rejected_before_registration
+    path: crates/heptabao-plugin-contracts/src/lib.rs
+    line: 205
+- crate: heptabao-plugin-host
+  crate_path: crates/heptabao-plugin-host
+  cargo_toml_sha256: e9cfa822b4d4d47fd23fcd7046a5e4ee93559ef380a94a6ab5afc95b6106cb6f
+  source_files:
+  - path: crates/heptabao-plugin-host/src/durable.rs
+    sha256: 93ab33753ced37f632650d5bf6d3268668b6e20ca20aca9b4fac4ebb385fb634
+  - path: crates/heptabao-plugin-host/src/lib.rs
+    sha256: e0b03388121f348f5e4fb572478b6966f14e794aa9579e3d4826f57142c16483
+  module_guide: docs/modules/heptabao-plugin-host.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  - name: heptabao-durable-service
+    section: dependencies
+  - name: heptabao-plugin-contracts
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: PluginMutationContext
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 32
+    signature: pub struct PluginMutationContext {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 39
+    signature: pub fn new(
+  - kind: fn
+    name: principal
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 54
+    signature: pub fn principal(&self) -> &Id {
+  - kind: fn
+    name: request_id
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 58
+    signature: pub fn request_id(&self) -> &Id {
+  - kind: struct
+    name: PendingPluginInvocation
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 76
+    signature: pub struct PendingPluginInvocation {
+  - kind: enum
+    name: DurableReconciliationDecision
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 84
+    signature: pub enum DurableReconciliationDecision {
+  - kind: struct
+    name: DurableDynamicSecretBroker
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 108
+    signature: 'pub struct DurableDynamicSecretBroker<B: Barrier, R: SandboxRunner> {'
+  - kind: fn
+    name: create_new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 115
+    signature: pub fn create_new(
+  - kind: fn
+    name: reopen
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 129
+    signature: pub fn reopen(
+  - kind: fn
+    name: host_state
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 188
+    signature: pub fn host_state(&self) -> PluginHostState {
+  - kind: fn
+    name: pending_invocation
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 192
+    signature: pub fn pending_invocation(&self) -> Option<PendingPluginInvocation> {
+  - kind: fn
+    name: view
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 200
+    signature: 'pub fn view(&mut self, lease_id: &Id, now: Tick) -> Result<DynamicLeaseView, PluginHostError> {'
+  - kind: fn
+    name: issue
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 204
+    signature: pub fn issue(
+  - kind: fn
+    name: renew
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 261
+    signature: pub fn renew(
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 323
+    signature: pub fn revoke(
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 383
+    signature: pub fn reconcile(
+  - kind: use
+    name: durable::{
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 27
+    signature: pub use durable::{
+  - kind: enum
+    name: PluginOperation
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 42
+    signature: pub enum PluginOperation {
+  - kind: struct
+    name: PluginLimits
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 73
+    signature: pub struct PluginLimits {
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 80
+    signature: pub fn validate(self) -> Result<Self, PluginHostError> {
+  - kind: struct
+    name: SandboxBinding
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 94
+    signature: pub struct SandboxBinding {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 102
+    signature: pub fn new(
+  - kind: struct
+    name: PluginManifest
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 121
+    signature: pub struct PluginManifest {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 130
+    signature: pub fn new(
+  - kind: fn
+    name: descriptor
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 159
+    signature: pub fn descriptor(&self) -> &PluginDescriptor {
+  - kind: fn
+    name: sandbox
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 163
+    signature: pub fn sandbox(&self) -> &SandboxBinding {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 167
+    signature: pub const fn limits(&self) -> PluginLimits {
+  - kind: fn
+    name: operations
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 171
+    signature: pub fn operations(&self) -> &BTreeSet<PluginOperation> {
+  - kind: fn
+    name: environment_allowlist
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 175
+    signature: pub fn environment_allowlist(&self) -> &BTreeSet<String> {
+  - kind: struct
+    name: SecretEnvironment
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 192
+    signature: pub struct SecretEnvironment {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 197
+    signature: pub fn new() -> Self {
+  - kind: fn
+    name: insert
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 203
+    signature: 'pub fn insert(&mut self, name: &str, value: String) -> Result<(), PluginHostError> {'
+  - kind: enum
+    name: SandboxFailure
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 240
+    signature: pub enum SandboxFailure {
+  - kind: trait
+    name: SandboxRunner
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 245
+    signature: 'pub trait SandboxRunner: fmt::Debug {'
+  - kind: struct
+    name: CommandSandboxRunner
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 258
+    signature: pub struct CommandSandboxRunner;
+  - kind: enum
+    name: PluginHostState
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 500
+    signature: pub enum PluginHostState {
+  - kind: enum
+    name: ReconciliationProof
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 507
+    signature: pub enum ReconciliationProof {
+  - kind: struct
+    name: PluginHost
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 513
+    signature: 'pub struct PluginHost<R: SandboxRunner> {'
+  - kind: fn
+    name: admit
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 520
+    signature: 'pub fn admit(manifest: PluginManifest, runner: R) -> Result<Self, PluginHostError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 531
+    signature: pub const fn state(&self) -> PluginHostState {
+  - kind: fn
+    name: manifest
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 535
+    signature: pub fn manifest(&self) -> &PluginManifest {
+  - kind: fn
+    name: invoke
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 539
+    signature: pub fn invoke(
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 583
+    signature: 'pub fn reconcile(&mut self, proof: ReconciliationProof) -> Result<(), PluginHostError> {'
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 598
+    signature: pub fn revoke(&mut self) {
+  - kind: enum
+    name: DynamicLeaseState
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 604
+    signature: pub enum DynamicLeaseState {
+  - kind: struct
+    name: DynamicLeaseSpec
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 612
+    signature: pub struct DynamicLeaseSpec {
+  - kind: struct
+    name: DynamicLeaseView
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 622
+    signature: pub struct DynamicLeaseView {
+  - kind: struct
+    name: DynamicSecretIssue
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 640
+    signature: pub struct DynamicSecretIssue {
+  - kind: struct
+    name: DynamicSecretBroker
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 646
+    signature: 'pub struct DynamicSecretBroker<R: SandboxRunner> {'
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 652
+    signature: 'pub fn new(host: PluginHost<R>) -> Result<Self, PluginHostError> {'
+  - kind: fn
+    name: host_state
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 670
+    signature: pub fn host_state(&self) -> PluginHostState {
+  - kind: fn
+    name: issue
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 674
+    signature: pub fn issue(
+  - kind: fn
+    name: view
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 713
+    signature: 'pub fn view(&mut self, lease_id: &Id, now: Tick) -> Result<DynamicLeaseView, PluginHostError> {'
+  - kind: fn
+    name: renew
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 729
+    signature: pub fn renew(
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 774
+    signature: pub fn revoke(
+  - kind: fn
+    name: reconcile_host
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 816
+    signature: pub fn reconcile_host(
+  - kind: enum
+    name: PluginHostError
+    modifier: null
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 885
+    signature: pub enum PluginHostError {
+  test_functions:
+  - name: issued_secret_is_released_only_after_durable_metadata_and_survives_reopen
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 1057
+  - name: unknown_effect_persists_intent_and_fences_restart_until_readback
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 1093
+  - name: before_entry_failure_clears_durable_intent_without_poisoning_host
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 1147
+  - name: durable_failure_after_plugin_entry_withholds_secret_and_retains_intent
+    path: crates/heptabao-plugin-host/src/durable.rs
+    line: 1179
+  - name: undeclared_environment_and_operation_fail_before_entry
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 1044
+  - name: outcome_unknown_fences_until_explicit_reconciliation
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 1062
+  - name: before_entry_failure_does_not_poison_host
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 1080
+  - name: command_runner_uses_the_verified_wrapper_and_bounded_frame
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 1093
+  - name: dynamic_secret_plaintext_is_not_retained_and_lifecycle_is_monotonic
+    path: crates/heptabao-plugin-host/src/lib.rs
+    line: 1168
+- crate: heptabao-policy
+  crate_path: crates/heptabao-policy
+  cargo_toml_sha256: 7ac2233dc0a58b056b87f400d97335c42dc29109deeca52d52ae39835bce3b25
+  source_files:
+  - path: crates/heptabao-policy/src/lib.rs
+    sha256: c17838a612975463c58de5fb9537f95969dc4e30225920e03b07f2e0779026f3
+  module_guide: docs/modules/heptabao-policy.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: Capability
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 13
+    signature: pub enum Capability {
+  - kind: struct
+    name: PolicyRule
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 23
+    signature: pub struct PolicyRule {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 29
+    signature: pub fn new(
+  - kind: fn
+    name: path_prefix
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 42
+    signature: pub fn path_prefix(&self) -> &CanonicalPath {
+  - kind: fn
+    name: capabilities
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 46
+    signature: pub fn capabilities(&self) -> &BTreeSet<Capability> {
+  - kind: struct
+    name: Policy
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 58
+    signature: pub struct Policy {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 64
+    signature: 'pub fn new(id: Id, rules: Vec<PolicyRule>) -> Result<Self, PolicyError> {'
+  - kind: fn
+    name: id
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 71
+    signature: pub fn id(&self) -> &Id {
+  - kind: fn
+    name: rules
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 75
+    signature: pub fn rules(&self) -> &[PolicyRule] {
+  - kind: struct
+    name: PolicyStore
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 81
+    signature: pub struct PolicyStore {
+  - kind: fn
+    name: insert
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 86
+    signature: 'pub fn insert(&mut self, policy: Policy) -> Result<(), PolicyError> {'
+  - kind: fn
+    name: remove
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 94
+    signature: 'pub fn remove(&mut self, id: &Id) -> Result<Policy, PolicyError> {'
+  - kind: fn
+    name: get
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 98
+    signature: 'pub fn get(&self, id: &Id) -> Result<&Policy, PolicyError> {'
+  - kind: fn
+    name: authorize
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 102
+    signature: pub fn authorize(
+  - kind: enum
+    name: PolicyError
+    modifier: null
+    path: crates/heptabao-policy/src/lib.rs
+    line: 120
+    signature: pub enum PolicyError {
+  test_functions:
+  - name: authorization_is_default_deny_and_segment_bounded
+    path: crates/heptabao-policy/src/lib.rs
+    line: 145
+  - name: duplicate_policy_is_rejected
+    path: crates/heptabao-policy/src/lib.rs
+    line: 180
 - crate: heptabao-protocol
   crate_path: crates/heptabao-protocol
   cargo_toml_sha256: 951de609e5e4f963856967dccae040184a9215084f138141b9205747d6a7f226
@@ -2585,6 +5431,571 @@ modules:
   - name: secret_debug_is_redacted_and_compare_is_length_aware
     path: crates/heptabao-protocol/src/lib.rs
     line: 984
+- crate: heptabao-proxy
+  crate_path: crates/heptabao-proxy
+  cargo_toml_sha256: f7a165e2852da3eb931b8ac2637d2a957078fb615279ad8ff2998f58500e6c0d
+  source_files:
+  - path: crates/heptabao-proxy/src/lib.rs
+    sha256: fcfc946b8c04dce5214c4bbe0aa65a531d0421af9be4b939408702ade11d3c61
+  module_guide: docs/modules/heptabao-proxy.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: const
+    name: MAX_HEADER_NAME_BYTES
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 12
+    signature: 'pub const MAX_HEADER_NAME_BYTES: usize = 64;'
+  - kind: const
+    name: MAX_HEADER_VALUE_BYTES
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 13
+    signature: 'pub const MAX_HEADER_VALUE_BYTES: usize = 8192;'
+  - kind: struct
+    name: HeaderName
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 34
+    signature: pub struct HeaderName(String);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 37
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, ProxyError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 48
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: HeaderValue
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 60
+    signature: pub struct HeaderValue(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 63
+    signature: 'pub fn new(bytes: Vec<u8>) -> Result<Self, ProxyError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 72
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: struct
+    name: ProxyRequest
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 98
+    signature: pub struct ProxyRequest {
+  - kind: struct
+    name: ForwardPlan
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 104
+    signature: pub struct ForwardPlan {
+  - kind: struct
+    name: ProxyPolicy
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 111
+    signature: pub struct ProxyPolicy {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 120
+    signature: pub fn new(
+  - kind: fn
+    name: plan_request
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 142
+    signature: pub fn plan_request(
+  - kind: fn
+    name: plan_response
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 173
+    signature: pub fn plan_response(
+  - kind: enum
+    name: ProxyError
+    modifier: null
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 252
+    signature: pub enum ProxyError {
+  test_functions:
+  - name: inbound_credentials_are_replaced_by_the_server_token
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 305
+  - name: connection_nominated_headers_cannot_be_smuggled
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 334
+  - name: duplicate_and_oversized_requests_fail_closed
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 355
+  - name: debug_output_never_contains_header_values
+    path: crates/heptabao-proxy/src/lib.rs
+    line: 383
+- crate: heptabao-raft-runtime
+  crate_path: crates/heptabao-raft-runtime
+  cargo_toml_sha256: 688cceef93fca7a05c56f110d5213723170927e9cea644a909d26c4f3ead345b
+  source_files:
+  - path: crates/heptabao-raft-runtime/src/cluster.rs
+    sha256: 14238a150c2caf8c0b02b1778caeca39dcdec6b443ff73d36e5fca4283d99817
+  - path: crates/heptabao-raft-runtime/src/lib.rs
+    sha256: 69681a33b01ba21d1f3f834e5678cc0dddaf47ac687a970d624da900ec02af33
+  - path: crates/heptabao-raft-runtime/src/network.rs
+    sha256: c32e0d7ea360f0146ed56fa536ff1edb6e1696c260c1eb6a1078c89d9cc7596e
+  - path: crates/heptabao-raft-runtime/src/store.rs
+    sha256: 7633f8ecefea05c6423aaa9b05de90e383abfa3f02dcdda3f2b0d1869d856d09
+  module_guide: docs/modules/heptabao-raft-runtime.md
+  internal_dependencies: []
+  public_items:
+  - kind: type
+    name: AnyResult
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 22
+    signature: pub type AnyResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
+  - kind: struct
+    name: DurableNode
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 39
+    signature: pub struct DurableNode {
+  - kind: struct
+    name: DurableCluster
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 46
+    signature: pub struct DurableCluster {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 54
+    signature: 'pub fn new(root: impl AsRef<Path>) -> AnyResult<Self> {'
+  - kind: fn
+    name: bootstrap_three_voters
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 127
+    signature: pub async fn bootstrap_three_voters(&mut self) -> AnyResult<()> {
+  - kind: fn
+    name: reopen_three_voters
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 166
+    signature: pub async fn reopen_three_voters(&mut self) -> AnyResult<u64> {
+  - kind: fn
+    name: consensus_leader
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 179
+    signature: pub async fn consensus_leader(&self) -> AnyResult<u64> {
+  - kind: fn
+    name: write
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 219
+    signature: 'pub async fn write(&self, leader: u64, serial: u64, status: String) -> AnyResult<u64> {'
+  - kind: fn
+    name: wait_all_applied
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 262
+    signature: 'pub async fn wait_all_applied(&self, index: u64) -> AnyResult<()> {'
+  - kind: fn
+    name: read_index
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 272
+    signature: 'pub async fn read_index(&self, leader: u64) -> AnyResult<()> {'
+  - kind: fn
+    name: trigger_snapshot
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 306
+    signature: 'pub async fn trigger_snapshot(&self, leader: u64, minimum_index: u64) -> AnyResult<()> {'
+  - kind: fn
+    name: state
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 366
+    signature: 'pub async fn state(&self, id: u64) -> MemStoreStateMachine {'
+  - kind: fn
+    name: all_states_equal
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 370
+    signature: pub async fn all_states_equal(&self) -> bool {
+  - kind: fn
+    name: snapshot_status
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 383
+    signature: pub async fn snapshot_status(&self) -> BTreeMap<u64, (bool, u64)> {
+  - kind: fn
+    name: artifact_paths
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 398
+    signature: pub fn artifact_paths(&self) -> BTreeMap<String, PathBuf> {
+  - kind: fn
+    name: rpc_counts
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 418
+    signature: pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {
+  - kind: fn
+    name: exercise_partition
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 423
+    signature: 'pub async fn exercise_partition(&self, leader: u64) -> AnyResult<(bool, bool)> {'
+  - kind: fn
+    name: shutdown
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/cluster.rs
+    line: 454
+    signature: pub async fn shutdown(mut self) -> AnyResult<()> {
+  - kind: struct
+    name: ReplicatedEnvelope
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 31
+    signature: pub struct ReplicatedEnvelope {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 38
+    signature: pub fn new(
+  - kind: struct
+    name: CommitReceipt
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 88
+    signature: pub struct CommitReceipt {
+  - kind: enum
+    name: RaftRuntimeError
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 95
+    signature: pub enum RaftRuntimeError {
+  - kind: struct
+    name: RaftRuntime
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 117
+    signature: pub struct RaftRuntime {
+  - kind: fn
+    name: bootstrap
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 131
+    signature: 'pub async fn bootstrap(root: impl AsRef<Path>) -> Result<Self, RaftRuntimeError> {'
+  - kind: fn
+    name: reopen
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 142
+    signature: 'pub async fn reopen(root: impl AsRef<Path>) -> Result<Self, RaftRuntimeError> {'
+  - kind: fn
+    name: leader
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 153
+    signature: pub async fn leader(&self) -> Result<u64, RaftRuntimeError> {
+  - kind: fn
+    name: replicate
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 160
+    signature: pub async fn replicate(
+  - kind: fn
+    name: ensure_linearizable
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 185
+    signature: pub async fn ensure_linearizable(&self) -> Result<u64, RaftRuntimeError> {
+  - kind: fn
+    name: trigger_snapshot
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 192
+    signature: 'pub async fn trigger_snapshot(&self, minimum_index: u64) -> Result<(), RaftRuntimeError> {'
+  - kind: fn
+    name: snapshot_status
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 201
+    signature: pub async fn snapshot_status(&self) -> Result<BTreeMap<u64, (bool, u64)>, RaftRuntimeError> {
+  - kind: fn
+    name: states_converged
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 205
+    signature: pub async fn states_converged(&self) -> Result<bool, RaftRuntimeError> {
+  - kind: fn
+    name: shutdown
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 209
+    signature: pub async fn shutdown(mut self) -> Result<(), RaftRuntimeError> {
+  - kind: type
+    name: DurableRaft
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 20
+    signature: pub type DurableRaft = Raft<TypeConfig, DurableStateMachine>;
+  - kind: struct
+    name: DurableRouter
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 23
+    signature: pub struct DurableRouter {
+  - kind: fn
+    name: register
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 36
+    signature: 'pub async fn register(&self, id: u64, raft: DurableRaft) {'
+  - kind: fn
+    name: unregister
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 40
+    signature: 'pub async fn unregister(&self, id: u64) {'
+  - kind: fn
+    name: isolate
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 45
+    signature: 'pub async fn isolate(&self, id: u64) {'
+  - kind: fn
+    name: pause
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 64
+    signature: 'pub async fn pause(&self, id: u64) {'
+  - kind: fn
+    name: resume
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 69
+    signature: 'pub async fn resume(&self, id: u64) {'
+  - kind: fn
+    name: heal_all
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 74
+    signature: pub async fn heal_all(&self) {
+  - kind: fn
+    name: rpc_counts
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 80
+    signature: pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {
+  - kind: struct
+    name: DurableNetworkFactory
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 116
+    signature: pub struct DurableNetworkFactory {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 122
+    signature: 'pub fn new(source: u64, router: DurableRouter) -> Self {'
+  - kind: struct
+    name: DurableNetwork
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/network.rs
+    line: 139
+    signature: pub struct DurableNetwork {
+  - kind: struct
+    name: DurableLogStore
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 422
+    signature: pub struct DurableLogStore {
+  - kind: fn
+    name: create
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 428
+    signature: 'pub fn create(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: open_existing
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 442
+    signature: 'pub fn open_existing(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: adopt_legacy
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 468
+    signature: 'pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: state_path
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 509
+    signature: pub fn state_path(&self) -> &Path {
+  - kind: struct
+    name: DurableStateMachine
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 729
+    signature: pub struct DurableStateMachine {
+  - kind: fn
+    name: create
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 735
+    signature: 'pub fn create(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: open_existing
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 749
+    signature: 'pub fn open_existing(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: adopt_legacy
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 775
+    signature: 'pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {'
+  - kind: fn
+    name: get_state_machine
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 818
+    signature: pub async fn get_state_machine(&self) -> MemStoreStateMachine {
+  - kind: fn
+    name: has_current_snapshot
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 822
+    signature: pub async fn has_current_snapshot(&self) -> bool {
+  - kind: fn
+    name: generation
+    modifier: async
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 826
+    signature: pub async fn generation(&self) -> u64 {
+  - kind: fn
+    name: state_path
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 831
+    signature: pub fn state_path(&self) -> &Path {
+  - kind: fn
+    name: snapshot_path
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 835
+    signature: pub fn snapshot_path(&self) -> &Path {
+  - kind: fn
+    name: flip_first_payload_byte
+    modifier: null
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 978
+    signature: 'pub fn flip_first_payload_byte(path: &Path) -> io::Result<()> {'
+  test_functions:
+  - name: durable_three_node_restart_read_index_and_quorum_loss
+    path: crates/heptabao-raft-runtime/src/lib.rs
+    line: 258
+  - name: payload_corruption_helper_produces_rejected_envelope
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1007
+  - name: failed_log_persist_does_not_publish_candidate_state
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1026
+  - name: failed_snapshot_persist_does_not_publish_snapshot_or_generation
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1049
+  - name: interrupted_previous_file_is_recovered_fail_closed
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1069
+  - name: fresh_create_and_existing_reopen_are_explicit
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1086
+  - name: create_new_rejects_nonempty_directory
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1104
+  - name: missing_initialized_log_generation_fails_closed
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1115
+  - name: missing_initialized_state_generation_fails_closed
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1126
+  - name: deleted_store_directory_is_not_silently_recreated_on_reopen
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1137
+  - name: active_log_persist_does_not_recreate_deleted_store_root
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1147
+  - name: active_state_persist_does_not_recreate_deleted_store_root
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1161
+  - name: legacy_log_adoption_rejects_unresolved_data_temporary_file
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1175
+  - name: legacy_state_adoption_rejects_unresolved_data_temporary_file
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1194
+  - name: legacy_generation_requires_explicit_validated_adoption
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1214
+  - name: state_legacy_generation_requires_explicit_validated_adoption
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1229
+  - name: valid_current_generation_discards_one_stale_previous
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1242
+  - name: corrupt_current_generation_never_falls_back_to_previous
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1253
+  - name: multiple_previous_generations_are_ambiguous_and_fail_closed
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1267
+  - name: corrupt_initialization_marker_fails_closed
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1283
+  - name: marker_domain_or_authoritative_file_drift_is_rejected
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1293
+  - name: interrupted_marker_previous_file_is_recovered
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1313
+  - name: non_regular_authoritative_generation_is_rejected
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1336
+  - name: symlinked_storage_root_is_rejected
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1347
+  - name: symlinked_initialization_marker_is_rejected
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1360
+  - name: symlinked_authoritative_generation_is_rejected
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1373
+  - name: log_envelope_round_trip_remains_bounded
+    path: crates/heptabao-raft-runtime/src/store.rs
+    line: 1386
 - crate: heptabao-recovery-core
   crate_path: crates/heptabao-recovery-core
   cargo_toml_sha256: 951bd09462faa2e6936dcf86b5f9a95ebc4f67654a6712dc345b9842abd4ced6
@@ -2996,6 +6407,102 @@ modules:
   - name: wrong_receipt_after_publication_is_outcome_unknown
     path: crates/heptabao-recovery-core/src/lib.rs
     line: 1953
+- crate: heptabao-retention
+  crate_path: crates/heptabao-retention
+  cargo_toml_sha256: a5cea0533a315670560cf62a20d7d465ae12f06c884b7c07ffcd0cfc77d8293f
+  source_files:
+  - path: crates/heptabao-retention/src/lib.rs
+    sha256: 5e25aaef33d7c96a8bb4c02d16bf7f703a049e4a9e6ff0e2a4afdf8593d51394
+  module_guide: docs/modules/heptabao-retention.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: RetentionPolicy
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 12
+    signature: pub struct RetentionPolicy {
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 20
+    signature: pub fn validate(&self) -> Result<(), RetentionError> {
+  - kind: fn
+    name: versions_to_prune
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 34
+    signature: 'pub fn versions_to_prune(&self, current_versions: usize) -> usize {'
+  - kind: enum
+    name: BackupState
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 40
+    signature: pub enum BackupState {
+  - kind: struct
+    name: BackupReceipt
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 49
+    signature: pub struct BackupReceipt {
+  - kind: struct
+    name: BackupCoordinator
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 56
+    signature: pub struct BackupCoordinator {
+  - kind: fn
+    name: state
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 77
+    signature: pub fn state(&self) -> BackupState {
+  - kind: fn
+    name: generation
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 81
+    signature: pub fn generation(&self) -> u64 {
+  - kind: fn
+    name: begin
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 85
+    signature: 'pub fn begin(&mut self, source_generation: u64, now: Tick) -> Result<(), RetentionError> {'
+  - kind: fn
+    name: seal
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 99
+    signature: 'pub fn seal(&mut self, digest: [u8; 32]) -> Result<BackupReceipt, RetentionError> {'
+  - kind: fn
+    name: verify
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 121
+    signature: 'pub fn verify(&mut self, digest: [u8; 32]) -> Result<(), RetentionError> {'
+  - kind: fn
+    name: fail
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 137
+    signature: pub fn fail(&mut self) -> Result<(), RetentionError> {
+  - kind: enum
+    name: RetentionError
+    modifier: null
+    path: crates/heptabao-retention/src/lib.rs
+    line: 147
+    signature: pub enum RetentionError {
+  test_functions:
+  - name: policy_and_compaction_plan_are_bounded
+    path: crates/heptabao-retention/src/lib.rs
+    line: 172
+  - name: backup_must_seal_and_verify_before_completion
+    path: crates/heptabao-retention/src/lib.rs
+    line: 185
 - crate: heptabao-rollback-anchor
   crate_path: crates/heptabao-rollback-anchor
   cargo_toml_sha256: 5d25fc4b2c0903ba3bd5f279255c1a82e7a1fc8d0acb7341811eeea964472d52
@@ -3318,12 +6825,865 @@ modules:
   - name: alternate_authenticated_cas_receipt_is_rejected
     path: crates/heptabao-rollback-anchor/src/lib.rs
     line: 975
+- crate: heptabao-runtime-service
+  crate_path: crates/heptabao-runtime-service
+  cargo_toml_sha256: c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927
+  source_files:
+  - path: crates/heptabao-runtime-service/src/lib.rs
+    sha256: 11a83b5224bce0abacd297fee238b7a85cf6398e0d58d64ecbf1344d2d02d5bc
+  module_guide: docs/modules/heptabao-runtime-service.md
+  internal_dependencies:
+  - name: heptabao-durable-service
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: Credential
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 24
+    signature: pub struct Credential(Vec<u8>);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 33
+    signature: 'pub fn new(bytes: Vec<u8>) -> Result<Self, RuntimeError> {'
+  - kind: fn
+    name: expose
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 41
+    signature: pub fn expose(&self) -> &[u8] {
+  - kind: enum
+    name: OperationKind
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 53
+    signature: pub enum OperationKind {
+  - kind: enum
+    name: InboundOperation
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 61
+    signature: pub enum InboundOperation {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 68
+    signature: pub const fn kind(&self) -> OperationKind {
+  - kind: struct
+    name: InboundMutation
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 86
+    signature: pub struct InboundMutation {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 95
+    signature: pub fn new(
+  - kind: struct
+    name: AuthenticatedPrincipal
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 135
+    signature: pub struct AuthenticatedPrincipal(String);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 138
+    signature: 'pub fn new(value: impl Into<String>) -> Result<Self, RuntimeError> {'
+  - kind: fn
+    name: as_str
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 145
+    signature: pub fn as_str(&self) -> &str {
+  - kind: struct
+    name: AuthorizationDigest
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 157
+    signature: pub struct AuthorizationDigest([u8; 32]);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 160
+    signature: 'pub fn new(value: [u8; 32]) -> Result<Self, RuntimeError> {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 168
+    signature: pub const fn into_inner(self) -> [u8; 32] {
+  - kind: trait
+    name: Authenticator
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 179
+    signature: pub trait Authenticator {
+  - kind: trait
+    name: Authorizer
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 186
+    signature: pub trait Authorizer {
+  - kind: struct
+    name: AuthenticationFailure
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 197
+    signature: pub struct AuthenticationFailure;
+  - kind: struct
+    name: AuthorizationFailure
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 200
+    signature: pub struct AuthorizationFailure;
+  - kind: struct
+    name: AuditFailure
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 203
+    signature: pub struct AuditFailure;
+  - kind: enum
+    name: AuditStage
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 206
+    signature: pub enum AuditStage {
+  - kind: struct
+    name: AuditEvent
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 216
+    signature: pub struct AuditEvent {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 225
+    signature: pub const fn request_fingerprint(&self) -> &[u8; 32] {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 230
+    signature: pub const fn stage(&self) -> AuditStage {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 235
+    signature: pub const fn generation(&self) -> Option<u64> {
+  - kind: trait
+    name: AuditSink
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 251
+    signature: pub trait AuditSink {
+  - kind: enum
+    name: RuntimeOutcome
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 256
+    signature: pub enum RuntimeOutcome {
+  - kind: enum
+    name: RuntimeError
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 268
+    signature: pub enum RuntimeError {
+  - kind: struct
+    name: RuntimeService
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 308
+    signature: pub struct RuntimeService<A, Z, U, B>
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 344
+    signature: pub const fn new(
+  - kind: fn
+    name: handle
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 358
+    signature: 'pub fn handle(&mut self, request: InboundMutation) -> Result<RuntimeOutcome, RuntimeError> {'
+  - kind: fn
+    name: handle_with_failpoint
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 362
+    signature: pub fn handle_with_failpoint(
+  - kind: fn
+    name: read
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 482
+    signature: pub fn read(
+  - kind: fn
+    name: list
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 510
+    signature: pub fn list(
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 579
+    signature: pub const fn recovery_required(&self) -> bool {
+  - kind: fn
+    name: reconcile
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 584
+    signature: 'pub fn reconcile(&self, recovery_reference: &str) -> ReconciliationStatus {'
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 589
+    signature: pub const fn generation(&self) -> u64 {
+  - kind: fn
+    name: retained_request_count
+    modifier: null
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 594
+    signature: pub fn retained_request_count(&self) -> usize {
+  test_functions:
+  - name: invalid_credential_cannot_allocate_durable_request_identity
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 853
+  - name: denied_request_does_not_preempt_later_authorized_identity
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 866
+  - name: request_identity_is_scoped_to_authenticated_principal
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 891
+  - name: pre_entry_audit_failure_prevents_durable_dispatch
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 907
+  - name: post_commit_audit_failure_is_reconcile_only
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 929
+  - name: durable_unknown_survives_restart_and_reconciles
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 953
+  - name: debug_output_redacts_credentials_paths_and_secret
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 992
+  - name: actual_io_failure_is_never_mapped_to_rejection
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 1011
+  - name: read_and_list_require_admission_and_result_audit
+    path: crates/heptabao-runtime-service/src/lib.rs
+    line: 1049
+- crate: heptabao-server
+  crate_path: crates/heptabao-server
+  cargo_toml_sha256: 490216f98630a660661ec40865f476a1d6779868874c6a1a2c773aac569b97d1
+  source_files:
+  - path: crates/heptabao-server/src/auth.rs
+    sha256: 4ee891a5130bdbe70a32a26ecbdb722932621019a4e764181e50c53fcaaa544e
+  - path: crates/heptabao-server/src/auth_tests.rs
+    sha256: 08cdd8a90d66ab049bf2750f6c00bc5c8e0c908daf353ccb014e11ee42732af5
+  - path: crates/heptabao-server/src/crypto.rs
+    sha256: 4d48992a3cbd52acaa173a0dc8dbadf1cb8ec44ce07759b596b4a88043a9c83a
+  - path: crates/heptabao-server/src/engine_tests.rs
+    sha256: 1662a84338b905970ac2beb28131598ed5ddbaa7945c869b4309112e8ea13c23
+  - path: crates/heptabao-server/src/engines.rs
+    sha256: a13c88cec6799c60ec7a0e8c8f46c40535827ef8da8b7553326a05714c69f887
+  - path: crates/heptabao-server/src/engines/kv.rs
+    sha256: f96472e84312b7105ccee6b5c331c25b11e23719eaae043471f0a2c17aecb711
+  - path: crates/heptabao-server/src/engines/totp.rs
+    sha256: a4f0b05d46d6f0f3b54f549cf5d484ecd2b3d7c98a407303ca5382eb29872630
+  - path: crates/heptabao-server/src/engines/transit.rs
+    sha256: 01df7e39dfca228d153ee9d3cfe28fd608f5be74c82292393b842bc6d483fa33
+  - path: crates/heptabao-server/src/http.rs
+    sha256: 4afef3842aba8371ae1c1640ebd004c9f5507549a0c1e6379abc985eee73a143
+  - path: crates/heptabao-server/src/lib.rs
+    sha256: 1a1525d7606de75c4be3a9d6d7e917c55e87a09041f90d9769a5a86b356ada3f
+  - path: crates/heptabao-server/src/main.rs
+    sha256: 68204f4c7eb7b908f75ef851ea319866678af57019ebeeb07deeb834a57947f6
+  - path: crates/heptabao-server/src/service.rs
+    sha256: 50b46e3beb65b9626e50a81b2d4d33ea853ead96cab808569a5d4f7550dc423b
+  - path: crates/heptabao-server/src/service_tests.rs
+    sha256: 769a77558465b3effdf2711e20b72c42f330ad9fd5dbb493d24ac17c9d12d63c
+  module_guide: docs/modules/heptabao-server.md
+  internal_dependencies:
+  - name: heptabao-durable-service
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: AuthState
+    modifier: null
+    path: crates/heptabao-server/src/auth.rs
+    line: 30
+    signature: pub struct AuthState {
+  - kind: struct
+    name: AuthResponse
+    modifier: null
+    path: crates/heptabao-server/src/auth.rs
+    line: 171
+    signature: pub struct AuthResponse {
+  - kind: struct
+    name: AuthError
+    modifier: null
+    path: crates/heptabao-server/src/auth.rs
+    line: 178
+    signature: pub struct AuthError {
+  - kind: struct
+    name: AeadBarrier
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 20
+    signature: pub struct AeadBarrier(aead::LessSafeKey);
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 23
+    signature: 'pub fn new(mut key: [u8; 32]) -> Result<Self, BarrierError> {'
+  - kind: struct
+    name: SecretShare
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 77
+    signature: pub struct SecretShare {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 104
+    signature: pub const fn total(&self) -> u8 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 109
+    signature: pub const fn threshold(&self) -> u8 {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 114
+    signature: pub const fn index(&self) -> u8 {
+  - kind: fn
+    name: encode
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 119
+    signature: pub fn encode(&self) -> Vec<u8> {
+  - kind: fn
+    name: decode
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 129
+    signature: 'pub fn decode(encoded: &[u8]) -> Result<Self, &''static str> {'
+  - kind: fn
+    name: split_secret
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 157
+    signature: pub fn split_secret(
+  - kind: fn
+    name: combine_shares
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 194
+    signature: 'pub fn combine_shares(shares: &[SecretShare]) -> Result<[u8; SHARE_SECRET_BYTES], &''static str> {'
+  - kind: fn
+    name: wrap_barrier_key
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 236
+    signature: pub fn wrap_barrier_key(
+  - kind: fn
+    name: unwrap_barrier_key
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 264
+    signature: pub fn unwrap_barrier_key(
+  - kind: fn
+    name: random
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 298
+    signature: 'pub fn random<const N: usize>() -> Result<[u8; N], &''static str> {'
+  - kind: fn
+    name: digest
+    modifier: null
+    path: crates/heptabao-server/src/crypto.rs
+    line: 306
+    signature: 'pub fn digest(bytes: &[u8]) -> [u8; 32] {'
+  - kind: struct
+    name: EngineState
+    modifier: null
+    path: crates/heptabao-server/src/engines.rs
+    line: 17
+    signature: pub struct EngineState {
+  - kind: struct
+    name: EngineResponse
+    modifier: null
+    path: crates/heptabao-server/src/engines.rs
+    line: 134
+    signature: pub struct EngineResponse {
+  - kind: struct
+    name: EngineError
+    modifier: null
+    path: crates/heptabao-server/src/engines.rs
+    line: 157
+    signature: pub struct EngineError {
+  - kind: fn
+    name: required_capability
+    modifier: null
+    path: crates/heptabao-server/src/engines.rs
+    line: 292
+    signature: pub fn required_capability(
+  - kind: fn
+    name: handle
+    modifier: null
+    path: crates/heptabao-server/src/engines.rs
+    line: 339
+    signature: pub fn handle(
+  - kind: struct
+    name: Config
+    modifier: null
+    path: crates/heptabao-server/src/http.rs
+    line: 28
+    signature: pub struct Config {
+  - kind: fn
+    name: serve
+    modifier: null
+    path: crates/heptabao-server/src/http.rs
+    line: 126
+    signature: 'pub fn serve(config: Config) -> Result<(), String> {'
+  - kind: mod
+    name: engines
+    modifier: null
+    path: crates/heptabao-server/src/lib.rs
+    line: 15
+    signature: pub mod engines;
+  - kind: mod
+    name: http
+    modifier: null
+    path: crates/heptabao-server/src/lib.rs
+    line: 16
+    signature: pub mod http;
+  - kind: use
+    name: service::{Response, Service}
+    modifier: null
+    path: crates/heptabao-server/src/lib.rs
+    line: 18
+    signature: pub use service::{Response, Service};
+  - kind: struct
+    name: Response
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 125
+    signature: pub struct Response {
+  - kind: fn
+    name: error
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 136
+    signature: 'pub fn error(status: u16, message: &str) -> Self {'
+  - kind: struct
+    name: Service
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 223
+    signature: pub struct Service {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 247
+    signature: 'pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &''static str> {'
+  - kind: fn
+    name: handle
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 310
+    signature: pub fn handle(
+  - kind: fn
+    name: handle_at
+    modifier: null
+    path: crates/heptabao-server/src/service.rs
+    line: 352
+    signature: pub fn handle_at(
+  test_functions:
+  - name: no_cleartext_credentials_in_restart_state
+    path: crates/heptabao-server/src/auth_tests.rs
+    line: 57
+  - name: namespace_collision_and_cross_namespace_grants_are_rejected
+    path: crates/heptabao-server/src/auth_tests.rs
+    line: 81
+  - name: policy_deny_overrides_grants_and_sudo_never_implies_read
+    path: crates/heptabao-server/src/auth_tests.rs
+    line: 132
+  - name: ciphertext_is_randomized_and_authenticates_payload_context_and_key
+    path: crates/heptabao-server/src/crypto.rs
+    line: 366
+  - name: shamir_threshold_reconstructs_from_any_subset_and_rejects_tampering
+    path: crates/heptabao-server/src/crypto.rs
+    line: 388
+  - name: wrapped_barrier_key_binds_seal_key_and_metadata
+    path: crates/heptabao-server/src/crypto.rs
+    line: 408
+  - name: kv_lifecycle_cas_patch_and_destroy_survive_serialization
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 20
+  - name: namespace_and_mount_boundaries_are_structural
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 151
+  - name: kv_retention_metadata_expiry_and_subkeys
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 216
+  - name: kv_lists_direct_children_scan_pagination_and_v1
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 321
+  - name: failed_operations_never_modify_engine_state
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 387
+  - name: transit_all_aead_algorithms_authenticate_and_roundtrip_after_restart
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 426
+  - name: transit_aad_rejects_namespace_mount_and_name_transplants
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 484
+  - name: transit_rotation_rewrap_minimum_versions_and_soft_delete
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 565
+  - name: transit_sign_verify_hmac_and_hash_use_real_crypto
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 717
+  - name: transit_hmac_matches_rfc4231_test_case_1
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 825
+  - name: transit_batch_partial_success_mutates_and_failure_does_not_upsert
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 860
+  - name: transit_datakey_export_random_and_unsupported_modes_are_explicit
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 915
+  - name: capability_checks_track_create_update_patch_and_soft_deleted_versions
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1014
+  - name: redacted_debug_and_timestamp_boundaries
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1065
+  - name: totp_replay_rejection_survives_restart_reimport_and_clock_rollback
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1084
+  - name: totp_replay_state_is_isolated_by_namespace_mount_and_key
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1178
+  - name: totp_url_enrollment_import_metadata_and_deletion
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1268
+  - name: totp_guessing_limit_is_persisted_and_recovers_next_period
+    path: crates/heptabao-server/src/engine_tests.rs
+    line: 1337
+  - name: rfc6238_all_eighteen_vectors
+    path: crates/heptabao-server/src/engines/totp.rs
+    line: 462
+  - name: rfc4648_base32_encoding_and_invalid_forms
+    path: crates/heptabao-server/src/engines/totp.rs
+    line: 499
+  - name: rate_limiter_enforces_burst_refill_and_bounded_peer_table
+    path: crates/heptabao-server/src/http.rs
+    line: 648
+  - name: rate_limit_configuration_rejects_disabled_or_unbounded_values
+    path: crates/heptabao-server/src/http.rs
+    line: 671
+  - name: rejects_smuggling_duplicate_headers_and_ambiguous_paths
+    path: crates/heptabao-server/src/http.rs
+    line: 677
+  - name: reads_versioned_request_without_mutating_secret_body
+    path: crates/heptabao-server/src/http.rs
+    line: 688
+  - name: rejects_duplicate_json_and_ambiguous_namespaces
+    path: crates/heptabao-server/src/http.rs
+    line: 698
+  - name: repeated_socket_reads_cannot_extend_connection_deadline
+    path: crates/heptabao-server/src/http.rs
+    line: 731
+  - name: shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 83
+  - name: verified_rekey_survives_response_loss_restart_and_cancel
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 293
+  - name: init_seal_wrong_key_root_policy_kv_restart_and_no_plaintext_disk
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 619
+  - name: finite_use_is_committed_for_acl_denial_and_state_capacity_rejection
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 700
+  - name: unknown_commit_releases_no_secret_and_recovers_written_value
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 779
+  - name: failed_engine_and_auth_transactions_leave_only_the_durable_token_consumption
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 829
+  - name: all_failed_routes_are_audited_and_authenticated_audit_rejects_tampering
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 886
+  - name: result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_reopen
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 936
+  - name: wire_rejections_are_audited_without_request_material
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 995
+  - name: initialization_response_audit_failure_publishes_no_state_and_is_retryable
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 1026
+  - name: root_maintenance_routes_compact_snapshot_restore_and_reconcile
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 1077
+  - name: legacy_unkeyed_audit_and_partial_audit_tail_are_rejected
+    path: crates/heptabao-server/src/service_tests.rs
+    line: 1246
+- crate: heptabao-service-core
+  crate_path: crates/heptabao-service-core
+  cargo_toml_sha256: 087b15eaee03ade930f3144d443ab3c23bd8ab1f35a78d1370ad2647a80df100
+  source_files:
+  - path: crates/heptabao-service-core/src/lib.rs
+    sha256: f9729217732175557fa52fd6c9121803de0a146ede6a1746118ac49c28b0c604
+  module_guide: docs/modules/heptabao-service-core.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  - name: heptabao-identity
+    section: dependencies
+  - name: heptabao-kv-engine
+    section: dependencies
+  - name: heptabao-mount-router
+    section: dependencies
+  - name: heptabao-namespace
+    section: dependencies
+  - name: heptabao-operator-api
+    section: dependencies
+  - name: heptabao-policy
+    section: dependencies
+  - name: heptabao-telemetry
+    section: dependencies
+  - name: heptabao-token
+    section: dependencies
+  public_items:
+  - kind: enum
+    name: ServiceOperation
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 21
+    signature: pub enum ServiceOperation {
+  - kind: struct
+    name: ServiceRequest
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 58
+    signature: pub struct ServiceRequest {
+  - kind: const
+    name: DEFAULT_REQUEST_REGISTRY_CAPACITY
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 66
+    signature: 'pub const DEFAULT_REQUEST_REGISTRY_CAPACITY: usize = 256;'
+  - kind: struct
+    name: RequestRegistryCounts
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 103
+    signature: pub struct RequestRegistryCounts {
+  - kind: const
+    name: fn
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 111
+    signature: pub const fn total(self) -> usize {
+  - kind: enum
+    name: ServiceOutput
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 214
+    signature: pub enum ServiceOutput {
+  - kind: enum
+    name: ServiceResponse
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 225
+    signature: pub enum ServiceResponse {
+  - kind: struct
+    name: PostCommitError
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 231
+    signature: pub struct PostCommitError;
+  - kind: trait
+    name: PostCommitHook
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 241
+    signature: 'pub trait PostCommitHook: fmt::Debug {'
+  - kind: struct
+    name: NoopPostCommitHook
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 246
+    signature: pub struct NoopPostCommitHook;
+  - kind: struct
+    name: FailOncePostCommitHook
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 255
+    signature: pub struct FailOncePostCommitHook {
+  - kind: struct
+    name: ServiceCore
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 270
+    signature: 'pub struct ServiceCore<H: PostCommitHook> {'
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 286
+    signature: 'pub fn new(max_versions: usize, post_commit: H) -> Result<Self, ServiceError> {'
+  - kind: fn
+    name: new_with_request_capacity
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 294
+    signature: pub fn new_with_request_capacity(
+  - kind: fn
+    name: identities_mut
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 315
+    signature: pub fn identities_mut(&mut self) -> &mut IdentityStore {
+  - kind: fn
+    name: policies_mut
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 319
+    signature: pub fn policies_mut(&mut self) -> &mut PolicyStore {
+  - kind: fn
+    name: tokens_mut
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 323
+    signature: pub fn tokens_mut(&mut self) -> &mut TokenStore {
+  - kind: fn
+    name: namespaces_mut
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 327
+    signature: pub fn namespaces_mut(&mut self) -> &mut NamespaceStore {
+  - kind: fn
+    name: mounts_mut
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 331
+    signature: pub fn mounts_mut(&mut self) -> &mut MountRouter {
+  - kind: fn
+    name: kv
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 335
+    signature: pub fn kv(&self) -> &KvStore {
+  - kind: fn
+    name: telemetry
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 339
+    signature: pub fn telemetry(&self) -> &MemoryTelemetry {
+  - kind: fn
+    name: reconciliation
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 343
+    signature: pub fn reconciliation(&self) -> &ReconciliationStore {
+  - kind: fn
+    name: request_registry_counts
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 347
+    signature: pub fn request_registry_counts(&self) -> RequestRegistryCounts {
+  - kind: fn
+    name: resolve_unknown
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 351
+    signature: pub fn resolve_unknown(
+  - kind: fn
+    name: handle
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 381
+    signature: pub fn handle(
+  - kind: enum
+    name: ServiceError
+    modifier: null
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 542
+    signature: pub enum ServiceError {
+  test_functions:
+  - name: accepted_request_runs_identity_policy_namespace_mount_and_engine
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 655
+  - name: default_deny_and_token_revocation_stop_dispatch
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 696
+  - name: request_registry_rejects_zero_capacity
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 736
+  - name: completed_request_ids_are_non_evicting_and_capacity_fails_closed
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 744
+  - name: invalid_token_cannot_preempt_a_later_authenticated_request_id
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 816
+  - name: request_ids_are_scoped_to_authenticated_principal_and_namespace
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 857
+  - name: rejected_engine_operation_releases_request_identity_for_a_safe_retry
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 899
+  - name: rejected_mutation_does_not_evict_a_resolved_request_id
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 937
+  - name: invalid_input_does_not_grow_the_bounded_request_registry
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 988
+  - name: unresolved_effects_are_exactly_bound_and_never_evicted
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 1019
+  - name: recovery_references_disambiguate_cross_principal_unknown_outcomes
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 1096
+  - name: namespace_storage_keys_are_isolated_with_explicit_namespace_policy
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 1168
+  - name: qualified_namespace_policy_denies_cross_principal_access
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 1250
+  - name: unknown_after_entry_is_recorded_and_request_is_not_replayed
+    path: crates/heptabao-service-core/src/lib.rs
+    line: 1332
 - crate: heptabao-single-node-journal
   crate_path: crates/heptabao-single-node-journal
-  cargo_toml_sha256: 6c8619a9a64dc5fa807b9c4757492aca5a75e515ec235a589e52b9ea82807325
+  cargo_toml_sha256: d186d67be29572ea67c599e26b8d26021665025f39e812d607e5d45fe007d85b
   source_files:
   - path: crates/heptabao-single-node-journal/src/lib.rs
-    sha256: 383fa58a626f4b1c1ccbe52fedb4cf53b864f23ca23b4d5c73d818129a26c968
+    sha256: fd6c3d967712f1eb0a41f1c46ba49b0385b659f63187b1b07a1be19d3b9e45af
   module_guide: docs/modules/heptabao-single-node-journal.md
   internal_dependencies:
   - name: heptabao-filesystem-guard
@@ -3335,84 +7695,84 @@ modules:
     name: MAX_JOURNAL_RECORDS
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 42
+    line: 38
     signature: 'pub const MAX_JOURNAL_RECORDS: u64 = 65_536;'
   - kind: struct
     name: FileDurableJournal
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 46
+    line: 42
     signature: 'pub struct FileDurableJournal<A: JournalAuthenticator> {'
   - kind: fn
     name: create_new
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 68
+    line: 64
     signature: pub fn create_new(
   - kind: fn
     name: reopen_existing
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 96
+    line: 92
     signature: pub fn reopen_existing(
   - kind: fn
     name: root
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 119
+    line: 115
     signature: pub fn root(&self) -> &Path {
   - kind: fn
     name: root_identity
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 123
+    line: 119
     signature: pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {
   - kind: fn
     name: reconcile_next_orphan
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 127
+    line: 123
     signature: pub fn reconcile_next_orphan(&mut self) -> Result<AppendReceipt, FileJournalError<A::Error>> {
   - kind: enum
     name: FileJournalError
     modifier: null
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 429
+    line: 425
     signature: pub enum FileJournalError<E>
   test_functions:
   - name: create_append_replay_and_reopen_round_trip
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1037
+    line: 1033
   - name: stale_tail_is_rejected
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1072
+    line: 1068
   - name: tampered_entry_fails_authentication
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1095
+    line: 1091
   - name: exact_next_orphan_requires_explicit_reconciliation
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1130
+    line: 1126
   - name: authoritative_recovery_refreshes_stale_cached_tail
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1164
+    line: 1160
   - name: symlinked_root_is_rejected
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1197
+    line: 1193
   - name: journal_files_are_owner_only_on_unix
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1216
+    line: 1212
   - name: second_journal_writer_is_fenced
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1249
+    line: 1245
   - name: open_journal_remains_bound_after_root_path_replacement
     path: crates/heptabao-single-node-journal/src/lib.rs
-    line: 1266
+    line: 1262
 - crate: heptabao-single-node-store
   crate_path: crates/heptabao-single-node-store
-  cargo_toml_sha256: b44e28cf79ed86fefeedbb92bec0d971c00d864fe6e2f75b74612278cbb77d73
+  cargo_toml_sha256: 5d8f2ef4faef49c93bcc48cb3fe9e7d5759074e89d1662d4bff8051fcd3b787c
   source_files:
   - path: crates/heptabao-single-node-store/src/lib.rs
-    sha256: 86f0d89a01573007688c899a29d849776dacb46053847d7f41cdb162311e49c4
+    sha256: 3296509be8c9e18db7abdf9d4ca47ec267ad79bdd23fee3309843ae76f6c2bb9
   module_guide: docs/modules/heptabao-single-node-store.md
   internal_dependencies:
   - name: heptabao-filesystem-guard
@@ -3424,81 +7784,81 @@ modules:
     name: FileGenerationStore
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 44
+    line: 40
     signature: 'pub struct FileGenerationStore<P: IntegrityProvider> {'
   - kind: fn
     name: create_new
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 66
+    line: 62
     signature: pub fn create_new(
   - kind: fn
     name: reopen_existing
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 84
+    line: 80
     signature: pub fn reopen_existing(
   - kind: fn
     name: adopt_legacy
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 107
+    line: 103
     signature: pub fn adopt_legacy(
   - kind: fn
     name: root
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 141
+    line: 137
     signature: pub fn root(&self) -> &Path {
   - kind: fn
     name: root_identity
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 145
+    line: 141
     signature: pub fn root_identity(&self) -> heptabao_filesystem_guard::DirectoryIdentity {
   - kind: enum
     name: FileStoreError
     modifier: null
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 517
+    line: 513
     signature: pub enum FileStoreError<E>
   test_functions:
   - name: create_commit_load_and_reopen_round_trip
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1117
+    line: 1113
   - name: authoritative_recovery_classifies_unwritten_and_published_intents
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1157
+    line: 1153
   - name: exact_orphan_bundle_is_completed_only_for_matching_intent
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1190
+    line: 1186
   - name: compare_and_swap_rejects_stale_expected_generation
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1234
+    line: 1230
   - name: corrupt_bundle_is_never_silently_reopened
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1260
+    line: 1256
   - name: missing_current_after_initialization_fails_closed
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1284
+    line: 1280
   - name: legacy_state_requires_explicit_adoption
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1306
+    line: 1302
   - name: create_new_rejects_non_empty_root
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1334
+    line: 1330
   - name: durable_store_files_are_owner_only_on_unix
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1347
+    line: 1343
   - name: symlinked_storage_root_is_rejected
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1379
+    line: 1375
   - name: second_store_writer_is_fenced
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1398
+    line: 1394
   - name: open_store_remains_bound_after_root_path_replacement
     path: crates/heptabao-single-node-store/src/lib.rs
-    line: 1414
+    line: 1410
 - crate: heptabao-storage-api
   crate_path: crates/heptabao-storage-api
   cargo_toml_sha256: 7c31ca83f1253d29128905cce76400717e01de047bf52f388f9ba5f710c99ad3
@@ -3746,6 +8106,150 @@ modules:
   - name: zero_digest_is_rejected
     path: crates/heptabao-storage-api/src/lib.rs
     line: 411
+- crate: heptabao-telemetry
+  crate_path: crates/heptabao-telemetry
+  cargo_toml_sha256: 31cead0bd3fecb51d5afdc9c463e88a6fef6fab9c18026719b5b09e1a162841d
+  source_files:
+  - path: crates/heptabao-telemetry/src/lib.rs
+    sha256: e6dcd841869e8b423efef4cef756dd461f8d6a732970d168f15401a40db23c2d
+  module_guide: docs/modules/heptabao-telemetry.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: TelemetryEvent
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 22
+    signature: pub struct TelemetryEvent {
+  - kind: fn
+    name: new
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 28
+    signature: 'pub fn new(name: Id, labels: BTreeMap<Id, Id>) -> Result<Self, TelemetryError> {'
+  - kind: fn
+    name: name
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 37
+    signature: pub fn name(&self) -> &Id {
+  - kind: fn
+    name: labels
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 41
+    signature: pub fn labels(&self) -> &BTreeMap<Id, Id> {
+  - kind: struct
+    name: MemoryTelemetry
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 47
+    signature: pub struct MemoryTelemetry {
+  - kind: fn
+    name: record
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 52
+    signature: 'pub fn record(&mut self, event: TelemetryEvent) {'
+  - kind: fn
+    name: events
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 56
+    signature: pub fn events(&self) -> &[TelemetryEvent] {
+  - kind: enum
+    name: TelemetryError
+    modifier: null
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 62
+    signature: pub enum TelemetryError {
+  test_functions:
+  - name: sensitive_or_high_cardinality_labels_are_rejected
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 79
+  - name: approved_labels_are_recorded_without_payloads
+    path: crates/heptabao-telemetry/src/lib.rs
+    line: 90
+- crate: heptabao-token
+  crate_path: crates/heptabao-token
+  cargo_toml_sha256: 1e3ce2af36291d20f00c54855df8c2f38baa662ad2f29efb1e2ab130c445ade5
+  source_files:
+  - path: crates/heptabao-token/src/lib.rs
+    sha256: 175a9ac19ee752577d962cc2c45a895b650a34aea73764704065aba090b2a1d1
+  module_guide: docs/modules/heptabao-token.md
+  internal_dependencies:
+  - name: heptabao-domain
+    section: dependencies
+  public_items:
+  - kind: struct
+    name: TokenId
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 13
+    signature: pub struct TokenId(Id);
+  - kind: fn
+    name: parse
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 16
+    signature: 'pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {'
+  - kind: struct
+    name: TokenView
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 28
+    signature: pub struct TokenView {
+  - kind: struct
+    name: TokenStore
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 62
+    signature: pub struct TokenStore {
+  - kind: fn
+    name: issue
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 67
+    signature: pub fn issue(
+  - kind: fn
+    name: validate
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 99
+    signature: 'pub fn validate(&self, token_id: &TokenId, now: Tick) -> Result<TokenView, TokenError> {'
+  - kind: fn
+    name: renew
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 110
+    signature: pub fn renew(
+  - kind: fn
+    name: revoke
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 137
+    signature: 'pub fn revoke(&mut self, token_id: &TokenId, now: Tick) -> Result<(), TokenError> {'
+  - kind: fn
+    name: revoke_entity
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 150
+    signature: 'pub fn revoke_entity(&mut self, entity_id: &Id, now: Tick) -> usize {'
+  - kind: enum
+    name: TokenError
+    modifier: null
+    path: crates/heptabao-token/src/lib.rs
+    line: 164
+    signature: pub enum TokenError {
+  test_functions:
+  - name: token_lifecycle_enforces_expiry_renewal_and_revocation
+    path: crates/heptabao-token/src/lib.rs
+    line: 193
+  - name: token_identifier_debug_is_redacted
+    path: crates/heptabao-token/src/lib.rs
+    line: 212
 claims:
   qualification: false
   compatibility_claim: false

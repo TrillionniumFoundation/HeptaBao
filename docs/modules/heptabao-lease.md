@@ -8,7 +8,25 @@ This package owns lease issue, renewal, expiration and revocation state for secr
 
 ## Public API and ownership
 
-`LeaseIssue` is the single auditable command object for identifier, owner, scope, kind, issue tick, TTL and renewable flag. `LeaseStore` owns records keyed by bounded identifiers, while `LeaseView` exposes the accepted state and generation.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-lease`; Cargo SHA-256 `23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `LeaseKind` | `crates/heptabao-lease/src/lib.rs:13` | `pub enum LeaseKind {` |
+| `enum` | `LeaseState` | `crates/heptabao-lease/src/lib.rs:19` | `pub enum LeaseState {` |
+| `struct` | `LeaseIssue` | `crates/heptabao-lease/src/lib.rs:26` | `pub struct LeaseIssue {` |
+| `struct` | `LeaseView` | `crates/heptabao-lease/src/lib.rs:37` | `pub struct LeaseView {` |
+| `struct` | `LeaseStore` | `crates/heptabao-lease/src/lib.rs:79` | `pub struct LeaseStore {` |
+| `fn` | `issue` | `crates/heptabao-lease/src/lib.rs:84` | `pub fn issue(&mut self, command: LeaseIssue) -> Result<LeaseView, LeaseError> {` |
+| `fn` | `validate` | `crates/heptabao-lease/src/lib.rs:111` | `pub fn validate(&mut self, id: &Id, now: Tick) -> Result<LeaseView, LeaseError> {` |
+| `fn` | `renew` | `crates/heptabao-lease/src/lib.rs:124` | `pub fn renew(&mut self, id: &Id, now: Tick, ttl: u64) -> Result<LeaseView, LeaseError> {` |
+| `fn` | `revoke` | `crates/heptabao-lease/src/lib.rs:144` | `pub fn revoke(&mut self, id: &Id) -> Result<(), LeaseError> {` |
+| `fn` | `revoke_prefix` | `crates/heptabao-lease/src/lib.rs:158` | `pub fn revoke_prefix(&mut self, prefix: &CanonicalPath) -> usize {` |
+| `enum` | `LeaseError` | `crates/heptabao-lease/src/lib.rs:172` | `pub enum LeaseError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +67,18 @@ Operators can revoke one lease or a canonical prefix. Production operation still
 ## Evolution and open boundaries
 
 Revocation callbacks, lease parentage, quotas, tidy operations, durable scheduling and disaster-recovery replay remain open until integrated with the operation ledger.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-lease`
+- Crate path: `crates/heptabao-lease`
+- Cargo manifest SHA-256: `23320b5bc43b0658b19373e2fa290f867791b0ec13219341f1a24f777ba369a5`
+- Rust source files: `1`
+- Public lexical declarations: `11`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

@@ -8,7 +8,51 @@ This crate is the mandatory admission adapter from inbound mutation/read/list re
 
 ## Public API and ownership
 
-`RuntimeService<A,Z,U,B>` privately owns the authenticator, authorizer, audit sink and `DurableService<B>` and exposes no durable-writer accessor. `InboundMutation` carries only an opaque credential and caller request fields; callers cannot supply `AuthenticatedPrincipal` or `AuthorizationDigest`. `read(&Credential, namespace, resource, request_id)` returns an optional secret and `list(&Credential, namespace, prefix, request_id)` returns immediate child names. Both authenticate and authorize with distinct `OperationKind::Read`/`List`, then require pre-dispatch and result audit. `RuntimeOutcome` and `RuntimeError` are bounded result classes. `recovery_required` exposes the durable stop condition. `reconcile` is a trusted internal read-only lookup; a network assembly must gate it with its own operator authorization.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-runtime-service`; Cargo SHA-256 `c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `Credential` | `crates/heptabao-runtime-service/src/lib.rs:24` | `pub struct Credential(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-runtime-service/src/lib.rs:33` | `pub fn new(bytes: Vec<u8>) -> Result<Self, RuntimeError> {` |
+| `fn` | `expose` | `crates/heptabao-runtime-service/src/lib.rs:41` | `pub fn expose(&self) -> &[u8] {` |
+| `enum` | `OperationKind` | `crates/heptabao-runtime-service/src/lib.rs:53` | `pub enum OperationKind {` |
+| `enum` | `InboundOperation` | `crates/heptabao-runtime-service/src/lib.rs:61` | `pub enum InboundOperation {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:68` | `pub const fn kind(&self) -> OperationKind {` |
+| `struct` | `InboundMutation` | `crates/heptabao-runtime-service/src/lib.rs:86` | `pub struct InboundMutation {` |
+| `fn` | `new` | `crates/heptabao-runtime-service/src/lib.rs:95` | `pub fn new(` |
+| `struct` | `AuthenticatedPrincipal` | `crates/heptabao-runtime-service/src/lib.rs:135` | `pub struct AuthenticatedPrincipal(String);` |
+| `fn` | `new` | `crates/heptabao-runtime-service/src/lib.rs:138` | `pub fn new(value: impl Into<String>) -> Result<Self, RuntimeError> {` |
+| `fn` | `as_str` | `crates/heptabao-runtime-service/src/lib.rs:145` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `AuthorizationDigest` | `crates/heptabao-runtime-service/src/lib.rs:157` | `pub struct AuthorizationDigest([u8; 32]);` |
+| `fn` | `new` | `crates/heptabao-runtime-service/src/lib.rs:160` | `pub fn new(value: [u8; 32]) -> Result<Self, RuntimeError> {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:168` | `pub const fn into_inner(self) -> [u8; 32] {` |
+| `trait` | `Authenticator` | `crates/heptabao-runtime-service/src/lib.rs:179` | `pub trait Authenticator {` |
+| `trait` | `Authorizer` | `crates/heptabao-runtime-service/src/lib.rs:186` | `pub trait Authorizer {` |
+| `struct` | `AuthenticationFailure` | `crates/heptabao-runtime-service/src/lib.rs:197` | `pub struct AuthenticationFailure;` |
+| `struct` | `AuthorizationFailure` | `crates/heptabao-runtime-service/src/lib.rs:200` | `pub struct AuthorizationFailure;` |
+| `struct` | `AuditFailure` | `crates/heptabao-runtime-service/src/lib.rs:203` | `pub struct AuditFailure;` |
+| `enum` | `AuditStage` | `crates/heptabao-runtime-service/src/lib.rs:206` | `pub enum AuditStage {` |
+| `struct` | `AuditEvent` | `crates/heptabao-runtime-service/src/lib.rs:216` | `pub struct AuditEvent {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:225` | `pub const fn request_fingerprint(&self) -> &[u8; 32] {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:230` | `pub const fn stage(&self) -> AuditStage {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:235` | `pub const fn generation(&self) -> Option<u64> {` |
+| `trait` | `AuditSink` | `crates/heptabao-runtime-service/src/lib.rs:251` | `pub trait AuditSink {` |
+| `enum` | `RuntimeOutcome` | `crates/heptabao-runtime-service/src/lib.rs:256` | `pub enum RuntimeOutcome {` |
+| `enum` | `RuntimeError` | `crates/heptabao-runtime-service/src/lib.rs:268` | `pub enum RuntimeError {` |
+| `struct` | `RuntimeService` | `crates/heptabao-runtime-service/src/lib.rs:308` | `pub struct RuntimeService<A, Z, U, B>` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:344` | `pub const fn new(` |
+| `fn` | `handle` | `crates/heptabao-runtime-service/src/lib.rs:358` | `pub fn handle(&mut self, request: InboundMutation) -> Result<RuntimeOutcome, RuntimeError> {` |
+| `fn` | `handle_with_failpoint` | `crates/heptabao-runtime-service/src/lib.rs:362` | `pub fn handle_with_failpoint(` |
+| `fn` | `read` | `crates/heptabao-runtime-service/src/lib.rs:482` | `pub fn read(` |
+| `fn` | `list` | `crates/heptabao-runtime-service/src/lib.rs:510` | `pub fn list(` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:579` | `pub const fn recovery_required(&self) -> bool {` |
+| `fn` | `reconcile` | `crates/heptabao-runtime-service/src/lib.rs:584` | `pub fn reconcile(&self, recovery_reference: &str) -> ReconciliationStatus {` |
+| `const` | `fn` | `crates/heptabao-runtime-service/src/lib.rs:589` | `pub const fn generation(&self) -> u64 {` |
+| `fn` | `retained_request_count` | `crates/heptabao-runtime-service/src/lib.rs:594` | `pub fn retained_request_count(&self) -> usize {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -58,3 +102,18 @@ migration_authority: false
 release_authority: false
 authority_effect: NONE
 ```
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-runtime-service`
+- Crate path: `crates/heptabao-runtime-service`
+- Cargo manifest SHA-256: `c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927`
+- Rust source files: `1`
+- Public lexical declarations: `37`
+- Discovered test functions: `9`
+- Workspace-internal dependencies: `heptabao-durable-service` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

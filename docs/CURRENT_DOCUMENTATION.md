@@ -91,3 +91,9 @@ authority_effect: NONE
 ## Main-line reconciliation
 
 `docs/operations/HEPTABAO_MAIN_RECONCILIATION_2026_09_08.md` records reconciliation with main `92894aa52de06f2f4ba7d5f234a0a55f93314474`: current 45-package implementation and mandatory validation remain intact; inherited legal/security obligations and the historical V1.4.6 recovery baseline remain applicable within their original scope. Archived runner-probe material is historical evidence and is not an admitted workflow.
+
+Current normative set: HEPTABAO-PLAN-2026-09-07-V2.1 and its V2 canonical-state, product-capability, blocker-register, and master-plan documents.
+
+Supersession chain: V1.4.4 module documentation → V1.4.5 security invariants → V1.4.6 authoritative recovery → V1.4.7 post-merge truth → V2.0 canonical repository state → V2.1 active development plan.
+
+The V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure remain inherited historical evidence only; neither supersedes the active V2.1 plan or grants production authority.

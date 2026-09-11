@@ -8,7 +8,29 @@ This package owns term, membership and writer-fence semantics for an HA composit
 
 ## Public API and ownership
 
-`HaState` owns local role, term, leader, voters, learners and generation. `WriterFence` binds one leader, term and exact generation at a write boundary.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-ha-contracts`; Cargo SHA-256 `c16ed8d85802428a25d38a8de02e66165bfa81ce266bfd2777fffe42e000386e`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `NodeRole` | `crates/heptabao-ha-contracts/src/lib.rs:13` | `pub enum NodeRole {` |
+| `struct` | `WriterFence` | `crates/heptabao-ha-contracts/src/lib.rs:20` | `pub struct WriterFence {` |
+| `struct` | `HaState` | `crates/heptabao-ha-contracts/src/lib.rs:27` | `pub struct HaState {` |
+| `fn` | `new` | `crates/heptabao-ha-contracts/src/lib.rs:38` | `pub fn new(local_node: Id, voters: BTreeSet<Id>) -> Result<Self, HaError> {` |
+| `fn` | `role` | `crates/heptabao-ha-contracts/src/lib.rs:53` | `pub fn role(&self) -> NodeRole {` |
+| `fn` | `term` | `crates/heptabao-ha-contracts/src/lib.rs:57` | `pub fn term(&self) -> u64 {` |
+| `fn` | `local_node` | `crates/heptabao-ha-contracts/src/lib.rs:61` | `pub fn local_node(&self) -> &Id {` |
+| `fn` | `voters` | `crates/heptabao-ha-contracts/src/lib.rs:65` | `pub fn voters(&self) -> &BTreeSet<Id> {` |
+| `fn` | `observe_higher_term` | `crates/heptabao-ha-contracts/src/lib.rs:69` | `pub fn observe_higher_term(&mut self, term: u64) -> Result<(), HaError> {` |
+| `fn` | `grant_leadership` | `crates/heptabao-ha-contracts/src/lib.rs:80` | `pub fn grant_leadership(&mut self, leader_id: Id, term: u64) -> Result<WriterFence, HaError> {` |
+| `fn` | `validate_writer` | `crates/heptabao-ha-contracts/src/lib.rs:102` | `pub fn validate_writer(&self, fence: &WriterFence) -> Result<(), HaError> {` |
+| `fn` | `add_learner` | `crates/heptabao-ha-contracts/src/lib.rs:114` | `pub fn add_learner(&mut self, node_id: Id) -> Result<(), HaError> {` |
+| `fn` | `promote` | `crates/heptabao-ha-contracts/src/lib.rs:122` | `pub fn promote(&mut self, node_id: &Id) -> Result<(), HaError> {` |
+| `fn` | `remove_voter` | `crates/heptabao-ha-contracts/src/lib.rs:131` | `pub fn remove_voter(&mut self, node_id: &Id) -> Result<(), HaError> {` |
+| `enum` | `HaError` | `crates/heptabao-ha-contracts/src/lib.rs:150` | `pub enum HaError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +71,18 @@ Learner addition, promotion and voter removal are explicit transitions. Producti
 ## Evolution and open boundaries
 
 OpenRaft or another implementation, joint consensus, read indexes, snapshots and network fault qualification remain open.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-ha-contracts`
+- Crate path: `crates/heptabao-ha-contracts`
+- Cargo manifest SHA-256: `c16ed8d85802428a25d38a8de02e66165bfa81ce266bfd2777fffe42e000386e`
+- Rust source files: `1`
+- Public lexical declarations: `15`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

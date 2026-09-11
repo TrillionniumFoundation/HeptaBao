@@ -37,23 +37,23 @@ The allowed direction follows the system crate graph: provider-neutral types and
 ## Public API index
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
-Source-bound lexical inventory: `crates/heptabao-filesystem-guard`; Cargo SHA-256 `273084bb18dc1d6e29ea9cfcd156e65d92a034a6c00657224fa7a23b47d98d25`.
+Source-bound lexical inventory: `crates/heptabao-filesystem-guard`; Cargo SHA-256 `a9ea4b0d9f7a5284049fbbb60a81509260c4e675ea04d5933468363738da9cb8`.
 
 | Kind | Name | Source | Declaration |
 |---|---|---|---|
-| `const` | `MAX_GUARDED_LEAF_BYTES` | `crates/heptabao-filesystem-guard/src/lib.rs:28` | `pub const MAX_GUARDED_LEAF_BYTES: usize = 240;` |
-| `struct` | `DirectoryIdentity` | `crates/heptabao-filesystem-guard/src/lib.rs:40` | `pub struct DirectoryIdentity {` |
-| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:46` | `pub const fn device(self) -> u64 {` |
-| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:50` | `pub const fn inode(self) -> u64 {` |
-| `struct` | `ExclusiveDirectory` | `crates/heptabao-filesystem-guard/src/lib.rs:59` | `pub struct ExclusiveDirectory {` |
-| `fn` | `open` | `crates/heptabao-filesystem-guard/src/lib.rs:79` | `pub fn open(root: impl AsRef<Path>) -> Result<Self, DirectoryGuardError> {` |
-| `fn` | `original_path` | `crates/heptabao-filesystem-guard/src/lib.rs:97` | `pub fn original_path(&self) -> &Path {` |
-| `fn` | `access_path` | `crates/heptabao-filesystem-guard/src/lib.rs:101` | `pub fn access_path(&self) -> &Path {` |
-| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:105` | `pub const fn identity(&self) -> DirectoryIdentity {` |
-| `fn` | `leaf_path` | `crates/heptabao-filesystem-guard/src/lib.rs:109` | `pub fn leaf_path(&self, name: &str) -> Result<PathBuf, DirectoryGuardError> {` |
-| `fn` | `verify` | `crates/heptabao-filesystem-guard/src/lib.rs:114` | `pub fn verify(&self) -> Result<(), DirectoryGuardError> {` |
-| `fn` | `sync_all` | `crates/heptabao-filesystem-guard/src/lib.rs:141` | `pub fn sync_all(&self) -> Result<(), DirectoryGuardError> {` |
-| `enum` | `DirectoryGuardError` | `crates/heptabao-filesystem-guard/src/lib.rs:197` | `pub enum DirectoryGuardError {` |
+| `const` | `MAX_GUARDED_LEAF_BYTES` | `crates/heptabao-filesystem-guard/src/lib.rs:32` | `pub const MAX_GUARDED_LEAF_BYTES: usize = 240;` |
+| `struct` | `DirectoryIdentity` | `crates/heptabao-filesystem-guard/src/lib.rs:38` | `pub struct DirectoryIdentity {` |
+| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:44` | `pub const fn device(self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:48` | `pub const fn inode(self) -> u64 {` |
+| `struct` | `ExclusiveDirectory` | `crates/heptabao-filesystem-guard/src/lib.rs:57` | `pub struct ExclusiveDirectory {` |
+| `fn` | `open` | `crates/heptabao-filesystem-guard/src/lib.rs:77` | `pub fn open(root: impl AsRef<Path>) -> Result<Self, DirectoryGuardError> {` |
+| `fn` | `original_path` | `crates/heptabao-filesystem-guard/src/lib.rs:95` | `pub fn original_path(&self) -> &Path {` |
+| `fn` | `access_path` | `crates/heptabao-filesystem-guard/src/lib.rs:99` | `pub fn access_path(&self) -> &Path {` |
+| `const` | `fn` | `crates/heptabao-filesystem-guard/src/lib.rs:103` | `pub const fn identity(&self) -> DirectoryIdentity {` |
+| `fn` | `leaf_path` | `crates/heptabao-filesystem-guard/src/lib.rs:107` | `pub fn leaf_path(&self, name: &str) -> Result<PathBuf, DirectoryGuardError> {` |
+| `fn` | `verify` | `crates/heptabao-filesystem-guard/src/lib.rs:112` | `pub fn verify(&self) -> Result<(), DirectoryGuardError> {` |
+| `fn` | `sync_all` | `crates/heptabao-filesystem-guard/src/lib.rs:139` | `pub fn sync_all(&self) -> Result<(), DirectoryGuardError> {` |
+| `enum` | `DirectoryGuardError` | `crates/heptabao-filesystem-guard/src/lib.rs:195` | `pub enum DirectoryGuardError {` |
 
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
@@ -170,7 +170,7 @@ without weakening the public fail-closed `WriterBusy` behavior.
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-filesystem-guard`
 - Crate path: `crates/heptabao-filesystem-guard`
-- Cargo manifest SHA-256: `273084bb18dc1d6e29ea9cfcd156e65d92a034a6c00657224fa7a23b47d98d25`
+- Cargo manifest SHA-256: `a9ea4b0d9f7a5284049fbbb60a81509260c4e675ea04d5933468363738da9cb8`
 - Rust source files: `1`
 - Public lexical declarations: `13`
 - Discovered test functions: `7`

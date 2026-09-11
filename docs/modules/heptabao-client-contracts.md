@@ -8,7 +8,20 @@ This package owns client-side failure and retry classification. It does not perf
 
 ## Public API and ownership
 
-`ClientAttempt` binds a request identifier, operation class and attempt count. `FailureClass` maps to an explicit `RetryDecision`.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-client-contracts`; Cargo SHA-256 `3cb2674bb8da7d545ab93e3009c3e91c330a25e35cb88a4a1140fca6a0b81bad`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `OperationClass` | `crates/heptabao-client-contracts/src/lib.rs:9` | `pub enum OperationClass {` |
+| `enum` | `FailureClass` | `crates/heptabao-client-contracts/src/lib.rs:16` | `pub enum FailureClass {` |
+| `enum` | `RetryDecision` | `crates/heptabao-client-contracts/src/lib.rs:24` | `pub enum RetryDecision {` |
+| `struct` | `ClientAttempt` | `crates/heptabao-client-contracts/src/lib.rs:31` | `pub struct ClientAttempt {` |
+| `fn` | `decision` | `crates/heptabao-client-contracts/src/lib.rs:38` | `pub fn decision(&self, failure: FailureClass) -> RetryDecision {` |
+| `fn` | `next_with_new_id` | `crates/heptabao-client-contracts/src/lib.rs:48` | `pub fn next_with_new_id(&self, request_id: Id) -> Self {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +62,18 @@ Operators can use the decision model to distinguish retry, stop and readback. Ap
 ## Evolution and open boundaries
 
 Backoff, circuit breaking, redirects, leader discovery and transport implementations remain open.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-client-contracts`
+- Crate path: `crates/heptabao-client-contracts`
+- Cargo manifest SHA-256: `3cb2674bb8da7d545ab93e3009c3e91c330a25e35cb88a4a1140fca6a0b81bad`
+- Rust source files: `1`
+- Public lexical declarations: `6`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

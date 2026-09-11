@@ -8,7 +8,73 @@ This package implements a durable three-voter OpenRaft consensus core for HeptaB
 
 ## Public API and ownership
 
-`ReplicatedEnvelope` is the only application payload accepted by the public façade. It binds a bounded operation identifier, a nonzero 32-byte semantic digest and 1 byte to 1 MiB of already sealed ciphertext. `RaftRuntime` exclusively owns three `openraft::Raft` instances, their durable log/state-machine stores and the deterministic in-process transport used by the qualification profile. `replicate` returns `CommitReceipt` only after the leader accepts the request and all three state machines report the committed index. Callers never receive mutable access to OpenRaft stores, routers or node handles.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-raft-runtime`; Cargo SHA-256 `688cceef93fca7a05c56f110d5213723170927e9cea644a909d26c4f3ead345b`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `type` | `AnyResult` | `crates/heptabao-raft-runtime/src/cluster.rs:22` | `pub type AnyResult<T> = Result<T, Box<dyn Error + Send + Sync>>;` |
+| `struct` | `DurableNode` | `crates/heptabao-raft-runtime/src/cluster.rs:39` | `pub struct DurableNode {` |
+| `struct` | `DurableCluster` | `crates/heptabao-raft-runtime/src/cluster.rs:46` | `pub struct DurableCluster {` |
+| `fn` | `new` | `crates/heptabao-raft-runtime/src/cluster.rs:54` | `pub fn new(root: impl AsRef<Path>) -> AnyResult<Self> {` |
+| `fn` | `bootstrap_three_voters` | `crates/heptabao-raft-runtime/src/cluster.rs:127` | `pub async fn bootstrap_three_voters(&mut self) -> AnyResult<()> {` |
+| `fn` | `reopen_three_voters` | `crates/heptabao-raft-runtime/src/cluster.rs:166` | `pub async fn reopen_three_voters(&mut self) -> AnyResult<u64> {` |
+| `fn` | `consensus_leader` | `crates/heptabao-raft-runtime/src/cluster.rs:179` | `pub async fn consensus_leader(&self) -> AnyResult<u64> {` |
+| `fn` | `write` | `crates/heptabao-raft-runtime/src/cluster.rs:219` | `pub async fn write(&self, leader: u64, serial: u64, status: String) -> AnyResult<u64> {` |
+| `fn` | `wait_all_applied` | `crates/heptabao-raft-runtime/src/cluster.rs:262` | `pub async fn wait_all_applied(&self, index: u64) -> AnyResult<()> {` |
+| `fn` | `read_index` | `crates/heptabao-raft-runtime/src/cluster.rs:272` | `pub async fn read_index(&self, leader: u64) -> AnyResult<()> {` |
+| `fn` | `trigger_snapshot` | `crates/heptabao-raft-runtime/src/cluster.rs:306` | `pub async fn trigger_snapshot(&self, leader: u64, minimum_index: u64) -> AnyResult<()> {` |
+| `fn` | `state` | `crates/heptabao-raft-runtime/src/cluster.rs:366` | `pub async fn state(&self, id: u64) -> MemStoreStateMachine {` |
+| `fn` | `all_states_equal` | `crates/heptabao-raft-runtime/src/cluster.rs:370` | `pub async fn all_states_equal(&self) -> bool {` |
+| `fn` | `snapshot_status` | `crates/heptabao-raft-runtime/src/cluster.rs:383` | `pub async fn snapshot_status(&self) -> BTreeMap<u64, (bool, u64)> {` |
+| `fn` | `artifact_paths` | `crates/heptabao-raft-runtime/src/cluster.rs:398` | `pub fn artifact_paths(&self) -> BTreeMap<String, PathBuf> {` |
+| `fn` | `rpc_counts` | `crates/heptabao-raft-runtime/src/cluster.rs:418` | `pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {` |
+| `fn` | `exercise_partition` | `crates/heptabao-raft-runtime/src/cluster.rs:423` | `pub async fn exercise_partition(&self, leader: u64) -> AnyResult<(bool, bool)> {` |
+| `fn` | `shutdown` | `crates/heptabao-raft-runtime/src/cluster.rs:454` | `pub async fn shutdown(mut self) -> AnyResult<()> {` |
+| `struct` | `ReplicatedEnvelope` | `crates/heptabao-raft-runtime/src/lib.rs:31` | `pub struct ReplicatedEnvelope {` |
+| `fn` | `new` | `crates/heptabao-raft-runtime/src/lib.rs:38` | `pub fn new(` |
+| `struct` | `CommitReceipt` | `crates/heptabao-raft-runtime/src/lib.rs:88` | `pub struct CommitReceipt {` |
+| `enum` | `RaftRuntimeError` | `crates/heptabao-raft-runtime/src/lib.rs:95` | `pub enum RaftRuntimeError {` |
+| `struct` | `RaftRuntime` | `crates/heptabao-raft-runtime/src/lib.rs:117` | `pub struct RaftRuntime {` |
+| `fn` | `bootstrap` | `crates/heptabao-raft-runtime/src/lib.rs:131` | `pub async fn bootstrap(root: impl AsRef<Path>) -> Result<Self, RaftRuntimeError> {` |
+| `fn` | `reopen` | `crates/heptabao-raft-runtime/src/lib.rs:142` | `pub async fn reopen(root: impl AsRef<Path>) -> Result<Self, RaftRuntimeError> {` |
+| `fn` | `leader` | `crates/heptabao-raft-runtime/src/lib.rs:153` | `pub async fn leader(&self) -> Result<u64, RaftRuntimeError> {` |
+| `fn` | `replicate` | `crates/heptabao-raft-runtime/src/lib.rs:160` | `pub async fn replicate(` |
+| `fn` | `ensure_linearizable` | `crates/heptabao-raft-runtime/src/lib.rs:185` | `pub async fn ensure_linearizable(&self) -> Result<u64, RaftRuntimeError> {` |
+| `fn` | `trigger_snapshot` | `crates/heptabao-raft-runtime/src/lib.rs:192` | `pub async fn trigger_snapshot(&self, minimum_index: u64) -> Result<(), RaftRuntimeError> {` |
+| `fn` | `snapshot_status` | `crates/heptabao-raft-runtime/src/lib.rs:201` | `pub async fn snapshot_status(&self) -> Result<BTreeMap<u64, (bool, u64)>, RaftRuntimeError> {` |
+| `fn` | `states_converged` | `crates/heptabao-raft-runtime/src/lib.rs:205` | `pub async fn states_converged(&self) -> Result<bool, RaftRuntimeError> {` |
+| `fn` | `shutdown` | `crates/heptabao-raft-runtime/src/lib.rs:209` | `pub async fn shutdown(mut self) -> Result<(), RaftRuntimeError> {` |
+| `type` | `DurableRaft` | `crates/heptabao-raft-runtime/src/network.rs:20` | `pub type DurableRaft = Raft<TypeConfig, DurableStateMachine>;` |
+| `struct` | `DurableRouter` | `crates/heptabao-raft-runtime/src/network.rs:23` | `pub struct DurableRouter {` |
+| `fn` | `register` | `crates/heptabao-raft-runtime/src/network.rs:36` | `pub async fn register(&self, id: u64, raft: DurableRaft) {` |
+| `fn` | `unregister` | `crates/heptabao-raft-runtime/src/network.rs:40` | `pub async fn unregister(&self, id: u64) {` |
+| `fn` | `isolate` | `crates/heptabao-raft-runtime/src/network.rs:45` | `pub async fn isolate(&self, id: u64) {` |
+| `fn` | `pause` | `crates/heptabao-raft-runtime/src/network.rs:64` | `pub async fn pause(&self, id: u64) {` |
+| `fn` | `resume` | `crates/heptabao-raft-runtime/src/network.rs:69` | `pub async fn resume(&self, id: u64) {` |
+| `fn` | `heal_all` | `crates/heptabao-raft-runtime/src/network.rs:74` | `pub async fn heal_all(&self) {` |
+| `fn` | `rpc_counts` | `crates/heptabao-raft-runtime/src/network.rs:80` | `pub async fn rpc_counts(&self) -> BTreeMap<String, u64> {` |
+| `struct` | `DurableNetworkFactory` | `crates/heptabao-raft-runtime/src/network.rs:116` | `pub struct DurableNetworkFactory {` |
+| `fn` | `new` | `crates/heptabao-raft-runtime/src/network.rs:122` | `pub fn new(source: u64, router: DurableRouter) -> Self {` |
+| `struct` | `DurableNetwork` | `crates/heptabao-raft-runtime/src/network.rs:139` | `pub struct DurableNetwork {` |
+| `struct` | `DurableLogStore` | `crates/heptabao-raft-runtime/src/store.rs:422` | `pub struct DurableLogStore {` |
+| `fn` | `create` | `crates/heptabao-raft-runtime/src/store.rs:428` | `pub fn create(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `open_existing` | `crates/heptabao-raft-runtime/src/store.rs:442` | `pub fn open_existing(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `adopt_legacy` | `crates/heptabao-raft-runtime/src/store.rs:468` | `pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `state_path` | `crates/heptabao-raft-runtime/src/store.rs:509` | `pub fn state_path(&self) -> &Path {` |
+| `struct` | `DurableStateMachine` | `crates/heptabao-raft-runtime/src/store.rs:729` | `pub struct DurableStateMachine {` |
+| `fn` | `create` | `crates/heptabao-raft-runtime/src/store.rs:735` | `pub fn create(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `open_existing` | `crates/heptabao-raft-runtime/src/store.rs:749` | `pub fn open_existing(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `adopt_legacy` | `crates/heptabao-raft-runtime/src/store.rs:775` | `pub fn adopt_legacy(root: impl AsRef<Path>) -> io::Result<Self> {` |
+| `fn` | `get_state_machine` | `crates/heptabao-raft-runtime/src/store.rs:818` | `pub async fn get_state_machine(&self) -> MemStoreStateMachine {` |
+| `fn` | `has_current_snapshot` | `crates/heptabao-raft-runtime/src/store.rs:822` | `pub async fn has_current_snapshot(&self) -> bool {` |
+| `fn` | `generation` | `crates/heptabao-raft-runtime/src/store.rs:826` | `pub async fn generation(&self) -> u64 {` |
+| `fn` | `state_path` | `crates/heptabao-raft-runtime/src/store.rs:831` | `pub fn state_path(&self) -> &Path {` |
+| `fn` | `snapshot_path` | `crates/heptabao-raft-runtime/src/store.rs:835` | `pub fn snapshot_path(&self) -> &Path {` |
+| `fn` | `flip_first_payload_byte` | `crates/heptabao-raft-runtime/src/store.rs:978` | `pub fn flip_first_payload_byte(path: &Path) -> io::Result<()> {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +115,18 @@ Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime` for the package and t
 ## Evolution and open boundaries
 
 The next mandatory slice replaces the deterministic router with authenticated bounded inter-process RPC, composes consensus into `heptabao-server`, forwards clients to the current leader without forwarding credentials to unverified peers, and executes real three-process failover, quorum-loss, snapshot transfer, restart and rolling-upgrade tests. Joint-consensus membership changes, witness/learner operation, production storage performance, disk-full behavior, mTLS/KMS custody, cross-platform destructive tests and independent linearizability campaigns remain open. This guide grants no compatibility, production, migration or release authority.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-raft-runtime`
+- Crate path: `crates/heptabao-raft-runtime`
+- Cargo manifest SHA-256: `688cceef93fca7a05c56f110d5213723170927e9cea644a909d26c4f3ead345b`
+- Rust source files: `4`
+- Public lexical declarations: `59`
+- Discovered test functions: `27`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

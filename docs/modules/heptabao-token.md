@@ -8,7 +8,24 @@ This package owns opaque token issue, validation, renewal and revocation state. 
 
 ## Public API and ownership
 
-`TokenStore` owns token records. `TokenId` is redacted in debug output. `TokenView` exposes only authorization-relevant entity, policy, lifetime and generation metadata.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-token`; Cargo SHA-256 `1e3ce2af36291d20f00c54855df8c2f38baa662ad2f29efb1e2ab130c445ade5`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `TokenId` | `crates/heptabao-token/src/lib.rs:13` | `pub struct TokenId(Id);` |
+| `fn` | `parse` | `crates/heptabao-token/src/lib.rs:16` | `pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {` |
+| `struct` | `TokenView` | `crates/heptabao-token/src/lib.rs:28` | `pub struct TokenView {` |
+| `struct` | `TokenStore` | `crates/heptabao-token/src/lib.rs:62` | `pub struct TokenStore {` |
+| `fn` | `issue` | `crates/heptabao-token/src/lib.rs:67` | `pub fn issue(` |
+| `fn` | `validate` | `crates/heptabao-token/src/lib.rs:99` | `pub fn validate(&self, token_id: &TokenId, now: Tick) -> Result<TokenView, TokenError> {` |
+| `fn` | `renew` | `crates/heptabao-token/src/lib.rs:110` | `pub fn renew(` |
+| `fn` | `revoke` | `crates/heptabao-token/src/lib.rs:137` | `pub fn revoke(&mut self, token_id: &TokenId, now: Tick) -> Result<(), TokenError> {` |
+| `fn` | `revoke_entity` | `crates/heptabao-token/src/lib.rs:150` | `pub fn revoke_entity(&mut self, entity_id: &Id, now: Tick) -> usize {` |
+| `enum` | `TokenError` | `crates/heptabao-token/src/lib.rs:164` | `pub enum TokenError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +66,18 @@ Entity compromise can be contained with `revoke_entity`. Production operation st
 ## Evolution and open boundaries
 
 Child tokens, orphan tokens, periodic renewal, batch tokens, cubbyholes, accessors and durable revocation indexes remain open product work.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-token`
+- Crate path: `crates/heptabao-token`
+- Cargo manifest SHA-256: `1e3ce2af36291d20f00c54855df8c2f38baa662ad2f29efb1e2ab130c445ade5`
+- Rust source files: `1`
+- Public lexical declarations: `10`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

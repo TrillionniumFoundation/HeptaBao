@@ -8,7 +8,27 @@ This package owns retention-policy validation, compaction counts and a backup li
 
 ## Public API and ownership
 
-`RetentionPolicy` owns bounded version, audit and schedule limits. `BackupCoordinator` owns one backup state machine and its latest receipt.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-retention`; Cargo SHA-256 `a5cea0533a315670560cf62a20d7d465ae12f06c884b7c07ffcd0cfc77d8293f`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `RetentionPolicy` | `crates/heptabao-retention/src/lib.rs:12` | `pub struct RetentionPolicy {` |
+| `fn` | `validate` | `crates/heptabao-retention/src/lib.rs:20` | `pub fn validate(&self) -> Result<(), RetentionError> {` |
+| `fn` | `versions_to_prune` | `crates/heptabao-retention/src/lib.rs:34` | `pub fn versions_to_prune(&self, current_versions: usize) -> usize {` |
+| `enum` | `BackupState` | `crates/heptabao-retention/src/lib.rs:40` | `pub enum BackupState {` |
+| `struct` | `BackupReceipt` | `crates/heptabao-retention/src/lib.rs:49` | `pub struct BackupReceipt {` |
+| `struct` | `BackupCoordinator` | `crates/heptabao-retention/src/lib.rs:56` | `pub struct BackupCoordinator {` |
+| `fn` | `state` | `crates/heptabao-retention/src/lib.rs:77` | `pub fn state(&self) -> BackupState {` |
+| `fn` | `generation` | `crates/heptabao-retention/src/lib.rs:81` | `pub fn generation(&self) -> u64 {` |
+| `fn` | `begin` | `crates/heptabao-retention/src/lib.rs:85` | `pub fn begin(&mut self, source_generation: u64, now: Tick) -> Result<(), RetentionError> {` |
+| `fn` | `seal` | `crates/heptabao-retention/src/lib.rs:99` | `pub fn seal(&mut self, digest: [u8; 32]) -> Result<BackupReceipt, RetentionError> {` |
+| `fn` | `verify` | `crates/heptabao-retention/src/lib.rs:121` | `pub fn verify(&mut self, digest: [u8; 32]) -> Result<(), RetentionError> {` |
+| `fn` | `fail` | `crates/heptabao-retention/src/lib.rs:137` | `pub fn fail(&mut self) -> Result<(), RetentionError> {` |
+| `enum` | `RetentionError` | `crates/heptabao-retention/src/lib.rs:147` | `pub enum RetentionError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +69,18 @@ Operators must schedule backup and restore drills separately. A successful snaps
 ## Evolution and open boundaries
 
 Offsite custody, WORM retention, compaction execution, legal hold and destructive restore drills remain environment and operator work.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-retention`
+- Crate path: `crates/heptabao-retention`
+- Cargo manifest SHA-256: `a5cea0533a315670560cf62a20d7d465ae12f06c884b7c07ffcd0cfc77d8293f`
+- Rust source files: `1`
+- Public lexical declarations: `13`
+- Discovered test functions: `2`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

@@ -8,7 +8,29 @@ This package owns bounded local proxy planning for request credential replacemen
 
 ## Public API and ownership
 
-`ProxyPolicy` owns request/response header allowlists, body-size limits and one upstream timeout. `plan_request` consumes caller headers and a server-side `SecretValue`, removes untrusted credentials and produces a `ForwardPlan`; `plan_response` applies the corresponding response boundary.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-proxy`; Cargo SHA-256 `f7a165e2852da3eb931b8ac2637d2a957078fb615279ad8ff2998f58500e6c0d`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_HEADER_NAME_BYTES` | `crates/heptabao-proxy/src/lib.rs:12` | `pub const MAX_HEADER_NAME_BYTES: usize = 64;` |
+| `const` | `MAX_HEADER_VALUE_BYTES` | `crates/heptabao-proxy/src/lib.rs:13` | `pub const MAX_HEADER_VALUE_BYTES: usize = 8192;` |
+| `struct` | `HeaderName` | `crates/heptabao-proxy/src/lib.rs:34` | `pub struct HeaderName(String);` |
+| `fn` | `parse` | `crates/heptabao-proxy/src/lib.rs:37` | `pub fn parse(value: impl Into<String>) -> Result<Self, ProxyError> {` |
+| `fn` | `as_str` | `crates/heptabao-proxy/src/lib.rs:48` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `HeaderValue` | `crates/heptabao-proxy/src/lib.rs:60` | `pub struct HeaderValue(Vec<u8>);` |
+| `fn` | `new` | `crates/heptabao-proxy/src/lib.rs:63` | `pub fn new(bytes: Vec<u8>) -> Result<Self, ProxyError> {` |
+| `fn` | `expose` | `crates/heptabao-proxy/src/lib.rs:72` | `pub fn expose(&self) -> &[u8] {` |
+| `struct` | `ProxyRequest` | `crates/heptabao-proxy/src/lib.rs:98` | `pub struct ProxyRequest {` |
+| `struct` | `ForwardPlan` | `crates/heptabao-proxy/src/lib.rs:104` | `pub struct ForwardPlan {` |
+| `struct` | `ProxyPolicy` | `crates/heptabao-proxy/src/lib.rs:111` | `pub struct ProxyPolicy {` |
+| `fn` | `new` | `crates/heptabao-proxy/src/lib.rs:120` | `pub fn new(` |
+| `fn` | `plan_request` | `crates/heptabao-proxy/src/lib.rs:142` | `pub fn plan_request(` |
+| `fn` | `plan_response` | `crates/heptabao-proxy/src/lib.rs:173` | `pub fn plan_response(` |
+| `enum` | `ProxyError` | `crates/heptabao-proxy/src/lib.rs:252` | `pub enum ProxyError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +71,18 @@ Runbooks must address local listener ownership, upstream certificate rotation, t
 ## Evolution and open boundaries
 
 A real listener, TLS, HTTP/2 and HTTP/3 normalization, streaming limits, cancellation, upstream health, response body filtering and OpenBao proxy behavior remain open. Those implementations must preserve the credential and ambiguity boundaries defined here.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-proxy`
+- Crate path: `crates/heptabao-proxy`
+- Cargo manifest SHA-256: `f7a165e2852da3eb931b8ac2637d2a957078fb615279ad8ff2998f58500e6c0d`
+- Rust source files: `1`
+- Public lexical declarations: `15`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

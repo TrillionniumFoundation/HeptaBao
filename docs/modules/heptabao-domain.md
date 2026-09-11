@@ -8,7 +8,37 @@ This package owns bounded identifiers, canonical resource paths, monotonic ticks
 
 ## Public API and ownership
 
-`Id`, `CanonicalPath`, `Tick` and `SecretValue` are the authoritative shared value objects. Callers own lifecycle and persistence; this package owns validation, redacted formatting and buffer clearing for `SecretValue`.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-domain`; Cargo SHA-256 `d0c3fb4ef5719cc4add370b5188355008b6c269c57cefdced1d7dd026c339ec8`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `const` | `MAX_ID_BYTES` | `crates/heptabao-domain/src/lib.rs:9` | `pub const MAX_ID_BYTES: usize = 64;` |
+| `const` | `MAX_PATH_BYTES` | `crates/heptabao-domain/src/lib.rs:10` | `pub const MAX_PATH_BYTES: usize = 1024;` |
+| `const` | `MAX_SECRET_BYTES` | `crates/heptabao-domain/src/lib.rs:11` | `pub const MAX_SECRET_BYTES: usize = 1024 * 1024;` |
+| `enum` | `DomainError` | `crates/heptabao-domain/src/lib.rs:14` | `pub enum DomainError {` |
+| `struct` | `Id` | `crates/heptabao-domain/src/lib.rs:51` | `pub struct Id(String);` |
+| `fn` | `parse` | `crates/heptabao-domain/src/lib.rs:54` | `pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {` |
+| `fn` | `as_str` | `crates/heptabao-domain/src/lib.rs:77` | `pub fn as_str(&self) -> &str {` |
+| `struct` | `CanonicalPath` | `crates/heptabao-domain/src/lib.rs:95` | `pub struct CanonicalPath(String);` |
+| `fn` | `parse` | `crates/heptabao-domain/src/lib.rs:98` | `pub fn parse(value: impl Into<String>) -> Result<Self, DomainError> {` |
+| `fn` | `root` | `crates/heptabao-domain/src/lib.rs:128` | `pub fn root() -> Self {` |
+| `fn` | `as_str` | `crates/heptabao-domain/src/lib.rs:132` | `pub fn as_str(&self) -> &str {` |
+| `fn` | `child` | `crates/heptabao-domain/src/lib.rs:136` | `pub fn child(&self, child: &Id) -> Result<Self, DomainError> {` |
+| `fn` | `matches_prefix` | `crates/heptabao-domain/src/lib.rs:145` | `pub fn matches_prefix(&self, prefix: &Self) -> bool {` |
+| `fn` | `relative_to` | `crates/heptabao-domain/src/lib.rs:156` | `pub fn relative_to<'a>(&'a self, prefix: &Self) -> Option<&'a str> {` |
+| `struct` | `Tick` | `crates/heptabao-domain/src/lib.rs:182` | `pub struct Tick(u64);` |
+| `const` | `fn` | `crates/heptabao-domain/src/lib.rs:185` | `pub const fn new(value: u64) -> Self {` |
+| `const` | `fn` | `crates/heptabao-domain/src/lib.rs:189` | `pub const fn as_u64(self) -> u64 {` |
+| `fn` | `checked_add` | `crates/heptabao-domain/src/lib.rs:193` | `pub fn checked_add(self, delta: u64) -> Result<Self, DomainError> {` |
+| `struct` | `SecretValue` | `crates/heptabao-domain/src/lib.rs:202` | `pub struct SecretValue {` |
+| `fn` | `new` | `crates/heptabao-domain/src/lib.rs:207` | `pub fn new(bytes: Vec<u8>) -> Result<Self, DomainError> {` |
+| `fn` | `expose` | `crates/heptabao-domain/src/lib.rs:217` | `pub fn expose(&self) -> &[u8] {` |
+| `fn` | `len` | `crates/heptabao-domain/src/lib.rs:221` | `pub fn len(&self) -> usize {` |
+| `fn` | `is_empty` | `crates/heptabao-domain/src/lib.rs:225` | `pub fn is_empty(&self) -> bool {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +79,18 @@ There is no runtime service to operate. Limit changes are compatibility changes 
 ## Evolution and open boundaries
 
 Future work may add typed namespace/resource identifiers, but it must preserve canonical parsing and redaction. Operating-system memory protection and cryptographic key containers remain provider-level work.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-domain`
+- Crate path: `crates/heptabao-domain`
+- Cargo manifest SHA-256: `d0c3fb4ef5719cc4add370b5188355008b6c269c57cefdced1d7dd026c339ec8`
+- Rust source files: `1`
+- Public lexical declarations: `23`
+- Discovered test functions: `4`
+- Workspace-internal dependencies: none
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

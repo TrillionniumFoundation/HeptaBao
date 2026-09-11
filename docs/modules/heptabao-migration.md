@@ -8,7 +8,65 @@ This package owns migration writer authority, the immutable source-to-target inv
 
 ## Public API and ownership
 
-`MigrationState` remains the small in-memory writer-authority primitive. `MigrationInventory` owns the closed persisted-domain denominator and dependency graph. `MigrationBinding` binds an exact migration, source, target, profile and inventory digest. `DurableMigrationJournal` is the only owner allowed to publish durable copy, cutover and rollback state under an exclusive directory writer fence.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-migration`; Cargo SHA-256 `77984cf865ac37a5a7d49c9746551c690b5fda21cd5030725d4f32fee0337e9d`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `MigrationObjectClass` | `crates/heptabao-migration/src/durable.rs:31` | `pub enum MigrationObjectClass {` |
+| `struct` | `MigrationObject` | `crates/heptabao-migration/src/durable.rs:51` | `pub struct MigrationObject {` |
+| `fn` | `new` | `crates/heptabao-migration/src/durable.rs:61` | `pub fn new(` |
+| `struct` | `MigrationInventory` | `crates/heptabao-migration/src/durable.rs:110` | `pub struct MigrationInventory {` |
+| `fn` | `new` | `crates/heptabao-migration/src/durable.rs:116` | `pub fn new(mut objects: Vec<MigrationObject>) -> Result<Self, MigrationJournalError> {` |
+| `fn` | `objects` | `crates/heptabao-migration/src/durable.rs:182` | `pub fn objects(&self) -> &[MigrationObject] {` |
+| `fn` | `sha256` | `crates/heptabao-migration/src/durable.rs:186` | `pub fn sha256(&self) -> &str {` |
+| `fn` | `execution_order` | `crates/heptabao-migration/src/durable.rs:190` | `pub fn execution_order(&self) -> Result<Vec<&MigrationObject>, MigrationJournalError> {` |
+| `struct` | `MigrationBinding` | `crates/heptabao-migration/src/durable.rs:244` | `pub struct MigrationBinding {` |
+| `fn` | `new` | `crates/heptabao-migration/src/durable.rs:253` | `pub fn new(` |
+| `enum` | `MigrationObjectState` | `crates/heptabao-migration/src/durable.rs:297` | `pub enum MigrationObjectState {` |
+| `fn` | `requires_reconciliation` | `crates/heptabao-migration/src/durable.rs:322` | `pub fn requires_reconciliation(&self) -> bool {` |
+| `enum` | `DurableMigrationPhase` | `crates/heptabao-migration/src/durable.rs:330` | `pub enum DurableMigrationPhase {` |
+| `struct` | `WriterFenceReceipt` | `crates/heptabao-migration/src/durable.rs:343` | `pub struct WriterFenceReceipt {` |
+| `fn` | `new` | `crates/heptabao-migration/src/durable.rs:351` | `pub fn new(` |
+| `struct` | `CopyIntent` | `crates/heptabao-migration/src/durable.rs:382` | `pub struct CopyIntent {` |
+| `struct` | `DurableMigrationJournal` | `crates/heptabao-migration/src/durable.rs:626` | `pub struct DurableMigrationJournal {` |
+| `fn` | `create_new` | `crates/heptabao-migration/src/durable.rs:647` | `pub fn create_new(` |
+| `fn` | `open` | `crates/heptabao-migration/src/durable.rs:708` | `pub fn open(` |
+| `fn` | `binding` | `crates/heptabao-migration/src/durable.rs:735` | `pub fn binding(&self) -> MigrationBinding {` |
+| `const` | `fn` | `crates/heptabao-migration/src/durable.rs:739` | `pub const fn generation(&self) -> u64 {` |
+| `const` | `fn` | `crates/heptabao-migration/src/durable.rs:743` | `pub const fn phase(&self) -> DurableMigrationPhase {` |
+| `const` | `fn` | `crates/heptabao-migration/src/durable.rs:747` | `pub const fn source_writer_enabled(&self) -> bool {` |
+| `const` | `fn` | `crates/heptabao-migration/src/durable.rs:751` | `pub const fn target_writer_enabled(&self) -> bool {` |
+| `const` | `fn` | `crates/heptabao-migration/src/durable.rs:755` | `pub const fn recovered_from_previous(&self) -> bool {` |
+| `fn` | `object_state` | `crates/heptabao-migration/src/durable.rs:759` | `pub fn object_state(&self, object_id: &str) -> Option<&MigrationObjectState> {` |
+| `fn` | `pending_reconciliation` | `crates/heptabao-migration/src/durable.rs:763` | `pub fn pending_reconciliation(&self) -> Vec<&str> {` |
+| `fn` | `fence_source` | `crates/heptabao-migration/src/durable.rs:775` | `pub fn fence_source(` |
+| `fn` | `begin_object` | `crates/heptabao-migration/src/durable.rs:794` | `pub fn begin_object(` |
+| `fn` | `mark_outcome_unknown` | `crates/heptabao-migration/src/durable.rs:859` | `pub fn mark_outcome_unknown(` |
+| `fn` | `confirm_committed` | `crates/heptabao-migration/src/durable.rs:888` | `pub fn confirm_committed(` |
+| `fn` | `confirm_not_committed` | `crates/heptabao-migration/src/durable.rs:920` | `pub fn confirm_not_committed(` |
+| `fn` | `fail_object` | `crates/heptabao-migration/src/durable.rs:946` | `pub fn fail_object(` |
+| `fn` | `verify_copy` | `crates/heptabao-migration/src/durable.rs:990` | `pub fn verify_copy(&mut self) -> Result<(), MigrationJournalError> {` |
+| `fn` | `activate_target` | `crates/heptabao-migration/src/durable.rs:1007` | `pub fn activate_target(` |
+| `fn` | `fence_target` | `crates/heptabao-migration/src/durable.rs:1031` | `pub fn fence_target(` |
+| `fn` | `rollback` | `crates/heptabao-migration/src/durable.rs:1054` | `pub fn rollback(` |
+| `enum` | `MigrationJournalError` | `crates/heptabao-migration/src/durable.rs:1138` | `pub enum MigrationJournalError {` |
+| `use` | `durable::*` | `crates/heptabao-migration/src/lib.rs:16` | `pub use durable::*;` |
+| `enum` | `MigrationPhase` | `crates/heptabao-migration/src/lib.rs:19` | `pub enum MigrationPhase {` |
+| `struct` | `MigrationState` | `crates/heptabao-migration/src/lib.rs:31` | `pub struct MigrationState {` |
+| `fn` | `new` | `crates/heptabao-migration/src/lib.rs:42` | `pub fn new(migration_id: Id, source_id: Id, target_id: Id) -> Result<Self, MigrationError> {` |
+| `fn` | `fence_source` | `crates/heptabao-migration/src/lib.rs:57` | `pub fn fence_source(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `begin_copy` | `crates/heptabao-migration/src/lib.rs:65` | `pub fn begin_copy(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `verify_copy` | `crates/heptabao-migration/src/lib.rs:72` | `pub fn verify_copy(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `activate_target` | `crates/heptabao-migration/src/lib.rs:79` | `pub fn activate_target(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `fence_target` | `crates/heptabao-migration/src/lib.rs:90` | `pub fn fence_target(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `rollback` | `crates/heptabao-migration/src/lib.rs:98` | `pub fn rollback(&mut self) -> Result<(), MigrationError> {` |
+| `fn` | `fail` | `crates/heptabao-migration/src/lib.rs:117` | `pub fn fail(&mut self) {` |
+| `fn` | `validate_no_overlap` | `crates/heptabao-migration/src/lib.rs:124` | `pub fn validate_no_overlap(&self) -> Result<(), MigrationError> {` |
+| `enum` | `MigrationError` | `crates/heptabao-migration/src/lib.rs:144` | `pub enum MigrationError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -55,3 +113,18 @@ Operators create a closed inventory, bind the exact source and target, obtain an
 ## Evolution and open boundaries
 
 Still external or integration-owned are OpenBao provider acquisition, complete class-specific adapters, live interruption campaigns against every supported backend, platform qualification, independent data comparison, operator approval and migration authority. Those gaps remain fail-closed even when this journal passes all repository tests.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-migration`
+- Crate path: `crates/heptabao-migration`
+- Cargo manifest SHA-256: `77984cf865ac37a5a7d49c9746551c690b5fda21cd5030725d4f32fee0337e9d`
+- Rust source files: `2`
+- Public lexical declarations: `51`
+- Discovered test functions: `7`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies), `heptabao-filesystem-guard` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

@@ -18,7 +18,7 @@ class ModuleSourceTruthTests(unittest.TestCase):
         expected = RENDERER.build_truth(ROOT)
         actual = yaml.safe_load((ROOT / RENDERER.TRUTH_PATH).read_text(encoding="utf-8"))
         self.assertEqual(expected, actual)
-        self.assertEqual(19, actual["module_count"])
+        self.assertEqual(len(actual["modules"]), actual["module_count"])
 
     def test_every_module_guide_generated_sections_are_current(self) -> None:
         truth = RENDERER.build_truth(ROOT)

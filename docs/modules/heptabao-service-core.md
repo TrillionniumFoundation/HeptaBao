@@ -8,7 +8,40 @@ This package is the mandatory V2 in-process request composition root. It joins t
 
 ## Public API and ownership
 
-`ServiceCore` owns all in-memory control/data-plane stores, a `PostCommitHook` and a bounded request registry. `new_with_request_capacity` makes the process-lifetime mutation admission ceiling explicit; `request_registry_counts` exposes pending, unresolved and resolved counts; `resolve_unknown` releases an exact unresolved binding only after an operator resolution. `ServiceRequest` owns request identity, bearer token identifier, namespace, user-relative path and operation. `ServiceResponse` preserves completed versus unknown-after-entry outcomes.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-service-core`; Cargo SHA-256 `087b15eaee03ade930f3144d443ab3c23bd8ab1f35a78d1370ad2647a80df100`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `enum` | `ServiceOperation` | `crates/heptabao-service-core/src/lib.rs:21` | `pub enum ServiceOperation {` |
+| `struct` | `ServiceRequest` | `crates/heptabao-service-core/src/lib.rs:58` | `pub struct ServiceRequest {` |
+| `const` | `DEFAULT_REQUEST_REGISTRY_CAPACITY` | `crates/heptabao-service-core/src/lib.rs:66` | `pub const DEFAULT_REQUEST_REGISTRY_CAPACITY: usize = 256;` |
+| `struct` | `RequestRegistryCounts` | `crates/heptabao-service-core/src/lib.rs:103` | `pub struct RequestRegistryCounts {` |
+| `const` | `fn` | `crates/heptabao-service-core/src/lib.rs:111` | `pub const fn total(self) -> usize {` |
+| `enum` | `ServiceOutput` | `crates/heptabao-service-core/src/lib.rs:214` | `pub enum ServiceOutput {` |
+| `enum` | `ServiceResponse` | `crates/heptabao-service-core/src/lib.rs:225` | `pub enum ServiceResponse {` |
+| `struct` | `PostCommitError` | `crates/heptabao-service-core/src/lib.rs:231` | `pub struct PostCommitError;` |
+| `trait` | `PostCommitHook` | `crates/heptabao-service-core/src/lib.rs:241` | `pub trait PostCommitHook: fmt::Debug {` |
+| `struct` | `NoopPostCommitHook` | `crates/heptabao-service-core/src/lib.rs:246` | `pub struct NoopPostCommitHook;` |
+| `struct` | `FailOncePostCommitHook` | `crates/heptabao-service-core/src/lib.rs:255` | `pub struct FailOncePostCommitHook {` |
+| `struct` | `ServiceCore` | `crates/heptabao-service-core/src/lib.rs:270` | `pub struct ServiceCore<H: PostCommitHook> {` |
+| `fn` | `new` | `crates/heptabao-service-core/src/lib.rs:286` | `pub fn new(max_versions: usize, post_commit: H) -> Result<Self, ServiceError> {` |
+| `fn` | `new_with_request_capacity` | `crates/heptabao-service-core/src/lib.rs:294` | `pub fn new_with_request_capacity(` |
+| `fn` | `identities_mut` | `crates/heptabao-service-core/src/lib.rs:315` | `pub fn identities_mut(&mut self) -> &mut IdentityStore {` |
+| `fn` | `policies_mut` | `crates/heptabao-service-core/src/lib.rs:319` | `pub fn policies_mut(&mut self) -> &mut PolicyStore {` |
+| `fn` | `tokens_mut` | `crates/heptabao-service-core/src/lib.rs:323` | `pub fn tokens_mut(&mut self) -> &mut TokenStore {` |
+| `fn` | `namespaces_mut` | `crates/heptabao-service-core/src/lib.rs:327` | `pub fn namespaces_mut(&mut self) -> &mut NamespaceStore {` |
+| `fn` | `mounts_mut` | `crates/heptabao-service-core/src/lib.rs:331` | `pub fn mounts_mut(&mut self) -> &mut MountRouter {` |
+| `fn` | `kv` | `crates/heptabao-service-core/src/lib.rs:335` | `pub fn kv(&self) -> &KvStore {` |
+| `fn` | `telemetry` | `crates/heptabao-service-core/src/lib.rs:339` | `pub fn telemetry(&self) -> &MemoryTelemetry {` |
+| `fn` | `reconciliation` | `crates/heptabao-service-core/src/lib.rs:343` | `pub fn reconciliation(&self) -> &ReconciliationStore {` |
+| `fn` | `request_registry_counts` | `crates/heptabao-service-core/src/lib.rs:347` | `pub fn request_registry_counts(&self) -> RequestRegistryCounts {` |
+| `fn` | `resolve_unknown` | `crates/heptabao-service-core/src/lib.rs:351` | `pub fn resolve_unknown(` |
+| `fn` | `handle` | `crates/heptabao-service-core/src/lib.rs:381` | `pub fn handle(` |
+| `enum` | `ServiceError` | `crates/heptabao-service-core/src/lib.rs:542` | `pub enum ServiceError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +82,18 @@ Administrators configure stores through explicit mutable accessors in this candi
 ## Evolution and open boundaries
 
 Durable request-ledger integration, restart-safe recovery references, lease issuance, plugin execution, TLS transport, HA fencing and compatibility routing remain open. The in-memory hard-cap registry is an executable fail-closed semantic contract, not evidence of durable exactly-once processing or indefinite production availability.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-service-core`
+- Crate path: `crates/heptabao-service-core`
+- Cargo manifest SHA-256: `087b15eaee03ade930f3144d443ab3c23bd8ab1f35a78d1370ad2647a80df100`
+- Rust source files: `1`
+- Public lexical declarations: `26`
+- Discovered test functions: `14`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies), `heptabao-identity` (dependencies), `heptabao-kv-engine` (dependencies), `heptabao-mount-router` (dependencies), `heptabao-namespace` (dependencies), `heptabao-operator-api` (dependencies), `heptabao-policy` (dependencies), `heptabao-telemetry` (dependencies), `heptabao-token` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->

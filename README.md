@@ -23,6 +23,8 @@ The current candidate includes a repository-owned durable three-voter Raft conse
 
 Historical V1.x and V2.0 artifacts remain exact-source evidence but are not current state authority.
 
+Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **45 / 45** existing crates. This candidate remains not production-deployable.
+
 ## Mandatory path
 
 ```text

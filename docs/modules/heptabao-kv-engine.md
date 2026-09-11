@@ -8,7 +8,26 @@ This package owns an in-memory versioned KV state machine with compare-and-set, 
 
 ## Public API and ownership
 
-`KvStore` owns per-path version histories. `write` validates the current version before creating a map entry. `destroy` validates the complete version set before mutating any record. `KvRead` borrows a redacted secret value and returns owned metadata. Callers own namespace and mount qualification before providing the engine key.
+<!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
+Source-bound lexical inventory: `crates/heptabao-kv-engine`; Cargo SHA-256 `1548333d3e46ddb77572406809229ef0e8ade28f39e10a84d2d76f0c096192d0`.
+
+| Kind | Name | Source | Declaration |
+|---|---|---|---|
+| `struct` | `KvMetadata` | `crates/heptabao-kv-engine/src/lib.rs:13` | `pub struct KvMetadata {` |
+| `struct` | `KvRead` | `crates/heptabao-kv-engine/src/lib.rs:37` | `pub struct KvRead<'a> {` |
+| `struct` | `KvStore` | `crates/heptabao-kv-engine/src/lib.rs:54` | `pub struct KvStore {` |
+| `fn` | `new` | `crates/heptabao-kv-engine/src/lib.rs:60` | `pub fn new(max_versions: usize) -> Result<Self, KvError> {` |
+| `fn` | `current_version` | `crates/heptabao-kv-engine/src/lib.rs:70` | `pub fn current_version(&self, path: &CanonicalPath) -> u64 {` |
+| `fn` | `write` | `crates/heptabao-kv-engine/src/lib.rs:77` | `pub fn write(` |
+| `fn` | `read` | `crates/heptabao-kv-engine/src/lib.rs:112` | `pub fn read(&self, path: &CanonicalPath, version: Option<u64>) -> Result<KvRead<'_>, KvError> {` |
+| `fn` | `delete_latest` | `crates/heptabao-kv-engine/src/lib.rs:134` | `pub fn delete_latest(&mut self, path: &CanonicalPath) -> Result<KvMetadata, KvError> {` |
+| `fn` | `undelete` | `crates/heptabao-kv-engine/src/lib.rs:147` | `pub fn undelete(&mut self, path: &CanonicalPath, version: u64) -> Result<KvMetadata, KvError> {` |
+| `fn` | `destroy` | `crates/heptabao-kv-engine/src/lib.rs:163` | `pub fn destroy(&mut self, path: &CanonicalPath, versions: &[u64]) -> Result<usize, KvError> {` |
+| `fn` | `list` | `crates/heptabao-kv-engine/src/lib.rs:194` | `pub fn list(&self, prefix: &CanonicalPath) -> Vec<CanonicalPath> {` |
+| `enum` | `KvError` | `crates/heptabao-kv-engine/src/lib.rs:204` | `pub enum KvError {` |
+
+This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
+<!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
 ## State and data model
 
@@ -49,3 +68,18 @@ Version retention is configured at construction. Operators should treat CAS mism
 ## Evolution and open boundaries
 
 Metadata custom fields, check-and-set-required policy, subkeys, patch, delete metadata and encrypted durable storage remain open until the service and storage composition is qualified. New mutators must preserve preflight-before-commit and rejected-operation no-op semantics.
+
+## Machine-verified source truth
+
+<!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
+- Crate: `heptabao-kv-engine`
+- Crate path: `crates/heptabao-kv-engine`
+- Cargo manifest SHA-256: `1548333d3e46ddb77572406809229ef0e8ade28f39e10a84d2d76f0c096192d0`
+- Rust source files: `1`
+- Public lexical declarations: `12`
+- Discovered test functions: `5`
+- Workspace-internal dependencies: `heptabao-domain` (dependencies)
+- Authoritative inventory: `planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`
+- Regeneration: `python scripts/render_plan_v1_4_7.py --write`
+- Verification: `python scripts/render_plan_v1_4_7.py --check`
+<!-- END GENERATED V1.4.7 MODULE FACTS -->
