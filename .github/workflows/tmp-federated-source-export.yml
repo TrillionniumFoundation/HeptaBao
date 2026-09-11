@@ -1,0 +1,36 @@
+name: Temporary federated-auth exact source export
+
+on:
+  push:
+    branches:
+      - tmp/export-federated-auth-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout immutable branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bundle exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/federated-auth-source"
+          mkdir -p "$output"
+          git bundle create "$output/source.bundle" HEAD
+          git bundle verify "$output/source.bundle"
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$output/source-binding.txt"
+      - name: Upload exact source
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: federated-auth-source
+          path: ${{ runner.temp }}/federated-auth-source/
+          if-no-files-found: error
+          retention-days: 1
