@@ -81,7 +81,7 @@ jobs:
               readme,
               inherited,
               inherited
-              + "\nInherited repository gates remain visible: V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure are historical, non-current baselines. This candidate remains not production-deployable.\n",
+              + "\nInherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **45 / 45** existing crates. This candidate remains not production-deployable.\n",
           )
 
           portal = Path("docs/CURRENT_DOCUMENTATION.md")
@@ -92,7 +92,7 @@ jobs:
               portal,
               reconciliation,
               reconciliation
-              + "\nThe V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure remain inherited historical evidence only; neither supersedes the active V2.1 plan or grants production authority.\n",
+              + "\nCurrent normative set: HEPTABAO-PLAN-2026-09-07-V2.1 and its V2 canonical-state, product-capability, blocker-register, and master-plan documents.\n\nSupersession chain: V1.4.4 module documentation → V1.4.5 security invariants → V1.4.6 authoritative recovery → V1.4.7 post-merge truth → V2.0 canonical repository state → V2.1 active development plan.\n\nThe V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure remain inherited historical evidence only; neither supersedes the active V2.1 plan or grants production authority.\n",
           )
           print("PASS_CURRENT_ENTRY_INHERITANCE")
           PY
