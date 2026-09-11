@@ -139,6 +139,28 @@ pub struct VerifiedPrincipal {
     pub expires_at: u64,
 }
 
+impl VerifiedPrincipal {
+    pub fn replay_fingerprint(&self) -> [u8; 32] {
+        let mut replay_identity = Vec::with_capacity(
+            self.issuer.len()
+                + self.subject.len()
+                + self.token_id.len()
+                + self.namespace.as_ref().map_or(0, String::len)
+                + 4,
+        );
+        for value in [
+            self.issuer.as_str(),
+            self.subject.as_str(),
+            self.namespace.as_deref().unwrap_or(""),
+            self.token_id.as_str(),
+        ] {
+            replay_identity.extend_from_slice(value.as_bytes());
+            replay_identity.push(0);
+        }
+        digest_bytes(&replay_identity)
+    }
+}
+
 #[derive(Debug)]
 pub struct JwtVerifier {
     policy: TrustPolicy,
@@ -165,12 +187,7 @@ impl JwtVerifier {
         })
     }
 
-    pub fn verify_and_record(
-        &self,
-        token: &str,
-        now: u64,
-        replay: &mut PersistentReplayLedger,
-    ) -> Result<VerifiedPrincipal, AuthError> {
+    pub fn verify(&self, token: &str, now: u64) -> Result<VerifiedPrincipal, AuthError> {
         if token.is_empty() || token.len() > MAX_TOKEN_BYTES || !token.is_ascii() {
             return Err(AuthError::MalformedToken);
         }
@@ -239,23 +256,6 @@ impl JwtVerifier {
         {
             return Err(AuthError::TokenTimeInvalid);
         }
-        let mut replay_identity = Vec::with_capacity(
-            issuer.len()
-                + subject.len()
-                + token_id.len()
-                + namespace.as_ref().map_or(0, String::len)
-                + 4,
-        );
-        for value in [
-            issuer.as_str(),
-            subject.as_str(),
-            namespace.as_deref().unwrap_or(""),
-            token_id.as_str(),
-        ] {
-            replay_identity.extend_from_slice(value.as_bytes());
-            replay_identity.push(0);
-        }
-        replay.record_once(digest_bytes(&replay_identity), expires_at, now)?;
         Ok(VerifiedPrincipal {
             issuer,
             subject,
@@ -266,6 +266,17 @@ impl JwtVerifier {
             issued_at,
             expires_at,
         })
+    }
+
+    pub fn verify_and_record(
+        &self,
+        token: &str,
+        now: u64,
+        replay: &mut PersistentReplayLedger,
+    ) -> Result<VerifiedPrincipal, AuthError> {
+        let principal = self.verify(token, now)?;
+        replay.record_once(principal.replay_fingerprint(), principal.expires_at, now)?;
+        Ok(principal)
     }
 }
 
@@ -341,14 +352,13 @@ impl MfaVerifier {
         })
     }
 
-    pub fn verify_and_record(
+    pub fn verify(
         &self,
         proof: &MfaProof,
         expected_subject: &str,
         expected_channel_binding: [u8; 32],
         now: u64,
-        replay: &mut PersistentReplayLedger,
-    ) -> Result<(), AuthError> {
+    ) -> Result<[u8; 32], AuthError> {
         if proof.subject != expected_subject
             || proof.channel_binding != expected_channel_binding
             || proof.nonce == [0; 16]
@@ -372,7 +382,19 @@ impl MfaVerifier {
         hmac::verify(&key, &body, &proof.tag).map_err(|_| AuthError::InvalidMfaProof)?;
         let mut replay_material = body;
         replay_material.extend_from_slice(&proof.tag);
-        replay.record_once(digest_bytes(&replay_material), proof.expires_at, now)
+        Ok(digest_bytes(&replay_material))
+    }
+
+    pub fn verify_and_record(
+        &self,
+        proof: &MfaProof,
+        expected_subject: &str,
+        expected_channel_binding: [u8; 32],
+        now: u64,
+        replay: &mut PersistentReplayLedger,
+    ) -> Result<(), AuthError> {
+        let fingerprint = self.verify(proof, expected_subject, expected_channel_binding, now)?;
+        replay.record_once(fingerprint, proof.expires_at, now)
     }
 }
 
