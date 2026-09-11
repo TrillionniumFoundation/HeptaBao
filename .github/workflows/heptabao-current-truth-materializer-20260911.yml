@@ -63,6 +63,39 @@ jobs:
           cp "$RUNNER_TEMP/patcher.py" scripts/.patcher.py
           python scripts/.patcher.py
           rm scripts/.patcher.py
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              value = path.read_text(encoding="utf-8")
+              count = value.count(old)
+              if count != 1:
+                  raise SystemExit(f"current-entry anchor drift for {path}: {count}")
+              path.write_text(value.replace(old, new, 1), encoding="utf-8")
+
+          readme = Path("README.md")
+          inherited = (
+              "Historical V1.x and V2.0 artifacts remain exact-source evidence but are not current state authority.\n"
+          )
+          replace_once(
+              readme,
+              inherited,
+              inherited
+              + "\nInherited repository gates remain visible: V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure are historical, non-current baselines. This candidate remains not production-deployable.\n",
+          )
+
+          portal = Path("docs/CURRENT_DOCUMENTATION.md")
+          reconciliation = (
+              "`docs/operations/HEPTABAO_MAIN_RECONCILIATION_2026_09_08.md` records reconciliation with main `92894aa52de06f2f4ba7d5f234a0a55f93314474`: current 45-package implementation and mandatory validation remain intact; inherited legal/security obligations and the historical V1.4.6 recovery baseline remain applicable within their original scope. Archived runner-probe material is historical evidence and is not an admitted workflow.\n"
+          )
+          replace_once(
+              portal,
+              reconciliation,
+              reconciliation
+              + "\nThe V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure remain inherited historical evidence only; neither supersedes the active V2.1 plan or grants production authority.\n",
+          )
+          print("PASS_CURRENT_ENTRY_INHERITANCE")
+          PY
           python scripts/render_plan_v1_4_7.py --write
           git diff --name-status
           test -n "$(git diff --name-only)"
@@ -79,6 +112,8 @@ jobs:
           truth = renderer.build_truth(root)
           allowed = {path.as_posix() for path in renderer.normative_paths(truth)}
           allowed.update({
+              "README.md",
+              "docs/CURRENT_DOCUMENTATION.md",
               "planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_7.yaml",
               "scripts/_render_plan_v1_4_7_baseline.py",
               "scripts/render_plan_v1_4_7.py",
