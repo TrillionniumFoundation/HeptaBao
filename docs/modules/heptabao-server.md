@@ -4,9 +4,13 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 ## Purpose and non-goals
 
-This package provides the runnable Linux single-node HTTPS secrets service. It joins persistent authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. This is a bounded development candidate; it does not implement production networked Raft, qualified KMS auto-unseal, dynamic database/cloud credentials, an external rollback anchor or full OpenBao compatibility.
+This package provides the runnable Linux single-node HTTPS secrets service. It joins persistent authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. This is a bounded development candidate; it now includes per-process networked Raft composition, but does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, an external rollback anchor or full OpenBao compatibility.
 
 ## Public API and ownership
+
+Current source binding: `docs/modules/CURRENT_SOURCE_BINDING.md` and
+`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`. Any V1.4.7 generated
+blocks below are historical lexical snapshots, not current API authority.
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-server`; Cargo SHA-256 `490216f98630a660661ec40865f476a1d6779868874c6a1a2c773aac569b97d1`.
@@ -64,7 +68,7 @@ Malformed input yields 400, missing/invalid/denied credentials 403, absent or un
 
 ## Concurrency and ordering
 
-One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including wrapping, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB body and 1 MiB response. Authentication can be CPU-expensive; throughput tuning and rate limiting remain unqualified.
+One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including wrapping, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB body and 1 MiB response. Per-peer rate-limit controls exist; authentication is CPU-expensive and production throughput/SLO qualification remains open.
 
 ## Security and privacy
 
@@ -74,7 +78,7 @@ The request principal is an internal capability, not a public authentication tok
 
 ## Persistence and compatibility
 
-All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and stops before the 64 MiB journal or 32 MiB audit budget is exhausted. No automatic compaction, online backup or supported format upgrade is implemented. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
+All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and stops before the 64 MiB journal or 32 MiB audit budget is exhausted. Root-authorized manual compaction and encrypted backup export/restore are implemented; automatic audit rotation and qualified format upgrades remain open. The snapshot response uses the HeptaBao encrypted-backup profile, not OpenBao snapshot bytes. Direct local restore is rejected when HA is enabled. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
 
 ## Observability
 
@@ -119,3 +123,56 @@ The authenticated request principal is crate-internal, non-cloneable and non-ser
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Current per-process HA composition
+
+The binary accepts `--ha-config /absolute/ha.json` in addition to the existing
+`--config`. `Service::new_with_ha` connects `HaProcess` to one `ProcessRaftNode`
+voter per process. The server crate now depends on `heptabao-ha-service` and
+`heptabao-raft-runtime` as well as `heptabao-durable-service`.
+
+The HA config requires `node_id`, `cluster_id`, `raft_dir`, `listen`, `ca_file`,
+`cert_file`, `key_file`, `replication_key_file` and `peers`. Each peer supplies
+`node_name`, `address`, `server_name` and `certificate_sha256`. Optional
+`bootstrap`, `peer_timeout_ms` (default 750) and `max_inflight` (default 64) are
+validated before entry. The replication key is an owner-protected 32-byte file,
+not a plaintext value in configuration or logs.
+
+Authority-bearing requests cross a current-leader/ReadIndex barrier. Complete
+application state is sealed once, proposed with its exact predecessor digest,
+replicated and reconciled into local durable state. Standbys forward only to a
+pinned mTLS peer; the receiving leader re-enters the public service dispatch
+boundary rather than trusting a client-supplied principal. After-entry failures
+remain uncertain; losing a response does not authorize replay of a write.
+
+Forward request Debug exposes only source, target and bounded method; path,
+namespace, token and body are redacted. Response Debug exposes direction/status
+and redacts the body. Serialization staging buffers are zeroized on drop,
+including oversize rejection; this does not guarantee removal of every library
+or allocator copy. Hostile Rust tests exercise redaction and frame bounds.
+
+Synthetic three-process testing is provided by
+`qa/openbao-acceptance/ha_destructive.py`. It creates its own private state and
+TLS identities, never attaches to a pre-existing deployment, and never treats a
+successful stale read as acceptable eventual consistency. Its scenario receipts
+are repository-controlled observations, not independent HA or release approval.
+
+## HA bootstrap and bounded process validation
+
+Set `cluster_id` in every HA configuration to the exact cluster identity returned
+by the initialized, unsealed seed's `sys/health`. Initialization uses canonical
+Base64 of sixteen random bytes; do not invent an unrelated name or rewrite an
+existing durable identity. The replication codec accepts that exact canonical
+encoding in addition to legacy named identities. Unseal rejects an HA/application
+cluster mismatch before installing decrypted local state. Peer receiver workers
+are bounded to 4–16 by `max_inflight`; only one forwarded public request may wait
+for service admission, leaving receiver capacity for consensus traffic.
+
+The process runtime uses a 200 ms heartbeat and 1000–2000 ms election timeouts;
+TLS peers set TCP_NODELAY. These are bounded development settings, not a measured
+production latency or availability SLO. ReadIndex remains mandatory; no cached or
+lease-read success replaces quorum confirmation. The destructive fixture performs
+read-only leader stabilization before fault-phase writes, never retries an
+ambiguous write, and rejects a successful stale read immediately. Its synthetic
+cold-cloned seed is not an implementation of production peer enrollment. Each
+result binds the actual binary digest and lists uncovered fault categories.

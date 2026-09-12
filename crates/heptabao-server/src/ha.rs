@@ -171,6 +171,22 @@ struct RaftWireFrame {
     payload: Vec<u8>,
 }
 
+// Fixed workers bound inbound TLS memory and keep a forwarded client request
+// from monopolizing the only receiver of Raft votes and append messages.
+struct PeerListener {
+    stop: Arc<AtomicBool>,
+    workers: Vec<JoinHandle<()>>,
+}
+
+impl Drop for PeerListener {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Release);
+        for worker in self.workers.drain(..) {
+            let _ = worker.join();
+        }
+    }
+}
+
 pub(crate) struct CommittedApplicationState {
     pub digest: [u8; 32],
     pub bytes: Zeroizing<Vec<u8>>,
@@ -184,8 +200,7 @@ pub struct HaProcess {
     peers: Arc<BTreeMap<u64, NodeId>>,
     forward_transport: MutualTlsPeerTransport,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
-    stop: Arc<AtomicBool>,
-    listener: Option<JoinHandle<()>>,
+    listener: Option<PeerListener>,
 }
 
 impl fmt::Debug for HaProcess {
@@ -280,76 +295,101 @@ impl HaProcess {
         let identities =
             PinnedClientCertificateMap::new(pinned).map_err(|error| error.to_string())?;
         let stop = Arc::new(AtomicBool::new(false));
-        let listener_stop = stop.clone();
-        let runtime_handle = runtime.handle().clone();
+        let listener = Arc::new(listener);
+        let identities = Arc::new(identities);
+        let ids_by_node = Arc::new(ids_by_node);
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
-        let listener_forward_handler = forward_handler.clone();
+        let forward_slots = Arc::new(Semaphore::new(1));
+        let mut listener_pool = PeerListener {
+            stop: stop.clone(),
+            workers: Vec::new(),
+        };
         let local_id = config.node_id;
-        let listener_thread = thread::Builder::new()
-            .name(format!("heptabao-raft-peer-{local_id}"))
-            .spawn(move || {
-                while !listener_stop.load(Ordering::Acquire) {
-                    let service = rpc_service.clone();
-                    let ids = &ids_by_node;
-                    let handle = &runtime_handle;
-                    let result = serve_one_mtls_peer_frame(
-                        &listener,
-                        server_tls.clone(),
-                        &identities,
-                        timeout,
-                        |peer, frame| {
-                            let source = *ids
-                                .get(&peer)
-                                .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
-                            if is_forward_request(&frame) {
-                                let request = decode_forward_request(&frame)
+        for worker_id in 0..config.max_inflight.clamp(4, 16) {
+            let listener_stop = stop.clone();
+            let listener = listener.clone();
+            let identities = identities.clone();
+            let ids_by_node = ids_by_node.clone();
+            let server_tls = server_tls.clone();
+            let rpc_service = rpc_service.clone();
+            let runtime_handle = runtime.handle().clone();
+            let listener_forward_handler = forward_handler.clone();
+            let forward_slots = forward_slots.clone();
+            let worker = thread::Builder::new()
+                .name(format!("heptabao-raft-peer-{local_id}-{worker_id}"))
+                .spawn(move || {
+                    while !listener_stop.load(Ordering::Acquire) {
+                        let service = rpc_service.clone();
+                        let ids = &ids_by_node;
+                        let handle = &runtime_handle;
+                        let result = serve_one_mtls_peer_frame(
+                            &listener,
+                            server_tls.clone(),
+                            &identities,
+                            timeout,
+                            |peer, frame| {
+                                let source = *ids
+                                    .get(&peer)
+                                    .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
+                                if is_forward_request(&frame) {
+                                    let request = decode_forward_request(&frame)
+                                        .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                    if request.source != source || request.target != local_id {
+                                        return Err(
+                                            heptabao_ha_service::HaError::PeerAuthenticationFailed,
+                                        );
+                                    }
+                                    // At most one forward may await the public service mutex.
+                                    // The remaining workers stay available to consensus traffic.
+                                    let _forward_slot =
+                                        forward_slots.clone().try_acquire_owned().map_err(
+                                            |_| heptabao_ha_service::HaError::WriterBusy,
+                                        )?;
+                                    let handler = listener_forward_handler
+                                        .lock()
+                                        .map_err(|_| heptabao_ha_service::HaError::Transport)?
+                                        .clone()
+                                        .ok_or(heptabao_ha_service::HaError::NotLeader)?;
+                                    let response = handler(request);
+                                    return encode_forward_response(
+                                        local_id,
+                                        source,
+                                        response.status,
+                                        &response.body,
+                                    )
+                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
+                                }
+                                let request = decode_raft_frame(&frame)
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
-                                if request.source != source || request.target != local_id {
+                                if request.role != RAFT_FRAME_REQUEST
+                                    || request.source != source
+                                    || request.target != local_id
+                                {
                                     return Err(
                                         heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                     );
                                 }
-                                let handler = listener_forward_handler
-                                    .lock()
-                                    .map_err(|_| heptabao_ha_service::HaError::Transport)?
-                                    .clone()
-                                    .ok_or(heptabao_ha_service::HaError::NotLeader)?;
-                                let response = handler(request);
-                                return encode_forward_response(
-                                    local_id,
-                                    source,
-                                    response.status,
-                                    &response.body,
-                                )
-                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
-                            }
-                            let request = decode_raft_frame(&frame)
-                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
-                            if request.role != RAFT_FRAME_REQUEST
-                                || request.source != source
-                                || request.target != local_id
-                            {
-                                return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
-                            }
-                            let payload = handle
-                                .block_on(service.handle(source, request.kind, request.payload))
-                                .map_err(map_remote_service_error)?;
-                            encode_raft_frame(RaftWireFrame {
-                                role: RAFT_FRAME_RESPONSE,
-                                source: local_id,
-                                target: source,
-                                kind: request.kind,
-                                payload,
-                            })
-                            .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
-                        },
-                    );
-                    if result.is_err() {
-                        thread::sleep(Duration::from_millis(10));
+                                let payload = handle
+                                    .block_on(service.handle(source, request.kind, request.payload))
+                                    .map_err(map_remote_service_error)?;
+                                encode_raft_frame(RaftWireFrame {
+                                    role: RAFT_FRAME_RESPONSE,
+                                    source: local_id,
+                                    target: source,
+                                    kind: request.kind,
+                                    payload,
+                                })
+                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
+                            },
+                        );
+                        if result.is_err() {
+                            thread::sleep(Duration::from_millis(2));
+                        }
                     }
-                }
-            })
-            .map_err(|error| error.to_string())?;
+                })
+                .map_err(|_| "cannot start bounded HA peer worker".to_owned())?;
+            listener_pool.workers.push(worker);
+        }
 
         if !existing && config.bootstrap {
             runtime
@@ -388,8 +428,7 @@ impl HaProcess {
             peers,
             forward_transport: transport,
             forward_handler,
-            stop,
-            listener: Some(listener_thread),
+            listener: Some(listener_pool),
         })
     }
 
@@ -581,10 +620,7 @@ impl HaProcess {
 
 impl Drop for HaProcess {
     fn drop(&mut self) {
-        self.stop.store(true, Ordering::Release);
-        if let Some(listener) = self.listener.take() {
-            let _ = listener.join();
-        }
+        drop(self.listener.take());
         if let Some(node) = self.node.take() {
             let _ = self.runtime.block_on(node.shutdown());
         }
@@ -932,6 +968,32 @@ mod tests {
         })?;
         encoded[26] ^= 1;
         assert!(decode_raft_frame(&encoded).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn dropping_peer_pool_stops_and_joins_every_worker() -> Result<(), Box<dyn std::error::Error>> {
+        let stop = Arc::new(AtomicBool::new(false));
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let mut pool = PeerListener {
+            stop: stop.clone(),
+            workers: Vec::new(),
+        };
+        for _ in 0..4 {
+            let flag = stop.clone();
+            let sender = sender.clone();
+            pool.workers.push(thread::spawn(move || {
+                while !flag.load(Ordering::Acquire) {
+                    thread::yield_now();
+                }
+                let _ = sender.send(());
+            }));
+        }
+        drop(pool);
+        assert!(stop.load(Ordering::Acquire));
+        for _ in 0..4 {
+            receiver.recv_timeout(Duration::from_secs(1))?;
+        }
         Ok(())
     }
 

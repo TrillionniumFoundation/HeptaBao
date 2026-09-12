@@ -30,6 +30,10 @@ The V2.1 path joins authentication, authorization and audit to restart-safe dura
 
 ## Module documentation
 
+Current content binding is `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
+source tables; those tables are historical, not current API inventories.
+
 - `docs/modules/README.md` — complete index for all 46 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited standard for historical V1.4.7 packages.

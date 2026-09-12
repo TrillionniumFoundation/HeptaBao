@@ -1170,6 +1170,18 @@ impl Service {
         if state.schema != 1 {
             return Err(Response::error(503, "unsupported server state schema"));
         }
+        // Bind durable identity before any local state is admitted into an HA epoch.
+        if let Some(ha) = self.ha.as_ref() {
+            let ha = ha
+                .lock()
+                .map_err(|_| Response::error(503, "HA identity is unavailable during unseal"))?;
+            if state.cluster_id != ha.cluster_id() {
+                return Err(Response::error(
+                    503,
+                    "HA configuration belongs to a different cluster",
+                ));
+            }
+        }
         self.durable = Some(durable);
         self.state = Some(state);
         self.barrier_key = Some(Zeroizing::new(*key));

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use zeroize::Zeroize;
+use std::fmt;
+use zeroize::{Zeroize, Zeroizing};
 
 const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
 const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
@@ -10,7 +11,7 @@ const MAX_PATH_BYTES: usize = 8192;
 const MAX_NAMESPACE_BYTES: usize = 512;
 const MAX_TOKEN_BYTES: usize = 16 * 1024;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardRequest {
     pub source: u64,
@@ -20,6 +21,21 @@ pub(crate) struct ForwardRequest {
     pub namespace: String,
     pub token: String,
     pub body: Value,
+}
+
+impl fmt::Debug for ForwardRequest {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ForwardRequest")
+            .field("source", &self.source)
+            .field("target", &self.target)
+            .field("method", &self.method)
+            .field("path", &"[REDACTED]")
+            .field("namespace", &"[REDACTED]")
+            .field("token", &"[REDACTED]")
+            .field("body", &"[REDACTED]")
+            .finish()
+    }
 }
 
 impl Drop for ForwardRequest {
@@ -40,13 +56,25 @@ struct ForwardRequestRef<'a> {
     body: &'a Value,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardResponse {
     pub source: u64,
     pub target: u64,
     pub status: u16,
     pub body: Value,
+}
+
+impl fmt::Debug for ForwardResponse {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ForwardResponse")
+            .field("source", &self.source)
+            .field("target", &self.target)
+            .field("status", &self.status)
+            .field("body", &"[REDACTED]")
+            .finish()
+    }
 }
 
 impl Drop for ForwardResponse {
@@ -156,15 +184,16 @@ fn validate_request_fields(
 }
 
 fn encode<T: Serialize>(magic: &[u8; 5], value: &T) -> Result<Vec<u8>, String> {
-    let json = serde_json::to_vec(value).map_err(|_| "cannot encode HA forward frame")?;
+    let json =
+        Zeroizing::new(serde_json::to_vec(value).map_err(|_| "cannot encode HA forward frame")?);
+    if json.len() > MAX_FORWARD_FRAME_BYTES - 9 {
+        return Err("HA forward frame exceeds transport bound".into());
+    }
     let length = u32::try_from(json.len()).map_err(|_| "HA forward frame is oversized")?;
     let mut encoded = Vec::with_capacity(9 + json.len());
     encoded.extend_from_slice(magic);
     encoded.extend_from_slice(&length.to_be_bytes());
     encoded.extend_from_slice(&json);
-    if encoded.len() > MAX_FORWARD_FRAME_BYTES {
-        return Err("HA forward frame exceeds transport bound".into());
-    }
     Ok(encoded)
 }
 
@@ -229,6 +258,55 @@ mod tests {
         let mut encoded = encode_request(1, 2, "GET", "secret/data/a", "", "", &json!({}))?;
         encoded[8] ^= 1;
         assert!(decode_request(&encoded).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn debug_never_discloses_forward_credentials_or_payloads() -> Result<(), String> {
+        let encoded = encode_request(
+            1,
+            2,
+            "POST",
+            "secret/data/private-path",
+            "private-namespace",
+            "private-bearer",
+            &json!({"private-field":"private-value"}),
+        )?;
+        let request = decode_request(&encoded)?;
+        let debug = format!("{request:?}");
+        for value in [
+            "private-path",
+            "private-namespace",
+            "private-bearer",
+            "private-field",
+            "private-value",
+        ] {
+            assert!(!debug.contains(value));
+        }
+        assert!(debug.contains("[REDACTED]"));
+        let encoded = encode_response(2, 1, 200, &json!({"client_token":"private-new-token"}))?;
+        let response = decode_response(&encoded)?;
+        let debug = format!("{response:?}");
+        assert!(!debug.contains("private-new-token"));
+        assert!(!debug.contains("client_token"));
+        assert!(debug.contains("[REDACTED]"));
+        Ok(())
+    }
+
+    #[test]
+    fn oversized_and_trailing_payloads_are_rejected() -> Result<(), String> {
+        assert!(
+            encode_response(
+                2,
+                1,
+                200,
+                &json!({"value":"x".repeat(MAX_FORWARD_FRAME_BYTES)})
+            )
+            .is_err()
+        );
+        let mut encoded = encode_response(2, 1, 200, &json!({}))?;
+        encoded.push(0);
+        assert!(decode_response(&encoded).is_err());
         Ok(())
     }
 }

@@ -473,6 +473,14 @@ def validate() -> list[str]:
     licensing = LICENSE_PLANNING_PATH.read_text(encoding="utf-8")
     if "HB-BLK-EXT-001" not in licensing or "NO FINAL OUTBOUND LICENSE SELECTED" not in licensing:
         errors.append("LICENSE-PLANNING.md must keep the unresolved external legal blocker explicit")
+    inventory_path = ROOT / "scripts/current_source_inventory.py"
+    inventory_spec = importlib.util.spec_from_file_location("heptabao_current_inventory", inventory_path)
+    if inventory_spec is None or inventory_spec.loader is None:
+        errors.append("current source inventory validator cannot be loaded")
+    else:
+        inventory_module = importlib.util.module_from_spec(inventory_spec)
+        inventory_spec.loader.exec_module(inventory_module)
+        errors.extend(inventory_module.validate(ROOT))
     return errors
 
 

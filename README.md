@@ -10,7 +10,7 @@ The current workspace contains **46 packages**. It includes the reviewed V2 cont
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
-The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. It still lacks the final `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` production composition, destructive three-process HA qualification, qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. The `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` per-process composition is present in this candidate, but production admission and destructive three-process HA qualification remain open, as do qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
 ## Current source of truth
 
@@ -58,6 +58,10 @@ cargo +1.98.0 doc --locked --workspace --no-deps
 The read-only V2.1 workflows validate the immutable exact PR head and the real prospective merge into `main`; old-head success is never inherited.
 
 ## Documentation
+
+Current source facts: `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+See `docs/modules/CURRENT_SOURCE_BINDING.md` for reproducible current API/test
+projections and the separation from frozen V1.4.7 evidence.
 
 - `docs/CURRENT_DOCUMENTATION.md`
 - `docs/modules/README.md`

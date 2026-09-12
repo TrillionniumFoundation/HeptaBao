@@ -226,9 +226,9 @@ impl ProcessRaftNode {
 
 fn production_config() -> Result<Config, RemoteRaftError> {
     Config {
-        heartbeat_interval: 40,
-        election_timeout_min: 120,
-        election_timeout_max: 240,
+        heartbeat_interval: 200,
+        election_timeout_min: 1_000,
+        election_timeout_max: 2_000,
         snapshot_policy: SnapshotPolicy::LogsSinceLast(3),
         max_in_snapshot_log_to_keep: 0,
         enable_pre_vote: Some(true),
@@ -236,4 +236,19 @@ fn production_config() -> Result<Config, RemoteRaftError> {
     }
     .validate()
     .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+}
+
+#[cfg(test)]
+mod timing_tests {
+    use super::*;
+
+    #[test]
+    fn process_timers_allow_tls_and_durable_io_without_using_lease_reads()
+    -> Result<(), RemoteRaftError> {
+        let config = production_config()?;
+        assert_eq!(config.heartbeat_interval, 200);
+        assert!(config.election_timeout_min >= 5 * config.heartbeat_interval);
+        assert!(config.election_timeout_max >= config.election_timeout_min * 2);
+        Ok(())
+    }
 }

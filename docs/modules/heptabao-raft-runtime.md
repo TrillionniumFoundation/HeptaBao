@@ -4,9 +4,13 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
 
-This package implements a durable three-voter OpenRaft consensus core for HeptaBao. It replicates bounded opaque sealed envelopes, persists Raft log, vote, membership, state-machine and snapshot generations, rejects writes without a quorum, and exposes an explicit ReadIndex linearizability barrier. It is a repository-scope vertical slice, not yet the public networked HA service: peer mTLS, operator join authorization, listener discovery, request forwarding, rolling upgrade and the `heptabao-server` composition remain separate blockers.
+This package implements a durable three-voter OpenRaft consensus core for HeptaBao. It replicates bounded opaque sealed envelopes, persists Raft log, vote, membership, state-machine and snapshot generations, rejects writes without a quorum, and exposes an explicit ReadIndex linearizability barrier. It provides both the in-process qualification facade and a separate `ProcessRaftNode`/`RemoteNetworkFactory` per-process path. The server now composes this path with mTLS and leader forwarding. Operator join authorization, key rotation, rolling-version upgrade and independent destructive qualification remain separate blockers.
 
 ## Public API and ownership
+
+Current source binding: `docs/modules/CURRENT_SOURCE_BINDING.md` and
+`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`. Any V1.4.7 generated
+blocks below are historical lexical snapshots, not current API authority.
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-raft-runtime`; Cargo SHA-256 `688cceef93fca7a05c56f110d5213723170927e9cea644a909d26c4f3ead345b`.
@@ -114,7 +118,7 @@ Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime` for the package and t
 
 ## Evolution and open boundaries
 
-The next mandatory slice replaces the deterministic router with authenticated bounded inter-process RPC, composes consensus into `heptabao-server`, forwards clients to the current leader without forwarding credentials to unverified peers, and executes real three-process failover, quorum-loss, snapshot transfer, restart and rolling-upgrade tests. Joint-consensus membership changes, witness/learner operation, production storage performance, disk-full behavior, mTLS/KMS custody, cross-platform destructive tests and independent linearizability campaigns remain open. This guide grants no compatibility, production, migration or release authority.
+The separate per-process path is now connected through `heptabao-server::ha::HaProcess`; the deterministic router remains a test helper and is not the production transport. The next gate executes real three-process failover, quorum-loss, snapshot transfer, restart and rolling-version-upgrade tests against that exact composition. Joint-consensus membership changes, witness/learner operation, production storage performance, disk-full behavior, mTLS/KMS custody, cross-platform destructive tests and independent linearizability campaigns remain open. This guide grants no compatibility, production, migration or release authority.
 
 ## Machine-verified source truth
 
@@ -130,3 +134,21 @@ The next mandatory slice replaces the deterministic router with authenticated bo
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Current remote-process path
+
+`ProcessRaftNode` owns one voter. `RemoteNetworkFactory` transports vote, append
+and snapshot RPC through the injected `RaftPeerRpc`. The server supplies bounded
+mTLS framing and pinned peer identities; the consensus package never receives
+public bearer credentials or decrypts application state. Do not apply the
+in-process facade's wait-for-all-voters completion description to every remote
+call: public success must be evaluated at the composed service boundary and
+Raft's actual quorum/application receipt. The V2 source inventory binds both
+paths and their discovered tests without treating either as a test-pass record.
+
+The separate process runtime's default timers are heartbeat 200 ms and election
+1000–2000 ms, allowing bounded mTLS and durable I/O rather than importing the
+in-process fixture's 40/120/240 ms test timings. Linearizable reads still use
+ReadIndex, not a clock-dependent lease shortcut. Real process behavior is
+exercised by `qa/openbao-acceptance/ha_destructive.py`; scenario success, ignored
+fault categories and the binary/source identity must be reported separately.

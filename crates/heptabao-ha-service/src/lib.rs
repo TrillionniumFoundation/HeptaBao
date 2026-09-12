@@ -723,7 +723,8 @@ impl MutualTlsPeerTransport {
         let stream = TcpStream::connect_timeout(&endpoint.address, self.timeout)
             .map_err(|_| HaError::Transport)?;
         stream
-            .set_read_timeout(Some(self.timeout))
+            .set_nodelay(true)
+            .and_then(|()| stream.set_read_timeout(Some(self.timeout)))
             .and_then(|()| stream.set_write_timeout(Some(self.timeout)))
             .map_err(|_| HaError::Transport)?;
         let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
@@ -787,7 +788,8 @@ where
     }
     let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
     stream
-        .set_read_timeout(Some(timeout))
+        .set_nodelay(true)
+        .and_then(|()| stream.set_read_timeout(Some(timeout)))
         .and_then(|()| stream.set_write_timeout(Some(timeout)))
         .map_err(|_| HaError::Transport)?;
     let connection =

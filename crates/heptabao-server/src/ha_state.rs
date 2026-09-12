@@ -7,6 +7,7 @@
 //! key material, TOTP seeds) are generated exactly once and are never
 //! reconstructed independently on followers.
 
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use ring::{
     aead, digest,
     rand::{SecureRandom, SystemRandom},
@@ -126,9 +127,12 @@ impl ClusterStateCodec {
         let cluster_id = cluster_id.into();
         if cluster_id.is_empty()
             || cluster_id.len() > MAX_CLUSTER_ID_BYTES
-            || !cluster_id
+            || !(cluster_id
                 .bytes()
                 .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+                || STANDARD
+                    .decode(&cluster_id)
+                    .is_ok_and(|bytes| bytes.len() == 16 && STANDARD.encode(&bytes) == cluster_id))
         {
             key.zeroize();
             return Err(ReplicatedStateError::InvalidCluster);
@@ -316,6 +320,29 @@ fn sha256(bytes: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn canonical_initialized_cluster_identity_is_supported()
+    -> Result<(), Box<dyn std::error::Error>> {
+        // Initialization persists STANDARD base64 of sixteen random bytes.
+        // Do not silently rewrite that identity when enrolling the same state in HA.
+        let id = STANDARD.encode([255; 16]);
+        let codec = ClusterStateCodec::new(&id, [7; 32])?;
+        let proposal = codec.seal("request-1", [1; 32], b"state")?;
+        assert_eq!(codec.open(&proposal, [1; 32])?.as_slice(), b"state");
+        for bad in [
+            "bad/identity",
+            "bad=padding",
+            "\ncluster",
+            "/////////////////////x==",
+        ] {
+            assert!(matches!(
+                ClusterStateCodec::new(bad, [7; 32]),
+                Err(ReplicatedStateError::InvalidCluster)
+            ));
+        }
+        Ok(())
+    }
 
     #[test]
     fn proposal_round_trip_is_base_fenced_and_authenticated()

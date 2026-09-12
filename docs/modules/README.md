@@ -69,18 +69,11 @@ cargo +1.98.0 doc --locked --workspace --no-deps
 
 A package change updates source, tests, guide, capability matrix and blocker evidence together. Documentation coverage is not production qualification or compatibility admission.
 
-<!-- BEGIN V1.4.7 MODULE TRUTH INDEX -->
-## V1.4.7 machine-verified module truth
+## Current source facts and preserved history
 
-All `45` Cargo workspace crates are bound to source hashes, internal dependency declarations,
-public lexical declarations and discovered tests in
-`planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml`. The generated Public API tables inside each module guide are normative for
-the exact candidate source; narrative stability or compatibility claims remain prohibited.
-
-Validation commands:
-
-```text
-python scripts/render_plan_v1_4_7.py --check
-python scripts/validate_plan_v1_4_7.py
-```
-<!-- END V1.4.7 MODULE TRUTH INDEX -->
+All current workspace packages are bound by
+`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` and the read-only V2 validator.
+See `docs/modules/CURRENT_SOURCE_BINDING.md` for details, regeneration and the
+commit/tree receipt boundary. The V1.4.7 inventory and generated guide blocks
+are preserved historical snapshots, not current source authority; their older
+45-package observation must not be interpreted as this candidate's package set.
