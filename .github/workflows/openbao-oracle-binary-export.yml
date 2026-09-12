@@ -1,0 +1,78 @@
+name: Pinned OpenBao 2.6.2 Oracle binary export
+
+on:
+  push:
+    branches: [exec/openbao-oracle-binary-20260912]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Acquire the existing Oracle profile's exact official artifact
+        shell: bash
+        env:
+          OUTPUT_ROOT: ${{ runner.temp }}/openbao-oracle-2.6.2
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, json, os, pathlib, tarfile, urllib.request
+          output = pathlib.Path(os.environ['OUTPUT_ROOT'])
+          output.mkdir(mode=0o700)
+          expected_archive = '8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa'
+          expected_binary = '8d18052337908a74f0d7dfacc8da7a1bff5f8a4ab6a2ad136fbf5ffeae243b00'
+          release_url = 'https://api.github.com/repos/openbao/openbao/releases/tags/v2.6.2'
+          request = urllib.request.Request(release_url, headers={'Accept':'application/vnd.github+json', 'User-Agent':'heptabao-isolated-oracle'})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              release = json.loads(response.read(2 * 1024 * 1024))
+          if release.get('tag_name') != 'v2.6.2' or release.get('draft') or release.get('prerelease'):
+              raise SystemExit('official release identity mismatch')
+          assets = [a for a in release['assets'] if a.get('digest') == 'sha256:' + expected_archive]
+          if len(assets) != 1:
+              raise SystemExit('exact pinned official Oracle archive not found')
+          asset = assets[0]
+          url = asset['browser_download_url']
+          if not url.startswith('https://github.com/openbao/openbao/releases/download/v2.6.2/'):
+              raise SystemExit('unexpected official artifact origin')
+          if not 0 < asset['size'] <= 256 * 1024 * 1024:
+              raise SystemExit('artifact exceeds bound')
+          with urllib.request.urlopen(url, timeout=60) as response:
+              raw = response.read(256 * 1024 * 1024 + 1)
+          if len(raw) != asset['size'] or hashlib.sha256(raw).hexdigest() != expected_archive:
+              raise SystemExit('official artifact integrity mismatch')
+          (output / 'oracle-official.tar.gz').write_bytes(raw)
+          with tarfile.open(fileobj=io.BytesIO(raw), mode='r:gz') as archive:
+              members = [m for m in archive.getmembers() if m.name == 'bao']
+              if len(members) != 1 or not members[0].isfile() or not 0 < members[0].size <= 256 * 1024 * 1024:
+                  raise SystemExit('invalid executable archive member')
+              stream = archive.extractfile(members[0])
+              if stream is None:
+                  raise SystemExit('missing executable stream')
+              binary = stream.read(256 * 1024 * 1024 + 1)
+          if hashlib.sha256(binary).hexdigest() != expected_binary:
+              raise SystemExit('official executable integrity mismatch')
+          (output / 'bao').write_bytes(binary)
+          (output / 'bao').chmod(0o700)
+          (output / 'provenance.json').write_text(json.dumps({
+              'schema':'heptabao.oracle-binary-acquisition.v1',
+              'product':'OpenBao','version':'2.6.2','release_url':release_url,
+              'asset_name':asset['name'],'artifact_url':url,
+              'archive_sha256':expected_archive,'binary_sha256':expected_binary,
+              'purpose':'isolated synthetic black-box differential testing only',
+              'source_classification':'official MPL-2.0 binary retained in Oracle lane; no upstream implementation source imported',
+              'independent_attestation':False,'compatibility_claim':False,
+              'production_authority':False,'release_authority':False
+          }, sort_keys=True, indent=2) + '\n')
+          PY
+
+      - name: Upload bounded Oracle-only artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: openbao-2.6.2-pinned-oracle-binary
+          path: ${{ runner.temp }}/openbao-oracle-2.6.2/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
