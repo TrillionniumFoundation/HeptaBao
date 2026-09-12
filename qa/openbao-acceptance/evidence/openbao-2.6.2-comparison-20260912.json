@@ -1,0 +1,1206 @@
+{
+  "candidate": {
+    "cluster_id_digest": "4d1a4208869ac2288bf5408795818456a182cfd1b4c9362e7f95fa59b7e8e710",
+    "namespace_digest": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+    "version": "HeptaBao-0.2.0"
+  },
+  "candidate_results": {
+    "cases": {
+      "approle.login": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "role_id_observed": true,
+          "secret_id_observed": true,
+          "token_issued": true
+        }
+      },
+      "core.unknown_route_denied": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-unsupported",
+        "result": "passed",
+        "semantics": {
+          "error_envelope": true
+        }
+      },
+      "edge_tls.health": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/health",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "kv.cas_no_effect": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "current_data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "kv.cas_rejected": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      },
+      "kv.deleted_metadata": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "generation_preserved": true,
+          "not_destroyed": true,
+          "tombstone_present": true
+        }
+      },
+      "kv.deleted_read": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.destroy_v1": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/destroy/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.destroyed_metadata": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "destroyed": true
+        }
+      },
+      "kv.destroyed_read": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.list": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "LIST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/",
+        "result": "passed",
+        "semantics": {
+          "exact_key_listing": true
+        }
+      },
+      "kv.metadata_read": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "cas_required": true,
+          "custom_metadata": true,
+          "max_versions": true
+        }
+      },
+      "kv.metadata_write": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-kv",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.read_old_version": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {
+          "exact_old_data": true
+        }
+      },
+      "kv.read_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_data": true,
+          "version_is_one": true
+        }
+      },
+      "kv.restored_read": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_restored_data": true
+        }
+      },
+      "kv.soft_delete": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.undelete": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/undelete/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.write_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_one": true
+        }
+      },
+      "kv.write_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_two": true
+        }
+      },
+      "operations.seal_status": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/seal-status",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "system.init_status": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/init",
+        "result": "passed",
+        "semantics": {
+          "initialized": true
+        }
+      },
+      "token.create": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "no_root_policy": true,
+          "requested_policy": true,
+          "token_issued": true
+        }
+      },
+      "token.create_expiring": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "token_issued": true
+        }
+      },
+      "token.denial_no_effect": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "token.expired_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.invalid_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.policy": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/policies/acl/hbqa-{run_id}-reader",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.read_allowed": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.revoke": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/auth/token/revoke",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.revoked_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.write_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "totp.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-totp",
+        "result": "passed",
+        "semantics": {}
+      },
+      "totp.roundtrip": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "MULTI",
+        "path_template": "/v1/hbqa-{run_id}-totp/{keys,code}/fixture",
+        "result": "passed",
+        "semantics": {
+          "code_generated": true,
+          "key_created": true,
+          "validation_true": true
+        }
+      },
+      "transit.create_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "transit.decrypt_old_after_rotation": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "old_key_retained": true
+        }
+      },
+      "transit.decrypt_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "transit.decrypt_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "transit.encrypt_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "transit.encrypt_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "transit.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-transit",
+        "result": "passed",
+        "semantics": {}
+      },
+      "transit.read_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "transit.read_rotated_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "transit.rotate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item/rotate",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "userpass.login": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/userpass/login/hbqa-{run_id}",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "token_issued": true
+        }
+      }
+    },
+    "cleanup": {
+      "failure_count": 0,
+      "result": "passed",
+      "run_id": "79f32aece766b876",
+      "scope": "only_newly_created_synthetic_resources"
+    }
+  },
+  "cases_match": true,
+  "declared_selected_case_count": 45,
+  "execution_binding": {
+    "build_log_sha256": "f3f6c1129e3a51163478f576d8e635c903f70c1f64514396e3b0e9d1d847a042",
+    "candidate_binary_sha256": "22d6a1ca6bae2e73a4087f92b70dfe20e268cb35ac409abe2aaa1714a9e42bcc",
+    "candidate_source_binding_basis": "operator_supplied_build_source_checkout",
+    "candidate_source_has_uncommitted_changes": false,
+    "candidate_source_sha": "8bd7f3acd5ae04baff52fc733c2fc51a53571c48",
+    "official_oracle": {
+      "archive_member_matches_executable": true,
+      "artifact_sha256": "8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa",
+      "binary_sha256": "8d18052337908a74f0d7dfacc8da7a1bff5f8a4ab6a2ad136fbf5ffeae243b00",
+      "launcher_source_sha256": "9a25163451f84f53b25f6e78057da2a0304cba23f8f07f23d1ee078236621a53",
+      "product": "OpenBao",
+      "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.6.2",
+      "server_mode": "server_not_dev",
+      "storage": "file",
+      "synthetic_only": true,
+      "tls_verified": true,
+      "version": "2.6.2"
+    },
+    "runner_source_sha256": "1cbe8ada26f72cf7bb8440c6992a11e68cadbc15ad82d5eac5684dde0cce6f18"
+  },
+  "extra_observed_cases": [
+    "totp.mount"
+  ],
+  "full_openbao_compatibility": false,
+  "mismatched_cases": [],
+  "mode": "differential",
+  "observed_at_unix": 1789188886.5969124,
+  "observed_result_count_per_side": 46,
+  "oracle": {
+    "artifact_sha256": "8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa",
+    "basis": "operator_artifact_attestation_plus_verified_tls_and_live_health",
+    "cluster_id_digest": "b7d76bdd444082a429ee8840b4ef143f4cbf5692e463f89817fa43d06ee3f081",
+    "independent_binary_attestation": false,
+    "product": "OpenBao",
+    "version": "2.6.2"
+  },
+  "oracle_results": {
+    "cases": {
+      "approle.login": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "role_id_observed": true,
+          "secret_id_observed": true,
+          "token_issued": true
+        }
+      },
+      "core.unknown_route_denied": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-unsupported",
+        "result": "passed",
+        "semantics": {
+          "error_envelope": true
+        }
+      },
+      "edge_tls.health": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/health",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "kv.cas_no_effect": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "current_data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "kv.cas_rejected": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      },
+      "kv.deleted_metadata": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "generation_preserved": true,
+          "not_destroyed": true,
+          "tombstone_present": true
+        }
+      },
+      "kv.deleted_read": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.destroy_v1": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/destroy/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.destroyed_metadata": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "destroyed": true
+        }
+      },
+      "kv.destroyed_read": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.list": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "LIST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/",
+        "result": "passed",
+        "semantics": {
+          "exact_key_listing": true
+        }
+      },
+      "kv.metadata_read": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "cas_required": true,
+          "custom_metadata": true,
+          "max_versions": true
+        }
+      },
+      "kv.metadata_write": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-kv",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.read_old_version": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {
+          "exact_old_data": true
+        }
+      },
+      "kv.read_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_data": true,
+          "version_is_one": true
+        }
+      },
+      "kv.restored_read": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_restored_data": true
+        }
+      },
+      "kv.soft_delete": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.undelete": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/undelete/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "kv.write_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_one": true
+        }
+      },
+      "kv.write_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_two": true
+        }
+      },
+      "operations.seal_status": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/seal-status",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "system.init_status": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/init",
+        "result": "passed",
+        "semantics": {
+          "initialized": true
+        }
+      },
+      "token.create": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "no_root_policy": true,
+          "requested_policy": true,
+          "token_issued": true
+        }
+      },
+      "token.create_expiring": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "token_issued": true
+        }
+      },
+      "token.denial_no_effect": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "token.expired_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.invalid_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.policy": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/policies/acl/hbqa-{run_id}-reader",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.read_allowed": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.revoke": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/auth/token/revoke",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.revoked_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "token.write_denied": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "totp.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-totp",
+        "result": "passed",
+        "semantics": {}
+      },
+      "totp.roundtrip": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "MULTI",
+        "path_template": "/v1/hbqa-{run_id}-totp/{keys,code}/fixture",
+        "result": "passed",
+        "semantics": {
+          "code_generated": true,
+          "key_created": true,
+          "validation_true": true
+        }
+      },
+      "transit.create_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "transit.decrypt_old_after_rotation": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "old_key_retained": true
+        }
+      },
+      "transit.decrypt_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "transit.decrypt_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "transit.encrypt_v1": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "transit.encrypt_v2": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "transit.mount": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-transit",
+        "result": "passed",
+        "semantics": {}
+      },
+      "transit.read_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "transit.read_rotated_key": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "transit.rotate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item/rotate",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "userpass.login": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/userpass/login/hbqa-{run_id}",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "token_issued": true
+        }
+      }
+    },
+    "cleanup": {
+      "failure_count": 0,
+      "result": "passed",
+      "run_id": "79f32aece766b876",
+      "scope": "only_newly_created_synthetic_resources"
+    }
+  },
+  "original_execution_receipt_sha256": "c1df6d12ff8f0840fef07d5c3937b3c60201594002407af8d191c5b247b6c969",
+  "post_run_observed_cases_exactly_equal": true,
+  "production_qualified": false,
+  "public_receipt_redactions": [
+    "local endpoint origins",
+    "raw cluster identity",
+    "local binary path"
+  ],
+  "schema": "heptabao.live-acceptance.v1",
+  "scope": [
+    "approle",
+    "core",
+    "edge_tls",
+    "kv",
+    "operations",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass"
+  ],
+  "source_proof": {
+    "binary_sha256": "22d6a1ca6bae2e73a4087f92b70dfe20e268cb35ac409abe2aaa1714a9e42bcc",
+    "build_binding_sha256": "c60e60c6e664368564b587b209f4f5178079c7d8c09d62000b5193ddc6a90fd8",
+    "build_log_sha256": "f3f6c1129e3a51163478f576d8e635c903f70c1f64514396e3b0e9d1d847a042",
+    "candidate_binary_unchanged_after_execution": true,
+    "cargo_lock_sha256": "2b70b0291cf8781301c164bb2b33aff6a950c4ad24a30efadd14da945c7a8b4f",
+    "source_commit": "8bd7f3acd5ae04baff52fc733c2fc51a53571c48",
+    "source_tree": "1816ddc3e9cacee8ae70f258bb9f344f63004810",
+    "source_worktree_clean_before_and_after_execution": true,
+    "tools": {
+      "openbao-acceptance/acceptance.py": "20ef563be078903e9dfb88089732f1c23c0410ea988cde4ad977a9eb344c7649",
+      "openbao-acceptance/bao_http.py": "3a549074655e56defa6ac003951420c46084b3adfd7a6e28ea3e4843114fd973",
+      "openbao-acceptance/live_migration_rehearsal.py": "109d1524713a6ddae41169b13c5f36d67a66e576671f0d742155712a3d54e4cb",
+      "openbao-acceptance/migrate_kv2.py": "5aa644a71fc1e6cd15de9ffb511a03320bfaf8c7708fd3046cafdad3416fb968",
+      "openbao-acceptance/official_openbao_launcher.py": "9a25163451f84f53b25f6e78057da2a0304cba23f8f07f23d1ee078236621a53",
+      "openbao-acceptance/run_official_comparison.py": "1cbe8ada26f72cf7bb8440c6992a11e68cadbc15ad82d5eac5684dde0cce6f18",
+      "single-node/smoke.py": "af5f4a3ad81f20f98bf2e327e1af35f75a53d016361002e1a8a989829e18c8c4"
+    }
+  },
+  "status": "passed_scoped_cases",
+  "target": "OpenBao 2.6.2",
+  "tool_source_sha256": "c42ad65721e8c07a471cb5990922100e9e42bf62ca91f1a7011a4f9f76b06538",
+  "uncovered": [
+    "full_endpoint_error_precedence",
+    "other_auth_methods",
+    "other_secret_engines",
+    "persistent_restart",
+    "ha",
+    "migration",
+    "upgrade",
+    "agent_proxy_cli",
+    "production_security"
+  ],
+  "published_source_binding": {
+    "commit": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+    "tree": "1816ddc3e9cacee8ae70f258bb9f344f63004810",
+    "basis": "published merge tree equals the clean local build tree; merge parents differ",
+    "local_build_commit": "8bd7f3acd5ae04baff52fc733c2fc51a53571c48"
+  }
+}
