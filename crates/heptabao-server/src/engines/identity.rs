@@ -95,7 +95,10 @@ pub(super) fn handle(
     body: &Value,
     now: u64,
 ) -> Result<EngineResponse> {
-    let relative = path.trim_start_matches('/').strip_prefix("identity").unwrap_or("");
+    let relative = path
+        .trim_start_matches('/')
+        .strip_prefix("identity")
+        .unwrap_or("");
     let relative = relative.trim_start_matches('/').trim_end_matches('/');
     match relative {
         "entity" => handle_entity_create(state, method, body, now),
@@ -164,7 +167,9 @@ fn handle_entity_id(
             state.entity_names.remove(&entity.name);
             for alias_id in entity.aliases {
                 if let Some(alias) = state.aliases.remove(&alias_id) {
-                    state.alias_keys.remove(&alias_key(&alias.mount_accessor, &alias.name));
+                    state
+                        .alias_keys
+                        .remove(&alias_key(&alias.mount_accessor, &alias.name));
                 }
             }
             for group_id in entity.group_ids {
@@ -236,7 +241,9 @@ fn upsert_entity(
     let metadata = optional_metadata(body, "metadata")?;
     let policies = optional_set(body, "policies", MAX_POLICIES, "policy")?;
     let disabled = body.get("disabled").map_or(Ok(false), |value| {
-        value.as_bool().ok_or_else(|| bad("disabled must be a boolean"))
+        value
+            .as_bool()
+            .ok_or_else(|| bad("disabled must be a boolean"))
     })?;
 
     let id = match id {
@@ -251,7 +258,10 @@ fn upsert_entity(
     {
         return Err(error(409, "entity name already exists"));
     }
-    let created_at = state.entities.get(&id).map_or(now, |entity| entity.created_at);
+    let created_at = state
+        .entities
+        .get(&id)
+        .map_or(now, |entity| entity.created_at);
     let aliases = state
         .entities
         .get(&id)
@@ -353,7 +363,9 @@ fn handle_alias_id(
             let Some(alias) = state.aliases.remove(id) else {
                 return Ok(empty(false));
             };
-            state.alias_keys.remove(&alias_key(&alias.mount_accessor, &alias.name));
+            state
+                .alias_keys
+                .remove(&alias_key(&alias.mount_accessor, &alias.name));
             if let Some(entity) = state.entities.get_mut(&alias.canonical_id) {
                 entity.aliases.remove(id);
                 entity.updated_at = now;
@@ -361,7 +373,10 @@ fn handle_alias_id(
             Ok(empty(true))
         }
         "POST" | "PUT" | "PATCH" => {
-            reject_unknown(body, &["canonical_id", "name", "mount_accessor", "metadata"])?;
+            reject_unknown(
+                body,
+                &["canonical_id", "name", "mount_accessor", "metadata"],
+            )?;
             upsert_alias(state, Some(id), body, now)
         }
         _ => Err(method_not_allowed()),
@@ -407,7 +422,9 @@ fn upsert_alias(
         return Err(error(409, "alias already exists for this mount"));
     }
     if let Some(old) = state.aliases.get(&id) {
-        state.alias_keys.remove(&alias_key(&old.mount_accessor, &old.name));
+        state
+            .alias_keys
+            .remove(&alias_key(&old.mount_accessor, &old.name));
         if let Some(entity) = state.entities.get_mut(&old.canonical_id) {
             entity.aliases.remove(&id);
             entity.updated_at = now;
@@ -460,14 +477,26 @@ fn handle_entity_lookup(
     require_write(method)?;
     reject_unknown(
         body,
-        &["entity_id", "entity_name", "alias_id", "alias_name", "alias_mount_accessor"],
+        &[
+            "entity_id",
+            "entity_name",
+            "alias_id",
+            "alias_name",
+            "alias_mount_accessor",
+        ],
     )?;
     let mut matches = Vec::new();
     if let Some(id) = optional_string(body, "entity_id")? {
         matches.push(id.to_owned());
     }
     if let Some(name) = optional_string(body, "entity_name")? {
-        matches.push(state.entity_names.get(name).cloned().ok_or_else(not_found)?);
+        matches.push(
+            state
+                .entity_names
+                .get(name)
+                .cloned()
+                .ok_or_else(not_found)?,
+        );
     }
     if let Some(id) = optional_string(body, "alias_id")? {
         matches.push(
@@ -556,7 +585,9 @@ fn handle_group_id(
             let aliases = state
                 .group_aliases
                 .iter()
-                .filter_map(|(alias_id, alias)| (alias.canonical_id == id).then_some(alias_id.clone()))
+                .filter_map(|(alias_id, alias)| {
+                    (alias.canonical_id == id).then_some(alias_id.clone())
+                })
                 .collect::<Vec<_>>();
             for alias_id in aliases {
                 if let Some(alias) = state.group_aliases.remove(&alias_id) {
@@ -630,7 +661,10 @@ fn upsert_group(
         .and_then(Value::as_str)
         .ok_or_else(|| bad("group name is required"))?;
     valid_name(name, "group name")?;
-    let kind = body.get("type").and_then(Value::as_str).unwrap_or("internal");
+    let kind = body
+        .get("type")
+        .and_then(Value::as_str)
+        .unwrap_or("internal");
     if !matches!(kind, "internal" | "external") {
         return Err(bad("group type must be internal or external"));
     }
@@ -726,7 +760,12 @@ fn group_data(state: &IdentityState, group: &Group) -> Value {
     let parent_group_ids = state
         .groups
         .values()
-        .filter_map(|parent| parent.member_group_ids.contains(&group.id).then_some(parent.id.clone()))
+        .filter_map(|parent| {
+            parent
+                .member_group_ids
+                .contains(&group.id)
+                .then_some(parent.id.clone())
+        })
         .collect::<Vec<_>>();
     json!({
         "id":group.id,
@@ -795,7 +834,10 @@ fn upsert_group_alias(
         .get("canonical_id")
         .and_then(Value::as_str)
         .ok_or_else(|| bad("canonical_id is required"))?;
-    let group = state.groups.get(canonical_id).ok_or_else(|| bad("canonical group does not exist"))?;
+    let group = state
+        .groups
+        .get(canonical_id)
+        .ok_or_else(|| bad("canonical group does not exist"))?;
     if group.kind != "external" {
         return Err(bad("group aliases require an external group"));
     }
@@ -892,13 +934,7 @@ fn group_cycle(state: &IdentityState, start: &str) -> Result<bool> {
         Ok(false)
     }
 
-    visit(
-        state,
-        start,
-        &mut BTreeSet::new(),
-        &mut BTreeSet::new(),
-        0,
-    )
+    visit(state, start, &mut BTreeSet::new(), &mut BTreeSet::new(), 0)
 }
 
 fn optional_metadata(body: &Value, field: &str) -> Result<BTreeMap<String, String>> {
@@ -928,12 +964,7 @@ fn optional_metadata(body: &Value, field: &str) -> Result<BTreeMap<String, Strin
         .collect()
 }
 
-fn optional_set(
-    body: &Value,
-    field: &str,
-    max: usize,
-    label: &str,
-) -> Result<BTreeSet<String>> {
+fn optional_set(body: &Value, field: &str, max: usize, label: &str) -> Result<BTreeSet<String>> {
     let Some(value) = body.get(field) else {
         return Ok(BTreeSet::new());
     };
@@ -974,9 +1005,9 @@ fn valid_name(value: &str, label: &str) -> Result<()> {
         || value.len() > MAX_NAME_BYTES
         || value.starts_with('.')
         || value.ends_with('.')
-        || value
-            .bytes()
-            .any(|byte| !(byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':' | b'@')))
+        || value.bytes().any(|byte| {
+            !(byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':' | b'@'))
+        })
     {
         return Err(bad(&format!("{label} is invalid")));
     }
@@ -1073,7 +1104,12 @@ mod tests {
             14,
         )?;
         assert_eq!(read.body["data"]["name"], "engineering");
-        assert_eq!(read.body["data"]["member_entity_ids"].as_array().map(Vec::len), Some(1));
+        assert_eq!(
+            read.body["data"]["member_entity_ids"]
+                .as_array()
+                .map(Vec::len),
+            Some(1)
+        );
         Ok(())
     }
 
@@ -1087,7 +1123,10 @@ mod tests {
             &json!({"name":"first"}),
             1,
         )?;
-        let first_id = first.body["data"]["id"].as_str().ok_or_else(not_found)?.to_owned();
+        let first_id = first.body["data"]["id"]
+            .as_str()
+            .ok_or_else(not_found)?
+            .to_owned();
         let second = handle(
             &mut state,
             "POST",
@@ -1095,7 +1134,10 @@ mod tests {
             &json!({"name":"second","member_group_ids":[first_id]}),
             2,
         )?;
-        let second_id = second.body["data"]["id"].as_str().ok_or_else(not_found)?.to_owned();
+        let second_id = second.body["data"]["id"]
+            .as_str()
+            .ok_or_else(not_found)?
+            .to_owned();
         let before = serde_json::to_vec(&state).map_err(|_| error(500, "serialization failed"))?;
         let result = handle(
             &mut state,
