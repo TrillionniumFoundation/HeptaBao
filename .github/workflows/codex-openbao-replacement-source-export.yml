@@ -6,6 +6,8 @@ on:
       - codex/openbao-replacement-full-closure-20260908
       - codex/openbao-2-6-production-replacement-closure-20260911-r1
       - codex/openbao-2.6-production-gap-closure-20260911
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -14,11 +16,14 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout exact branch head without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -26,6 +31,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           output="$RUNNER_TEMP/heptabao-openbao-replacement-source"
           mkdir -p "$output"
@@ -34,6 +41,11 @@ jobs:
           printf 'repository=TrillionniumFoundation/HeptaBao\ncommit=%s\ntree=%s\n' \
             "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" > "$output/source-binding.txt"
           (cd "$output" && sha256sum heptabao-openbao-replacement.bundle > heptabao-openbao-replacement.bundle.sha256)
+          rustup toolchain install 1.98.0 --profile minimal
+          cargo +1.98.0 vendor --locked "$RUNNER_TEMP/heptabao-locked-vendor" > "$output/vendor-config.toml"
+          tar -C "$RUNNER_TEMP" -czf "$output/locked-vendor.tar.gz" heptabao-locked-vendor
+          (cd "$output" && sha256sum locked-vendor.tar.gz > locked-vendor.tar.gz.sha256)
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Upload bounded exact-source artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

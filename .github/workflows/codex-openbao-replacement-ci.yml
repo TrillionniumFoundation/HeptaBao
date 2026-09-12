@@ -19,31 +19,32 @@ concurrency:
 
 jobs:
   qualify:
-    name: OpenBao replacement / ${{ matrix.candidate }}
+    name: OpenBao replacement / ${{ matrix.source_kind }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
+        source_kind: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
     env:
-      EXPECTED_SOURCE: ${{ matrix.candidate == 'head' && github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_SOURCE: ${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
       PR_HEAD: ${{ github.event.pull_request.head.sha }}
       PR_BASE: ${{ github.event.pull_request.base.sha }}
     steps:
       - name: Checkout immutable candidate without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ matrix.candidate == 'head' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Verify source identity and prospective-merge parents
         shell: bash
         env:
-          CANDIDATE: ${{ matrix.candidate }}
+          CANDIDATE: ${{ matrix.source_kind }}
         run: |
           set -euo pipefail
+          [[ "$EXPECTED_SOURCE" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
