@@ -1,4 +1,4 @@
-use super::{EngineResponse, Result, bad, empty, error, ok, reject_unknown};
+use super::{EngineResponse, Result, bad, empty, error, ok, reject_unknown, timestamp};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 use std::collections::{BTreeMap, BTreeSet};
@@ -54,7 +54,8 @@ struct Alias {
     canonical_id: String,
     name: String,
     mount_accessor: String,
-    metadata: BTreeMap<String, String>,
+    #[serde(default, alias = "metadata")]
+    custom_metadata: BTreeMap<String, String>,
     created_at: u64,
     updated_at: u64,
 }
@@ -112,6 +113,7 @@ pub(super) fn handle(
         "group-alias" => handle_group_alias_create(state, method, body, now),
         "group-alias/id" => handle_group_alias_list(state, method),
         "lookup/entity" => handle_entity_lookup(state, method, body),
+        "lookup/group" => handle_group_lookup(state, method, body),
         _ => {
             if let Some(id) = relative.strip_prefix("entity/id/") {
                 handle_entity_id(state, method, id, body, now)
@@ -317,6 +319,10 @@ fn entity_data(state: &IdentityState, entity: &Entity) -> Value {
         .filter_map(|id| state.aliases.get(id))
         .map(alias_data)
         .collect::<Vec<_>>();
+    let direct_group_ids = entity.group_ids.clone();
+    let inherited_group_ids = inherited_groups(state, &direct_group_ids);
+    let mut group_ids = direct_group_ids.clone();
+    group_ids.extend(inherited_group_ids.iter().cloned());
     json!({
         "id":entity.id,
         "name":entity.name,
@@ -324,10 +330,37 @@ fn entity_data(state: &IdentityState, entity: &Entity) -> Value {
         "metadata":entity.metadata,
         "policies":entity.policies,
         "aliases":aliases,
-        "group_ids":entity.group_ids,
-        "created_time":entity.created_at,
-        "last_update_time":entity.updated_at,
+        "direct_group_ids":direct_group_ids,
+        "inherited_group_ids":inherited_group_ids,
+        "group_ids":group_ids,
+        "creation_time":timestamp(entity.created_at),
+        "last_update_time":timestamp(entity.updated_at),
+        "merged_entity_ids":Value::Null,
     })
+}
+
+fn inherited_groups(state: &IdentityState, direct: &BTreeSet<String>) -> BTreeSet<String> {
+    let mut all = BTreeSet::new();
+    let mut frontier = direct.clone();
+    for _ in 0..MAX_GROUP_DEPTH {
+        let mut next = BTreeSet::new();
+        for group in state.groups.values() {
+            if group
+                .member_group_ids
+                .iter()
+                .any(|child| frontier.contains(child))
+                && !direct.contains(&group.id)
+                && all.insert(group.id.clone())
+            {
+                next.insert(group.id.clone());
+            }
+        }
+        if next.is_empty() {
+            break;
+        }
+        frontier = next;
+    }
+    all
 }
 
 fn handle_alias_create(
@@ -339,7 +372,13 @@ fn handle_alias_create(
     require_write(method)?;
     reject_unknown(
         body,
-        &["id", "canonical_id", "name", "mount_accessor", "metadata"],
+        &[
+            "id",
+            "canonical_id",
+            "name",
+            "mount_accessor",
+            "custom_metadata",
+        ],
     )?;
     let id = optional_string(body, "id")?;
     upsert_alias(state, id, body, now)
@@ -375,7 +414,7 @@ fn handle_alias_id(
         "POST" | "PUT" | "PATCH" => {
             reject_unknown(
                 body,
-                &["canonical_id", "name", "mount_accessor", "metadata"],
+                &["canonical_id", "name", "mount_accessor", "custom_metadata"],
             )?;
             upsert_alias(state, Some(id), body, now)
         }
@@ -407,7 +446,7 @@ fn upsert_alias(
         .and_then(Value::as_str)
         .ok_or_else(|| bad("mount_accessor is required"))?;
     valid_name(mount_accessor, "mount accessor")?;
-    let metadata = optional_metadata(body, "metadata")?;
+    let custom_metadata = optional_metadata(body, "custom_metadata")?;
     let id = match id {
         Some(id) => {
             valid_identifier(id, "alias id")?;
@@ -420,6 +459,13 @@ fn upsert_alias(
         && other != &id
     {
         return Err(error(409, "alias already exists for this mount"));
+    }
+    if state.aliases.values().any(|alias| {
+        alias.id != id
+            && alias.canonical_id == canonical_id
+            && alias.mount_accessor == mount_accessor
+    }) {
+        return Err(error(409, "entity already has an alias for this mount"));
     }
     if let Some(old) = state.aliases.get(&id) {
         state
@@ -436,7 +482,7 @@ fn upsert_alias(
         canonical_id: canonical_id.into(),
         name: name.into(),
         mount_accessor: mount_accessor.into(),
-        metadata,
+        custom_metadata,
         created_at,
         updated_at: now,
     };
@@ -463,9 +509,11 @@ fn alias_data(alias: &Alias) -> Value {
         "canonical_id":alias.canonical_id,
         "name":alias.name,
         "mount_accessor":alias.mount_accessor,
-        "metadata":alias.metadata,
-        "created_time":alias.created_at,
-        "last_update_time":alias.updated_at,
+        "custom_metadata":alias.custom_metadata,
+        "metadata":{},
+        "creation_time":timestamp(alias.created_at),
+        "last_update_time":timestamp(alias.updated_at),
+        "local":false,
     })
 }
 
@@ -478,18 +526,18 @@ fn handle_entity_lookup(
     reject_unknown(
         body,
         &[
-            "entity_id",
-            "entity_name",
+            "id",
+            "name",
             "alias_id",
             "alias_name",
             "alias_mount_accessor",
         ],
     )?;
     let mut matches = Vec::new();
-    if let Some(id) = optional_string(body, "entity_id")? {
+    if let Some(id) = optional_string(body, "id")? {
         matches.push(id.to_owned());
     }
-    if let Some(name) = optional_string(body, "entity_name")? {
+    if let Some(name) = optional_string(body, "name")? {
         matches.push(
             state
                 .entity_names
@@ -529,6 +577,62 @@ fn handle_entity_lookup(
     }
     let entity = state.entities.get(&matches[0]).ok_or_else(not_found)?;
     Ok(ok(entity_data(state, entity), false))
+}
+
+fn handle_group_lookup(
+    state: &IdentityState,
+    method: &str,
+    body: &Value,
+) -> Result<EngineResponse> {
+    require_write(method)?;
+    reject_unknown(
+        body,
+        &[
+            "id",
+            "name",
+            "alias_id",
+            "alias_name",
+            "alias_mount_accessor",
+        ],
+    )?;
+    let mut matches = Vec::new();
+    if let Some(id) = optional_string(body, "id")? {
+        matches.push(id.to_owned());
+    }
+    if let Some(name) = optional_string(body, "name")? {
+        matches.push(state.group_names.get(name).cloned().ok_or_else(not_found)?);
+    }
+    if let Some(id) = optional_string(body, "alias_id")? {
+        matches.push(
+            state
+                .group_aliases
+                .get(id)
+                .map(|alias| alias.canonical_id.clone())
+                .ok_or_else(not_found)?,
+        );
+    }
+    if let Some(alias_name) = optional_string(body, "alias_name")? {
+        let accessor = body
+            .get("alias_mount_accessor")
+            .and_then(Value::as_str)
+            .ok_or_else(|| bad("alias_mount_accessor is required with alias_name"))?;
+        let alias_id = state
+            .group_alias_keys
+            .get(&alias_key(accessor, alias_name))
+            .ok_or_else(not_found)?;
+        matches.push(
+            state
+                .group_aliases
+                .get(alias_id)
+                .map(|alias| alias.canonical_id.clone())
+                .ok_or_else(not_found)?,
+        );
+    }
+    if matches.len() != 1 {
+        return Err(bad("exactly one identity selector is required"));
+    }
+    let group = state.groups.get(&matches[0]).ok_or_else(not_found)?;
+    Ok(ok(group_data(state, group), false))
 }
 
 fn handle_group_create(
@@ -776,8 +880,8 @@ fn group_data(state: &IdentityState, group: &Group) -> Value {
         "member_entity_ids":group.member_entity_ids,
         "member_group_ids":group.member_group_ids,
         "parent_group_ids":parent_group_ids,
-        "created_time":group.created_at,
-        "last_update_time":group.updated_at,
+        "creation_time":timestamp(group.created_at),
+        "last_update_time":timestamp(group.updated_at),
     })
 }
 
@@ -900,8 +1004,8 @@ fn group_alias_data(alias: &GroupAlias) -> Value {
         "canonical_id":alias.canonical_id,
         "name":alias.name,
         "mount_accessor":alias.mount_accessor,
-        "created_time":alias.created_at,
-        "last_update_time":alias.updated_at,
+        "creation_time":timestamp(alias.created_at),
+        "last_update_time":timestamp(alias.updated_at),
     })
 }
 
@@ -1074,7 +1178,7 @@ mod tests {
             &mut state,
             "POST",
             "identity/entity-alias",
-            &json!({"canonical_id":entity_id,"name":"alice@example.invalid","mount_accessor":"auth_jwt"}),
+            &json!({"canonical_id":entity_id,"name":"alice@example.invalid","mount_accessor":"auth_jwt","custom_metadata":{"qa":"synthetic"}}),
             11,
         )?;
         assert!(alias.mutated);
@@ -1086,6 +1190,14 @@ mod tests {
             12,
         )?;
         assert_eq!(lookup.body["data"]["name"], "alice");
+        let by_name = handle(
+            &mut state,
+            "POST",
+            "identity/lookup/entity",
+            &json!({"name":"alice"}),
+            12,
+        )?;
+        assert_eq!(by_name.body["data"]["id"], entity_id);
         let group = handle(
             &mut state,
             "POST",
