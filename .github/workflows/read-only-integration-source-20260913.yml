@@ -1,0 +1,33 @@
+name: Temporary exact public integration source export
+on:
+  push:
+    branches: [ops/read-only-integration-source-20260913]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 26c40c833b071e154e21b437236f90ed8a1043bd
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export exact source without executing project code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 26c40c833b071e154e21b437236f90ed8a1043bd
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          mkdir -p "$RUNNER_TEMP/integration-source"
+          git bundle create "$RUNNER_TEMP/integration-source/source.bundle" HEAD
+          git bundle verify "$RUNNER_TEMP/integration-source/source.bundle"
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/integration-source/source-binding.txt"
+          (cd "$RUNNER_TEMP/integration-source" && sha256sum source.bundle > source.bundle.sha256)
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: exact-integration-source-26c40c83
+          path: ${{ runner.temp }}/integration-source/
+          if-no-files-found: error
+          retention-days: 1
