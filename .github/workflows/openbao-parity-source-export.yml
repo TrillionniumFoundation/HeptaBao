@@ -16,12 +16,12 @@ jobs:
           out="$RUNNER_TEMP/openbao-comparison-input"
           mkdir -p "$out"
           curl --fail --location --proto '=https' --tlsv1.2 --max-time 120 \
-            https://github.com/openbao/openbao/releases/download/v2.6.2/bao_2.6.2_linux_amd64.tar.gz \
-            -o "$out/bao_2.6.2_linux_amd64.tar.gz"
+            https://github.com/openbao/openbao/releases/download/v2.6.2/openbao_2.6.2_linux_amd64.tar.gz \
+            -o "$out/openbao_2.6.2_linux_amd64.tar.gz"
           cd "$out"
-          echo 'a3411b691b3704f392ad52b03e0727fbee4d447edaa74f6688c010b18d5a9a72  bao_2.6.2_linux_amd64.tar.gz' > SHA256SUMS
+          echo 'a3411b691b3704f392ad52b03e0727fbee4d447edaa74f6688c010b18d5a9a72  openbao_2.6.2_linux_amd64.tar.gz' > SHA256SUMS
           sha256sum -c SHA256SUMS
-          printf '%s\n' 'Official OpenBao v2.6.2 release asset 419015714.' 'Repository-controlled synthetic black-box comparison only; not independent Oracle qualification.' > SCOPE.txt
+          printf '%s\n' 'Official OpenBao v2.6.2 release asset 420820712; pinned release asset digest.' 'Repository-controlled synthetic black-box comparison only; not independent Oracle qualification.' > SCOPE.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: openbao-2.6.2-black-box-input
