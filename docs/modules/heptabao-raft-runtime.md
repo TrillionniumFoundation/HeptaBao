@@ -82,11 +82,11 @@ This table is generated from the exact candidate source. It is a bounded lexical
 
 ## State and data model
 
-Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. Application entries contain the `hbr1` envelope profile: operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero.
+Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. New application entries use the length-prefixed `hbr2` envelope profile (unambiguous `hbr1` entries remain readable): operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero.
 
 ## Invariants and authorization
 
-Only the current consensus leader may acknowledge mutation. A successful public receipt requires a committed log index and convergence of every configured voter. An isolated former leader cannot advance its committed index. Read callers must cross `ensure_linearizable`, which executes OpenRaft ReadIndex against a freshly resolved leader. Consensus membership is not application authorization: authentication, policy, namespace qualification, final-use grants and audit remain upstream responsibilities. The runtime never unseals, parses or logs the opaque application ciphertext.
+Only the current consensus leader may acknowledge mutation. The in-process `RaftRuntime` qualification facade requires a committed log index and convergence of every configured voter before returning its receipt. The separate `ProcessRaftNode` path instead follows the actual quorum commitment and local application receipt; a temporarily unavailable follower is not a requirement for acknowledging a majority-committed write. An isolated former leader must not acknowledge new writes. Public reads cross ReadIndex through the composed service, not a cached leader hint. Consensus membership is not application authorization: authentication, policy, namespace qualification and audit remain upstream responsibilities. The runtime never unseals, parses or logs opaque application ciphertext.
 
 ## Failure, retry and reconciliation
 
@@ -94,11 +94,11 @@ Invalid bounds and zero client serials fail before consensus entry. Fatal OpenRa
 
 ## Concurrency and ordering
 
-OpenRaft serializes leader terms, log append, commitment and state-machine application. The façade first resolves the current leader, invokes one idempotent client write, observes the returned log index, and waits for every voter to apply at least that index before releasing a receipt. ReadIndex occurs after leader resolution and before a linearizable read may be served. The deterministic router supports isolation, pause, healing and RPC counting only for qualification; it is not exposed as a production bypass. Shutdown unregisters every node before releasing the corresponding Raft task.
+OpenRaft serializes leader terms, log append, commitment and state-machine application. The in-process facade first resolves the current leader, invokes one idempotent client write, observes the returned log index and waits for every voter to apply at least that index. The per-process path owns one voter and relies on bounded peer RPC, quorum commitment and explicit application-state reconciliation in the server. ReadIndex precedes a public linearizable read. The deterministic router supports isolation, pause, healing and RPC counting only for qualification; it is not exposed as a production bypass. In-process shutdown unregisters each node before stopping its Raft task; server process shutdown must additionally stop its separately owned transport workers.
 
 ## Security and privacy
 
-The public payload must already be protected by the HeptaBao Barrier; this package deliberately has no key, unseal or plaintext API. `Debug` for `ReplicatedEnvelope` redacts operation identity and digest and reports only ciphertext length. Durable application values are ciphertext, while Raft metadata such as node IDs, terms and membership remain nonsecret. The store rejects symlinked roots/generations and limits every durable artifact to 128 MiB. Peer authentication, transport encryption, certificate rotation, join tokens, anti-rollback hardware and host isolation are explicitly outside this in-process vertical slice and remain mandatory before production activation.
+The application payload must already be protected by the HeptaBao Barrier; this package deliberately has no application key, unseal or plaintext API. `Debug` for `ReplicatedEnvelope` redacts operation identity and digest and reports only ciphertext length. Durable application values are ciphertext; Raft node IDs, terms and membership are metadata, not secret values. The store rejects symlinked roots/generations and bounds each durable artifact to 128 MiB. The per-process server supplies mTLS and pinned peer identities through `RaftPeerRpc`. Certificate rotation, join authorization, independently qualified key custody, anti-rollback hardware and host isolation remain separately governed; the in-process router is not evidence for those properties.
 
 ## Persistence and compatibility
 
@@ -110,7 +110,7 @@ The public façade exposes leader ID, committed log index and the caller-supplie
 
 ## Operations
 
-Repository qualification supports bootstrap of exactly three voters, orderly shutdown, exact-root reopen, leader discovery, snapshot generation, deterministic partition/heal and state convergence checks. Operators must treat a failed reopen, checksum mismatch or ambiguous replacement as a recovery event and preserve all artifacts. Deleting log/state files to regain liveness is forbidden. The future networked service must add peer certificate enrollment, membership-change authorization, rolling upgrade, node replacement, snapshot transfer limits, quorum-loss runbooks and cross-host backup/restore before this runtime can back production requests.
+The in-process API supports bootstrap of three voters, orderly shutdown, exact-root reopen, leader discovery, snapshot generation, deterministic partition/heal and convergence checks. The actual per-process service is entered through `heptabao-server --config ... --ha-config ...`, with its declared pinned peer set and separate replication-key custody; the server guide owns those configuration fields. Local synthetic process and opaque-link fixtures never attach to an existing deployment. Failed reopen, checksum mismatch or ambiguous replacement requires recovery and preservation of evidence, not deletion of authoritative log/state files. Production node enrollment/replacement, membership-change authorization, rolling upgrade and cross-host backup/restore require their own complete operating procedures and tests.
 
 ## Tests and executable evidence
 
@@ -118,7 +118,7 @@ Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime` for the package and t
 
 ## Evolution and open boundaries
 
-The separate per-process path is now connected through `heptabao-server::ha::HaProcess`; the deterministic router remains a test helper and is not the production transport. The next gate executes real three-process failover, quorum-loss, snapshot transfer, restart and rolling-version-upgrade tests against that exact composition. Joint-consensus membership changes, witness/learner operation, production storage performance, disk-full behavior, mTLS/KMS custody, cross-platform destructive tests and independent linearizability campaigns remain open. This guide grants no compatibility, production, migration or release authority.
+The separate per-process path is connected through `heptabao-server::ha::HaProcess`; the deterministic router remains a test helper, not the service transport. Real three-process failover/restart and loopback network-partition fixtures are installed and must execute on the exact candidate. A snapshot request followed by catch-up is not proof that a follower installed a snapshot rather than replaying logs. Forced snapshot transfer, rolling binary-version upgrade, operator-authorized membership change, production load, disk-full/power-loss behavior, mTLS/KMS custody, cross-platform destructive tests and independent concurrent-history linearizability campaigns remain open. This guide grants no compatibility, production, migration or release authority.
 
 ## Machine-verified source truth
 
@@ -152,3 +152,27 @@ in-process fixture's 40/120/240 ms test timings. Linearizable reads still use
 ReadIndex, not a clock-dependent lease shortcut. Real process behavior is
 exercised by `qa/openbao-acceptance/ha_destructive.py`; scenario success, ignored
 fault categories and the binary/source identity must be reported separately.
+
+
+## Bounded bootstrap leadership transitions
+
+The in-process qualification facade no longer sends every learner addition and
+voter promotion to the original node 1 after bootstrap. Each membership operation
+resolves a current leader and follows only an explicit OpenRaft `ForwardToLeader`
+response, with the same fixed learner identity or voter set. The attempt budget
+is 40, the inter-attempt delay is 50 ms and the entire membership attempt loop has
+a 12-second deadline. Initial leader discovery has its own bounded deadline.
+Fatal storage failures and membership conflicts stop immediately. A deadline
+expiration reports an unknown membership outcome and never authorizes replay.
+This correction is not a change to the public server's write retry semantics.
+
+`bootstrap_membership_resolves_explicit_follower_hint` starts the operation on a
+follower, adds a fixed learner and verifies the exact three-voter set and ReadIndex.
+`bootstrap_membership_recovers_when_forward_has_no_leader_hint` starts on an
+unjoined node and resolves the leader from the existing cluster rather than
+trusting an empty forwarding hint.
+`unavailable_membership_target_does_not_allocate_or_retry` proves that an absent
+node is not silently invented and no network RPC is issued. The existing durable
+restart/quorum-loss regression remains mandatory, without ignores or retry wrappers.
+Real network fault evidence is separately described in
+`docs/operations/HEPTABAO_NETWORK_PARTITION_QUALIFICATION.md`.

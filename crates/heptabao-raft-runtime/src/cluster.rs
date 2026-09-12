@@ -29,6 +29,13 @@ const LEADER_RETRY_ATTEMPTS: usize = 40;
 const LEADER_RETRY_DELAY: Duration = Duration::from_millis(50);
 const LEADER_REFRESH_TIMEOUT: Duration = Duration::from_millis(250);
 const SNAPSHOT_WAIT_TIMEOUT: Duration = Duration::from_secs(2);
+const MEMBERSHIP_OPERATION_TIMEOUT: Duration = Duration::from_secs(12);
+
+#[derive(Clone, Copy, Debug)]
+enum BootstrapMembership {
+    AddLearner(u64),
+    PromoteThree,
+}
 
 #[derive(Clone, Copy, Debug)]
 enum StoreLifecycle {
@@ -140,20 +147,12 @@ impl DurableCluster {
 
         for id in [2_u64, 3] {
             self.start_node(id, StoreLifecycle::CreateNew).await?;
-            self.nodes[&1]
-                .raft
-                .add_learner(id, (), true)
-                .await
-                .decompose()
-                .unwrap()?;
+            self.bootstrap_membership(BootstrapMembership::AddLearner(id))
+                .await?;
         }
 
-        self.nodes[&1]
-            .raft
-            .change_membership(BTreeSet::from([1_u64, 2, 3]), false)
-            .await
-            .decompose()
-            .unwrap()?;
+        self.bootstrap_membership(BootstrapMembership::PromoteThree)
+            .await?;
         for node in self.nodes.values() {
             node.raft
                 .wait(Some(Duration::from_secs(8)))
@@ -161,6 +160,55 @@ impl DurableCluster {
                 .await?;
         }
         Ok(())
+    }
+
+    /// Bootstrap is a bounded qualification operation, not a production retry
+    /// policy. A node may lose leadership while durable learner/snapshot I/O is
+    /// in flight. Re-resolve only an explicit ForwardToLeader API response;
+    /// fatal storage errors, membership conflicts and timeout remain failures.
+    /// In particular, never turn timeout into permission to replay a mutation.
+    async fn bootstrap_membership(&self, operation: BootstrapMembership) -> AnyResult<()> {
+        let candidate = self.consensus_leader().await?;
+        self.bootstrap_membership_from(operation, candidate).await
+    }
+
+    async fn bootstrap_membership_from(
+        &self,
+        operation: BootstrapMembership,
+        mut candidate: u64,
+    ) -> AnyResult<()> {
+        timeout(MEMBERSHIP_OPERATION_TIMEOUT, async {
+            for attempt in 0..LEADER_RETRY_ATTEMPTS {
+                let node = self
+                    .nodes
+                    .get(&candidate)
+                    .ok_or("bootstrap leader unavailable")?;
+                let result = match operation {
+                    BootstrapMembership::AddLearner(id) => {
+                        node.raft.add_learner(id, (), true).await
+                    }
+                    BootstrapMembership::PromoteThree => {
+                        node.raft
+                            .change_membership(BTreeSet::from([1_u64, 2, 3]), false)
+                            .await
+                    }
+                };
+                match result.decompose() {
+                    Ok(Ok(_)) => return Ok(()),
+                    Err(fatal) => return Err(Box::new(fatal) as Box<dyn Error + Send + Sync>),
+                    Ok(Err(ClientWriteError::ForwardToLeader(forward))) => {
+                        candidate = self.retry_leader(candidate, forward.leader_id).await;
+                    }
+                    Ok(Err(error)) => return Err(Box::new(error)),
+                }
+                if attempt + 1 < LEADER_RETRY_ATTEMPTS {
+                    sleep(LEADER_RETRY_DELAY).await;
+                }
+            }
+            Err("bootstrap membership did not observe a stable leader".into())
+        })
+        .await
+        .map_err(|_| "bootstrap membership outcome is unknown after timeout; no retry")?
     }
 
     pub async fn reopen_three_voters(&mut self) -> AnyResult<u64> {
@@ -459,6 +507,104 @@ impl DurableCluster {
                 node.raft.shutdown().await?;
             }
         }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod bootstrap_tests {
+    use super::*;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+    struct Root(PathBuf);
+
+    impl Root {
+        fn new() -> Self {
+            Self(std::env::temp_dir().join(format!(
+                "heptabao-membership-forward-{}-{}",
+                std::process::id(),
+                SEQUENCE.fetch_add(1, Ordering::Relaxed)
+            )))
+        }
+    }
+
+    impl Drop for Root {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[tokio::test]
+    async fn bootstrap_membership_resolves_explicit_follower_hint() -> AnyResult<()> {
+        let root = Root::new();
+        let mut cluster = DurableCluster::new(&root.0)?;
+        cluster.bootstrap_three_voters().await?;
+        let leader = cluster.consensus_leader().await?;
+        let follower = if leader == 1 { 2 } else { 1 };
+        cluster.start_node(4, StoreLifecycle::CreateNew).await?;
+        // Start explicitly on a follower, rather than depending on a scheduling
+        // race to cover ForwardToLeader. The desired learner identity is fixed.
+        cluster
+            .bootstrap_membership_from(BootstrapMembership::AddLearner(4), follower)
+            .await?;
+        cluster
+            .bootstrap_membership_from(BootstrapMembership::PromoteThree, follower)
+            .await?;
+        for node in cluster.nodes.values() {
+            node.raft
+                .wait(Some(Duration::from_secs(8)))
+                .voter_ids(
+                    [1_u64, 2, 3],
+                    "forwarded membership keeps the exact voter set",
+                )
+                .await?;
+        }
+        cluster
+            .read_index(cluster.consensus_leader().await?)
+            .await?;
+        cluster.shutdown().await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn bootstrap_membership_recovers_when_forward_has_no_leader_hint() -> AnyResult<()> {
+        let root = Root::new();
+        let mut cluster = DurableCluster::new(&root.0)?;
+        cluster.bootstrap_three_voters().await?;
+        cluster.start_node(4, StoreLifecycle::CreateNew).await?;
+        assert!(
+            cluster.nodes[&4]
+                .raft
+                .metrics()
+                .borrow_watched()
+                .current_leader
+                .is_none()
+        );
+        // This node has not joined any membership and cannot supply a leader
+        // hint. Other registered nodes, not the empty hint, resolve the target.
+        cluster
+            .bootstrap_membership_from(BootstrapMembership::AddLearner(4), 4)
+            .await?;
+        cluster
+            .read_index(cluster.consensus_leader().await?)
+            .await?;
+        cluster.shutdown().await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn unavailable_membership_target_does_not_allocate_or_retry() -> AnyResult<()> {
+        let root = Root::new();
+        let cluster = DurableCluster::new(&root.0)?;
+        let result = cluster
+            .bootstrap_membership_from(BootstrapMembership::PromoteThree, 99)
+            .await;
+        assert!(result.is_err());
+        assert!(cluster.nodes.is_empty());
+        assert!(cluster.rpc_counts().await.is_empty());
+        cluster.shutdown().await?;
         Ok(())
     }
 }

@@ -112,6 +112,18 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
+      - name: Exercise real encrypted-link network partitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 360 python qa/openbao-acceptance/ha_network_partition.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
+
       - name: Confirm source remained immutable
         if: ${{ success() || failure() }}
         shell: bash
