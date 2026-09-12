@@ -1,5 +1,6 @@
-//! Single-node secret engines. State is secret-bearing and must only be persisted
-//! through the server's authenticated encryption boundary; Debug redacts it.
+//! Single-node secret engines and core logical surfaces. State is secret-bearing
+//! and must only be persisted through the server's authenticated encryption boundary;
+//! Debug redacts it.
 //!
 //! Namespace, mount and resource identifiers are separate map dimensions. No
 //! delimiter-concatenated value is ever used as a storage identity.
@@ -9,6 +10,7 @@ use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 use zeroize::Zeroize;
 
+mod identity;
 mod kv;
 mod totp;
 mod transit;
@@ -29,6 +31,8 @@ impl std::fmt::Debug for EngineState {
 #[derive(Clone, Serialize, Deserialize)]
 struct NamespaceState {
     mounts: BTreeMap<String, Mount>,
+    #[serde(default)]
+    identity: identity::IdentityState,
 }
 
 impl Default for NamespaceState {
@@ -47,6 +51,7 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            identity: identity::IdentityState::default(),
         }
     }
 }
@@ -300,6 +305,15 @@ impl EngineState {
             .next()
             .unwrap_or(path)
             .trim_start_matches('/');
+        if identity::owns(path) {
+            return Some(match method {
+                "GET" | "HEAD" => "read",
+                "LIST" | "SCAN" => "list",
+                "DELETE" => "delete",
+                "PATCH" => "patch",
+                _ => "update",
+            });
+        }
         let fallback = NamespaceState::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
         let (mount_path, mount) = state
@@ -369,6 +383,13 @@ impl EngineState {
                 method
             };
         let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+        if identity::owns(path) {
+            let response = identity::handle(&mut candidate.identity, method, path, &params, now)?;
+            if response.mutated {
+                self.namespaces.insert(namespace.into(), candidate);
+            }
+            return Ok(Some(response));
+        }
         let response = if path == "sys/mounts" || path == "sys/mounts/" {
             if method != "GET" {
                 return Err(unsupported());
