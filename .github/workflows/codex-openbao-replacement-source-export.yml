@@ -45,6 +45,22 @@ jobs:
           cargo +1.98.0 vendor --locked "$RUNNER_TEMP/heptabao-locked-vendor" > "$output/vendor-config.toml"
           tar -C "$RUNNER_TEMP" -czf "$output/locked-vendor.tar.gz" heptabao-locked-vendor
           (cd "$output" && sha256sum locked-vendor.tar.gz > locked-vendor.tar.gz.sha256)
+          python3 -m pip download --disable-pip-version-check --only-binary=:all: \
+            --python-version 3.13 --implementation cp --abi cp313 \
+            --platform manylinux2014_x86_64 --platform manylinux_2_28_x86_64 \
+            --index-url https://pypi.org/simple --requirement requirements-plan.txt \
+            --dest "$output/python-wheels"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          output = Path(os.environ['RUNNER_TEMP']) / 'heptabao-openbao-replacement-source'
+          wheels = sorted((output / 'python-wheels').glob('*.whl'))
+          if not 2 <= len(wheels) <= 32 or sum(p.stat().st_size for p in wheels) > 64 * 1024 * 1024:
+              raise ValueError('Python wheel inventory exceeds transport bounds')
+          entries = [{'file': p.name, 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in wheels]
+          receipt = {'schema': 'heptabao.python-wheel-transport.v1', 'source_commit': os.environ['SOURCE_SHA'], 'requirements_sha256': hashlib.sha256(Path('requirements-plan.txt').read_bytes()).hexdigest(), 'target': 'CPython 3.13 Linux x86_64', 'wheels': entries, 'executed': False, 'qualification': False, 'scope': 'dependency transport only; not runtime tests or independent supply-chain admission'}
+          (output / 'python-wheels.json').write_text(json.dumps(receipt, sort_keys=True) + '\n')
+          PY
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Transport pinned official Oracle archive without executing it
