@@ -1,0 +1,41 @@
+name: Codex rustfmt and inventory once
+
+on:
+  push:
+    branches:
+      - codex/openbao-complete-replacement-20260912
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: codex/openbao-complete-replacement-20260912
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Format source, regenerate inventory, validate and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt
+          cargo +1.98.0 fmt --all
+          python scripts/current_source_inventory.py --write
+          python scripts/validate_repository_v2.py
+          cargo +1.98.0 fmt --all -- --check
+          if git diff --quiet -- crates/heptabao-server/src/engines/identity.rs planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json; then
+            echo "format and inventory already exact"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add crates/heptabao-server/src/engines/identity.rs planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json
+          git commit -m "style(identity): apply rustfmt 1.98 and rebind source inventory"
+          git push origin HEAD:codex/openbao-complete-replacement-20260912
