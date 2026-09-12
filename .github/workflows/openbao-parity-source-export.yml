@@ -7,34 +7,27 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 05b47e81601b2ef7cf19eb5623763d0f72851617
+          ref: 26c40c833b071e154e21b437236f90ed8a1043bd
           fetch-depth: 0
           persist-credentials: false
-      - name: Export exact public source and dependencies, without runtime execution
+      - name: Export existing exact identity source, without runtime execution
         shell: bash
-        env:
-          CARGO_HOME: /tmp/heptabao-parity-cargo
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = 05b47e81601b2ef7cf19eb5623763d0f72851617
-          out="$RUNNER_TEMP/heptabao-parity-inputs"
+          test "$(git rev-parse HEAD)" = 26c40c833b071e154e21b437236f90ed8a1043bd
+          out="$RUNNER_TEMP/heptabao-identity-inputs"
           mkdir -p "$out"
-          git bundle create "$out/source.bundle" HEAD
-          git archive --format=tar HEAD | gzip -n > "$out/source.tar.gz"
+          git bundle create "$out/identity.bundle" HEAD
           git rev-parse HEAD HEAD^{tree} > "$out/source-binding.txt"
-          git status --porcelain=v1 --untracked-files=all > "$out/source-status.txt"
-          rustup toolchain install 1.98.0 --profile minimal
-          cargo +1.98.0 vendor --locked "$RUNNER_TEMP/parity-vendor" > "$out/vendor-config.toml"
-          tar -C "$RUNNER_TEMP" -czf "$out/vendor.tar.gz" parity-vendor
           cd "$out"
-          sha256sum source.bundle source.tar.gz vendor.tar.gz vendor-config.toml source-binding.txt > SHA256SUMS
+          sha256sum identity.bundle source-binding.txt > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: heptabao-parity-source-05b47e81
-          path: ${{ runner.temp }}/heptabao-parity-inputs/
+          name: heptabao-identity-source-26c40c83
+          path: ${{ runner.temp }}/heptabao-identity-inputs/
           retention-days: 3
           if-no-files-found: error
