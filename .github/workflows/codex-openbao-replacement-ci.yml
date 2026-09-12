@@ -76,6 +76,10 @@ jobs:
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
 
+      - name: Verify ACL and Linux proxy tests are in the compiled module graph
+        shell: bash
+        run: python scripts/verify_compiled_runtime_paths.py
+
       - name: Check formatting without changing source
         if: ${{ success() || failure() }}
         shell: bash

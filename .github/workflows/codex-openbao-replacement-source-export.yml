@@ -45,6 +45,71 @@ jobs:
           cargo +1.98.0 vendor --locked "$RUNNER_TEMP/heptabao-locked-vendor" > "$output/vendor-config.toml"
           tar -C "$RUNNER_TEMP" -czf "$output/locked-vendor.tar.gz" heptabao-locked-vendor
           (cd "$output" && sha256sum locked-vendor.tar.gz > locked-vendor.tar.gz.sha256)
+          python3 -m pip download --disable-pip-version-check --only-binary=:all: \
+            --python-version 3.13 --implementation cp --abi cp313 \
+            --platform manylinux2014_x86_64 --platform manylinux_2_28_x86_64 \
+            --index-url https://pypi.org/simple --requirement requirements-plan.txt \
+            --dest "$output/python-wheels"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          output = Path(os.environ['RUNNER_TEMP']) / 'heptabao-openbao-replacement-source'
+          wheels = sorted((output / 'python-wheels').glob('*.whl'))
+          if not 2 <= len(wheels) <= 32 or sum(p.stat().st_size for p in wheels) > 64 * 1024 * 1024:
+              raise ValueError('Python wheel inventory exceeds transport bounds')
+          entries = [{'file': p.name, 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in wheels]
+          receipt = {'schema': 'heptabao.python-wheel-transport.v1', 'source_commit': os.environ['SOURCE_SHA'], 'requirements_sha256': hashlib.sha256(Path('requirements-plan.txt').read_bytes()).hexdigest(), 'target': 'CPython 3.13 Linux x86_64', 'wheels': entries, 'executed': False, 'qualification': False, 'scope': 'dependency transport only; not runtime tests or independent supply-chain admission'}
+          (output / 'python-wheels.json').write_text(json.dumps(receipt, sort_keys=True) + '\n')
+          PY
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Transport pinned official Oracle archive without executing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, urllib.request
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          expected = "8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa"
+          class HttpsOnly(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  if urlsplit(newurl).scheme != "https":
+                      raise ValueError("non-HTTPS redirect rejected")
+                  return super().redirect_request(req, fp, code, msg, headers, newurl)
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), HttpsOnly())
+          request = urllib.request.Request("https://api.github.com/repos/openbao/openbao/releases/tags/v2.6.2", headers={"User-Agent":"HeptaBao-Oracle-Transport", "Accept":"application/vnd.github+json"})
+          with opener.open(request, timeout=30) as response:
+              raw = response.read(1024 * 1024 + 1)
+          if len(raw) > 1024 * 1024:
+              raise ValueError("release metadata exceeds bound")
+          release = json.loads(raw)
+          if release["tag_name"] != "v2.6.2" or release["draft"] or release["prerelease"]:
+              raise ValueError("wrong stable Oracle release")
+          assets = [a for a in release["assets"] if a.get("digest") == "sha256:" + expected]
+          if len(assets) != 1:
+              raise ValueError("pinned archive not uniquely present in official release")
+          asset = assets[0]
+          url = asset["browser_download_url"]
+          if not url.startswith("https://github.com/openbao/openbao/releases/download/v2.6.2/") or not url.endswith(".tar.gz") or not 0 < asset["size"] <= 256 * 1024 * 1024:
+              raise ValueError("unexpected Oracle archive identity or size")
+          output = Path(os.environ["RUNNER_TEMP"]) / "heptabao-openbao-replacement-source" / "oracle-binary"
+          output.mkdir(mode=0o700)
+          archive = output / "official-openbao-2.6.2.tar.gz"
+          digest, size = hashlib.sha256(), 0
+          with opener.open(url, timeout=60) as response, archive.open("xb") as target:
+              while block := response.read(1024 * 1024):
+                  size += len(block)
+                  if size > asset["size"]:
+                      raise ValueError("archive exceeds official size")
+                  digest.update(block)
+                  target.write(block)
+          if size != asset["size"] or digest.hexdigest() != expected:
+              archive.unlink()
+              raise ValueError("Oracle archive digest mismatch")
+          receipt = {"schema":"heptabao.oracle-archive-transport.v1", "version":"2.6.2", "archive_sha256":expected, "archive_bytes":size, "official_release_id":release["id"], "official_asset_id":asset["id"], "official_asset_name":asset["name"], "provenance_url":release["html_url"], "executed":False, "independent_attestation":False, "compatibility_claim":False, "production_authority":False, "scope":"public official binary archive transport only; not source transfer or admission"}
+          (output / "transport-receipt.json").write_text(json.dumps(receipt, sort_keys=True) + "\n")
+          PY
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Upload bounded exact-source artifact
