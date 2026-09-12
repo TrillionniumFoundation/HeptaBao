@@ -1,0 +1,38 @@
+name: Codex regenerate current source inventory once
+
+on:
+  push:
+    branches:
+      - codex/openbao-complete-replacement-20260912
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: codex/openbao-complete-replacement-20260912
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Regenerate and validate repository truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/current_source_inventory.py --write
+          python scripts/validate_repository_v2.py
+          if git diff --quiet -- planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json; then
+            echo "inventory already exact"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json
+          git commit -m "chore(inventory): regenerate exact current source binding"
+          git push origin HEAD:codex/openbao-complete-replacement-20260912
