@@ -1,5 +1,20 @@
 # `heptabao-single-node-store` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`FileGenerationStore::create_new`, `reopen_existing` and `adopt_legacy` distinguish lifecycle admission and own an injected `IntegrityProvider`. Every operation stays anchored to an `ExclusiveDirectory`. `prepare_commit(expected_current, candidate)` derives a generation/digest intent; `commit` takes the opaque candidate by value and uses compare-and-swap publication of immutable generation bundles before updating the current pointer.
+
+`recover_commit(intent)` classifies an interrupted exact candidate; `GenerationConflict` and `CommitOutcomeUnknown` must remain distinct. Missing or mismatched markers, unsafe file types and corrupt bytes fail closed. A caller must retain the original intent for recovery rather than delete publication artifacts. This provider supplies no independent rollback protection and is an inherited composition, not the current server's `DurableService` storage format.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `create_commit_load_and_reopen_round_trip` — `crates/heptabao-single-node-store/src/lib.rs`.
+- `compare_and_swap_rejects_stale_expected_generation` — `crates/heptabao-single-node-store/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-single-node-store --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `storage-platform-security`  

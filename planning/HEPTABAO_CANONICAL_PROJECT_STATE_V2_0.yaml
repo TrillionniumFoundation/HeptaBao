@@ -5,7 +5,7 @@ status: V2_1_RUNNABLE_SINGLE_NODE_REVIEW_REQUIRED
 source_baseline:
   commit: 89012e7d7991e084104e7030e4f8485c5667592e
   tree: 81819977bcdc5755f484af46a27305c7c7223fa0
-  description: independently reviewed 40-package V2 repository baseline extended by the V2.1 durable vertical slice
+  description: historical independently reviewed 40-package V2 baseline; current source inventory and runtime architecture describe the subsequent implementation
 current_documents:
   current_portal: docs/CURRENT_DOCUMENTATION.md
   root_readme: README.md
@@ -14,6 +14,9 @@ current_documents:
   blocker_register: planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml
   capability_matrix: planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml
   module_index: docs/modules/README.md
+  current_runtime_architecture: docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md
+  runtime_module_map: docs/modules/CURRENT_RUNTIME_MAP.md
+  documentation_semantics_validator: scripts/validate_current_documentation_semantics.py
   module_standard: docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md
   engineering_handbook: docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md
   control_plane_pipeline: docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md

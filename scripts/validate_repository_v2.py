@@ -481,6 +481,14 @@ def validate() -> list[str]:
         inventory_module = importlib.util.module_from_spec(inventory_spec)
         inventory_spec.loader.exec_module(inventory_module)
         errors.extend(inventory_module.validate(ROOT))
+    semantics_path = ROOT / "scripts/validate_current_documentation_semantics.py"
+    semantics_spec = importlib.util.spec_from_file_location("heptabao_documentation_semantics", semantics_path)
+    if semantics_spec is None or semantics_spec.loader is None:
+        errors.append("current documentation semantics validator cannot be loaded")
+    else:
+        semantics_module = importlib.util.module_from_spec(semantics_spec)
+        semantics_spec.loader.exec_module(semantics_module)
+        errors.extend(semantics_module.validate(ROOT))
     return errors
 
 

@@ -7,18 +7,19 @@ not a separate crate or an independent production authority grant.
 ## Responsibility and durable transaction boundary
 
 `AuthState` owns token verifiers, ACL policies, user password verifiers,
-user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers. It derives `Clone`, `Serialize` and
+user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers, the auth mount registry and pinned-key JWT trust/role/replay state. It derives `Clone`, `Serialize` and
 `Deserialize`; neither this state nor credential-bearing records implements
 `Debug`. The surrounding service serializes it inside the encrypted durable
 server state. It is not a separate plaintext authentication database.
 
-The service must execute every request in this order:
+For an authenticated application request, the service owns this transaction order (initialization and anonymous login have separate admitted paths):
 
-1. Clone the last committed state.
-2. Authenticate the token on that clone, consuming one use if limited.
-3. Authorize the requested operation and invoke the route handler.
-4. Commit all authentication mutations before disclosing any response data.
-5. Publish the clone only after durable success.
+1. Persist the required request-audit record before dispatch.
+2. Clone committed state and authenticate on the clone, consuming one token use if limited.
+3. Persist changed token consumption before application authorization/handler dispatch; publish only a durably admitted state.
+4. Recheck the private principal against live time/state, then invoke the route on a candidate clone.
+5. Commit successful handler mutations before publishing the new state or disclosing response data; discard rejected handler changes.
+6. Persist the required response audit before releasing the result. A later audit failure withholds it without undoing the durable token use or application mutation.
 
 Authentication consumption survives an ACL rejection or a malformed owned-route
 request. A failed storage commit discards the candidate and cannot return a
@@ -34,15 +35,43 @@ Authorization checks the current token record and its ancestor chain, so a
 previously authenticated principal cannot bypass revocation. A principal belongs
 to one request; the service must authenticate again for a later request.
 
-The public interface is:
+The following illustrative excerpts show the current **crate-private** declarations; they are not an external Rust API or a standalone program. `lib.rs` declares `mod auth;`, and these methods are `pub(super)`. `authenticate` mutably consumes a token use and returns one non-cloneable request capability; the service persists consumption before dispatch. `authorize_request` borrows that capability and reevaluates expiry, revocation, ancestor and namespace state at the live caller-supplied `now`. Omitting `now` would allow stale authorization and is not this API. `handle` borrows an optional principal because login is anonymous; dispatch consumes the enclosing principal so it cannot escape to a later request.
 
-```rust
-AuthState::bootstrap(now: u64) -> Result<(AuthState, String), AuthError>
-state.authenticate(token: &str, now: u64) -> Result<Principal, AuthError>
-state.authorize(&principal, namespace, path, capability) -> Result<(), AuthError>
-state.handle(principal, namespace, method, path, body, now)
-    -> Result<Option<AuthResponse>, AuthError>
+<!-- CURRENT API: crates/heptabao-server/src/auth.rs#bootstrap -->
+```text
+pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError>
 ```
+
+<!-- CURRENT API: crates/heptabao-server/src/auth.rs#authenticate -->
+```text
+pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError>
+```
+
+<!-- CURRENT API: crates/heptabao-server/src/auth.rs#authorize_request -->
+```text
+pub(super) fn authorize_request(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        now: u64,
+    ) -> Result<(), AuthError>
+```
+
+<!-- CURRENT API: crates/heptabao-server/src/auth.rs#handle -->
+```text
+pub(super) fn handle(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<AuthResponse>, AuthError>
+```
+
 
 Paths omit `/v1/`. The root namespace is the empty string. Namespaces use
 slash-separated identifier segments. Empty, `.` and `..` segments are rejected.
@@ -190,22 +219,54 @@ overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
 lifetime or use count. Secret IDs can be listed by accessor, looked up, or
 destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
-within a namespace are rejected. No secret-ID bearer can be recovered after
+within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding, response wrapping, entity/group
-mapping, batch tokens, LDAP, OIDC/JWT, Kubernetes, cloud IAM, certificate auth,
-WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount
-tuning. Unknown
-security-relevant request fields are rejected. Userpass and AppRole currently
-have fixed paths. Login throttling is not implemented in this module; the
-bounded single-node server must not be advertised as production authentication
-parity without separate abuse-resistance work.
+Not supported: custom secret IDs, CIDR binding, response wrapping, general identity/group administration, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+
+## Authentication mount registry
+
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle` or `jwt`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+
+Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
+
+The whole registry, credentials and issued-token provenance live in encrypted `AuthState`, share the Service transaction boundary, survive reopen and follow the HA state replication path. A separately constructed federated verifier result does not become the server's private `Principal`.
+
+## Bounded JWT authentication
+
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. It does not accept the OpenBao PEM `jwt_validation_pubkeys` configuration, fetch a JWKS URL, perform OIDC discovery or implement a browser callback.
+
+Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
+
+| Parameter | Meaning and bounds |
+|---|---|
+| `issuer` | Exact trusted `iss`; URL-shaped issuer strings are supported |
+| `audiences` | Trusted audience string or string array, including URI audiences |
+| `required_namespace` | If supplied, equals the configuring request namespace; root empty string is handled as no additional verifier namespace restriction, while route admission still checks the root namespace |
+| `clock_skew_seconds` | Default 30, maximum 300; applies to future `iat`/`nbf`, not to accepting an already expired token |
+| `maximum_token_lifetime_seconds` | Default 3600, maximum 86400; bounds the JWT's issued-to-expiry lifetime |
+| `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64` |
+| key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
+| key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
+
+A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl`, `token_max_ttl` and `token_num_uses` configure the issued service token: default TTL is one hour, default maximum equals that TTL, both are positive and bounded by the service maximum of 32 days, and maximum cannot be below TTL. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
+
+Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. The service token's lifetime cannot exceed the JWT's remaining lifetime. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
+
+Accepted JWT replay identity, verified identity projection and issued token commit together in `AuthState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
+
+Successful JWT login creates an ordinary bounded HeptaBao token. Subsequent requests authenticate that token through the same private capability/ACL flow as other methods; JWT verifier helper types are not authorization capabilities. Mount disable removes JWT trust/replay state and revokes its issued tokens. Independent OpenBao differential fixtures must still cover this protocol's intended compatibility scope.
 
 ## Route inventory
 
+Default userpass/AppRole paths below also project onto the corresponding configured custom mount as described above.
+
 | Route (without `/v1/`) | Implemented operations |
 |---|---|
+| `sys/auth`, `sys/auth/:mount` | Registry read/list and sudo-gated method enable/disable |
+| `auth/:jwt_mount/config` | GET, POST/PUT pinned-key trust |
+| `auth/:jwt_mount/role/:name` | GET, POST/PUT, DELETE bounded role |
+| `auth/:jwt_mount/login` | Anonymous POST JWT verification and token issuance |
 | `auth/token/create`, `create-orphan` | POST/PUT issue |
 | `auth/token/lookup-self`, `lookup`, `lookup-accessor` | GET/POST lookup |
 | `auth/token/renew-self`, `renew`, `renew-accessor` | POST/PUT renewal |
@@ -252,8 +313,24 @@ operations make bounded state capacity recoverable after repeated logins; no
 background cleanup scheduler is currently enabled.
 
 The tests are local implementation evidence. Full OpenBao black-box differential
-compatibility, service-level crash tests of finite-use consumption, exhaustive
-parser fuzzing, KDF resource-exhaustion limits, clock-rollback policy, auth
-background pruning, external authentication providers and independent security
+compatibility, destructive failure qualification beyond the named finite-use and JWT reopen tests, exhaustive
+parser fuzzing, KDF resource-exhaustion qualification, trusted-clock policy, auth
+background pruning, additional external authentication providers and independent security
 review remain separate acceptance gates. No compatibility percentage or
 production qualification follows from this module's existence.
+
+## Current mount and JWT executable scenarios
+
+The following functions in `crates/heptabao-server/src/auth_tests.rs` exercise the current integrated auth code, rather than an unrelated contract crate:
+
+- `custom_userpass_mounts_isolate_credentials_namespaces_and_real_acl_paths` verifies mount/namespace isolation and ACL paths.
+- `custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy` verifies separate role/secret-ID state.
+- `disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials` verifies disable effects.
+- `legacy_fixed_auth_state_survives_upgrade_and_unmount_fences_unattributed_tokens` verifies legacy state/provenance handling.
+- `jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_replay` verifies bound issuance and persisted replay.
+- `jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_replay` verifies hostile inputs.
+- `jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart` verifies the watermark.
+- `jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion` verifies real ES256 and algorithm selection.
+- `jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen` initializes a real Service/disk state, logs in, reads KV, reopens, rejects replay, disables the mount and verifies revocation after another reopen.
+
+Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. Named scenarios identify executable evidence; current pass receipts and independent qualification remain separate.

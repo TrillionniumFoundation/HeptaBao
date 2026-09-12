@@ -1,5 +1,20 @@
 # `heptabao-rollback-anchor` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`AnchorCoordinator::new(anchor, authenticator)` owns the injected providers. `classify` compares a local observation with the authenticated current checkpoint; `advance(observation)` uses the provider's compare-and-swap revision. A checkpoint binds store domain/generation/digest, journal domain/tail, key epoch and previous checkpoint digest. `verify_current` requires currentness, while merely verifying a checkpoint signature is insufficient against rollback.
+
+`with_current_fence(expected, operation)` must use the same serialization primitive as anchor advancement. `CheckpointNotCurrent` and provider failure before entry prove the callback did not run; `OutcomeUnknownAfterEntry` discards its result and requires reconciliation. `RollbackDetected`, divergence and epoch regression remain terminal admission failures. The repository supplies contracts and test providers, not a deployed remote rollback anchor; local memory or a co-restored file is not independent rollback protection.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `checkpoint_advances_and_exact_observation_is_detected` — `crates/heptabao-rollback-anchor/src/lib.rs`.
+- `current_checkpoint_fence_rejects_stale_checkpoint` — `crates/heptabao-rollback-anchor/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-rollback-anchor --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `storage-cryptography-distributed-systems`  

@@ -13,6 +13,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
 use std::sync::Mutex;
+use zeroize::Zeroize;
 
 use heptabao_protocol::{CanonicalTarget, MAX_HTTP_BODY_BYTES, Method, RequestId};
 
@@ -259,7 +260,7 @@ pub fn verify_bound_assertion(
     }
     let mut canonical_request = request.canonical_bytes()?;
     let digest_result = digest_provider.digest(&canonical_request);
-    canonical_request.fill(0);
+    canonical_request.as_mut_slice().zeroize();
     let expected_digest = digest_result?;
     if !constant_time_equal(&expected_digest, &assertion.request_digest) {
         return Err(AuthbusError::RequestBindingMismatch);
@@ -267,7 +268,7 @@ pub fn verify_bound_assertion(
     let mut payload = assertion.unsigned_payload()?;
     let signature_result =
         signature_verifier.verify(&assertion.key_id, &payload, &assertion.signature);
-    payload.fill(0);
+    payload.as_mut_slice().zeroize();
     if !signature_result? {
         return Err(AuthbusError::InvalidSignature);
     }
@@ -513,7 +514,7 @@ mod tests {
     fn assertion(request: &RequestBinding<'_>) -> AuthbusAssertion {
         let mut canonical = request.canonical_bytes().unwrap_or_default();
         let digest = TestDigest.digest(&canonical);
-        canonical.fill(0);
+        canonical.as_mut_slice().zeroize();
         let request_digest = digest.unwrap_or([1; 32]);
         AuthbusAssertion {
             version: 1,

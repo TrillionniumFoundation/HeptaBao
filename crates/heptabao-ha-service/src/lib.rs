@@ -18,6 +18,7 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::path::{Component, Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
+use zeroize::Zeroize;
 
 use ring::rand::{SecureRandom, SystemRandom};
 use ring::{digest, hmac};
@@ -426,7 +427,7 @@ impl fmt::Debug for PeerAuthenticator {
 impl Drop for PeerAuthenticator {
     fn drop(&mut self) {
         for key in self.keys.values_mut() {
-            key.fill(0);
+            key.zeroize();
         }
     }
 }
@@ -536,7 +537,7 @@ impl fmt::Debug for PersistentPeerSequences {
 
 impl Drop for PersistentPeerSequences {
     fn drop(&mut self) {
-        self.key.fill(0);
+        self.key.zeroize();
         let _ = fs::remove_file(&self.lock_path);
     }
 }

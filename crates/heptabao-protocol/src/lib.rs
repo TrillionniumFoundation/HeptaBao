@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
 use std::time::Duration;
+use zeroize::Zeroize;
 
 pub const MAX_HTTP_HEAD_BYTES: usize = 16 * 1024;
 pub const MAX_HTTP_BODY_BYTES: usize = 1024 * 1024;
@@ -89,7 +90,7 @@ impl Operation {
 
 fn zeroize_string(value: &mut String) {
     let mut bytes = std::mem::take(value).into_bytes();
-    bytes.fill(0);
+    bytes.as_mut_slice().zeroize();
 }
 
 #[derive(Default)]
@@ -320,7 +321,7 @@ impl fmt::Debug for HeaderMap {
 impl Drop for HeaderMap {
     fn drop(&mut self) {
         for value in self.0.values_mut() {
-            value.fill(0);
+            value.as_mut_slice().zeroize();
         }
     }
 }
@@ -371,7 +372,7 @@ impl fmt::Debug for ParsedHttpRequest {
 
 impl Drop for ParsedHttpRequest {
     fn drop(&mut self) {
-        self.body.fill(0);
+        self.body.as_mut_slice().zeroize();
     }
 }
 
@@ -677,7 +678,7 @@ pub struct SecretBytes(Vec<u8>);
 impl SecretBytes {
     pub fn new(mut value: Vec<u8>) -> Result<Self, ProtocolError> {
         if value.is_empty() || value.len() > MAX_HTTP_BODY_BYTES {
-            value.fill(0);
+            value.as_mut_slice().zeroize();
             return Err(ProtocolError::InvalidSecret);
         }
         Ok(Self(value))
@@ -707,7 +708,7 @@ impl fmt::Debug for SecretBytes {
 
 impl Drop for SecretBytes {
     fn drop(&mut self) {
-        self.0.fill(0);
+        self.0.as_mut_slice().zeroize();
     }
 }
 

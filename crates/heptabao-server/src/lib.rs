@@ -20,4 +20,5 @@ mod ha_forward;
 pub mod ha_state;
 pub mod http;
 mod service;
+pub use service::AuditConfig;
 pub use service::{Response, Service};

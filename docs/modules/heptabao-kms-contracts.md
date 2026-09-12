@@ -1,5 +1,7 @@
 # heptabao-kms-contracts
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns provider-neutral key lifecycle, wrapping context, secret buffer and operation-outcome contracts for KMS integration. It does not implement cryptography, contact a cloud KMS or HSM, manage credentials, attest hardware or create signing and custody authority.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`KeyCatalog` owns metadata for one registered version per key ID, not key material. `register(KeyRegistration)` requires a nonzero `KeyVersion`, a nonempty capability set and unique key ID. `require_operation(key_id, version, capability)` checks exact version, enabled state and capability. It is a separate call: implementing `KmsProvider` does not automatically invoke it. The custody adapter must bind validation to provider entry and prevent a state change between them.
+
+`disable`/`enable`, `schedule_destruction(key_id, not_before, now)` and `destroy(key_id, now)` implement metadata transitions. Destruction must be scheduled strictly in the future and executed at or after its deadline; pending/destroyed keys cannot operate. There is no rotation or cancellation method. Generation overflow returns `GenerationOverflow`; transitions assign state before checking that increment, so callers must not infer that every error leaves metadata unchanged.
+
+`KmsProvider` exposes only `wrap(WrapCommand) -> KmsOutcome<WrappedValue>` and `unwrap(UnwrapCommand) -> KmsOutcome<SecretValue>`, consuming owned commands. `GenerateDataKey` is a capability enum variant, not an implemented provider method. Commands bind operation ID, key ID/version and `WrappingContext` (namespace, purpose, nonzero associated-data digest). `WrappedValue::new` accepts 1 byte through 2 MiB; the provider must enforce actual cryptographic context binding and ciphertext format.
+
+`KmsOutcome::retry_disposition` permits a fresh operation only for `ProviderUnavailableBeforeEntry`; uncertainty is `ReconcileOnly`. Derived `Debug` redacts plaintext/wrapped buffers through their types but **does not redact** ordinary `Id` fields, including reconciliation references. Do not log whole outcome/command objects when identifiers are sensitive. This standalone contract is outside the current server dependency closure and supplies no cloud/HSM adapter, auto-unseal implementation or key custody evidence.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-kms-contracts`; Cargo SHA-256 `06bf9f721dfcbfbde4222a5ca33d232c614be54e2ddcf337b26d2b967b0053fc`.
@@ -58,7 +74,7 @@ Every registered key declares at least one capability. Operations require the ex
 
 ## Failure, retry and reconciliation
 
-`FailedBeforeEntry` is distinguishable from `OutcomeUnknownAfterEntry`. Only a provider-unavailable error proven before entry is eligible for a new operation ID; an unknown wrap or unwrap result is `ReconcileOnly` and retains a redacted reconciliation reference until authoritative readback or provider evidence resolves it.
+`FailedBeforeEntry` is distinguishable from `OutcomeUnknownAfterEntry`. Only a provider-unavailable error proven before entry is eligible for a new operation ID; an unknown wrap or unwrap result is `ReconcileOnly` and carries a reconciliation reference for authoritative readback or provider evidence. That ordinary `Id` is not automatically redacted by the outcome enum.
 
 ## Concurrency and ordering
 
@@ -66,7 +82,7 @@ Every registered key declares at least one capability. Operations require the ex
 
 ## Security and privacy
 
-Plaintext, ciphertext and reconciliation identifiers are absent from ordinary diagnostics or represented by redacted types. Provider credentials, key material, PINs, attestation documents and unwrap results must never enter logs, arguments or repository fixtures. Production use requires least-privilege identities and independent custody controls.
+Plaintext and ciphertext buffers use redacted types. Key, operation, namespace, purpose and reconciliation identifiers are ordinary `Id` values and may appear in derived Debug output; adapters must redact them where sensitive. Provider credentials, key material, PINs, attestation documents and unwrap results must never enter logs, arguments or repository fixtures. Production use requires least-privilege identities and independent custody controls.
 
 ## Persistence and compatibility
 
@@ -82,6 +98,13 @@ Operator procedures must include bootstrap, rotation, provider outage, disabled-
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::key_lifecycle_is_fail_closed_and_monotonic`](../../crates/heptabao-kms-contracts/src/lib.rs) checks disabled-key rejection and the scheduled-destruction deadline.
+- [`tests::key_version_capability_and_context_are_bound`](../../crates/heptabao-kms-contracts/src/lib.rs) checks metadata validation of version/capability and zero digest rejection; it does not exercise cryptographic context binding.
+- [`tests::unknown_after_entry_is_reconcile_only`](../../crates/heptabao-kms-contracts/src/lib.rs) checks retry dispositions.
+- [`tests::secret_and_wrapped_debug_output_are_redacted`](../../crates/heptabao-kms-contracts/src/lib.rs) checks secret bytes are absent from diagnostics, without asserting identifier redaction.
+
 `cargo test -p heptabao-kms-contracts` verifies capability/version checks, monotonic lifecycle, delayed destruction, retry classification and secret diagnostic redaction. The V2 validator binds this package to the capability matrix and requires this guide and test surface.
 
 ## Evolution and open boundaries
@@ -89,6 +112,8 @@ Operator procedures must include bootstrap, rotation, provider outage, disabled-
 Cloud and HSM adapters, data-key generation, cryptographic algorithm negotiation, provider attestation, multi-region failover, durable reconciliation and real signer/KMS custody evidence remain open. `HB-BLK-EXT-004` therefore remains external even after this repository contract is implemented.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-kms-contracts`

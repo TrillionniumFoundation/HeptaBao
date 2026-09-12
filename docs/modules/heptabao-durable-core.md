@@ -1,5 +1,20 @@
 # `heptabao-durable-core` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`DurableStateEngine::new(store, barrier)` takes ownership of the generation store and barrier provider. `prepare_persist(expected_current, plaintext, caller_associated_data)` consumes plaintext, checks the optional expected generation before provider work and returns a `PreparedDurableMutation`. `commit_prepared` performs the publication; `recover_commit` classifies the exact prepared intent after interruption. The caller must serialize its mutable engine and retain the original intent for readback.
+
+`GenerationConflict` is a pre-provider conflict; `CommitIntentMismatch`, `CommitReceiptMismatch` and `BarrierEpochMismatch` must not be treated as successful writes. Storage/barrier errors preserve the provider distinction. This composition seals before storage but does not journal request identity or authorize a client; `journaled-core` adds that separate ledger. The runnable server uses the separate `durable-service` implementation, not this engine.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `prepared_mutation_binds_target_before_authoritative_commit` — `crates/heptabao-durable-core/src/lib.rs`.
+- `associated_data_mismatch_fails_authentication` — `crates/heptabao-durable-core/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-durable-core --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `core-storage-barrier`  

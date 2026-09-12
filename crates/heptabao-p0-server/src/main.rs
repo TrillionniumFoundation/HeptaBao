@@ -11,13 +11,14 @@ use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, TryLockError};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use zeroize::Zeroize;
 
 use heptabao_p0_server::{
     AuditError, AuditSink, DevelopmentCredentials, FileAuditSink, P0Response, P0Server,
 };
 use heptabao_protocol::{
-    AuditEvent, AuditPhase, CommitDisposition, MonotonicTick, ProtocolError, RequestEnvelope,
-    RequestId, parse_http_request,
+    AuditEvent, AuditPhase, CommitDisposition, MonotonicTick, Operation, ProtocolError,
+    RequestEnvelope, RequestId, classify_operation, parse_http_request,
 };
 
 const TOTAL_REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
@@ -153,12 +154,10 @@ fn run() -> Result<(), String> {
                 }
             });
         if let Err(error) = worker_result {
-            spawn_failure_active.fetch_sub(1, Ordering::AcqRel);
-            let _audit_result = record_transport_rejection(
+            let _audit_result = record_worker_spawn_failure(
+                spawn_failure_active.as_ref(),
                 &spawn_failure_audit,
                 spawn_failure_attempt_id,
-                503,
-                "connection-worker-spawn-failed",
             );
             eprintln!("connection worker spawn failed: {error}");
         }
@@ -184,7 +183,7 @@ fn discard_available_ingress(stream: &mut TcpStream) {
         let _ = stream.set_read_timeout(Some(remaining));
         match stream.read(&mut buffer) {
             Ok(0) => break,
-            Ok(count) => buffer[..count].fill(0),
+            Ok(count) => buffer[..count].zeroize(),
             Err(error)
                 if matches!(
                     error.kind(),
@@ -198,7 +197,7 @@ fn discard_available_ingress(stream: &mut TcpStream) {
             Err(_) => break,
         }
     }
-    buffer.fill(0);
+    buffer.zeroize();
 }
 
 #[derive(Clone, Debug)]
@@ -350,6 +349,7 @@ fn serve_one(
         });
     }
 
+    let delivery_operation = classify_operation(request.method, &request.target).ok();
     let request_id = match request.headers.get("x-heptabao-request-id") {
         Some(raw) => request_ids.claim(raw, Instant::now())?,
         None => attempt_id,
@@ -385,7 +385,8 @@ fn serve_one(
     };
 
     if let Err(error) = write_response_with_timeout(stream, &response) {
-        let _audit_result = record_delivery_failure(audit, request_id, response.committed);
+        let _audit_result =
+            record_delivery_failure(audit, request_id, delivery_operation, response.committed);
         eprintln!("response delivery failed: {error}");
     }
     Ok(())
@@ -470,13 +471,13 @@ fn read_request(
             return result;
         }
         input.extend_from_slice(&buffer[..count]);
-        buffer[..count].fill(0);
+        buffer[..count].zeroize();
     }
 }
 
 fn clear_request_buffers(input: &mut [u8], buffer: &mut [u8]) {
-    input.fill(0);
-    buffer.fill(0);
+    input.zeroize();
+    buffer.zeroize();
 }
 
 fn record_transport_rejection(
@@ -496,15 +497,25 @@ fn record_transport_rejection(
     })
 }
 
+fn record_worker_spawn_failure(
+    active: &AtomicUsize,
+    audit: &SharedAuditSink,
+    request_id: RequestId,
+) -> Result<(), AuditError> {
+    active.fetch_sub(1, Ordering::AcqRel);
+    record_transport_rejection(audit, request_id, 503, "connection-worker-spawn-failed")
+}
+
 fn record_delivery_failure(
     audit: &SharedAuditSink,
     request_id: RequestId,
+    operation: Option<Operation>,
     committed: bool,
 ) -> Result<(), AuditError> {
     let mut sink = audit.clone();
     sink.record(&AuditEvent {
         request_id,
-        operation: None,
+        operation,
         phase: if committed {
             AuditPhase::ResponseCommitted
         } else {
@@ -533,6 +544,18 @@ fn error_response(status_code: u16, message: &str) -> P0Response {
     }
 }
 
+/// Socket timeout control for the P0 development writer and its fault fixtures.
+/// The production server has its own independent DeadlineStream implementation.
+trait TimedWrite: Write {
+    fn set_remaining_write_timeout(&mut self, remaining: Duration) -> io::Result<()>;
+}
+
+impl TimedWrite for TcpStream {
+    fn set_remaining_write_timeout(&mut self, remaining: Duration) -> io::Result<()> {
+        self.set_write_timeout(Some(remaining))
+    }
+}
+
 fn write_response_with_timeout(
     stream: &mut TcpStream,
     response: &P0Response,
@@ -543,8 +566,8 @@ fn write_response_with_timeout(
     write_response_until(stream, response, absolute_deadline)
 }
 
-fn write_response_until(
-    stream: &mut TcpStream,
+fn write_response_until<W: TimedWrite>(
+    stream: &mut W,
     response: &P0Response,
     absolute_deadline: Instant,
 ) -> Result<(), String> {
@@ -557,7 +580,7 @@ fn write_response_until(
                 .filter(|value| !value.is_zero())
                 .ok_or_else(|| "response write deadline exceeded".to_owned())?;
             stream
-                .set_write_timeout(Some(remaining))
+                .set_remaining_write_timeout(remaining)
                 .map_err(|error| format!("set response write timeout failed: {error}"))?;
             match stream.write(&bytes[offset..]) {
                 Ok(0) => return Err("response write returned zero bytes".to_owned()),
@@ -579,13 +602,13 @@ fn write_response_until(
             .filter(|value| !value.is_zero())
             .ok_or_else(|| "response write deadline exceeded".to_owned())?;
         stream
-            .set_write_timeout(Some(remaining))
+            .set_remaining_write_timeout(remaining)
             .map_err(|error| format!("set response flush timeout failed: {error}"))?;
         stream
             .flush()
             .map_err(|error| format!("response flush failed: {error}"))
     })();
-    bytes.fill(0);
+    bytes.as_mut_slice().zeroize();
     result
 }
 
@@ -733,9 +756,143 @@ fn escape_json(value: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{RequestIdRegistry, render_response};
-    use heptabao_p0_server::P0Response;
+    use super::{
+        RequestIdRegistry, SharedAuditSink, TimedWrite, record_delivery_failure,
+        record_worker_spawn_failure, render_response, write_response_until,
+    };
+    use heptabao_p0_server::{FileAuditSink, P0Response};
+    use heptabao_protocol::{Operation, RequestId};
+    use std::error::Error;
+    use std::fs;
+    use std::io::{self, Write};
+    use std::path::PathBuf;
+    use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
+    use std::thread;
     use std::time::{Duration, Instant};
+
+    static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+    #[derive(Debug, Default)]
+    struct SlowPartialWriter {
+        writes: usize,
+        observed: Vec<u8>,
+        remaining: Duration,
+    }
+
+    impl Write for SlowPartialWriter {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            self.writes += 1;
+            let count = bytes.len().min(1);
+            self.observed.extend_from_slice(&bytes[..count]);
+            if self.writes == 1 {
+                // Consume the configured remaining budget on the first partial
+                // write. A successful byte must not renew the whole deadline.
+                thread::sleep(self.remaining + Duration::from_millis(5));
+            }
+            Ok(count)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
+    impl TimedWrite for SlowPartialWriter {
+        fn set_remaining_write_timeout(&mut self, remaining: Duration) -> io::Result<()> {
+            self.remaining = remaining;
+            Ok(())
+        }
+    }
+
+    struct AuditFixture {
+        root: PathBuf,
+        audit: SharedAuditSink,
+    }
+
+    impl AuditFixture {
+        fn new() -> Result<Self, Box<dyn Error>> {
+            let root = std::env::temp_dir().join(format!(
+                "heptabao-p0-regression-{}-{}",
+                std::process::id(),
+                TEST_SEQUENCE.fetch_add(1, Ordering::Relaxed),
+            ));
+            fs::create_dir(&root)?;
+            let audit = SharedAuditSink::new(FileAuditSink::create_new(root.join("audit.log"))?);
+            Ok(Self { root, audit })
+        }
+
+        fn lines(&self) -> io::Result<String> {
+            fs::read_to_string(self.root.join("audit.log"))
+        }
+    }
+
+    impl Drop for AuditFixture {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.root);
+        }
+    }
+
+    #[test]
+    fn partial_write_progress_cannot_reset_absolute_deadline() {
+        let response = P0Response {
+            status_code: 200,
+            body: br#"{"bounded":true}"#.to_vec(),
+            committed: false,
+            recovery_reference: None,
+        };
+        let deadline = Instant::now() + Duration::from_millis(250);
+        let mut writer = SlowPartialWriter::default();
+        let result = write_response_until(&mut writer, &response, deadline);
+        assert_eq!(result, Err("response write deadline exceeded".to_owned()));
+        assert_eq!(writer.writes, 1);
+        assert_eq!(writer.observed.len(), 1);
+    }
+
+    #[test]
+    fn worker_spawn_failure_releases_capacity_and_is_audited() -> Result<(), Box<dyn Error>> {
+        let fixture = AuditFixture::new()?;
+        let active = AtomicUsize::new(1);
+        record_worker_spawn_failure(
+            &active,
+            &fixture.audit,
+            RequestId::new("worker-spawn-failure-0001".to_owned())?,
+        )?;
+        assert_eq!(active.load(Ordering::Acquire), 0);
+        assert_eq!(
+            fixture.lines()?,
+            concat!(
+                "request_id=worker-spawn-failure-0001 operation=NONE phase=RequestRejected ",
+                "commit=NotAttempted status=503 detail=connection-worker-spawn-failed\n",
+            )
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn delivery_failure_preserves_operation_and_commit_metadata() -> Result<(), Box<dyn Error>> {
+        let fixture = AuditFixture::new()?;
+        for (id, operation, committed) in [
+            ("write-delivery-0001", Operation::KvWrite, true),
+            ("read-delivery-0001", Operation::KvRead, false),
+        ] {
+            record_delivery_failure(
+                &fixture.audit,
+                RequestId::new(id.to_owned())?,
+                Some(operation),
+                committed,
+            )?;
+        }
+        assert_eq!(
+            fixture.lines()?,
+            concat!(
+                "request_id=write-delivery-0001 operation=KvWrite phase=ResponseCommitted ",
+                "commit=Committed status=503 detail=response-delivery-failed-after-commit\n",
+                "request_id=read-delivery-0001 operation=KvRead phase=ResponsePrepared ",
+                "commit=NotCommitted status=503 detail=response-delivery-failed-before-commit\n",
+            )
+        );
+        Ok(())
+    }
 
     #[test]
     fn no_content_response_never_emits_a_wire_body() {

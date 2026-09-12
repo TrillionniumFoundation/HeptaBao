@@ -1,5 +1,20 @@
 # `heptabao-recovery-core` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`RecoveryArchive::capture` packages already sealed state and authenticated journal records; `verify` returns a verified image without decrypting it. `RecoveryRestorer::restore(target, archive, authenticator, anchor)` consumes the archive and mutably borrows both target and anchor coordinator. The private constructor of `AuthorizedRecoveryImage` makes it a single-use capability obtained only after checking the current external checkpoint.
+
+The provider must hold `anchor.with_current_fence` through target staging, publication and receipt verification. A changed anchor before entry denies publication; `OutcomeUnknownAfterEntry` or a mismatched publish receipt requires readback, never automatic retry. Archives bound state to 16 MiB, payloads to 64 MiB and records to 100,000. An empty target alone is insufficient without this fence. The current server's JSON backup route is a separate local format and does not instantiate this remote-anchor protocol.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `anchor_fence_is_held_across_target_publication` — `crates/heptabao-recovery-core/src/lib.rs`.
+- `tamper_trailing_bytes_and_non_empty_target_fail_closed` — `crates/heptabao-recovery-core/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-recovery-core --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `recovery-storage-audit-security`  

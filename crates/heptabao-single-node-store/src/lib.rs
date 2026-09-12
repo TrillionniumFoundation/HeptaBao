@@ -15,6 +15,7 @@ use std::fmt;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
+use zeroize::Zeroize;
 
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
@@ -174,7 +175,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
     ) -> Result<(), FileStoreError<P::Error>> {
         let mut bytes = encode_current(record);
         let result = atomic_replace(&self.root, CURRENT_NAME, &bytes);
-        bytes.fill(0);
+        bytes.as_mut_slice().zeroize();
         match result {
             Ok(()) => Ok(()),
             Err(error) if error.published => Err(FileStoreError::CommitOutcomeUnknown),
@@ -237,7 +238,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         let mut bytes =
             encode_marker(self.domain.as_str(), self.integrity.algorithm_id().as_str())?;
         let result = atomic_replace(&self.root, MARKER_NAME, &bytes);
-        bytes.fill(0);
+        bytes.as_mut_slice().zeroize();
         match result {
             Ok(()) => Ok(()),
             Err(error) => Err(FileStoreError::Io(error.source)),
@@ -271,7 +272,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         {
             Ok(value) => value,
             Err(error) => {
-                bundle.state.fill(0);
+                bundle.state.as_mut_slice().zeroize();
                 return Err(FileStoreError::IntegrityProvider(error));
             }
         };
@@ -465,7 +466,7 @@ where
             candidate.as_bytes(),
         )?;
         let bundle_result = write_new_file_and_sync_parent(&self.root, &bundle_name, &bundle_bytes);
-        bundle_bytes.fill(0);
+        bundle_bytes.as_mut_slice().zeroize();
         if let Err(error) = bundle_result {
             if error.kind() == io::ErrorKind::AlreadyExists {
                 return Err(FileStoreError::GenerationAlreadyExists(generation));
@@ -475,7 +476,7 @@ where
 
         let mut current_bytes = encode_current(CurrentRecord { generation, digest });
         let current_result = atomic_replace(&self.root, CURRENT_NAME, &current_bytes);
-        current_bytes.fill(0);
+        current_bytes.as_mut_slice().zeroize();
         if let Err(error) = current_result {
             if error.published {
                 return Err(FileStoreError::CommitOutcomeUnknown);
@@ -629,7 +630,7 @@ impl DecodedBundle {
 
 impl Drop for DecodedBundle {
     fn drop(&mut self) {
-        self.state.fill(0);
+        self.state.as_mut_slice().zeroize();
     }
 }
 
@@ -742,7 +743,7 @@ where
         .read_to_end(&mut bytes)
         .map_err(FileStoreError::Io)?;
     if bytes.len() > maximum {
-        bytes.fill(0);
+        bytes.as_mut_slice().zeroize();
         return Err(FileStoreError::CorruptState);
     }
     Ok(bytes)
@@ -1211,7 +1212,7 @@ mod tests {
                                 write_new_file_and_sync_parent(&store.root, &name, &encoded)
                                     .is_ok()
                             );
-                            encoded.fill(0);
+                            encoded.as_mut_slice().zeroize();
                             let recovered = store.recover_commit(intent);
                             assert!(matches!(
                                 recovered,

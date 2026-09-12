@@ -6,6 +6,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+zeroize = "=1.8.1"
 heptabao-domain = { path = "../heptabao-domain" }
 
 [lib]

@@ -1,5 +1,24 @@
 # `heptabao-p0-server` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`P0Server::new(credentials, audit)` owns development credentials and an `AuditSink`. `handle(envelope, now: MonotonicTick)` consumes a protocol `RequestEnvelope`, validates its process-local monotonic deadline, and serializes the in-memory init/seal/KV state. `DevelopmentCredentials::new` rejects weak or equal root/unseal credentials. This prototype is not the `heptabao-server` executable and has no durable KV, TLS listener or production token model.
+
+Request-audit failure prevents dispatch. Response-audit failure after a committed mutation returns an explicit recovery reference; a client must not repeat the effect. `FileAuditSink::create_new` requires an absolute new non-symlink path and does not supply the runnable service's authenticated rotating audit. All state is lost when the prototype is dropped; operate only with synthetic values and use the current server runbook for the actual process.
+
+The separate `src/main.rs` development listener bounds connections to 32, tracks request identifiers in a 4096-entry bounded set and uses an absolute response-write deadline; partial writes cannot refresh that deadline. Worker-spawn failure releases admission capacity and is audited, and delivery failure retains the classified operation/commit metadata. A busy `try_lock` path returns 503 and the response drain is bounded. These prototype mechanics do not replace the runnable server's TLS `DeadlineStream`.
+
+Additional binary regressions in `crates/heptabao-p0-server/src/main.rs` are `partial_write_progress_cannot_reset_absolute_deadline`, `worker_spawn_failure_releases_capacity_and_is_audited` and `delivery_failure_preserves_operation_and_commit_metadata`.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `fresh_server_starts_fail_closed_and_sealed` — `crates/heptabao-p0-server/src/lib.rs`.
+- `weak_or_equal_credentials_are_rejected` — `crates/heptabao-p0-server/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-p0-server --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `protocol-core-development`  

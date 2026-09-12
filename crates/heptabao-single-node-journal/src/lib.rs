@@ -20,6 +20,7 @@ use std::io::{self, Read, Write};
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
+use zeroize::Zeroize;
 
 use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
 use heptabao_journal_api::{
@@ -72,7 +73,7 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         }
         let mut marker = encode_marker(&domain, authenticator.authenticator_id())?;
         let publish = atomic_replace(&root, MARKER_NAME, &marker);
-        marker.fill(0);
+        marker.as_mut_slice().zeroize();
         if let Err(error) = publish {
             return if error.published {
                 Err(FileJournalError::InitializationOutcomeUnknown)
@@ -305,7 +306,7 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
     fn publish_tail(&self, tail: JournalTail) -> Result<(), FileJournalError<A::Error>> {
         let mut encoded = encode_tail(tail);
         let result = atomic_replace(&self.root, TAIL_NAME, &encoded);
-        encoded.fill(0);
+        encoded.as_mut_slice().zeroize();
         match result {
             Ok(()) => Ok(()),
             Err(error) if error.published => Err(FileJournalError::AppendOutcomeUnknown),
@@ -397,7 +398,7 @@ where
         let mut encoded = encode_entry(&record)?;
         let entry_name = entry_file_name(sequence);
         let write_result = write_new_file_and_sync_parent(&self.root, &entry_name, &encoded);
-        encoded.fill(0);
+        encoded.as_mut_slice().zeroize();
         if let Err(error) = write_result {
             if error.kind() == io::ErrorKind::AlreadyExists {
                 return Err(FileJournalError::EntryAlreadyExists(sequence));
@@ -626,7 +627,7 @@ where
         .read_to_end(&mut bytes)
         .map_err(FileJournalError::Io)?;
     if bytes.len() > maximum {
-        bytes.fill(0);
+        bytes.as_mut_slice().zeroize();
         return Err(FileJournalError::CorruptJournal);
     }
     Ok(bytes)

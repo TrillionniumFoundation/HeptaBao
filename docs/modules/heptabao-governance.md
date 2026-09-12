@@ -1,5 +1,20 @@
 # `heptabao-governance` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`qualify(facts, tests, findings)` takes value records and returns only `AuthorityEffect::None`. `QualificationFacts` binds cleanliness, dependency receipts, required lanes, approval/signature and validity flags; `TestSummary` and `FindingSummary` carry counts supplied by the caller. The function validates their consistency but does not independently execute tests, verify a signature with a real key, or fetch review evidence.
+
+`DirtySourceTree`, `FailedTest`, `UnknownTestOutcome`, critical/high/unclassified findings and invalid or expired approvals all reject the receipt. Retry is meaningful only after supplying corrected independently established facts. `H00_AUTHORITY` remains a compile-time set of false sentinels. This tooling crate is outside the runnable server and cannot authorize release, migration or production traffic.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `qualification_never_grants_authority` — `crates/heptabao-governance/src/lib.rs`.
+- `failed_tests_reject_qualification` — `crates/heptabao-governance/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-governance --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `program-governance-security`  

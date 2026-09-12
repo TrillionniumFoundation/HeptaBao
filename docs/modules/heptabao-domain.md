@@ -1,5 +1,7 @@
 # heptabao-domain
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns bounded identifiers, canonical resource paths, monotonic ticks and repository-owned secret byte buffers. It does not provide authentication, policy evaluation, persistence, random generation, locked memory or cryptography.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`Id::parse` owns a 1–64 byte lowercase ASCII/digit identifier with internal `-`/`_` allowed and neither at a boundary. `CanonicalPath::parse` owns an absolute path of at most 1024 bytes; `/` is valid, while empty segments, trailing `/`, `.`/`..` segments and unsupported characters are rejected. Path segments allow ASCII alphanumerics plus `-`, `_`, `.`, `:`. Parsing validates input and does not normalize encoded traversal or URL-escape sequences; the transport must decode and validate its own syntax before constructing a domain path.
+
+`child(&Id)` constructs and revalidates a path; `matches_prefix` compares segment boundaries and treats `/` as universal. `relative_to` borrows its result from the path. Equality returns an empty relative path; a root prefix strips the leading slash, so `/app`.relative_to(`/`) returns `Some("app")`. A nonmatching or partial-segment prefix returns `None`. The caller must still bind the namespace separately.
+
+`Tick::new` wraps a caller-supplied `u64`; only `checked_add(delta)` detects overflow (`TickOverflow`). No method proves monotonicity or a clock unit. `SecretValue::new(Vec<u8>)` takes ownership of 1 byte through 1 MiB; `expose()` lends a byte slice and `Clone` creates another owned secret copy. `Debug` redacts bytes, and `Drop` fills this vector with zeroes. This is not a guaranteed compiler-resistant wipe, locked memory or zeroization of caller-created copies.
+
+The crate is a shared model primitive outside the current server dependency closure. Its dependent candidate services own authorization and effect boundaries; current server/durable-service representations are separate and require explicit conversion if integrated.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-domain`; Cargo SHA-256 `d0c3fb4ef5719cc4add370b5188355008b6c269c57cefdced1d7dd026c339ec8`.
@@ -74,6 +90,13 @@ There is no runtime service to operate. Limit changes are compatibility changes 
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::identifier_and_path_validation_are_fail_closed`](../../crates/heptabao-domain/src/lib.rs) checks representative identifier and traversal rejection.
+- [`tests::relative_paths_respect_segment_boundaries`](../../crates/heptabao-domain/src/lib.rs) checks root and non-root prefixes and rejects a partial segment.
+- [`tests::tick_addition_detects_overflow`](../../crates/heptabao-domain/src/lib.rs) checks overflow returns a classified error.
+- [`tests::secret_debug_output_is_redacted`](../../crates/heptabao-domain/src/lib.rs) checks diagnostic redaction, not physical-memory erasure.
+
 `cargo test -p heptabao-domain` covers identifier/path rejection, segment-boundary prefix matching, secret debug redaction and tick overflow. The current workspace CI compiles and lints the same source.
 
 ## Evolution and open boundaries
@@ -81,6 +104,8 @@ There is no runtime service to operate. Limit changes are compatibility changes 
 Future work may add typed namespace/resource identifiers, but it must preserve canonical parsing and redaction. Operating-system memory protection and cryptographic key containers remain provider-level work.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-domain`

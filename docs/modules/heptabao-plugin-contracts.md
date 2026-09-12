@@ -1,5 +1,7 @@
 # heptabao-plugin-contracts
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns plugin descriptors, registry lifecycle and the semantic distinction between pre-entry failure and post-entry unknown outcome. It does not launch processes, verify signatures, sandbox plugins or implement RPC.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`PluginDescriptor::new(id, kind, command, checksum, protocol_version)` owns a canonical command path and metadata. It rejects an all-zero 32-byte checksum and protocol version 0. It does not open the executable, compute its checksum, authenticate a publisher or negotiate RPC; callers must perform those checks using a host/provider before execution.
+
+`PluginRegistry::register` owns a descriptor under a unique ID, while `get` borrows it. `enable` accepts Registered/Disabled, `disable` accepts Enabled, and `revoke` accepts any non-revoked status; successful transitions advance a saturating generation. Revoked is terminal and no API deletes/replaces a descriptor. The registry alone does not synchronize an already running plugin with an administrative change.
+
+`PluginCallOutcome<T>` distinguishes `BeforeEntryFailure`, `Completed(T)` and `OutcomeUnknownAfterEntry { recovery_reference }`. The host must preserve this classification across process/IPC failure, bind the exact descriptor generation to each call, and obtain authoritative readback before retrying uncertainty. The enum carries no automatic retry or reconciliation implementation.
+
+This descriptor/outcome model is consumed by the independent `heptabao-plugin-host`, outside the current server dependency closure. It does not implement the server's native plugin paths or OpenBao's plugin RPC ABI. An operator action on this memory registry therefore does not administer a deployed server plugin.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-plugin-contracts`; Cargo SHA-256 `f65f8c26ed9b3989b8a2fece8b8bd2913d87697905e05ee6715fc1edbe2e4e02`.
@@ -70,6 +86,11 @@ Operators may disable or revoke a descriptor before replacing it. Production upg
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::lifecycle_is_monotonic_after_revocation`](../../crates/heptabao-plugin-contracts/src/lib.rs) checks register/enable/disable/re-enable/revoke and the terminal revocation guard.
+- [`tests::invalid_descriptor_is_rejected_before_registration`](../../crates/heptabao-plugin-contracts/src/lib.rs) checks zero-checksum rejection before a descriptor exists.
+
 `cargo test -p heptabao-plugin-contracts` covers descriptor validation and terminal revocation. The current repository validator requires this V3 guide and at least one Rust test.
 
 ## Evolution and open boundaries
@@ -77,6 +98,8 @@ Operators may disable or revoke a descriptor before replacing it. Production upg
 Process supervision, RPC multiplexing, mTLS, plugin catalogs, reload and compatibility negotiation remain open provider work.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-plugin-contracts`

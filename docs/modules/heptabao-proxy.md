@@ -1,5 +1,7 @@
 # heptabao-proxy
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns bounded local proxy planning for request credential replacement, response filtering and HTTP header-smuggling defense. It does not open sockets, terminate TLS, pool upstream connections, parse request bodies or claim production proxy compatibility.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`HeaderName::parse` owns a lowercase validated token of 1–64 bytes; `HeaderValue::new(Vec<u8>)` owns at most 8192 bytes and rejects CR, LF and NUL. Values may be empty and are otherwise not a complete HTTP parser. `ProxyPolicy::new` owns request/response header allowlists, positive body-size limits and a positive timeout in ticks; an empty allowlist is accepted and forwards only the generated request credential.
+
+`plan_request(ProxyRequest, SecretValue)` consumes headers and the server token. It checks the caller-reported body length, rejects duplicate normalized names, strips hop-by-hop/Connection-nominated/credential headers, retains allowlisted fields and appends one `Authorization: Bearer ...` value. The prefixed token must also fit `HeaderValue` bounds. `plan_response(headers, body_bytes)` applies the response bound and filtering without injecting credentials. Both return owned `ForwardPlan` values, not transmitted HTTP messages.
+
+The adapter must enforce actual streamed body and aggregate-header limits, validate authority/URL/framing, establish TLS and honor `upstream_timeout_ticks`. There is no header-count bound or aggregate byte budget in these types, and `body_bytes` is supplied rather than measured. Unknown results after transport entry require readback classification; planning errors happen before any network effect.
+
+This independent planner is outside the current server dependency closure. It implements no listener, pooling, caching or OpenBao Proxy process; the operational runbook below describes responsibilities for a future transport adapter, not existing deployment commands.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-proxy`; Cargo SHA-256 `f7a165e2852da3eb931b8ac2637d2a957078fb615279ad8ff2998f58500e6c0d`.
@@ -62,9 +78,15 @@ Recommended counters cover rejected duplicate headers, invalid header bytes, str
 
 ## Operations
 
-Runbooks must address local listener ownership, upstream certificate rotation, token replacement, header policy rollout, timeout saturation and ambiguous request reconciliation. A configuration error should stop the proxy rather than start with an empty or permissive policy.
+Runbooks must address local listener ownership, upstream certificate rotation, token replacement, header policy rollout, timeout saturation and ambiguous request reconciliation. The transport adapter must reject deployment configuration it cannot safely implement. Empty allowlists are valid in this model and have the filtering semantics described above; constructor success does not validate listener or upstream configuration.
 
 ## Tests and executable evidence
+
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::inbound_credentials_are_replaced_by_the_server_token`](../../crates/heptabao-proxy/src/lib.rs) checks exactly one injected server credential survives.
+- [`tests::connection_nominated_headers_cannot_be_smuggled`](../../crates/heptabao-proxy/src/lib.rs) checks a nominated otherwise-allowed header is removed.
+- [`tests::duplicate_and_oversized_requests_fail_closed`](../../crates/heptabao-proxy/src/lib.rs) checks duplicate names and caller-reported request length.
 
 `cargo test -p heptabao-proxy` proves attacker credentials are replaced, `Connection`-nominated headers cannot be smuggled, duplicate and oversized requests fail closed and debug output contains no header value. Strict workspace Clippy and rustdoc are additional current-head gates.
 
@@ -73,6 +95,8 @@ Runbooks must address local listener ownership, upstream certificate rotation, t
 A real listener, TLS, HTTP/2 and HTTP/3 normalization, streaming limits, cancellation, upstream health, response body filtering and OpenBao proxy behavior remain open. Those implementations must preserve the credential and ambiguity boundaries defined here.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-proxy`

@@ -56,3 +56,9 @@ backup format, not OpenBao's Raft snapshot format. Standby forwarding is a
 credential-bearing internal boundary and must never expose tokens or bodies in
 Debug output. Production peer enrollment, certificate/key rotation, destructive
 fault campaigns and independent admission remain separate requirements.
+
+## Semantic drift guards
+
+All 46 guides include current API/ownership narrative and concrete source test names outside the frozen tables. `docs/modules/CURRENT_RUNTIME_MAP.md` maps every crate to actual server integration and a named executable scenario. `scripts/validate_current_documentation_semantics.py`, also called by the ordinary V2 validator, removes historical blocks before checking current API substance, checks named tests against Rust source, derives the server closure from normal Cargo path dependencies, and compares marked critical API declaration excerpts (including private `authorize_request` with its live `now`) against current source. The markers identify actual reviewable declarations, not an API-stability promise.
+
+When a signature, selected test or runtime dependency changes, revise its human semantics and map before refreshing the inventory. A digest refresh alone cannot close these checks. The validator detects these specific drift classes; it does not prove every sentence is correct, every parameter is documented, or any integration test passed.

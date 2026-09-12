@@ -2,6 +2,7 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
+use crate::federated_auth::{JwtAlgorithm, JwtVerifier, TrustPolicy, VerificationKey};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use ring::{
     digest, hmac, pbkdf2,
@@ -22,6 +23,7 @@ const MFA_SEED_BYTES: usize = 32;
 const MFA_PERIOD_SECONDS: u64 = 30;
 const MFA_DIGITS: usize = 6;
 const MFA_DRIFT_STEPS: u64 = 1;
+const MAX_EXTERNAL_REPLAY_ENTRIES: usize = 32_000;
 const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
@@ -32,14 +34,114 @@ pub struct AuthState {
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
     roles: BTreeMap<String, BTreeMap<String, Role>>,
+    // The original fixed mounts retain their exact persisted representation.
+    // Custom mounts add a structural dimension; namespace strings are never
+    // concatenated with mount names to manufacture storage keys.
+    #[serde(default)]
+    mounted_users: BTreeMap<String, BTreeMap<String, BTreeMap<String, User>>>,
+    #[serde(default)]
+    mounted_roles: BTreeMap<String, BTreeMap<String, BTreeMap<String, Role>>>,
     #[serde(default)]
     auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
+    #[serde(default)]
+    jwt_mounts: BTreeMap<String, BTreeMap<String, JwtMountState>>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtKeyRecord {
+    algorithm: String,
+    bytes: Vec<u8>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtConfig {
+    issuer: String,
+    audiences: BTreeSet<String>,
+    required_namespace: Option<String>,
+    clock_skew_seconds: u64,
+    maximum_token_lifetime_seconds: u64,
+    keys: BTreeMap<String, JwtKeyRecord>,
+}
+
+impl JwtConfig {
+    fn verifier(&self) -> Result<JwtVerifier, AuthError> {
+        let policy = TrustPolicy::new(
+            self.issuer.clone(),
+            self.audiences.clone(),
+            self.required_namespace
+                .clone()
+                .filter(|value| !value.is_empty()),
+            self.clock_skew_seconds,
+            self.maximum_token_lifetime_seconds,
+        )
+        .map_err(|_| bad("invalid JWT trust policy"))?;
+        let mut keys = Vec::with_capacity(self.keys.len());
+        for (key_id, record) in &self.keys {
+            let algorithm = match record.algorithm.as_str() {
+                "EdDSA" => JwtAlgorithm::Ed25519,
+                "ES256" => JwtAlgorithm::Es256,
+                _ => return Err(bad("unsupported JWT algorithm")),
+            };
+            keys.push(
+                VerificationKey::new(key_id.clone(), algorithm, record.bytes.clone())
+                    .map_err(|_| bad("invalid JWT verification key"))?,
+            );
+        }
+        JwtVerifier::new(policy, keys).map_err(|_| bad("invalid JWT verifier configuration"))
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct JwtRole {
+    bound_groups: BTreeSet<String>,
+    #[serde(default)]
+    bound_subject: Option<String>,
+    #[serde(default)]
+    bound_audiences: BTreeSet<String>,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct ExternalIdentity {
+    issuer: String,
+    subject: String,
+    namespace: String,
+    groups: BTreeSet<String>,
+    last_seen: u64,
+}
+
+#[derive(Clone, Serialize, Deserialize, Default)]
+struct JwtMountState {
+    config: Option<JwtConfig>,
+    roles: BTreeMap<String, JwtRole>,
+    identities: BTreeMap<String, ExternalIdentity>,
+    replay: BTreeMap<String, u64>,
+    // Once expired replay records are pruned, a clock rollback must not revive
+    // them. This watermark commits atomically with replay and issued tokens.
+    last_admission_time: u64,
+}
+
+impl Drop for JwtMountState {
+    fn drop(&mut self) {
+        for (mut fingerprint, _) in std::mem::take(&mut self.replay) {
+            fingerprint.zeroize();
+        }
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     kind: String,
     description: String,
+}
+
+#[derive(Clone, Copy)]
+struct AuthScope<'a> {
+    namespace: &'a str,
+    mount: &'a str,
 }
 
 impl AuthMount {
@@ -106,6 +208,12 @@ struct Token {
     renewable: bool,
     uses_remaining: Option<u64>,
     display_name: String,
+    /// Authentication mount provenance, inherited by derived tokens. Old
+    /// snapshots lack it and require conservative revocation on legacy unmount.
+    #[serde(default)]
+    auth_mount: Option<String>,
+    #[serde(default)]
+    auth_origin_known: bool,
 }
 
 impl Drop for Token {
@@ -417,6 +525,32 @@ fn policies(
     Ok(result)
 }
 
+fn claim_values(body: &Value, name: &str) -> Result<BTreeSet<String>, AuthError> {
+    let values: Vec<&str> = match body.get(name) {
+        None => Vec::new(),
+        Some(Value::String(value)) => value.split(',').map(str::trim).collect(),
+        Some(Value::Array(values)) => values
+            .iter()
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("claim bindings must be strings"))
+            })
+            .collect::<Result<_, _>>()?,
+        _ => return Err(bad("claim bindings must be a string or array")),
+    };
+    if values.len() > 64
+        || values.iter().any(|value| {
+            value.is_empty() || value.len() > 1024 || value.chars().any(char::is_control)
+        })
+    {
+        return Err(bad(
+            "claim bindings exceed bounds or contain invalid strings",
+        ));
+    }
+    Ok(values.into_iter().map(str::to_owned).collect())
+}
+
 impl AuthState {
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
@@ -424,7 +558,10 @@ impl AuthState {
             policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
+            mounted_users: BTreeMap::new(),
+            mounted_roles: BTreeMap::new(),
             auth_mounts: BTreeMap::new(),
+            jwt_mounts: BTreeMap::new(),
         };
         let token = Token {
             accessor: random_id("a.")?,
@@ -439,6 +576,8 @@ impl AuthState {
             renewable: false,
             uses_remaining: None,
             display_name: "root".into(),
+            auth_mount: None,
+            auth_origin_known: true,
         };
         let raw = random_id("hvs.")?;
         state.tokens.insert(hash(&raw), token);
@@ -620,6 +759,124 @@ impl AuthState {
             .unwrap_or_else(legacy_auth_mounts)
     }
 
+    fn users_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, User>> {
+        if scope.mount == "userpass" {
+            self.users.get(scope.namespace)
+        } else {
+            self.mounted_users.get(scope.namespace)?.get(scope.mount)
+        }
+    }
+
+    fn users_at_mut(&mut self, scope: AuthScope<'_>) -> &mut BTreeMap<String, User> {
+        if scope.mount == "userpass" {
+            self.users.entry(scope.namespace.into()).or_default()
+        } else {
+            self.mounted_users
+                .entry(scope.namespace.into())
+                .or_default()
+                .entry(scope.mount.into())
+                .or_default()
+        }
+    }
+
+    fn roles_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, Role>> {
+        if scope.mount == "approle" {
+            self.roles.get(scope.namespace)
+        } else {
+            self.mounted_roles.get(scope.namespace)?.get(scope.mount)
+        }
+    }
+
+    fn roles_at_mut(&mut self, scope: AuthScope<'_>) -> &mut BTreeMap<String, Role> {
+        if scope.mount == "approle" {
+            self.roles.entry(scope.namespace.into()).or_default()
+        } else {
+            self.mounted_roles
+                .entry(scope.namespace.into())
+                .or_default()
+                .entry(scope.mount.into())
+                .or_default()
+        }
+    }
+
+    fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
+        self.users_at_mut(scope).clear();
+        self.roles_at_mut(scope).clear();
+        if let Some(mounts) = self.jwt_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        let revoke: Vec<String> = self
+            .tokens
+            .iter()
+            .filter(|(_, token)| {
+                token.namespace == scope.namespace
+                    && !token.root
+                    && (token.auth_mount.as_deref() == Some(scope.mount)
+                        || (!token.auth_origin_known
+                            && matches!(scope.mount, "userpass" | "approle")))
+            })
+            .map(|(digest, _)| digest.clone())
+            .collect();
+        for digest in revoke {
+            self.revoke(&digest);
+        }
+    }
+
+    fn jwt_at(&self, scope: AuthScope<'_>) -> Option<&JwtMountState> {
+        self.jwt_mounts.get(scope.namespace)?.get(scope.mount)
+    }
+
+    fn jwt_at_mut(&mut self, scope: AuthScope<'_>) -> &mut JwtMountState {
+        self.jwt_mounts
+            .entry(scope.namespace.into())
+            .or_default()
+            .entry(scope.mount.into())
+            .or_default()
+    }
+
+    fn admit_external_replay(
+        &mut self,
+        scope: AuthScope<'_>,
+        fingerprint: [u8; 32],
+        expires_at: u64,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        let state = self.jwt_at_mut(scope);
+        if expires_at <= now || now < state.last_admission_time {
+            return Err(denied());
+        }
+        let mut key = URL_SAFE_NO_PAD.encode(fingerprint);
+        if state.replay.get(&key).is_some_and(|expiry| *expiry > now) {
+            key.zeroize();
+            return Err(denied());
+        }
+        if state
+            .replay
+            .values()
+            .filter(|expiry| **expiry > now)
+            .count()
+            >= MAX_EXTERNAL_REPLAY_ENTRIES
+        {
+            key.zeroize();
+            return Err(err(503, "external replay registry capacity exhausted"));
+        }
+        // All fallible checks precede the mutation, including randomness for
+        // token creation at the caller; Service owns the durable transaction.
+        let mut retained = BTreeMap::new();
+        for (mut id, expiry) in std::mem::take(&mut state.replay) {
+            if expiry > now {
+                retained.insert(id, expiry);
+            } else {
+                id.zeroize();
+            }
+        }
+        retained.insert(key, expires_at);
+        state.replay = retained;
+        state.last_admission_time = now;
+        Ok(())
+    }
+
+    #[cfg(test)]
     fn auth_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
         self.auth_mounts.get(namespace).map_or_else(
             || {
@@ -657,8 +914,8 @@ impl AuthState {
             return Ok(response(Value::Object(entries), false));
         }
         let mount = suffix.trim_start_matches('/').trim_end_matches('/');
-        if !valid_name(mount) {
-            return Err(bad("auth mount path must be one canonical segment"));
+        if mount.is_empty() || mount.len() > 256 || !mount.split('/').all(valid_name) {
+            return Err(bad("auth mount path must contain canonical segments"));
         }
         let route = format!("sys/auth/{mount}");
         match method {
@@ -680,14 +937,8 @@ impl AuthState {
                     .get("type")
                     .and_then(Value::as_str)
                     .ok_or_else(|| bad("auth mount type is required"))?;
-                if !matches!(kind, "userpass" | "approle") {
+                if !matches!(kind, "userpass" | "approle" | "jwt") {
                     return Err(err(501, "auth method type is not implemented"));
-                }
-                if mount != kind {
-                    return Err(err(
-                        501,
-                        "custom auth mount paths require isolated method state",
-                    ));
                 }
                 let description = body
                     .get("description")
@@ -702,6 +953,16 @@ impl AuthState {
                     return Err(bad("invalid auth mount description"));
                 }
                 let mut entries = self.effective_auth_mounts(namespace);
+                if mount == "token" || entries.get(mount).is_some_and(|old| old.kind != kind) {
+                    return Err(bad("auth mount is already in use by another method"));
+                }
+                if entries.keys().any(|name| {
+                    name != mount
+                        && (name.starts_with(&format!("{mount}/"))
+                            || mount.starts_with(&format!("{name}/")))
+                }) {
+                    return Err(bad("auth mount paths cannot overlap"));
+                }
                 let next = AuthMount::new(kind, description);
                 let mutated = entries.get(mount) != Some(&next);
                 entries.insert(mount.into(), next);
@@ -719,6 +980,7 @@ impl AuthState {
                 let mutated = entries.remove(mount).is_some();
                 self.auth_mounts.insert(namespace.into(), entries);
                 if mutated {
+                    self.disable_auth_mount(AuthScope { namespace, mount });
                     Ok(empty(true))
                 } else {
                     Err(err(404, "auth mount not found"))
@@ -745,61 +1007,38 @@ impl AuthState {
                 .auth_mount_route(principal, namespace, method, path, body, now)
                 .map(Some);
         }
-        if path.starts_with("auth/userpass/")
-            && !self.auth_mount_enabled(namespace, "userpass", "userpass")
-        {
-            return Err(err(404, "userpass auth mount is disabled"));
-        }
-        if path.starts_with("auth/approle/")
-            && !self.auth_mount_enabled(namespace, "approle", "approle")
-        {
-            return Err(err(404, "approle auth mount is disabled"));
-        }
-        if path == "auth/approle/login" {
-            return self.login_approle(namespace, method, body, now).map(Some);
-        }
-        if path == "auth/approle/tidy/secret-id" {
-            if !matches!(method, "POST" | "PUT") {
-                return Err(err(405, "method not allowed"));
-            }
-            reject_unknown(body, &[])?;
-            let actor = self.permission(principal, namespace, path, "update", now)?;
-            self.authorize_request(actor, namespace, path, "sudo", now)?;
-            let mut removed = 0;
-            if let Some(roles) = self.roles.get_mut(namespace) {
-                for role in roles.values_mut() {
-                    let stale: Vec<String> = role
-                        .secret_ids
-                        .iter()
-                        .filter(|(_, secret)| {
-                            secret.uses_remaining == Some(0)
-                                || secret.expires_at.is_some_and(|expiry| expiry <= now)
-                        })
-                        .map(|(id, _)| id.clone())
-                        .collect();
-                    for mut id in stale {
-                        if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
-                            stored_id.zeroize();
-                            removed += 1;
-                        }
-                        id.zeroize();
-                    }
+        if let Some(auth_path) = path.strip_prefix("auth/") {
+            let mounts = self.effective_auth_mounts(namespace);
+            let (mount, entry, suffix) = mounts
+                .iter()
+                .find_map(|(mount, entry)| {
+                    auth_path
+                        .strip_prefix(&format!("{mount}/"))
+                        .map(|suffix| (mount, entry, suffix))
+                })
+                .ok_or_else(|| err(404, "auth mount not found"))?;
+            let scope = AuthScope { namespace, mount };
+            let result = match entry.kind.as_str() {
+                "token" if mount == "token" => {
+                    self.token_route(principal, namespace, method, path, body, now)
                 }
-            }
-            return Ok(Some(response(
-                json!({"removed_secret_ids": removed}),
-                removed > 0,
-            )));
-        }
-        if let Some(name) = path.strip_prefix("auth/userpass/login/") {
-            return self
-                .login_userpass(namespace, method, name, body, now)
-                .map(Some);
-        }
-        if path.starts_with("auth/token/") {
-            return self
-                .token_route(principal, namespace, method, path, body, now)
-                .map(Some);
+                "userpass" if suffix.starts_with("login/") => {
+                    self.login_userpass(scope, method, &suffix[6..], body, now)
+                }
+                "userpass" if suffix == "users" || suffix.starts_with("users/") => {
+                    self.user_route(principal, scope, method, path, body, now)
+                }
+                "approle" if suffix == "login" => self.login_approle(scope, method, body, now),
+                "approle" if suffix == "tidy/secret-id" => {
+                    self.tidy_secret_ids(principal, scope, method, path, body, now)
+                }
+                "approle" if suffix == "role" || suffix.starts_with("role/") => {
+                    self.role_route(principal, scope, method, path, body, now)
+                }
+                "jwt" => self.jwt_route(principal, scope, method, path, body, now),
+                _ => Err(err(404, "unsupported auth route")),
+            };
+            return result.map(Some);
         }
         if path == "sys/policies/acl"
             || path.starts_with("sys/policies/acl/")
@@ -810,17 +1049,405 @@ impl AuthState {
                 .policy_route(principal, namespace, method, path, body, now)
                 .map(Some);
         }
-        if path == "auth/userpass/users" || path.starts_with("auth/userpass/users/") {
-            return self
-                .user_route(principal, namespace, method, path, body, now)
-                .map(Some);
-        }
-        if path == "auth/approle/role" || path.starts_with("auth/approle/role/") {
-            return self
-                .role_route(principal, namespace, method, path, body, now)
-                .map(Some);
-        }
         Ok(None)
+    }
+
+    fn jwt_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        if path == format!("auth/{mount}/config") {
+            return self.jwt_config_route(principal, scope, method, body, now);
+        }
+        if path == format!("auth/{mount}/login") {
+            if !matches!(method, "POST" | "PUT") {
+                return Err(err(405, "method not allowed"));
+            }
+            reject_unknown(body, &["role", "jwt"])?;
+            let role_name = string_field(body, "role")?;
+            if !valid_name(role_name) {
+                return Err(bad("invalid JWT role name"));
+            }
+            let jwt = string_field(body, "jwt")?;
+            let config = self
+                .jwt_at(scope)
+                .and_then(|state| state.config.as_ref())
+                .cloned()
+                .ok_or_else(|| err(503, "JWT auth is not configured"))?;
+            let role = self
+                .jwt_at(scope)
+                .map(|state| &state.roles)
+                .and_then(|roles| roles.get(role_name))
+                .cloned()
+                .ok_or_else(denied)?;
+            let verified = config.verifier()?.verify(jwt, now).map_err(|_| denied())?;
+            let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
+            if claimed_namespace != namespace
+                || !role.bound_groups.is_subset(&verified.groups)
+                || role
+                    .bound_subject
+                    .as_ref()
+                    .is_some_and(|subject| subject != &verified.subject)
+                || !role.bound_audiences.is_empty()
+                    && role.bound_audiences.is_disjoint(&verified.audiences)
+                || role.policies.contains("root")
+            {
+                return Err(denied());
+            }
+            let remaining = verified.expires_at.saturating_sub(now);
+            if remaining == 0 {
+                return Err(denied());
+            }
+            let ttl = role.token_ttl.min(remaining).max(1);
+            let max_ttl = role.token_max_ttl.min(remaining).max(ttl);
+            let fingerprint = verified.replay_fingerprint();
+            let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
+            let identity = ExternalIdentity {
+                issuer: verified.issuer.clone(),
+                subject: verified.subject.clone(),
+                namespace: namespace.into(),
+                groups: verified.groups.clone(),
+                last_seen: now,
+            };
+            let display_hash = hash(&verified.subject);
+            let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
+            let token = Token {
+                accessor: random_id("a.")?,
+                namespace: namespace.into(),
+                policies: role.policies,
+                root: false,
+                parent: None,
+                created_at: now,
+                expires_at: Some(checked_expiry(now, ttl)?),
+                max_expires_at: Some(checked_expiry(now, max_ttl)?),
+                period: 0,
+                renewable: true,
+                uses_remaining: unlimited_zero(role.token_num_uses),
+                display_name: format!("jwt-{display_suffix}"),
+                auth_mount: Some(mount.into()),
+                auth_origin_known: true,
+            };
+            let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+            if let Err(error) =
+                self.admit_external_replay(scope, fingerprint, verified.expires_at, now)
+            {
+                crate::service::erase_json(&mut response.body);
+                return Err(error);
+            }
+            self.jwt_at_mut(scope)
+                .identities
+                .insert(identity_key, identity);
+            self.tokens.insert(token_id, token);
+            return Ok(response);
+        }
+        if path == format!("auth/{mount}/role") {
+            if !matches!(method, "GET" | "LIST") {
+                return Err(err(405, "method not allowed"));
+            }
+            self.permission(principal, namespace, path, "list", now)?;
+            reject_unknown(body, &[])?;
+            let keys: Vec<&str> = self
+                .jwt_at(scope)
+                .map(|state| &state.roles)
+                .map(|roles| roles.keys().map(String::as_str).collect())
+                .unwrap_or_default();
+            return Ok(response(json!({"keys": keys}), false));
+        }
+        if let Some(name) = path.strip_prefix(&format!("auth/{mount}/role/")) {
+            if !valid_name(name) {
+                return Err(bad("invalid JWT role name"));
+            }
+            return self.jwt_role_route(principal, scope, method, name, body, now);
+        }
+        Err(err(404, "JWT auth path is not implemented"))
+    }
+
+    fn jwt_config_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        let path = format!("auth/{mount}/config");
+        let path = path.as_str();
+        match method {
+            "GET" => {
+                self.permission(principal, namespace, path, "read", now)?;
+                reject_unknown(body, &[])?;
+                let config = self
+                    .jwt_at(scope)
+                    .and_then(|state| state.config.as_ref())
+                    .ok_or_else(|| err(404, "JWT auth is not configured"))?;
+                let keys: Vec<Value> = config
+                    .keys
+                    .iter()
+                    .map(|(kid, key)| json!({"kid": kid, "algorithm": key.algorithm}))
+                    .collect();
+                Ok(response(
+                    json!({
+                        "issuer": config.issuer,
+                        "audiences": config.audiences,
+                        "required_namespace": config.required_namespace,
+                        "clock_skew_seconds": config.clock_skew_seconds,
+                        "maximum_token_lifetime_seconds": config.maximum_token_lifetime_seconds,
+                        "keys": keys
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                let actor = self.permission(principal, namespace, path, "update", now)?;
+                self.authorize_request(actor, namespace, path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "issuer",
+                        "audiences",
+                        "required_namespace",
+                        "clock_skew_seconds",
+                        "maximum_token_lifetime_seconds",
+                        "keys",
+                    ],
+                )?;
+                let issuer = string_field(body, "issuer")?.to_owned();
+                let audiences = claim_values(body, "audiences")?;
+                let required_namespace = body
+                    .get("required_namespace")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("required_namespace must be a string"))
+                    })
+                    .transpose()?
+                    .map(str::to_owned);
+                if required_namespace
+                    .as_deref()
+                    .is_some_and(|value| value != namespace)
+                {
+                    return Err(bad(
+                        "required_namespace must equal the configured auth namespace",
+                    ));
+                }
+                let clock_skew_seconds = number(body, "clock_skew_seconds", 30)?;
+                let maximum_token_lifetime_seconds =
+                    number(body, "maximum_token_lifetime_seconds", 3600)?;
+                let key_values = body
+                    .get("keys")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| bad("JWT keys must be an array"))?;
+                if key_values.is_empty() || key_values.len() > 64 {
+                    return Err(bad("JWT key count is outside bounds"));
+                }
+                let mut keys = BTreeMap::new();
+                for value in key_values {
+                    reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
+                    let kid = string_field(value, "kid")?;
+                    if kid.is_empty()
+                        || kid.len() > 1024
+                        || kid.chars().any(char::is_control)
+                        || keys.contains_key(kid)
+                    {
+                        return Err(bad("invalid or duplicate JWT key id"));
+                    }
+                    let algorithm = string_field(value, "algorithm")?;
+                    if !matches!(algorithm, "EdDSA" | "ES256") {
+                        return Err(bad("unsupported JWT algorithm"));
+                    }
+                    let bytes = URL_SAFE_NO_PAD
+                        .decode(string_field(value, "key_base64")?)
+                        .map_err(|_| bad("invalid JWT key encoding"))?;
+                    if bytes.is_empty() || bytes.len() > 16 * 1024 {
+                        return Err(bad("JWT key is outside bounds"));
+                    }
+                    keys.insert(
+                        kid.into(),
+                        JwtKeyRecord {
+                            algorithm: algorithm.into(),
+                            bytes,
+                        },
+                    );
+                }
+                let config = JwtConfig {
+                    issuer,
+                    audiences,
+                    required_namespace,
+                    clock_skew_seconds,
+                    maximum_token_lifetime_seconds,
+                    keys,
+                };
+                config.verifier()?;
+                let mutated =
+                    self.jwt_at(scope).and_then(|state| state.config.as_ref()) != Some(&config);
+                self.jwt_at_mut(scope).config = Some(config);
+                Ok(empty(mutated))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn jwt_role_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        name: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        let path = format!("auth/{mount}/role/{name}");
+        match method {
+            "GET" => {
+                self.permission(principal, namespace, &path, "read", now)?;
+                reject_unknown(body, &[])?;
+                let role = self
+                    .jwt_at(scope)
+                    .map(|state| &state.roles)
+                    .and_then(|roles| roles.get(name))
+                    .ok_or_else(|| err(404, "JWT role not found"))?;
+                Ok(response(
+                    json!({
+                        "bound_groups": role.bound_groups,
+                        "bound_subject": role.bound_subject,
+                        "bound_audiences": role.bound_audiences,
+                        "policies": role.policies,
+                        "token_ttl": role.token_ttl,
+                        "token_max_ttl": role.token_max_ttl,
+                        "token_num_uses": role.token_num_uses
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                let actor = self.permission(principal, namespace, &path, "update", now)?;
+                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "bound_groups",
+                        "bound_subject",
+                        "bound_audiences",
+                        "policies",
+                        "token_policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                let bound_groups = claim_values(body, "bound_groups")?;
+                let bound_audiences = claim_values(body, "bound_audiences")?;
+                let bound_subject = body
+                    .get("bound_subject")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .filter(|value| {
+                                !value.is_empty()
+                                    && value.len() <= 1024
+                                    && !value.chars().any(char::is_control)
+                            })
+                            .map(str::to_owned)
+                            .ok_or_else(|| bad("invalid bound subject"))
+                    })
+                    .transpose()?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let role_policies = policies(
+                    body,
+                    if body.get("token_policies").is_some() {
+                        "token_policies"
+                    } else {
+                        "policies"
+                    },
+                    &BTreeSet::new(),
+                    true,
+                )?;
+                self.validate_assignment(actor, &role_policies)?;
+                let token_ttl = duration(body, "token_ttl", DEFAULT_TTL)?;
+                let token_max_ttl = duration(body, "token_max_ttl", token_ttl)?;
+                let token_num_uses = number(body, "token_num_uses", 0)?;
+                if token_ttl == 0
+                    || token_ttl > MAX_TTL
+                    || token_max_ttl < token_ttl
+                    || token_max_ttl > MAX_TTL
+                {
+                    return Err(bad("JWT role token TTL is outside bounds"));
+                }
+                let role = JwtRole {
+                    bound_groups,
+                    bound_subject,
+                    bound_audiences,
+                    policies: role_policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses,
+                };
+                let roles = &mut self.jwt_at_mut(scope).roles;
+                let mutated = roles.get(name) != Some(&role);
+                roles.insert(name.into(), role);
+                Ok(empty(mutated))
+            }
+            "DELETE" => {
+                let actor = self.permission(principal, namespace, &path, "update", now)?;
+                self.authorize_request(actor, namespace, &path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self.jwt_at_mut(scope).roles.remove(name);
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "JWT role not found"))
+                }
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn tidy_secret_ids(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Err(err(405, "method not allowed"));
+        }
+        reject_unknown(body, &[])?;
+        let actor = self.permission(principal, scope.namespace, path, "update", now)?;
+        self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+        let mut removed = 0;
+        for role in self.roles_at_mut(scope).values_mut() {
+            let stale: Vec<String> = role
+                .secret_ids
+                .iter()
+                .filter(|(_, secret)| {
+                    secret.uses_remaining == Some(0)
+                        || secret.expires_at.is_some_and(|expiry| expiry <= now)
+                })
+                .map(|(id, _)| id.clone())
+                .collect();
+            for mut id in stale {
+                if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
+                    stored_id.zeroize();
+                    removed += 1;
+                }
+                id.zeroize();
+            }
+        }
+        Ok(response(
+            json!({"removed_secret_ids": removed}),
+            removed > 0,
+        ))
     }
 
     fn token_route(
@@ -1137,6 +1764,8 @@ impl AuthState {
                 renewable: boolean(body, "renewable", true)? && expires_at.is_some(),
                 uses_remaining: unlimited_zero(number(body, "num_uses", 0)?),
                 display_name: display_name.into(),
+                auth_mount: parent.auth_mount.clone(),
+                auth_origin_known: parent.root || parent.auth_origin_known,
             },
             now,
         )
@@ -1229,14 +1858,15 @@ impl AuthState {
     fn user_route(
         &mut self,
         principal: Option<&Principal>,
-        namespace: &str,
+        scope: AuthScope<'_>,
         method: &str,
         path: &str,
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
         let suffix = path
-            .strip_prefix("auth/userpass/users")
+            .strip_prefix(&format!("auth/{mount}/users"))
             .ok_or_else(|| bad("invalid user route"))?
             .trim_start_matches('/');
         let (name, subpath) = suffix.split_once('/').unwrap_or((suffix, ""));
@@ -1244,8 +1874,7 @@ impl AuthState {
         let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() && capability == "list" {
             let keys: Vec<&str> = self
-                .users
-                .get(namespace)
+                .users_at(scope)
                 .map(|users| users.keys().map(String::as_str).collect())
                 .unwrap_or_default();
             return Ok(response(json!({"keys": keys}), false));
@@ -1254,8 +1883,7 @@ impl AuthState {
             return Err(bad("invalid user route"));
         }
         let existing = self
-            .users
-            .get(namespace)
+            .users_at(scope)
             .and_then(|users| users.get(name))
             .cloned();
         if subpath == "mfa" {
@@ -1283,10 +1911,7 @@ impl AuthState {
                     reject_unknown(body, &[])?;
                     self.authorize_request(actor, namespace, path, "sudo", now)?;
                     let changed = user.mfa.take().is_some();
-                    self.users
-                        .entry(namespace.into())
-                        .or_default()
-                        .insert(name.into(), user);
+                    self.users_at_mut(scope).insert(name.into(), user);
                     return Ok(empty(changed));
                 }
                 "update" => {
@@ -1307,10 +1932,7 @@ impl AuthState {
                             .map_err(|_| err(500, "invalid MFA digit configuration"))?,
                         last_accepted_counter: None,
                     });
-                    self.users
-                        .entry(namespace.into())
-                        .or_default()
-                        .insert(name.into(), user);
+                    self.users_at_mut(scope).insert(name.into(), user);
                     return Ok(response(
                         json!({
                             "enabled": true,
@@ -1334,9 +1956,7 @@ impl AuthState {
             ));
         }
         if capability == "delete" && subpath.is_empty() {
-            if let Some(users) = self.users.get_mut(namespace) {
-                users.remove(name);
-            }
+            self.users_at_mut(scope).remove(name);
             return Ok(empty(true));
         }
         if capability != "update" {
@@ -1434,10 +2054,7 @@ impl AuthState {
         )?;
         normalize_ttl(&mut user.token_ttl, &mut user.token_max_ttl)?;
         user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
-        self.users
-            .entry(namespace.into())
-            .or_default()
-            .insert(name.into(), user);
+        self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
     }
 
@@ -1455,12 +2072,13 @@ impl AuthState {
 
     fn login_userpass(
         &mut self,
-        namespace: &str,
+        scope: AuthScope<'_>,
         method: &str,
         name: &str,
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
@@ -1473,8 +2091,7 @@ impl AuthState {
             return Err(denied());
         }
         let user = self
-            .users
-            .get(namespace)
+            .users_at(scope)
             .and_then(|users| users.get(name))
             .cloned();
         // A nonexistent account still performs the same password KDF.
@@ -1509,7 +2126,7 @@ impl AuthState {
                 None
             }
         };
-        let token = login_token(
+        let mut token = login_token(
             namespace,
             user.policies.clone(),
             user.token_ttl,
@@ -1518,6 +2135,7 @@ impl AuthState {
             format!("userpass-{name}"),
             now,
         )?;
+        token.auth_mount = Some(mount.into());
         let (token_id, token, response) = Self::prepare_issue(token, now)?;
         if let Some(counter) = accepted_counter {
             let enrollment = user
@@ -1526,10 +2144,7 @@ impl AuthState {
                 .ok_or_else(|| err(500, "MFA enrollment disappeared during login"))?;
             enrollment.last_accepted_counter = Some(counter);
         }
-        self.users
-            .entry(namespace.into())
-            .or_default()
-            .insert(name.into(), user);
+        self.users_at_mut(scope).insert(name.into(), user);
         self.tokens.insert(token_id, token);
         Ok(response)
     }
@@ -1537,14 +2152,15 @@ impl AuthState {
     fn role_route(
         &mut self,
         principal: Option<&Principal>,
-        namespace: &str,
+        scope: AuthScope<'_>,
         method: &str,
         path: &str,
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
         let suffix = path
-            .strip_prefix("auth/approle/role")
+            .strip_prefix(&format!("auth/{mount}/role"))
             .ok_or_else(|| bad("invalid role route"))?
             .trim_start_matches('/');
         let (name, operation) = suffix.split_once('/').unwrap_or((suffix, ""));
@@ -1555,8 +2171,7 @@ impl AuthState {
         let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() && capability == "list" {
             let keys: Vec<&str> = self
-                .roles
-                .get(namespace)
+                .roles_at(scope)
                 .map(|roles| roles.keys().map(String::as_str).collect())
                 .unwrap_or_default();
             return Ok(response(json!({"keys": keys}), false));
@@ -1565,8 +2180,7 @@ impl AuthState {
             return Err(bad("invalid role name"));
         }
         let existing = self
-            .roles
-            .get(namespace)
+            .roles_at(scope)
             .and_then(|roles| roles.get(name))
             .cloned();
         if operation.is_empty() {
@@ -1579,9 +2193,7 @@ impl AuthState {
                 ));
             }
             if capability == "delete" {
-                if let Some(roles) = self.roles.get_mut(namespace) {
-                    roles.remove(name);
-                }
+                self.roles_at_mut(scope).remove(name);
                 return Ok(empty(true));
             }
             if capability != "update" {
@@ -1634,10 +2246,7 @@ impl AuthState {
                 return Err(bad("secret_id TTL exceeds maximum"));
             }
             role.secret_id_num_uses = number(body, "secret_id_num_uses", role.secret_id_num_uses)?;
-            self.roles
-                .entry(namespace.into())
-                .or_default()
-                .insert(name.into(), role);
+            self.roles_at_mut(scope).insert(name.into(), role);
             return Ok(empty(true));
         }
         let mut role = existing.ok_or_else(|| err(404, "role not found"))?;
@@ -1648,7 +2257,7 @@ impl AuthState {
                 let value = string_field(body, "role_id")?;
                 if value.is_empty()
                     || value.len() > 256
-                    || self.roles.get(namespace).is_some_and(|roles| {
+                    || self.roles_at(scope).is_some_and(|roles| {
                         roles
                             .iter()
                             .any(|(other, role)| other != name && role.role_id == value)
@@ -1657,10 +2266,7 @@ impl AuthState {
                     return Err(bad("invalid or duplicate role_id"));
                 }
                 role.role_id = value.into();
-                self.roles
-                    .entry(namespace.into())
-                    .or_default()
-                    .insert(name.into(), role);
+                self.roles_at_mut(scope).insert(name.into(), role);
                 Ok(empty(true))
             }
             ("secret-id", "list") => {
@@ -1701,10 +2307,7 @@ impl AuthState {
                         uses_remaining: unlimited_zero(num_uses),
                     },
                 );
-                self.roles
-                    .entry(namespace.into())
-                    .or_default()
-                    .insert(name.into(), role);
+                self.roles_at_mut(scope).insert(name.into(), role);
                 Ok(response(
                     json!({"secret_id": raw.as_str(), "secret_id_accessor": accessor, "secret_id_ttl": ttl, "secret_id_num_uses": num_uses}),
                     true,
@@ -1746,10 +2349,7 @@ impl AuthState {
                 if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
                     stored_id.zeroize();
                 }
-                self.roles
-                    .entry(namespace.into())
-                    .or_default()
-                    .insert(name.into(), role);
+                self.roles_at_mut(scope).insert(name.into(), role);
                 Ok(empty(true))
             }
             _ => Err(err(404, "unsupported AppRole operation")),
@@ -1758,11 +2358,12 @@ impl AuthState {
 
     fn login_approle(
         &mut self,
-        namespace: &str,
+        scope: AuthScope<'_>,
         method: &str,
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
@@ -1773,8 +2374,7 @@ impl AuthState {
             return Err(denied());
         }
         let (name, mut role) = self
-            .roles
-            .get(namespace)
+            .roles_at(scope)
             .and_then(|roles| roles.iter().find(|(_, role)| role.role_id == role_id))
             .map(|(name, role)| (name.clone(), role.clone()))
             .ok_or_else(denied)?;
@@ -1787,7 +2387,7 @@ impl AuthState {
         if let Some(remaining) = &mut secret.uses_remaining {
             *remaining -= 1;
         }
-        let token = login_token(
+        let mut token = login_token(
             namespace,
             role.policies.clone(),
             role.token_ttl,
@@ -1796,11 +2396,9 @@ impl AuthState {
             format!("approle-{name}"),
             now,
         )?;
+        token.auth_mount = Some(mount.into());
         let issued = self.issue(token, now)?;
-        self.roles
-            .entry(namespace.into())
-            .or_default()
-            .insert(name, role);
+        self.roles_at_mut(scope).insert(name, role);
         Ok(issued)
     }
 }
@@ -1927,6 +2525,8 @@ fn login_token(
         renewable: true,
         uses_remaining: unlimited_zero(uses),
         display_name,
+        auth_mount: None,
+        auth_origin_known: true,
     })
 }
 fn token_info(token: &Token, now: u64) -> Value {

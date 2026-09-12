@@ -1,5 +1,20 @@
 # `heptabao-journal-api` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`DurableJournal` owns append/replay semantics for one `JournalDomain`; mutable `append` compares the expected tail and consumes a `JournalPayload`. The authenticator receives domain, sequence, previous tag and payload, so callers must not authenticate only the payload. Constructors reject zero sequence/tag and payloads outside the 1 MiB bound; `JournalSequence::checked_next` detects exhaustion.
+
+A failed append defaults to `AppendFailureDisposition::OutcomeUnknown`. Only a provider proving that nothing was durably appended may return `DefinitelyNotAppended`. `recover_authoritative(&mut self)` must refresh cached tails and authenticate the committed prefix before writes resume; its default `replay` implementation requires provider overrides when orphan records exist. This crate supplies neither files nor cryptography and is not the runnable server's audit device.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `sequence_is_checked_and_non_zero` — `crates/heptabao-journal-api/src/lib.rs`.
+- `zero_tag_is_rejected` — `crates/heptabao-journal-api/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-journal-api --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `audit-journal-core-security`  

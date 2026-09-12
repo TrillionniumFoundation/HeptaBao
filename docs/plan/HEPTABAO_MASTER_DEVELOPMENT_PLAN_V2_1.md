@@ -23,6 +23,10 @@ The implementation branch must retain both identities:
 
 A convergence commit may reuse the approved tree but may not claim that an earlier empty or 19-package default-branch snapshot already contained those sources. Exact-head CI and a real prospective merge into `main` are required after every source change.
 
+## Current implementation reading order
+
+The plan retains the original 40-package lineage, while the current workspace has 46 packages. `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` and `docs/modules/CURRENT_RUNTIME_MAP.md` define the actual five-package server assembly and the remaining independent libraries/tools. `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` separates present implementation from historical pass receipts. Original acceptance criteria below remain qualification objectives; implemented code is not equivalent to independently admitted completion.
+
 ## 3. Scope
 
 ### G0 — repository truth and default-branch convergence
@@ -52,12 +56,12 @@ Acceptance:
 Acceptance:
 
 - there is exactly one dispatch path from token/identity/policy/namespace/mount validation into the durable mutation envelope;
-- an unauthenticated or unauthorized caller cannot allocate durable idempotency state or mutate storage;
+- unauthenticated requests cannot allocate application replay state; a denied operation cannot mutate protected application data. The concrete server separately commits an authenticated finite-use token consumption before later authorization/handler rejection, so usage accounting is not rolled back by a denied request;
 - the authorization decision digest and canonical operation binding cannot be changed between policy evaluation and durable intent;
 - durable recovery references survive transport failure and are available through the operator API;
 - audit-before-dispatch and response/audit-after-commit behavior is explicit and tested.
 
-G2 remains open until the adapter source and end-to-end restart tests exist. The presence of separate `service-core` and `durable-service` crates is not sufficient.
+The admitted library adapter and concrete Service source/restart tests now exist and remain `IMPLEMENTED_REVIEW_REQUIRED` in the canonical state. The presence of separate `service-core` and `durable-service` crates alone is insufficient: the concrete Service owner, private principal boundary, token-consumption transaction and named restart/audit-failure tests must be reviewed together.
 
 ### G3 — provider and destructive qualification
 
@@ -85,6 +89,7 @@ The exact candidate and its prospective merge must run:
 
 ```bash
 python scripts/validate_repository_v2.py
+python scripts/validate_current_documentation_semantics.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
 python -m unittest discover -s tests/security -p 'test_*.py' -v
 python scripts/validate_workflow_trust.py

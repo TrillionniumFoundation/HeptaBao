@@ -1,5 +1,20 @@
 # `heptabao-protocol` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`parse_http_request(input)` borrows bounded complete HTTP bytes and returns owned parsed fields; `CanonicalTarget::parse` rejects ambiguous paths/query encodings. Its prototype profile bounds headers to 16 KiB, bodies to 1 MiB, targets to 2 KiB and header count to 64. These are this contract's limits, not the runnable server's independently implemented 256 KiB normal-body limit.
+
+`RequestEnvelope::validate_at(now: MonotonicTick)` validates one process-local clock epoch and a maximum 60-second budget. Never compare serialized ticks across hosts. `ProtocolError` separates malformed framing, duplicates, forbidden transfer encoding, deadline expiry and unsupported operations. `SecretBytes` owns/redacts its buffer and only exposes it through an explicit borrow. This parser supplies the P0 prototype and contract models; actual TLS requests enter `server::http`, not this crate.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `strict_request_parses_and_classifies` — `crates/heptabao-protocol/src/lib.rs`.
+- `duplicate_host_is_rejected` — `crates/heptabao-protocol/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-protocol --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `protocol-ingress-security`  

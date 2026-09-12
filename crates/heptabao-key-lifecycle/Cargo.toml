@@ -13,5 +13,8 @@ doctest = false
 heptabao-barrier-api = { path = "../heptabao-barrier-api" }
 heptabao-journal-api = { path = "../heptabao-journal-api" }
 
+[dev-dependencies]
+zeroize = "=1.8.1"
+
 [lints]
 workspace = true

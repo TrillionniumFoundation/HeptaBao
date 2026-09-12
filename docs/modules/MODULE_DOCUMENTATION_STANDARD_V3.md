@@ -39,7 +39,9 @@ The guide identifies:
 
 ## Generated facts
 
-Workspace membership, package identity, source roots, lockfile presence and discovered tests are machine checked by `scripts/validate_repository_v2.py`. Generated facts are evidence aids, not substitutes for design explanation.
+Workspace membership, package identity, source roots, lockfile presence and discovered tests are machine checked by `scripts/validate_repository_v2.py`. Generated facts are evidence aids, not substitutes for design explanation. Frozen V1.4.7 tables must remain identified as historical and linked to `docs/modules/CURRENT_SOURCE_BINDING.md`; their bytes are not rewritten to represent new code.
+
+`python scripts/validate_current_documentation_semantics.py` checks current API substance outside those tables, current named test anchors, the actual server runtime closure in `docs/modules/CURRENT_RUNTIME_MAP.md`, and marked critical declaration signatures. For an inherited V2 guide, a current semantic supplement may precede the preserved historical structure. A source-digest refresh cannot replace review of the parameters, failure semantics and integration boundary. These targeted checks are not an automatic proof of complete documentation.
 
 ## Examples
 

@@ -1,5 +1,7 @@
 # HeptaBao V2.2 durable Raft runtime vertical slice
 
+> Scope: this retained increment describes its named library composition and tests. It is not the complete current HTTP server assembly. See [current runtime architecture](HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md) for the concrete server, private authentication boundary and per-process HA integration.
+
 Status: repository implementation under exact-head review. Authority effect: none.
 
 ## Scope

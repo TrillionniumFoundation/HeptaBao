@@ -1,5 +1,7 @@
 # heptabao-compatibility
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns an exact compatibility surface denominator, differential response/side-effect observations and fail-closed compatibility admission. It does not generate Oracle observations or grant release authority.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`SurfaceCatalog::new(profile_id, inventory_sha256, requirements)` owns an immutable map of unique `SurfaceId` requirements. A surface ID is at most 96 bytes; the catalog permits 1–1024 surfaces and each minimum count is a `NonZeroU16`. Empty/duplicate/oversized catalogs and zero inventory digests fail construction. The catalog digest is supplied by the caller; this crate does not hash or load the inventory artifact.
+
+`CompatibilityMatrix::new(catalog)` owns observations keyed by operation ID. `add(Observation)` rejects undeclared surfaces, reused operation IDs and more than 65,536 observations. An observation compares both response and side-effect digests, treating absent actual data as a mismatch class. `coverage()` reports surfaces meeting their minimum observation count separately from matching observations; a counted surface can still contain a mismatch, which blocks `complete()`/admission.
+
+`admit(EvidenceBinding)` requires independent origin, nonzero distinct oracle/candidate artifact digests, the exact catalog inventory digest, complete minima and no mismatches. It returns an owned `CompatibilityClaim`; it does not write a release record or revoke an earlier claim. `EvidenceOrigin::Independent` is caller-supplied metadata, not authenticated provenance: the evidence adapter must verify signatures, artifact hashing and oracle/candidate independence before invoking admission. Public report/claim fields also mean manually constructed values are not equivalent to successful `admit` evidence.
+
+This crate is an evidence evaluator outside the current server dependency closure. It never implements OpenBao endpoints, executes differential tests or changes qualification flags. Test fixture admission demonstrates the rule, not product compatibility with OpenBao.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-compatibility`; Cargo SHA-256 `acb3b12563e57626ecc37ad0f01c0a0b47c113e17a6fee76a3ccaa1e44a0712f`.
@@ -79,6 +95,13 @@ Operators first validate the frozen 60-surface corpus, then collect the required
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::exact_denominator_and_minimum_count_are_mandatory`](../../crates/heptabao-compatibility/src/lib.rs) blocks admission when a surface lacks its declared number of observations.
+- [`tests::repository_cannot_self_admit_compatibility`](../../crates/heptabao-compatibility/src/lib.rs) rejects an explicitly repository-controlled evidence binding.
+- [`tests::side_effect_mismatch_blocks_admission`](../../crates/heptabao-compatibility/src/lib.rs) rejects matching responses whose side-effect digests differ.
+- [`tests::unknown_surface_and_inventory_rebinding_fail_closed`](../../crates/heptabao-compatibility/src/lib.rs) checks unknown surfaces and evidence rebound to a different inventory.
+
 `cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all 60 inventoried surfaces are present exactly once and all 38 current scoped cases are mapped exactly once.
 
 ## Evolution and open boundaries
@@ -86,6 +109,8 @@ Operators first validate the frozen 60-surface corpus, then collect the required
 Fifty-four inventoried surfaces still have no executable fixture, and no surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-compatibility`

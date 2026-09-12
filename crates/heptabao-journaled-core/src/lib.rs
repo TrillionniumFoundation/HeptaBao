@@ -512,6 +512,7 @@ mod tests {
         CommitIntent, CommitRecovery, GenerationSnapshot, OpaqueState, StateDigest,
         StorageContractError, StoreDomain, StoreOpenMode,
     };
+    use zeroize::Zeroize;
 
     #[derive(Clone, Copy, Debug, Eq, PartialEq)]
     enum MemoryStoreError {
@@ -553,7 +554,7 @@ mod tests {
 
     impl Drop for MemoryStore {
         fn drop(&mut self) {
-            self.bytes.fill(0);
+            self.bytes.as_mut_slice().zeroize();
         }
     }
 
@@ -636,7 +637,7 @@ mod tests {
             };
             let bytes = candidate.into_bytes();
             let digest = state_digest(committed, &bytes)?;
-            self.bytes.fill(0);
+            self.bytes.as_mut_slice().zeroize();
             self.bytes = bytes;
             let previous = self.current;
             self.current = Some(committed);
@@ -710,9 +711,9 @@ mod tests {
                 .copied()
                 .map(|byte| byte ^ 0x5a)
                 .collect::<Vec<_>>();
-            clear.fill(0);
+            clear.as_mut_slice().zeroize();
             let tag = mock_tag(&aad, &ciphertext);
-            aad.fill(0);
+            aad.as_mut_slice().zeroize();
             SealedEnvelope::new(
                 heptabao_barrier_api::SEALED_ENVELOPE_VERSION,
                 context.key_epoch(),
@@ -732,7 +733,7 @@ mod tests {
                 .canonical_associated_data()
                 .map_err(MockBarrierError::Contract)?;
             let expected = mock_tag(&aad, envelope.ciphertext());
-            aad.fill(0);
+            aad.as_mut_slice().zeroize();
             if expected.as_slice() != envelope.authentication_tag() {
                 return Err(MockBarrierError::Authentication);
             }
@@ -804,7 +805,7 @@ mod tests {
     impl Drop for MemoryJournal {
         fn drop(&mut self) {
             for payload in &mut self.payloads {
-                payload.fill(0);
+                payload.as_mut_slice().zeroize();
             }
         }
     }

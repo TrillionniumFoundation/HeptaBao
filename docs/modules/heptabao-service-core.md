@@ -1,12 +1,32 @@
 # heptabao-service-core
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
 
-This package is the mandatory V2 in-process request composition root. It joins token validation, identity policy expansion, namespace-bound default-deny authorization, mount routing, KV dispatch, telemetry, bounded non-evicting request admission and reconciliation. It is not a TLS server, persistent idempotency ledger or qualified durable production service.
+This package is the V2 in-memory request composition model with mandatory admission within its `handle` entrypoint. It joins token validation, identity policy expansion, namespace-bound default-deny authorization, mount routing, KV dispatch, telemetry, bounded non-evicting request admission and reconciliation. It is not a TLS server, persistent idempotency ledger or qualified durable production service.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`ServiceCore<H: PostCommitHook>` owns the in-memory identity, policy, token, namespace and mount stores, KV engine, telemetry, request registry and reconciliation records. `new(max_versions, hook)` selects a request capacity of 256; `new_with_request_capacity(max_versions, capacity, hook)` requires both capacities to be positive. The `*_mut` accessors are trusted administrative/bootstrap interfaces with no authorization of their own. `kv`, `telemetry` and `reconciliation` return borrowed read-only stores; those are privileged in-process inspection paths, not independently authenticated endpoints.
+
+`handle(ServiceRequest, now: Tick)` consumes the request and uses caller-supplied trusted time. It validates the token, expands live identity/group policies, adds token policy IDs, qualifies the resource under the selected namespace, authorizes, routes the mount and accepts only `Backend::Kv`. `ServiceOperation` supports read with optional version, write with owned secret and optional CAS, delete-latest, and list. Every write requests `Capability::Update`, even for an absent key; this composition does not select Create separately. The engine storage key includes namespace ID, mount ID and relative path.
+
+Read responses own a copied `SecretValue` plus metadata. Listed paths are the engine's internal canonical keys, including namespace/mount components, not an OpenBao directory-style response. Write/delete results contain metadata. Only mutations reserve `(authenticated entity, namespace, request_id)` in the registry; rejected authentication, policy, routing or backend validation reserves nothing. Pending/unresolved records retain the exact path/operation/value/CAS binding. Completed records retain only the scoped key: any later reuse of a completed key returns `DuplicateRequest`, not a returned cached response or a changed-binding diagnosis.
+
+`PostCommitHook::after_commit(&request_id)` runs only after KV mutation and reports confirmation failure as `ServiceResponse::OutcomeUnknownAfterEntry`, which is an `Ok` response variant rather than `Err(ServiceError)`. Callers must inspect that variant and use its separately generated `recovery_N` reference. `resolve_unknown(reference, Resolution)` trusts the caller's authoritative decision, records it, drops the unresolved secret binding and retains the completed key without freeing capacity. It neither performs readback nor authorizes the resolver.
+
+`request_registry_counts` reports capacity/pending/unresolved/resolved; saturation rejects a new mutation before engine entry without evicting old keys. Deterministic KV rejection releases only the pending reservation. Neither completed replay records nor reconciliation state survives restart, and telemetry storage has no event-count bound. The owner must serialize access and must not use restart as a safe replay-capacity reset.
+
+This is an independent in-memory composition model **outside the current server dependency closure**. It does not drive `heptabao-server` routes, native authentication, HA or durable storage. `heptabao-runtime-service` and the server's native service are distinct compositions, not implicit layers beneath this type.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-service-core`; Cargo SHA-256 `087b15eaee03ade930f3144d443ab3c23bd8ab1f35a78d1370ad2647a80df100`.
@@ -49,7 +69,7 @@ Mutation identity is keyed by authenticated principal, namespace and request ide
 
 ## Invariants and authorization
 
-Token validation and identity expansion precede namespace qualification. Policy evaluates the qualified canonical resource, not the user-relative path: root `/secret/app` stays `/secret/app`, while namespace `team` becomes `/team/secret/app`. Therefore a root policy cannot cross into a child namespace merely because both mounts expose `/secret`. Mount selection, backend validation, telemetry construction and engine-path construction all precede mutation-ID admission. Invalid tokens and unauthorized or unroutable requests cannot reserve identifiers or grow the registry. The same external request identifier is independent across authenticated principals and namespaces. Within one scoped key, a changed path, CAS or write value fails as `RequestBindingMismatch`; an exact duplicate fails as `DuplicateRequest`.
+Token validation and identity expansion precede namespace qualification. Policy evaluates the qualified canonical resource, not the user-relative path: root `/secret/app` stays `/secret/app`, while namespace `team` becomes `/team/secret/app`. Therefore a root policy cannot cross into a child namespace merely because both mounts expose `/secret`. Mount selection, backend validation, telemetry construction and engine-path construction all precede mutation-ID admission. Invalid tokens and unauthorized or unroutable requests cannot reserve identifiers or grow the registry. The same external request identifier is independent across authenticated principals and namespaces. For a pending or unresolved scoped key, a changed path, CAS or write value fails as `RequestBindingMismatch`; an exact duplicate fails as `DuplicateRequest`. A completed key retains no exact payload binding and always rejects reuse as `DuplicateRequest`.
 
 ## Failure, retry and reconciliation
 
@@ -77,6 +97,14 @@ Administrators configure stores through explicit mutable accessors in this candi
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::completed_request_ids_are_non_evicting_and_capacity_fails_closed`](../../crates/heptabao-service-core/src/lib.rs) checks saturation rejects a new mutation while old IDs remain blocked.
+- [`tests::rejected_engine_operation_releases_request_identity_for_a_safe_retry`](../../crates/heptabao-service-core/src/lib.rs) checks failed CAS leaves a reservation available for corrected retry.
+- [`tests::unresolved_effects_are_exactly_bound_and_never_evicted`](../../crates/heptabao-service-core/src/lib.rs) checks changed unresolved bindings, exact duplicate and capacity-before-dispatch.
+- [`tests::recovery_references_disambiguate_cross_principal_unknown_outcomes`](../../crates/heptabao-service-core/src/lib.rs) checks separate recovery references for a shared external ID and terminal resolution.
+- [`tests::qualified_namespace_policy_denies_cross_principal_access`](../../crates/heptabao-service-core/src/lib.rs) checks root/team cross-access denial occurs before registry or KV mutation.
+
 `cargo test -p heptabao-service-core` executes invalid-token-then-valid-ID, cross-principal scoped-ID, failed-CAS reservation release, non-evicting completed-ID saturation, bounded invalid-input, exact unresolved binding, saturation-before-dispatch, distinct recovery-reference, explicit operator-resolution, explicit namespace-policy storage isolation and hostile cross-principal/cross-namespace denial scenarios in addition to accepted, denied and revoked paths.
 
 ## Evolution and open boundaries
@@ -84,6 +112,8 @@ Administrators configure stores through explicit mutable accessors in this candi
 Durable request-ledger integration, restart-safe recovery references, lease issuance, plugin execution, TLS transport, HA fencing and compatibility routing remain open. The in-memory hard-cap registry is an executable fail-closed semantic contract, not evidence of durable exactly-once processing or indefinite production availability.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-service-core`

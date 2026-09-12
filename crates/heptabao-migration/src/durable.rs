@@ -16,6 +16,11 @@ use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+#[path = "durable_auth.rs"]
+mod authentication;
+use authentication::JournalAuthentication;
+pub use authentication::MigrationJournalAuthenticator;
+
 const JOURNAL_SCHEMA: &str = "heptabao.migration-journal.v1";
 const ENVELOPE_SCHEMA: &str = "heptabao.migration-journal-envelope.v1";
 const CURRENT_FILE: &str = "migration-state.json";
@@ -628,6 +633,7 @@ pub struct DurableMigrationJournal {
     inventory: MigrationInventory,
     record: JournalRecord,
     recovered_from_previous: bool,
+    authentication: JournalAuthentication,
 }
 
 impl fmt::Debug for DurableMigrationJournal {
@@ -638,16 +644,58 @@ impl fmt::Debug for DurableMigrationJournal {
             .field("migration_id", &self.record.migration_id)
             .field("generation", &self.record.generation)
             .field("phase", &self.record.phase)
+            .field("authentication_key_id", &self.authentication.key_id())
             .field("recovered_from_previous", &self.recovered_from_previous)
             .finish_non_exhaustive()
     }
 }
 
 impl DurableMigrationJournal {
+    /// Compatibility entry point for the original unkeyed v1 checksum profile.
+    /// Use `create_authenticated` when malicious checkpoint rewriting is in scope.
     pub fn create_new(
         root: impl AsRef<Path>,
         binding: MigrationBinding,
         inventory: MigrationInventory,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::create_legacy_checksum(root, binding, inventory)
+    }
+
+    /// Explicit legacy v1 creation; SHA-256 is a checksum, not authentication.
+    pub fn create_legacy_checksum(
+        root: impl AsRef<Path>,
+        binding: MigrationBinding,
+        inventory: MigrationInventory,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::create_with_authentication(
+            root,
+            binding,
+            inventory,
+            JournalAuthentication::LegacyChecksum,
+        )
+    }
+
+    /// Create a new v2 journal authenticated with an externally supplied key.
+    /// Existing v1/v2 files are never overwritten or implicitly migrated.
+    pub fn create_authenticated(
+        root: impl AsRef<Path>,
+        binding: MigrationBinding,
+        inventory: MigrationInventory,
+        authenticator: MigrationJournalAuthenticator,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::create_with_authentication(
+            root,
+            binding,
+            inventory,
+            JournalAuthentication::Authenticated(authenticator),
+        )
+    }
+
+    fn create_with_authentication(
+        root: impl AsRef<Path>,
+        binding: MigrationBinding,
+        inventory: MigrationInventory,
+        authentication: JournalAuthentication,
     ) -> Result<Self, MigrationJournalError> {
         binding.validate()?;
         inventory.validate()?;
@@ -696,19 +744,60 @@ impl DurableMigrationJournal {
         };
         record.validate()?;
         Self::validate_record_against_inventory(&record, &inventory)?;
-        persist_initial(&root, &record)?;
+        persist_initial(&root, &record, &authentication)?;
         Ok(Self {
             root,
             inventory,
             record,
             recovered_from_previous: false,
+            authentication,
         })
     }
 
+    /// Compatibility entry point for reopening only the legacy v1 checksum profile.
     pub fn open(
         root: impl AsRef<Path>,
         expected: &MigrationBinding,
         inventory: MigrationInventory,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::open_legacy_checksum(root, expected, inventory)
+    }
+
+    /// Reopen a legacy v1 checkpoint. Authenticated v2 files are rejected.
+    pub fn open_legacy_checksum(
+        root: impl AsRef<Path>,
+        expected: &MigrationBinding,
+        inventory: MigrationInventory,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::open_with_authentication(
+            root,
+            expected,
+            inventory,
+            JournalAuthentication::LegacyChecksum,
+        )
+    }
+
+    /// Reopen v2 only. Both current and previous generations must authenticate;
+    /// this operation never falls back to an unkeyed checkpoint or a different key.
+    pub fn open_authenticated(
+        root: impl AsRef<Path>,
+        expected: &MigrationBinding,
+        inventory: MigrationInventory,
+        authenticator: MigrationJournalAuthenticator,
+    ) -> Result<Self, MigrationJournalError> {
+        Self::open_with_authentication(
+            root,
+            expected,
+            inventory,
+            JournalAuthentication::Authenticated(authenticator),
+        )
+    }
+
+    fn open_with_authentication(
+        root: impl AsRef<Path>,
+        expected: &MigrationBinding,
+        inventory: MigrationInventory,
+        authentication: JournalAuthentication,
     ) -> Result<Self, MigrationJournalError> {
         expected.validate()?;
         inventory.validate()?;
@@ -716,8 +805,8 @@ impl DurableMigrationJournal {
             return Err(MigrationJournalError::BindingMismatch);
         }
         let root = ExclusiveDirectory::open(root).map_err(map_guard_error)?;
-        let current = load_optional(&root, CURRENT_FILE)?;
-        let previous = load_optional(&root, PREVIOUS_FILE)?;
+        let current = load_optional(&root, CURRENT_FILE, &authentication)?;
+        let previous = load_optional(&root, PREVIOUS_FILE, &authentication)?;
         let (record, recovered_from_previous) = select_generation(current, previous)?;
         if record.binding() != *expected {
             return Err(MigrationJournalError::BindingMismatch);
@@ -729,7 +818,13 @@ impl DurableMigrationJournal {
             inventory,
             record,
             recovered_from_previous,
+            authentication,
         })
+    }
+
+    /// `None` identifies the legacy checksum profile; no secret key is returned.
+    pub fn authentication_key_id(&self) -> Option<&str> {
+        self.authentication.key_id()
     }
 
     pub fn binding(&self) -> MigrationBinding {
@@ -1126,7 +1221,7 @@ impl DurableMigrationJournal {
             .ok_or(MigrationJournalError::GenerationOverflow)?;
         candidate.validate()?;
         Self::validate_record_against_inventory(&candidate, &self.inventory)?;
-        persist_replace(&self.root, &candidate)?;
+        persist_replace(&self.root, &candidate, &self.authentication)?;
         self.record = candidate;
         self.recovered_from_previous = false;
         Ok(())
@@ -1160,6 +1255,8 @@ pub enum MigrationJournalError {
     BindingMismatch,
     UnsupportedSchema,
     IntegrityMismatch,
+    InvalidAuthenticationKey,
+    AuthenticationFailed,
     InvalidJournal,
     JournalMissing,
     AmbiguousGeneration,
@@ -1200,6 +1297,10 @@ impl fmt::Display for MigrationJournalError {
             Self::BindingMismatch => "migration journal binding does not match the expected source",
             Self::UnsupportedSchema => "migration journal schema is unsupported",
             Self::IntegrityMismatch => "migration journal integrity digest does not match",
+            Self::InvalidAuthenticationKey => "migration journal authentication key is invalid",
+            Self::AuthenticationFailed => {
+                "migration journal authentication failed or profile is incompatible"
+            }
             Self::InvalidJournal => "migration journal state is invalid",
             Self::JournalMissing => "migration journal has no valid generation",
             Self::AmbiguousGeneration => "migration journal generations conflict",
@@ -1355,10 +1456,11 @@ fn secure_open_read(path: &Path) -> io::Result<File> {
 fn persist_initial(
     root: &ExclusiveDirectory,
     record: &JournalRecord,
+    authentication: &JournalAuthentication,
 ) -> Result<(), MigrationJournalError> {
     root.verify().map_err(map_guard_error)?;
     let current = root.leaf_path(CURRENT_FILE).map_err(map_guard_error)?;
-    let bytes = serde_json::to_vec(&JournalEnvelope::new(record.clone())?)?;
+    let bytes = authentication.encode(record)?;
     write_new(&current, &bytes)?;
     root.sync_all().map_err(map_guard_error)
 }
@@ -1366,6 +1468,7 @@ fn persist_initial(
 fn persist_replace(
     root: &ExclusiveDirectory,
     record: &JournalRecord,
+    authentication: &JournalAuthentication,
 ) -> Result<(), MigrationJournalError> {
     root.verify().map_err(map_guard_error)?;
     let current = root.leaf_path(CURRENT_FILE).map_err(map_guard_error)?;
@@ -1374,7 +1477,7 @@ fn persist_replace(
     reject_symlink_or_non_regular_if_present(&previous)?;
     let temporary_name = format!("migration-state.{}.tmp", record.generation);
     let temporary = root.leaf_path(&temporary_name).map_err(map_guard_error)?;
-    let bytes = serde_json::to_vec(&JournalEnvelope::new(record.clone())?)?;
+    let bytes = authentication.encode(record)?;
     write_new(&temporary, &bytes)?;
     if current.exists() {
         if previous.exists() {
@@ -1419,6 +1522,7 @@ fn reject_symlink_or_non_regular_if_present(path: &Path) -> Result<(), Migration
 fn load_optional(
     root: &ExclusiveDirectory,
     name: &str,
+    authentication: &JournalAuthentication,
 ) -> Result<Option<JournalRecord>, MigrationJournalError> {
     root.verify().map_err(map_guard_error)?;
     let path = root.leaf_path(name).map_err(map_guard_error)?;
@@ -1448,8 +1552,7 @@ fn load_optional(
     {
         return Err(MigrationJournalError::InvalidJournal);
     }
-    let envelope: JournalEnvelope = serde_json::from_slice(&bytes)?;
-    envelope.validate().map(Some)
+    authentication.decode(&bytes).map(Some)
 }
 
 fn same_file(left: &fs::Metadata, right: &fs::Metadata) -> bool {
@@ -1743,6 +1846,288 @@ mod tests {
             Err(MigrationJournalError::AmbiguousGeneration)
                 | Err(MigrationJournalError::BindingMismatch)
         ));
+        Ok(())
+    }
+    fn authenticator() -> Result<MigrationJournalAuthenticator, MigrationJournalError> {
+        MigrationJournalAuthenticator::new("migration-test-key", &[7; 32])
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn authenticated_checkpoint_preserves_reconciliation_and_cutover_after_restart()
+    -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal = DurableMigrationJournal::create_authenticated(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        assert_eq!(journal.authentication_key_id(), Some("migration-test-key"));
+        journal.fence_source(&source_fence()?)?;
+        journal.begin_object("policy-root", "copy-policy-1")?;
+        journal.mark_outcome_unknown("policy-root", "copy-policy-1")?;
+        let generation = journal.generation();
+        drop(journal);
+        let mut reopened = DurableMigrationJournal::open_authenticated(
+            &directory.path,
+            &expected,
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        assert_eq!(reopened.generation(), generation);
+        assert!(matches!(
+            reopened.begin_object("policy-root", "copy-policy-2"),
+            Err(MigrationJournalError::ReconciliationRequired)
+        ));
+        assert!(matches!(
+            reopened.confirm_committed("policy-root", "copy-policy-1", &digest('f')),
+            Err(MigrationJournalError::TargetDigestMismatch)
+        ));
+        reopened.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        reopened.begin_object("mount-kv", "copy-mount-1")?;
+        reopened.confirm_committed("mount-kv", "copy-mount-1", &digest('d'))?;
+        reopened.verify_copy()?;
+        reopened.activate_target(
+            &WriterFenceReceipt::new("heptabao-target", true, 8, digest('5'))?,
+            &digest('1'),
+        )?;
+        assert!(!reopened.source_writer_enabled());
+        assert!(reopened.target_writer_enabled());
+        drop(reopened);
+        let final_state = DurableMigrationJournal::open_authenticated(
+            &directory.path,
+            &expected,
+            inventory,
+            authenticator()?,
+        )?;
+        assert_eq!(final_state.phase(), DurableMigrationPhase::TargetActive);
+        let files: Vec<_> = fs::read_dir(&directory.path)?.collect::<Result<Vec<_>, _>>()?;
+        assert!(files.iter().all(|entry| {
+            [CURRENT_FILE, PREVIOUS_FILE]
+                .iter()
+                .any(|name| entry.file_name() == *name)
+        }));
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn authenticated_checkpoint_rejects_recomputed_checksum_and_wrong_key_without_rewriting()
+    -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal = DurableMigrationJournal::create_authenticated(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        journal.fence_source(&source_fence()?)?;
+        drop(journal);
+        let current = directory.path.join(CURRENT_FILE);
+        let bytes = fs::read(&current)?;
+        for auth in [
+            MigrationJournalAuthenticator::new("migration-test-key", &[8; 32])?,
+            MigrationJournalAuthenticator::new("different-key-id", &[7; 32])?,
+        ] {
+            assert!(matches!(
+                DurableMigrationJournal::open_authenticated(
+                    &directory.path,
+                    &expected,
+                    inventory.clone(),
+                    auth
+                ),
+                Err(MigrationJournalError::AuthenticationFailed)
+            ));
+            assert_eq!(fs::read(&current)?, bytes);
+        }
+        let mut envelope: serde_json::Value = serde_json::from_slice(&bytes)?;
+        envelope["unsigned"]["payload"]["generation"] = serde_json::json!(99);
+        let record: JournalRecord =
+            serde_json::from_value(envelope["unsigned"]["payload"].clone())?;
+        record.validate()?;
+        envelope["unsigned"]["payload_sha256"] = serde_json::json!(sha256_json(&record)?);
+        let forged = serde_json::to_vec(&envelope)?;
+        fs::write(&current, &forged)?;
+        assert!(matches!(
+            DurableMigrationJournal::open_authenticated(
+                &directory.path,
+                &expected,
+                inventory,
+                authenticator()?
+            ),
+            Err(MigrationJournalError::AuthenticationFailed)
+        ));
+        assert_eq!(fs::read(current)?, forged);
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn authenticated_checkpoint_rejects_legacy_downgrade_in_either_generation()
+    -> Result<(), Box<dyn Error>> {
+        for target in [CURRENT_FILE, PREVIOUS_FILE] {
+            let directory = TestDirectory::new()?;
+            let inventory = inventory()?;
+            let expected = binding(&inventory)?;
+            let mut journal = DurableMigrationJournal::create_authenticated(
+                &directory.path,
+                expected.clone(),
+                inventory.clone(),
+                authenticator()?,
+            )?;
+            journal.fence_source(&source_fence()?)?;
+            drop(journal);
+            let path = directory.path.join(target);
+            let envelope: serde_json::Value = serde_json::from_slice(&fs::read(&path)?)?;
+            let record: JournalRecord =
+                serde_json::from_value(envelope["unsigned"]["payload"].clone())?;
+            let legacy = serde_json::to_vec(&JournalEnvelope::new(record)?)?;
+            fs::write(&path, &legacy)?;
+            assert!(matches!(
+                DurableMigrationJournal::open_authenticated(
+                    &directory.path,
+                    &expected,
+                    inventory,
+                    authenticator()?
+                ),
+                Err(MigrationJournalError::AuthenticationFailed)
+            ));
+            assert_eq!(fs::read(path)?, legacy);
+        }
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn authentication_profiles_require_explicit_creation_without_implicit_upgrade()
+    -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let legacy = DurableMigrationJournal::create_legacy_checksum(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+        )?;
+        assert_eq!(legacy.authentication_key_id(), None);
+        drop(legacy);
+        let original = fs::read(directory.path.join(CURRENT_FILE))?;
+        assert!(matches!(
+            DurableMigrationJournal::open_authenticated(
+                &directory.path,
+                &expected,
+                inventory.clone(),
+                authenticator()?
+            ),
+            Err(MigrationJournalError::AuthenticationFailed)
+        ));
+        assert!(matches!(
+            DurableMigrationJournal::create_authenticated(
+                &directory.path,
+                expected.clone(),
+                inventory.clone(),
+                authenticator()?
+            ),
+            Err(MigrationJournalError::InvalidTransition)
+        ));
+        assert_eq!(fs::read(directory.path.join(CURRENT_FILE))?, original);
+        let legacy = DurableMigrationJournal::open_legacy_checksum(
+            &directory.path,
+            &expected,
+            inventory.clone(),
+        )?;
+        assert_eq!(legacy.authentication_key_id(), None);
+        drop(legacy);
+        let authenticated_directory = TestDirectory::new()?;
+        let authenticated = DurableMigrationJournal::create_authenticated(
+            &authenticated_directory.path,
+            expected.clone(),
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        drop(authenticated);
+        assert!(
+            DurableMigrationJournal::open_legacy_checksum(
+                &authenticated_directory.path,
+                &expected,
+                inventory
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn authenticated_previous_generation_recovery_keeps_binding_and_reconcile_only_state()
+    -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal = DurableMigrationJournal::create_authenticated(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        journal.fence_source(&source_fence()?)?;
+        journal.begin_object("policy-root", "copy-policy-1")?;
+        journal.mark_outcome_unknown("policy-root", "copy-policy-1")?;
+        drop(journal);
+        let current = directory.path.join(CURRENT_FILE);
+        fs::remove_file(&current)?;
+        let mut recovered = DurableMigrationJournal::open_authenticated(
+            &directory.path,
+            &expected,
+            inventory.clone(),
+            authenticator()?,
+        )?;
+        assert!(recovered.recovered_from_previous());
+        assert!(matches!(
+            recovered.begin_object("policy-root", "new-attempt"),
+            Err(MigrationJournalError::ReconciliationRequired)
+        ));
+        recovered.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        drop(recovered);
+        let wrong = MigrationBinding::new(
+            "migration-one",
+            "different-source",
+            "heptabao-target",
+            "openbao-2.6.2-complete-v1",
+            inventory.sha256(),
+        )?;
+        assert!(matches!(
+            DurableMigrationJournal::open_authenticated(
+                &directory.path,
+                &wrong,
+                inventory,
+                authenticator()?
+            ),
+            Err(MigrationJournalError::BindingMismatch)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn authentication_key_validation_and_debug_do_not_expose_key_material()
+    -> Result<(), Box<dyn Error>> {
+        assert!(matches!(
+            MigrationJournalAuthenticator::new("key-one", &[0; 32]),
+            Err(MigrationJournalError::InvalidAuthenticationKey)
+        ));
+        assert!(matches!(
+            MigrationJournalAuthenticator::new("key-one", &[7; 31]),
+            Err(MigrationJournalError::InvalidAuthenticationKey)
+        ));
+        let auth = authenticator()?;
+        let debug = format!("{auth:?}");
+        assert!(debug.contains("[REDACTED]"));
+        assert!(!debug.contains("[7, 7"));
         Ok(())
     }
 }

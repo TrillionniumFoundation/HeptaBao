@@ -19,6 +19,11 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
+- `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
+- `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
+
+The following retained increment/target documents describe their own historical or library scope:
+
 - `docs/architecture/HEPTABAO_V2_MANDATORY_REQUEST_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_1_DURABLE_RUNTIME_PIPELINE.md`
 - `docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md`
@@ -26,7 +31,7 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The V2.1 path joins authentication, authorization and audit to restart-safe durable intent/state/commit/ledger ordering. The server composes real TLS, persistent auth and encrypted KV/Transit/TOTP. The V2.2 repository slice adds durable three-voter consensus and ReadIndex. The current increment also adds an authenticated HA service boundary with mTLS peer identity binding, durable peer replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport; a checksum-pinned sandbox-wrapper process boundary; encrypted restart-safe plugin invocation intents and dynamic-lease projections; plus a machine-validated 60-surface OpenBao 2.6.2 compatibility denominator. Qualified operating-system sandbox/provider observations, production peer networking, destructive HA, complete fixtures, migration and independent compatibility qualification remain separate gates.
+The runnable server composes real TLS, private persistent authentication/ACL, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested plugin-host, identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
 
 ## Module documentation
 
@@ -39,7 +44,7 @@ source tables; those tables are historical, not current API inventories.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited standard for historical V1.4.7 packages.
 - `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared engineering contracts.
 
-Every package has exactly one guide. The validator checks package, lockfile, source, guide, matrix and test surfaces as one set.
+Every package has exactly one guide. The validators check package, lockfile, source, guide, matrix and test surfaces as one set, reject API sections made solely of historical generated tables, and check the runtime dependency map and current critical API signatures. This is a drift guard, not automatic proof that all prose is semantically complete.
 
 ## Runnable single-node increment
 
@@ -72,6 +77,7 @@ Compatibility remains false until an isolated Oracle corpus and independent admi
 
 ```text
 python scripts/validate_repository_v2.py
+python scripts/validate_current_documentation_semantics.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
 cargo +1.98.0 fmt --all -- --check
 cargo +1.98.0 test --locked --workspace --all-targets

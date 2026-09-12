@@ -3,24 +3,19 @@
 
 //! A fail-closed plugin process boundary and dynamic-secret lease coordinator.
 //!
-//! The host never executes a plugin directly. A separately installed sandbox
-//! provider must attest the manifest and launch the descriptor-bound executable.
+//! A separately installed sandbox provider must enforce the manifest profile.
+//! On Linux the host launches immutable, digest-verified executable snapshots;
+//! its process group and I/O deadline do not constitute an OS security sandbox.
 //! Requests and responses use a bounded binary frame; post-spawn uncertainty
 //! fences further calls until an explicit reconciliation proof is supplied.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
-use std::fs::{self, OpenOptions};
-use std::io::{self, Read, Write};
-use std::path::{Component, Path, PathBuf};
-use std::process::{Command, Stdio};
-use std::thread;
-use std::time::{Duration, Instant};
 
 use heptabao_domain::{CanonicalPath, DomainError, Id, SecretValue, Tick};
 use heptabao_plugin_contracts::{PluginDescriptor, PluginKind, PluginStatus};
-use ring::digest::{Context, SHA256};
+use ring::digest::SHA256;
 use zeroize::Zeroizing;
 
 mod durable;
@@ -29,13 +24,14 @@ pub use durable::{
     PluginMutationContext,
 };
 
-const MAX_EXECUTABLE_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_REQUEST_BYTES: usize = 1024 * 1024;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 const MAX_ENVIRONMENT_ENTRIES: usize = 64;
 const MAX_ENVIRONMENT_VALUE_BYTES: usize = 16 * 1024;
 const MAX_LEASE_TTL: u64 = 366 * 24 * 60 * 60;
+#[cfg(target_os = "linux")]
 const REQUEST_MAGIC: &[u8; 4] = b"HBP1";
+#[cfg(target_os = "linux")]
 const RESPONSE_MAGIC: &[u8; 4] = b"HBR1";
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -254,214 +250,41 @@ pub trait SandboxRunner: fmt::Debug {
     ) -> Result<SecretValue, SandboxFailure>;
 }
 
+/// Linux 6.3+ runner using sealed executable images and nonblocking pipe I/O.
+///
+/// The provider receives a parent-owned `/proc/.../fd/...` path for the plugin
+/// and must open that descriptor-bound image before changing its procfs view
+/// or credentials. It must not resolve the original manifest command again.
+/// Shebang interpreters and dynamic loaders remain trusted installed platform
+/// dependencies; this runner does not attest them or provide OS containment.
+/// Admission hashes local installed files separately from the invocation I/O
+/// deadline. Unsupported memfd/procfs/platform configurations fail before entry.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CommandSandboxRunner;
 
+#[cfg(target_os = "linux")]
+mod command_runner;
+
+// No path-execution fallback: other platforms need equivalent sealed image and
+// nonblocking process I/O backends before this runner may admit any plugin.
+#[cfg(not(target_os = "linux"))]
 impl SandboxRunner for CommandSandboxRunner {
-    fn admit(&self, manifest: &PluginManifest) -> Result<(), SandboxFailure> {
-        verify_file(
-            Path::new(manifest.sandbox().command.as_str()),
-            manifest.sandbox().command_sha256,
-        )?;
-        verify_file(
-            Path::new(manifest.descriptor().command().as_str()),
-            *manifest.descriptor().checksum(),
-        )?;
-        Ok(())
+    fn admit(&self, _manifest: &PluginManifest) -> Result<(), SandboxFailure> {
+        Err(SandboxFailure::BeforeEntry)
     }
 
     fn invoke(
         &self,
-        manifest: &PluginManifest,
-        operation: PluginOperation,
-        request: &SecretValue,
-        environment: &SecretEnvironment,
+        _manifest: &PluginManifest,
+        _operation: PluginOperation,
+        _request: &SecretValue,
+        _environment: &SecretEnvironment,
     ) -> Result<SecretValue, SandboxFailure> {
-        self.admit(manifest)?;
-        if request.len() > manifest.limits().maximum_request_bytes {
-            return Err(SandboxFailure::BeforeEntry);
-        }
-        if environment
-            .iter()
-            .any(|(name, _)| !manifest.environment_allowlist().contains(name))
-        {
-            return Err(SandboxFailure::BeforeEntry);
-        }
-        let frame = encode_request(
-            manifest.descriptor().protocol_version(),
-            operation,
-            request.expose(),
-        )
-        .map_err(|_| SandboxFailure::BeforeEntry)?;
-        let mut command = Command::new(manifest.sandbox().command.as_str());
-        command
-            .arg("--heptabao-profile")
-            .arg(manifest.sandbox().profile_id.as_str())
-            .arg("--heptabao-plugin")
-            .arg(manifest.descriptor().command().as_str())
-            .arg("--heptabao-protocol")
-            .arg(manifest.descriptor().protocol_version().to_string())
-            .arg("--heptabao-operation")
-            .arg(operation.as_str())
-            .env_clear()
-            .env(
-                "HEPTABAO_SANDBOX_PROVIDER",
-                manifest.sandbox().provider_id.as_str(),
-            )
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null());
-        for (name, value) in environment.iter() {
-            command.env(name, value);
-        }
-        let mut child = command.spawn().map_err(|_| SandboxFailure::BeforeEntry)?;
-        let mut stdin = child
-            .stdin
-            .take()
-            .ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
-        if stdin.write_all(&frame).is_err() || stdin.flush().is_err() {
-            let _ = child.kill();
-            let _ = child.wait();
-            return Err(SandboxFailure::OutcomeUnknownAfterEntry);
-        }
-        drop(stdin);
-        let stdout = child
-            .stdout
-            .take()
-            .ok_or(SandboxFailure::OutcomeUnknownAfterEntry)?;
-        let maximum = manifest
-            .limits()
-            .maximum_response_bytes
-            .checked_add(9)
-            .ok_or(SandboxFailure::BeforeEntry)?;
-        let reader = thread::spawn(move || read_bounded(stdout, maximum));
-        let deadline = Instant::now() + Duration::from_millis(manifest.limits().timeout_ms);
-        let status = loop {
-            match child.try_wait() {
-                Ok(Some(status)) => break status,
-                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-                Ok(None) | Err(_) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    let _ = reader.join();
-                    return Err(SandboxFailure::OutcomeUnknownAfterEntry);
-                }
-            }
-        };
-        let output = reader
-            .join()
-            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)?
-            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)?;
-        if !status.success() {
-            return Err(SandboxFailure::OutcomeUnknownAfterEntry);
-        }
-        decode_response(&output, manifest.limits().maximum_response_bytes)
-            .map_err(|_| SandboxFailure::OutcomeUnknownAfterEntry)
+        Err(SandboxFailure::BeforeEntry)
     }
 }
 
-fn verify_file(path: &Path, expected: [u8; 32]) -> Result<(), SandboxFailure> {
-    if !path.is_absolute() || !path_components_are_real(path) {
-        return Err(SandboxFailure::BeforeEntry);
-    }
-    let metadata = fs::symlink_metadata(path).map_err(|_| SandboxFailure::BeforeEntry)?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > MAX_EXECUTABLE_BYTES
-    {
-        return Err(SandboxFailure::BeforeEntry);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let mode = metadata.permissions().mode();
-        if mode & 0o022 != 0 || mode & 0o100 == 0 {
-            return Err(SandboxFailure::BeforeEntry);
-        }
-    }
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(target_os = "linux")]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000);
-    }
-    let mut file = options
-        .open(path)
-        .map_err(|_| SandboxFailure::BeforeEntry)?;
-    let opened = file.metadata().map_err(|_| SandboxFailure::BeforeEntry)?;
-    if !opened.is_file() || opened.len() != metadata.len() {
-        return Err(SandboxFailure::BeforeEntry);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
-            return Err(SandboxFailure::BeforeEntry);
-        }
-    }
-    let mut digest = Context::new(&SHA256);
-    let mut buffer = [0_u8; 16 * 1024];
-    let mut observed = 0_u64;
-    loop {
-        let count = file
-            .read(&mut buffer)
-            .map_err(|_| SandboxFailure::BeforeEntry)?;
-        if count == 0 {
-            break;
-        }
-        observed = observed
-            .checked_add(count as u64)
-            .ok_or(SandboxFailure::BeforeEntry)?;
-        if observed > MAX_EXECUTABLE_BYTES {
-            return Err(SandboxFailure::BeforeEntry);
-        }
-        digest.update(&buffer[..count]);
-    }
-    if digest.finish().as_ref() != expected {
-        return Err(SandboxFailure::BeforeEntry);
-    }
-    Ok(())
-}
-
-fn path_components_are_real(path: &Path) -> bool {
-    let mut current = PathBuf::new();
-    for component in path.components() {
-        match component {
-            Component::Prefix(_) | Component::RootDir | Component::Normal(_) => {
-                current.push(component.as_os_str());
-                if current.as_os_str().is_empty() || current == Path::new("/") {
-                    continue;
-                }
-                let Ok(metadata) = fs::symlink_metadata(&current) else {
-                    return false;
-                };
-                if metadata.file_type().is_symlink() {
-                    return false;
-                }
-            }
-            Component::CurDir | Component::ParentDir => return false,
-        }
-    }
-    true
-}
-
-fn read_bounded(mut reader: impl Read, maximum: usize) -> io::Result<Vec<u8>> {
-    let mut output = Vec::new();
-    reader
-        .by_ref()
-        .take(maximum as u64 + 1)
-        .read_to_end(&mut output)?;
-    if output.len() > maximum {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "response exceeds bound",
-        ));
-    }
-    Ok(output)
-}
-
+#[cfg(target_os = "linux")]
 fn encode_request(
     protocol_version: u16,
     operation: PluginOperation,
@@ -477,6 +300,7 @@ fn encode_request(
     Ok(frame)
 }
 
+#[cfg(target_os = "linux")]
 fn decode_response(bytes: &[u8], maximum: usize) -> Result<SecretValue, PluginHostError> {
     if bytes.len() < 8 || &bytes[..4] != RESPONSE_MAGIC {
         return Err(PluginHostError::MalformedResponse);
@@ -1088,9 +912,11 @@ mod tests {
         Ok(())
     }
 
-    #[cfg(unix)]
+    #[cfg(target_os = "linux")]
     #[test]
     fn command_runner_uses_the_verified_wrapper_and_bounded_frame() -> Result<(), Box<dyn Error>> {
+        use std::fs;
+        use std::io;
         use std::os::unix::fs::PermissionsExt;
 
         let root = std::env::temp_dir().join(format!(

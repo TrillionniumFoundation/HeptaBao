@@ -1,5 +1,7 @@
 # heptabao-ha-contracts
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,18 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns term, membership and writer-fence semantics for an HA composition. It does not implement Raft networking, log replication, snapshots, quorum reads or leader election.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`HaState::new(local_node, voters)` owns local role, term, leader, voter/learner sets and fence generation. Membership must be nonempty and include the local node. `grant_leadership(leader_id, term)` accepts a voter and nonzero non-stale term, updates the local role, and returns `WriterFence { term, leader_id, generation }`. It does not conduct an election or require a quorum certificate; the consensus adapter must establish authority before calling it.
+
+`observe_higher_term(term)` requires a strictly larger term, demotes the node and invalidates existing fences. `validate_writer(&fence)` requires the exact local leader, term and generation, otherwise `StaleFence`. `add_learner`, `promote` and `remove_voter` mutate membership, reject duplicates/missing learners/last-voter removal, and invalidate fences by advancing generation. Generations use saturating arithmetic; the model is not a durable or unbounded fence authority.
+
+The caller must serialize membership and leadership events, persist the authoritative consensus state, and recheck writer authority at the actual commit boundary. `HaState` owns no storage, peer identities, timeout or joint-consensus protocol. This crate is outside the current server dependency closure; the separately implemented `heptabao-ha-service` and `heptabao-raft-runtime` drive current server HA paths. Their existence does not turn this standalone fence model into that runtime.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-ha-contracts`; Cargo SHA-256 `c16ed8d85802428a25d38a8de02e66165bfa81ce266bfd2777fffe42e000386e`.
@@ -66,13 +80,20 @@ Learner addition, promotion and voter removal are explicit transitions. Producti
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::stale_writer_fence_is_rejected_after_term_change`](../../crates/heptabao-ha-contracts/src/lib.rs) checks a previously granted fence fails after observing a larger term.
+- [`tests::learner_promotion_and_last_voter_guard_are_explicit`](../../crates/heptabao-ha-contracts/src/lib.rs) checks promotion ordering and protection against removing the final voter.
+
 `cargo test -p heptabao-ha-contracts` proves stale-fence rejection, learner promotion and last-voter protection.
 
 ## Evolution and open boundaries
 
-OpenRaft or another implementation, joint consensus, read indexes, snapshots and network fault qualification remain open.
+This crate does not implement consensus. The repository separately contains `heptabao-raft-runtime` and `heptabao-ha-service`; integration with this model, its joint-consensus/read-index contract and independent network-fault qualification require separate evidence.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-ha-contracts`

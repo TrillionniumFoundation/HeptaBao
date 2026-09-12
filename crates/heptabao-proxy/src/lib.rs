@@ -6,6 +6,7 @@
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 use heptabao_domain::SecretValue;
 
@@ -90,7 +91,7 @@ impl fmt::Debug for HeaderValue {
 
 impl Drop for HeaderValue {
     fn drop(&mut self) {
-        self.0.fill(0);
+        self.0.as_mut_slice().zeroize();
     }
 }
 

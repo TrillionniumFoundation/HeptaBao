@@ -1,5 +1,7 @@
 # HeptaBao Authoritative Data Ownership 与 Transaction Map V1
 
+> Historical target architecture (V1): package names and writer assignments below describe the intended design, not the current Cargo workspace or executable. Some named crates do not exist. Use [the current runtime architecture](HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md) and [46-package runtime map](../modules/CURRENT_RUNTIME_MAP.md) for current source ownership.
+
 ## 1. 规则
 
 每个 durable domain 只有一个 authoritative writer。读 cache、projection、standby 和 migration tooling 必须携带 source revision/epoch；无法证明新鲜度时 fail closed 或转发 active。

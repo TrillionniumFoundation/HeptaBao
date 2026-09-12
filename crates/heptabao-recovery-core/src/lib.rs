@@ -11,6 +11,7 @@
 
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 use heptabao_barrier_api::KeyEpoch;
 use heptabao_journal_api::{
@@ -171,7 +172,7 @@ impl fmt::Debug for RecoveryRecord {
 
 impl Drop for RecoveryRecord {
     fn drop(&mut self) {
-        self.payload.fill(0);
+        self.payload.as_mut_slice().zeroize();
     }
 }
 
@@ -204,7 +205,7 @@ impl RecoveryImage {
         records: Vec<RecoveryRecord>,
     ) -> Result<Self, RecoveryContractError> {
         if sealed_state.is_empty() || sealed_state.len() > MAX_RECOVERY_STATE_BYTES {
-            sealed_state.fill(0);
+            sealed_state.as_mut_slice().zeroize();
             return Err(RecoveryContractError::InvalidSealedState);
         }
         let image = Self {
@@ -273,7 +274,7 @@ impl fmt::Debug for RecoveryImage {
 
 impl Drop for RecoveryImage {
     fn drop(&mut self) {
-        self.sealed_state.fill(0);
+        self.sealed_state.as_mut_slice().zeroize();
     }
 }
 
@@ -1283,7 +1284,7 @@ mod tests {
 
     impl Drop for MemoryStore {
         fn drop(&mut self) {
-            self.bytes.fill(0);
+            self.bytes.as_mut_slice().zeroize();
         }
     }
 
@@ -1350,7 +1351,7 @@ mod tests {
     impl Drop for MemoryJournal {
         fn drop(&mut self) {
             for payload in &mut self.payloads {
-                payload.fill(0);
+                payload.as_mut_slice().zeroize();
             }
         }
     }
@@ -1546,7 +1547,7 @@ mod tests {
 
     impl Drop for MemoryTarget {
         fn drop(&mut self) {
-            self.restored_state.fill(0);
+            self.restored_state.as_mut_slice().zeroize();
         }
     }
 

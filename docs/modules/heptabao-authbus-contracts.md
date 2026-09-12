@@ -1,5 +1,20 @@
 # `heptabao-authbus-contracts` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`verify_bound_assertion` borrows the assertion, canonical request, verification policy and injected digest/signature/replay providers. `now: UnixTimeSeconds` comes from the caller's trusted clock; the verifier checks issuer, audience, allowed key ID, request binding and signature before admitting an identity. Policy ceilings are 30 seconds of assertion lifetime and 5 seconds of clock skew. Success returns `VerifiedAuthbusIdentity` with `AuthorizationEffect::None`; it cannot be used as the server's private `Principal`.
+
+`InMemoryReplayCache::with_capacity` accepts a bounded nonzero capacity up to 4096. `ReplayDetected` is terminal; `ReplayCacheSaturated`, provider failure, invalid signature and clock overflow deny admission. An assertion successfully accepted once is not retryable as a second request. Production callers must supply cryptography, key discovery and a replay authority shared across nodes; this package supplies no HTTP authentication mount.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `valid_assertion_authenticates_but_does_not_authorize` — `crates/heptabao-authbus-contracts/src/lib.rs`.
+- `request_binding_mismatch_is_rejected` — `crates/heptabao-authbus-contracts/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-authbus-contracts --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `identity-authentication-security`  

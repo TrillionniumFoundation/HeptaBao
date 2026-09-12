@@ -1,5 +1,20 @@
 # `heptabao-platform-bakeoff` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`validate_candidate(candidate)` borrows identifiers/evidence and validates candidate shape and score bounds. `select_for_prototype` additionally requires an eligible candidate, pinned source/release and complete license, maintenance, security and reproduction facts. `ScoreCard::total` summarizes supplied scores; it neither measures a dependency nor downloads or selects a runtime implementation for the server.
+
+`CandidateNotEligible`, missing evidence and unsafe or unclassified findings reject selection. Correct the underlying evidence before reevaluating; no automatic fallback to an unreviewed candidate exists. A returned `PrototypeSelection` has `AuthorityEffect::None` and is not a production approval. This is repository tooling without persistence, networking or a server route.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `validated_candidate_has_no_authority` — `crates/heptabao-platform-bakeoff/src/lib.rs`.
+- `pending_license_rejects_selection` — `crates/heptabao-platform-bakeoff/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-platform-bakeoff --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `platform-qualification-security`  

@@ -1,5 +1,20 @@
 # `heptabao-single-node-journal` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`FileDurableJournal::create_new(root, domain, authenticator)` and `reopen_existing` own the supplied authenticator and a descriptor-anchored exclusive directory fence. Immutable record files bind sequence, previous tag and payload; a separately synchronized `TAIL` publishes the authenticated contiguous prefix. This provider limits records to 65,536. All subsequent file access must preserve its guard lifetime.
+
+A crash can leave one exact-next orphan; `reconcile_next_orphan` is explicit and rejects unrelated or conflicting entries. `AppendOutcomeUnknown` and `InitializationOutcomeUnknown` are not safe-to-repeat failures; `PendingOrphan`, `UnresolvedTemporaryArtifact` and chain/authentication failures require retained evidence and controlled recovery. This inherited file journal is not the runnable service's JSONL audit or its HBJ2 journal implementation.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `create_append_replay_and_reopen_round_trip` — `crates/heptabao-single-node-journal/src/lib.rs`.
+- `stale_tail_is_rejected` — `crates/heptabao-single-node-journal/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-single-node-journal --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `audit-storage-platform`  

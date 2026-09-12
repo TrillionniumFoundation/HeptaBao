@@ -1,5 +1,20 @@
 # `heptabao-key-lifecycle` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`KeyRingLedger::open(journal)` consumes and authenticates replay of the injected journal. `bootstrap`, `stage`, `rotate`, `retire` and `revoke` mutate one key-epoch state machine with a bounded `ReasonCode` (96 bytes), not key material. `rotate` atomically promotes the staged epoch and makes the previous active epoch decrypt-only. `KeyRingState::directive` returns `SealAndOpen`, `OpenOnly` or `Deny`; a custody provider must enforce it.
+
+`ActiveRevocationForbidden` requires rotation before revocation. An ambiguous append sets `ReplayRequired`; `recover_after_append_failure` or consuming `reopen` must establish authoritative state before further changes. The caller cannot infer HSM execution, KMS reachability or data rewrapping from a ledger entry. The current server's Shamir/rekey implementation is separate and does not invoke this package.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `bootstrap_stage_rotate_retire_and_revoke_replay` — `crates/heptabao-key-lifecycle/src/lib.rs`.
+- `active_revocation_and_unstaged_rotation_fail_closed` — `crates/heptabao-key-lifecycle/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-key-lifecycle --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `cryptography-custody-core-security`  

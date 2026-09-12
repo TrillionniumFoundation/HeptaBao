@@ -6,7 +6,7 @@ use crate::{
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use heptabao_durable_service::{
-    DurableService, PutRequest, ReconciliationStatus, Secret, ServiceError,
+    Barrier, DurableService, PutRequest, ReconciliationStatus, Secret, ServiceError,
 };
 use ring::hmac;
 use serde::{Deserialize, Serialize};
@@ -24,11 +24,17 @@ use zeroize::{Zeroize, Zeroizing};
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
+#[path = "audit_rotation.rs"]
+mod audit_rotation;
+pub use audit_rotation::AuditConfig;
+use audit_rotation::AuditRotation;
 const MAX_SEAL_SHARES: u8 = 16;
 const SEAL_METADATA_FILE: &str = "seal.json";
 const PENDING_REKEY_FILE: &str = "seal-rekey.json";
 const SEAL_METADATA_LIMIT: u64 = 64 * 1024;
 const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
+const INIT_RECOVERY_FILE: &str = "init-recovery.hbe";
+const INIT_RECOVERY_LIMIT: u64 = 16 * 1024;
 const MAX_BACKUP_TRANSFER_BYTES: usize = 20 * 1024 * 1024;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -245,6 +251,7 @@ struct RequestView<'a> {
 pub struct Service {
     data_dir: PathBuf,
     audit: File,
+    audit_rotation: AuditRotation,
     audit_key: hmac::Key,
     audit_sequence: u64,
     audit_previous: [u8; 32],
@@ -268,7 +275,7 @@ impl Service {
     /// The TLS private key and audit file belong outside the exclusively owned
     /// data directory. The directory is never initialized implicitly on serve.
     pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {
-        Self::new_inner(data_dir, audit_path, None)
+        Self::new_inner(data_dir, audit_path, None, AuditConfig::default())
     }
 
     pub fn new_with_ha(
@@ -276,42 +283,54 @@ impl Service {
         audit_path: &Path,
         ha: Arc<Mutex<HaProcess>>,
     ) -> Result<Self, &'static str> {
-        Self::new_inner(data_dir, audit_path, Some(ha))
+        Self::new_inner(data_dir, audit_path, Some(ha), AuditConfig::default())
+    }
+
+    pub fn new_with_audit_config(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        audit_config: AuditConfig,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, None, audit_config)
+    }
+
+    pub fn new_with_ha_audit_config(
+        data_dir: PathBuf,
+        audit_path: &Path,
+        ha: Arc<Mutex<HaProcess>>,
+        audit_config: AuditConfig,
+    ) -> Result<Self, &'static str> {
+        Self::new_inner(data_dir, audit_path, Some(ha), audit_config)
     }
 
     fn new_inner(
         data_dir: PathBuf,
         audit_path: &Path,
         ha: Option<Arc<Mutex<HaProcess>>>,
+        audit_config: AuditConfig,
     ) -> Result<Self, &'static str> {
         if !data_dir.is_absolute() || !audit_path.is_absolute() || audit_path.starts_with(&data_dir)
         {
             return Err("data and audit paths must be absolute and separate");
         }
-        if fs::symlink_metadata(audit_path).is_ok_and(|m| m.file_type().is_symlink()) {
-            return Err("audit symlinks are forbidden");
+        // Historical audit-key escrow could expose the single-key seal to an
+        // audit-directory reader. Never silently treat it as the new protocol.
+        for suffix in [".init-escrow", ".init-escrow.next"] {
+            let mut legacy = audit_path.as_os_str().to_os_string();
+            legacy.push(suffix);
+            if path_present(Path::new(&legacy))? {
+                return Err("legacy initialization escrow requires explicit offline migration");
+            }
         }
-        let mut options = OpenOptions::new();
-        options.create(true).append(true).read(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options
-                .mode(0o600)
-                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+        if ha.is_some() && initialization_recovery_pending(&data_dir)? {
+            return Err("acknowledge initialization recovery before enabling HA");
         }
-        let mut audit = options
-            .open(audit_path)
-            .map_err(|_| "cannot open private audit file")?;
-        check_private_file(&audit).map_err(|_| "audit file must be a private regular file")?;
-        audit
-            .try_lock()
-            .map_err(|_| "audit writer is already active or locking is unavailable")?;
-        let audit_key = load_audit_key(audit_path, &audit)?;
-        let (audit_sequence, audit_previous) = verify_audit(&mut audit, &audit_key)?;
-        File::open(audit_path.parent().ok_or("invalid audit parent")?)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|_| "cannot sync audit directory")?;
+        let (mut audit_rotation, mut audit) = AuditRotation::open(audit_path, audit_config)
+            .map_err(|_| "cannot safely open audit rotation files")?;
+        let audit_key = load_audit_key(&audit_rotation.active_path(), &audit)?;
+        let (audit_sequence, audit_previous) = audit_rotation
+            .recover(&mut audit, &audit_key)
+            .map_err(|_| "audit verification or rotation recovery failed")?;
         let seal = load_seal_metadata(&data_dir)?;
         let pending_rekey = load_pending_rekey(&data_dir, seal.as_ref())?;
         let rekey = pending_rekey.map(|pending| RekeyState {
@@ -327,6 +346,7 @@ impl Service {
         Ok(Self {
             data_dir,
             audit,
+            audit_rotation,
             audit_key,
             audit_sequence,
             audit_previous,
@@ -450,7 +470,15 @@ impl Service {
             return Response::error(503, "audit unavailable before entry");
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
-            let (response, response_audited) = self.initialize(&body, now, &fingerprint);
+            let (response, response_audited) =
+                if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
+                    (
+                        Response::error(400, "initialization requires the root namespace"),
+                        false,
+                    )
+                } else {
+                    self.initialize(&body, now, &fingerprint)
+                };
             erase_json(&mut body);
             if !response_audited
                 && self
@@ -595,6 +623,12 @@ impl Service {
                 return Response::error(error.status, &error.message);
             }
             return self.leader_response();
+        }
+        if path == "sys/init/ack" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.ack_initialization(method, body);
         }
         if matches!(path, "sys/rekey/init" | "sys/rekey/update") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -825,13 +859,13 @@ impl Service {
                 false,
             );
         }
-        if self.initialized() {
-            return (Response::error(400, "already initialized"), false);
-        }
         if body.as_object().is_none_or(|object| {
-            object
-                .keys()
-                .any(|key| !matches!(key.as_str(), "secret_shares" | "secret_threshold"))
+            object.keys().any(|key| {
+                !matches!(
+                    key.as_str(),
+                    "secret_shares" | "secret_threshold" | "recovery_nonce"
+                )
+            })
         }) {
             return (
                 Response::error(400, "unsupported initialization options"),
@@ -852,6 +886,22 @@ impl Service {
                     400,
                     "secret shares must be 1..=16 and threshold must be within that set",
                 ),
+                false,
+            );
+        }
+        let recovery_secret = match body.get("recovery_nonce") {
+            None => None,
+            Some(value) => match decode_initialization_secret(value) {
+                Ok(secret) => Some(secret),
+                Err(error) => return (Response::error(400, error), false),
+            },
+        };
+        if self.initialized() {
+            return (
+                match recovery_secret.as_ref() {
+                    Some(secret) => self.recover_initialization(secret, shares, threshold),
+                    None => Response::error(400, "already initialized"),
+                },
                 false,
             );
         }
@@ -985,6 +1035,15 @@ impl Service {
             "recovery_keys": [],
             "recovery_keys_base64": [],
         }));
+        if let Some(secret) = recovery_secret.as_ref() {
+            response.body["init_ack_required"] = json!(true);
+            if write_initialization_recovery(&stage.path, &seal, secret, &response.body).is_err() {
+                return (
+                    Response::error(503, "cannot prepare initialization recovery"),
+                    false,
+                );
+            }
+        }
         if self
             .audit_event(
                 "initialization-response-prepared",
@@ -1019,6 +1078,15 @@ impl Service {
         self.rekey = None;
         if !parent_synced {
             self.recovery_required = true;
+            if recovery_secret.is_some() {
+                return (
+                    Response::error(
+                        503,
+                        "initialization publication outcome unknown; retry with the same recovery nonce",
+                    ),
+                    true,
+                );
+            }
             if let Some(object) = response.body.as_object_mut() {
                 object.insert(
                     "warnings".into(),
@@ -1027,6 +1095,84 @@ impl Service {
             }
         }
         (response, true)
+    }
+
+    fn recover_initialization(&self, secret: &[u8; 32], shares: u8, threshold: u8) -> Response {
+        let seal = match self.seal.as_ref() {
+            Some(seal) if seal.secret_shares == shares && seal.secret_threshold == threshold => {
+                seal
+            }
+            _ => return Response::error(400, "initialization recovery parameters do not match"),
+        };
+        if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(seal) {
+            return Response::error(503, "initialization recovery seal binding changed");
+        }
+        let protected = match read_initialization_recovery(&self.data_dir) {
+            Ok(Some(value)) => value,
+            Ok(None) => return Response::error(409, "initialization recovery is not pending"),
+            Err(_) => return Response::error(503, "initialization recovery file is unavailable"),
+        };
+        let (barrier, context) = match initialization_recovery_barrier(secret, seal) {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "initialization recovery provider unavailable"),
+        };
+        let plaintext = match barrier.open(&context, &protected) {
+            Ok(value) => Zeroizing::new(value),
+            Err(_) => return Response::error(403, "initialization recovery authentication failed"),
+        };
+        let Some(parent) = self.data_dir.parent() else {
+            return Response::error(503, "initialization recovery parent is unavailable");
+        };
+        if File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .is_err()
+        {
+            return Response::error(503, "initialization publication durability is unknown");
+        }
+        match serde_json::from_slice::<Value>(&plaintext) {
+            Ok(body) => Response::ok(body),
+            Err(_) => Response::error(503, "initialization recovery response is corrupt"),
+        }
+    }
+
+    fn ack_initialization(&mut self, method: &str, body: &Value) -> Response {
+        self.ack_initialization_with_sync(method, body, |path| File::open(path)?.sync_all())
+    }
+
+    fn ack_initialization_with_sync(
+        &mut self,
+        method: &str,
+        body: &Value,
+        sync: impl FnOnce(&Path) -> io::Result<()>,
+    ) -> Response {
+        if !matches!(method, "POST" | "PUT") {
+            return Response::error(405, "initialization acknowledgement requires POST or PUT");
+        }
+        if body.as_object().is_none_or(|fields| !fields.is_empty()) {
+            return Response::error(
+                400,
+                "initialization acknowledgement accepts an empty object",
+            );
+        }
+        let removed = fs::remove_file(self.data_dir.join(INIT_RECOVERY_FILE));
+        if let Err(error) = removed
+            && error.kind() != io::ErrorKind::NotFound
+        {
+            return Response::error(503, "cannot remove initialization recovery file");
+        }
+        // Also sync an already absent file: a previous delete may have succeeded
+        // while its directory sync failed, so absence alone is not an acknowledgement.
+        if sync(&self.data_dir).is_err() {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "initialization acknowledgement outcome unknown; directory sync failed",
+            );
+        }
+        Response {
+            status: 204,
+            body: Value::Null,
+        }
     }
 
     fn unseal(&mut self, body: &Value) -> Response {
@@ -1269,6 +1415,13 @@ impl Service {
     }
 
     fn rekey_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
+        match initialization_recovery_pending(&self.data_dir) {
+            Ok(false) => {}
+            Ok(true) => {
+                return Response::error(409, "acknowledge initialization recovery before rekey");
+            }
+            Err(_) => return Response::error(503, "initialization recovery state is unavailable"),
+        }
         if path == "sys/rekey/init" {
             if method == "GET" {
                 return self.rekey_status();
@@ -2027,16 +2180,27 @@ impl Service {
             mac: STANDARD.encode(tag.as_ref()),
         })?;
         bytes.push(b'\n');
-        let length = self.audit.metadata()?.len();
-        #[cfg(not(test))]
-        let capacity = MAX_AUDIT_BYTES;
+        // Preserve the existing test-only I/O budget injection. Production
+        // capacity is per segment and rotates without skipping either audit event.
         #[cfg(test)]
-        let capacity = self.audit_capacity;
-        if length
+        if self
+            .audit
+            .metadata()?
+            .len()
             .checked_add(bytes.len() as u64)
-            .is_none_or(|n| n > capacity)
+            .is_none_or(|n| n > self.audit_capacity)
         {
-            return Err(std::io::Error::other("audit capacity exhausted"));
+            return Err(std::io::Error::other("injected audit capacity exhausted"));
+        }
+        if let Err(error) = self.audit_rotation.before_append(
+            &mut self.audit,
+            &self.audit_key,
+            bytes.len(),
+            self.audit_sequence,
+            self.audit_previous,
+        ) {
+            self.audit_failed = true;
+            return Err(error);
         }
         if let Err(error) = self
             .audit
@@ -2070,6 +2234,137 @@ fn health_status(
     } else {
         200
     }
+}
+
+fn path_present(path: &Path) -> Result<bool, &'static str> {
+    match fs::symlink_metadata(path) {
+        Ok(_) => Ok(true),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),
+        Err(_) => Err("cannot inspect initialization recovery path"),
+    }
+}
+
+fn initialization_recovery_pending(data_dir: &Path) -> Result<bool, &'static str> {
+    path_present(&data_dir.join(INIT_RECOVERY_FILE))
+}
+
+fn decode_initialization_secret(value: &Value) -> Result<Zeroizing<[u8; 32]>, &'static str> {
+    let encoded = value.as_str().ok_or("recovery_nonce must be a string")?;
+    if encoded.len() != 44 && encoded.len() != 64 {
+        return Err("recovery_nonce must contain 32 random bytes");
+    }
+    let decoded = if encoded.len() == 64
+        && encoded
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        Zeroizing::new(decode_hex(encoded).ok_or("invalid recovery_nonce encoding")?)
+    } else {
+        let decoded = Zeroizing::new(
+            STANDARD
+                .decode(encoded)
+                .map_err(|_| "invalid recovery_nonce encoding")?,
+        );
+        let canonical = Zeroizing::new(STANDARD.encode(decoded.as_slice()));
+        if canonical.as_str() != encoded {
+            return Err("recovery_nonce must use canonical base64 or lowercase hex");
+        }
+        decoded
+    };
+    let secret = Zeroizing::new(
+        decoded
+            .as_slice()
+            .try_into()
+            .map_err(|_| "recovery_nonce must contain 32 random bytes")?,
+    );
+    if *secret == [0; 32] {
+        return Err("recovery_nonce must be generated with cryptographic randomness");
+    }
+    Ok(secret)
+}
+
+fn initialization_recovery_barrier(
+    secret: &[u8; 32],
+    seal: &SealMetadata,
+) -> Result<(AeadBarrier, Vec<u8>), io::Error> {
+    let encoded = serde_json::to_vec(seal).map_err(io::Error::other)?;
+    let mut context = b"heptabao.initialization-recovery.v2\0".to_vec();
+    context.extend_from_slice(&crypto::digest(&encoded));
+    let key = hmac::Key::new(hmac::HMAC_SHA256, secret);
+    let tag = hmac::sign(&key, &context);
+    let mut derived = Zeroizing::new([0_u8; 32]);
+    derived.copy_from_slice(tag.as_ref());
+    let barrier = AeadBarrier::new(*derived)
+        .map_err(|_| io::Error::other("cannot derive initialization recovery key"))?;
+    Ok((barrier, context))
+}
+
+fn write_initialization_recovery(
+    stage: &Path,
+    seal: &SealMetadata,
+    secret: &[u8; 32],
+    response: &Value,
+) -> Result<(), io::Error> {
+    let plaintext = Zeroizing::new(serde_json::to_vec(response).map_err(io::Error::other)?);
+    let (barrier, context) = initialization_recovery_barrier(secret, seal)?;
+    let protected = Zeroizing::new(
+        barrier
+            .seal(&context, &plaintext)
+            .map_err(|_| io::Error::other("cannot encrypt initialization recovery"))?,
+    );
+    if protected.len() as u64 > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+    }
+    let mut file = options.open(stage.join(INIT_RECOVERY_FILE))?;
+    check_private_file(&file)?;
+    file.write_all(&protected)?;
+    file.sync_all()?;
+    File::open(stage)?.sync_all()
+}
+
+fn read_initialization_recovery(data_dir: &Path) -> Result<Option<Zeroizing<Vec<u8>>>, io::Error> {
+    let path = data_dir.join(INIT_RECOVERY_FILE);
+    match fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.file_type().is_symlink() => {
+            return Err(io::Error::other(
+                "initialization recovery symlink is forbidden",
+            ));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    }
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+    }
+    let file = options.open(path)?;
+    check_private_file(&file)?;
+    if file.metadata()?.len() > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    let mut protected = Zeroizing::new(Vec::new());
+    file.take(INIT_RECOVERY_LIMIT + 1)
+        .read_to_end(&mut protected)?;
+    if protected.len() as u64 > INIT_RECOVERY_LIMIT {
+        return Err(io::Error::other("initialization recovery exceeds bound"));
+    }
+    Ok(Some(protected))
 }
 
 fn seal_associated_data(
@@ -2486,7 +2781,12 @@ fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static
     Ok(hmac::Key::new(hmac::HMAC_SHA256, material.as_ref()))
 }
 
-fn verify_audit(audit: &mut File, key: &hmac::Key) -> Result<(u64, [u8; 32]), &'static str> {
+fn verify_audit_from(
+    audit: &mut File,
+    key: &hmac::Key,
+    mut sequence: u64,
+    mut previous: [u8; 32],
+) -> Result<(u64, [u8; 32]), &'static str> {
     use std::io::{Read, Seek, SeekFrom};
     if audit.metadata().map_err(|_| "cannot inspect audit")?.len() > MAX_AUDIT_BYTES {
         return Err("audit capacity exceeded");
@@ -2505,8 +2805,6 @@ fn verify_audit(audit: &mut File, key: &hmac::Key) -> Result<(u64, [u8; 32]), &'
     if bytes.windows(2).any(|pair| pair == b"\n\n") || bytes.starts_with(b"\n") {
         return Err("audit contains empty records");
     }
-    let mut sequence = 0_u64;
-    let mut previous = [0_u8; 32];
     for line in bytes
         .split(|b| *b == b'\n')
         .take_while(|line| !line.is_empty())
@@ -2514,7 +2812,7 @@ fn verify_audit(audit: &mut File, key: &hmac::Key) -> Result<(u64, [u8; 32]), &'
         let record: AuditRecord = serde_json::from_slice(line)
             .map_err(|_| "unsupported or corrupt authenticated audit format")?;
         if record.event.schema != 2
-            || record.event.sequence != sequence + 1
+            || Some(record.event.sequence) != sequence.checked_add(1)
             || record.event.previous != STANDARD.encode(previous)
         {
             return Err("audit chain is inconsistent");
@@ -2522,6 +2820,9 @@ fn verify_audit(audit: &mut File, key: &hmac::Key) -> Result<(u64, [u8; 32]), &'
         let tag = STANDARD
             .decode(&record.mac)
             .map_err(|_| "invalid audit authenticator")?;
+        if tag.len() != 32 {
+            return Err("invalid audit authenticator length");
+        }
         let payload = serde_json::to_vec(&record.event).map_err(|_| "invalid audit payload")?;
         hmac::verify(key, &payload, &tag).map_err(|_| "audit authentication failed")?;
         previous.copy_from_slice(&tag);

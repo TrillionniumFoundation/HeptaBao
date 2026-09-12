@@ -5,6 +5,7 @@
 
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 pub const MAX_ID_BYTES: usize = 64;
 pub const MAX_PATH_BYTES: usize = 1024;
@@ -157,6 +158,9 @@ impl CanonicalPath {
         if self.0 == prefix.0 {
             return Some("");
         }
+        if prefix.0 == "/" {
+            return self.0.strip_prefix('/');
+        }
         self.0
             .strip_prefix(&prefix.0)
             .and_then(|suffix| suffix.strip_prefix('/'))
@@ -239,7 +243,7 @@ impl fmt::Debug for SecretValue {
 
 impl Drop for SecretValue {
     fn drop(&mut self) {
-        self.bytes.fill(0);
+        self.bytes.as_mut_slice().zeroize();
     }
 }
 
@@ -266,6 +270,15 @@ mod tests {
         let false_prefix = CanonicalPath::parse("/secret/ap")?;
         assert_eq!(Some("config"), path.relative_to(&prefix));
         assert!(!path.matches_prefix(&false_prefix));
+        assert_eq!(None, path.relative_to(&false_prefix));
+        assert_eq!(
+            Some("secret/app/config"),
+            path.relative_to(&CanonicalPath::root())
+        );
+        assert_eq!(
+            Some(""),
+            CanonicalPath::root().relative_to(&CanonicalPath::root())
+        );
         Ok(())
     }
 

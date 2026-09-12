@@ -10,6 +10,7 @@ path = "src/lib.rs"
 doctest = false
 
 [dependencies]
+zeroize = "=1.8.1"
 heptabao-barrier-api = { path = "../heptabao-barrier-api" }
 heptabao-journal-api = { path = "../heptabao-journal-api" }
 heptabao-rollback-anchor = { path = "../heptabao-rollback-anchor" }

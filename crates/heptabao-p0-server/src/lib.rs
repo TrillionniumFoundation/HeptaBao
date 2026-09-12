@@ -14,6 +14,7 @@ use std::fmt;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use zeroize::Zeroize;
 
 use heptabao_protocol::{
     AuditEvent, AuditPhase, CommitDisposition, MonotonicTick, Operation, ProtocolError,
@@ -34,8 +35,8 @@ pub struct DevelopmentCredentials {
 impl DevelopmentCredentials {
     pub fn new(mut root_token: Vec<u8>, mut unseal_key: Vec<u8>) -> Result<Self, P0Error> {
         if root_token.len() < 24 || unseal_key.len() < 24 || root_token == unseal_key {
-            root_token.fill(0);
-            unseal_key.fill(0);
+            root_token.as_mut_slice().zeroize();
+            unseal_key.as_mut_slice().zeroize();
             return Err(P0Error::WeakDevelopmentCredential);
         }
         let root_token = SecretBytes::new(root_token).map_err(P0Error::Protocol)?;
@@ -196,7 +197,7 @@ impl<A: AuditSink> fmt::Debug for P0Server<A> {
 
 fn zeroize_string(value: &mut String) {
     let mut bytes = std::mem::take(value).into_bytes();
-    bytes.fill(0);
+    bytes.as_mut_slice().zeroize();
 }
 
 #[derive(Eq, Ord, PartialEq, PartialOrd)]
@@ -286,7 +287,7 @@ impl fmt::Debug for P0Response {
 
 impl Drop for P0Response {
     fn drop(&mut self) {
-        self.body.fill(0);
+        self.body.as_mut_slice().zeroize();
     }
 }
 
@@ -455,7 +456,7 @@ impl<A: AuditSink> P0Server<A> {
                 };
             }
             response.status_code = 503;
-            response.body.fill(0);
+            response.body.as_mut_slice().zeroize();
             response.body = br#"{"errors":["response audit unavailable"]}"#.to_vec();
         }
         response
@@ -679,7 +680,7 @@ fn decode_json_string(value: &str) -> Result<Vec<u8>, BodyError> {
         if byte == b'\\' {
             index += 1;
             if index >= source.len() {
-                output.fill(0);
+                output.as_mut_slice().zeroize();
                 return Err(BodyError::InvalidEscape);
             }
             match source[index] {
@@ -689,12 +690,12 @@ fn decode_json_string(value: &str) -> Result<Vec<u8>, BodyError> {
                 b'r' => output.push(b'\r'),
                 b't' => output.push(b'\t'),
                 _ => {
-                    output.fill(0);
+                    output.as_mut_slice().zeroize();
                     return Err(BodyError::InvalidEscape);
                 }
             }
         } else if byte.is_ascii_control() || !byte.is_ascii() || byte == b'"' {
-            output.fill(0);
+            output.as_mut_slice().zeroize();
             return Err(BodyError::InvalidCharacter);
         } else {
             output.push(byte);

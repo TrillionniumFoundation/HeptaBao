@@ -1,5 +1,20 @@
 # `heptabao-storage-api` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`DurableGenerationStore` is a mutable owner contract with explicit create/reopen/adopt lifecycle. `prepare_commit(expected_current, &candidate)` computes an exact `CommitIntent` without publication; `commit(expected_current, candidate)` consumes opaque bytes. `recover_commit(intent)` rereads provider authority and returns committed, not-committed or conflicting state. A constructed intent is metadata, not evidence that a ledger durably authorized it.
+
+`Generation` and `StateDigest` reject zero values, generation increment detects overflow, and `OpaqueState` owns bounded bytes (16 MiB maximum). Callers own encryption: opacity does not imply secrecy. The injected `IntegrityProvider` binds domain, generation and state. Preserve provider errors and distinguish CAS conflict from unknown commit. This package has no filesystem/network implementation and no direct runnable-server dependency.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `generation_is_non_zero_and_checked` — `crates/heptabao-storage-api/src/lib.rs`.
+- `zero_digest_is_rejected` — `crates/heptabao-storage-api/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-storage-api --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `storage-core-api`  

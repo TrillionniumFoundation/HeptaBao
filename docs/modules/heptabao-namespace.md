@@ -1,5 +1,7 @@
 # heptabao-namespace
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns hierarchical namespaces and the mapping from namespace identifiers to canonical path roots. It does not authorize requests, persist namespace records or implement replication.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`NamespaceStore` owns namespace records and a canonical path index. `bootstrap_root(id)` is allowed only in an empty store and creates `/`; `create(id, parent_id)` derives a child path under an existing active parent. IDs are globally unique in a store, so the same local name cannot be reused under a different parent. Creation rejects missing/disabled parents, duplicates and path construction failures before inserting either index.
+
+`get(id)` borrows a record even if disabled. `resolve(path)` returns the longest active namespace prefix; it can fall back to an active ancestor when a more specific namespace is disabled. `qualify(namespace_id, resource_path)` checks the selected record is active and prefixes its root; `/` selects the namespace root. It does not infer a namespace from authorization or validate the state of all ancestors.
+
+`disable(id)` forbids root and repeated disable, and changes only that record. Existing descendants remain active, and resolving a path is not an authorization barrier for a disabled subtree. Callers needing recursive disable must explicitly enforce ancestor checks and descendant handling before policy, mount and storage access. The current API provides no deletion, reparenting, enabling or per-namespace keyring.
+
+This model feeds qualified-resource policy evaluation in `heptabao-service-core` and is outside the current server dependency closure. It does not prove OpenBao namespace isolation, delegated administration or namespace sealing in the native server.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-namespace`; Cargo SHA-256 `ffbf4c8704c5c73c0c78a43833978258b35fbc6863a2afd8839b8125b9fca0ba`.
@@ -62,17 +78,24 @@ Recommended administrative events are `namespace.created` and `namespace.disable
 
 ## Operations
 
-Root bootstrap is a one-time operation. Disabling a child blocks qualification immediately; production deletion, reparenting and recursive cleanup remain deliberately absent.
+Root bootstrap is a one-time operation. Disabling a child blocks direct qualification of that record immediately; existing descendants and active-ancestor resolution require the separate checks described above. Production deletion, reparenting and recursive cleanup remain absent.
 
 ## Tests and executable evidence
 
-`cargo test -p heptabao-namespace` covers hierarchy, longest-prefix resolution, qualification, disabled isolation and root protection. The V2 repository validator binds the package to this guide.
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::hierarchy_and_longest_prefix_resolution_are_deterministic`](../../crates/heptabao-namespace/src/lib.rs) checks nested path resolution and qualification.
+- [`tests::disabled_namespace_fails_closed`](../../crates/heptabao-namespace/src/lib.rs) checks direct qualification of the disabled record and root protection; it does not prove recursive subtree disable.
+
+`cargo test -p heptabao-namespace` covers hierarchy, longest-prefix resolution, qualification, direct disabled-record rejection and root protection. The V2 repository validator binds the package to this guide.
 
 ## Evolution and open boundaries
 
 Deletion, reparenting, namespace quotas and HA replication remain open. They require tombstones, cycle checks and recovery semantics before implementation.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-namespace`

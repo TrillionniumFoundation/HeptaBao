@@ -1,5 +1,20 @@
 # `heptabao-oracle-observer` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`ObservationContext::validate` borrows capture metadata and distinguishes synthetic contract capture from a black-box Oracle observation. It requires a verified artifact for the latter and rejects secret-bearing material. Success returns `AuthorityEffect::None`: callers must bind the exact observed binary/environment and independently protect raw fixtures.
+
+`SideEffectDelta::between(before, after)` compares supplied counters; `validate_delta(policy, delta)` rejects undeclared changes (for example token mutation during a health observation). Neither function probes a live server or proves the counters are truthful. The harness supplies both snapshots and the operation-specific policy. Run this tooling in an isolated synthetic environment; it is outside the service dependency closure and exposes no HTTP route.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `synthetic_contract_has_no_authority` — `crates/heptabao-oracle-observer/src/lib.rs`.
+- `secret_material_is_rejected` — `crates/heptabao-oracle-observer/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-oracle-observer --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `compatibility-clean-room-security`  

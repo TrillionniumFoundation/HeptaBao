@@ -1,5 +1,20 @@
 # `heptabao-platform-contracts` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`validate_artifact_binding` checks caller-supplied artifact digests, metadata and evidence maturity; registry metadata alone does not establish independent reproduction. `TaskSpec::validate(now: MonotonicInstant)` checks nonzero task identity, deadline and cancellation requirements. `TlsProfile::validate` checks explicit protocol/ticket/client-auth bounds, while `TlsProvider` remains an injected provider contract rather than the server's concrete rustls configuration.
+
+`ApplyCursor::validate_next` requires contiguous Raft indexes and nonregressing terms; `SnapshotMeta::validate(cursor)` forbids regression. Invalid digests, task budgets, ticket policies, noncontiguous apply and snapshot regression produce typed `ContractError`; callers must not downgrade them to warnings. Runtime, TLS and consensus adapters own execution and external state. This package is outside the current process dependency closure.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `registry_metadata_has_no_authority` — `crates/heptabao-platform-contracts/src/lib.rs`.
+- `registry_checksum_mismatch_is_rejected` — `crates/heptabao-platform-contracts/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-platform-contracts --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `platform-runtime-tls-distributed-systems`  

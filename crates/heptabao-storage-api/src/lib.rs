@@ -9,6 +9,7 @@
 
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 pub const MAX_OPAQUE_STATE_BYTES: usize = 16 * 1024 * 1024;
 pub const MAX_STORE_DOMAIN_BYTES: usize = 128;
@@ -142,7 +143,7 @@ pub struct OpaqueState(Vec<u8>);
 impl OpaqueState {
     pub fn new(mut value: Vec<u8>) -> Result<Self, StorageContractError> {
         if value.is_empty() || value.len() > MAX_OPAQUE_STATE_BYTES {
-            value.fill(0);
+            value.as_mut_slice().zeroize();
             return Err(StorageContractError::InvalidOpaqueState);
         }
         Ok(Self(value))
@@ -177,7 +178,7 @@ impl fmt::Debug for OpaqueState {
 
 impl Drop for OpaqueState {
     fn drop(&mut self) {
-        self.0.fill(0);
+        self.0.as_mut_slice().zeroize();
     }
 }
 

@@ -29,6 +29,8 @@ pub struct Config {
     pub listen: SocketAddr,
     pub data_dir: PathBuf,
     pub audit_file: PathBuf,
+    #[serde(default)]
+    pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
     #[serde(default = "default_connections")]
@@ -173,8 +175,15 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
         match ha {
-            Some(ha) => Service::new_with_ha(config.data_dir, &config.audit_file, ha),
-            None => Service::new(config.data_dir, &config.audit_file),
+            Some(ha) => Service::new_with_ha_audit_config(
+                config.data_dir,
+                &config.audit_file,
+                ha,
+                config.audit,
+            ),
+            None => {
+                Service::new_with_audit_config(config.data_dir, &config.audit_file, config.audit)
+            }
         }
         .map_err(str::to_owned)?,
     ));

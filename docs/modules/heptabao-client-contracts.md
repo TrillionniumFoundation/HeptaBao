@@ -1,5 +1,7 @@
 # heptabao-client-contracts
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,18 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns client-side failure and retry classification. It does not perform HTTP, TLS, authentication, backoff scheduling or service discovery.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`ClientAttempt` is a public value containing `request_id`, `OperationClass` and a numeric attempt counter. `decision(FailureClass)` is pure: `BeforeEntry` permits a new request, `DeterministicRejection` and `Committed` prohibit retry, and `UnknownAfterEntry` requires authoritative readback. The current match does not vary by `OperationClass`; even a declared read-only or idempotent operation receives no uncertainty bypass.
+
+`next_with_new_id(request_id)` returns a copied attempt with a saturating increment of `attempt`. Its name expresses caller intent: the implementation neither generates an identifier nor checks that the supplied identifier differs from the old one. Callers must enforce uniqueness and their own attempt limit; saturation at `u32::MAX` is not an error. Both methods are infallible and have no I/O or mutable shared state.
+
+A transport adapter must establish whether the request actually entered the effect boundary before constructing `FailureClass`; a timeout alone cannot prove `BeforeEntry`. It must also implement readback, backoff and cancellation. This crate is outside the current `heptabao-server` dependency closure and supplies no HTTP client or exported SDK.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-client-contracts`; Cargo SHA-256 `3cb2674bb8da7d545ab93e3009c3e91c330a25e35cb88a4a1140fca6a0b81bad`.
@@ -25,7 +39,7 @@ This table is generated from the exact candidate source. It is a bounded lexical
 
 ## State and data model
 
-Attempts are immutable values. A retry creates a new value with a new request identifier and incremented attempt count.
+Attempts are immutable values. A retry creates a new value with a caller-supplied request identifier and saturating-incremented attempt count; callers must ensure the identifier is fresh.
 
 ## Invariants and authorization
 
@@ -33,7 +47,7 @@ Unknown-after-entry always maps to authoritative readback, never automatic retry
 
 ## Failure, retry and reconciliation
 
-Before-entry failure allows a new request. The original identifier is not reused. Nonidempotent operations receive no special bypass.
+Before-entry failure allows a new request. The client adapter must not reuse the original identifier. Nonidempotent operations receive no special bypass.
 
 ## Concurrency and ordering
 
@@ -57,6 +71,11 @@ Operators can use the decision model to distinguish retry, stop and readback. Ap
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::unknown_after_entry_never_becomes_automatic_retry`](../../crates/heptabao-client-contracts/src/lib.rs) checks the nonidempotent uncertainty decision.
+- [`tests::retry_uses_a_new_request_identifier`](../../crates/heptabao-client-contracts/src/lib.rs) demonstrates caller-supplied distinct IDs and counter increment; it does not test rejection of reused IDs.
+
 `cargo test -p heptabao-client-contracts` proves uncertainty preservation and new-identifier retry behavior.
 
 ## Evolution and open boundaries
@@ -64,6 +83,8 @@ Operators can use the decision model to distinguish retry, stop and readback. Ap
 Backoff, circuit breaking, redirects, leader discovery and transport implementations remain open.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-client-contracts`

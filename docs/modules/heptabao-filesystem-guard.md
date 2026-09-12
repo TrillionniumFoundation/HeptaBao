@@ -1,5 +1,20 @@
 # `heptabao-filesystem-guard` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`ExclusiveDirectory::open(root)` owns one Linux directory descriptor and exclusive writer lock. `root` must be an existing absolute directory. The guard is deliberately not cloneable: keep it alive for every operation and use `access_path()` or `leaf_path(name)`, never reconstruct paths through the original pathname. Leaf names are bounded to 240 bytes and reject separators/traversal. `verify()` checks the original directory identity; `sync_all()` persists directory metadata.
+
+`RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed; no other-platform fallback exists (`UnsupportedPlatform`). Writer acquisition retries at most 64 ms to tolerate fork/exec descriptor inheritance, not to take over a live owner. Dropping the guard releases the lock. This package is in the current server dependency closure, protecting the `durable-service` storage root; the server audit rotation code implements its own directory/descriptor fencing and does not call this guard. This crate has no independent HTTP route. Restore or repair must keep the descriptor fence and never delete a live lock to force admission.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `root_is_descriptor_bound_and_leaf_names_are_closed` — `crates/heptabao-filesystem-guard/src/lib.rs`.
+- `symlink_root_is_rejected` — `crates/heptabao-filesystem-guard/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on Linux; successful unit tests do not qualify a target filesystem.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `storage-platform-security`  

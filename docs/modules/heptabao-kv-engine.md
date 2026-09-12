@@ -1,5 +1,7 @@
 # heptabao-kv-engine
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns an in-memory versioned KV state machine with compare-and-set, soft delete, undelete, atomic multi-version destroy and bounded version retention. It does not encrypt or persist values and is not a production secrets engine.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`KvStore::new(max_versions)` owns an in-memory map from canonical paths to version histories and rejects zero retention. `write(path, SecretValue, now, cas)` consumes the path/value; `cas=None` writes unconditionally, `Some(0)` requires an absent key, and another value must equal the current version. Successful writes checked-increment the version and prune oldest retained records. `current_version` returns 0 only when no history exists, including after a rejected first write.
+
+`read(path, version)` returns `KvRead<'_>` with cloned metadata and a byte slice borrowed from the store; `None` selects the latest version, even if deleted. Errors distinguish missing key, missing/pruned version, soft deletion and destruction. `delete_latest` preserves the bytes; `undelete` requires a deleted, non-destroyed version. `destroy(path, &[versions])` validates every requested version before changing any record, clears each live value once and counts only actual changes, including duplicate version inputs.
+
+`list(prefix)` returns every stored full canonical key under a segment-bounded prefix, including keys whose current value is deleted/destroyed. It does not return OpenBao's directory-style listing or remove key metadata. The caller owns namespace/mount storage-key construction, authorization, trusted time and serialization; the engine has no request-ID deduplication or transaction journal.
+
+This model is used by `heptabao-service-core` and is outside the current server dependency closure. The server's durable KV paths use `heptabao-durable-service` with separate representations and persistence; API similarity is not shared execution or full KV v2 compatibility.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-kv-engine`; Cargo SHA-256 `1548333d3e46ddb77572406809229ef0e8ade28f39e10a84d2d76f0c096192d0`.
@@ -63,6 +79,13 @@ Version retention is configured at construction. Operators should treat CAS mism
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::rejected_first_write_cas_does_not_publish_a_ghost_key`](../../crates/heptabao-kv-engine/src/lib.rs) checks failed initial CAS leaves no key, version or list entry.
+- [`tests::rejected_multi_version_destroy_is_atomic_in_both_orders`](../../crates/heptabao-kv-engine/src/lib.rs) checks a missing version prevents all destruction regardless of input ordering.
+- [`tests::duplicate_destroy_versions_are_idempotent_and_count_once`](../../crates/heptabao-kv-engine/src/lib.rs) checks duplicate/repeated destruction changes a version once.
+- [`tests::retention_prunes_old_versions_and_list_is_prefix_bounded`](../../crates/heptabao-kv-engine/src/lib.rs) checks bounded retained versions and segment-aware listing.
+
 `cargo test -p heptabao-kv-engine` executes `rejected_first_write_cas_does_not_publish_a_ghost_key`, `rejected_multi_version_destroy_is_atomic_in_both_orders`, `duplicate_destroy_versions_are_idempotent_and_count_once`, CAS/version lifecycle and segment-safe retention/listing scenarios.
 
 ## Evolution and open boundaries
@@ -70,6 +93,8 @@ Version retention is configured at construction. Operators should treat CAS mism
 Metadata custom fields, check-and-set-required policy, subkeys, patch, delete metadata and encrypted durable storage remain open until the service and storage composition is qualified. New mutators must preserve preflight-before-commit and rejected-operation no-op semantics.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-kv-engine`

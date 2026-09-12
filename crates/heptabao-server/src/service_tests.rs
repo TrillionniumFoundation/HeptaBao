@@ -80,6 +80,326 @@ fn limited_token(
 }
 
 #[test]
+fn initialization_recovery_survives_response_loss_and_requires_root_ack()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let secret = STANDARD.encode([93_u8; 32]);
+    let body = json!({"secret_shares":3,"secret_threshold":2,"recovery_nonce":secret});
+    let initialized = call(&mut service, "POST", "sys/init", "", body.clone());
+    assert_eq!(initialized.status, 200);
+    assert_eq!(initialized.body["init_ack_required"], true);
+    let expected = initialized.body.clone();
+    let keys = expected["keys_base64"].as_array().ok_or("missing shares")?;
+    let token = expected["root_token"]
+        .as_str()
+        .ok_or("missing root token")?;
+    let recovery_path = root.path.join("data").join(INIT_RECOVERY_FILE);
+    for directory in [&root.path, &root.path.join("data")] {
+        for entry in fs::read_dir(directory)? {
+            let entry = entry?;
+            if !entry.file_type()?.is_file() {
+                continue;
+            }
+            let bytes = fs::read(entry.path())?;
+            for credential in [
+                secret.as_str(),
+                token,
+                keys[0].as_str().ok_or("missing first share")?,
+            ] {
+                assert!(
+                    !bytes
+                        .windows(credential.len())
+                        .any(|window| window == credential.as_bytes())
+                );
+            }
+        }
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        assert_eq!(
+            fs::metadata(&recovery_path)?.permissions().mode() & 0o777,
+            0o600
+        );
+    }
+    // Simulate losing the entire response and the process after publication.
+    drop(initialized);
+    drop(service);
+    let mut service = root.service()?;
+    let recovered = call(&mut service, "POST", "sys/init", "", body.clone());
+    assert_eq!(recovered.status, 200);
+    assert_eq!(recovered.body, expected);
+    assert_eq!(
+        call(&mut service, "GET", "sys/init", "", json!({})).body,
+        json!({"initialized":true})
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/init",
+            "",
+            json!({"secret_shares":3,"secret_threshold":2})
+        )
+        .status,
+        400
+    );
+    let mut wrong = body.clone();
+    wrong["recovery_nonce"] = json!(STANDARD.encode([94_u8; 32]));
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", wrong).status,
+        403
+    );
+    let mut unknown = body.clone();
+    unknown["unknown"] = json!(true);
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", unknown).status,
+        400
+    );
+    assert_eq!(
+        service
+            .handle_at("POST", "sys/init", "team", "", body.clone(), 100)
+            .status,
+        400
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/init/ack", token, json!({})).status,
+        503
+    );
+    for key in keys.iter().take(2) {
+        assert_eq!(
+            call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+    }
+    assert!(service.state.is_some());
+    assert_eq!(
+        call(&mut service, "POST", "sys/rekey/init", token, json!({})).status,
+        409
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/init/ack", "", json!({})).status,
+        403
+    );
+    assert_eq!(
+        service
+            .handle_at("POST", "sys/init/ack", "team", token, json!({}), 100)
+            .status,
+        403
+    );
+    let limited = limited_token(
+        &mut service,
+        token,
+        r#"path "auth/token/lookup-self" { capabilities = ["read"] }"#,
+    )?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", &limited, body.clone()).body,
+        expected
+    );
+    // Recovering with the client secret does not authenticate or consume this token.
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &limited,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/init/ack", token, json!({})).status,
+        204
+    );
+    assert!(!recovery_path.exists());
+    assert_eq!(
+        call(&mut service, "POST", "sys/init/ack", token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body.clone()).status,
+        409
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(call(&mut service, "POST", "sys/init", "", body).status, 409);
+    for key in keys.iter().take(2) {
+        assert_eq!(
+            call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+    }
+    assert_eq!(
+        call(&mut service, "POST", "sys/rekey/init", token, json!({})).status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn initialization_recovery_rejects_tampering_wrong_seal_and_invalid_secret()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    for secret in [
+        json!(null),
+        json!(0),
+        json!("short"),
+        json!(STANDARD.encode([0_u8; 32])),
+        json!("f".repeat(63)),
+    ] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/init",
+                "",
+                json!({"recovery_nonce":secret})
+            )
+            .status,
+            400
+        );
+        assert!(!service.initialized());
+    }
+    let body = json!({"secret_shares":1,"secret_threshold":1,"recovery_nonce":"a3".repeat(32)});
+    let response = call(&mut service, "POST", "sys/init", "", body.clone());
+    assert_eq!(response.status, 200);
+    let path = root.path.join("data").join(INIT_RECOVERY_FILE);
+    let original = fs::read(&path)?;
+    let mut tampered = original.clone();
+    *tampered.last_mut().ok_or("empty recovery ciphertext")? ^= 1;
+    fs::write(&path, tampered)?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body.clone()).status,
+        403
+    );
+    fs::write(&path, &original)?;
+    let seal_path = root.path.join("data").join(SEAL_METADATA_FILE);
+    let original_seal = fs::read(&seal_path)?;
+    let mut seal: SealMetadata = serde_json::from_slice(&original_seal)?;
+    seal.generation += 1;
+    fs::write(&seal_path, serde_json::to_vec(&seal)?)?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body.clone()).status,
+        503
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body.clone()).status,
+        403
+    );
+    fs::write(&seal_path, &original_seal)?;
+    drop(service);
+    let mut service = root.service()?;
+    fs::write(&path, vec![0_u8; INIT_RECOVERY_LIMIT as usize + 1])?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body.clone()).status,
+        503
+    );
+    fs::write(&path, &original)?;
+    #[cfg(unix)]
+    {
+        fs::remove_file(&path)?;
+        std::os::unix::fs::symlink(&seal_path, &path)?;
+        assert_eq!(
+            call(&mut service, "POST", "sys/init", "", body.clone()).status,
+            503
+        );
+        fs::remove_file(&path)?;
+        fs::write(&path, &original)?;
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
+    }
+    assert_eq!(
+        call(&mut service, "POST", "sys/init", "", body).body,
+        response.body
+    );
+    Ok(())
+}
+
+#[test]
+fn initialization_ack_directory_sync_failure_fences_and_retry_resyncs()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/init",
+        "",
+        json!({"secret_shares":1,"secret_threshold":1,"recovery_nonce":STANDARD.encode([92_u8;32])}),
+    );
+    assert_eq!(response.status, 200);
+    let key = response.body["keys_base64"][0]
+        .as_str()
+        .ok_or("missing key")?;
+    let token = response.body["root_token"]
+        .as_str()
+        .ok_or("missing root token")?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let failed = service.ack_initialization_with_sync("POST", &json!({}), |_| {
+        Err(io::Error::other("injected directory sync failure"))
+    });
+    assert_eq!(failed.status, 503);
+    assert!(service.recovery_required);
+    assert!(!root.path.join("data").join(INIT_RECOVERY_FILE).exists());
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            token,
+            json!({})
+        )
+        .status,
+        503
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let resynced = std::cell::Cell::new(false);
+    let retry = service.ack_initialization_with_sync("POST", &json!({}), |path| {
+        resynced.set(true);
+        File::open(path)?.sync_all()
+    });
+    assert_eq!(retry.status, 204);
+    assert!(resynced.get());
+    Ok(())
+}
+
+#[test]
+fn initialization_without_recovery_secret_never_creates_escrow_and_legacy_is_rejected()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/init",
+        "",
+        json!({"secret_shares":1,"secret_threshold":1}),
+    );
+    assert_eq!(response.status, 200);
+    assert!(response.body.get("init_ack_required").is_none());
+    assert!(!initialization_recovery_pending(&service.data_dir)?);
+    assert_eq!(call(&mut service, "POST", "sys/init", "", json!({"secret_shares":1,"secret_threshold":1,"recovery_nonce":STANDARD.encode([91_u8;32])})).status, 409);
+    drop(service);
+    fs::write(
+        root.path.join("audit.jsonl.init-escrow"),
+        b"legacy-audit-key-ciphertext",
+    )?;
+    assert!(root.service().is_err());
+    Ok(())
+}
+
+#[test]
 fn shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
@@ -1027,7 +1347,7 @@ fn initialization_response_audit_failure_publishes_no_state_and_is_retryable()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let body = json!({"secret_shares":3,"secret_threshold":2});
+    let body = json!({"secret_shares":3,"secret_threshold":2,"recovery_nonce":STANDARD.encode([73_u8;32])});
     let fingerprint = service.request_fingerprint("PUT", "sys/init", "", "");
     let event = AuditUnsigned {
         schema: 2,

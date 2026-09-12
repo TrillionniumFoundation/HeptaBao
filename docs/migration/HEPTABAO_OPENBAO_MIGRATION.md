@@ -1,5 +1,9 @@
 # Controlled OpenBao KV-v2 migration
 
+## Implementation boundary
+
+This guide describes the Python HTTPS transfer tool. The separate Rust `heptabao-migration` crate now offers explicit authenticated v2 migration checkpoints as well as legacy checksum checkpoints; this tool does not invoke that crate. Its live-transfer checkpoint and the Rust protocol journal must not be treated as one implementation or one security receipt. See `docs/modules/heptabao-migration.md` for the Rust profile/key/no-downgrade contracts.
+
 ## Implemented transfer boundary
 
 `qa/openbao-acceptance/migrate_kv2.py` copies explicitly selected KV-v2 objects

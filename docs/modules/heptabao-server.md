@@ -4,9 +4,30 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 ## Purpose and non-goals
 
-This package provides the runnable Linux single-node HTTPS secrets service. It joins persistent authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. This is a bounded development candidate; it now includes per-process networked Raft composition, but does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, an external rollback anchor or full OpenBao compatibility.
+This package provides the runnable Linux single-node HTTPS secrets service. It joins persistent token/userpass/AppRole and pinned-key JWT authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. This is a bounded development candidate; it now includes per-process networked Raft composition, but does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, an external rollback anchor or full OpenBao compatibility.
 
 ## Public API and ownership
+
+`Service::new(data_dir, audit_path)` owns the private state lifecycle, durable writer, audit owner and seal material. `new_with_audit_config` takes the exported `AuditConfig` retention policy; `new_with_ha_audit_config` combines both options, while existing constructors use defaults. `new_with_ha` additionally shares an `Arc<Mutex<HaProcess>>`; it does not permit the caller to inject an authenticated principal. Public `Service::handle` derives Unix seconds from the system clock. `handle_at` takes the same borrowed method/path/namespace/bearer inputs, consumes an owned JSON body and accepts an explicit `now` for deterministic tests or a trusted embedding. It returns owned `Response { status, body }`. Production callers must not accept a client-supplied time.
+
+Paths passed to Service omit `/v1/` and the root namespace is empty; the HTTPS parser owns wire canonicalization and bounds. `http::Config` owns absolute storage/audit/TLS paths, listen address, connection/deadline/rate-limit settings and audit retention configuration. Unknown JSON configuration fields are rejected. `http::serve` owns configuration and starts the listener; `serve_with_ha` shares the HA process. The private `auth` and `service` modules are not exported, even where historical tables below show `pub` declarations.
+
+Current API declaration excerpt (illustrative, not a standalone program):
+
+<!-- CURRENT API: crates/heptabao-server/src/service.rs#handle_at -->
+```text
+pub fn handle_at(
+        &mut self,
+        method: &str,
+        path: &str,
+        namespace: &str,
+        token: &str,
+        body: Value,
+        now: u64,
+    ) -> Response
+```
+
+Authentication, engine and maintenance route parameters/errors are detailed in `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`, `docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md` and `docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md`. The actual crate and internal owner graph is `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`; the standalone token/policy/identity/plugin crates are not server state owners.
 
 Current source binding: `docs/modules/CURRENT_SOURCE_BINDING.md` and
 `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`. Any V1.4.7 generated
@@ -64,11 +85,11 @@ TLS and canonical HTTP parsing precede service dispatch. Every parsed service re
 
 ## Failure, retry and reconciliation
 
-Malformed input yields 400, missing/invalid/denied credentials 403, absent or unsupported paths 404, oversized requests 413, unimplemented providers 501, sealed/fenced service or unknown durable outcome 503, and exhausted state capacity 507. Post-entry I/O failures retain a recovery reference and fence service admission. Do not blindly retry writes or initialization after a lost response. Reopen with the original key invokes durable reconciliation before accepting state; the public HTTP profile does not yet provide a complete authorized operation-reference lookup API. A lost initialization response may leave initialized data whose key was not received; do not automatically erase it or reinitialize.
+Malformed input yields 400, missing/invalid/denied credentials 403, absent or unsupported paths 404, oversized requests 413, unimplemented providers 501, sealed/fenced service or unknown durable outcome 503, and exhausted state capacity 507. Post-entry I/O failures retain a recovery reference and fence service admission. Do not blindly retry writes or initialization after a lost response. Reopen with the original key invokes durable reconciliation before accepting state; root `GET sys/internal/recovery/<reference>` reports committed/aborted/unknown for the bounded local durable ledger; it is not a general external-effect operator API. For initialization opted into client-secret recovery, repeat the same bound request to recover the response before acknowledgement. Without that opt-in, response loss may leave initialized data whose shares were not received; do not automatically erase it or reinitialize.
 
 ## Concurrency and ordering
 
-One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including wrapping, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB body and 1 MiB response. Per-peer rate-limit controls exist; authentication is CPU-expensive and production throughput/SLO qualification remains open.
+One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including wrapping, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB normal body, 32 MiB snapshot request body and 32 MiB response; decoded backup transfer is limited to 20 MiB. Per-peer rate-limit controls exist; authentication is CPU-expensive and production throughput/SLO qualification remains open.
 
 ## Security and privacy
 
@@ -78,7 +99,7 @@ The request principal is an internal capability, not a public authentication tok
 
 ## Persistence and compatibility
 
-All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and stops before the 64 MiB journal or 32 MiB audit budget is exhausted. Root-authorized manual compaction and encrypted backup export/restore are implemented; automatic audit rotation and qualified format upgrades remain open. The snapshot response uses the HeptaBao encrypted-backup profile, not OpenBao snapshot bytes. Direct local restore is rejected when HA is enabled. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
+All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and rejects new durable entry before the 64 MiB journal budget is exhausted. Root-authorized manual compaction and encrypted backup export/restore are implemented; compaction preserves retained operation identities. Audit rotates automatically at `audit.segment_bytes` (4 KiB–32 MiB, default 32 MiB), retaining `audit.retained_segments` (1–64, default 8) sealed segments plus the active file. A signed manifest preserves retained-chain and evicted-prefix frontiers; evicted event contents require external archival. Audit corruption or I/O failure still fails closed. Qualified format upgrades and external archive delivery remain open. The snapshot response uses the HeptaBao encrypted-backup profile, not OpenBao snapshot bytes. Direct local restore is rejected when HA is enabled. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
 
 ## Observability
 
@@ -90,11 +111,19 @@ Use the executable setup in `qa/single-node/smoke.py` for synthetic local data. 
 
 ## Tests and executable evidence
 
+Current named source scenarios:
+
+- `finite_use_is_committed_for_acl_denial_and_state_capacity_rejection` — `crates/heptabao-server/src/service_tests.rs`.
+- `result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_reopen` — `crates/heptabao-server/src/service_tests.rs`.
+- `root_maintenance_routes_compact_snapshot_restore_and_reconcile` — `crates/heptabao-server/src/service_tests.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. These are source anchors; a current test receipt is separate.
+
 Run `cargo test --locked -p heptabao-server` and the workspace gates from the current README. Tests cover real AEAD context/tamper rejection, canonical HTTP framing, auth TTL/usage/revocation, RFC crypto vectors, KV CAS/namespace isolation, partial batch semantics and service transaction/response-audit failure. `tests/repository/test_auth_capability_boundary_v2_6.py` additionally rejects a public raw auth module or any public `Service` signature that exposes `Principal` or `AuthState`. Run `python qa/single-node/smoke.py --binary /absolute/target/debug/heptabao-server --work-dir /new/absolute/private-directory` for a real TLS process, initialization/sealing, invalid credentials, durable finite-use denial and SIGKILL/restart recovery with ciphertext/redacted-audit checks. `qa/openbao-acceptance/acceptance.py` separately executes named KV/token/Transit cases against an independent OpenBao binary. Current results belong in `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md`; commands listed here are requirements, not implied passes.
 
 ## Evolution and open boundaries
 
-Next gates are full authentication/identity/MFA coverage; PKI/SSH/database/cloud engines and lease revocation; networked Raft replication, linearizable reads and destructive three-node tests; complete interruption-safe migration of policies, identities, keys and leases; external audit anchoring, compaction, provider and platform qualification. Any future lower-level authentication API must use an affine, non-cloneable, non-serializable request capability consumed by one dispatcher call and must receive fresh exact-head hostile replay review. Repository tests and a runnable single node do not close the remaining product gates.
+Next gates are full authentication/identity/MFA coverage; PKI/SSH/database/cloud engines and lease revocation; destructive three-node qualification of implemented networked Raft replication and linearizable reads; complete interruption-safe migration of policies, identities, keys and leases; external audit anchoring/archival and qualification of implemented compaction, providers and platforms. Any future lower-level authentication API must use an affine, non-cloneable, non-serializable request capability consumed by one dispatcher call and must receive fresh exact-head hostile replay review. Repository tests and a runnable single node do not close the remaining product gates.
 
 ```text
 qualification: false
@@ -123,6 +152,16 @@ The authenticated request principal is crate-internal, non-cloneable and non-ser
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Optional initialization-response recovery
+
+`POST`/`PUT sys/init` accepts optional `recovery_nonce`: 32 client-generated random bytes encoded as canonical standard base64 or lowercase hex. The initializer validates share/threshold bounds (defaults 5/3), creates the usual Shamir state and, when opted in, publishes an encrypted `init-recovery.hbe` alongside staged state. The 16 KiB, owner-only recovery object contains the original response; a key derived from the client secret and seal context protects it independently of the audit key. No recovery secret or response plaintext is stored in audit.
+
+A matching repeat with the same secret and effective share/threshold settings returns the same original shares/root token after response loss or restart. Missing recovery credentials on an already initialized server fail closed; wrong share/threshold settings return 400, failed recovery authentication 403, absent pending recovery 409, and an in-process/on-disk seal disagreement or unavailable/uncertain durable file 503 (a changed binding discovered by decryption after restart yields 403). The response adds `init_ack_required: true`; ordinary requests without recovery credentials keep the existing compatibility profile. This extension cannot retroactively recover an older lost initialization that never supplied a client secret.
+
+After unseal and custody verification, root-namespace `POST`/`PUT sys/init/ack` with an effective root token and `{}` removes/synchronizes the pending encrypted response. Acknowledgement returns 204 and also synchronizes the directory when the file is already absent, making an authorized retry meaningful after a lost acknowledgement. A directory-sync failure returns 503 and fences the live service; reopen/reconcile before retrying. Pending recovery blocks rekey (409) and HA startup. `GET sys/init` never exposes sensitive recovery fields. An old audit-key-dependent `.init-escrow` artifact is a migration error, not a current decryption source. See the operator runbook for the custody sequence; local encryption is not external custody or a production initialization-ceremony qualification.
+
+Current initialization regressions in `crates/heptabao-server/src/service_tests.rs` are `initialization_recovery_survives_response_loss_and_requires_root_ack`, `initialization_recovery_rejects_tampering_wrong_seal_and_invalid_secret`, `initialization_ack_directory_sync_failure_fences_and_retry_resyncs` and `initialization_without_recovery_secret_never_creates_escrow_and_legacy_is_rejected`. They bind the local recovery/custody boundary; they do not qualify a production ceremony.
 
 ## Current per-process HA composition
 

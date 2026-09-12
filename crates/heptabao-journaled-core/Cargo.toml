@@ -17,6 +17,7 @@ heptabao-operation-ledger = { path = "../heptabao-operation-ledger" }
 heptabao-storage-api = { path = "../heptabao-storage-api" }
 
 [dev-dependencies]
+zeroize = "=1.8.1"
 heptabao-single-node-journal = { path = "../heptabao-single-node-journal" }
 heptabao-single-node-store = { path = "../heptabao-single-node-store" }
 

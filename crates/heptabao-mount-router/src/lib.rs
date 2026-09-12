@@ -152,6 +152,51 @@ mod tests {
     use super::*;
 
     #[test]
+    fn root_mount_routes_descendants_and_preserves_namespace_and_precedence()
+    -> Result<(), Box<dyn Error>> {
+        let namespace = Id::parse("root")?;
+        let mut router = MountRouter::default();
+        let root_mount = Id::parse("fallback")?;
+        router.mount(
+            root_mount.clone(),
+            namespace.clone(),
+            CanonicalPath::root(),
+            Backend::Kv,
+        )?;
+        let path = CanonicalPath::parse("/secret/item")?;
+        assert_eq!(
+            "secret/item",
+            router.route(&namespace, &path)?.relative_path
+        );
+        assert_eq!(
+            "",
+            router
+                .route(&namespace, &CanonicalPath::root())?
+                .relative_path
+        );
+        assert_eq!(
+            Err(MountError::NoRoute),
+            router.route(&Id::parse("other")?, &path)
+        );
+        let plugin = Id::parse("specific")?;
+        router.mount(
+            Id::parse("secret")?,
+            namespace.clone(),
+            CanonicalPath::parse("/secret")?,
+            Backend::Plugin(plugin.clone()),
+        )?;
+        let route = router.route(&namespace, &path)?;
+        assert_eq!(Backend::Plugin(plugin), route.backend);
+        assert_eq!("item", route.relative_path);
+        router.set_enabled(&root_mount, false)?;
+        assert_eq!(
+            Err(MountError::NoRoute),
+            router.route(&namespace, &CanonicalPath::parse("/other")?)
+        );
+        Ok(())
+    }
+
+    #[test]
     fn longest_prefix_wins_within_namespace() -> Result<(), Box<dyn Error>> {
         let namespace = Id::parse("root")?;
         let mut router = MountRouter::default();

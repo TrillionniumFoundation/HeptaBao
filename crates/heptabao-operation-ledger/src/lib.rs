@@ -897,6 +897,7 @@ mod tests {
         JournalContractError, JournalDomain, JournalOpenMode, JournalRecord, JournalSequence,
         JournalTag, JournalTail,
     };
+    use zeroize::Zeroize;
 
     #[derive(Clone, Copy, Debug, Eq, PartialEq)]
     enum MemoryJournalError {
@@ -937,7 +938,7 @@ mod tests {
     impl Drop for MemoryJournal {
         fn drop(&mut self) {
             for payload in &mut self.payloads {
-                payload.fill(0);
+                payload.as_mut_slice().zeroize();
             }
         }
     }

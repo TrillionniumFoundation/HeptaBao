@@ -96,6 +96,7 @@ impl ReplicatedEnvelope {
             if operation_len == 0
                 || operation_len > MAX_OPERATION_ID_BYTES
                 || rest.len() <= operation_len
+                || !rest.is_char_boundary(operation_len)
             {
                 return Err(RaftRuntimeError::InvalidEnvelope);
             }
@@ -383,6 +384,22 @@ mod tests {
         assert_eq!(decoded.sealed(), &[0xaa; 16]);
         assert!(ReplicatedEnvelope::decode_status("hbr1:ambiguous:id:00:aa").is_err());
         Ok(())
+    }
+
+    #[test]
+    fn malformed_unicode_status_is_rejected_without_panicking() {
+        for encoded in [
+            "hbr2:1:é:x:y",
+            "hbr2:2:€:x:y",
+            "hbr2:3:😀:x:y",
+            "hbr2:2:é:x:y",
+            "hbr1:é:00:aa",
+        ] {
+            assert!(matches!(
+                ReplicatedEnvelope::decode_status(encoded),
+                Err(RaftRuntimeError::InvalidEnvelope)
+            ));
+        }
     }
 
     #[tokio::test]

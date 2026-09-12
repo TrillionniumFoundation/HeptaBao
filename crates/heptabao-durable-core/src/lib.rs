@@ -303,6 +303,7 @@ where
 mod tests {
     use super::*;
     use heptabao_storage_api::{GenerationSnapshot, StoreDomain, StoreOpenMode};
+    use zeroize::Zeroize;
 
     #[derive(Clone, Copy, Debug, Eq, PartialEq)]
     enum MemoryStoreError {
@@ -342,7 +343,7 @@ mod tests {
 
     impl Drop for MemoryStore {
         fn drop(&mut self) {
-            self.bytes.fill(0);
+            self.bytes.as_mut_slice().zeroize();
         }
     }
 
@@ -421,7 +422,7 @@ mod tests {
             };
             let bytes = candidate.into_bytes();
             let digest = test_digest(generation, &bytes)?;
-            self.bytes.fill(0);
+            self.bytes.as_mut_slice().zeroize();
             self.bytes = bytes;
             let previous = self.current;
             self.current = Some(generation);
@@ -497,9 +498,9 @@ mod tests {
                 .copied()
                 .map(|byte| byte ^ 0xaa)
                 .collect::<Vec<_>>();
-            plaintext.fill(0);
+            plaintext.as_mut_slice().zeroize();
             let tag = mock_tag(&associated_data, &ciphertext);
-            associated_data.fill(0);
+            associated_data.as_mut_slice().zeroize();
             SealedEnvelope::new(
                 heptabao_barrier_api::SEALED_ENVELOPE_VERSION,
                 context.key_epoch(),
@@ -519,7 +520,7 @@ mod tests {
                 .canonical_associated_data()
                 .map_err(MockBarrierError::Contract)?;
             let expected_tag = mock_tag(&associated_data, envelope.ciphertext());
-            associated_data.fill(0);
+            associated_data.as_mut_slice().zeroize();
             if expected_tag.as_slice() != envelope.authentication_tag() {
                 return Err(MockBarrierError::AuthenticationFailed);
             }

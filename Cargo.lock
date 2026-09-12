@@ -127,6 +127,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
+name = "bitflags"
+version = "2.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
+
+[[package]]
 name = "block-buffer"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -367,6 +373,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
 
 [[package]]
+name = "errno"
+version = "0.3.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
+dependencies = [
+ "libc",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "find-msvc-tools"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -517,6 +533,7 @@ name = "heptabao-authbus-contracts"
 version = "0.1.0"
 dependencies = [
  "heptabao-protocol",
+ "zeroize",
 ]
 
 [[package]]
@@ -524,6 +541,7 @@ name = "heptabao-barrier-api"
 version = "0.1.0"
 dependencies = [
  "heptabao-storage-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -550,6 +568,9 @@ dependencies = [
 [[package]]
 name = "heptabao-domain"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "heptabao-durable-core"
@@ -557,6 +578,7 @@ version = "0.1.0"
 dependencies = [
  "heptabao-barrier-api",
  "heptabao-storage-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -593,6 +615,7 @@ version = "0.1.0"
 dependencies = [
  "ring",
  "rustls",
+ "zeroize",
 ]
 
 [[package]]
@@ -605,6 +628,9 @@ dependencies = [
 [[package]]
 name = "heptabao-journal-api"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "heptabao-journaled-core"
@@ -617,6 +643,7 @@ dependencies = [
  "heptabao-single-node-journal",
  "heptabao-single-node-store",
  "heptabao-storage-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -625,6 +652,7 @@ version = "0.1.0"
 dependencies = [
  "heptabao-barrier-api",
  "heptabao-journal-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -632,6 +660,7 @@ name = "heptabao-kms-contracts"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
+ "zeroize",
 ]
 
 [[package]]
@@ -655,6 +684,7 @@ dependencies = [
  "heptabao-domain",
  "heptabao-filesystem-guard",
  "libc",
+ "ring",
  "serde",
  "serde_json",
  "sha2",
@@ -680,6 +710,7 @@ version = "0.1.0"
 dependencies = [
  "heptabao-journal-api",
  "heptabao-storage-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -698,6 +729,7 @@ name = "heptabao-p0-server"
 version = "0.1.0"
 dependencies = [
  "heptabao-protocol",
+ "zeroize",
 ]
 
 [[package]]
@@ -723,6 +755,7 @@ dependencies = [
  "heptabao-durable-service",
  "heptabao-plugin-contracts",
  "ring",
+ "rustix",
  "zeroize",
 ]
 
@@ -736,12 +769,16 @@ dependencies = [
 [[package]]
 name = "heptabao-protocol"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "heptabao-proxy"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
+ "zeroize",
 ]
 
 [[package]]
@@ -767,6 +804,7 @@ dependencies = [
  "heptabao-journal-api",
  "heptabao-rollback-anchor",
  "heptabao-storage-api",
+ "zeroize",
 ]
 
 [[package]]
@@ -834,6 +872,7 @@ dependencies = [
  "heptabao-filesystem-guard",
  "heptabao-journal-api",
  "libc",
+ "zeroize",
 ]
 
 [[package]]
@@ -843,11 +882,15 @@ dependencies = [
  "heptabao-filesystem-guard",
  "heptabao-storage-api",
  "libc",
+ "zeroize",
 ]
 
 [[package]]
 name = "heptabao-storage-api"
 version = "0.1.0"
+dependencies = [
+ "zeroize",
+]
 
 [[package]]
 name = "heptabao-telemetry"
@@ -934,6 +977,12 @@ name = "libc"
 version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
+
+[[package]]
+name = "linux-raw-sys"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "log"
@@ -1250,6 +1299,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
 dependencies = [
  "semver",
+]
+
+[[package]]
+name = "rustix"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
+dependencies = [
+ "bitflags",
+ "errno",
+ "libc",
+ "linux-raw-sys",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

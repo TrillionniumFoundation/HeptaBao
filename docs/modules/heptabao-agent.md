@@ -1,5 +1,7 @@
 # heptabao-agent
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns the fail-closed lifecycle for local auto-authentication, token renewal, sink delivery, backoff, revocation and outcome reconciliation. It does not implement an authentication backend, persist credentials, create operating-system services or claim production agent compatibility.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`AgentSession::new(AgentConfig)` takes ownership of the configuration and all lifecycle metadata. `TokenSink::new(kind, reference)` describes a sink; it does not open a file or socket. `CredentialSource` describes stdin, an inherited descriptor or workload identity without reading credentials. The constructor rejects a zero initial backoff, a maximum below the initial value, and inherited descriptors below 3; it does not check descriptor ownership or sink permissions.
+
+The controller calls `start`, then reports provider results through `authentication_succeeded(now, ttl_ticks)` or `authentication_failed_before_entry(now)`. Success requires nonzero TTL, checked deadline arithmetic and a non-overflowing generation. Before-entry failures return the next retry tick using capped exponential delay; `retry_authentication(now)` rejects early attempts with `RetryNotDue`. `begin_renewal(now)` must precede the expiry deadline: equality returns `SessionExpired` and moves to `FailedClosed`. Revocation is a separate begin/success pair; none of these methods performs the external effect.
+
+After provider entry, an uncertain result must go through `mark_outcome_unknown_after_entry(reference)` and `reconcile(ReconciledAgentState)`. Reconciliation rejects generation regression, but has no `now` parameter and does not validate whether an authenticated deadline is still live. The caller must obtain authoritative state and validate its deadline. An expiry-induced failed-closed state has no reconciliation reference, so it cannot use the same reconciliation path without a separate recovery policy.
+
+This crate is an independent controller model outside the current `heptabao-server` dependency closure. The agent adapter must own transport, trusted monotonic time, actual token bytes, sink publication and restart recovery; the model supplies no running agent process.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-agent`; Cargo SHA-256 `081f9b1eb2c4647064ae04f7f44d4328767af72cd133b491add40e8cb38fede5`.
@@ -78,6 +94,12 @@ Operators need explicit procedures for startup, authentication outage, clock/tic
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::authentication_renewal_and_revocation_are_monotonic`](../../crates/heptabao-agent/src/lib.rs) checks the success transitions and generation increment through renewal and revocation.
+- [`tests::retry_backoff_is_bounded_and_deadline_checked`](../../crates/heptabao-agent/src/lib.rs) checks the 2, 4, 8, 8 tick backoff sequence and rejects early retry.
+- [`tests::unknown_after_entry_blocks_blind_retry_until_reconciled`](../../crates/heptabao-agent/src/lib.rs) checks that uncertainty blocks restart until an explicit reconciliation result.
+
 `cargo test -p heptabao-agent` exercises the complete authentication/renewal/revocation path, bounded exponential backoff, deadline enforcement, generation monotonicity, unknown-after-entry fencing and redacted diagnostics. The V2 assurance workflow also applies formatting, strict Clippy and rustdoc checks.
 
 ## Evolution and open boundaries
@@ -85,6 +107,8 @@ Operators need explicit procedures for startup, authentication outage, clock/tic
 Concrete authentication methods, workload identity providers, durable agent state, token sink implementations, process supervision, namespace-aware templates and OpenBao agent compatibility remain separate work. No compatibility or production claim is created by this contract package.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-agent`

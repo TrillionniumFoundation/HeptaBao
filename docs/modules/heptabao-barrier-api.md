@@ -1,5 +1,20 @@
 # `heptabao-barrier-api` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`BarrierProvider` is an injected seal/open contract. `BarrierContext::new` binds a `StoreDomain`, `Generation`, nonzero `KeyEpoch`, `BarrierPurpose` and owned caller associated data; these values must match again when opening. `KeyEpoch::checked_next` fails on overflow. `SecretState::new` owns bounded plaintext; borrowing via `as_bytes` does not transfer it, while `into_bytes` explicitly transfers ownership to a caller that must clear it.
+
+`SealedEnvelope` is a strict version-1 container, not proof of encryption: callers provide the actual cryptographic provider. `decode` rejects unsupported version, malformed/truncated shape and trailing bytes. State/envelope fields are bounded by 16 MiB and associated data by 64 KiB. Do not substitute this contract's envelope for the runnable server's private `AeadBarrier` or HBA1 format; the server does not depend on this package.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `envelope_round_trips_strictly` — `crates/heptabao-barrier-api/src/lib.rs`.
+- `truncated_and_trailing_envelopes_fail_closed` — `crates/heptabao-barrier-api/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-barrier-api --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `cryptography-barrier-core-security`  

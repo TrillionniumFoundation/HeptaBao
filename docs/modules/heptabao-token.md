@@ -1,5 +1,7 @@
 # heptabao-token
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns opaque token issue, validation, renewal and revocation state. It does not generate entropy, hash bearer material, persist tokens, create child-token trees or provide network authentication.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`TokenId::parse` wraps the bounded domain `Id` syntax and redacts `Debug`; it does not generate a cryptographically random token. `TokenStore::issue(token_id, entity_id, policy_ids, issued_at, ttl, renewable)` takes ownership of token/identity metadata and rejects zero TTL, overflow (`InvalidTtl`) and an ID already retained in the map. Entity and policy existence are not checked here. `TokenView` returns cloned non-bearer lifecycle and policy metadata.
+
+`validate(token_id, now)` checks existence, revocation and `now < expires_at`. It does not enforce `now >= issued_at`, query an identity provider or consult the policy store. `renew(token_id, now, ttl)` additionally requires renewable and replaces the deadline with `now + ttl`; it may shorten the lifetime and has no maximum TTL, periodic-token or parent-token logic. Callers must supply a trusted monotonic clock and any stronger issuance/renewal policy.
+
+`revoke(token_id, now)` marks a record once and increments its saturating generation. `revoke_entity(entity_id, now)` marks every not-yet-revoked matching record, including one whose deadline has already elapsed, and returns the count. Neither method removes records or cascades to leases/children. Callers own authentication, current identity expansion, lease revocation and durable lifecycle ordering.
+
+This token model is composed by `heptabao-service-core`, outside the current server dependency closure. The server's native token storage and routes are separate; this API is not evidence of OpenBao token-tree, accessor or batch-token support.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-token`; Cargo SHA-256 `1e3ce2af36291d20f00c54855df8c2f38baa662ad2f29efb1e2ab130c445ade5`.
@@ -61,6 +77,11 @@ Entity compromise can be contained with `revoke_entity`. Production operation st
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::token_lifecycle_enforces_expiry_renewal_and_revocation`](../../crates/heptabao-token/src/lib.rs) checks the demonstrated TTL/renew/revoke path and post-revocation denial; it does not exercise every expiry boundary.
+- [`tests::token_identifier_debug_is_redacted`](../../crates/heptabao-token/src/lib.rs) checks the bearer identifier never appears in its Debug representation.
+
 `cargo test -p heptabao-token` covers issue, renewal, expiration/revocation rejection and debug redaction. Strict workspace Clippy rejects panic, unwrap and expect use.
 
 ## Evolution and open boundaries
@@ -68,6 +89,8 @@ Entity compromise can be contained with `revoke_entity`. Production operation st
 Child tokens, orphan tokens, periodic renewal, batch tokens, cubbyholes, accessors and durable revocation indexes remain open product work.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-token`

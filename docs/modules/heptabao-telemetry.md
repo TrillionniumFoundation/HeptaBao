@@ -1,12 +1,26 @@
 # heptabao-telemetry
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
 
-This package owns bounded telemetry events and a low-cardinality label allowlist. It does not export metrics, traces or logs to a production collector and does not replace audit records.
+This package owns size-bounded event identifiers and an allowlist of label keys. Event-count and value-cardinality budgets belong to the caller. It does not export metrics, traces or logs to a production collector and does not replace audit records.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`TelemetryEvent::new(name, BTreeMap<Id, Id>)` owns a bounded event name and label map. It accepts only label keys `backend`, `kind`, `operation`, `outcome`, `state`, and `generation_bucket`, returning `ForbiddenLabel` otherwise. This constrains the key vocabulary; label values and event names remain arbitrary valid `Id` values, not enumerated low-cardinality values. Applications must enforce value vocabularies and must not place secrets in allowed keys.
+
+`MemoryTelemetry::record(event)` appends an owned event and returns no error; `events()` lends the complete slice. The underlying vector has no capacity, eviction or backpressure limit. Event construction bounds individual identifiers, not total event count or distinct-value cardinality. The owner must select an external retention/export strategy before using this pattern in a long-running service.
+
+This sink is used by the independent `heptabao-service-core` and is outside the current server dependency closure. It is not the server's Prometheus implementation or a persistent security audit device. A production exporter must define synchronization, overflow policy, delivery errors and ordering without changing a request's commit outcome.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-telemetry`; Cargo SHA-256 `31cead0bd3fecb51d5afdc9c463e88a6fef6fab9c18026719b5b09e1a162841d`.
@@ -43,7 +57,7 @@ The memory sink has no interior synchronization. Its owning composition root rec
 
 ## Security and privacy
 
-Token, secret, key, unseal, credential, body and arbitrary path labels are structurally impossible through the current allowlist. Values remain bounded identifiers rather than free text.
+Label keys outside the six-name allowlist are rejected. Values remain bounded identifiers, but their content and cardinality are not checked: an allowed key can still carry a sensitive or highly variable value if the caller supplies one.
 
 ## Persistence and compatibility
 
@@ -59,6 +73,11 @@ Production deployment needs exporters, backpressure, sampling, retention and SLO
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::sensitive_or_high_cardinality_labels_are_rejected`](../../crates/heptabao-telemetry/src/lib.rs) checks the forbidden token key; it does not reject sensitive/high-cardinality values under allowed keys.
+- [`tests::approved_labels_are_recorded_without_payloads`](../../crates/heptabao-telemetry/src/lib.rs) checks a valid event appends to the memory sink.
+
 `cargo test -p heptabao-telemetry` proves forbidden-label rejection and accepted event recording. V2 CI compiles and documents the public API.
 
 ## Evolution and open boundaries
@@ -66,6 +85,8 @@ Production deployment needs exporters, backpressure, sampling, retention and SLO
 Metrics exporters, trace propagation, cardinality budgets and audit correlation remain open adapters with their own qualification requirements.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-telemetry`

@@ -1,5 +1,7 @@
 # heptabao-mount-router
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns namespace-scoped longest-prefix routing from canonical request paths to KV or plugin backends. It does not execute backends, authorize access or persist the mount table.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`MountRouter` owns a map keyed by store-global mount ID. `mount(id, namespace_id, path, Backend)` rejects duplicate IDs and duplicate namespace/path pairs, then returns an owned enabled `Mount` at generation 1. Backend is either `Kv` or `Plugin(Id)`; registration does not validate namespace existence, plugin existence/health or policy. The service must establish those constraints before dispatch.
+
+`route(namespace_id, path)` selects the longest enabled segment-bounded prefix in that exact namespace and returns owned `Route { mount_id, backend, relative_path, mount_generation }`. An exact mount path has an empty relative path. A `/` mount routes descendants as a namespace-scoped fallback; a longer enabled mount takes precedence. `NoRoute` remains the result when the selected namespace has no enabled matching mount.
+
+`set_enabled(id, enabled)` rejects a repeated state as `NoStateChange` and saturating-increments generation on change; `unmount` removes and returns the record. No method drains calls, revokes leases or keeps a tombstone. A route is a snapshot, not a lock: concurrent adapters must revalidate administrative state/generation before backend entry.
+
+This crate is composed by the independent `heptabao-service-core`, outside the current server dependency closure. Current server routes use a separate native mount implementation; a plugin route here does not execute a plugin process.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-mount-router`; Cargo SHA-256 `9a0fa2697289993cf1ce471fc686ee3aab42874a777a18424cef2bac58cde78e`.
@@ -64,6 +80,13 @@ Disabling a mount immediately makes it unroutable. Safe production unmount addit
 
 ## Tests and executable evidence
 
+- `root_mount_routes_descendants_and_preserves_namespace_and_precedence` — `crates/heptabao-mount-router/src/lib.rs`; verifies root fallback, longest prefix, namespace isolation and disabled-root rejection.
+
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::longest_prefix_wins_within_namespace`](../../crates/heptabao-mount-router/src/lib.rs) checks nested plugin mount selection and the relative backend path.
+- [`tests::namespace_and_enablement_are_fail_closed`](../../crates/heptabao-mount-router/src/lib.rs) checks wrong-namespace and disabled-mount rejection.
+
 `cargo test -p heptabao-mount-router` proves longest-prefix selection, namespace isolation and disabled-mount failure. Strict Clippy is part of V2 CI.
 
 ## Evolution and open boundaries
@@ -71,6 +94,8 @@ Disabling a mount immediately makes it unroutable. Safe production unmount addit
 Tune endpoints, remount, mount aliases, replication filters and plugin health-aware routing remain open and require explicit transition protocols.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-mount-router`

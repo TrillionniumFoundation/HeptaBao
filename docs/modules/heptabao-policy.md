@@ -1,5 +1,7 @@
 # heptabao-policy
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
@@ -7,6 +9,20 @@ Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 This package owns deterministic path-capability policy evaluation. It does not authenticate callers, expand identities, store policies durably or implement deny overrides, templating or Sentinel-style evaluation.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`PolicyRule::new(path_prefix, capabilities)` owns a canonical prefix and nonempty capability set; `Policy::new(id, rules)` owns a nonempty ordered rule vector. `PolicyStore::insert` rejects duplicate policy IDs, `get` borrows a policy and `remove` returns the removed owned policy or `MissingPolicy`. The store provides no in-place update, parser or persisted policy format.
+
+`authorize(&BTreeSet<Id>, capability, &CanonicalPath) -> bool` permits a request if any referenced existing policy has any segment-bounded prefix rule granting the capability. Missing IDs and no matches contribute no permission. In this model `Capability::Sudo` grants every requested capability under the prefix; there is no explicit deny rule or deny precedence, wildcard grammar (`*`/`+`), parameter constraint, HCL/JSON parser or identity template. This differs from a complete OpenBao ACL evaluator.
+
+The caller must provide current authenticated policy IDs and a namespace-qualified canonical resource. This function neither authenticates the principal nor performs namespace qualification; using an unqualified resource can make equal paths across namespaces share permissions. Identity expansion, policy removal and mount routing must be ordered by the owning service.
+
+This crate is used by the independent in-memory `heptabao-service-core` and is outside the current server dependency closure. The server's native authorization module is separate; changes to this model do not alter server authorization until an explicit adapter is wired and tested.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-policy`; Cargo SHA-256 `7ac2233dc0a58b056b87f400d97335c42dc29109deeca52d52ae39835bce3b25`.
@@ -66,6 +82,11 @@ Policy changes are explicit store mutations. Production operation still requires
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::authorization_is_default_deny_and_segment_bounded`](../../crates/heptabao-policy/src/lib.rs) checks requested capability, empty assignments and /app versus /application path boundaries.
+- [`tests::duplicate_policy_is_rejected`](../../crates/heptabao-policy/src/lib.rs) checks a second insert cannot silently replace an existing policy.
+
 `cargo test -p heptabao-policy` proves default denial, capability separation, segment-bounded matching and duplicate rejection. Workspace Clippy runs with warnings denied.
 
 ## Evolution and open boundaries
@@ -73,6 +94,8 @@ Policy changes are explicit store mutations. Production operation still requires
 Deny rules, parameter constraints, response wrapping, control groups and policy templates remain open. Adding them must preserve deterministic evaluation and explicit conflict precedence.
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-policy`

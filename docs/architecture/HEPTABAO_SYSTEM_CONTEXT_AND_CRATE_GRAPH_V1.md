@@ -1,5 +1,7 @@
 # HeptaBao System Context 与 Crate Graph V1
 
+> Historical target architecture (V1): package names and writer assignments below describe the intended design, not the current Cargo workspace or executable. Some named crates do not exist. Use [the current runtime architecture](HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md) and [46-package runtime map](../modules/CURRENT_RUNTIME_MAP.md) for current source ownership.
+
 ## 1. 进程边界
 
 | 进程/工具 | 信任级别 | 可接触明文 | 可写 durable state | 可授予 authority |

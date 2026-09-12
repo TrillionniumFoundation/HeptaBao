@@ -10,6 +10,7 @@
 
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 use heptabao_storage_api::{Generation, StoreDomain};
 
@@ -80,7 +81,7 @@ impl BarrierContext {
         mut caller_associated_data: Vec<u8>,
     ) -> Result<Self, BarrierContractError> {
         if caller_associated_data.len() > MAX_ASSOCIATED_DATA_BYTES {
-            caller_associated_data.fill(0);
+            caller_associated_data.as_mut_slice().zeroize();
             return Err(BarrierContractError::AssociatedDataTooLarge);
         }
         Ok(Self {
@@ -138,7 +139,7 @@ impl fmt::Debug for BarrierContext {
 
 impl Drop for BarrierContext {
     fn drop(&mut self) {
-        self.caller_associated_data.fill(0);
+        self.caller_associated_data.as_mut_slice().zeroize();
     }
 }
 
@@ -148,7 +149,7 @@ pub struct SecretState(Vec<u8>);
 impl SecretState {
     pub fn new(mut value: Vec<u8>) -> Result<Self, BarrierContractError> {
         if value.is_empty() || value.len() > MAX_BARRIER_FIELD_BYTES {
-            value.fill(0);
+            value.as_mut_slice().zeroize();
             return Err(BarrierContractError::InvalidSecretState);
         }
         Ok(Self(value))
@@ -183,7 +184,7 @@ impl fmt::Debug for SecretState {
 
 impl Drop for SecretState {
     fn drop(&mut self) {
-        self.0.fill(0);
+        self.0.as_mut_slice().zeroize();
     }
 }
 
@@ -205,9 +206,9 @@ impl SealedEnvelope {
         mut authentication_tag: Vec<u8>,
     ) -> Result<Self, BarrierContractError> {
         if version != SEALED_ENVELOPE_VERSION {
-            nonce.fill(0);
-            ciphertext.fill(0);
-            authentication_tag.fill(0);
+            nonce.as_mut_slice().zeroize();
+            ciphertext.as_mut_slice().zeroize();
+            authentication_tag.as_mut_slice().zeroize();
             return Err(BarrierContractError::UnsupportedEnvelopeVersion);
         }
         if nonce.is_empty()
@@ -217,9 +218,9 @@ impl SealedEnvelope {
             || ciphertext.len() > MAX_BARRIER_FIELD_BYTES
             || authentication_tag.len() > MAX_BARRIER_FIELD_BYTES
         {
-            nonce.fill(0);
-            ciphertext.fill(0);
-            authentication_tag.fill(0);
+            nonce.as_mut_slice().zeroize();
+            ciphertext.as_mut_slice().zeroize();
+            authentication_tag.as_mut_slice().zeroize();
             return Err(BarrierContractError::InvalidEnvelopeShape);
         }
         Ok(Self {
@@ -274,7 +275,7 @@ impl SealedEnvelope {
 
     pub fn decode(mut encoded: Vec<u8>) -> Result<Self, BarrierContractError> {
         let result = decode_envelope(&encoded);
-        encoded.fill(0);
+        encoded.as_mut_slice().zeroize();
         result
     }
 }
@@ -295,9 +296,9 @@ impl fmt::Debug for SealedEnvelope {
 
 impl Drop for SealedEnvelope {
     fn drop(&mut self) {
-        self.nonce.fill(0);
-        self.ciphertext.fill(0);
-        self.authentication_tag.fill(0);
+        self.nonce.as_mut_slice().zeroize();
+        self.ciphertext.as_mut_slice().zeroize();
+        self.authentication_tag.as_mut_slice().zeroize();
     }
 }
 

@@ -10,6 +10,7 @@
 
 use std::error::Error;
 use std::fmt;
+use zeroize::Zeroize;
 
 pub const MAX_JOURNAL_PAYLOAD_BYTES: usize = 1024 * 1024;
 pub const MAX_JOURNAL_DOMAIN_BYTES: usize = 128;
@@ -119,7 +120,7 @@ pub struct JournalPayload(Vec<u8>);
 impl JournalPayload {
     pub fn new(mut value: Vec<u8>) -> Result<Self, JournalContractError> {
         if value.is_empty() || value.len() > MAX_JOURNAL_PAYLOAD_BYTES {
-            value.fill(0);
+            value.as_mut_slice().zeroize();
             return Err(JournalContractError::InvalidJournalPayload);
         }
         Ok(Self(value))
@@ -154,7 +155,7 @@ impl fmt::Debug for JournalPayload {
 
 impl Drop for JournalPayload {
     fn drop(&mut self) {
-        self.0.fill(0);
+        self.0.as_mut_slice().zeroize();
     }
 }
 

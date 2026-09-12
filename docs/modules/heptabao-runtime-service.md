@@ -1,12 +1,32 @@
 # heptabao-runtime-service
 
+Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_BINDING.md). Runtime integration: [docs/modules/CURRENT_RUNTIME_MAP.md](CURRENT_RUNTIME_MAP.md).
+
 Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. Shared rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
 ## Purpose and non-goals
 
-This crate is the mandatory admission adapter from inbound mutation/read/list requests to the private durable service. It authenticates, authorizes, records accepted-before-entry audit evidence, constructs the immutable durable envelope and classifies the result. It does not implement a network listener, credential protocol, persistent identity database, production audit provider or KMS/HSM.
+This crate provides an admission adapter whose own mutation/read/list entrypoints require authentication, authorization and audit before private durable-service access. The current native server uses a separate composition. It authenticates, authorizes, records accepted-before-entry audit evidence, constructs the immutable durable envelope and classifies the result. It does not implement a network listener, credential protocol, persistent identity database, production audit provider or KMS/HSM.
 
 ## Public API and ownership
+
+### Current API contract and integration boundary
+
+`RuntimeService<A, Z, U, B>::new(authenticator, authorizer, audit, durable)` takes exclusive ownership of an `Authenticator`, `Authorizer`, `AuditSink` and `DurableService<B>`. Its durable writer is private and has no mutable accessor. This makes admission mandatory for calls through this adapter; it does not prevent other assemblies from using `DurableService` directly.
+
+`Credential::new(Vec<u8>)` accepts 1 byte through 16 KiB, owns and zeroizes the buffer, and lends it through `expose()`. `InboundMutation::new(credential, namespace, request_id, resource, InboundOperation)` owns either Put(Secret) or Delete and checks nonempty ASCII fields of at most 4096 bytes. This preliminary validation does not enforce the durable namespace/path grammar; envelope construction later performs that stricter validation. `AuthenticatedPrincipal::new` restricts principal syntax/length to the durable 256-byte identifier grammar; `AuthorizationDigest::new` rejects an all-zero digest.
+
+`Authenticator::authenticate(&Credential)` must establish the principal from live credentials. `Authorizer::authorize(&principal, namespace, resource, OperationKind)` must enforce the actual policy and return a decision digest; the adapter does not create that policy evidence. `AuditSink::append(&AuditEvent)` must return success only under the sink's declared durability contract. Audit events expose stage, binary request fingerprint and optional generation, without request or secret bytes. The fingerprint binds principal, namespace, request ID, resource, operation and authorization digest; it does not include the Put value digest (the durable operation binding does).
+
+`handle(InboundMutation)` and `handle_with_failpoint` validate, authenticate, authorize and append `AcceptedBeforeEntry` before durable dispatch. A pre-entry audit failure returns `AuditUnavailableBeforeEntry` without a storage identity. Success/duplicate gets a second audit event; failure there returns `OutcomeUnknown` with the committed recovery reference and does not itself poison an otherwise healthy durable writer. A durable after-entry fault retains uncertainty and may require reopen. Errors distinguish invalid input, authentication/authorization denial, unavailable audit, recovery required, durable rejection and durable corruption.
+
+`read(&credential, namespace, resource, request_id)` and `list(&credential, namespace, prefix, request_id)` use the same admission sequence, then require result audit before releasing a secret or key list. An empty list prefix is namespace-root access and is passed explicitly to the authorizer. `reconcile(reference)`, `generation`, `retained_request_count` and `recovery_required` expose read-only durable status without authentication arguments; a network/operator adapter must separately restrict them.
+
+This is a functional candidate admission adapter **outside the current server dependency closure**. `heptabao-server` has its own native admission/audit composition and owns `DurableService` directly; its behavior cannot be inferred from this crate's tests. Integration would require real authentication/policy/audit adapters, transport mappings and tests of that concrete assembly.
+
+### Historical V1.4.7 lexical snapshot
+
+The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
 
 <!-- BEGIN GENERATED V1.4.7 PUBLIC API TRUTH; DO NOT EDIT -->
 Source-bound lexical inventory: `crates/heptabao-runtime-service`; Cargo SHA-256 `c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927`.
@@ -88,6 +108,14 @@ Assembly must construct exactly one durable root in a sealed composition boundar
 
 ## Tests and executable evidence
 
+Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
+
+- [`tests::invalid_credential_cannot_allocate_durable_request_identity`](../../crates/heptabao-runtime-service/src/lib.rs) checks invalid authentication leaves generation and replay count unchanged.
+- [`tests::pre_entry_audit_failure_prevents_durable_dispatch`](../../crates/heptabao-runtime-service/src/lib.rs) checks the first audit failure prevents storage entry.
+- [`tests::post_commit_audit_failure_is_reconcile_only`](../../crates/heptabao-runtime-service/src/lib.rs) checks postcommit audit loss reports uncertainty while readback proves the commit and replay is duplicate.
+- [`tests::actual_io_failure_is_never_mapped_to_rejection`](../../crates/heptabao-runtime-service/src/lib.rs) checks actual ledger-publication I/O failure remains unknown and recoverable.
+- [`tests::read_and_list_require_admission_and_result_audit`](../../crates/heptabao-runtime-service/src/lib.rs) checks query authorization and withholds a read result when result audit fails.
+
 Run `cargo test -p heptabao-runtime-service`. Rust tests inject an actual post-publication ledger EISDIR error and verify preserved outcome reference, unknown audit event, blocked read and committed reopen reconciliation. Read/list tests verify authentication, authorization, fingerprint serialization and result-audit denial without releasing secret bytes. Existing tests prove invalid credentials and denied policy cannot preempt request identity, principal scoping holds, pre-entry audit failure prevents dispatch, post-commit audit failure is reconcile-only, durable unknown survives restart, exact replay is duplicate and Debug is redacted. Repository tests bind mandatory ordering, private ownership, truth files, read-only CI and the SHA-256 boundary.
 
 ## Evolution and open boundaries
@@ -104,6 +132,8 @@ authority_effect: NONE
 ```
 
 ## Machine-verified source truth
+
+The V1.4.7 generated facts below are a preserved historical snapshot. Current dependency/integration statements are given above; historic declaration/test counts are not a current completion measure.
 
 <!-- BEGIN GENERATED V1.4.7 MODULE FACTS; DO NOT EDIT -->
 - Crate: `heptabao-runtime-service`

@@ -1,5 +1,20 @@
 # `heptabao-operation-ledger` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`OperationLedger` owns authenticated replay and one transition chain per `OperationId`. IDs and stable detail codes are limited to 128 bytes; request/effect/response digests must be nonzero. `OperationEvent::accepted` starts a chain and `next` binds the previous phase, request digest and optional state/effect/response evidence. Encode/decode is a strict versioned journal payload, not a permissive JSON API.
+
+`RetryDirective` distinguishes `LookupOnly`, `ReconcileOnly`, `ManualHold` and safe pre-entry retry from completion. `OutcomeUnknown` append failures fence writes until authoritative recovery; event construction does not prove that an external effect occurred. The caller owns effect readback, audit and delivery evidence. This ledger is used by inherited compositions and plugin modeling, not directly by the runnable server's HTTP dispatcher.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `legal_mutation_chain_replays_and_requires_lookup_after_commit` — `crates/heptabao-operation-ledger/src/lib.rs`.
+- `duplicate_acceptance_and_illegal_transition_fail_closed` — `crates/heptabao-operation-ledger/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-operation-ledger --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `core-audit-reconciliation`  

@@ -8,6 +8,23 @@ This package implements a durable three-voter OpenRaft consensus core for HeptaB
 
 ## Public API and ownership
 
+`ProcessRaftNode::create(root, id, network)` and `reopen` own one node's durable log/vote and state-machine stores. The nonzero `id` must equal `RemoteNetworkFactory::local_id`; mismatch returns `RemoteRaftError::InvalidTopology`. Root creation/reopen is explicit and disk failures remain `Io`, while consensus rejection remains `Consensus`. The current server uses this per-process path; `RaftRuntime::bootstrap/reopen` retain the separate three-voter in-process facade for tests.
+
+`replicate` borrows a sealed `ReplicatedEnvelope` and a nonzero client serial; the envelope binds a 1–128-byte ASCII operation ID (alphanumeric plus `-_.:`), a nonzero 32-byte digest and 1 byte–1 MiB of opaque sealed bytes. `next_production_client_serial` obtains serial allocation from durable state rather than process uptime. After a lost response, reconcile the operation binding before retrying. `ensure_linearizable` is an awaited ReadIndex barrier, not a cached leader observation. `applied_state`/`latest_envelope` read local state and require the caller to establish the needed authority barrier first.
+
+`initialize_single`, `add_learner` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
+
+Current API declaration excerpt (illustrative, not a standalone program):
+
+<!-- CURRENT API: crates/heptabao-raft-runtime/src/process/node.rs#create -->
+```text
+pub async fn create(
+        root: impl AsRef<Path>,
+        id: u64,
+        network: RemoteNetworkFactory,
+    ) -> Result<Self, RemoteRaftError>
+```
+
 Current source binding: `docs/modules/CURRENT_SOURCE_BINDING.md` and
 `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`. Any V1.4.7 generated
 blocks below are historical lexical snapshots, not current API authority.
@@ -82,7 +99,7 @@ This table is generated from the exact candidate source. It is a bounded lexical
 
 ## State and data model
 
-Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. New application entries use the length-prefixed `hbr2` envelope profile (unambiguous `hbr1` entries remain readable): operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero.
+Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. New application entries use the length-prefixed `hbr2` envelope profile (unambiguous `hbr1` entries remain readable): operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero. `decode_status` rejects malformed length prefixes and UTF-8 split boundaries with `InvalidEnvelope` before slicing, so hostile Unicode cannot panic the decoder.
 
 ## Invariants and authorization
 
@@ -113,6 +130,15 @@ The public façade exposes leader ID, committed log index and the caller-supplie
 The in-process API supports bootstrap of three voters, orderly shutdown, exact-root reopen, leader discovery, snapshot generation, deterministic partition/heal and convergence checks. The actual per-process service is entered through `heptabao-server --config ... --ha-config ...`, with its declared pinned peer set and separate replication-key custody; the server guide owns those configuration fields. Local synthetic process and opaque-link fixtures never attach to an existing deployment. Failed reopen, checksum mismatch or ambiguous replacement requires recovery and preservation of evidence, not deletion of authoritative log/state files. Production node enrollment/replacement, membership-change authorization, rolling upgrade and cross-host backup/restore require their own complete operating procedures and tests.
 
 ## Tests and executable evidence
+
+- `malformed_unicode_status_is_rejected_without_panicking` — `crates/heptabao-raft-runtime/src/lib.rs`; rejects malformed Unicode v1/v2 envelopes without panic.
+
+Current named source scenarios:
+
+- `bootstrap_membership_resolves_explicit_follower_hint` — `crates/heptabao-raft-runtime/src/cluster.rs`.
+- `failed_snapshot_persist_does_not_publish_snapshot_or_generation` — `crates/heptabao-raft-runtime/src/store.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime --all-targets`. These are source anchors; a current test receipt is separate.
 
 Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime` for the package and the full workspace commands from `README.md`. The primary executable regression bootstraps three voters, commits a bounded sealed envelope, proves all state machines converge, crosses ReadIndex, isolates the leader and proves no isolated commit, shuts down, reopens every durable store, crosses ReadIndex again and proves convergence. Store tests additionally cover interrupted atomic replacement, corruption, missing generations, stale predecessors, legacy adoption boundaries, symlink roots/generations, directory substitution and exact round-trip encoding.
 

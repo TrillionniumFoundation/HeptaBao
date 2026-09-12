@@ -1,5 +1,20 @@
 # `heptabao-journaled-core` developer guide
 
+> Current reading order: the semantic supplement below and `docs/modules/CURRENT_RUNTIME_MAP.md` describe the current source. The source baseline/tree, reverse-dependency prose and V1.4.7 generated tables retained below are historical evidence. `docs/modules/CURRENT_SOURCE_BINDING.md` explains current inventory regeneration; do not run the historical renderer in write mode.
+
+## Current API semantics and runtime integration
+
+`JournaledDurableCore::new(state, ledger)` owns both components. `persist_mutation(operation_id, request_digest, expected_current, plaintext, caller_associated_data)` consumes identity, digest and secret bytes and records acceptance/intent before state publication. The caller may record response auditing and delivery only after the corresponding effect. One mutable core serializes these transitions; unrelated unresolved mutations can block a new mutation.
+
+`ExistingOperation` returns the observed phase and retry directive; it does not execute the request again. `StateCommittedLedgerIncomplete` means state may already be committed: preserve the intent and run `recover_durable_intent`/`reconcile`, rather than inventing a new successful receipt. Append failure recovery is explicit. This is the inherited typed composition; server requests currently use `durable-service`, so its ledger phases must not be claimed as automatic HTTP response fields.
+
+Current executable checks (source anchors, not a pass receipt):
+
+- `intent_precedes_state_commit_and_duplicate_never_mutates_again` — `crates/heptabao-journaled-core/src/lib.rs`.
+- `postcommit_ledger_failure_is_recovered_from_persisted_target_not_caller_receipt` — `crates/heptabao-journaled-core/src/lib.rs`.
+
+Run `cargo +1.98.0 test --locked -p heptabao-journaled-core --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
 **Owner role:** `core-audit-storage`  

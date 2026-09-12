@@ -1,5 +1,7 @@
 # HeptaBao V2 Mandatory Request Pipeline
 
+> Scope: this retained increment describes its named library composition and tests. It is not the complete current HTTP server assembly. See [current runtime architecture](HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md) for the concrete server, private authentication boundary and per-process HA integration.
+
 The repository-owned request path is ordered as follows:
 
 ```text
