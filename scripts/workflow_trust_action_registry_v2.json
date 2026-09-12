@@ -12,7 +12,7 @@
   "uploads": [
     {
       "file": "codex-openbao-replacement-source-export.yml",
-      "location": "workflow.jobs.export.steps[2]",
+      "location": "workflow.jobs.export.steps[3]",
       "path": "${{ runner.temp }}/heptabao-openbao-replacement-source/"
     },
     {
