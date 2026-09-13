@@ -22,3 +22,6 @@ pub mod http;
 mod service;
 pub use service::AuditConfig;
 pub use service::{Response, Service};
+
+#[cfg(test)]
+mod cubbyhole_service_tests;

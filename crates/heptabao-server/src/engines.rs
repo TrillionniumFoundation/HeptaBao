@@ -394,16 +394,13 @@ impl EngineState {
             if method != "GET" {
                 return Err(unsupported());
             }
-            ok(
-                Value::Object(
-                    candidate
-                        .mounts
-                        .iter()
-                        .map(|(name, mount)| (name.clone(), mount.descriptor()))
-                        .collect(),
-                ),
-                false,
-            )
+            let mut mounts: serde_json::Map<String, Value> = candidate
+                .mounts
+                .iter()
+                .map(|(name, mount)| (name.clone(), mount.descriptor()))
+                .collect();
+            mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
+            ok(Value::Object(mounts), false)
         } else if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
             handle_mounts(&mut candidate, method, mount_path, &params)?
         } else {
@@ -434,6 +431,12 @@ impl EngineState {
         }
         Ok(Some(response))
     }
+}
+
+fn cubbyhole_descriptor() -> Value {
+    json!({"type":"cubbyhole","description":"per-token private secret storage",
+        "options":{},"local":true,"seal_wrap":false,"external_entropy_access":false,
+        "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
 }
 
 fn handle_mounts(
@@ -483,6 +486,9 @@ fn handle_mounts(
         return Ok(empty(true));
     }
     valid_path(requested)?;
+    if requested == "cubbyhole" && method == "GET" {
+        return Ok(ok(cubbyhole_descriptor(), false));
+    }
     if matches!(
         requested.split('/').next(),
         Some("sys" | "auth" | "identity" | "cubbyhole")

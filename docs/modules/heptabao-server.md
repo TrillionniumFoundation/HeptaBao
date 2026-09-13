@@ -215,3 +215,24 @@ read-only leader stabilization before fault-phase writes, never retries an
 ambiguous write, and rejects a successful stale read immediately. Its synthetic
 cold-cloned seed is not an implementation of production peer enrollment. Each
 result binds the actual binary digest and lists uncovered fault categories.
+
+## Core-isolation implementation supplement
+
+The actual Service now dispatches built-in `cubbyhole/*` to the private token
+owner, with encrypted state, non-inheriting issuance, ACL create/update
+classification and atomic final-use clearing. Read the [Cubbyhole development
+and operations contract](../engines/HEPTABAO_CUBBYHOLE.md). The matching-policy
+algorithm is `src/auth_acl.rs`: highest-priority pattern selection replaces the
+earlier broad/narrow permission union. Policy rollout needs explicit review.
+
+The inherited service-internal Identity API, merge algorithm, reverse indexes,
+limits and remaining login/MFA/OIDC work are detailed in the [current Identity
+runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md). The standalone
+`heptabao-identity` guide is not a substitute for these Service-owned semantics.
+
+Focused source tests: `auth_cubbyhole_tests.rs`, `auth_acl.rs` and
+`cubbyhole_service_tests.rs`. The executable local differential entry point is
+`qa/openbao-acceptance/core_isolation.py`; it compares only selected Cubbyhole
+and ACL behavior against the pinned official OpenBao 2.6.2 binary. Response
+wrapping, autonomous expiry, production-scale state layout, full compatibility
+and independent operational qualification are not established by this increment.

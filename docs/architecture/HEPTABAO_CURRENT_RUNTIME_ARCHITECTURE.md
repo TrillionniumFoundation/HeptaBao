@@ -23,8 +23,10 @@ flowchart TD
     Wire["http.rs: TLS, bounds, parsing"] --> Tx["service.rs: request transaction"]
     Tx --> Auth["private auth.rs: tokens and ACL"]
     Auth --> Login["federated_auth.rs: verifier helpers"]
+    Auth --> Cubbyhole["auth_cubbyhole.rs: token-private state"]
+    Auth --> ACL["auth_acl.rs: winning-pattern permissions"]
     Tx --> Engines["engines.rs: mounts and dispatch"]
-    Engines --> Backends["engines/kv.rs, transit.rs, totp.rs"]
+    Engines --> Backends["engines/kv.rs, transit.rs, totp.rs, identity.rs"]
     Tx --> Storage["durable-service: encrypted state"]
     Tx --> Audit["service audit: authenticated records"]
     Tx --> HA["ha.rs, ha_forward.rs, ha_state.rs"]
@@ -40,6 +42,8 @@ Audit is part of admission and response publication: a request record is persist
 |---|---|---|
 | Tokens, password/role verifiers, ACL and auth mounts | private `auth.rs`, contained in Service state and encrypted by `durable-service` | `auth/*`, `sys/auth`, `sys/policies/acl/*`; `auth_tests.rs` |
 | KV versions/metadata, Transit keys and TOTP state | `engines.rs` and `engines/*`, inside the same encrypted Service state | mount-relative engine routes and `sys/mounts`; `engine_tests.rs` |
+| Token-private Cubbyhole | `Token.cubbyhole` in private AuthState, in the same encrypted Service state; final-use erasure is committed at authentication admission | `cubbyhole/*`; `auth_cubbyhole_tests.rs`, `cubbyhole_service_tests.rs` |
+| Structural entities, aliases, groups and merge lineage | `NamespaceState.identity` inside EngineState and the same Service transaction; this is not a login-policy/MFA/OIDC composition | `identity/*`; `engines/identity.rs` tests |
 | Init/seal/rekey state | `service.rs` seal metadata and optional client-secret initialization recovery object; `crypto.rs` Shamir/key wrapping; barrier activation authenticates durable state | `sys/init`, root `sys/init/ack`, `sys/unseal`, `sys/seal`, `sys/rekey/*`; `service_tests.rs` |
 | Durable request ledger, journal and snapshot | `durable-service`; exclusive `filesystem-guard` owner | Service persistence, `sys/internal/recovery/*`, compaction/backup routes; durable-service tests |
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
@@ -50,3 +54,7 @@ The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`,
 ## Historical and target diagrams
 
 The V1 system-context/crate graph and authoritative ownership map retain proposed layers including package names that were never implemented under those names. The V2 mandatory/admitted/durable pipeline documents describe `RuntimeService`/`ServiceCore` compositions. They remain design and regression context; this document is the current executable assembly. Follow the operator runbook for current startup, audit capacity and backup behavior. Destructive HA, migration, upgrade, external provider and independent security/compatibility qualification remain separate evidence requirements.
+
+## Core isolation implementation detail
+
+The [Cubbyhole contract](../engines/HEPTABAO_CUBBYHOLE.md) specifies current per-token state, final-use admission, explicit revoke/tidy cleanup and retention limitations. The [server Identity contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md) documents the inherited structural Identity implementation separately from unfinished login, MFA and OIDC integration. ACL rules are selected by highest-priority matching pattern; only identical winning patterns union. Parameter-constrained policies remain separate work.
