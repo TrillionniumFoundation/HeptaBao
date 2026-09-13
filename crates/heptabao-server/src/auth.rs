@@ -16,6 +16,11 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_acl.rs"]
+mod acl;
+#[path = "auth_cubbyhole.rs"]
+mod cubbyhole;
+
 const DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
 const PASSWORD_ROUNDS: u32 = 600_000;
@@ -196,6 +201,8 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    #[serde(default)]
+    cubbyhole: cubbyhole::TokenCubbyhole,
     accessor: String,
     namespace: String,
     policies: BTreeSet<String>,
@@ -564,6 +571,7 @@ impl AuthState {
             jwt_mounts: BTreeMap::new(),
         };
         let token = Token {
+            cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
             namespace: String::new(),
             policies: BTreeSet::from(["root".into()]),
@@ -617,9 +625,16 @@ impl AuthState {
         if let Some(remaining) = &mut token.uses_remaining {
             *remaining -= 1;
         }
+        // Retain the last-use view only in this affine request capability.
+        // Durable admission destroys its stored cubbyhole before any secret
+        // can leave the service. A failed response cannot make it reusable.
+        let request_token = token.clone();
+        if token.uses_remaining == Some(0) {
+            token.cubbyhole = cubbyhole::TokenCubbyhole::default();
+        }
         Ok(Principal {
             digest: id,
-            token: token.clone(),
+            token: request_token,
             #[cfg(test)]
             request_time: now,
         })
@@ -656,7 +671,7 @@ impl AuthState {
         if token.root {
             return Ok(());
         }
-        let mut granted = false;
+        let mut decision = acl::Decision::default();
         for policy_name in &token.policies {
             let explicit = self
                 .policies
@@ -664,18 +679,24 @@ impl AuthState {
                 .and_then(|entries| entries.get(policy_name));
             if let Some(policy) = explicit {
                 for rule in &policy.rules {
-                    if path_matches(&rule.path, path) {
-                        if rule.capabilities.contains("deny") {
-                            return Err(denied());
-                        }
-                        granted |= rule.capabilities.contains(capability);
-                    }
+                    decision.consider(
+                        &rule.path,
+                        rule.capabilities.iter().map(String::as_str),
+                        path,
+                        capability,
+                    );
                 }
-            } else if policy_name == "default" && default_grants(path, capability) {
-                granted = true;
+            } else if policy_name == "default" {
+                for (pattern, capabilities) in acl::DEFAULT_RULES {
+                    decision.consider(pattern, capabilities.iter().copied(), path, capability);
+                }
             }
         }
-        if granted { Ok(()) } else { Err(denied()) }
+        if decision.allowed() {
+            Ok(())
+        } else {
+            Err(denied())
+        }
     }
 
     #[cfg(test)]
@@ -1002,6 +1023,11 @@ impl AuthState {
     ) -> Result<Option<AuthResponse>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
+        if path == "cubbyhole" || path.starts_with("cubbyhole/") {
+            return self
+                .cubbyhole_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
         if path == "sys/auth" || path.starts_with("sys/auth/") {
             return self
                 .auth_mount_route(principal, namespace, method, path, body, now)
@@ -1118,6 +1144,7 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
                 policies: role.policies,
@@ -1748,6 +1775,7 @@ impl AuthState {
         }
         self.issue(
             Token {
+                cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
                 policies: requested,
@@ -2513,6 +2541,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,
         namespace: namespace.into(),
         policies,
@@ -2537,16 +2566,18 @@ fn token_info(token: &Token, now: u64) -> Value {
         "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace})
 }
 
-fn default_grants(path: &str, capability: &str) -> bool {
-    matches!(
-        (path, capability),
-        ("auth/token/lookup-self", "read")
-            | ("auth/token/renew-self", "update")
-            | ("auth/token/revoke-self", "update")
-    )
-}
 fn default_policy_source() -> String {
-    "path \"auth/token/lookup-self\" { capabilities = [\"read\"] }\npath \"auth/token/renew-self\" { capabilities = [\"update\"] }\npath \"auth/token/revoke-self\" { capabilities = [\"update\"] }\n".into()
+    acl::DEFAULT_RULES
+        .iter()
+        .map(|(path, caps)| {
+            let caps = caps
+                .iter()
+                .map(|cap| format!("\"{cap}\""))
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("path \"{path}\" {{ capabilities = [{caps}] }}\n")
+        })
+        .collect()
 }
 
 fn path_matches(pattern: &str, path: &str) -> bool {

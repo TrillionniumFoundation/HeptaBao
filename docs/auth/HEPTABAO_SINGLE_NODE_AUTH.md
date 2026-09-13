@@ -119,10 +119,16 @@ stored. This is an intentional compatibility boundary.
 
 The default is deny. Capabilities are `create`, `read`, `update`, `delete`,
 `list`, `patch`, `sudo` and `deny`. `sudo` does not imply any operation capability:
-a protected operation requires its normal capability and `sudo`. Every matching
-explicit `deny` overrides grants. Policy edits additionally require `sudo` in
-this bounded profile. This conservative rule is not an assertion of full
-OpenBao ACL priority compatibility.
+a protected operation requires its normal capability and `sudo`. Select the
+highest-priority matching path pattern; only identical winning patterns across
+policies union their capabilities. `deny` wins within that selected union.
+Priority uses later first wildcard, absence of a terminal `*`, fewer segment
+`+` wildcards, longer pattern, then lexical order. A broad grant cannot lend
+write authority to a narrower read-only match. A broader deny is not a veto on
+a different, higher-priority pattern. This changes the earlier all-matches
+union and requires policy review before rollout. `auth_acl.rs` implements the
+ordering and default rules. Policy edits additionally require `sudo` in this
+bounded profile; parameter/template parity remains separately incomplete.
 
 Literal paths, a whole-segment `+`, and one terminal `*` are supported:
 
@@ -148,16 +154,17 @@ same entry point to preserve duplicate-key rejection for object-form policies.
 {"path":{"secret/data/team/*":{"capabilities":["read"]}}}
 ```
 
-The built-in `default` policy grants only lookup-self, renew-self and revoke-self.
-It is automatically attached unless token creation requests `no_default_policy`;
+The built-in `default` policy grants lookup-self, renew-self, revoke-self and
+create/read/update/delete/list on `cubbyhole/*`. All these rules participate in
+the same highest-priority pattern selection. It is automatically attached unless
+token creation requests `no_default_policy`;
 root tokens do not receive it. An explicitly written namespace `default` policy
 replaces those defaults. `root` cannot be read, written or deleted, and `default`
 cannot be deleted. Unknown policy names grant nothing.
 
 Not supported: parameter constraints, `min_wrapping_ttl`, `max_wrapping_ttl`,
 control groups, identity templating, `required_parameters`, legacy `policy =`
-HCL attributes or OpenBao's full path-priority resolution. These inputs fail
-closed. There is no silently ignored HCL or JSON policy attribute.
+HCL attributes. These unsupported inputs fail closed. There is no silently ignored HCL or JSON policy attribute.
 
 ## Userpass
 
@@ -222,7 +229,7 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding, response wrapping, general identity/group administration, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding, response wrapping, Identity-to-login/policy projection, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
@@ -334,3 +341,17 @@ The following functions in `crates/heptabao-server/src/auth_tests.rs` exercise t
 - `jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen` initializes a real Service/disk state, logs in, reads KV, reopens, rejects replay, disables the mount and verifies revocation after another reopen.
 
 Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. Named scenarios identify executable evidence; current pass receipts and independent qualification remain separate.
+
+## Integrated token-private storage
+
+The current Cubbyhole backend lives in the server's private Token state, not a
+standalone engine crate. See [the Cubbyhole implementation contract](../engines/HEPTABAO_CUBBYHOLE.md)
+for routes, ACL selection, atomic final-use clearing, expiry/tidy, bounds,
+restart behavior and tests. Built-in default rules do not let a token access
+another token's map, including a root token. New tokens never inherit values.
+This increment does not add response wrapping or full lease expiration.
+
+The structural Identity endpoints inherited from PR #92 are documented in
+[the current Identity runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md).
+They are not the separate identity crate. Stored entity/group policy names and
+`disabled` flags do not yet establish live login/token policy enforcement.

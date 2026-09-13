@@ -57,6 +57,16 @@ Every package has exactly one guide. The validators check package, lockfile, sou
 - `qa/openbao-acceptance/complete_surface_corpus_v1.json`
 - `docs/migration/HEPTABAO_OPENBAO_MIGRATION.md`
 
+## Core isolation and current Identity implementation
+
+- `docs/engines/HEPTABAO_CUBBYHOLE.md` — integrated token-private storage, ACL
+  specificity, final-use durability, expiry/tidy boundaries and execution.
+- `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md` — actual server-owned Identity
+  endpoints, indexes, merge/lineage, operations and unresolved auth/MFA/OIDC.
+
+These documents do not change the 60-surface denominator or assert completion
+of the combined Cubbyhole/wrapping or full Identity compatibility surfaces.
+
 ## Operations, security and compatibility
 
 - `docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md`
