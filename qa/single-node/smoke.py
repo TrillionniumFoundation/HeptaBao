@@ -189,7 +189,7 @@ def run(binary: Path, root: Path, keep_running: bool):
         used_code = generated["data"]["code"]
         status, validated = instance.call("POST", "smoke-totp/code/item", {"code": used_code})
         check("totp_validate", status == 200 and validated["data"]["valid"] is True)
-        check("ha_explicitly_unimplemented", instance.call("POST", "sys/step-down", {})[0] == 501)
+        check("ha_step_down_requires_ha", instance.call("POST", "sys/step-down", {}, token=instance.token)[0] == 400)
         instance.stop()  # SIGKILL, deliberately no clean seal/close.
         check("encrypted_disk", all(marker.encode() not in path.read_bytes() for path in (root / "data").rglob("*") if path.is_file()))
         check("redacted_audit", marker.encode() not in (root / "audit.jsonl").read_bytes())

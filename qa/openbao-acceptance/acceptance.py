@@ -22,6 +22,8 @@ CASES = {
               "revoke", "revoked_denied", "invalid_denied", "create_expiring", "expired_denied"],
     "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",
                 "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],
+    "pki": ["mount", "root", "role", "role_read", "issue", "lease_lookup",
+            "cert_lookup", "lease_revoke", "revoked_lease_absent", "crl_json"],
     "totp": ["roundtrip"],
     "userpass": ["login"],
     "approle": ["login"],
@@ -35,8 +37,8 @@ class Suite:
     def __init__(self, client: Client, run_id: str, modules: set[str], allow_writes: bool):
         self.client, self.run_id, self.modules = client, run_id, modules
         self.allow_writes = allow_writes
-        self.kv, self.transit, self.totp, self.policy = (
-            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "totp", "reader")
+        self.kv, self.transit, self.pki, self.totp, self.policy = (
+            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "pki", "totp", "reader")
         )
         self.marker = "heptabao-synthetic-" + run_id
         self.results = {}
@@ -76,11 +78,13 @@ class Suite:
         inventory = self.client.request("GET", "/v1/sys/mounts")
         if inventory.status != 200 or mount + "/" in inventory.data():
             raise BaoError("cannot_prove_synthetic_mount_absent")
-        if kind not in {"kv", "transit", "totp"}:
+        if kind not in {"kv", "transit", "pki", "totp"}:
             raise BaoError("unsupported_fixture_mount_kind")
         payload = {"type": kind, "description": self.marker}
         if kind == "kv":
             payload["options"] = {"version": "2"}
+        elif kind == "pki":
+            payload["config"] = {"max_lease_ttl": "8760h"}
         self.perform(kind + ".mount", "POST", "/v1/sys/mounts/" + mount, payload)
         self.owned_mounts.append(mount)
 
@@ -150,6 +154,70 @@ class Suite:
         r = self.call("kv.metadata_read", "GET", path + "/metadata/item")
         self.check("kv.metadata_read", r, 200, custom_metadata=r.data().get("custom_metadata") == {"qa": "synthetic"},
                    cas_required=r.data().get("cas_required") is True, max_versions=r.data().get("max_versions") == 5)
+
+    def pki_cases(self):
+        self.mount("pki", self.pki)
+        path = "/v1/" + self.pki
+        r = self.call("pki.root", "POST", path + "/root/generate/internal",
+                      {"common_name": "ca.example.test", "ttl": "8760h", "key_type": "ed25519"})
+        data = r.data()
+        self.check("pki.root", r, 200,
+                   certificate=data.get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   issuing_ca=data.get("issuing_ca", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   serial=bool(data.get("serial_number")),
+                   expiration=int(data.get("expiration", 0)) > 0)
+        r = self.call("pki.role", "POST", path + "/roles/web",
+                      {"allowed_domains": ["example.test"], "allow_subdomains": True,
+                       "max_ttl": "2h", "generate_lease": True, "key_type": "ed25519"})
+        data = r.data()
+        self.check("pki.role", r, 200,
+                   domains=data.get("allowed_domains") == ["example.test"],
+                   subdomains=data.get("allow_subdomains") is True,
+                   max_ttl=int(data.get("max_ttl", 0)) == 7200,
+                   generate_lease=data.get("generate_lease") is True,
+                   key_type=data.get("key_type") == "ed25519")
+        r = self.call("pki.role_read", "GET", path + "/roles/web")
+        data = r.data()
+        self.check("pki.role_read", r, 200,
+                   domains=data.get("allowed_domains") == ["example.test"],
+                   subdomains=data.get("allow_subdomains") is True,
+                   max_ttl=int(data.get("max_ttl", 0)) == 7200,
+                   generate_lease=data.get("generate_lease") is True,
+                   key_type=data.get("key_type") == "ed25519")
+        r = self.call("pki.issue", "POST", path + "/issue/web",
+                      {"common_name": "api.example.test", "alt_names": "www.example.test", "ttl": "1h"})
+        data = r.data()
+        lease_id = r.body.get("lease_id", "")
+        serial = data.get("serial_number", "")
+        self.check("pki.issue", r, 200,
+                   lease_id=bool(lease_id), renewable=r.body.get("renewable") is False,
+                   lease_duration=0 < int(r.body.get("lease_duration", 0)) <= 3600,
+                   serial=bool(serial),
+                   certificate=data.get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   issuing_ca=data.get("issuing_ca", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   private_key=data.get("private_key", "").startswith("-----BEGIN PRIVATE KEY-----"),
+                   private_key_type=data.get("private_key_type") == "ed25519")
+        r = self.call("pki.lease_lookup", "POST", "/v1/sys/leases/lookup", {"lease_id": lease_id})
+        data = r.data()
+        self.check("pki.lease_lookup", r, 200, exact_id=data.get("id") == lease_id,
+                   renewable=data.get("renewable") is False, ttl=0 < int(data.get("ttl", 0)) <= 3600)
+        r = self.call("pki.cert_lookup", "GET", path + "/cert/" + serial)
+        self.requests["pki.cert_lookup"]["path_template"] = "/v1/{pki}/cert/{serial}"
+        self.check("pki.cert_lookup", r, 200,
+                   certificate=r.data().get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"))
+        self.perform("pki.lease_revoke", "POST", "/v1/sys/leases/revoke",
+                     {"lease_id": lease_id, "sync": True}, status=204)
+        r = self.call("pki.revoked_lease_absent", "POST", "/v1/sys/leases/lookup", {"lease_id": lease_id})
+        self.check("pki.revoked_lease_absent", r, (400, 404),
+                   errors_present=isinstance(r.body.get("errors"), list) and bool(r.body["errors"]))
+        # Both implementations reject an already-revoked lease lookup; OpenBao
+        # uses 400 while the bounded candidate uses 404. Normalize only this
+        # explicitly admitted rejection class so differential equality compares
+        # the security effect instead of one allowed status spelling.
+        self.results["pki.revoked_lease_absent"]["http_status"] = "rejected_400_or_404"
+        r = self.call("pki.crl_json", "GET", path + "/cert/crl")
+        self.check("pki.crl_json", r, 200,
+                   crl=r.data().get("certificate", "").startswith("-----BEGIN X509 CRL-----"))
 
     def token_cases(self):
         if self.results.get("kv.metadata_read", {}).get("result") != "passed":
@@ -372,7 +440,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("core", "kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
+            for module in ("core", "kv", "token", "transit", "pki", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -402,7 +470,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="core,kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
+    parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",

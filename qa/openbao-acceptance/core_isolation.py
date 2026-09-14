@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare bounded Cubbyhole/ACL behavior on new local TLS instances only.
+"""Compare a bounded candidate behavior profile on new local TLS instances only.
 
 No live endpoint/credential option exists. The official pinned binary/archive
 must be supplied through HB_ORACLE_BINARY and HB_ORACLE_ARCHIVE. The result is a
@@ -144,7 +144,7 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
 
 def main(*, scenario_runner=run_scenarios, profile="core-isolation",
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
-    if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live", "ssh-otp-live"):
+    if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live", "ssh-otp-live", "pki-live"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)

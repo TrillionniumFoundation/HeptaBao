@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 13,
-    "defined_not_implemented_surface_count": 47,
-    "fixture_case_count": 45,
+    "implemented_surface_count": 14,
+    "defined_not_implemented_surface_count": 46,
+    "fixture_case_count": 55,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -257,9 +257,20 @@
       "surface_id": "HB-SURFACE-SECRET-PKI",
       "category": "secret_engines",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "pki.mount",
+        "pki.root",
+        "pki.role",
+        "pki.role_read",
+        "pki.issue",
+        "pki.lease_lookup",
+        "pki.cert_lookup",
+        "pki.lease_revoke",
+        "pki.revoked_lease_absent",
+        "pki.crl_json"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

@@ -82,7 +82,7 @@ class WrappingCluster(Cluster):
 
 def main(*, cluster_type=WrappingCluster, profile="wrapping-ha", runner_path=None,
          scope="same-version loopback three-voter forwarding, process loss, quorum fencing and restart; includes baseline HA cases") -> int:
-    if profile not in ("wrapping-ha", "ssh-otp-ha", "idle-lifecycle-ha"):
+    if profile not in ("wrapping-ha", "ssh-otp-ha", "idle-lifecycle-ha", "ha-step-down"):
         raise ValueError("unknown local HA qualification profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)
