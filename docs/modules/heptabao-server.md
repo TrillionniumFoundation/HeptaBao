@@ -277,3 +277,8 @@ the complete workspace and real TLS/HA suites. `identity_service_tests.rs` names
 the actual caller tests. External-group membership synchronization, templated
 ACLs, broader subject formats, full MFA/OIDC, migration and destructive HA
 invalidation qualification are not implemented by this bounded increment.
+
+The selected live-Identity differential runner is
+`qa/openbao-acceptance/identity_live.py`. Explicit existing entity/group-ID
+updates return 204/no body, matched to the pinned official OpenBao 2.6.2
+behavior. This does not change all other Identity mutation response shapes.

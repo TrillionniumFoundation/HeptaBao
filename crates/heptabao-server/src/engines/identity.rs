@@ -190,7 +190,8 @@ fn handle_entity_id(
         }
         "POST" | "PUT" | "PATCH" => {
             reject_unknown(body, &["name", "metadata", "policies", "disabled"])?;
-            upsert_entity(state, Some(id), body, now)
+            upsert_entity(state, Some(id), body, now)?;
+            Ok(empty(true))
         }
         _ => Err(method_not_allowed()),
     }
@@ -922,7 +923,8 @@ fn handle_group_id(
                     "member_group_ids",
                 ],
             )?;
-            upsert_group(state, Some(id), body, now)
+            upsert_group(state, Some(id), body, now)?;
+            Ok(empty(true))
         }
         _ => Err(method_not_allowed()),
     }

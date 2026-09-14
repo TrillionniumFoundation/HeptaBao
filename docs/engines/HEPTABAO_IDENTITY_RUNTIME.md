@@ -66,7 +66,8 @@ count-limit parity remains work for this surface.
 
 Routes below omit `/v1/`. Reads return 200/data, missing records 404, malformed
 requests 400, duplicate names/alias keys 409 and unsupported methods 405.
-Caller authorization may reject earlier. Empty/idempotent deletes return 204.
+Caller authorization may reject earlier. Explicit entity/group ID updates and
+empty/idempotent deletes return 204 with no response body; creates return 200.
 POST/PUT are the normal write methods. The internal Identity handler also
 recognizes PATCH in its write helper; its presence is not a promise that every
 HTTP/ACL/endpoint PATCH permutation is independently qualified.
@@ -210,3 +211,23 @@ parity, migration formats and destructive HA invalidation evidence. The frozen
 60-surface corpus is unchanged: targeted native tests do not close a broad
 compatibility surface or manufacture an independent observation. Compatibility
 and production admission remain unqualified.
+
+## Selected official-binary differential profile
+
+`qa/openbao-acceptance/identity_live.py` starts fresh, verified local TLS servers
+using the exact OpenBao 2.6.2 archive/executable pins in the existing Oracle
+launcher. Its ordered profile compares status/semantic observations: alias
+binding, repeat login, live entity/internal-group grants, disable/re-enable,
+child binding without copied policy grants, metadata-preserving updates,
+policy definition changes and entity deletion. It validates exact HTTP status,
+not a permissive union of success codes, and compares normalized booleans rather
+than random IDs or credentials. Initial development observations identified the
+204/no-body contract for explicit existing entity/group-ID updates; the server
+now uses that contract rather than its previous 200/data reply on those routes.
+
+This profile is separate from the frozen full-surface acceptance corpus. It
+cannot establish complete error precedence, all Identity routes, independent
+observation, the full 60-surface denominator, production or migration admission.
+Results bind both binary digests, the source commit/tree, dirty state and runner
+hash. Failed prefixes and equal empty traces must not be accepted. The harness
+stops both processes and removes synthetic private fixture roots on exit.

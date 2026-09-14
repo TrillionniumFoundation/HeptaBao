@@ -136,7 +136,7 @@ fn update_entity(s: &mut Service, ns: &str, admin: &str, id: &str, body: Value) 
             body
         )
         .status,
-        200
+        204
     );
 }
 fn read_fixture(s: &mut Service, ns: &str, admin: &str) {
@@ -288,7 +288,7 @@ fn identity_live_nested_internal_group_policy_and_membership_removal_take_effect
             json!({"policies":[]})
         )
         .status,
-        200
+        204
     );
     assert_eq!(read_status(&mut s, "", &token), 403);
     assert_eq!(
@@ -301,7 +301,7 @@ fn identity_live_nested_internal_group_policy_and_membership_removal_take_effect
             json!({"policies":["reader"]})
         )
         .status,
-        200
+        204
     );
     assert_eq!(read_status(&mut s, "", &token), 200);
     assert_eq!(
@@ -314,7 +314,7 @@ fn identity_live_nested_internal_group_policy_and_membership_removal_take_effect
             json!({"member_entity_ids":[]})
         )
         .status,
-        200
+        204
     );
     assert_eq!(read_status(&mut s, "", &token), 403);
     Ok(())

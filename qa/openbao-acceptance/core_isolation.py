@@ -121,7 +121,31 @@ def file_hash(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def main() -> int:
+
+def successful_comparison(cases: dict, side_failures: dict) -> bool:
+    """Never admit matching failed/empty prefixes or mismatched observations."""
+    if side_failures or set(cases) != {"candidate", "oracle"}:
+        return False
+    candidate, oracle = cases["candidate"], cases["oracle"]
+    if not isinstance(candidate, list) or not isinstance(oracle, list):
+        return False
+    if not candidate or len(candidate) > 4096 or candidate != oracle:
+        return False
+    seen = set()
+    for row in candidate:
+        if not isinstance(row, dict) or row.get("passed") is not True:
+            return False
+        name = row.get("case")
+        if not isinstance(name, str) or not name or name in seen:
+            return False
+        seen.add(name)
+    return True
+
+def main(*, scenario_runner=run_scenarios, profile="core-isolation",
+         scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
+    if profile not in ("core-isolation", "identity-live"):
+        raise ValueError("unknown local comparison profile")
+    runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--output", required=True)
@@ -140,16 +164,17 @@ def main() -> int:
     spec.loader.exec_module(smoke)
     instance = smoke.Instance(binary, private_root / "candidate")
     oracle = None
-    result = {"schema": "heptabao.core-isolation-comparison.v1", "synthetic_only": True,
+    result = {"schema": "heptabao." + profile + "-comparison.v1", "synthetic_only": True,
               "target_version": "2.6.2", "full_openbao_compatibility": False,
               "independent_qualification": False, "production_authority": False,
               "candidate_binary_sha256": file_hash(binary), "oracle_binary_sha256": BINARY_SHA256,
               "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"),
-              "runner_sha256": file_hash(Path(__file__)),
+              "runner_sha256": file_hash(runner_path),
+              "launcher_harness_sha256": file_hash(Path(__file__)),
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
               "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
-              "started_at_unix": time.time(), "cases": {}, "scope": "selected_cubbyhole_and_acl_behavior_only"}
+              "started_at_unix": time.time(), "cases": {}, "scope": scope}
     try:
         instance.start()
         status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -165,12 +190,21 @@ def main() -> int:
         oracle = start_oracle(port)
         reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"], 8192).decode().strip())
         # Same ordered requests run independently; no protected operation proxies.
+        # Preserve both sides even if one rejects early. Equality of two empty
+        # traces or matching failure prefixes can never qualify a profile.
+        result["side_failures"] = {}
         for name, client in (("candidate", candidate), ("oracle", reference)):
             result["cases"][name] = []
-            run_scenarios(client, result["cases"][name])
+            try:
+                scenario_runner(client, result["cases"][name])
+            except (ScenarioFailure, BaoError) as error:
+                result["side_failures"][name] = str(error)
+            except Exception as error:
+                result["side_failures"][name] = "unexpected_" + type(error).__name__
         result["cases_match"] = result["cases"]["candidate"] == result["cases"]["oracle"]
         result["case_count_per_side"] = len(result["cases"]["candidate"])
-        result["status"] = "passed" if result["cases_match"] else "mismatch"
+        complete = successful_comparison(result["cases"], result["side_failures"])
+        result["status"] = "passed" if complete else "mismatch"
     except (ScenarioFailure, BaoError) as error:
         result["status"] = "failed"
         result["safe_failure_code"] = str(error)
@@ -187,7 +221,7 @@ def main() -> int:
         result["finished_at_unix"] = time.time()
         private_write(output, result)
     print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
-                      "failure": result.get("safe_failure_code"), "full_openbao_compatibility": False}))
+                      "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}), "full_openbao_compatibility": False}))
     return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
 
 
