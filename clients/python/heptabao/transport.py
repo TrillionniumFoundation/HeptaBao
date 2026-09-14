@@ -268,5 +268,3 @@ class Client:
             raise BaoError("version_identity_missing")
         return {"cluster_id": cluster, "version": version, "status": response.status,
                 "initialized": True, "sealed": False}
-
-

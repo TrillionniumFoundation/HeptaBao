@@ -161,7 +161,15 @@ def run(binary: Path, root: Path, keep_running: bool):
         status, read = instance.call("GET", "secret/data/item?version=1")
         check("kv_read", status == 200 and read["data"]["data"]["value"] == marker)
         check("invalid_token_denied", instance.call("GET", "secret/data/item", token="invalid-synthetic")[0] == 403)
-        check("unsupported_wrapping_withholds_secret", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})[0] == 501)
+        status, wrapped = instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})
+        check("wrapping_withholds_secret", status == 200 and wrapped.get("data") is None
+              and wrapped.get("auth") is None and marker not in json.dumps(wrapped))
+        wrapping_token = wrapped["wrap_info"]["token"]
+        status, unwrapped = instance.call("POST", "sys/wrapping/unwrap", {}, token=wrapping_token)
+        check("unwrap_returns_exact_secret", status == 200 and unwrapped["data"]["data"]["value"] == marker)
+        check("wrapping_replay_rejected", instance.call("POST", "sys/wrapping/unwrap", {}, token=wrapping_token)[0] == 400)
+        check("unsupported_wrapping_format_withholds_secret", instance.call("GET", "secret/data/item",
+              extra_headers={"X-Vault-Wrap-TTL": "60s", "X-Vault-Wrap-Format": "jwt"})[0] == 501)
         check("unsupported_mfa_fails_closed", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-MFA": "synthetic"})[0] == 501)
         check("secret_query_rejected", instance.call("POST", "smoke-totp/keys/leak?url=synthetic", {})[0] == 400)
         # Equal path suffixes in distinct namespaces must not share bytes.
