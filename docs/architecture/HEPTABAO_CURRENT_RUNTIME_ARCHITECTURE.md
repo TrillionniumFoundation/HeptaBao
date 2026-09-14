@@ -26,7 +26,7 @@ flowchart TD
     Auth --> Cubbyhole["auth_cubbyhole.rs: token-private state"]
     Auth --> ACL["auth_acl.rs: winning-pattern permissions"]
     Tx --> Engines["engines.rs: mounts and dispatch"]
-    Engines --> Backends["engines/kv.rs, transit.rs, totp.rs, identity.rs"]
+    Engines --> Backends["engines/kv.rs, transit.rs, totp.rs, identity.rs, ssh.rs, pki.rs"]
     Tx --> Storage["durable-service: encrypted state"]
     Tx --> Audit["service audit: authenticated records"]
     Tx --> HA["ha.rs, ha_forward.rs, ha_state.rs"]
@@ -41,13 +41,13 @@ Audit is part of admission and response publication: a request record is persist
 | State | Actual owner and durable boundary | Route/verification entry |
 |---|---|---|
 | Tokens, password/role verifiers, ACL and auth mounts | private `auth.rs`, contained in Service state and encrypted by `durable-service` | `auth/*`, `sys/auth`, `sys/policies/acl/*`; `auth_tests.rs` |
-| KV versions/metadata, Transit keys and TOTP state | `engines.rs` and `engines/*`, inside the same encrypted Service state | mount-relative engine routes and `sys/mounts`; `engine_tests.rs` |
+| KV versions/metadata, Transit/TOTP, bounded SSH OTP and bounded internal PKI state | `engines.rs`, `engines/*` and `engine_leases.rs`, inside the same encrypted Service state | mount-relative engine routes, `sys/mounts`, `sys/leases/*`; engine/SSH/PKI service tests |
 | Token-private Cubbyhole | `Token.cubbyhole` in private AuthState, in the same encrypted Service state; final-use erasure is committed at authentication admission | `cubbyhole/*`; `auth_cubbyhole_tests.rs`, `cubbyhole_service_tests.rs` |
 | Entities, aliases, live internal-group policies and merge lineage | `NamespaceState.identity` inside EngineState and the same Service transaction; the Service additionally binds login identities and projects live internal-group policies; complete MFA/OIDC remain separate | `identity/*`; `engines/identity.rs` tests |
 | Init/seal/rekey state | `service.rs` seal metadata and optional client-secret initialization recovery object; `crypto.rs` Shamir/key wrapping; barrier activation authenticates durable state | `sys/init`, root `sys/init/ack`, `sys/unseal`, `sys/seal`, `sys/rekey/*`; `service_tests.rs` |
 | Durable request ledger, journal and snapshot | `durable-service`; exclusive `filesystem-guard` owner | Service persistence, `sys/internal/recovery/*`, compaction/backup routes; durable-service tests |
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
-| HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding and `sys/storage/raft/*`; HA and raft-runtime tests |
+| HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding, authenticated `sys/step-down` and `sys/storage/raft/*`; HA and raft-runtime tests |
 
 The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `plugin-host`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. In particular the server does not yet integrate a general plugin backend, dynamic-secret lease subsystem, KMS auto-unseal provider or remote rollback anchor merely because corresponding crates exist.
 
@@ -87,3 +87,15 @@ role verification respectively. Their protocol/operations/remaining boundaries a
 in `docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md`. The existing Rust agent/proxy
 model crates remain outside the normal server closure; no package-count inference
 is made. Service schema remains 3 and mixed-version HA is not qualified.
+
+## Current PKI, JWKS and explicit leadership-transfer increment
+
+The current server source additionally integrates a bounded internal PKI engine,
+inline public-only JWKS parsing for the existing JWT verifier profile, and an
+authenticated `sys/step-down` route backed by OpenRaft leadership transfer. The
+step-down path requires both `update` and `sudo`, refuses non-HA use, and waits
+for observation of a different leader before success. The loopback three-voter
+fixture proves explicit transfer and forwarding after the old leader becomes a
+standby; it does not establish mixed-version rolling upgrade or multi-host WAN
+qualification. The PKI and JWKS boundaries are documented in the engine/auth
+guides and remain narrower than the full OpenBao surfaces.

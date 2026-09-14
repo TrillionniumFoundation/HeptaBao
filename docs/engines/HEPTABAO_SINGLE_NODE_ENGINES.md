@@ -322,6 +322,25 @@ acceptance. Implementing another route does not establish HA or migration safety
 - [RFC 4231](https://www.rfc-editor.org/rfc/rfc4231): HMAC SHA-2 test vectors.
 - [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648): base32 encoding examples.
 
+## Current bounded PKI increment
+
+The runnable server now admits a `pki` secrets mount with an internal Ed25519
+root, bounded DNS roles, leaf issuance, optional registered certificate leases,
+exact lease revocation, certificate lookup and a signed JSON CRL at
+`cert/crl`. Mount default/max lease TTL tuning is enforced by the same mount
+registry used by the Service. Generated leaf private keys are returned only in
+the successful response and are not retained; the CA key and certificate state
+are persisted only inside the encrypted Service state. Lease-backed certificates
+are revoked rather than deleted when their issuer becomes invalid, so the CRL
+continues to publish the revocation after restart and HA replication.
+
+The selected `qa/openbao-acceptance/pki_live.py` profile compares the same
+internal Ed25519 root/role/lease-backed issue/revoke/CRL observations with the
+pinned OpenBao 2.6.2 binary. That finite profile is not the full PKI surface.
+Intermediates, imported/KMS keys, CSR signing/sign-verbatim, issuer/key rotation,
+OCSP, ACME, EST, PKIext, raw CRL endpoints, all role parameters and high-volume
+revocation/tidy behavior remain outside the current implementation.
+
 ## Current SSH OTP increment
 
 [SSH OTP and registered local leases](HEPTABAO_SSH_OTP.md) now supports actual

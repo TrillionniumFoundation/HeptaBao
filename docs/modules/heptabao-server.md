@@ -4,7 +4,7 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 ## Purpose and non-goals
 
-This package provides the runnable Linux single-node HTTPS secrets service. It joins persistent token/userpass/AppRole and pinned-key JWT authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. This is a bounded development candidate; it now includes per-process networked Raft composition, but does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, an external rollback anchor or full OpenBao compatibility.
+This package provides the runnable Linux HTTPS secrets service. It joins persistent token/userpass/AppRole and bounded JWT/JWKS authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP, SSH OTP and internal PKI engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. It includes per-process networked Raft composition and authenticated explicit leadership transfer. This remains a bounded development candidate: it does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, the complete PKI/JWT/OIDC surfaces, an external rollback anchor or full OpenBao compatibility.
 
 ## Public API and ownership
 
@@ -159,7 +159,7 @@ Run `cargo test --locked -p heptabao-server` and the workspace gates from the cu
 
 ## Evolution and open boundaries
 
-Next gates are full authentication/identity/MFA coverage; PKI/SSH/database/cloud engines and lease revocation; destructive three-node qualification of implemented networked Raft replication and linearizable reads; complete interruption-safe migration of policies, identities, keys and leases; external audit anchoring/archival and qualification of implemented compaction, providers and platforms. Any future lower-level authentication API must use an affine, non-cloneable, non-serializable request capability consumed by one dispatcher call and must receive fresh exact-head hostile replay review. Repository tests and a runnable single node do not close the remaining product gates.
+Next gates are full authentication/identity/OIDC/MFA coverage; complete PKI/SSH plus database/cloud dynamic providers and general renewable external-provider leases; mixed-version/membership/snapshot-install and multi-host qualification of networked Raft; complete interruption-safe migration of policies, identities, keys and leases; external audit anchoring/archival and qualification of implemented compaction, providers and platforms. Any future lower-level authentication API must use an affine, non-cloneable, non-serializable request capability consumed by one dispatcher call and must receive fresh exact-head hostile replay review. Repository tests and a runnable single node do not close the remaining product gates.
 
 ```text
 qualification: false

@@ -241,7 +241,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. It does not accept the OpenBao PEM `jwt_validation_pubkeys` configuration, fetch a JWKS URL, perform OIDC discovery or implement a browser callback.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. It still does not fetch a `jwks_url`, perform OIDC discovery/browser callbacks, or implement the full OpenBao JWT/OIDC configuration and claim-mapping API.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 
@@ -252,7 +252,8 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | `required_namespace` | If supplied, equals the configuring request namespace; root empty string is handled as no additional verifier namespace restriction, while route admission still checks the root namespace |
 | `clock_skew_seconds` | Default 30, maximum 300; applies to future `iat`/`nbf`, not to accepting an already expired token |
 | `maximum_token_lifetime_seconds` | Default 3600, maximum 86400; bounds the JWT's issued-to-expiry lifetime |
-| `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64` |
+| `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64`; mutually exclusive with `jwks` |
+| `jwks` | Inline RFC 7517 public key set; accepts only signature-use Ed25519/EdDSA or P-256/ES256 public material, rejects private/symmetric/duplicate/unknown-key input; mutually exclusive with `keys` |
 | key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
 | key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
 
