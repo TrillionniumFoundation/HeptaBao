@@ -11,6 +11,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use zeroize::Zeroize;
 
 mod identity;
+#[path = "engine_identity.rs"]
+mod identity_projection;
+use identity_projection::IdentityProjection;
 mod kv;
 mod totp;
 mod transit;

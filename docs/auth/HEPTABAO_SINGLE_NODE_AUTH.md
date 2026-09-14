@@ -229,7 +229,7 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding, response wrapping, Identity-to-login/policy projection, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding, response wrapping, external-group login synchronization, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
@@ -260,7 +260,7 @@ A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_g
 
 Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. The service token's lifetime cannot exceed the JWT's remaining lifetime. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
 
-Accepted JWT replay identity, verified identity projection and issued token commit together in `AuthState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
+Accepted JWT replay identity and the issued token are owned by `AuthState`; Service commits them atomically with the mount/subject alias and entity association in `EngineState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
 
 Successful JWT login creates an ordinary bounded HeptaBao token. Subsequent requests authenticate that token through the same private capability/ACL flow as other methods; JWT verifier helper types are not authorization capabilities. Mount disable removes JWT trust/replay state and revokes its issued tokens. Independent OpenBao differential fixtures must still cover this protocol's intended compatibility scope.
 
@@ -351,7 +351,30 @@ restart behavior and tests. Built-in default rules do not let a token access
 another token's map, including a root token. New tokens never inherit values.
 This increment does not add response wrapping or full lease expiration.
 
-The structural Identity endpoints inherited from PR #92 are documented in
-[the current Identity runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md).
-They are not the separate identity crate. Stored entity/group policy names and
-`disabled` flags do not yet establish live login/token policy enforcement.
+The [current Identity runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md)
+describes the implemented Service-owned login binding and live authorization
+projection, not the separate identity crate. After credential verification,
+Userpass uses the authenticated user name, AppRole the verified role ID, and the
+pinned JWT profile the verified `sub`, each scoped to namespace and the current
+mount accessor. JWT subjects must additionally satisfy the current Identity
+alias alphabet/128-byte ceiling; broader JWT/OIDC claim mapping remains work.
+
+New login tokens durably store only `entity_id`, not a frozen copy of identity
+policy grants. Each admitted Service request obtains current entity/internal
+group policy names, rejects disabled or deleted entities, and applies the same
+ACL specificity/deny rules as token policies. Responses separate `token_policies`
+from `identity_policies`; child-token policy attenuation uses token policies
+only. A policy change therefore affects an already-issued token on its next
+request. Disabling is not revocation: enabling the same entity again can restore
+its nonrevoked token, whereas a deleted entity name cannot revive old tokens.
+
+`AuthMount.accessor` is persisted. Legacy records missing it use a deterministic,
+namespace/mount/type-separated accessor without read-side writes. New or
+re-enabled mounts get a fresh random accessor. Old tokens missing `entity_id`
+remain readable and unbound; this is an explicit compatibility limitation, not
+silent reconstruction from names. Remount/re-enrollment is an operator action.
+
+The `identity_service_tests.rs` suite exercises grants/revocation on existing
+tokens, disable/re-enable, nested groups, child attenuation, merge lineage,
+namespace/mount incarnation isolation, restart and failed-login publication.
+These are source test anchors, not independent OpenBao or production admission.

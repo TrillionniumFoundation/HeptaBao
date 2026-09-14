@@ -225,9 +225,9 @@ and operations contract](../engines/HEPTABAO_CUBBYHOLE.md). The matching-policy
 algorithm is `src/auth_acl.rs`: highest-priority pattern selection replaces the
 earlier broad/narrow permission union. Policy rollout needs explicit review.
 
-The inherited service-internal Identity API, merge algorithm, reverse indexes,
-limits and remaining login/MFA/OIDC work are detailed in the [current Identity
-runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md). The standalone
+The service-internal Identity API, login/entity binding, live internal-group
+policy projection, merge algorithm, reverse indexes and remaining MFA/OIDC work
+are detailed in the [current Identity runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md). The standalone
 `heptabao-identity` guide is not a substitute for these Service-owned semantics.
 
 Focused source tests: `auth_cubbyhole_tests.rs`, `auth_acl.rs` and
@@ -248,3 +248,32 @@ intermediate symlinks, and group/world-writable audit roots. Run these source
 tests on both Linux architectures as part of the existing all-target workspace
 gate; an x86_64 run alone is not aarch64 qualification. Non-Linux durable storage
 remains explicitly unsupported by this implementation profile.
+
+## Live Identity authorization boundary
+
+`src/service_identity.rs` composes the existing auth and engine transaction
+owners. `src/auth_identity.rs` binds only a newly issued, mount-provenanced token;
+`src/engine_identity.rs` reads the namespace owner; `engines/identity_runtime.rs`
+resolves aliases and bounded internal-group policies. None is a public authority
+constructor, new daemon, cache or independent store. After the existing HA
+ReadIndex/state synchronization and finite-use commit, Service checks live
+entity admission before dispatch. Login stages token, alias and entity in the
+same encrypted commit; failure discards candidate grants and withholds output.
+
+Persisted token `entity_id` and mount `accessor` are optional for legacy decoding.
+Legacy tokens are not auto-enrolled. A new mount incarnation gets a new accessor;
+merge redirects only by explicit lineage, never by reused display names. Entity
+and group partial updates preserve omitted fields, reject unknown parameters,
+and cannot recreate an explicitly supplied deleted identifier.
+
+Live expansion is limited to 4,096 group records, 256 reached groups, depth 32
+and 256 effective policy names. Root-policy injection, cycles, missing entities,
+ambiguous merge lineage and capacity overflow reject authorization. Service
+state size and existing transaction/audit limits still apply. The general
+performance profile is not upgraded by these pilot bounds.
+
+Run `cargo +1.98.0 test --locked -p heptabao-server --lib identity_` together with
+the complete workspace and real TLS/HA suites. `identity_service_tests.rs` names
+the actual caller tests. External-group membership synchronization, templated
+ACLs, broader subject formats, full MFA/OIDC, migration and destructive HA
+invalidation qualification are not implemented by this bounded increment.

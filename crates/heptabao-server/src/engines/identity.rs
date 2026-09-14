@@ -11,6 +11,9 @@ const MAX_POLICIES: usize = 64;
 const MAX_MEMBERS: usize = 256;
 const MAX_GROUP_DEPTH: usize = 32;
 
+#[path = "identity_runtime.rs"]
+mod runtime;
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(super) struct IdentityState {
     #[serde(default)]
@@ -238,18 +241,57 @@ fn upsert_entity(
     body: &Value,
     now: u64,
 ) -> Result<EngineResponse> {
-    let name = body
-        .get("name")
-        .and_then(Value::as_str)
-        .ok_or_else(|| bad("entity name is required"))?;
+    reject_unknown(body, &["id", "name", "metadata", "policies", "disabled"])?;
+    if let Some(id) = id {
+        if !state.entities.contains_key(id) {
+            return Err(not_found());
+        }
+        if body
+            .get("id")
+            .is_some_and(|value| value.as_str() != Some(id))
+        {
+            return Err(bad("identity path and body id disagree"));
+        }
+    }
+
+    let previous = id.and_then(|id| state.entities.get(id)).cloned();
+    let name = match body.get("name") {
+        Some(value) => value
+            .as_str()
+            .ok_or_else(|| bad("entity name must be a string"))?,
+        None => previous
+            .as_ref()
+            .map(|entity| entity.name.as_str())
+            .ok_or_else(|| bad("entity name is required"))?,
+    };
     valid_name(name, "entity name")?;
-    let metadata = optional_metadata(body, "metadata")?;
-    let policies = optional_set(body, "policies", MAX_POLICIES, "policy")?;
-    let disabled = body.get("disabled").map_or(Ok(false), |value| {
-        value
-            .as_bool()
-            .ok_or_else(|| bad("disabled must be a boolean"))
-    })?;
+    let metadata = if body.get("metadata").is_some() {
+        optional_metadata(body, "metadata")?
+    } else {
+        previous
+            .as_ref()
+            .map(|entity| entity.metadata.clone())
+            .unwrap_or_default()
+    };
+    let policies = if body.get("policies").is_some() {
+        optional_set(body, "policies", MAX_POLICIES, "policy")?
+    } else {
+        previous
+            .as_ref()
+            .map(|entity| entity.policies.clone())
+            .unwrap_or_default()
+    };
+    if policies.contains("root") {
+        return Err(bad("root is not an identity policy"));
+    }
+    let disabled = body.get("disabled").map_or(
+        Ok(previous.as_ref().is_some_and(|entity| entity.disabled)),
+        |value| {
+            value
+                .as_bool()
+                .ok_or_else(|| bad("disabled must be a boolean"))
+        },
+    )?;
 
     let id = match id {
         Some(id) => {
@@ -926,22 +968,87 @@ fn upsert_group(
     body: &Value,
     now: u64,
 ) -> Result<EngineResponse> {
-    let name = body
-        .get("name")
-        .and_then(Value::as_str)
-        .ok_or_else(|| bad("group name is required"))?;
+    reject_unknown(
+        body,
+        &[
+            "id",
+            "name",
+            "type",
+            "metadata",
+            "policies",
+            "member_entity_ids",
+            "member_group_ids",
+        ],
+    )?;
+    if let Some(id) = id {
+        if !state.groups.contains_key(id) {
+            return Err(not_found());
+        }
+        if body
+            .get("id")
+            .is_some_and(|value| value.as_str() != Some(id))
+        {
+            return Err(bad("identity path and body id disagree"));
+        }
+    }
+
+    let old = id.and_then(|id| state.groups.get(id)).cloned();
+    let name = match body.get("name") {
+        Some(value) => value
+            .as_str()
+            .ok_or_else(|| bad("group name must be a string"))?,
+        None => old
+            .as_ref()
+            .map(|group| group.name.as_str())
+            .ok_or_else(|| bad("group name is required"))?,
+    };
     valid_name(name, "group name")?;
-    let kind = body
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or("internal");
+    let kind = match body.get("type") {
+        Some(value) => value
+            .as_str()
+            .ok_or_else(|| bad("group type must be a string"))?,
+        None => old
+            .as_ref()
+            .map(|group| group.kind.as_str())
+            .unwrap_or("internal"),
+    };
+    if old.as_ref().is_some_and(|group| group.kind != kind) {
+        return Err(bad("group type cannot change"));
+    }
     if !matches!(kind, "internal" | "external") {
         return Err(bad("group type must be internal or external"));
     }
-    let policies = optional_set(body, "policies", MAX_POLICIES, "policy")?;
-    let members = optional_set(body, "member_entity_ids", MAX_MEMBERS, "entity id")?;
-    let child_groups = optional_set(body, "member_group_ids", MAX_MEMBERS, "group id")?;
-    let metadata = optional_metadata(body, "metadata")?;
+    let policies = if body.get("policies").is_some() {
+        optional_set(body, "policies", MAX_POLICIES, "policy")?
+    } else {
+        old.as_ref()
+            .map(|group| group.policies.clone())
+            .unwrap_or_default()
+    };
+    if policies.contains("root") {
+        return Err(bad("root is not an identity policy"));
+    }
+    let members = if body.get("member_entity_ids").is_some() {
+        optional_set(body, "member_entity_ids", MAX_MEMBERS, "entity id")?
+    } else {
+        old.as_ref()
+            .map(|group| group.member_entity_ids.clone())
+            .unwrap_or_default()
+    };
+    let child_groups = if body.get("member_group_ids").is_some() {
+        optional_set(body, "member_group_ids", MAX_MEMBERS, "group id")?
+    } else {
+        old.as_ref()
+            .map(|group| group.member_group_ids.clone())
+            .unwrap_or_default()
+    };
+    let metadata = if body.get("metadata").is_some() {
+        optional_metadata(body, "metadata")?
+    } else {
+        old.as_ref()
+            .map(|group| group.metadata.clone())
+            .unwrap_or_default()
+    };
     for entity_id in &members {
         if !state.entities.contains_key(entity_id) {
             return Err(bad("group references an unknown entity"));
@@ -1321,11 +1428,27 @@ fn not_found() -> super::EngineError {
 
 impl IdentityState {
     fn allocate_id(&mut self, prefix: char) -> Result<String> {
-        self.next_id = self
+        let next = self
             .next_id
             .checked_add(1)
             .ok_or_else(|| error(507, "identity identifier space exhausted"))?;
-        Ok(format!("{prefix}-{:032x}", self.next_id))
+        let id = format!("{prefix}-{next:032x}");
+        let occupied = self.entities.contains_key(&id)
+            || self.aliases.contains_key(&id)
+            || self.groups.contains_key(&id)
+            || self.group_aliases.contains_key(&id)
+            || self
+                .entities
+                .values()
+                .any(|entity| entity.merged_entity_ids.contains(&id));
+        if occupied {
+            return Err(error(
+                503,
+                "identity allocator would reuse a reserved identifier",
+            ));
+        }
+        self.next_id = next;
+        Ok(id)
     }
 }
 

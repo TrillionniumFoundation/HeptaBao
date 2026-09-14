@@ -20,6 +20,9 @@ use zeroize::{Zeroize, Zeroizing};
 mod acl;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
+#[path = "auth_identity.rs"]
+mod identity;
+use identity::LoginIdentity;
 
 const DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
@@ -139,6 +142,8 @@ impl Drop for JwtMountState {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
+    #[serde(default)]
+    accessor: Option<String>,
     kind: String,
     description: String,
 }
@@ -152,6 +157,7 @@ struct AuthScope<'a> {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            accessor: None,
             kind: kind.into(),
             description: description.into(),
         }
@@ -160,6 +166,7 @@ impl AuthMount {
     fn descriptor(&self) -> Value {
         json!({
             "type": self.kind,
+            "accessor": self.accessor.as_deref().unwrap_or(""),
             "description": self.description,
             "local": false,
             "seal_wrap": false,
@@ -202,6 +209,8 @@ impl Drop for AuthState {
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
     #[serde(default)]
+    entity_id: Option<String>,
+    #[serde(default)]
     cubbyhole: cubbyhole::TokenCubbyhole,
     accessor: String,
     namespace: String,
@@ -234,6 +243,8 @@ impl Drop for Token {
 /// An affine capability owned by exactly one service dispatcher invocation.
 /// It is non-cloneable, non-serializable and never crosses the public API.
 pub(super) struct Principal {
+    identity_policies: BTreeSet<String>,
+    identity_checked: bool,
     digest: String,
     token: Token,
     #[cfg(test)]
@@ -333,6 +344,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(super) login_identity: Option<LoginIdentity>,
     pub status: u16,
     pub body: Value,
     pub mutated: bool,
@@ -365,6 +377,7 @@ fn denied() -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        login_identity: None,
         status: 200,
         body: json!({"data": data}),
         mutated,
@@ -372,6 +385,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        login_identity: None,
         status: 204,
         body: Value::Null,
         mutated,
@@ -571,6 +585,7 @@ impl AuthState {
             jwt_mounts: BTreeMap::new(),
         };
         let token = Token {
+            entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
             namespace: String::new(),
@@ -633,6 +648,8 @@ impl AuthState {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
         }
         Ok(Principal {
+            identity_policies: BTreeSet::new(),
+            identity_checked: false,
             digest: id,
             token: request_token,
             #[cfg(test)]
@@ -648,7 +665,10 @@ impl AuthState {
     ) -> Result<&'a Token, AuthError> {
         validate_namespace(namespace)?;
         let token = self.active_token(&principal.digest, now, false)?;
-        if token.accessor != principal.token.accessor || !token.root && token.namespace != namespace
+        if token.accessor != principal.token.accessor
+            || token.entity_id != principal.token.entity_id
+            || token.entity_id.is_some() && !principal.identity_checked
+            || !token.root && token.namespace != namespace
         {
             return Err(denied());
         }
@@ -672,7 +692,7 @@ impl AuthState {
             return Ok(());
         }
         let mut decision = acl::Decision::default();
-        for policy_name in &token.policies {
+        for policy_name in token.policies.iter().chain(&principal.identity_policies) {
             let explicit = self
                 .policies
                 .get(namespace)
@@ -733,11 +753,12 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            login_identity: None,
             status: 200,
             mutated: true,
             body: json!({"auth": {
                 "client_token": raw.as_str(), "accessor": token.accessor, "policies": token.policies,
-                "token_policies": token.policies, "metadata": {}, "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
+                "token_policies": token.policies, "entity_id": token.entity_id.as_deref().unwrap_or(""), "metadata": {}, "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
                 "renewable": token.renewable, "token_type": "service", "orphan": token.parent.is_none(), "num_uses": token.uses_remaining.unwrap_or(0)
             }}),
         };
@@ -774,10 +795,25 @@ impl AuthState {
     }
 
     fn effective_auth_mounts(&self, namespace: &str) -> BTreeMap<String, AuthMount> {
-        self.auth_mounts
+        let mut entries = self
+            .auth_mounts
             .get(namespace)
             .cloned()
-            .unwrap_or_else(legacy_auth_mounts)
+            .unwrap_or_else(legacy_auth_mounts);
+        for (name, entry) in &mut entries {
+            if entry.accessor.is_none() {
+                // Preserve legacy mount identity without a read-side mutation.
+                // Re-enabled mounts receive random new incarnation accessors.
+                entry.accessor = Some(format!(
+                    "auth_legacy_{}",
+                    hash(&format!(
+                        "heptabao-legacy-auth-mount-v1\0{namespace}\0{name}\0{}",
+                        entry.kind
+                    ))
+                ));
+            }
+        }
+        entries
     }
 
     fn users_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, User>> {
@@ -984,7 +1020,13 @@ impl AuthState {
                 }) {
                     return Err(bad("auth mount paths cannot overlap"));
                 }
-                let next = AuthMount::new(kind, description);
+                let mut next = AuthMount::new(kind, description);
+                next.accessor = Some(
+                    match entries.get(mount).and_then(|entry| entry.accessor.as_ref()) {
+                        Some(accessor) => accessor.clone(),
+                        None => random_id("auth_")?,
+                    },
+                );
                 let mutated = entries.get(mount) != Some(&next);
                 entries.insert(mount.into(), next);
                 self.auth_mounts.insert(namespace.into(), entries);
@@ -1144,6 +1186,7 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                entity_id: None,
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
@@ -1161,6 +1204,10 @@ impl AuthState {
                 auth_origin_known: true,
             };
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+            response.login_identity = Some(LoginIdentity {
+                mount: mount.into(),
+                alias: verified.subject.clone(),
+            });
             if let Err(error) =
                 self.admit_external_replay(scope, fingerprint, verified.expires_at, now)
             {
@@ -1636,10 +1683,12 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    login_identity: None,
                     status: 200,
                     mutated: true,
                     body: json!({"auth": {
                         "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
+                        "entity_id": token.entity_id.as_deref().unwrap_or(""),
                         "lease_duration": expires_at - now, "renewable": true, "token_type": "service"
                     }}),
                 })
@@ -1775,6 +1824,7 @@ impl AuthState {
         }
         self.issue(
             Token {
+                entity_id: parent.entity_id.clone(),
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
@@ -2164,7 +2214,11 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(mount.into());
-        let (token_id, token, response) = Self::prepare_issue(token, now)?;
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: mount.into(),
+            alias: name.into(),
+        });
         if let Some(counter) = accepted_counter {
             let enrollment = user
                 .mfa
@@ -2425,7 +2479,11 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(mount.into());
-        let issued = self.issue(token, now)?;
+        let mut issued = self.issue(token, now)?;
+        issued.login_identity = Some(LoginIdentity {
+            mount: mount.into(),
+            alias: role_id.into(),
+        });
         self.roles_at_mut(scope).insert(name, role);
         Ok(issued)
     }
@@ -2541,6 +2599,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        entity_id: None,
         cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,
         namespace: namespace.into(),
@@ -2563,7 +2622,8 @@ fn token_info(token: &Token, now: u64) -> Value {
         "creation_time": token.created_at, "ttl": token.expires_at.map(|t| t.saturating_sub(now)).unwrap_or(0),
         "expire_time_unix": token.expires_at, "explicit_max_ttl": token.max_expires_at.map(|t| t.saturating_sub(token.created_at)).unwrap_or(0),
         "period": token.period, "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
-        "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace})
+        "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
+        "entity_id": token.entity_id.as_deref().unwrap_or("")})
 }
 
 fn default_policy_source() -> String {

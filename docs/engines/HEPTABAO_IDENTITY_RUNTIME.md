@@ -1,18 +1,23 @@
 # Identity: current server state and development contract
 
 This document describes the service-internal implementation in
-`crates/heptabao-server/src/engines/identity.rs`, inherited from the candidate
-behind PR #92. It is **not** the separate `heptabao-identity` library's API and
-must not be interpreted as complete login/Identity/MFA/OIDC integration. It
-supplements the V2.1 plan and the current server module guide.
+`crates/heptabao-server/src/engines/identity.rs` and `identity_runtime.rs`,
+composed through `service_identity.rs`, `auth_identity.rs` and
+`engine_identity.rs`. Structural endpoints are now joined to bounded login and
+live internal-group authorization in the actual Service. This is **not** the
+separate `heptabao-identity` library's API or complete Identity/MFA/OIDC parity.
+It supplements the V2.1 plan and current server module guide.
 
 ## Ownership and transactions
 
 `NamespaceState.identity: IdentityState` belongs to `EngineState`. The actual
 path is canonical HTTPS -> request audit -> Service authentication and ACL ->
 `EngineState::handle` -> `identity::handle` -> isolated namespace candidate ->
-Service encrypted commit -> response audit. The standalone identity crate is
-not a runtime dependency and cannot authenticate a Service principal.
+Service encrypted commit -> response audit. For login, credential verification
+precedes alias/entity association; auth and engine candidates publish in one
+encrypted Service transaction. On authenticated requests, Service projects the
+current entity/internal-group policies before ACL dispatch. The standalone
+identity crate is not a runtime dependency and cannot authenticate a principal.
 
 `IdentityState` contains an allocation counter and authoritative entity, alias,
 group and group-alias maps with reverse name/key indexes. Namespace isolation
@@ -51,9 +56,11 @@ Policies are bounded to 64 names. Membership/merge inputs are bounded to 256
 IDs, and nested-group traversal has a depth bound of 32.
 
 These input limits do not replace the 768 KiB aggregate Service state ceiling
-or qualify a production-scale entity index. Some inherited update handlers
-have replacement rather than full OpenBao partial-update behavior. Complete
-argument, normalization and count-limit parity remains work for this surface.
+or qualify a production-scale entity index. Live projection rejects more than
+4,096 group records, 256 reached groups, depth greater than 32, or 256 effective
+policy names. Login-created entity/alias maps each have a 4,096-record ceiling.
+These are fail-closed development limits. Complete argument, normalization and
+count-limit parity remains work for this surface.
 
 ## Route map
 
@@ -82,11 +89,13 @@ successful create/read pair.
 
 Entity reads report `direct_group_ids`, transitively inherited group IDs and
 their union. Timestamps are rendered by the existing RFC3339 formatter.
-`merged_entity_ids` is null when empty. Current upserts require explicit names
-in the ID form; the name form supplies the path name. Omitted entity metadata,
-policies or disabled fields currently receive implementation defaults rather
-than universal PATCH-preserve semantics. Do not rely on missing-field
-preservation until separately implemented and compared.
+`merged_entity_ids` is null when empty. Entity/group updates preserve omitted
+name, metadata, policies, disabled/type and membership fields; initial manual
+creation requires a name. Supplied IDs must identify an existing record, body
+and path IDs must agree, unknown fields are rejected, and group type is
+immutable. This prevents recreating deleted identifiers to revive old tokens.
+Alias update dialects and complete endpoint parameter parity remain separate
+work; entity/group preservation must not be generalized to every endpoint.
 
 ## Alias and group invariants
 
@@ -96,7 +105,9 @@ an alias is attached. Reassignment removes the old entity/index reference and
 updates the new one within the candidate. Entity deletion removes aliases and
 references from direct groups. Group aliases require a canonical group of
 type `external`; they are not executable external authentication providers.
-Accessor strings are validated as identifiers, not proof of a verified login.
+Service additionally requires supplied alias accessors to name a current auth
+mount in that namespace. Only a successfully verified login creates the private
+`LoginIdentity` used by Service; arbitrary alias JSON is never a credential.
 
 Group writes verify referenced entities and groups, reject self-membership,
 and run depth-bounded cycle detection. Direct memberships update entity
@@ -127,9 +138,11 @@ readback/reconciliation, not blind automatic resubmission of a now-missing
 source entity.
 
 **`force` does not currently merge MFA secrets.** Identity-owned MFA secrets are
-not part of this state model. Source deletion/disabled fields and group changes
-also do not yet form a live Identity-to-token policy projection. Treat them as
-structural identity data, not an already enforced login/revocation mechanism.
+not part of this state model. Existing bound tokens follow only explicit
+`merged_entity_ids` lineage to the current destination. Missing entities or
+multiple possible successors fail closed; display-name reuse cannot rebind a
+token. Deletion or disabling blocks future requests. Disabling itself does not
+revoke the token, so enabling that same entity may restore a nonrevoked token.
 
 ## Operations, evidence and open integration
 
@@ -151,9 +164,49 @@ The implementation does not create a separate metrics exporter or index
 recovery daemon. State inspection and migration must preserve counters,
 records and reverse indexes together with encrypted Service state.
 
-Open work includes login alias/entity binding, dynamic entity/group policy
-projection, enforced disabled-entity behavior, full partial-update semantics,
-MFA enrollment/merge, OIDC provider/JWKS/key rotation, complete error/parameter
-and list behavior, migration formats and destructive HA invalidation evidence.
-An existing file, a stored policy-name set or this development guide does not
-close those obligations. All compatibility and production gates remain open.
+## Bounded live login and policy projection
+
+A successful Userpass login uses its verified name, AppRole its verified role ID,
+and the pinned-key JWT profile its verified subject. The identity key is
+namespace + mount accessor + alias name. JWT subjects and custom role IDs must
+fit the present 128-byte Identity alphabet; broader mappings are unsupported.
+Login resolves an existing alias or atomically creates an entity and alias.
+Disabled identity, inconsistent alias index or capacity failure aborts issuance.
+Token creation and alias/entity writes share the existing Service commit and
+result-audit withholding rules. No independent entity writer is introduced.
+
+A persisted token carries optional `entity_id`. Every admitted request projects
+entity and transitive **internal** group policy names from current authoritative
+group records, not reverse indexes or a frozen token grant. Root policy names,
+cycles, missing entities, excessive expansion or ambiguous lineage reject.
+The winning ACL pattern is selected across token and live identity policies;
+deny at the selected pattern dominates. Child tokens retain the entity binding,
+but cannot promote identity policy names into durable token-policy grants.
+Responses distinguish `token_policies` and `identity_policies`.
+
+Mounts persist optional `accessor`. Legacy missing fields produce a deterministic
+namespace/mount/type-separated value without a read-side write. New/re-enabled
+mounts receive random accessors, so a replacement mount cannot silently inherit
+a previous identity. Old tokens lacking `entity_id` remain unbound; no alias/name
+heuristic upgrades them. Operators must treat re-enrollment as a separate action.
+
+The current HA request path synchronizes state under ReadIndex before Service
+admission, after which live projection uses that one snapshot. No cache permits
+a revoked group policy to survive a later synchronized snapshot. This is a
+source design, not destructive multi-host invalidation qualification.
+
+Actual caller cases in `identity_service_tests.rs` cover existing-token
+policy removal, disable/re-enable, restart, nested groups and group-membership
+removal, child attenuation, merge/deletion/name reuse, namespace and remount
+isolation, and token/alias nonpublication when a login commit exceeds capacity.
+The `identity_runtime.rs` tests cover corrupt cycles, ambiguous lineage and
+partial-update rejection. Run `cargo +1.98.0 test --locked -p heptabao-server
+--lib identity_` (one shell line). No test command here is a pass receipt.
+
+Open work includes external-group login synchronization, complete subject and
+claim mapping, templated policy expansion, alias update/parameter semantics,
+MFA enrollment/merge, OIDC provider/JWKS/key rotation, full endpoint/error/list
+parity, migration formats and destructive HA invalidation evidence. The frozen
+60-surface corpus is unchanged: targeted native tests do not close a broad
+compatibility surface or manufacture an independent observation. Compatibility
+and production admission remain unqualified.

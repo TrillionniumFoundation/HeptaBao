@@ -26,6 +26,8 @@ const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 #[path = "audit_rotation.rs"]
 mod audit_rotation;
+#[path = "service_identity.rs"]
+mod identity;
 pub use audit_rotation::AuditConfig;
 use audit_rotation::AuditRotation;
 const MAX_SEAL_SHARES: u8 = 16;
@@ -598,7 +600,7 @@ impl Service {
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");
         };
-        let principal = if token.is_empty() {
+        let mut principal = if token.is_empty() {
             None
         } else {
             match admitted.auth.authenticate(token, now) {
@@ -611,6 +613,11 @@ impl Service {
                 return error;
             }
             self.state = Some(admitted.clone());
+        }
+        if let Some(principal) = principal.as_mut()
+            && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
+        {
+            return error;
         }
         if path == "sys/leader" && method == "GET" {
             let Some(principal) = principal.as_ref() else {
@@ -706,9 +713,21 @@ impl Service {
         let principal = principal.as_ref();
         let mut auth = state.auth.clone();
         match auth.handle(principal, namespace, method, path, body, now) {
-            Ok(Some(response)) => {
+            Ok(Some(mut response)) => {
+                let mut engines = state.engines.clone();
+                if let Err(error) = Self::finish_identity_response(
+                    &mut auth,
+                    &mut engines,
+                    &mut response,
+                    namespace,
+                    now,
+                ) {
+                    erase_json(&mut response.body);
+                    return error;
+                }
                 if response.mutated {
                     state.auth = auth;
+                    state.engines = engines;
                 }
                 return Response {
                     status: response.status,
@@ -754,6 +773,12 @@ impl Service {
             .authorize_request(principal, namespace, path, capability, now)
         {
             return Response::error(error.status, &error.message);
+        }
+        if matches!(method, "POST" | "PUT" | "PATCH")
+            && let Err(error) =
+                Self::validate_identity_alias_mount(&state.auth, namespace, path, body)
+        {
+            return error;
         }
         let mut engines = state.engines.clone();
         match engines.handle(namespace, method, path, body, now) {
