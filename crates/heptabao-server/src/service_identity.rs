@@ -4,6 +4,19 @@
 use super::*;
 use crate::auth::{AuthError, AuthResponse};
 
+impl State {
+    pub(super) fn validate_format(&self) -> Result<(), Response> {
+        match self.schema {
+            1 if !self.auth.has_live_identity_state() => Ok(()),
+            CURRENT_STATE_SCHEMA => Ok(()),
+            _ => Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            )),
+        }
+    }
+}
+
 impl Service {
     pub(super) fn bind_identity_principal(
         state: &State,

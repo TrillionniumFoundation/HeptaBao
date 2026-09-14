@@ -142,7 +142,7 @@ impl Drop for JwtMountState {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     accessor: Option<String>,
     kind: String,
     description: String,
@@ -208,7 +208,7 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     entity_id: Option<String>,
     #[serde(default)]
     cubbyhole: cubbyhole::TokenCubbyhole,

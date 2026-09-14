@@ -77,7 +77,7 @@ This table is generated from the exact candidate source. It is a bounded lexical
 
 ## State and data model
 
-The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 1 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
+The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 2 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
 
 ## Invariants and authorization
 
@@ -282,3 +282,29 @@ The selected live-Identity differential runner is
 `qa/openbao-acceptance/identity_live.py`. Explicit existing entity/group-ID
 updates return 204/no body, matched to the pinned official OpenBao 2.6.2
 behavior. This does not change all other Identity mutation response shapes.
+
+## Identity-aware persisted state format and rollback
+
+The Service discriminator is now `State.schema = 2`; seal metadata remains
+schema 1, and the underlying HBS2/HBJ2/HBL2/HBA1 envelopes are unchanged. Schema
+1 can be read only without the new persisted token/entity and mount-accessor
+bindings. Missing optional identity fields are omitted during serialization to
+preserve the legacy canonical bytes and HA base digest. Merely unsealing or
+reading a valid schema-1 store does not silently write a migration.
+
+The first committed auth/engine mutation, including finite-use consumption
+before a subsequently denied request, stages schema 2 with the existing atomic
+state commit. A rejected precommit does not publish a schema transition. New
+initialization starts at 2. Unseal, durable refresh and HA state admission all
+reject unsupported versions and schema-1 records carrying identity-aware fields.
+The original schema-1-only binary therefore refuses upgraded state instead of
+ignoring the new identity constraints.
+
+Rollback requires a schema-2-capable predecessor and the current revocation
+state. Never edit the discriminator, discard new fields, or restore a stale
+schema-1 backup to make an old binary run. This format fence is not an external
+monotonic rollback anchor and does not qualify mixed-version rolling upgrades.
+`identity_upgrade.py` exercises actual legacy and new binaries through fresh
+local TLS state; its receipt binds both executable digests. `identity_schema_`
+source tests additionally cover unknown versions, contradictory legacy fields,
+byte-preserving reads, commit promotion and finite-use denial/reopen behavior.

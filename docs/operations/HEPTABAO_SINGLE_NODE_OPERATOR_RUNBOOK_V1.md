@@ -52,6 +52,28 @@ After unsealing and verifying custody, an effective root token in the root names
 
 `sys/rekey/init` and `sys/rekey/update` implement the bounded Shamir rekey/verification protocol described in the server guide and service tests. Rekey changes wrapping/share custody while preserving the barrier key; it is not KMS auto-unseal or a general data-key rewrap facility. Preserve pending verification state across response loss/restart and explicitly complete or cancel the ceremony. New shares must be verified before discarding the previous custody set.
 
+## Identity-aware upgrade and rollback boundary
+
+The current Service state discriminator is version 2 (independent of the
+unchanged seal metadata and durable envelope versions). A valid version-1
+state without new identity bindings remains readable. The first durable
+mutation, even finite-token consumption followed by ACL denial, atomically
+publishes version 2. A startup/read-only check alone is not a migration receipt.
+
+Stop old clients/writers and retain original encrypted state/custody before an
+isolated upgrade drill. Verify data, auth, identity denial and restart with the
+exact candidate. After the transition, the previous version-1-only executable
+will reject unseal with 503; this is intentional and must not be bypassed by
+editing state, clearing fields or deleting files. Recovery needs a compatible
+version-2 binary and current revocation information. Restoring an older backup
+can restore obsolete permissions; it is not a safe substitute for rollback.
+
+`qa/openbao-acceptance/identity_upgrade.py` tests the binary boundary on newly
+created local synthetic state and requires the legacy executable's SHA-256.
+It does not accept an existing deployment. These checks do not admit production
+migration, mixed-version rolling HA, forced old-format restore or an external
+rollback-protection provider. Consult the detailed Identity and server guides.
+
 ## Limits, compaction and pressure
 
 | Resource | Current enforced bound | Action |

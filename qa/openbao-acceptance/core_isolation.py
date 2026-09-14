@@ -131,14 +131,15 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
         return False
     if not candidate or len(candidate) > 4096 or candidate != oracle:
         return False
-    seen = set()
-    for row in candidate:
-        if not isinstance(row, dict) or row.get("passed") is not True:
-            return False
-        name = row.get("case")
-        if not isinstance(name, str) or not name or name in seen:
-            return False
-        seen.add(name)
+    for observations in (candidate, oracle):
+        seen = set()
+        for row in observations:
+            if not isinstance(row, dict) or row.get("passed") is not True:
+                return False
+            name = row.get("case")
+            if not isinstance(name, str) or not name or name in seen:
+                return False
+            seen.add(name)
     return True
 
 def main(*, scenario_runner=run_scenarios, profile="core-isolation",

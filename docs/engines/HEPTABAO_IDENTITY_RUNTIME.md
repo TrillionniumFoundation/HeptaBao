@@ -231,3 +231,23 @@ observation, the full 60-surface denominator, production or migration admission.
 Results bind both binary digests, the source commit/tree, dirty state and runner
 hash. Failed prefixes and equal empty traces must not be accepted. The harness
 stops both processes and removes synthetic private fixture roots on exit.
+
+## State-format migration and downgrade fence
+
+Identity-aware writes are committed with Service `State.schema = 2`. Valid
+schema-1 state with no new bindings remains readable without rewriting its
+canonical bytes. The first durable mutation (including finite-use admission)
+publishes version 2 in the same transaction; initialization also uses version 2.
+A schema-1 payload with new bound-identity/accessor fields and any unknown
+version are rejected. The pre-integration binary's schema-1-only reader then
+refuses upgraded state, rather than silently discarding identity enforcement.
+
+`qa/openbao-acceptance/identity_upgrade.py` compares a supplied, checksum-bound
+legacy executable with the current binary using only private local fixtures:
+old state is initialized, read by the new process, mutated by a bound login,
+refused by the old process, then reopened by the new process with the disabled
+entity still enforced. An old binary refusing a new format is a downgrade
+fence, not a supported rollback procedure. Preserve schema-2-capable binaries,
+current token revocations and full encrypted state. Rollback by restoring a
+stale backup, external monotonic anchoring, mixed-version HA and general OpenBao
+migration remain separate, unqualified capabilities.

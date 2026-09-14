@@ -31,7 +31,7 @@ The following retained increment/target documents describe their own historical 
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The runnable server composes real TLS, private persistent authentication/ACL, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested plugin-host, identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
+The runnable server composes real TLS, private persistent authentication/ACL, bounded live login/Identity/internal-group policies, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested plugin-host, identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
 
 ## Module documentation
 
@@ -62,10 +62,17 @@ Every package has exactly one guide. The validators check package, lockfile, sou
 - `docs/engines/HEPTABAO_CUBBYHOLE.md` — integrated token-private storage, ACL
   specificity, final-use durability, expiry/tidy boundaries and execution.
 - `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md` — actual server-owned Identity
-  endpoints, indexes, merge/lineage, operations and unresolved auth/MFA/OIDC.
+  endpoints, indexes, merge/lineage, bounded verified-login binding and live
+  internal-group policies; full external-auth/MFA/OIDC remain open.
 
 These documents do not change the 60-surface denominator or assert completion
 of the combined Cubbyhole/wrapping or full Identity compatibility surfaces.
+`qa/openbao-acceptance/identity_live.py` is the selected official-binary
+Identity differential profile; `identity_upgrade.py` tests the version-1 to
+version-2 binary boundary and intentional old-binary refusal.
+`scripts/current_compatibility_coverage.py`
+derives the current compatibility guide counters from corpus rows; neither
+entry point can issue independent or production admission.
 
 ## Operations, security and compatibility
 

@@ -21,6 +21,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+const CURRENT_STATE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -609,6 +610,7 @@ impl Service {
             }
         };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
+            admitted.schema = CURRENT_STATE_SCHEMA;
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
             }
@@ -688,11 +690,18 @@ impl Service {
             Err(_) => return Response::error(500, "state serialization failed"),
         };
         let response = Self::dispatch(&mut admitted, principal, namespace, method, path, body, now);
-        let serialized = match serde_json::to_vec(&admitted) {
+        let mut serialized = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
         };
         if *serialized != *before {
+            if admitted.schema != CURRENT_STATE_SCHEMA {
+                admitted.schema = CURRENT_STATE_SCHEMA;
+                serialized = match serde_json::to_vec(&admitted) {
+                    Ok(value) => Zeroizing::new(value),
+                    Err(_) => return Response::error(500, "state serialization failed"),
+                };
+            }
             if let Err(error) = self.commit_state_bytes(&serialized) {
                 return error;
             }
@@ -978,7 +987,7 @@ impl Service {
             Err(error) => return (Response::error(503, error), false),
         };
         let state = State {
-            schema: 1,
+            schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             auth,
             engines: EngineState::default(),
@@ -1338,9 +1347,7 @@ impl Service {
             .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
         let state: State = serde_json::from_slice(bytes.expose())
             .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-        if state.schema != 1 {
-            return Err(Response::error(503, "unsupported server state schema"));
-        }
+        state.validate_format()?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
@@ -1983,9 +1990,7 @@ impl Service {
             .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
         let state: State = serde_json::from_slice(bytes.expose())
             .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-        if state.schema != 1 {
-            return Err(Response::error(503, "unsupported server state schema"));
-        }
+        state.validate_format()?;
         self.state = Some(state);
         self.recovery_required = false;
         Ok(())
@@ -2078,12 +2083,7 @@ impl Service {
         }
         let state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
-        if state.schema != 1 {
-            return Err(Response::error(
-                503,
-                "unsupported HA committed state schema",
-            ));
-        }
+        state.validate_format()?;
         let expected_cluster = ha
             .lock()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?

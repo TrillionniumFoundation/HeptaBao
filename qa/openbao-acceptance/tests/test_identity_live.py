@@ -37,6 +37,9 @@ class IdentityLiveHarnessTests(unittest.TestCase):
             with self.subTest(row=row):
                 self.assertFalse(core_isolation.successful_comparison({"candidate": row, "oracle": row}, {}))
         self.assertFalse(core_isolation.successful_comparison({}, {}))
+        good = [{"case": "x", "passed": True}]
+        mistyped = [{"case": "x", "passed": 1}]
+        self.assertFalse(core_isolation.successful_comparison({"candidate": good, "oracle": mistyped}, {}))
 
     def test_mismatched_duplicate_and_failed_prefixes_are_rejected(self):
         row = {"case": "x", "status": 204, "passed": True}

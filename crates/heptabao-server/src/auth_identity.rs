@@ -19,6 +19,15 @@ impl Principal {
 }
 
 impl AuthState {
+    pub(crate) fn has_live_identity_state(&self) -> bool {
+        self.tokens.values().any(|token| token.entity_id.is_some())
+            || self
+                .auth_mounts
+                .values()
+                .flat_map(|mounts| mounts.values())
+                .any(|mount| mount.accessor.is_some())
+    }
+
     pub(crate) fn mount_accessor(&self, namespace: &str, mount: &str) -> Result<String, AuthError> {
         self.effective_auth_mounts(namespace)
             .get(mount)

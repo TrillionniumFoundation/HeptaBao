@@ -16,7 +16,7 @@ The H09-WP05 structural merge/dedupe/lineage tranche is implemented at `3f4bf6e9
 
 ## Remaining fail-closed scope
 
-The broad Identity surface is not marked complete until its remaining OpenBao behavior is executable, including identity-to-auth policy projection, login alias/entity binding, MFA framework integration, OIDC provider/JWKS/rotation and HA invalidation evidence. The exact-denominator compatibility corpus remains authoritative; statuses must advance only when corresponding behavior and executable fixtures exist.
+The bounded Service login/entity binding and current entity/internal-group policy projection are now implemented in the source described by `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md`. Existing tokens consume live policy and disabled-entity state, with explicit merge lineage and encrypted restart tests. The selected local official-binary runner is `qa/openbao-acceptance/identity_live.py`; it is not independent admission. The broad Identity surface remains incomplete: external-group synchronization, broader subject/claim mappings, templated policies, full alias/endpoint semantics, MFA framework integration, OIDC provider/JWKS/rotation and destructive HA invalidation evidence remain required. The exact-denominator compatibility corpus remains authoritative; statuses must advance only when corresponding behavior and executable fixtures exist.
 
 Repository-controlled OpenBao replacement work also remains outside Identity, including remaining dynamic-secret/lease behavior, CLI/Agent/Proxy behavior, migration/rotation paths, and the remaining Raft administrative/upgrade/snapshot/platform evidence required by the active development plan.
 

@@ -546,3 +546,200 @@ fn identity_live_failed_login_commit_publishes_neither_token_nor_entity() -> Tes
     assert!(!text(&retry.body, "/auth/entity_id")?.is_empty());
     Ok(())
 }
+
+#[test]
+fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> TestResult {
+    let (auth, _) = AuthState::bootstrap(100)?;
+    let state = State {
+        schema: 1,
+        cluster_id: "legacy-synthetic".into(),
+        auth,
+        engines: EngineState::default(),
+    };
+    let bytes = serde_json::to_vec(&state)?;
+    let restored: State = serde_json::from_slice(&bytes)?;
+    assert!(restored.validate_format().is_ok());
+    assert_eq!(bytes, serde_json::to_vec(&restored)?);
+    let mut value = serde_json::to_value(&state)?;
+    for token in value["auth"]["tokens"]
+        .as_object()
+        .ok_or("tokens")?
+        .values()
+    {
+        assert!(token.get("entity_id").is_none());
+    }
+    for schema in [0, 3, u32::MAX] {
+        value["schema"] = json!(schema);
+        assert!(
+            serde_json::from_value::<State>(value.clone())?
+                .validate_format()
+                .is_err()
+        );
+    }
+    value["schema"] = json!(1);
+    value["auth"]["tokens"]
+        .as_object_mut()
+        .ok_or("tokens")?
+        .values_mut()
+        .next()
+        .ok_or("token")?["entity_id"] = json!("e-bound");
+    assert!(
+        serde_json::from_value::<State>(value.clone())?
+            .validate_format()
+            .is_err()
+    );
+    value["schema"] = json!(CURRENT_STATE_SCHEMA);
+    assert!(
+        serde_json::from_value::<State>(value)?
+            .validate_format()
+            .is_ok()
+    );
+    let mut mounts = serde_json::to_value(&state)?;
+    mounts["auth"]["auth_mounts"] =
+        json!({"": {"approle": {"kind": "approle", "description": "", "accessor": "auth-new"}}});
+    assert!(
+        serde_json::from_value::<State>(mounts)?
+            .validate_format()
+            .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, key) = bootstrap(&mut s)?;
+    assert_eq!(
+        s.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    // Materialize an exact schema-1 fixture to model the previously supported
+    // on-disk format; no runtime API permits downgrading this discriminator.
+    let mut legacy = s.state.clone().ok_or("state")?;
+    legacy.schema = 1;
+    let bytes = serde_json::to_vec(&legacy)?;
+    assert!(legacy.validate_format().is_ok());
+    s.commit_state_bytes(&bytes)
+        .map_err(|_| "fixture persistence")?;
+    s.state = Some(legacy);
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "", "POST", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(s.state.as_ref().ok_or("state")?.schema, 1);
+    assert_eq!(
+        call(
+            &mut s,
+            "",
+            &admin,
+            "GET",
+            "auth/token/lookup-self",
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(s.state.as_ref().ok_or("state")?.schema, 1);
+    assert_eq!(
+        call(
+            &mut s,
+            "",
+            &admin,
+            "POST",
+            "secret/data/schema",
+            json!({"data":{"v":"synthetic"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        s.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    let persisted = s
+        .durable
+        .as_ref()
+        .ok_or("store")?
+        .get("system", "state")?
+        .ok_or("persisted")?;
+    assert_eq!(
+        serde_json::from_slice::<State>(persisted.expose())?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "", "POST", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        s.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    Ok(())
+}
+
+#[test]
+fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, key) = bootstrap(&mut s)?;
+    let issued = call(
+        &mut s,
+        "",
+        &admin,
+        "POST",
+        "auth/token/create",
+        json!({"policies":["default"],"num_uses":1}),
+    );
+    assert_eq!(issued.status, 200);
+    let token = text(&issued.body, "/auth/client_token")?;
+    let mut legacy = s.state.clone().ok_or("state")?;
+    legacy.schema = 1;
+    assert!(legacy.validate_format().is_ok());
+    s.commit_state_bytes(&serde_json::to_vec(&legacy)?)
+        .map_err(|_| "fixture persistence")?;
+    s.state = Some(legacy);
+    assert_eq!(
+        call(
+            &mut s,
+            "",
+            &token,
+            "GET",
+            "secret/data/forbidden",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        s.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "", "POST", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        s.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    assert_eq!(
+        call(
+            &mut s,
+            "",
+            &token,
+            "GET",
+            "auth/token/lookup-self",
+            json!({})
+        )
+        .status,
+        403
+    );
+    Ok(())
+}

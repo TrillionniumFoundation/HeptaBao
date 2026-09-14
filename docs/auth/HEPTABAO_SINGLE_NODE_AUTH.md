@@ -378,3 +378,8 @@ The `identity_service_tests.rs` suite exercises grants/revocation on existing
 tokens, disable/re-enable, nested groups, child attenuation, merge lineage,
 namespace/mount incarnation isolation, restart and failed-login publication.
 These are source test anchors, not independent OpenBao or production admission.
+
+Identity-aware token bindings use Service state version 2. Old optional fields
+are omitted for byte-preserving version-1 reads, but the first durable mutation
+promotes the complete state to version 2. Version-1-only binaries must reject
+that state; see the server guide and operator runbook before any rollback.
