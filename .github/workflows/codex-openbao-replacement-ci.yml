@@ -140,6 +140,10 @@ jobs:
             --binary "$binary" \
             --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
             --output "$evidence/ssh-ha.json"
+          timeout 240 python qa/openbao-acceptance/idle_lifecycle_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
+            --output "$evidence/idle-ha.json"
 
       - name: Confirm source remained immutable
         if: ${{ success() || failure() }}

@@ -34,9 +34,16 @@ def compare(candidate, oracle):
         if (report.get('schema')!='heptabao.operational-process-evidence.v1' or report.get('target')!=target
                 or report.get('status')!='passed' or report.get('source_dirty') is not False
                 or report.get('synthetic_only') is not True or report.get('independent_qualification') is not False
-                or report.get('production_authority') is not False):raise ValueError('invalid_report_scope')
+                or report.get('production_authority') is not False
+                or report.get('full_agent_proxy_compatibility') is not False
+                or report.get('actual_pam_or_sshd_login') is not False):raise ValueError('invalid_report_scope')
         if not re.fullmatch(r'[0-9a-f]{40}', report.get('source_commit','')) or not re.fullmatch(r'[0-9a-f]{40}',report.get('source_tree','')):
             raise ValueError('source_identity_required')
+        for key in ('candidate_binary_sha256', 'runner_sha256'):
+            if not re.fullmatch(r'[0-9a-f]{64}', report.get(key, '')):
+                raise ValueError('invalid_artifact_digest')
+        if report.get('client_distribution') not in ('source', 'installed-wheel'):
+            raise ValueError('unknown_client_distribution')
     for key in ('source_commit','source_tree','candidate_binary_sha256','runner_sha256','client_distribution'):
         if not candidate.get(key) or candidate.get(key)!=oracle.get(key):raise ValueError('candidate_pair_mismatch')
     identity=oracle.get('oracle_identity',{})

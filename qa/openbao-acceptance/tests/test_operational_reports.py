@@ -12,6 +12,7 @@ class OperationalReportTests(unittest.TestCase):
     def pair(self):
         common={'schema':'heptabao.operational-process-evidence.v1','status':'passed','source_dirty':False,
                 'synthetic_only':True,'independent_qualification':False,'production_authority':False,
+                'full_agent_proxy_compatibility':False,'actual_pam_or_sshd_login':False,
                 'source_commit':'a'*40,'source_tree':'b'*40,'candidate_binary_sha256':'c'*64,
                 'runner_sha256':'d'*64,'client_distribution':'source'}
         candidate={**common,'target':'heptabao-candidate','cases':[{'case':n,'passed':True} for n in sorted(comparison.EXPECTED_COMMON|comparison.CANDIDATE_ONLY)]}
@@ -41,5 +42,13 @@ class OperationalReportTests(unittest.TestCase):
         c,o=self.pair();c['cases'].append({'case':'new-waiver','passed':True})
         with self.assertRaises(ValueError):comparison.compare(c,o)
 
+
+    def test_equal_malformed_artifact_identity_or_inflated_claims_reject(self):
+        for key, value in [('candidate_binary_sha256','not-a-digest'),
+                           ('runner_sha256','a'*63), ('client_distribution','unknown'),
+                           ('full_agent_proxy_compatibility',True),
+                           ('actual_pam_or_sshd_login',True)]:
+            c,o=self.pair();c[key]=value;o[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):comparison.compare(c,o)
 
 if __name__=='__main__':unittest.main()

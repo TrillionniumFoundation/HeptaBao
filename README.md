@@ -23,6 +23,13 @@ compatibility or production readiness. Schema 3 refuses unsafe old-binary fallba
 no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
 worker, full Agent/Proxy or independent acceptance is created by these additions.
 
+The [operational consumer implementation](docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md)
+adds a bounded AppRole auto-auth/renewal process, generation-checked private sink,
+Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
+maintenance through the existing audited durable/Raft writer. These are scoped
+executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
+external-provider revocation. Existing state remains schema 3.
+
 ## Current source of truth
 
 1. `planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml`

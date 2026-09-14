@@ -82,13 +82,14 @@ class WrappingCluster(Cluster):
 
 def main(*, cluster_type=WrappingCluster, profile="wrapping-ha", runner_path=None,
          scope="same-version loopback three-voter forwarding, process loss, quorum fencing and restart; includes baseline HA cases") -> int:
-    if profile not in ("wrapping-ha", "ssh-otp-ha"):
+    if profile not in ("wrapping-ha", "ssh-otp-ha", "idle-lifecycle-ha"):
         raise ValueError("unknown local HA qualification profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--expected-binary-sha256", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--lifecycle-interval-seconds", type=int, choices=range(61))
     args = parser.parse_args()
     binary = Path(args.binary).resolve(strict=True)
     output = Path(args.output).resolve()
@@ -103,6 +104,7 @@ def main(*, cluster_type=WrappingCluster, profile="wrapping-ha", runner_path=Non
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
               "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
+              "lifecycle_interval_override": args.lifecycle_interval_seconds,
               "binary_sha256": digest, "runner_sha256": file_hash(runner_path),
               "wrapping_harness_sha256": file_hash(Path(__file__)),
               "baseline_harness_sha256": file_hash(Path(__file__).with_name("ha_destructive.py")),
@@ -112,6 +114,13 @@ def main(*, cluster_type=WrappingCluster, profile="wrapping-ha", runner_path=Non
               "started_at_unix": time.time()}
     try:
         cluster = cluster_type(binary, temporary / "cluster")
+        if args.lifecycle_interval_seconds is not None:
+            for node in cluster.nodes:
+                configuration = node.root / "server.json"
+                values = json.loads(configuration.read_text())
+                values["lifecycle_interval_seconds"] = args.lifecycle_interval_seconds
+                configuration.write_text(json.dumps(values))
+                configuration.chmod(0o600)
         cluster.run()
         checked_binary(binary, digest)
         report["status"] = "passed"

@@ -233,7 +233,12 @@ The fixture kills a real post-login client process before token publication and
 checks the ordinary executable refuses to repeat its pending login. Negative
 cases include root-header injection, namespace changes, real policy revocation,
 wrong host/user/role, bad CA, second writers, clock drift and secret-free diagnostics.
-These source assertions and repository CI commands are not pass receipts for a
+`idle_lifecycle_ha.py` additionally kills the leader after issuing short-lived
+OTP/wrapping state, sends no client requests until a surviving node records a
+committed autonomous-expiry audit event, and checks expiry cannot revive when
+the old leader restarts. It includes the prior core HA cases; do not
+add those counts together. These source assertions and repository CI commands
+are not pass receipts for a
 future candidate. Multi-host HA, mixed-version upgrades, ARM64/macOS execution,
 Windows file security, external providers, full Agent/Proxy/SSH compatibility and
 independent production acceptance remain open.
