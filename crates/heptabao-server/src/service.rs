@@ -2544,7 +2544,7 @@ fn write_initialization_recovery(
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let mut file = options.open(stage.join(INIT_RECOVERY_FILE))?;
     check_private_file(&file)?;
@@ -2570,7 +2570,7 @@ fn read_initialization_recovery(data_dir: &Path) -> Result<Option<Zeroizing<Vec<
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options.open(path)?;
     check_private_file(&file)?;
@@ -2667,7 +2667,7 @@ fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static 
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = match options.open(path) {
         Ok(file) => file,
@@ -2706,7 +2706,7 @@ fn load_pending_rekey(
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = match options.open(&path) {
         Ok(file) => file,
@@ -2771,7 +2771,7 @@ fn persist_pending_rekey(
             use std::os::unix::fs::OpenOptionsExt;
             options
                 .mode(0o600)
-                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
         }
         let mut file = options.open(&temporary)?;
         check_private_file(&file)?;
@@ -2825,7 +2825,7 @@ fn persist_seal_metadata(data_dir: &Path, seal: &SealMetadata) -> Result<(), std
             use std::os::unix::fs::OpenOptionsExt;
             options
                 .mode(0o600)
-                .custom_flags(0o400000 | 0o2000000 | 0o4000);
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
         }
         let mut file = options.open(&temporary)?;
         check_private_file(&file)?;
@@ -2950,7 +2950,7 @@ fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let material = match options.open(&key_path) {
         Ok(mut file) => {
@@ -2982,7 +2982,7 @@ fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static
                 use std::os::unix::fs::OpenOptionsExt;
                 options
                     .mode(0o600)
-                    .custom_flags(0o400000 | 0o2000000 | 0o4000);
+                    .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
             }
             let mut file = options
                 .open(&key_path)

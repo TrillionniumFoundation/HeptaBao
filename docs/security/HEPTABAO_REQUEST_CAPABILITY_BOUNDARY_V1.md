@@ -50,3 +50,13 @@ The executable suite must continue to prove:
 ## Evolution rule
 
 Any future need to expose lower-level authentication must introduce a new affine, non-cloneable, non-serializable request capability that is consumed by one dispatcher call and bound to a fresh request identity and decision time. Re-exporting the current raw module is prohibited. Such a change requires hostile replay tests, an exact-head security review, and an explicit revision of this contract.
+
+## Transactional response-wrapping increment
+
+`ServiceRequest` carries only raw bounded request inputs and optional TTL, never
+a Principal/AuthState or preauthorized actor. The actual Principal is still
+consumed by value exactly once by dispatch. The isolated State candidate is now
+named `transaction`, cloned from durably `admitted` state so failed wrapper
+publication can roll back domain mutation without undoing finite-use admission.
+The lexical guard follows this explicit call, not an old variable name. Runtime
+failure tests and compile-fail visibility remain the semantic checks.

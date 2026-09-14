@@ -329,3 +329,13 @@ monotonic rollback anchor and does not qualify mixed-version rolling upgrades.
 local TLS state; its receipt binds both executable digests. `identity_schema_`
 source tests additionally cover unknown versions, contradictory legacy fields,
 byte-preserving reads, commit promotion and finite-use denial/reopen behavior.
+
+## Platform file-open regression boundary
+
+Audit rotation, configuration, TLS material, seal/rekey/recovery state, audit keys
+and HA material use target `libc::O_NOFOLLOW`, `O_CLOEXEC` and `O_NONBLOCK` flags
+rather than Linux-x86 numeric constants. The libc dependency follows `cfg(unix)`
+where Unix-only code consumes it. The whole server source is checked for numeric
+`custom_flags` regressions. This static guard and x86 execution do not establish
+new ARM64/macOS runtime qualification; the existing Linux-only durable-store
+profile and independent platform gates remain unchanged.

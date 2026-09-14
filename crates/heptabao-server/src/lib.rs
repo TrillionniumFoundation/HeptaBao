@@ -21,7 +21,8 @@ pub mod ha_state;
 pub mod http;
 mod service;
 pub use service::AuditConfig;
-pub use service::{Response, Service, ServiceRequest};
+pub use service::ServiceRequest;
+pub use service::{Response, Service};
 
 #[cfg(test)]
 mod cubbyhole_service_tests;

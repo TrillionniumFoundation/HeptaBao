@@ -57,13 +57,25 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         text = SERVICE_RS.read_text(encoding="utf-8")
         compact = re.sub(r"\s+", "", text)
         self.assertRegex(text, r"principal:\s*Option<Principal>")
-        self.assertRegex(text, r"Self::dispatch\(\s*&mut admitted,\s*principal,")
+        self.assertRegex(text, r"Self::dispatch\(\s*&mut transaction,\s*principal,")
         self.assertNotRegex(
             text,
-            r"Self::dispatch\(\s*&mut admitted,\s*principal\.as_ref\(\)",
+            r"Self::dispatch\(\s*&mut transaction,\s*principal\.as_ref\(\)",
         )
+        self.assertIn("letmuttransaction=admitted.clone();", compact)
+        self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
         self.assertEqual(3, compact.count(".authorize_request("))
         self.assertIn(",now)", compact)
+
+    def test_wrapping_request_envelope_does_not_carry_authority(self) -> None:
+        text = SERVICE_RS.read_text(encoding="utf-8")
+        match = re.search(r"pub struct ServiceRequest<'a> \{(.*?)\n\}", text, re.S)
+        self.assertIsNotNone(match)
+        fields = set(re.findall(r"pub (\w+):", match.group(1)))
+        self.assertEqual(fields, {"method", "path", "namespace", "token", "body", "wrap_ttl_seconds"})
+        self.assertNotIn("Principal", match.group(1))
+        self.assertNotIn("AuthState", match.group(1))
+        self.assertNotRegex(text, r"#\[derive\([^]]*(?:Clone|Debug)[^]]*\)\]\s*pub struct ServiceRequest")
 
     def test_request_capability_has_one_documented_owner(self) -> None:
         self.assertTrue(BOUNDARY_DOC.is_file())
