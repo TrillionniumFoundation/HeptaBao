@@ -1,0 +1,348 @@
++    def __init__(self, config: AgentConfig, directory: StateDirectory, *, client_factory=Client,
++                 wall=time.time, monotonic=time.monotonic):
++        config.validate()
++        self.config, self.directory = config, directory
++        self._trusted_ca = read_trusted_ca(config.ca_file)
++        self.binding = config.binding()
++        if read_trusted_ca(config.ca_file) != self._trusted_ca:
++            raise BaoError('agent_trust_configuration_changed')
++        self.factory, self.wall, self.monotonic = client_factory, wall, monotonic
++        self._deadline = None
++        self._token = None
++        self.state = directory.json('state.json', optional=True)
++        if self.state is None:
++            # Never adopt an orphan token after a crash in publication.
++            if directory.read('token', optional=True) is not None:
++                raise BaoError('orphan_token_requires_reconciliation')
++            self.state = {'schema': 1, 'binding': self.binding, 'phase': 'empty', 'generation': 0,
++                          'authentications': 0, 'observed_wall': self.wall()}
++        else:
++            if (not isinstance(self.state, dict) or type(self.state.get('schema')) is not int or self.state.get('schema') != 1
++                    or self.state.get('binding') != self.binding
++                    or self.state.get('phase') not in ('empty', 'ready', 'stopped')
++                    or type(self.state.get('authentications')) is not int
++                    or not 0 <= self.state['authentications'] <= config.max_authentications
++                    or type(self.state.get('generation')) is not int or self.state['generation'] < 0):
++                raise BaoError('pending_or_invalid_agent_state_requires_reconciliation')
++            if self.state['phase'] == 'ready':
++                if (type(self.state.get('expires_at')) not in (int, float)
++                        or type(self.state.get('observed_wall')) not in (int, float)
++                        or self.wall() < self.state['observed_wall']):
++                    raise BaoError('invalid_agent_expiry')
++                if self.wall() >= self.state['expires_at']:
++                    self._invalidate('empty')
++                else:
++                    token, _ = token_snapshot(directory, self.wall(), self.binding)
++                    self._token = token
++                    # Conservative restart deadline; revalidate before reuse.
++                    self._deadline = self.monotonic() + self.state['expires_at'] - self.wall()
++        self._resumed = self._token is not None
++
++    def _checkpoint(self, phase, **updates):
++        current = self.wall()
++        if (not math.isfinite(current) or type(self.state.get('observed_wall')) not in (int, float)
++                or current < self.state['observed_wall']):
++            raise BaoError('agent_clock_regression')
++        state = {**self.state, **updates, 'phase': phase, 'generation': self.state['generation'] + 1,
++                 'observed_wall': current}
++        self.directory.publish('state.json', state)
++        self.state = state
++
++    def _client(self, token: str):
++        if self.config.binding() != self.binding:
++            raise BaoError('agent_trust_configuration_changed')
++        return self.factory(self.config.address, self.config.ca_file, token, self.config.namespace, self.config.timeout,
++                            trusted_ca_pem=self._trusted_ca)
++
++    def _invalidate(self, phase):
++        self._checkpoint(phase)
++        self.directory.remove('token')
++        self._token, self._deadline = None, None
++
++    def _admit_token(self, response, start_wall, start_mono):
++        auth = response.body.get('auth')
++        if (response.status != 200 or response.body.get('wrap_info') is not None or not isinstance(auth, dict)
++                or auth.get('token_type') != 'service' or auth.get('renewable') is not True
++                or 'root' in auth.get('policies', []) or 'root' in auth.get('token_policies', [])):
++            raise BaoError('agent_requires_unwrapped_nonroot_renewable_service_token')
++        ttl, token = auth.get('lease_duration'), auth.get('client_token')
++        if (type(ttl) is not int or not 1 < ttl <= self.config.max_token_ttl_seconds
++                or not isinstance(token, str) or not token or len(token) > 8192
++                or any(ord(c) < 33 or ord(c) > 126 for c in token)):
++            raise BaoError('agent_token_response_invalid')
++        # Account for the entire login/renewal/lookup duration, not response receipt time.
++        deadline, expiry = start_mono + ttl, start_wall + ttl
++        client = self._client(token)
++        lookup = client.request('GET', '/v1/auth/token/lookup-self')
++        data = lookup.data() if lookup.status == 200 else {}
++        if (type(data.get('num_uses')) is not int or data['num_uses'] != 0
++                or data.get('type') != 'service' or data.get('renewable') is not True
++                or 'root' in data.get('policies', []) or type(data.get('ttl')) is not int
++                or data['ttl'] <= 0):
++            raise BaoError('agent_token_must_have_unlimited_uses_and_live_ttl')
++        if self.wall() >= expiry or self.monotonic() >= deadline:
++            raise BaoError('agent_token_expired_during_admission')
++        raw = token.encode('ascii') + b'\n'
++        self.directory.write('token', raw)
++        self._checkpoint('ready', token_sha256=hashlib.sha256(raw).hexdigest(), expires_at=expiry,
++                         ttl=ttl, renew_at=start_wall + ttl / 2)
++        self._token, self._deadline, self._resumed = token, deadline, False
++
++    def step(self) -> str:
++        self.directory.check()
++        if self.config.binding() != self.binding:
++            raise BaoError('agent_trust_configuration_changed')
++        now, mono = self.wall(), self.monotonic()
++        if now < self.state['observed_wall']:
++            raise BaoError('agent_clock_regression')
++        if self.state['phase'] not in ('ready', 'empty', 'stopped'):
++            raise BaoError('pending_agent_effect_requires_reconciliation')
++        if self._token is not None:
++            if now >= self.state['expires_at'] or (self._deadline is not None and mono >= self._deadline):
++                self._invalidate('empty')
++                return 'expired'
++            token, _ = token_snapshot(self.directory, now, self.binding)
++            if token != self._token:
++                raise BaoError('agent_token_changed')
++            if self._deadline is None or mono >= self._deadline:
++                self._invalidate('empty')
++                return 'expired'
++            # A restarted token is authoritatively checked before any use/renewal.
++            if self._resumed:
++                response = self._client(token).request('GET', '/v1/auth/token/lookup-self')
++                if response.status == 403:
++                    self._invalidate('empty')
++                    return 'reauthenticate'
++                if response.status != 200:
++                    raise BaoError('agent_resume_lookup_failed')
++                data = response.data()
++                if (type(data.get('num_uses')) is not int or data['num_uses'] != 0
++                        or type(data.get('ttl')) is not int or data['ttl'] <= 0
++                        or data.get('type') != 'service' or data.get('renewable') is not True
++                        or 'root' in data.get('policies', [])):
++                    raise BaoError('agent_resumed_token_rejected')
++                self._resumed = False
++            if now < self.state['renew_at'] and mono < self._deadline - self.state['ttl'] / 2:
++                return 'ready'
++            self._checkpoint('renew_pending')
++            self.directory.remove('token')
++            response = self._client(token).request('POST', '/v1/auth/token/renew-self',
++                                                   {'increment': self.config.renew_increment_seconds})
++            if response.status == 403:
++                self._invalidate('empty')
++                return 'reauthenticate'
++            self._admit_token(response, now, mono)
++            return 'renewed'
++        if self.state['authentications'] >= self.config.max_authentications:
++            raise BaoError('agent_authentication_budget_exhausted')
++        role, secret = _secret(self.config.role_id_file), _secret(self.config.secret_id_file)
++        self._checkpoint('auth_pending', authentications=self.state['authentications'] + 1)
++        self.directory.remove('token')
++        response = self._client('heptabao-unauthenticated').request('POST', '/v1/' + self.config.auth_mount + '/login',
++                                                                {'role_id': role, 'secret_id': secret}, token='')
++        self._admit_token(response, now, mono)
++        return 'authenticated'
++
++    def stop(self):
++        # Sink invalidation is NOT remote revocation. Cached copies remain subject
++        # to server TTL/revocation. Pending phases are retained, never cleared.
++        if self.state['phase'] in ('ready', 'empty', 'stopped'):
++            self._invalidate('stopped')
++        else:
++            self.directory.remove('token')
++
++
++def main(argv=None):
++    parser = SafeArgumentParser(description=__doc__)
++    parser.add_argument('--config', required=True, help='Owner-only JSON config, no credentials in argv')
++    parser.add_argument('--once', action='store_true', help='One admitted step; leave a ready sink until its stored TTL')
++    args = parser.parse_args(argv)
++    stop = threading.Event()
++    handlers = {}
++    try:
++        config = AgentConfig.load(args.config)
++        for sig in (signal.SIGINT, signal.SIGTERM):
++            handlers[sig] = signal.signal(sig, lambda *_: stop.set())
++        with StateDirectory(config.state_dir, writer=True) as directory:
++            agent = Agent(config, directory)
++            end = time.monotonic() + config.max_runtime_seconds
++            try:
++                while not stop.is_set() and time.monotonic() < end:
++                    agent.step()
++                    if args.once:
++                        return 0
++                    stop.wait(config.interval_seconds)
++            finally:
++                if not args.once:
++                    agent.stop()
++        return 0
++    except (BaoError, OSError, ValueError, TypeError):
++        # No exception/HTTP text, token, path, or credentials on diagnostics.
++        print('heptabao-agent: blocked; inspect private state and reconcile before restart', file=sys.stderr)
++        return 2
++    finally:
++        for sig, handler in handlers.items():
++            signal.signal(sig, handler)
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/clients/python/heptabao/cli.py b/clients/python/heptabao/cli.py
+new file mode 100644
+index 0000000..661dbdb
+--- /dev/null
++++ b/clients/python/heptabao/cli.py
+@@ -0,0 +1,161 @@
++"""Explicit HTTPS commands. Credentials never enter argv or ordinary stdout.
++
++Every response is published into a new owner-only file. No shell execution,
++redirect following, credential caching, environment-token fallback or blind
++mutation retry is performed. This is not the full OpenBao CLI/Agent/Proxy.
++"""
++from __future__ import annotations
++
++import json
++import os
++from pathlib import Path
++import stat
++import sys
++from .transport import (BaoError, Client, SafeArgumentParser, decode_json,
++                        key_path, private_read, private_write)
++
++INPUT_LIMIT = 256 * 1024
++
++
++def token_file(path: str) -> str:
++    try:
++        value = private_read(path, 8192).decode("ascii").strip()
++    except UnicodeError:
++        raise BaoError("invalid_token_file") from None
++    if not value or len(value) > 8192 or any(ord(c) < 33 or ord(c) > 126 for c in value):
++        raise BaoError("invalid_token_file")
++    return value
++
++
++def output_preflight(path: str) -> None:
++    """Reject a bad destination before any API request, then recheck on publish."""
++    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "geteuid"):
++        raise BaoError("private_files_require_posix")
++    target = Path(path).absolute()
++    directory = None
++    try:
++        directory = os.open(target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++        info = os.fstat(directory)
++        if info.st_uid != os.geteuid() or info.st_mode & 0o077 or not stat.S_ISDIR(info.st_mode):
++            raise BaoError("output_directory_requires_owner_only_mode")
++        try:
++            os.stat(target.name, dir_fd=directory, follow_symlinks=False)
++        except FileNotFoundError:
++            return
++        raise BaoError("output_already_exists")
++    except OSError:
++        raise BaoError("output_preflight_failed") from None
++    finally:
++        if directory is not None:
++            os.close(directory)
++
++
++def input_object(filename: str):
++    if filename == "-":
++        if sys.stdin.isatty():
++            raise BaoError("piped_json_input_required")
++        data = sys.stdin.buffer.read(INPUT_LIMIT + 1)
++        if len(data) > INPUT_LIMIT:
++            raise BaoError("input_size_limit")
++    else:
++        data = private_read(filename, INPUT_LIMIT)
++    result = decode_json(data)
++    if not isinstance(result, dict):
++        raise BaoError("input_object_required")
++    return result
++
++
++def parser() -> SafeArgumentParser:
++    result = SafeArgumentParser(description=__doc__)
++    result.add_argument("--address", required=True, help="Explicit HTTPS origin; no credentials in URL")
++    result.add_argument("--ca-file", required=True)
++    result.add_argument("--token-file", help="Owner-only bearer-token file; no direct token argument")
++    result.add_argument("--namespace", default="")
++    result.add_argument("--timeout", type=float, default=15.0)
++    result.add_argument("--output", required=True, help="New response JSON file in an owner-only directory")
++    result.add_argument("--allow-write", action="store_true", help="Explicitly admit a mutating command")
++    commands = result.add_subparsers(dest="command", required=True, parser_class=SafeArgumentParser)
++    for name in ("read", "list", "delete"):
++        command = commands.add_parser(name)
++        command.add_argument("path", help="Canonical API path without /v1/")
++        if name == "read":
++            command.add_argument("--wrap-ttl")
++    command = commands.add_parser("write")
++    command.add_argument("path")
++    command.add_argument("--input", required=True, help="Private JSON file or - for piped JSON")
++    command.add_argument("--wrap-ttl")
++    command = commands.add_parser("capabilities")
++    command.add_argument("paths", nargs="+")
++    selectors = command.add_mutually_exclusive_group()
++    selectors.add_argument("--target-token-file")
++    selectors.add_argument("--accessor-file")
++    command = commands.add_parser("wrap")
++    command.add_argument("--input", required=True)
++    command.add_argument("--ttl", required=True)
++    for name in ("unwrap", "rewrap", "wrapping-lookup"):
++        commands.add_parser(name).add_argument("--wrapping-token-file", required=True)
++    return result
++
++
++def prepare(args):
++    if args.command in ("write", "delete", "wrap", "unwrap", "rewrap") or getattr(args, "wrap_ttl", None):
++        if not args.allow_write:
++            raise BaoError("explicit_write_admission_required")
++    output_preflight(args.output)
++    bearer = token_file(args.token_file) if args.token_file else None
++    payload = None
++    ttl = getattr(args, "wrap_ttl", None)
++    if args.command in ("read", "list", "write", "delete"):
++        path = key_path(args.path)
++        method = {"read": "GET", "list": "LIST", "write": "POST", "delete": "DELETE"}[args.command]
++        if args.command == "write":
++            payload = input_object(args.input)
++    elif args.command == "capabilities":
++        if not 1 <= len(args.paths) <= 64 or len(set(args.paths)) != len(args.paths):
++            raise BaoError("invalid_capability_paths")
++        payload = {"paths": [key_path(path) for path in args.paths]}
++        method, path = "POST", "sys/capabilities-self"
++        if args.target_token_file:
++            payload["token"] = token_file(args.target_token_file)
++            path = "sys/capabilities"
++        elif args.accessor_file:
++            payload["accessor"] = token_file(args.accessor_file)
++            path = "sys/capabilities-accessor"
++    elif args.command == "wrap":
++        method, path, payload, ttl = "POST", "sys/wrapping/wrap", input_object(args.input), args.ttl
++    else:
++        wrapped = token_file(args.wrapping_token_file)
++        method, payload = "POST", {}
++        if args.command == "rewrap":
++            path, payload = "sys/wrapping/rewrap", {"token": wrapped}
++        else:
++            # Possession, not a root credential, authenticates self unwrap/lookup.
++            if bearer is not None:
++                raise BaoError("self_wrapping_command_does_not_take_a_second_token")
++            bearer = wrapped
++            path = "sys/wrapping/unwrap" if args.command == "unwrap" else "sys/wrapping/lookup"
++    if bearer is None:
++        raise BaoError("token_file_required")
++    client = Client(args.address, args.ca_file, bearer, args.namespace, args.timeout)
++    return client, method, "/v1/"+path, payload, ttl
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parser().parse_args(argv)
++    dispatched, received = False, False
++    try:
++        client, method, path, payload, ttl = prepare(args)
++        dispatched = True
++        response = client.request(method, path, payload, wrap_ttl=ttl)
++        received = True
++        private_write(args.output, response.body, replace=False)
++        # No response body, credential, private path or secret digest in diagnostics.
++        print(json.dumps({"status": "received", "http_status": response.status, "stored_privately": True}))
