@@ -4,6 +4,8 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
+Current runtime distinction: The actual network SDK now lives in `clients/python`; this Rust crate remains a standalone retry model.
+
 ## Purpose and non-goals
 
 This package owns client-side failure and retry classification. It does not perform HTTP, TLS, authentication, backoff scheduling or service discovery.

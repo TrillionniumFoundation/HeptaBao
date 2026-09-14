@@ -32,7 +32,7 @@ use crate::{
     ha_forward::{
         ForwardRequest, decode_request as decode_forward_request,
         decode_response as decode_forward_response, encode_request as encode_forward_request,
-        encode_response as encode_forward_response, is_forward_request,
+        encode_response as encode_forward_response, encode_wrapped_request, is_forward_request,
     },
     ha_state::ClusterStateCodec,
 };
@@ -454,6 +454,7 @@ impl HaProcess {
         namespace: &str,
         token: &str,
         body: &serde_json::Value,
+        wrap_ttl_seconds: Option<u64>,
     ) -> Result<Response, String> {
         let local = self.local_id()?;
         let leader = self
@@ -466,7 +467,12 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
-        let request = encode_forward_request(local, leader, method, path, namespace, token, body)?;
+        let request = Zeroizing::new(match wrap_ttl_seconds {
+            Some(ttl) => {
+                encode_wrapped_request((local, leader), method, path, namespace, token, body, ttl)?
+            }
+            None => encode_forward_request(local, leader, method, path, namespace, token, body)?,
+        });
         let response = zeroize::Zeroizing::new(
             self.forward_transport
                 .exchange(target, &request)

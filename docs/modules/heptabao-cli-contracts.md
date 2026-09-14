@@ -4,6 +4,8 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
+Current runtime distinction: The actual bounded CLI now lives in `clients/python`; this Rust crate remains a standalone invocation model, not full OpenBao CLI compatibility.
+
 ## Purpose and non-goals
 
 This package owns a bounded command-line invocation grammar that rejects secret material in process arguments and makes indirect secret input explicit. It does not implement network transport, interactive prompting, shell completion, configuration-file loading or command execution.

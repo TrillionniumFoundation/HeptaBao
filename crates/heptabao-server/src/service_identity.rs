@@ -6,8 +6,20 @@ use crate::auth::{AuthError, AuthResponse};
 
 impl State {
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.engines
+            .validate_lease_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.auth
+            .validate_wrapping_state()
+            .map_err(|_| Response::error(503, "invalid wrapping state"))?;
         match self.schema {
-            1 if !self.auth.has_live_identity_state() => Ok(()),
+            1 if !self.auth.has_live_identity_state()
+                && !self.auth.has_wrapping_state()
+                && !self.engines.has_lease_state() =>
+            {
+                Ok(())
+            }
+            2 if !self.auth.has_wrapping_state() && !self.engines.has_lease_state() => Ok(()),
             CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,

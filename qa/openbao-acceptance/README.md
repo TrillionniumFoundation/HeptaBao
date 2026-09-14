@@ -63,3 +63,15 @@ rehearsal against the named OpenBao2.6.2 and candidate binary digests. It is not
 receipt for future binaries or full-format migration. Archive additional actual
 execution receipts and bind each to the tested deployment and immutable candidate
 source identity before making a scoped claim. No live HA pass is bundled.
+
+## Additional selected runtime profiles
+
+`response_wrapping.py`, `capabilities_live.py`, `ssh_otp_live.py` reuse the strict
+nonempty/all-passed comparison harness with the pinned official binary. They do
+not self-advance `complete_surface_corpus_v1.json`. `client_live.py` exercises the
+real Python CLI. `wrapping_ha.py` and `ssh_otp_ha.py` include earlier HA profiles,
+so their scenario counts are overlapping, not additive coverage. `wrapping_upgrade.py`
+requires the exact schema-2 legacy binary hash and exercises actual schema-3
+wrapping/OTP mutation, old-reader rejection and recovery. Use absolute binaries,
+new output names and an existing mode-0700 evidence directory. All fixture secrets
+remain in temporary private directories and are removed by these launchers.

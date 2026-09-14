@@ -247,7 +247,14 @@ legacy executable with the current binary using only private local fixtures:
 old state is initialized, read by the new process, mutated by a bound login,
 refused by the old process, then reopened by the new process with the disabled
 entity still enforced. An old binary refusing a new format is a downgrade
-fence, not a supported rollback procedure. Preserve schema-2-capable binaries,
+fence, not a supported rollback procedure. Preserve binaries capable of the actual persisted schema,
 current token revocations and full encrypted state. Rollback by restoring a
 stale backup, external monotonic anchoring, mixed-version HA and general OpenBao
 migration remain separate, unqualified capabilities.
+
+### Subsequent runtime format
+
+The current wrapping/SSH-OTP increment writes Service schema 3 and preserves
+read-only access to valid older identity-aware schema 2 state. It extends the
+same old-reader rejection rule; it does not make schema downgrade or mixed-version
+rolling HA upgrades safe. See `../auth/HEPTABAO_RESPONSE_WRAPPING.md`.

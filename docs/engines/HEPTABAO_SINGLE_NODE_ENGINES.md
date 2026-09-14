@@ -321,3 +321,12 @@ acceptance. Implementing another route does not establish HA or migration safety
 - [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238): TOTP algorithm and fixed interoperability vectors.
 - [RFC 4231](https://www.rfc-editor.org/rfc/rfc4231): HMAC SHA-2 test vectors.
 - [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648): base32 encoding examples.
+
+## Current SSH OTP increment
+
+[SSH OTP and registered local leases](HEPTABAO_SSH_OTP.md) now supports actual
+role CRUD, online credential issuance/verification, mount TTL tuning, local lease
+lookup/list/exact and segment-bound prefix revocation. It does not implement SSH
+CA, a host/PAM integration, general renewable-provider callbacks or a background
+lease worker. The real `Service` owns authorization, issuer liveness, durable
+consumption and commit-before-response; standalone `EngineState` is not a bypass.

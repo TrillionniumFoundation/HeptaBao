@@ -123,3 +123,18 @@ Root `GET /v1/sys/internal/recovery/<reference>` returns the bounded local recon
 Optional `--ha-config /absolute/ha.json` enables one voter per process with pinned mTLS peers and the actual initialized application's cluster identity. See the server guide for required node/peer fields, 200 ms heartbeats, 1000–2000 ms elections and bounded forwarding workers. ReadIndex remains required; a local leader observation is insufficient. The synthetic destructive fixture uses cold-cloned development seed data and is not a production enrollment procedure.
 
 Repository checks include `root_maintenance_routes_compact_snapshot_restore_and_reconcile`, `result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_reopen` and the `audit_rotation_*` interruption/tamper tests in the server package. Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`; the standalone smoke and HA fixtures exercise additional named scenarios. Independently witnessed restore, filesystem/power failure, HA faults, rolling upgrades, custody, archival retention and incident response remain qualification work.
+
+## Wrapping/OTP schema-3 operations
+
+Use the current wrapping and SSH OTP guides for scoped command and lifecycle
+semantics. Keep original pre-upgrade backups and the actual capable binary under
+operator control. Schema-1/2 reads do not rewrite state; the first real mutation
+upgrades to schema 3. An old binary must reject schema 3; do not hand-edit the
+schema, delete identity/wrapper/lease fields or restore stale grants to bypass it.
+This is not a qualified mixed-version HA upgrade or production migration plan.
+
+For uncertain unwrap or OTP verification, do not blindly retry. The capability
+may already be durably consumed while the response was withheld. Metadata lookup
+and the existing authenticated recovery boundary are investigative tools, not an
+instruction to recreate the credential. An SSH integration must separately bind
+returned username/IP to the actual host; no host integration has been deployed.

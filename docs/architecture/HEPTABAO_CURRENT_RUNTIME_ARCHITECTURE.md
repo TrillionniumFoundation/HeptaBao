@@ -58,3 +58,20 @@ The V1 system-context/crate graph and authoritative ownership map retain propose
 ## Core isolation implementation detail
 
 The [Cubbyhole contract](../engines/HEPTABAO_CUBBYHOLE.md) specifies current per-token state, final-use admission, explicit revoke/tidy cleanup and retention limitations. The [server Identity contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md) documents structural Identity plus bounded login/entity/internal-group policy composition; complete MFA and OIDC integration remain unfinished. ACL rules are selected by highest-priority matching pattern; only identical winning patterns union. Parameter-constrained policies remain separate work.
+
+## Current wrapping, inspection and dynamic OTP assembly
+
+`http` passes a typed `ServiceRequest` with optional wrapping TTL. `Service`
+reconciles wrapper/lease expiry and issuer liveness against the current ReadIndex
+snapshot, durably admits finite bearer use, and dispatches an isolated candidate.
+`auth_wrapping` owns encrypted captured responses, `service_capabilities` reads
+current ACL/Identity projections, and `engines/ssh` with `engine_leases` owns the
+online OTP profile. Result audit and durable publication precede response release.
+HBFQ2 carries wrapping options without downgrade. These are internal modules of
+`heptabao-server`; the five-package normal Cargo dependency closure is unchanged.
+
+The real Python transport/CLI lives in `clients/python`; QA imports that transport.
+It is a separate language package, not an additional Cargo crate and not a daemon.
+All current boundaries, capacity limits and unqualified surfaces are documented in
+`docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`, `docs/auth/HEPTABAO_CAPABILITIES.md`,
+`docs/engines/HEPTABAO_SSH_OTP.md` and `clients/python/README.md`.

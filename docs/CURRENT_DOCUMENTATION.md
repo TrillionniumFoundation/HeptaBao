@@ -124,3 +124,15 @@ Current normative set: HEPTABAO-PLAN-2026-09-07-V2.1 and its V2 canonical-state,
 Supersession chain: V1.4.4 module documentation → V1.4.5 security invariants → V1.4.6 authoritative recovery → V1.4.7 post-merge truth → V2.0 canonical repository state → V2.1 active development plan.
 
 The V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure remain inherited historical evidence only; neither supersedes the active V2.1 plan or grants production authority.
+
+## Service and client runtime increments
+
+- `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`: real single-use response capture, forwarding, recovery and schema 3.
+- `docs/auth/HEPTABAO_CAPABILITIES.md`: live policy inspection without consuming a subject token.
+- `docs/engines/HEPTABAO_SSH_OTP.md`: online OTP issuance/verification and scoped registered lease lifecycle.
+- `clients/python/README.md`: installable real HTTPS SDK and explicit private-output CLI.
+
+These extend the existing source owner without changing the 46 Cargo-package
+count. The fixed compatibility corpus remains separate from selected new official
+binary profiles. Source/test presence and local fixture execution do not establish
+full compatibility, multi-platform/host safety, independent acceptance or release.

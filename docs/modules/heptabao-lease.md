@@ -4,6 +4,8 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
+Current runtime distinction: The current SSH OTP local lease owner is `heptabao-server/src/engine_leases.rs` inside Service, not this standalone model. General external-provider callbacks and a background worker remain absent.
+
 ## Purpose and non-goals
 
 This package owns lease issue, renewal, expiration and revocation state for secret and authentication leases. It does not execute backend revocation callbacks, persist leases or schedule background expiration.

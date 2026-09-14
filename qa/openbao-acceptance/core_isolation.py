@@ -144,7 +144,7 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
 
 def main(*, scenario_runner=run_scenarios, profile="core-isolation",
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
-    if profile not in ("core-isolation", "identity-live"):
+    if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live", "ssh-otp-live"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)

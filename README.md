@@ -12,6 +12,17 @@ The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable stat
 
 The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. The `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` per-process composition is present in this candidate, but production admission and destructive three-process HA qualification remain open, as do qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
+## Current integrated runtime additions
+
+The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RESPONSE_WRAPPING.md),
+[live capability inspection](docs/auth/HEPTABAO_CAPABILITIES.md), and
+[SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
+[Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
+not only a contract. These remain bounded development profiles, not full OpenBao
+compatibility or production readiness. Schema 3 refuses unsafe old-binary fallback;
+no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
+worker, full Agent/Proxy or independent acceptance is created by these additions.
+
 ## Current source of truth
 
 1. `planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml`

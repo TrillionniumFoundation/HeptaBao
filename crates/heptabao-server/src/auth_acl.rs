@@ -6,8 +6,12 @@ use std::cmp::Ordering;
 
 pub(super) const DEFAULT_RULES: &[(&str, &[&str])] = &[
     ("auth/token/lookup-self", &["read"]),
+    ("sys/capabilities-self", &["update"]),
     ("auth/token/renew-self", &["update"]),
     ("auth/token/revoke-self", &["update"]),
+    ("sys/wrapping/wrap", &["update"]),
+    ("sys/wrapping/unwrap", &["update"]),
+    ("sys/wrapping/lookup", &["update", "read"]),
     (
         "cubbyhole/*",
         &["create", "read", "update", "delete", "list"],

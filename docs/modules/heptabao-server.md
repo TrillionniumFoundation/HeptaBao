@@ -75,9 +75,30 @@ Source-bound lexical inventory: `crates/heptabao-server`; Cargo SHA-256 `490216f
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
+## Integrated runtime extensions
+
+Response wrapping now uses `ServiceRequest`, `handle_request` and
+`handle_request_at` to bind TTL without widening the Principal interface. Read
+[the wrapping contract](../auth/HEPTABAO_RESPONSE_WRAPPING.md) for durable
+single-use capture, HBFQ2 forwarding, limits, failure and upgrade semantics.
+[Live capability inspection](../auth/HEPTABAO_CAPABILITIES.md) uses the same
+current ACL/Identity evaluator; inspecting another finite token does not consume it.
+[SSH OTP and its registered leases](../engines/HEPTABAO_SSH_OTP.md) are actual
+Service paths, not an imported in-memory lease model. Issuance, consumption,
+revocation, clock fencing and wrapper capture share the existing writer.
+
+The [Python SDK and CLI](../../clients/python/README.md) makes real HTTPS calls
+and publishes responses privately. It does not implement full CLI/Agent/Proxy
+parity and does not turn the standalone Rust contract crates into runtime owners.
+
+Source test anchors include `wrapping_result_audit_failure_withholds_response_and_persists_single_use`,
+`ssh_lease_path_and_body_identity_cannot_redirect_authorized_revocation` and
+`ssh_disabled_login_identity_revokes_issued_otp_without_resurrection`.
+These names identify test code; only exact-candidate execution evidence proves a pass.
+
 ## State and data model
 
-The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 2 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
+The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 3 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
 
 ## Invariants and authorization
 

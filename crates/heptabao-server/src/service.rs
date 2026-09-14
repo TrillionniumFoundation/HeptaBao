@@ -21,14 +21,18 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 2;
+const CURRENT_STATE_SCHEMA: u32 = 3;
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 #[path = "audit_rotation.rs"]
 mod audit_rotation;
+#[path = "service_capabilities.rs"]
+mod capabilities;
 #[path = "service_identity.rs"]
 mod identity;
+#[path = "service_leases.rs"]
+mod leases;
 pub use audit_rotation::AuditConfig;
 use audit_rotation::AuditRotation;
 const MAX_SEAL_SHARES: u8 = 16;
@@ -231,6 +235,17 @@ impl Drop for InitializationStage {
     }
 }
 
+/// One bounded request. The token and body are secret-bearing; deliberately no
+/// Debug/Clone/Serialize implementation. HTTP and authenticated HA use this same entry.
+pub struct ServiceRequest<'a> {
+    pub method: &'a str,
+    pub path: &'a str,
+    pub namespace: &'a str,
+    pub token: &'a str,
+    pub body: Value,
+    pub wrap_ttl_seconds: Option<u64>,
+}
+
 struct RequestDispatch<'a> {
     method: &'a str,
     path: &'a str,
@@ -239,6 +254,7 @@ struct RequestDispatch<'a> {
     body: Value,
     now: u64,
     allow_forward: bool,
+    wrap_ttl_seconds: Option<u64>,
 }
 
 struct RequestView<'a> {
@@ -249,6 +265,7 @@ struct RequestView<'a> {
     body: &'a Value,
     now: u64,
     allow_forward: bool,
+    wrap_ttl_seconds: Option<u64>,
 }
 
 pub struct Service {
@@ -421,6 +438,35 @@ impl Service {
         body: Value,
         now: u64,
     ) -> Response {
+        self.handle_request_at(
+            ServiceRequest {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                wrap_ttl_seconds: None,
+            },
+            now,
+        )
+    }
+
+    pub fn handle_request(&mut self, request: ServiceRequest<'_>) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |d| d.as_secs());
+        self.handle_request_at(request, now)
+    }
+
+    pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+        } = request;
         self.handle_at_mode(RequestDispatch {
             method,
             path,
@@ -429,17 +475,19 @@ impl Service {
             body,
             now,
             allow_forward: true,
+            wrap_ttl_seconds,
         })
     }
 
-    pub(crate) fn handle_forwarded(
-        &mut self,
-        method: &str,
-        path: &str,
-        namespace: &str,
-        token: &str,
-        body: Value,
-    ) -> Response {
+    pub(crate) fn handle_forwarded(&mut self, request: ServiceRequest<'_>) -> Response {
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+        } = request;
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_or(0, |duration| duration.as_secs());
@@ -451,6 +499,7 @@ impl Service {
             body,
             now,
             allow_forward: false,
+            wrap_ttl_seconds,
         })
     }
 
@@ -463,14 +512,59 @@ impl Service {
             mut body,
             now,
             allow_forward,
+            wrap_ttl_seconds,
         } = request;
-        let fingerprint = self.request_fingerprint(method, path, namespace, token);
+        let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
+        if let Some(ttl) = wrap_ttl_seconds {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.wrapping-request.v1");
+            context.update(fingerprint.as_bytes());
+            context.update(&ttl.to_le_bytes());
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
         if self
             .audit_event("request", &fingerprint, now, None)
             .is_err()
         {
             erase_json(&mut body);
             return Response::error(503, "audit unavailable before entry");
+        }
+        if let Some(ttl) = wrap_ttl_seconds {
+            let validation = if ttl == 0 || ttl > 32 * 24 * 3600 {
+                Some((400, "wrapping TTL is outside the bounded service profile"))
+            } else if matches!(
+                path,
+                "sys/health"
+                    | "sys/leader"
+                    | "sys/init"
+                    | "sys/unseal"
+                    | "sys/seal"
+                    | "sys/seal-status"
+                    | "sys/init/ack"
+            ) || path.starts_with("sys/rekey/")
+                || path.starts_with("sys/storage/")
+                || path.starts_with("sys/internal/recovery/")
+                || matches!(method, "HEAD" | "DELETE")
+            {
+                Some((
+                    501,
+                    "response wrapping is not implemented on this service boundary",
+                ))
+            } else {
+                None
+            };
+            if let Some((status, message)) = validation {
+                erase_json(&mut body);
+                let response = Response::error(status, message);
+                if self
+                    .audit_event("response", &fingerprint, now, Some(status))
+                    .is_err()
+                {
+                    self.recovery_required = true;
+                    return Response::error(503, "wrapping rejection audit unavailable");
+                }
+                return response;
+            }
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
             let (response, response_audited) =
@@ -501,6 +595,7 @@ impl Service {
             body: &body,
             now,
             allow_forward,
+            wrap_ttl_seconds,
         });
         erase_json(&mut body);
         if self
@@ -525,6 +620,7 @@ impl Service {
             body,
             now,
             allow_forward,
+            wrap_ttl_seconds,
         } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
@@ -582,7 +678,7 @@ impl Service {
                 }
                 return match ha.lock() {
                     Ok(ha) => ha
-                        .forward_request(method, path, namespace, token, body)
+                        .forward_request(method, path, namespace, token, body, wrap_ttl_seconds)
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
                     Err(_) => Response::error(503, "HA process lock is unavailable"),
                 };
@@ -601,14 +697,51 @@ impl Service {
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");
         };
-        let mut principal = if token.is_empty() {
-            None
-        } else {
-            match admitted.auth.authenticate(token, now) {
-                Ok(principal) => Some(principal),
-                Err(error) => return Response::error(error.status, &error.message),
+        // A trusted wall-clock observation is persisted before a wrapping
+        // token can be rejected/consumed. Observed expiry cannot be undone by
+        // a later clock rollback, process restart, or HA leader change.
+        if Self::reconcile_lease_owners(&mut admitted, now) {
+            admitted.schema = CURRENT_STATE_SCHEMA;
+            if let Err(error) = self.commit_state(&admitted) {
+                return error;
             }
-        };
+            self.state = Some(admitted.clone());
+        }
+        let public_otp_verify = admitted
+            .engines
+            .is_ssh_verification(namespace, method, path);
+        if (wrap_ttl_seconds.is_some()
+            || path.starts_with("sys/wrapping/")
+            || admitted.auth.is_wrapping_token(token))
+            && admitted.auth.advance_wrapping_clock(now)
+        {
+            admitted.schema = CURRENT_STATE_SCHEMA;
+            if let Err(error) = self.commit_state(&admitted) {
+                return error;
+            }
+            self.state = Some(admitted.clone());
+        }
+        // OpenBao reports an invalid self-unwrapping capability as a wrapping
+        // request error, not a generic login failure. Validate its type/scope
+        // without consuming it; actual admission below still consumes exactly once.
+        if path == "sys/wrapping/unwrap"
+            && body.get("token").is_none()
+            && let Err(error) =
+                admitted
+                    .auth
+                    .lookup_wrapping_request(token, namespace, "POST", &json!({}), now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        let mut principal =
+            if token.is_empty() || path == "sys/wrapping/lookup" || public_otp_verify {
+                None
+            } else {
+                match admitted.auth.authenticate(token, now) {
+                    Ok(principal) => Some(principal),
+                    Err(error) => return Response::error(error.status, &error.message),
+                }
+            };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = CURRENT_STATE_SCHEMA;
             if let Err(error) = self.commit_state(&admitted) {
@@ -689,7 +822,57 @@ impl Service {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
         };
-        let response = Self::dispatch(&mut admitted, principal, namespace, method, path, body, now);
+        let mut transaction = admitted.clone();
+        let mut response = if path == "sys/wrapping/lookup" {
+            match transaction
+                .auth
+                .lookup_wrapping_request(token, namespace, method, body, now)
+            {
+                Ok(value) => Response {
+                    status: value.status,
+                    body: value.body,
+                },
+                Err(error) => Response::error(error.status, &error.message),
+            }
+        } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none() {
+            Response::error(400, "endpoint requires response wrapping to be used")
+        } else {
+            Self::dispatch(
+                &mut transaction,
+                principal,
+                namespace,
+                method,
+                path,
+                body,
+                now,
+            )
+        };
+        if let Some(ttl) = wrap_ttl_seconds
+            && (200..300).contains(&response.status)
+            && response.status != 204
+            && !response.body.is_null()
+            && response.body.get("wrap_info").is_none_or(Value::is_null)
+        {
+            match transaction
+                .auth
+                .wrap_response(namespace, path, ttl, &response.body, now)
+            {
+                Ok(wrapped) => {
+                    response = Response {
+                        status: wrapped.status,
+                        body: wrapped.body,
+                    };
+                    admitted = transaction;
+                }
+                // Wrapping publication failure rolls back the domain operation;
+                // the earlier finite-use token admission deliberately stays consumed.
+                Err(error) => {
+                    response = Response::error(error.status, &error.message);
+                }
+            }
+        } else {
+            admitted = transaction;
+        }
         let mut serialized = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
@@ -720,17 +903,28 @@ impl Service {
         now: u64,
     ) -> Response {
         let principal = principal.as_ref();
+        if state.engines.is_ssh_service_route(namespace, path) || path.starts_with("sys/leases/") {
+            return Self::lease_route(state, principal, namespace, method, path, body, now);
+        }
+        if matches!(
+            path,
+            "sys/capabilities" | "sys/capabilities-self" | "sys/capabilities-accessor"
+        ) {
+            return Self::capabilities_route(state, principal, namespace, method, path, body, now);
+        }
         let mut auth = state.auth.clone();
         match auth.handle(principal, namespace, method, path, body, now) {
             Ok(Some(mut response)) => {
                 let mut engines = state.engines.clone();
-                if let Err(error) = Self::finish_identity_response(
-                    &mut auth,
-                    &mut engines,
-                    &mut response,
-                    namespace,
-                    now,
-                ) {
+                if !path.starts_with("sys/wrapping/")
+                    && let Err(error) = Self::finish_identity_response(
+                        &mut auth,
+                        &mut engines,
+                        &mut response,
+                        namespace,
+                        now,
+                    )
+                {
                     erase_json(&mut response.body);
                     return error;
                 }
@@ -2894,3 +3088,15 @@ mod ha_health_status_tests {
 #[cfg(test)]
 #[path = "service_tests.rs"]
 mod tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "wrapping_service_tests.rs"]
+mod wrapping_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "capabilities_service_tests.rs"]
+mod capabilities_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "ssh_service_tests.rs"]
+mod ssh_service_tests;

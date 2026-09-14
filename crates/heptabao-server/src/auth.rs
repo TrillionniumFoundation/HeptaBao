@@ -18,10 +18,15 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[path = "auth_acl.rs"]
 mod acl;
+#[path = "auth_capabilities.rs"]
+mod capabilities;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_wrapping.rs"]
+mod wrapping;
+pub(crate) use capabilities::InspectionTarget;
 use identity::LoginIdentity;
 
 const DEFAULT_TTL: u64 = 3600;
@@ -38,6 +43,8 @@ const CAPABILITIES: &[&str] = &[
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "is_zero")]
+    wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -208,6 +215,8 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    wrapping: Option<wrapping::WrappedResponse>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     entity_id: Option<String>,
     #[serde(default)]
@@ -410,6 +419,10 @@ fn checked_expiry(now: u64, ttl: u64) -> Result<u64, AuthError> {
     now.checked_add(ttl)
         .ok_or_else(|| bad("TTL overflows timestamp"))
 }
+fn is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
 fn unlimited_zero(value: u64) -> Option<u64> {
     if value == 0 { None } else { Some(value) }
 }
@@ -575,6 +588,7 @@ fn claim_values(body: &Value, name: &str) -> Result<BTreeSet<String>, AuthError>
 impl AuthState {
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            wrapping_clock: 0,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
             users: BTreeMap::new(),
@@ -585,6 +599,7 @@ impl AuthState {
             jwt_mounts: BTreeMap::new(),
         };
         let token = Token {
+            wrapping: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
@@ -609,6 +624,11 @@ impl AuthState {
 
     fn active_token(&self, id: &str, now: u64, consume_check: bool) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
+        let now = if token.wrapping.is_some() {
+            now.max(self.wrapping_clock)
+        } else {
+            now
+        };
         if token.expires_at.is_some_and(|t| now >= t)
             || consume_check && token.uses_remaining == Some(0)
         {
@@ -646,6 +666,7 @@ impl AuthState {
         let request_token = token.clone();
         if token.uses_remaining == Some(0) {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
+            token.wrapping = None;
         }
         Ok(Principal {
             identity_policies: BTreeSet::new(),
@@ -688,11 +709,39 @@ impl AuthState {
             return Err(denied());
         }
         let token = self.check_principal(principal, namespace, now)?;
+        if principal.token.wrapping.is_some() {
+            return if path == "sys/wrapping/unwrap" && capability == "update" {
+                Ok(())
+            } else {
+                Err(denied())
+            };
+        }
         if token.root {
             return Ok(());
         }
+        if self.policy_allows(
+            namespace,
+            path,
+            capability,
+            &token.policies,
+            &principal.identity_policies,
+        ) {
+            Ok(())
+        } else {
+            Err(denied())
+        }
+    }
+
+    fn policy_allows(
+        &self,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        policies: &BTreeSet<String>,
+        identity_policies: &BTreeSet<String>,
+    ) -> bool {
         let mut decision = acl::Decision::default();
-        for policy_name in token.policies.iter().chain(&principal.identity_policies) {
+        for policy_name in policies.iter().chain(identity_policies) {
             let explicit = self
                 .policies
                 .get(namespace)
@@ -712,11 +761,7 @@ impl AuthState {
                 }
             }
         }
-        if decision.allowed() {
-            Ok(())
-        } else {
-            Err(denied())
-        }
+        decision.allowed()
     }
 
     #[cfg(test)]
@@ -1065,6 +1110,11 @@ impl AuthState {
     ) -> Result<Option<AuthResponse>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
+        if path.starts_with("sys/wrapping/") {
+            return self
+                .wrapping_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
         if path == "cubbyhole" || path.starts_with("cubbyhole/") {
             return self
                 .cubbyhole_route(principal, namespace, method, path, body, now)
@@ -1186,6 +1236,7 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                wrapping: None,
                 entity_id: None,
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
@@ -1824,6 +1875,7 @@ impl AuthState {
         }
         self.issue(
             Token {
+                wrapping: None,
                 entity_id: parent.entity_id.clone(),
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
@@ -2599,6 +2651,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        wrapping: None,
         entity_id: None,
         cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,
@@ -2951,3 +3004,48 @@ fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
 #[cfg(test)]
 #[path = "auth_tests.rs"]
 mod tests;
+
+// A bounded issuer reference is metadata, not a reusable execution Principal.
+pub(crate) struct LeaseIssuer {
+    pub(crate) digest: String,
+    pub(crate) expires_at: Option<u64>,
+    pub(crate) entity_id: Option<String>,
+}
+impl AuthState {
+    pub(crate) fn lease_issuer(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        now: u64,
+    ) -> Result<LeaseIssuer, AuthError> {
+        self.check_principal(actor, namespace, now)?;
+        self.lease_issuer_by_digest(&actor.digest, namespace, now)
+            .ok_or_else(denied)
+    }
+    pub(crate) fn lease_issuer_by_digest(
+        &self,
+        id: &str,
+        namespace: &str,
+        now: u64,
+    ) -> Option<LeaseIssuer> {
+        let token = self.active_token(id, now, true).ok()?;
+        if !token.root && token.namespace != namespace {
+            return None;
+        }
+        let mut expires = token.expires_at;
+        let mut parent = token.parent.as_deref();
+        // active_token already rejected cycles, missing or expired ancestors.
+        while let Some(id) = parent {
+            let ancestor = self.tokens.get(id)?;
+            if let Some(limit) = ancestor.expires_at {
+                expires = Some(expires.map_or(limit, |current| current.min(limit)));
+            }
+            parent = ancestor.parent.as_deref();
+        }
+        Some(LeaseIssuer {
+            digest: id.into(),
+            expires_at: expires,
+            entity_id: token.entity_id.clone(),
+        })
+    }
+}

@@ -568,7 +568,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     {
         assert!(token.get("entity_id").is_none());
     }
-    for schema in [0, 3, u32::MAX] {
+    for schema in [0, CURRENT_STATE_SCHEMA + 1, u32::MAX] {
         value["schema"] = json!(schema);
         assert!(
             serde_json::from_value::<State>(value.clone())?

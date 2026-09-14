@@ -194,13 +194,14 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 return Response::error(503, "HA forward service is unavailable");
             };
             let response = match service.lock() {
-                Ok(mut service) => service.handle_forwarded(
-                    &request.method,
-                    &request.path,
-                    &request.namespace,
-                    &request.token,
-                    std::mem::take(&mut request.body),
-                ),
+                Ok(mut service) => service.handle_forwarded(crate::ServiceRequest {
+                    method: &request.method,
+                    path: &request.path,
+                    namespace: &request.namespace,
+                    token: &request.token,
+                    body: std::mem::take(&mut request.body),
+                    wrap_ttl_seconds: request.wrap_ttl_seconds,
+                }),
                 Err(_) => Response::error(503, "HA forward service lock is unavailable"),
             };
             request.token.zeroize();
@@ -279,13 +280,18 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
                         let response = match service.lock() {
-                            Ok(mut service) => service.handle(
-                                if is_head { "GET" } else { &request.method },
-                                &request.path,
-                                &request.namespace,
-                                &request.token,
-                                std::mem::take(&mut request.body.0),
-                            ),
+                            Ok(mut service) => service.handle_request(crate::ServiceRequest {
+                                method: if is_head && request.wrap_ttl_seconds.is_none() {
+                                    "GET"
+                                } else {
+                                    &request.method
+                                },
+                                path: &request.path,
+                                namespace: &request.namespace,
+                                token: &request.token,
+                                body: std::mem::take(&mut request.body.0),
+                                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                            }),
                             Err(_) => Response::error(503, "service state is unavailable"),
                         };
                         (response, is_head)
@@ -401,6 +407,7 @@ struct Request {
     namespace: String,
     token: Zeroizing<String>,
     body: SecretJson,
+    wrap_ttl_seconds: Option<u64>,
 }
 struct ParseError {
     status: u16,
@@ -493,7 +500,11 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
             && !matches!(
                 name.as_str(),
-                "x-vault-token" | "x-vault-namespace" | "x-vault-request"
+                "x-vault-token"
+                    | "x-vault-namespace"
+                    | "x-vault-request"
+                    | "x-vault-wrap-ttl"
+                    | "x-vault-wrap-format"
             )
     }) {
         return Err(ParseError {
@@ -501,6 +512,20 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             message: "requested OpenBao header semantics are not implemented",
         });
     }
+    if map
+        .get("x-vault-wrap-format")
+        .is_some_and(|value| value.as_str() != "uuid")
+    {
+        return Err(ParseError {
+            status: 501,
+            message: "only opaque response wrapping tokens are supported",
+        });
+    }
+    let wrap_ttl_seconds = map
+        .get("x-vault-wrap-ttl")
+        .map(|value| parse_wrap_ttl(value))
+        .transpose()?
+        .flatten();
     if map.contains_key("transfer-encoding") || map.contains_key("expect") {
         return Err(bad("streamed request bodies are not supported"));
     }
@@ -618,7 +643,52 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         namespace,
         token,
         body,
+        wrap_ttl_seconds,
     })
+}
+
+fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
+    let invalid = || bad("invalid or unsupported wrapping TTL");
+    if value.is_empty() || value.len() > 64 || !value.is_ascii() {
+        return Err(invalid());
+    }
+    let mut total = 0u64;
+    let mut number = 0u64;
+    let mut digits = false;
+    for byte in value.bytes() {
+        if byte.is_ascii_digit() {
+            number = number
+                .checked_mul(10)
+                .and_then(|v| v.checked_add(u64::from(byte - b'0')))
+                .ok_or_else(invalid)?;
+            digits = true;
+        } else {
+            if !digits {
+                return Err(invalid());
+            }
+            let unit = match byte {
+                b'h' => 3600,
+                b'm' => 60,
+                b's' => 1,
+                _ => return Err(invalid()),
+            };
+            total = total
+                .checked_add(number.checked_mul(unit).ok_or_else(invalid)?)
+                .ok_or_else(invalid)?;
+            number = 0;
+            digits = false;
+        }
+    }
+    if digits {
+        if !value.bytes().all(|b| b.is_ascii_digit()) {
+            return Err(invalid());
+        }
+        total = number;
+    }
+    if total > 32 * 24 * 3600 {
+        return Err(invalid());
+    }
+    Ok((total != 0).then_some(total))
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -755,12 +825,7 @@ mod tests {
             payload.len()
         );
         assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
-        for header in [
-            "X-Vault-Wrap-TTL",
-            "X-Vault-MFA",
-            "X-Vault-Policy-Override",
-            "X-Vault-Index",
-        ] {
+        for header in ["X-Vault-MFA", "X-Vault-Policy-Override", "X-Vault-Index"] {
             let request = format!(
                 "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}: synthetic\r\n\r\n"
             );
@@ -805,5 +870,53 @@ mod tests {
             .join()
             .map_err(|_| io::Error::other("sender thread failed"))?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod wrapping_header_tests {
+    use super::*;
+    #[test]
+    fn wrapping_duration_is_bounded_and_rejects_silent_rounding() {
+        for (input, expected) in [
+            ("60", Some(60)),
+            ("1h30m5s", Some(5405)),
+            ("0s", None),
+            ("0", None),
+        ] {
+            assert!(parse_wrap_ttl(input).is_ok_and(|actual| actual == expected));
+        }
+        for input in [
+            "",
+            "-1",
+            "1.5s",
+            "1ms",
+            "1d",
+            "1s5",
+            "s",
+            " 60",
+            "18446744073709551616",
+            "768h1s",
+        ] {
+            assert!(parse_wrap_ttl(input).is_err());
+        }
+    }
+    #[test]
+    fn wrapping_headers_are_retained_and_duplicates_or_jwt_reject() {
+        let valid =
+            b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: 60s\r\n\r\n";
+        assert!(
+            read_request(&mut valid.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|r| r.wrap_ttl_seconds == Some(60))
+        );
+        for header in [
+            "X-Vault-Wrap-TTL: 60s\r\nx-vault-wrap-ttl: 1s",
+            "X-Vault-Wrap-TTL: invalid",
+            "X-Vault-Wrap-Format: jwt",
+        ] {
+            let request =
+                format!("GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
     }
 }

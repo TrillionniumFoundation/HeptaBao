@@ -75,12 +75,17 @@ class Node:
     def data_dir(self) -> Path:
         return self.root / "data"
 
-    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0):
+    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0, wrap_ttl: str | None = None):
         if not path or path.startswith("/") or "://" in path or ".." in path.split("/"):
             raise FixtureError("invalid_fixture_request_path")
         headers = {"Content-Type": "application/json"}
         if token:
             headers["X-Vault-Token"] = token
+        if wrap_ttl is not None:
+            if not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64 or any(
+                    ord(c) < 33 or ord(c) > 126 for c in wrap_ttl):
+                raise FixtureError("invalid_fixture_wrapping_ttl")
+            headers["X-Vault-Wrap-TTL"] = wrap_ttl
         request = urllib.request.Request(
             f"https://127.0.0.1:{self.http_port}/v1/{path}",
             data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)

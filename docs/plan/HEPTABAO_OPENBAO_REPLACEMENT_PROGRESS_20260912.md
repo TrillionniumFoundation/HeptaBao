@@ -21,3 +21,13 @@ The bounded Service login/entity binding and current entity/internal-group polic
 Repository-controlled OpenBao replacement work also remains outside Identity, including remaining dynamic-secret/lease behavior, CLI/Agent/Proxy behavior, migration/rotation paths, and the remaining Raft administrative/upgrade/snapshot/platform evidence required by the active development plan.
 
 External legal review, independent security review, HSM-backed exercises, destructive platform validation and independent OpenBao-Oracle observation remain external completion gates. This branch must not self-attest those gates.
+## Subsequent integrated runtime increment
+
+The current source adds bounded response wrapping, live capability inspection,
+SSH OTP/local lease administration and a Python network SDK/CLI. These run through
+the actual Service/client paths rather than isolated contract models. Development
+commands and unresolved boundaries are linked from `docs/CURRENT_DOCUMENTATION.md`.
+The new persisted format is schema 3 with legacy no-op read preservation and
+old-reader rejection. Exact commits, binary hashes and executed results belong to
+external receipts, not cached green assertions in this plan. The full compatibility
+denominator and independent production/migration/release gates remain unchanged.

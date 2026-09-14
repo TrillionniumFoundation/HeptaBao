@@ -9,8 +9,8 @@ The architecture and current owner boundaries are in [the current runtime archit
 | `heptabao-agent` | no | Credential/cache lifecycle model; no running sidecar or server route | `crates/heptabao-agent/src/lib.rs::authentication_renewal_and_revocation_are_monotonic` |
 | `heptabao-authbus-contracts` | no | Request-bound assertion verifier contracts; no Authbus login mount | `crates/heptabao-authbus-contracts/src/lib.rs::valid_assertion_authenticates_but_does_not_authorize` |
 | `heptabao-barrier-api` | no | Provider-neutral envelope/AAD contract; no server seal route | `crates/heptabao-barrier-api/src/lib.rs::envelope_round_trips_strictly` |
-| `heptabao-cli-contracts` | no | Command classification/output contract; no OpenBao-compatible CLI binary | `crates/heptabao-cli-contracts/src/lib.rs::secret_bearing_arguments_fail_closed` |
-| `heptabao-client-contracts` | no | Client retry/request-ID model; no network SDK | `crates/heptabao-client-contracts/src/lib.rs::unknown_after_entry_never_becomes_automatic_retry` |
+| `heptabao-cli-contracts` | no | Command classification/output contract; bounded real Python CLI is separate and not full OpenBao CLI parity | `crates/heptabao-cli-contracts/src/lib.rs::secret_bearing_arguments_fail_closed` |
+| `heptabao-client-contracts` | no | Client retry/request-ID model; real Python HTTPS SDK lives separately in clients/python | `crates/heptabao-client-contracts/src/lib.rs::unknown_after_entry_never_becomes_automatic_retry` |
 | `heptabao-compatibility` | no | Oracle comparison/normalization tooling; no server route | `crates/heptabao-compatibility/src/lib.rs::repository_cannot_self_admit_compatibility` |
 | `heptabao-domain` | no | Namespace/request domain identifiers; server uses separate internal models | `crates/heptabao-domain/src/lib.rs::identifier_and_path_validation_are_fail_closed` |
 | `heptabao-durable-core` | no | Inherited generation-store/barrier composition; no server route | `crates/heptabao-durable-core/src/lib.rs::prepared_mutation_binds_target_before_authoritative_commit` |
@@ -25,7 +25,7 @@ The architecture and current owner boundaries are in [the current runtime archit
 | `heptabao-key-lifecycle` | no | Journaled key-epoch metadata; server Shamir/rekey is separate | `crates/heptabao-key-lifecycle/src/lib.rs::bootstrap_stage_rotate_retire_and_revoke_replay` |
 | `heptabao-kms-contracts` | no | Custody wrap/unwrap interface; no integrated KMS auto-unseal route | `crates/heptabao-kms-contracts/src/lib.rs::key_lifecycle_is_fail_closed_and_monotonic` |
 | `heptabao-kv-engine` | no | Standalone KV version model; current secret/* routes use server/engines/kv.rs | `crates/heptabao-kv-engine/src/lib.rs::compare_and_set_and_version_lifecycle_are_enforced` |
-| `heptabao-lease` | no | In-memory lease model; no general sys/leases backend | `crates/heptabao-lease/src/lib.rs::lease_lifecycle_is_monotonic` |
+| `heptabao-lease` | no | Standalone in-memory lease model; current scoped sys/leases backend uses server/engine_leases.rs, not this crate | `crates/heptabao-lease/src/lib.rs::lease_lifecycle_is_monotonic` |
 | `heptabao-migration` | no | Inventory/manifest/reconciliation model and evidence tooling; no automatic production importer | `crates/heptabao-migration/src/durable.rs::inventory_is_closed_sorted_dependency_checked_and_hashed` |
 | `heptabao-mount-router` | no | Standalone mount routing model; sys/mounts uses server engine state | `crates/heptabao-mount-router/src/lib.rs::longest_prefix_wins_within_namespace` |
 | `heptabao-namespace` | no | Standalone namespace model; server uses its internal namespace validation/state | `crates/heptabao-namespace/src/lib.rs::hierarchy_and_longest_prefix_resolution_are_deterministic` |
@@ -58,3 +58,9 @@ Run a row with `cargo +1.98.0 test --locked -p <package> <test-name>` (illustrat
 `python scripts/validate_current_documentation_semantics.py` checks every row against workspace manifests, the server's actual dependency closure and a discovered Rust test in that same package. Changing a dependency or deleting/renaming the selected test requires reviewing this map. These checks cannot prove semantic completeness, so code review must still compare handler behavior with the corresponding human guide.
 
 Qualification, compatibility, production, migration and release authority remain false.
+
+The Python SDK/CLI (`clients/python`) is outside this Cargo-package table. The
+new wrapping, capability-inspection and SSH OTP modules are internal server source,
+not extra workspace packages. Their named service, binary-differential, upgrade
+and HA tests are linked from the current server guide. Original compatibility
+corpus status is not advanced by standalone profile success.

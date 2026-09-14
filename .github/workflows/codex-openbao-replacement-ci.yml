@@ -70,6 +70,7 @@ jobs:
           python scripts/validate_repository_v2.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
+          python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
 
       - name: Test the complete locked Rust workspace
         if: ${{ success() || failure() }}
@@ -123,6 +124,20 @@ jobs:
             --binary "$binary" \
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
+
+      - name: Exercise actual private-output client and OTP wrapping HA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          evidence="$RUNNER_TEMP/heptabao-runtime-profile-evidence"
+          mkdir -m 700 "$evidence"
+          python qa/openbao-acceptance/client_live.py --binary "$binary" --output "$evidence/client.json"
+          timeout 360 python qa/openbao-acceptance/ssh_otp_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
+            --output "$evidence/ssh-ha.json"
 
       - name: Confirm source remained immutable
         if: ${{ success() || failure() }}

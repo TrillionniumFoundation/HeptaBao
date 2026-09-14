@@ -229,7 +229,7 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding, response wrapping, external-group login synchronization, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, external-group login synchronization, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
@@ -383,3 +383,14 @@ Identity-aware token bindings use Service state version 2. Old optional fields
 are omitted for byte-preserving version-1 reads, but the first durable mutation
 promotes the complete state to version 2. Version-1-only binaries must reject
 that state; see the server guide and operator runbook before any rollback.
+
+## Current wrapping and introspection APIs
+
+[Response wrapping](HEPTABAO_RESPONSE_WRAPPING.md) and
+[live capability inspection](HEPTABAO_CAPABILITIES.md) now run through the actual
+Service boundary. Wrapper records are encrypted and single-use; ordinary lookup
+metadata does not consume them. The default policy grants wrap/unwrap/lookup and
+self capability inspection, but not rewrap or arbitrary subject inspection.
+The new state writer emits schema 3; the identity-aware schema-2 baseline remains
+readable only without wrapping/SSH-lease state and is upgraded only on mutation.
+The SSH engine's CIDR rules are not authentication-method CIDR support.

@@ -15,11 +15,16 @@ mod identity;
 mod identity_projection;
 use identity_projection::IdentityProjection;
 mod kv;
+#[path = "engine_leases.rs"]
+mod leases;
+mod ssh;
 mod totp;
 mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    lease_clock: u64,
     namespaces: BTreeMap<String, NamespaceState>,
 }
 
@@ -29,6 +34,10 @@ impl std::fmt::Debug for EngineState {
             .field("state", &"[REDACTED]")
             .finish()
     }
+}
+
+fn lease_clock_is_zero(value: &u64) -> bool {
+    *value == 0
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -70,6 +79,7 @@ enum Backend {
     Kv1(BTreeMap<String, Value>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
+    Ssh(ssh::SshOtp),
     Totp(totp::Totp),
 }
 
@@ -130,11 +140,16 @@ impl Mount {
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
+            Backend::Ssh(_) => ("ssh", json!({})),
             Backend::Totp(_) => ("totp", json!({})),
+        };
+        let (default_ttl, max_ttl) = match &self.backend {
+            Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
+            _ => (0, 0),
         };
         json!({"type":kind,"description":self.description,"options":options,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
-            "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
+            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}})
     }
 }
 
@@ -332,6 +347,7 @@ impl EngineState {
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
+                Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -427,6 +443,7 @@ impl EngineState {
                 Backend::Transit(engine) => {
                     engine.handle(namespace, &mount_path, method, relative, &params, now)?
                 }
+                Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
             }
         };
         if response.mutated {
@@ -456,14 +473,21 @@ fn handle_mounts(
             .ok_or_else(not_found)?;
         if method == "GET" {
             return Ok(ok(
-                json!({"description":mount.description,"options":mount.descriptor()["options"],"default_lease_ttl":0,"max_lease_ttl":0}),
+                json!({"description":mount.description,"options":mount.descriptor()["options"],
+                    "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
+                    "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"]}),
                 false,
             ));
         }
         if !write_method(method) {
             return Err(unsupported());
         }
-        reject_unknown(body, &["description", "options"])?;
+        if let Backend::Ssh(engine) = &mut mount.backend {
+            reject_unknown(body, &["description", "default_lease_ttl", "max_lease_ttl"])?;
+            engine.tune(body)?;
+        } else {
+            reject_unknown(body, &["description", "options"])?;
+        }
         if let Some(description) = body.get("description") {
             mount.description = description
                 .as_str()
@@ -536,9 +560,10 @@ fn handle_mounts(
             return Err(error(501, "requested mount option is not implemented"));
         }
     }
-    if body
-        .get("config")
-        .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+    if body.get("type").and_then(Value::as_str) != Some("ssh")
+        && body
+            .get("config")
+            .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
     {
         return Err(error(
             501,
@@ -582,6 +607,20 @@ fn handle_mounts(
             }
             Backend::Totp(totp::Totp::default())
         }
+        "ssh" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("SSH mount options are not supported"));
+            }
+            let mut engine = ssh::SshOtp::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Ssh(engine)
+        }
         _ => return Err(error(501, "secret engine type is not implemented")),
     };
     let description = body
@@ -597,7 +636,7 @@ fn handle_mounts(
 }
 
 /// RFC 3339 UTC, second resolution, for persisted Unix timestamps.
-fn timestamp(seconds: u64) -> String {
+pub(crate) fn timestamp(seconds: u64) -> String {
     let seconds = seconds.min(253402300799); // last second of year 9999
     let days = (seconds / 86400) as i64;
     let z = days + 719468;
@@ -657,3 +696,11 @@ fn duration_seconds(value: &Value) -> Result<u64> {
 #[cfg(test)]
 #[path = "engine_tests.rs"]
 mod tests;
+
+fn listing(keys: Vec<String>) -> Result<EngineResponse> {
+    if keys.is_empty() {
+        Err(not_found())
+    } else {
+        Ok(ok(json!({"keys":keys}), false))
+    }
+}
