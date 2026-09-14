@@ -20,6 +20,10 @@ impl Drop for WrappedResponse {
 }
 
 impl AuthState {
+    pub(crate) fn has_live_wrappers(&self) -> bool {
+        self.tokens.values().any(|token| token.wrapping.is_some())
+    }
+
     pub(crate) fn has_wrapping_state(&self) -> bool {
         self.wrapping_clock != 0 || self.tokens.values().any(|token| token.wrapping.is_some())
     }

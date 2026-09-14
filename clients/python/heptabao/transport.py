@@ -175,7 +175,7 @@ class Response:
 
 
 class Client:
-    def __init__(self, address: str, ca_file: str, token: str, namespace: str = "", timeout: float = 15):
+    def __init__(self, address: str, ca_file: str, token: str, namespace: str = "", timeout: float = 15, *, trusted_ca_pem: bytes | None = None):
         if type(timeout) not in (int, float) or not math.isfinite(timeout) or not 0 < timeout <= 60:
             raise BaoError("invalid_timeout")
         self.address = endpoint(address)
@@ -189,11 +189,17 @@ class Client:
         self._token = token
         self.timeout = timeout
         try:
-            context = ssl.create_default_context(cafile=ca_file)
+            if trusted_ca_pem is None:
+                context = ssl.create_default_context(cafile=ca_file)
+            else:
+                if not isinstance(trusted_ca_pem, bytes) or not 1 <= len(trusted_ca_pem) <= 1024 * 1024:
+                    raise BaoError("invalid_frozen_ca_bytes")
+                # Load the exact verified bytes, not a mutable second path open.
+                context = ssl.create_default_context(cadata=trusted_ca_pem.decode("ascii"))
             context.minimum_version = ssl.TLSVersion.TLSv1_2
             self._opener = urllib.request.build_opener(
                 urllib.request.ProxyHandler({}), NoRedirect(), urllib.request.HTTPSHandler(context=context))
-        except (OSError, ssl.SSLError):
+        except (OSError, ssl.SSLError, UnicodeError):
             raise BaoError("ca_configuration_invalid") from None
 
     @classmethod

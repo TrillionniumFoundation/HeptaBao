@@ -680,3 +680,192 @@ fn ssh_disabled_login_identity_revokes_issued_otp_without_resurrection() -> Test
     assert_eq!(issue(&mut s, &actor).status, 200);
     Ok(())
 }
+
+#[test]
+fn idle_maintenance_commits_expiry_without_a_client_request_and_no_clock_revival() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, key) = start(&mut s)?;
+    install(&mut s, &root);
+    let issued = issue(&mut s, &root);
+    let otp = text(&issued.body, "/data/key")?;
+    assert!(s.state.as_ref().ok_or("state")?.engines.has_live_leases());
+    assert!(s.maintain_lifetimes_at(160)?);
+    assert!(!s.state.as_ref().ok_or("state")?.engines.has_live_leases());
+    let current = snapshot(&s)?;
+    assert!(!s.maintain_lifetimes_at(100)?);
+    assert_eq!(current, snapshot(&s)?);
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(verify(&mut s, &otp, 100).status, 400);
+    Ok(())
+}
+
+#[test]
+fn idle_maintenance_requires_pre_entry_audit_and_has_no_network_authority() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    assert!(!s.maintain_lifetimes_at(100)?);
+    let (root, _) = start(&mut s)?;
+    install(&mut s, &root);
+    assert_eq!(issue(&mut s, &root).status, 200);
+    let before = snapshot(&s)?;
+    s.audit_capacity = s.audit.metadata()?.len();
+    assert!(s.maintain_lifetimes_at(160).is_err());
+    assert_eq!(snapshot(&s)?, before);
+    s.audit_capacity = u64::MAX;
+    // No route exists that lets a caller choose a lifecycle clock or dispatch an INTERNAL request.
+    assert_ne!(
+        call(&mut s, "", "lifecycle/expiry", json!({"now":999999})).status,
+        204
+    );
+    Ok(())
+}
+
+#[test]
+fn idle_maintenance_erases_expired_wrapped_payload_and_then_stops_writing() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    let wrapped = s.handle_request_at(
+        ServiceRequest {
+            method: "POST",
+            path: "sys/wrapping/wrap",
+            namespace: "",
+            token: &root,
+            body: json!({"value":"synthetic-idle-wrapped-secret"}),
+            wrap_ttl_seconds: Some(5),
+        },
+        100,
+    );
+    assert_eq!(wrapped.status, 200);
+    assert!(s.state.as_ref().ok_or("state")?.auth.has_live_wrappers());
+    assert!(s.maintain_lifetimes_at(105)?);
+    assert!(!s.state.as_ref().ok_or("state")?.auth.has_live_wrappers());
+    let bytes = snapshot(&s)?;
+    assert!(
+        !bytes
+            .windows(b"synthetic-idle-wrapped-secret".len())
+            .any(|b| b == b"synthetic-idle-wrapped-secret")
+    );
+    assert!(!s.maintain_lifetimes_at(106)?);
+    assert_eq!(bytes, snapshot(&s)?);
+    Ok(())
+}
+
+#[test]
+fn lifecycle_worker_is_bounded_joined_and_does_not_keep_service_alive() -> TestResult {
+    use std::{
+        sync::{Arc, Mutex},
+        time::{Duration, Instant},
+    };
+    let f = Fixture::new()?;
+    let s = Arc::new(Mutex::new(f.service()?));
+    assert!(lifecycle::start_lifecycle_worker(&s, Duration::ZERO)?.is_none());
+    assert!(lifecycle::start_lifecycle_worker(&s, Duration::from_millis(1)).is_err());
+    assert!(lifecycle::start_lifecycle_worker(&s, Duration::from_secs(61)).is_err());
+    let worker = lifecycle::start_lifecycle_worker(&s, Duration::from_secs(60))?;
+    assert_eq!(Arc::strong_count(&s), 1);
+    let before = Instant::now();
+    drop(worker);
+    assert!(before.elapsed() < Duration::from_secs(2));
+    Ok(())
+}
+
+#[test]
+fn idle_result_audit_failure_fences_but_preserves_committed_revocation_on_reopen() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, key) = start(&mut s)?;
+    install(&mut s, &root);
+    let otp = text(&issue(&mut s, &root).body, "/data/key")?;
+    let fingerprint = s.request_fingerprint("INTERNAL", "lifecycle/expiry", "", "");
+    let event = AuditUnsigned {
+        schema: 2,
+        sequence: s.audit_sequence + 1,
+        previous: STANDARD.encode(s.audit_previous),
+        time: 160,
+        kind: "lifecycle-request".into(),
+        path_digest: fingerprint,
+        status: None,
+    };
+    let payload = serde_json::to_vec(&event)?;
+    let mac = STANDARD.encode(hmac::sign(&s.audit_key, &payload).as_ref());
+    let length = serde_json::to_vec(&AuditRecord { event, mac })?.len() + 1;
+    s.audit_capacity = s.audit.metadata()?.len() + length as u64;
+    assert!(s.maintain_lifetimes_at(160).is_err());
+    assert!(s.recovery_required);
+    assert!(!s.state.as_ref().ok_or("state")?.engines.has_live_leases());
+    assert!(s.maintain_lifetimes_at(161).is_err());
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(verify(&mut s, &otp, 100).status, 400);
+    Ok(())
+}
+
+#[test]
+fn renewed_bearer_echo_is_request_bound_wrapped_and_never_reconstructed_from_accessor() -> TestResult
+{
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    let created = call(
+        &mut s,
+        &root,
+        "auth/token/create",
+        json!({"policies":["default"],"ttl":"60s"}),
+    );
+    assert_eq!(created.status, 200);
+    let token = text(&created.body, "/auth/client_token")?;
+    let accessor = text(&created.body, "/auth/accessor")?;
+    let renewed = call(
+        &mut s,
+        &token,
+        "auth/token/renew-self",
+        json!({"increment":60}),
+    );
+    assert_eq!(renewed.status, 200);
+    assert_eq!(renewed.body["auth"]["client_token"], token);
+    let renewed = call(
+        &mut s,
+        &root,
+        "auth/token/renew",
+        json!({"token":token,"increment":60}),
+    );
+    assert_eq!(renewed.status, 200);
+    assert_eq!(renewed.body["auth"]["client_token"], token);
+    let hidden = call(
+        &mut s,
+        &root,
+        "auth/token/renew-accessor",
+        json!({"accessor":accessor,"increment":60}),
+    );
+    assert_eq!(hidden.status, 200);
+    assert!(!hidden.body.to_string().contains(&token));
+    let wrapped = s.handle_request_at(
+        ServiceRequest {
+            method: "POST",
+            path: "auth/token/renew-self",
+            namespace: "",
+            token: &token,
+            body: json!({"increment":60}),
+            wrap_ttl_seconds: Some(10),
+        },
+        100,
+    );
+    assert_eq!(wrapped.status, 200);
+    assert!(!wrapped.body.to_string().contains(&token));
+    let wrap_token = text(&wrapped.body, "/wrap_info/token")?;
+    let opened = call(&mut s, &wrap_token, "sys/wrapping/unwrap", json!({}));
+    assert_eq!(opened.status, 200);
+    assert_eq!(opened.body["auth"]["client_token"], token);
+    Ok(())
+}

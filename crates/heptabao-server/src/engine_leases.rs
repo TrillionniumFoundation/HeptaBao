@@ -25,6 +25,13 @@ impl EngineState {
                 .ssh_mount(namespace, path)
                 .is_some_and(|mount| &path[mount.len()..] == "verify")
     }
+    pub(crate) fn has_live_leases(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(
+                |mount| matches!(&mount.backend, Backend::Ssh(engine) if !engine.leases.is_empty()),
+            )
+        })
+    }
     pub(crate) fn has_lease_state(&self) -> bool {
         self.lease_clock != 0
             || self.namespaces.values().any(|state| {

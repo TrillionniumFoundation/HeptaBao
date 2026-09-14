@@ -96,6 +96,21 @@ Source test anchors include `wrapping_result_audit_failure_withholds_response_an
 `ssh_disabled_login_identity_revokes_issued_otp_without_resurrection`.
 These names identify test code; only exact-candidate execution evidence proves a pass.
 
+### Idle lifetime worker and operational consumers
+
+The host starts one bounded `service_lifecycle.rs` worker for local lease expiry
+and wrapped-payload erasure, using the existing Service writer, ReadIndex, audit
+and durable commit. It cannot issue credentials or run external-provider callbacks.
+`lifecycle_interval_seconds` is default 5, enabled 1–60, explicitly disabled at 0;
+per-request expiry remains enforced. Source tests include
+`idle_maintenance_commits_expiry_without_a_client_request_and_no_clock_revival`
+and `lifecycle_worker_is_bounded_joined_and_does_not_keep_service_alive`.
+The real Python AppRole Agent, same-UID Unix proxy and host-bound OTP helper
+are described in [the operational contract](../operations/HEPTABAO_AGENT_PROXY_HELPER.md).
+They are separately installable consumers, not new server state owners. Successful
+`auth/token/renew-self` and token-selected `renew` echo only the already supplied
+bearer, before optional wrapping; accessor lookup never reconstructs a credential.
+
 ## State and data model
 
 The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 3 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
@@ -110,7 +125,7 @@ Malformed input yields 400, missing/invalid/denied credentials 403, absent or un
 
 ## Concurrency and ordering
 
-One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including wrapping, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB normal body, 32 MiB snapshot request body and 32 MiB response; decoded backup transfer is limited to 20 MiB. Per-peer rate-limit controls exist; authentication is CPU-expensive and production throughput/SLO qualification remains open.
+One OS-locked audit writer and one OS-locked durable directory prevent concurrent writers. Connections are bounded (default 16, maximum 128); a mutex serializes service transitions while parsing and TLS I/O occur outside that mutex. Each connection has an absolute deadline enforced at underlying socket I/O, including fragmented TLS handshakes. One HTTP request is handled per connection; chunked request bodies, duplicate headers, encoded path separators and pipelining are rejected. Query parameters use a small explicit allowlist; secret-bearing fields must use JSON bodies. Unsupported `X-Vault-*`/`X-Bao-*` security headers (including unsupported wrapping formats, MFA and consistency requirements) return 501 before dispatch instead of silently releasing an unwrapped response. HTTP bounds are 16 KiB headers, 256 KiB normal body, 32 MiB snapshot request body and 32 MiB response; decoded backup transfer is limited to 20 MiB. Per-peer rate-limit controls exist; authentication is CPU-expensive and production throughput/SLO qualification remains open.
 
 ## Security and privacy
 

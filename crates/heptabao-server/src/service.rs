@@ -31,6 +31,10 @@ mod audit_rotation;
 mod capabilities;
 #[path = "service_identity.rs"]
 mod identity;
+#[path = "service_lifecycle.rs"]
+mod lifecycle;
+pub(crate) use lifecycle::start_lifecycle_worker;
+
 #[path = "service_leases.rs"]
 mod leases;
 pub use audit_rotation::AuditConfig;
@@ -847,6 +851,23 @@ impl Service {
                 now,
             )
         };
+        // The durable AuthState stores only token digests. After successful
+        // token renewal, echo only the exact credential already supplied on
+        // this authorized request. Do this before optional response wrapping;
+        // no bearer is reconstructed from an accessor or stored in plaintext.
+        if response.status == 200 && matches!(path, "auth/token/renew-self" | "auth/token/renew") {
+            let renewed = if path == "auth/token/renew-self" {
+                Some(token)
+            } else {
+                body.get("token").and_then(Value::as_str)
+            };
+            if let (Some(renewed), Some(auth)) = (
+                renewed,
+                response.body.get_mut("auth").and_then(Value::as_object_mut),
+            ) {
+                auth.insert("client_token".into(), json!(renewed));
+            }
+        }
         if let Some(ttl) = wrap_ttl_seconds
             && (200..300).contains(&response.status)
             && response.status != 204

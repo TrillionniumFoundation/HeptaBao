@@ -134,6 +134,8 @@ jobs:
           evidence="$RUNNER_TEMP/heptabao-runtime-profile-evidence"
           mkdir -m 700 "$evidence"
           python qa/openbao-acceptance/client_live.py --binary "$binary" --output "$evidence/client.json"
+          timeout 180 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" --output "$evidence/agent-proxy-helper.json"
           timeout 360 python qa/openbao-acceptance/ssh_otp_ha.py \
             --binary "$binary" \
             --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \

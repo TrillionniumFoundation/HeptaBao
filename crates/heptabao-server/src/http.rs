@@ -43,6 +43,12 @@ pub struct Config {
     pub rate_limit_burst: u32,
     #[serde(default = "default_rate_limit_entries")]
     pub rate_limit_entries: usize,
+    /// Zero explicitly disables idle maintenance. Active request checks remain mandatory.
+    #[serde(default = "default_lifecycle_interval")]
+    pub lifecycle_interval_seconds: u64,
+}
+fn default_lifecycle_interval() -> u64 {
+    5
 }
 fn default_connections() -> usize {
     16
@@ -137,6 +143,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
+    if config.lifecycle_interval_seconds > 60 {
+        return Err("lifecycle interval must be zero or 1..=60 seconds".into());
+    }
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
         config.rate_limit_burst,
@@ -213,6 +222,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     }
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
+    let _lifecycle = crate::service::start_lifecycle_worker(
+        &service,
+        Duration::from_secs(config.lifecycle_interval_seconds),
+    )?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",

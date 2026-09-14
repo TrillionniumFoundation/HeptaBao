@@ -20,6 +20,18 @@ After provider entry, an uncertain result must go through `mark_outcome_unknown_
 
 This crate is an independent controller model outside the current `heptabao-server` dependency closure. The agent adapter must own transport, trusted monotonic time, actual token bytes, sink publication and restart recovery; the model supplies no running agent process.
 
+### Current executable client profile
+
+This Rust crate remains a standalone model and is not newly connected into the
+server dependency graph. The separate Python 0.2.0 executable implementation in
+`clients/python/heptabao/` now supplies bounded AppRole authentication, a private
+restart-aware token sink, renewal, and an exact-route Linux Unix-socket proxy.
+Its actual process state, file formats, trust limits, no-blind-retry behavior and
+source/installed-package tests are specified in
+[the operational consumer guide](../operations/HEPTABAO_AGENT_PROXY_HELPER.md).
+Do not infer full OpenBao Agent/Proxy compatibility or use this crate's unit tests
+as evidence that the separate executable was run at the current candidate.
+
 ### Historical V1.4.7 lexical snapshot
 
 The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).

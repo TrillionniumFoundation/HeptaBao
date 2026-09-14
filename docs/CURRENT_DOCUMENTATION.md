@@ -136,3 +136,11 @@ These extend the existing source owner without changing the 46 Cargo-package
 count. The fixed compatibility corpus remains separate from selected new official
 binary profiles. Source/test presence and local fixture execution do not establish
 full compatibility, multi-platform/host safety, independent acceptance or release.
+
+## Operational Agent, Unix proxy, SSH verifier and idle expiry
+
+The actual process entry points, pending-checkpoint recovery, file/TLS trust,
+server lifetime worker and explicit unimplemented scope are specified in
+[`operations/HEPTABAO_AGENT_PROXY_HELPER.md`](operations/HEPTABAO_AGENT_PROXY_HELPER.md).
+The Python processes do not reclassify standalone Rust contract/model crates as
+server dependencies. Current module status and all independent gates are unchanged.

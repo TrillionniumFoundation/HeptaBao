@@ -75,3 +75,15 @@ It is a separate language package, not an additional Cargo crate and not a daemo
 All current boundaries, capacity limits and unqualified surfaces are documented in
 `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`, `docs/auth/HEPTABAO_CAPABILITIES.md`,
 `docs/engines/HEPTABAO_SSH_OTP.md` and `clients/python/README.md`.
+
+## Idle lifecycle and real operational clients
+
+`service_lifecycle.rs` performs bounded local OTP/wrapper expiry through the same
+single authoritative Service writer and HA commit path. It has no remotely selected
+clock and no general external provider callbacks. The Python `agent`, `proxy` and
+`ssh_helper` process entry points make actual verified HTTPS calls, with an AppRole
+pending checkpoint/token sink, a Linux same-UID Unix listener, and explicit host/user/
+role verification respectively. Their protocol/operations/remaining boundaries are
+in `docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md`. The existing Rust agent/proxy
+model crates remain outside the normal server closure; no package-count inference
+is made. Service schema remains 3 and mixed-version HA is not qualified.

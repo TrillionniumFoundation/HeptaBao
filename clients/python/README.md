@@ -102,7 +102,30 @@ python qa/openbao-acceptance/client_live.py --binary /absolute/heptabao-server \
 checks private outputs and secret-free diagnostics, and removes generated state.
 QA's `bao_http.py` reuses the product transport rather than shipping QA in the
 product. Package/wheel tests must bind the installed source files to this exact
-checkout. Network SDK existence is not full SDK ecosystem parity. Agent auto-auth,
-renewal/cache/template/sink orchestration, Proxy, complete CLI flags/output modes,
+checkout. Network SDK existence is not full SDK ecosystem parity. Full Agent method/template/cache/sink coverage, full Proxy compatibility, complete CLI flags/output modes,
 Windows protected files, upstream plugin workflows and independent operational
 qualification remain separate implementation work.
+
+## Executable operational profiles (client package 0.2.0)
+
+The wheel also installs `heptabao-agent`, `heptabao-proxy` and `heptabao-ssh-helper`.
+These are actual processes, not full upstream replacements. Read the detailed
+[configuration, state machine and recovery contract](../../docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md)
+before use. AppRole login and renewal have a durable pending checkpoint and a
+single private token sink; unknown outcomes block retry. The proxy has a fixed
+HTTPS origin/namespace and finite route allowlist on a Linux same-UID Unix socket.
+The helper reads OTP only from stdin and checks the returned host/user/role binding.
+It does not configure PAM or sshd. Pending checkpoints and stale sockets require
+operator reconciliation rather than an unconditional cleanup/restart loop.
+
+```sh
+heptabao-agent --help
+heptabao-proxy --help
+heptabao-ssh-helper --help
+```
+
+The real-process fixture supports both source imports and an installed wheel via
+`--client-python /absolute/venv/bin/python`. `--oracle` runs these same clients
+against the pinned official OpenBao service; that proves only the selected workflow,
+not general Agent/Proxy compatibility. Python memory copies are not zeroization
+claims. Linux x86_64 execution cannot establish other-platform qualification.
