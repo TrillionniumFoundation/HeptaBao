@@ -1,0 +1,345 @@
+diff --git a/.github/workflows/codex-openbao-replacement-ci.yml b/.github/workflows/codex-openbao-replacement-ci.yml
+index aa50b06..595a757 100644
+--- a/.github/workflows/codex-openbao-replacement-ci.yml
++++ b/.github/workflows/codex-openbao-replacement-ci.yml
+@@ -70,6 +70,7 @@ jobs:
+           python scripts/validate_repository_v2.py
+           python -m unittest discover -s tests/repository -p 'test_*.py' -v
+           python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
++          python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
+ 
+       - name: Test the complete locked Rust workspace
+         if: ${{ success() || failure() }}
+@@ -124,6 +125,26 @@ jobs:
+             --expected-binary-sha256 "$digest" \
+             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
+ 
++      - name: Exercise actual private-output client and OTP wrapping HA
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
++          binary="$PWD/target/debug/heptabao-server"
++          evidence="$RUNNER_TEMP/heptabao-runtime-profile-evidence"
++          mkdir -m 700 "$evidence"
++          python qa/openbao-acceptance/client_live.py --binary "$binary" --output "$evidence/client.json"
++          timeout 180 python qa/openbao-acceptance/agent_proxy_helper_live.py \
++            --binary "$binary" --output "$evidence/agent-proxy-helper.json"
++          timeout 360 python qa/openbao-acceptance/ssh_otp_ha.py \
++            --binary "$binary" \
++            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
++            --output "$evidence/ssh-ha.json"
++          timeout 240 python qa/openbao-acceptance/idle_lifecycle_ha.py \
++            --binary "$binary" \
++            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
++            --output "$evidence/idle-ha.json"
++
+       - name: Confirm source remained immutable
+         if: ${{ success() || failure() }}
+         shell: bash
+diff --git a/Cargo.lock b/Cargo.lock
+index ab9f7dc..2373166 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -841,6 +841,7 @@ dependencies = [
+  "heptabao-durable-service",
+  "heptabao-ha-service",
+  "heptabao-raft-runtime",
++ "libc",
+  "ring",
+  "rustls",
+  "rustls-pemfile",
+diff --git a/README.md b/README.md
+index d3a1675..5c1045e 100644
+--- a/README.md
++++ b/README.md
+@@ -12,6 +12,24 @@ The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable stat
+ 
+ The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. The `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` per-process composition is present in this candidate, but production admission and destructive three-process HA qualification remain open, as do qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
+ 
++## Current integrated runtime additions
++
++The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RESPONSE_WRAPPING.md),
++[live capability inspection](docs/auth/HEPTABAO_CAPABILITIES.md), and
++[SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
++[Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
++not only a contract. These remain bounded development profiles, not full OpenBao
++compatibility or production readiness. Schema 3 refuses unsafe old-binary fallback;
++no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
++worker, full Agent/Proxy or independent acceptance is created by these additions.
++
++The [operational consumer implementation](docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md)
++adds a bounded AppRole auto-auth/renewal process, generation-checked private sink,
++Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
++maintenance through the existing audited durable/Raft writer. These are scoped
++executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
++external-provider revocation. Existing state remains schema 3.
++
+ ## Current source of truth
+ 
+ 1. `planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml`
+diff --git a/clients/python/README.md b/clients/python/README.md
+new file mode 100644
+index 0000000..b44c395
+--- /dev/null
++++ b/clients/python/README.md
+@@ -0,0 +1,131 @@
++# HeptaBao Python HTTPS client and explicit CLI
++
++This installable, standard-library-only package provides real network requests;
++it is not the standalone Rust client/CLI contract models and is not a complete
++OpenBao CLI, Agent or Proxy. Python >=3.11 is required. Qualified local execution
++uses Python 3.13 on Linux; the private-file CLI requires POSIX descriptor flags.
++
++## Install and invoke
++
++From a trusted checkout, install `clients/python` into a dedicated environment,
++or install the exact reviewed `heptabao_client` wheel with `pip --no-deps`.
++The entry point is `heptabao` (equivalently `python -m heptabao`). No external
++runtime dependency, Oracle executable or QA code is packaged.
++
++Example for isolated development, with existing owner-only credential files:
++
++```sh
++umask 077
++mkdir -m 700 /tmp/heptabao-client-responses
++heptabao --address https://localhost:8200 --ca-file /private/ca.crt \
++  --token-file /private/scoped.token \
++  --output /tmp/heptabao-client-responses/read.json \
++  read secret/data/example
++```
++
++The paths and address above are placeholders, not production defaults. The
++response can contain a secret, so it goes to the specified new private file, not
++stdout. The response directory must already be caller-owned with mode 0700 and
++the destination must not exist. Credentials are supplied by an owner-only file,
++never a raw `--token` argument. No implicit environment bearer fallback is used
++by the CLI. Reads using finite-use credentials can still consume their use count.
++
++## Commands and semantics
++
++`read`, `list`, `write`, `delete`, `capabilities`, `wrap`, `unwrap`, `rewrap` and
++`wrapping-lookup` issue explicit HTTPS requests. Mutating commands, and reads that
++request wrapping, require `--allow-write`. JSON input is a private file supplied
++with `--input`, or piped stdin with `--input -`; interactive secret entry and
++arbitrary key=value argv parsing are intentionally absent. `read`/`write` accept
++`--wrap-ttl`; `wrap` requires `--ttl`. Global options precede the subcommand.
++
++Self `unwrap` and `wrapping-lookup` take a wrapping-token file and reject a second
++bearer. `rewrap` instead requires an ordinary explicitly authorized caller plus a
++wrapping-token file. `capabilities` supports self inspection or an explicit target
++bearer/accessor file; the selector does not itself authorize inspection. Existing
++credential/lease APIs can be called with `write` using reviewed private JSON.
++
++## SDK boundary
++
++```python
++from heptabao import Client
++
++# Obtain these variables from a trusted host configuration/credential channel.
++client = Client(address, ca_file, bearer, namespace="", timeout=15)
++response = client.request("GET", "/v1/secret/data/example", wrap_ttl="60s")
++# Handle response.body in the dedicated consumer, not ordinary logs.
++```
++
++The SDK must receive a bearer value, but does not log it or expose it in repr.
++`Response.status` and `.body` belong to the caller. The package exports `BaoError`,
++`Client` and `Response`; private-file helpers remain implementation details.
++The optional SDK `from_env` is an explicit call by an embedding host, not an
++automatic CLI credential source. A host must review its own environment policy.
++
++TLS uses an explicit CA with minimum TLS 1.2. Origins reject embedded credentials,
++paths/query/fragment; redirects and ambient proxies are disabled. Request methods,
++paths, header values, timeout and bounded JSON are validated, including duplicate
++object-member rejection and explicit rejection of ambiguous namespace slashes.
++Private token/input files are opened nonblocking before checking regular-file type,
++so a FIFO cannot stall admission waiting for a writer. The configured socket timeout is not a proof of an
++end-to-end deadline across every OS resolver or hostile transport behavior.
++
++## Output, uncertainty and recovery
++
++Private-file preflight occurs before dispatch; publication then uses an exclusive,
++owner-bound, no-follow descriptor and atomic publication. The output is 0600.
++A race or disk failure can still occur after a remote effect: diagnostics report
++request/response progress but cannot certify whether that remote effect committed.
++No command retries automatically, follows leader redirects, caches secrets or
++starts a shell. Call the appropriate server recovery/metadata boundary before
++making an explicit new mutating attempt. Do not retry OTP verification or unwrap
++to test availability.
++
++Exit 0 means an HTTP 2xx response was received and privately stored; exit 1 means
++a received non-2xx response was privately stored; exit 2 means parsing, transport
++or publication failed. Neither 0 nor receipt of a lease proves host SSH login,
++external-provider success, production acceptance or complete compatibility.
++Only fixed safe codes/status metadata appear on stdout/stderr. Python immutable
++strings and interpreter copies are not guaranteed to be memory-zeroized; deployment
++must account for process isolation, dumps and swap separately.
++
++## Development and verification
++
++```sh
++python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
++python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
++python qa/openbao-acceptance/client_live.py --binary /absolute/heptabao-server \
++  --output /private/evidence/client-live.json
++```
++
++`client_live.py` launches fresh synthetic TLS state and real CLI subprocesses,
++checks private outputs and secret-free diagnostics, and removes generated state.
++QA's `bao_http.py` reuses the product transport rather than shipping QA in the
++product. Package/wheel tests must bind the installed source files to this exact
++checkout. Network SDK existence is not full SDK ecosystem parity. Full Agent method/template/cache/sink coverage, full Proxy compatibility, complete CLI flags/output modes,
++Windows protected files, upstream plugin workflows and independent operational
++qualification remain separate implementation work.
++
++## Executable operational profiles (client package 0.2.0)
++
++The wheel also installs `heptabao-agent`, `heptabao-proxy` and `heptabao-ssh-helper`.
++These are actual processes, not full upstream replacements. Read the detailed
++[configuration, state machine and recovery contract](../../docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md)
++before use. AppRole login and renewal have a durable pending checkpoint and a
++single private token sink; unknown outcomes block retry. The proxy has a fixed
++HTTPS origin/namespace and finite route allowlist on a Linux same-UID Unix socket.
++The helper reads OTP only from stdin and checks the returned host/user/role binding.
++It does not configure PAM or sshd. Pending checkpoints and stale sockets require
++operator reconciliation rather than an unconditional cleanup/restart loop.
++
++```sh
++heptabao-agent --help
++heptabao-proxy --help
++heptabao-ssh-helper --help
++```
++
++The real-process fixture supports both source imports and an installed wheel via
++`--client-python /absolute/venv/bin/python`. `--oracle` runs these same clients
++against the pinned official OpenBao service; that proves only the selected workflow,
++not general Agent/Proxy compatibility. Python memory copies are not zeroization
++claims. Linux x86_64 execution cannot establish other-platform qualification.
+diff --git a/clients/python/heptabao/__init__.py b/clients/python/heptabao/__init__.py
+new file mode 100644
+index 0000000..856df0c
+--- /dev/null
++++ b/clients/python/heptabao/__init__.py
+@@ -0,0 +1,5 @@
++"""Bounded HTTPS client; no production compatibility or retry guarantee."""
++from .transport import BaoError, Client, Response
++
++__all__ = ["BaoError", "Client", "Response"]
++__version__ = "0.2.0"
+diff --git a/clients/python/heptabao/__main__.py b/clients/python/heptabao/__main__.py
+new file mode 100644
+index 0000000..eb53e2f
+--- /dev/null
++++ b/clients/python/heptabao/__main__.py
+@@ -0,0 +1,3 @@
++from .cli import main
++
++raise SystemExit(main())
+diff --git a/clients/python/heptabao/agent.py b/clients/python/heptabao/agent.py
+new file mode 100644
+index 0000000..7c2e6d4
+--- /dev/null
++++ b/clients/python/heptabao/agent.py
+@@ -0,0 +1,291 @@
++"""AppRole auto-auth with durable admission, one private token sink and renewal.
++
++Only unwrapped, renewable, unlimited-use service tokens are accepted. Ambiguous
++login/renewal or a pending crash checkpoint fences reauthentication: no blind
++retry. This is a bounded POSIX process, not the entire OpenBao Agent feature set.
++"""
++from __future__ import annotations
++from dataclasses import dataclass
++import hashlib
++import math
++import os
++from pathlib import Path
++import signal
++import sys
++import threading
++import time
++
++from .transport import BaoError, Client, SafeArgumentParser, canonical, endpoint, key_path, private_read, private_json
++from .private_state import StateDirectory, token_snapshot, read_trusted_ca
++
++
++@dataclass(frozen=True, repr=False)
++class AgentConfig:
++    address: str
++    ca_file: str
++    role_id_file: str
++    secret_id_file: str
++    state_dir: str
++    namespace: str = ''
++    auth_mount: str = 'auth/approle'
++    timeout: float = 5
++    interval_seconds: float = 1
++    renew_increment_seconds: int = 60
++    max_token_ttl_seconds: int = 3600
++    max_authentications: int = 32
++    max_runtime_seconds: int = 3600
++
++    @classmethod
++    def load(cls, path: str):
++        value = private_json(path)
++        fields = set(cls.__dataclass_fields__)
++        if not isinstance(value, dict) or set(value) - fields:
++            raise BaoError('invalid_agent_configuration')
++        try:
++            result = cls(**value)
++            result.validate()
++            return result
++        except (TypeError, ValueError):
++            raise BaoError('invalid_agent_configuration') from None
++
++    def validate(self):
++        if endpoint(self.address) != self.address.rstrip('/'):
++            # Normalize only an absent standard port, not paths or credentials.
++            endpoint(self.address)
++        for value in (self.ca_file, self.role_id_file, self.secret_id_file, self.state_dir):
++            if not isinstance(value, str) or not Path(value).is_absolute() or '..' in Path(value).parts:
++                raise BaoError('agent_requires_absolute_file_paths')
++        reserved = {str(Path(self.state_dir) / name) for name in ('state.json', 'token', '.agent.lock')}
++        if self.role_id_file == self.secret_id_file or {self.role_id_file, self.secret_id_file} & reserved:
++            raise BaoError('agent_credential_paths_conflict')
++        if not isinstance(self.namespace, str) or self.namespace.startswith('/') or self.namespace.endswith('/'):
++            if self.namespace != '':
++                raise BaoError('invalid_agent_namespace')
++        key_path(self.namespace, allow_empty=True)
++        if not isinstance(self.auth_mount, str) or not self.auth_mount.startswith('auth/'):
++            raise BaoError('invalid_approle_mount')
++        if key_path(self.auth_mount) != self.auth_mount:
++            raise BaoError('invalid_approle_mount')
++        for value, low, high in ((self.timeout, 0.1, 30), (self.interval_seconds, 0.1, 60)):
++            if type(value) not in (int, float) or not math.isfinite(value) or not low <= value <= high:
++                raise BaoError('invalid_agent_timing')
++        for value, low, high in ((self.renew_increment_seconds, 1, 3600), (self.max_token_ttl_seconds, 2, 86400),
++                                 (self.max_authentications, 1, 256), (self.max_runtime_seconds, 1, 86400)):
++            if type(value) is not int or not low <= value <= high:
++                raise BaoError('invalid_agent_resource_bound')
++        if self.renew_increment_seconds > self.max_token_ttl_seconds:
++            raise BaoError('agent_renewal_exceeds_ttl_bound')
++
++    def binding(self):
++        # Public configuration and trust-root bytes, not credential hashes.
++        ca = read_trusted_ca(self.ca_file)
++        fields = {name: getattr(self, name) for name in self.__dataclass_fields__}
++        fields['ca_sha256'] = hashlib.sha256(ca).hexdigest()
++        return hashlib.sha256(canonical(fields)).hexdigest()
++
++
++def _secret(path: str) -> str:
++    try:
++        result = private_read(path, 8192).decode('ascii').strip()
++    except UnicodeError:
++        raise BaoError('invalid_approle_credential_file') from None
++    if not result or len(result) > 8192 or any(ord(c) < 33 or ord(c) > 126 for c in result):
++        raise BaoError('invalid_approle_credential_file')
++    return result
++
++
++class Agent:
++    """Single process/writer. StateDirectory may be supplied by deterministic tests.
++
++    Checkpoints contain phases/digests/timestamps only, never token/SecretID bytes.
++    A token file alone is NOT an admitted token: consumers must read token_snapshot.
++    """
