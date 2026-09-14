@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, File, OpenOptions},
     io::{self, Read, Seek, SeekFrom, Write},
-    path::{Component, Path, PathBuf},
+    path::{Path, PathBuf},
 };
 const MAX_SEGMENT_BYTES: u64 = 32 * 1024 * 1024;
 const MAX_MANIFEST_BYTES: u64 = 128 * 1024;
@@ -531,18 +531,24 @@ fn open_read(path: &Path) -> io::Result<File> {
     Ok(file)
 }
 fn private_options(create: bool) -> OpenOptions {
-    let mut options = OpenOptions::new();
+    let options = OpenOptions::new();
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        let mut options = options;
+        // These values differ between Linux x86_64 and aarch64. Never copy
+        // numeric O_* flags from the build host into target filesystem code.
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
         if create {
             options.mode(0o600);
         }
+        options
     }
     #[cfg(not(target_os = "linux"))]
-    let _ = create;
-    options
+    {
+        let _ = create;
+        options
+    }
 }
 fn descriptor_path(file: &File) -> io::Result<PathBuf> {
     #[cfg(target_os = "linux")]
@@ -564,11 +570,14 @@ fn open_directory(path: &Path) -> io::Result<File> {
     }
     #[cfg(target_os = "linux")]
     {
-        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+        use std::{
+            os::unix::fs::{OpenOptionsExt, PermissionsExt},
+            path::Component,
+        };
         let mut options = OpenOptions::new();
         options
             .read(true)
-            .custom_flags(0o200000 | 0o400000 | 0o2000000);
+            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
         let mut current = options.open("/")?;
         for component in path.components() {
             match component {
@@ -1002,3 +1011,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "audit_platform_tests.rs"]
+mod platform_tests;

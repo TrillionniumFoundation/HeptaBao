@@ -173,3 +173,10 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Platform-specific test compilation
+
+The `TEST_SEQUENCE` counter and its atomic imports are compiled only with the
+Linux command-runner tests that consume them. Portable contract tests and strict
+Clippy remain enabled on macOS. This removes unused Linux test support from the
+non-Linux compilation unit; it does not add macOS sandbox or durable-host support.

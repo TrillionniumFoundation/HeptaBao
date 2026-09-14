@@ -236,3 +236,15 @@ Focused source tests: `auth_cubbyhole_tests.rs`, `auth_acl.rs` and
 and ACL behavior against the pinned official OpenBao 2.6.2 binary. Response
 wrapping, autonomous expiry, production-scale state layout, full compatibility
 and independent operational qualification are not established by this increment.
+
+## Audit target-ABI boundary
+
+The audit rotation implementation uses the pinned `libc` target definitions for
+`O_DIRECTORY`, `O_NOFOLLOW`, `O_CLOEXEC` and `O_NONBLOCK`. Linux x86_64 numeric
+flags are not portable to Linux aarch64. The private-file, directory-descriptor,
+symlink, permissions and nonblocking protections are retained, not disabled.
+`audit_platform_tests.rs` exercises real directories and regular files, leaf and
+intermediate symlinks, and group/world-writable audit roots. Run these source
+tests on both Linux architectures as part of the existing all-target workspace
+gate; an x86_64 run alone is not aarch64 qualification. Non-Linux durable storage
+remains explicitly unsupported by this implementation profile.

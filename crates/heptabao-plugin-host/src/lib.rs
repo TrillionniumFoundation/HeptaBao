@@ -790,8 +790,10 @@ impl From<DomainError> for PluginHostError {
 mod tests {
     use super::*;
     use heptabao_plugin_contracts::PluginRegistry;
+    #[cfg(target_os = "linux")]
     use std::sync::atomic::{AtomicU64, Ordering};
 
+    #[cfg(target_os = "linux")]
     static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
     #[derive(Clone, Copy, Debug)]

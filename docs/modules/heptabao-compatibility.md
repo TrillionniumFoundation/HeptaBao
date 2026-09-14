@@ -102,11 +102,23 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 - [`tests::side_effect_mismatch_blocks_admission`](../../crates/heptabao-compatibility/src/lib.rs) rejects matching responses whose side-effect digests differ.
 - [`tests::unknown_surface_and_inventory_rebinding_fail_closed`](../../crates/heptabao-compatibility/src/lib.rs) checks unknown surfaces and evidence rebound to a different inventory.
 
-`cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all 60 inventoried surfaces are present exactly once and all 38 current scoped cases are mapped exactly once.
+`cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all inventoried surfaces are present exactly once and every current scoped case is mapped exactly once. The source-derived counts below must match the corpus.
+
+<!-- BEGIN CURRENT COMPATIBILITY COVERAGE -->
+| Source-derived coverage metric | Count |
+|---|---:|
+| Inventoried surfaces | 60 |
+| Surfaces with scoped fixtures | 13 |
+| Surfaces without implemented fixtures | 47 |
+| Scoped fixture cases | 45 |
+
+Scoped fixtures are not full behavior coverage or independent compatibility admission.
+The counts above are regenerated from corpus rows; they are not test-pass receipts.
+<!-- END CURRENT COMPATIBILITY COVERAGE -->
 
 ## Evolution and open boundaries
 
-Fifty-four inventoried surfaces still have no executable fixture, and no surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
+The surfaces without implemented fixtures are counted in the current projection above. No surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
 
 ## Machine-verified source truth
 

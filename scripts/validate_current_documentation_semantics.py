@@ -66,7 +66,12 @@ def runtime_closure(root: Path, packages: dict[str, dict]) -> set[str]:
 
 
 def validate(root: Path = ROOT) -> list[str]:
-    errors: list[str] = []
+    coverage_spec = importlib.util.spec_from_file_location("documentation_coverage", Path(__file__).with_name("current_compatibility_coverage.py"))
+    if coverage_spec is None or coverage_spec.loader is None:
+        return ["cannot load compatibility documentation coverage guard"]
+    coverage_module = importlib.util.module_from_spec(coverage_spec)
+    coverage_spec.loader.exec_module(coverage_module)
+    errors: list[str] = coverage_module.validate(root)
     spec = importlib.util.spec_from_file_location("semantic_inventory", root / "scripts/current_source_inventory.py")
     if spec is None or spec.loader is None:
         return ["cannot load current inventory for documentation semantics"]
