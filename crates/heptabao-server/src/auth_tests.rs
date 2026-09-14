@@ -2304,3 +2304,115 @@ fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen(
         403
     );
 }
+
+#[test]
+fn jwt_jwks_config_accepts_public_ed25519_and_drives_login() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[91; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "reader",
+        json!(r#"path "secret/data/app" { capabilities = ["read"] }"#),
+    );
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let config = json!({
+        "issuer":"https://issuer.example",
+        "audiences":["https://service.example/bao"],
+        "required_namespace":"team",
+        "clock_skew_seconds":0,
+        "maximum_token_lifetime_seconds":3600,
+        "jwks":{"keys":[{
+            "kid":"key-1","kty":"OKP","crv":"Ed25519","alg":"EdDSA","use":"sig","key_ops":["verify"],
+            "x":URL_SAFE_NO_PAD.encode(pair.public_key().as_ref())
+        }]}
+    });
+    let response = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/config",
+        config,
+        1000,
+    );
+    assert_eq!(response.status, 204);
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/role/app",
+        json!({"token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
+            "bound_audiences":["https://service.example/bao"],"token_ttl":120,"token_max_ttl":240}),
+        1000,
+    );
+    let token = signed_jwt(
+        &pair,
+        &json!({"alg":"EdDSA","kid":"key-1","typ":"JWT"}),
+        &jwt_claims("jwks-login"),
+    );
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/federated/login",
+            &json!({"role":"app","jwt":token}),
+            1001,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(
+        login.body["auth"]["token_policies"],
+        json!(["default", "reader"])
+    );
+}
+
+#[test]
+fn jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[92; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let base = serde_json::to_vec(&state).unwrap();
+    let x = URL_SAFE_NO_PAD.encode(pair.public_key().as_ref());
+    let bad_jwks = [
+        json!({"keys":[{"kid":"k","kty":"oct","crv":"Ed25519","alg":"EdDSA","x":x}]}),
+        json!({"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x,"d":"private"}]}),
+        json!({"keys":[
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x},
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}
+        ]}),
+    ];
+    for jwks in bad_jwks {
+        let result = state.handle(
+            Some(&root),
+            "team",
+            "POST",
+            "auth/federated/config",
+            &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+                "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+                "jwks":jwks}),
+            1000,
+        );
+        assert!(result.is_err());
+        assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+    }
+    let mixed = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/federated/config",
+        &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+            "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+            "keys":[{"kid":"legacy","algorithm":"EdDSA","key_base64":x}],
+            "jwks":{"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}]}}),
+        1000,
+    );
+    assert!(mixed.is_err());
+    assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+}

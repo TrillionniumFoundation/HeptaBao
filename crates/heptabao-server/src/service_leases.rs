@@ -1,4 +1,4 @@
-//! Service-owned admission for online SSH OTP and its local lease projection.
+//! Service-owned admission for online SSH OTP, internal PKI issuance and their lease projections.
 //! Expiry/issuer revocation are reconciled under the same post-ReadIndex state
 //! lock, never by an independent authoritative writer.
 use super::*;
@@ -52,7 +52,7 @@ impl Service {
                         .authorize_request(principal, namespace, path, "sudo", now)
                         .map_err(|e| Response::error(e.status, &e.message))?;
                 }
-                if state.engines.is_ssh_service_route(namespace, path) {
+                if state.engines.is_lease_service_route(namespace, path) {
                     owner = Some(
                         state
                             .auth
@@ -64,6 +64,11 @@ impl Service {
             let mut engines = state.engines.clone();
             let mut response = if path.starts_with("sys/leases/") {
                 engines.handle_lease_admin(namespace, method, path, body, now)
+            } else if engines.is_pki_issue_route(namespace, path) {
+                let owner = owner
+                    .as_ref()
+                    .ok_or_else(|| Response::error(403, "credential issuer is required"))?;
+                engines.handle_service_pki(namespace, method, path, body, owner, now)
             } else {
                 engines.handle_service_ssh(namespace, method, path, body, owner.as_ref(), now)
             }

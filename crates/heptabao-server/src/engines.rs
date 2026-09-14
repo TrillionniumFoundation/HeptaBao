@@ -17,6 +17,7 @@ use identity_projection::IdentityProjection;
 mod kv;
 #[path = "engine_leases.rs"]
 mod leases;
+mod pki;
 mod ssh;
 mod totp;
 mod transit;
@@ -79,6 +80,7 @@ enum Backend {
     Kv1(BTreeMap<String, Value>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
+    Pki(pki::Pki),
     Ssh(ssh::SshOtp),
     Totp(totp::Totp),
 }
@@ -140,11 +142,13 @@ impl Mount {
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
+            Backend::Pki(_) => ("pki", json!({})),
             Backend::Ssh(_) => ("ssh", json!({})),
             Backend::Totp(_) => ("totp", json!({})),
         };
         let (default_ttl, max_ttl) = match &self.backend {
             Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
+            Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
             _ => (0, 0),
         };
         json!({"type":kind,"description":self.description,"options":options,
@@ -347,7 +351,7 @@ impl EngineState {
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
-                Backend::Ssh(_) => None,
+                Backend::Pki(_) | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -443,6 +447,7 @@ impl EngineState {
                 Backend::Transit(engine) => {
                     engine.handle(namespace, &mount_path, method, relative, &params, now)?
                 }
+                Backend::Pki(engine) => engine.handle_admin(method, relative, &params, now)?,
                 Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
             }
         };
@@ -483,6 +488,9 @@ fn handle_mounts(
             return Err(unsupported());
         }
         if let Backend::Ssh(engine) = &mut mount.backend {
+            reject_unknown(body, &["description", "default_lease_ttl", "max_lease_ttl"])?;
+            engine.tune(body)?;
+        } else if let Backend::Pki(engine) = &mut mount.backend {
             reject_unknown(body, &["description", "default_lease_ttl", "max_lease_ttl"])?;
             engine.tune(body)?;
         } else {
@@ -560,10 +568,12 @@ fn handle_mounts(
             return Err(error(501, "requested mount option is not implemented"));
         }
     }
-    if body.get("type").and_then(Value::as_str) != Some("ssh")
-        && body
-            .get("config")
-            .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+    if !matches!(
+        body.get("type").and_then(Value::as_str),
+        Some("ssh" | "pki")
+    ) && body
+        .get("config")
+        .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
     {
         return Err(error(
             501,
@@ -606,6 +616,20 @@ fn handle_mounts(
                 return Err(bad("TOTP mount options are not supported"));
             }
             Backend::Totp(totp::Totp::default())
+        }
+        "pki" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("PKI mount options are not supported"));
+            }
+            let mut engine = pki::Pki::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Pki(engine)
         }
         "ssh" => {
             if body

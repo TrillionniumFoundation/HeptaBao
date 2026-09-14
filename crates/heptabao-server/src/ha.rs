@@ -512,6 +512,49 @@ impl HaProcess {
         Ok(self.leader()? == Some(local_id))
     }
 
+    /// Transfer leadership to another configured voter and wait until this node
+    /// observes a different leader. A failed/unreachable target is tried once
+    /// before the next configured peer; no client mutation is retried here.
+    pub fn step_down(&self) -> Result<u64, String> {
+        let node = self
+            .node
+            .as_ref()
+            .ok_or_else(|| "HA process is shut down".to_owned())?;
+        let local = node.id();
+        if self.runtime.block_on(node.current_leader()) != Some(local) {
+            return Err("HA step-down requires the current leader".into());
+        }
+        let targets: Vec<u64> = self
+            .peers
+            .keys()
+            .copied()
+            .filter(|id| *id != local)
+            .collect();
+        if targets.is_empty() {
+            return Err("HA cluster has no alternate voter".into());
+        }
+        self.runtime.block_on(async {
+            for target in targets {
+                if node.transfer_leadership(target).await.is_err() {
+                    continue;
+                }
+                let deadline = tokio::time::Instant::now() + Duration::from_secs(3);
+                loop {
+                    if let Some(leader) = node.current_leader().await
+                        && leader != local
+                    {
+                        return Ok(leader);
+                    }
+                    if tokio::time::Instant::now() >= deadline {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(25)).await;
+                }
+            }
+            Err("HA leadership transfer did not complete".into())
+        })
+    }
+
     pub fn ensure_linearizable(&self) -> Result<(), String> {
         let node = self
             .node

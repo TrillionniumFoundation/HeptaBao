@@ -998,7 +998,6 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
             "transit/encrypt/key",
             json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
         ),
-        ("sys/mounts/pki", json!({"type":"pki"})),
     ] {
         assert_eq!(
             request(&mut state, "", "POST", path, body, 3)

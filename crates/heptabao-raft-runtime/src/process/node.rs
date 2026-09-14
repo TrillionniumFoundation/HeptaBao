@@ -136,6 +136,16 @@ impl ProcessRaftNode {
     pub async fn current_leader(&self) -> Option<u64> {
         self.raft.current_leader().await
     }
+    pub async fn transfer_leadership(&self, target: u64) -> Result<(), RemoteRaftError> {
+        if target == 0 || target == self.id {
+            return Err(RemoteRaftError::InvalidTopology);
+        }
+        self.raft
+            .trigger()
+            .transfer_leader(target)
+            .await
+            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+    }
 
     /// Return a nonzero monotonically increasing serial for the production
     /// application client.

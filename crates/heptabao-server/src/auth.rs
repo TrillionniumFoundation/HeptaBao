@@ -78,6 +78,118 @@ struct JwtConfig {
     keys: BTreeMap<String, JwtKeyRecord>,
 }
 
+fn valid_jwt_kid(kid: &str) -> bool {
+    !kid.is_empty() && kid.len() <= 1024 && !kid.chars().any(char::is_control)
+}
+
+fn insert_jwt_key(
+    keys: &mut BTreeMap<String, JwtKeyRecord>,
+    kid: &str,
+    algorithm: &str,
+    bytes: Vec<u8>,
+) -> Result<(), AuthError> {
+    if !valid_jwt_kid(kid) || keys.contains_key(kid) {
+        return Err(bad("invalid or duplicate JWT key id"));
+    }
+    if !matches!(algorithm, "EdDSA" | "ES256") {
+        return Err(bad("unsupported JWT algorithm"));
+    }
+    if bytes.is_empty() || bytes.len() > 16 * 1024 {
+        return Err(bad("JWT key is outside bounds"));
+    }
+    keys.insert(
+        kid.into(),
+        JwtKeyRecord {
+            algorithm: algorithm.into(),
+            bytes,
+        },
+    );
+    Ok(())
+}
+
+fn parse_legacy_jwt_keys(values: &[Value]) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
+    if values.is_empty() || values.len() > 64 {
+        return Err(bad("JWT key count is outside bounds"));
+    }
+    let mut keys = BTreeMap::new();
+    for value in values {
+        reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
+        let kid = string_field(value, "kid")?;
+        let algorithm = string_field(value, "algorithm")?;
+        let bytes = URL_SAFE_NO_PAD
+            .decode(string_field(value, "key_base64")?)
+            .map_err(|_| bad("invalid JWT key encoding"))?;
+        insert_jwt_key(&mut keys, kid, algorithm, bytes)?;
+    }
+    Ok(keys)
+}
+
+/// Parse the public-key subset of RFC 7517 needed by the bounded JWT verifier.
+/// Only explicit signature keys are admitted; symmetric keys, private material,
+/// unknown curves and duplicate key IDs are rejected before state mutation.
+fn parse_jwks(jwks: &Value) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
+    reject_unknown(jwks, &["keys"])?;
+    let values = jwks
+        .get("keys")
+        .and_then(Value::as_array)
+        .ok_or_else(|| bad("jwks.keys must be an array"))?;
+    if values.is_empty() || values.len() > 64 {
+        return Err(bad("JWT key count is outside bounds"));
+    }
+    let mut keys = BTreeMap::new();
+    for value in values {
+        let object = value
+            .as_object()
+            .ok_or_else(|| bad("JWK must be an object"))?;
+        if object.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "kid" | "kty" | "crv" | "x" | "y" | "alg" | "use" | "key_ops"
+            )
+        }) {
+            return Err(bad("unsupported JWK member"));
+        }
+        let kid = string_field(value, "kid")?;
+        if object.get("use").is_some_and(|v| v.as_str() != Some("sig")) {
+            return Err(bad("JWK use must be sig when present"));
+        }
+        if let Some(ops) = object.get("key_ops") {
+            let ops = ops
+                .as_array()
+                .ok_or_else(|| bad("JWK key_ops must be an array"))?;
+            if ops.is_empty() || ops.len() > 8 || ops.iter().any(|op| op.as_str() != Some("verify"))
+            {
+                return Err(bad("JWK key_ops must contain only verify"));
+            }
+        }
+        let kty = string_field(value, "kty")?;
+        let crv = string_field(value, "crv")?;
+        let alg = string_field(value, "alg")?;
+        let x = URL_SAFE_NO_PAD
+            .decode(string_field(value, "x")?)
+            .map_err(|_| bad("invalid JWK x coordinate"))?;
+        let bytes = match (kty, crv, alg) {
+            ("OKP", "Ed25519", "EdDSA") if x.len() == 32 && !object.contains_key("y") => x,
+            ("EC", "P-256", "ES256") if x.len() == 32 => {
+                let y = URL_SAFE_NO_PAD
+                    .decode(string_field(value, "y")?)
+                    .map_err(|_| bad("invalid JWK y coordinate"))?;
+                if y.len() != 32 {
+                    return Err(bad("invalid P-256 JWK coordinate size"));
+                }
+                let mut point = Vec::with_capacity(65);
+                point.push(4);
+                point.extend_from_slice(&x);
+                point.extend_from_slice(&y);
+                point
+            }
+            _ => return Err(bad("unsupported JWK key type, curve or algorithm")),
+        };
+        insert_jwt_key(&mut keys, kid, alg, bytes)?;
+    }
+    Ok(keys)
+}
+
 impl JwtConfig {
     fn verifier(&self) -> Result<JwtVerifier, AuthError> {
         let policy = TrustPolicy::new(
@@ -732,6 +844,18 @@ impl AuthState {
         }
     }
 
+    pub(super) fn authorize_sudo_request(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        self.authorize_request(principal, namespace, path, capability, now)?;
+        self.authorize_request(principal, namespace, path, "sudo", now)
+    }
+
     fn policy_allows(
         &self,
         namespace: &str,
@@ -1341,6 +1465,7 @@ impl AuthState {
                         "clock_skew_seconds",
                         "maximum_token_lifetime_seconds",
                         "keys",
+                        "jwks",
                     ],
                 )?;
                 let issuer = string_field(body, "issuer")?.to_owned();
@@ -1365,42 +1490,18 @@ impl AuthState {
                 let clock_skew_seconds = number(body, "clock_skew_seconds", 30)?;
                 let maximum_token_lifetime_seconds =
                     number(body, "maximum_token_lifetime_seconds", 3600)?;
-                let key_values = body
-                    .get("keys")
-                    .and_then(Value::as_array)
-                    .ok_or_else(|| bad("JWT keys must be an array"))?;
-                if key_values.is_empty() || key_values.len() > 64 {
-                    return Err(bad("JWT key count is outside bounds"));
+                if body.get("keys").is_some() && body.get("jwks").is_some() {
+                    return Err(bad("configure either JWT keys or jwks, not both"));
                 }
-                let mut keys = BTreeMap::new();
-                for value in key_values {
-                    reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
-                    let kid = string_field(value, "kid")?;
-                    if kid.is_empty()
-                        || kid.len() > 1024
-                        || kid.chars().any(char::is_control)
-                        || keys.contains_key(kid)
-                    {
-                        return Err(bad("invalid or duplicate JWT key id"));
-                    }
-                    let algorithm = string_field(value, "algorithm")?;
-                    if !matches!(algorithm, "EdDSA" | "ES256") {
-                        return Err(bad("unsupported JWT algorithm"));
-                    }
-                    let bytes = URL_SAFE_NO_PAD
-                        .decode(string_field(value, "key_base64")?)
-                        .map_err(|_| bad("invalid JWT key encoding"))?;
-                    if bytes.is_empty() || bytes.len() > 16 * 1024 {
-                        return Err(bad("JWT key is outside bounds"));
-                    }
-                    keys.insert(
-                        kid.into(),
-                        JwtKeyRecord {
-                            algorithm: algorithm.into(),
-                            bytes,
-                        },
-                    );
-                }
+                let keys = if let Some(jwks) = body.get("jwks") {
+                    parse_jwks(jwks)?
+                } else {
+                    let key_values = body
+                        .get("keys")
+                        .and_then(Value::as_array)
+                        .ok_or_else(|| bad("JWT keys or jwks are required"))?;
+                    parse_legacy_jwt_keys(key_values)?
+                };
                 let config = JwtConfig {
                     issuer,
                     audiences,

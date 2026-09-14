@@ -770,6 +770,36 @@ impl Service {
             }
             return self.leader_response();
         }
+        if path == "sys/step-down" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "step-down requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "step-down accepts an empty JSON object");
+            }
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_sudo_request(principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(ha) = self.ha.as_ref() else {
+                return Response::error(400, "HA is not enabled");
+            };
+            return match ha.lock() {
+                Ok(ha) => match ha.step_down() {
+                    Ok(_) => Response {
+                        status: 204,
+                        body: Value::Null,
+                    },
+                    Err(_) => Response::error(503, "HA leadership transfer failed"),
+                },
+                Err(_) => Response::error(503, "HA process lock is unavailable"),
+            };
+        }
         if path == "sys/init/ack" {
             if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
                 return Response::error(403, "permission denied");
@@ -924,7 +954,8 @@ impl Service {
         now: u64,
     ) -> Response {
         let principal = principal.as_ref();
-        if state.engines.is_ssh_service_route(namespace, path) || path.starts_with("sys/leases/") {
+        if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
+        {
             return Self::lease_route(state, principal, namespace, method, path, body, now);
         }
         if matches!(
@@ -3121,3 +3152,7 @@ mod capabilities_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "ssh_service_tests.rs"]
 mod ssh_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "pki_service_tests.rs"]
+mod pki_service_tests;
