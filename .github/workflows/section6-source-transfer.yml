@@ -1,0 +1,131 @@
+name: Section six exact source transport
+on:
+  push:
+    branches: [exec/section6-source-transfer-20260915]
+permissions:
+  contents: write
+jobs:
+  publish:
+    if: github.repository == 'TrillionniumFoundation/HeptaBao' && github.ref == 'refs/heads/exec/section6-source-transfer-20260915'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Publish only the reviewed exact tree without executing candidate code
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import lzma
+          import os
+          import re
+          import urllib.error
+          import urllib.request
+          
+          REPO = 'TrillionniumFoundation/HeptaBao'
+          BASE = '0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5'
+          BASE_TREE = 'c07f35ef3791c1bf8270c5335067eeda79ff4265'
+          TREE = '13b30c5c0bbbd92f76b70181f981e3f2887eb6b5'
+          BRANCH = 'work/section6-storage-migration-20260915'
+          PARTS = ['5bd9222fcdd3ceb4077e8d305db505d9a15a8535', '1e8b6d3577cd57fe05e8c0edb313935c803eb245', '545ff7574b5e36762cbe1904ad85cc591a70c359', '80b1643d0622dbbf5b8f5bf3ee8d82c4045fc57f']
+          assert os.environ['GITHUB_REPOSITORY'] == REPO
+          assert os.environ['GITHUB_REF'] == 'refs/heads/exec/section6-source-transfer-20260915'
+          TOKEN = os.environ['GH_TOKEN']
+          
+          def api(path, body=None, missing=False):
+              req = urllib.request.Request('https://api.github.com/repos/' + REPO + path,
+                  data=None if body is None else json.dumps(body).encode(),
+                  headers={'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/vnd.github+json',
+                           'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28'},
+                  method='GET' if body is None else 'POST')
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as response:
+                      raw = response.read(8 * 1024 * 1024 + 1)
+                      if len(raw) > 8 * 1024 * 1024:
+                          raise RuntimeError('oversized Git response')
+                      return json.loads(raw)
+              except urllib.error.HTTPError as exc:
+                  if missing and exc.code == 404:
+                      return None
+                  raise RuntimeError('Git API status ' + str(exc.code)) from None
+          
+          def git_hash(raw):
+              return hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          
+          def blob(sha):
+              value = api('/git/blobs/' + sha)
+              assert value['sha'] == sha and value['encoding'] == 'base64'
+              raw = base64.b64decode(''.join(value['content'].split()), validate=True)
+              assert git_hash(raw) == sha
+              return raw
+          
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError('duplicate manifest key')
+                  result[key] = value
+              return result
+          
+          assert api('/git/commits/' + BASE)['tree']['sha'] == BASE_TREE
+          index = api('/git/trees/' + BASE_TREE + '?recursive=1')
+          assert not index['truncated'] and index['sha'] == BASE_TREE
+          index = {entry['path']: entry for entry in index['tree']}
+          packed_parts = [blob(sha) for sha in PARTS]
+          assert all(len(part) == 10716 for part in packed_parts)
+          packed = b''.join(packed_parts)
+          assert hashlib.sha256(packed).hexdigest() == '02a62a5276618c77c6e235d48956bb9ab8c324ff1fce9a1205c610f865069b88'
+          decoder = lzma.LZMADecompressor(memlimit=128 * 1024 * 1024)
+          raw = decoder.decompress(packed, max_length=1024 * 1024)
+          assert decoder.eof and not decoder.unused_data and len(raw) < 1024 * 1024
+          manifest = json.loads(raw.decode('utf-8'), object_pairs_hook=unique)
+          assert set(manifest) == {'base_commit', 'base_tree', 'expected_tree', 'files'}
+          assert (manifest['base_commit'], manifest['base_tree'], manifest['expected_tree']) == (BASE, BASE_TREE, TREE)
+          assert isinstance(manifest['files'], list) and len(manifest['files']) == 28
+          entries, seen = [], set()
+          for row in manifest['files']:
+              assert set(row) == {'path', 'old_blob', 'new_blob', 'splices'}
+              path = row['path']
+              assert isinstance(path, str) and re.fullmatch(r'[A-Za-z0-9_./-]{1,240}', path)
+              assert not path.startswith('/') and all(p not in ('', '.', '..', '.git') for p in path.split('/'))
+              assert path not in seen
+              seen.add(path)
+              old_sha = row['old_blob']
+              if old_sha is None:
+                  assert path not in index
+                  text = ''
+              else:
+                  assert re.fullmatch('[0-9a-f]{40}', old_sha)
+                  assert index[path]['sha'] == old_sha and index[path]['type'] == 'blob' and index[path]['mode'] == '100644'
+                  text = blob(old_sha).decode('utf-8')
+              end_previous = 0
+              assert isinstance(row['splices'], list)
+              for splice in row['splices']:
+                  assert isinstance(splice, list) and len(splice) == 3
+                  start, end, replacement = splice
+                  assert type(start) is int and type(end) is int and isinstance(replacement, str)
+                  assert end_previous <= start <= end <= len(text)
+                  end_previous = end
+              for start, end, replacement in reversed(row['splices']):
+                  text = text[:start] + replacement + text[end:]
+              assert re.fullmatch('[0-9a-f]{40}', row['new_blob']) and git_hash(text.encode('utf-8')) == row['new_blob']
+              entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'content': text})
+          created_tree = api('/git/trees', {'base_tree': BASE_TREE, 'tree': entries})
+          assert created_tree['sha'] == TREE
+          existing = api('/git/ref/heads/' + BRANCH, missing=True)
+          if existing is not None:
+              commit = api('/git/commits/' + existing['object']['sha'])
+              assert commit['tree']['sha'] == TREE and [p['sha'] for p in commit['parents']] == [BASE]
+              print('already_published_commit=' + commit['sha'])
+          else:
+              commit = api('/git/commits', {
+                  'message': 'feat: safe journal maintenance and checkpointed Transit migration with complete surface work contracts',
+                  'tree': TREE, 'parents': [BASE]})
+              created = api('/git/refs', {'ref': 'refs/heads/' + BRANCH, 'sha': commit['sha']})
+              assert created['object']['sha'] == commit['sha']
+              print('published_commit=' + commit['sha'])
+          print('published_tree=' + TREE)
+          print('published_branch=' + BRANCH)
+          PY
