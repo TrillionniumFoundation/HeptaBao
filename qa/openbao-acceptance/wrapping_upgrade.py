@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline schema-2 -> schema-3 wrapping/SSH-OTP migration and old-binary rejection.
+"""Offline pinned-predecessor -> current wrapping/SSH upgrade and old-reader rejection.
 
 Only newly initialized synthetic TLS state is used. Binary pins are required;
 passing does not qualify a mixed-version HA upgrade or production rollback.

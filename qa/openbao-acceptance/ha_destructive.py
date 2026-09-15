@@ -142,6 +142,7 @@ class Node:
 
 
 class Cluster:
+    NODE_IDS = (1, 2, 3)
     def __init__(self, binary: Path, root: Path):
         if not root.is_absolute() or root.resolve() != root or root.exists() or not root.parent.is_dir():
             raise FixtureError("work_directory_must_be_new_absolute_non_symlink")
@@ -169,7 +170,7 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
-        for number in (1, 2, 3):
+        for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
             node = Node(number, self.binary, root, context)
@@ -191,7 +192,7 @@ class Cluster:
                 "max_connections": 32, "timeout_seconds": 5,
                 "rate_limit_per_second": 1000, "rate_limit_burst": 2000, "rate_limit_entries": 256}))
         ports = [port for node in self.nodes for port in (node.http_port, node.raft_port)]
-        if len(set(ports)) != 6:
+        if len(set(ports)) != 2 * len(self.NODE_IDS):
             raise FixtureError("ephemeral_port_collision")
         self.peers = peers
 
