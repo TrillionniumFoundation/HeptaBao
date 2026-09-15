@@ -202,3 +202,7 @@ node is not silently invented and no network RPC is issued. The existing durable
 restart/quorum-loss regression remains mandatory, without ignores or retry wrappers.
 Real network fault evidence is separately described in
 `docs/operations/HEPTABAO_NETWORK_PARTITION_QUALIFICATION.md`.
+
+## Current native administration
+
+`src/process/admin.rs` now exposes committed membership/replication observations, guarded native learner add/promotion/demotion/removal and persisted snapshot metadata/digests. See [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for the expected-index fence, joint-to-stable completion, bounds and five-process acceptance command. This does not establish OpenBao snapshot format, forced restore, mixed-version rollout or independent qualification.

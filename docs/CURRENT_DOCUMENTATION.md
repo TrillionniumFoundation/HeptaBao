@@ -144,3 +144,11 @@ server lifetime worker and explicit unimplemented scope are specified in
 [`operations/HEPTABAO_AGENT_PROXY_HELPER.md`](operations/HEPTABAO_AGENT_PROXY_HELPER.md).
 The Python processes do not reclassify standalone Rust contract/model crates as
 server dependencies. Current module status and all independent gates are unchanged.
+
+## Schema 4 external boundaries and qualification distinction
+
+- [PostgreSQL provider, renewable lease and reconcile](engines/HEPTABAO_POSTGRESQL_PROVIDER.md): actual PostgreSQL 17 acceptance remains blocked without the server binaries; wire models are labelled explicitly.
+- [Remote JWKS / Discovery-backed JWT](auth/HEPTABAO_REMOTE_JWT_KEYS.md): fresh verified HTTPS keys, not browser OIDC code flow.
+- [Raft membership / persisted snapshots / Autopilot](operations/HEPTABAO_RAFT_ADMINISTRATION.md): same-version pre-enrolled native consensus operations, not full restore/migration parity.
+
+These current implementation notes supersede earlier absence-of-implementation statements only for their exact bounded profiles. Original 60-surface admission statuses and independent authority remain unchanged.

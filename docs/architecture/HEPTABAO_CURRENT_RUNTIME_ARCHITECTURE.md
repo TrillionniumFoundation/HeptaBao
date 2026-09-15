@@ -99,3 +99,7 @@ fixture proves explicit transfer and forwarding after the old leader becomes a
 standby; it does not establish mixed-version rolling upgrade or multi-host WAN
 qualification. The PKI and JWKS boundaries are documented in the engine/auth
 guides and remain narrower than the full OpenBao surfaces.
+
+## Schema 4 external-effect and Raft-administration boundaries
+
+Service now composes the native TLS/SCRAM PostgreSQL adapter and a bounded encrypted provider-intent ledger, fresh remote JWT key resolution, plus native Raft administration. The architecture remains one authoritative Service writer; provider operations require pre-entry intent and post-commit readback, and native consensus owns membership. Host startup pins outbound origins/addresses/CAs. See [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft](../operations/HEPTABAO_RAFT_ADMINISTRATION.md). Model-provider tests are not actual SQL execution. These additions do not turn isolated contract crates into runtime dependencies or confer full compatibility.

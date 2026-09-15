@@ -395,3 +395,7 @@ self capability inspection, but not rewrap or arbitrary subject inspection.
 The new state writer emits schema 3; the identity-aware schema-2 baseline remains
 readable only without wrapping/SSH-lease state and is upgraded only on mutation.
 The SSH engine's CIDR rules are not authentication-method CIDR support.
+
+## Remote key-source extension
+
+The current [remote JWKS / OIDC Discovery JWT implementation](HEPTABAO_REMOTE_JWT_KEYS.md) adds host-enrolled verified HTTPS, login-time key refresh and RSA/RS256. Static keys remain a separate mutually exclusive profile. Browser authorization-code OIDC, MFA and arbitrary claim mapping are not implied. Newly persisted source/algorithm constraints require schema 4.

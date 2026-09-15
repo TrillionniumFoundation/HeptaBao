@@ -138,3 +138,7 @@ may already be durably consumed while the response was withheld. Metadata lookup
 and the existing authenticated recovery boundary are investigative tools, not an
 instruction to recreate the credential. An SSH integration must separately bind
 returned username/IP to the actual host; no host integration has been deployed.
+
+## Schema 4 and external providers
+
+Before configuring remote JWT or PostgreSQL, read [remote key enrollment](../auth/HEPTABAO_REMOTE_JWT_KEYS.md) and [provider ownership/reconciliation](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md). No outbound endpoint exists by default. Provider timeouts leave durable pending effects, not a retry permission; the bounded reconciler revokes uncertain leases. Actual PostgreSQL 17 acceptance is mandatory before any deployment use. See [Raft administration](HEPTABAO_RAFT_ADMINISTRATION.md) for member operations. Do not roll back schema 4 to an old executable or restore provider-bearing snapshots by hand.

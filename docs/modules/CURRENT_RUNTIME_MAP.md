@@ -64,3 +64,7 @@ new wrapping, capability-inspection and SSH OTP modules are internal server sour
 not extra workspace packages. Their named service, binary-differential, upgrade
 and HA tests are linked from the current server guide. Original compatibility
 corpus status is not advanced by standalone profile success.
+
+## Additional current server-owned routes
+
+The server's internal `service_database.rs` and `postgres_wire.rs` implement the bounded PostgreSQL provider/renewable-lease path; `auth_remote.rs` and `outbound.rs` implement remote JWT keys; `service_raft_admin.rs` composes native `process/admin.rs` membership/snapshot observations and guarded Autopilot. These extend existing server/runtime package rows without adding a separate database package or changing the 46-package denominator. See [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [JWT](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for exact current limits and unexecuted qualification boundaries.

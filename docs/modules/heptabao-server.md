@@ -354,3 +354,7 @@ where Unix-only code consumes it. The whole server source is checked for numeric
 `custom_flags` regressions. This static guard and x86 execution do not establish
 new ARM64/macOS runtime qualification; the existing Linux-only durable-store
 profile and independent platform gates remain unchanged.
+
+## Schema 4 runtime extensions
+
+Current Service integrates [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT keys](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) through its existing writer. Source files `service_database.rs`, `postgres_wire.rs`, `outbound.rs`, `auth_remote.rs` and `service_raft_admin.rs` own the corresponding concrete boundaries; server package existence alone does not qualify them. Database effect intent and exact readback are durable. Remote destinations are enrolled at startup. Native membership acknowledgement requires stable committed configuration. Actual PostgreSQL SQL execution, browser OIDC, mixed-version/forced restore and independent production acceptance remain open. Service schema 4 prevents older readers from ignoring these new fields. See the linked guides for limits, configuration, state machine, failures and exact test commands.
