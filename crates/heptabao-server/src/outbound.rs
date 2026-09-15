@@ -254,11 +254,27 @@ fn line(stream: &mut impl Read, budget: &mut usize) -> Result<Vec<u8>, &'static 
     }
 }
 fn read_json_response(stream: &mut impl Read) -> Result<Value, &'static str> {
+    read_json_response_status(stream, &[200])
+}
+fn read_json_response_status(
+    stream: &mut impl Read,
+    accepted: &[u16],
+) -> Result<Value, &'static str> {
     let mut budget = 16 * 1024;
     let status = line(stream, &mut budget)?;
     let status = std::str::from_utf8(&status).map_err(|_| "invalid outbound HTTP status")?;
-    if !status.starts_with("HTTP/1.1 200 ") && !status.starts_with("HTTP/1.0 200 ") {
-        return Err("outbound HTTP status is not 200; redirects forbidden");
+    let mut parts = status.splitn(3, ' ');
+    let version = parts.next().unwrap_or("");
+    let code = parts.next().unwrap_or("");
+    if !matches!(version, "HTTP/1.1" | "HTTP/1.0")
+        || code.len() != 3
+        || !code.bytes().all(|b| b.is_ascii_digit())
+        || !code
+            .parse::<u16>()
+            .is_ok_and(|value| accepted.contains(&value))
+        || parts.next().is_none()
+    {
+        return Err("outbound HTTP status rejected; redirects forbidden");
     }
     let mut headers = BTreeMap::new();
     loop {
@@ -358,6 +374,109 @@ fn read_json_response(stream: &mut impl Read) -> Result<Value, &'static str> {
     // The same duplicate-key rejecting parser used by the public HTTP boundary.
     crate::auth::parse_strict_json(&body).map_err(|_| "invalid or ambiguous outbound JSON")
 }
+
+impl Outbound {
+    /// One host-enrolled TokenReview request. No credential may choose its own
+    /// network origin, CA, address, method or path; no automatic HTTP retry.
+    pub(crate) fn post_json_bearer(
+        &self,
+        url: &str,
+        bearer: &str,
+        value: &Value,
+    ) -> Result<Value, &'static str> {
+        if bearer.is_empty()
+            || bearer.len() > 32 * 1024
+            || !bearer.bytes().all(|b| b.is_ascii_graphic())
+        {
+            return Err("invalid outbound bearer");
+        }
+        let body = Zeroizing::new(serde_json::to_vec(value).map_err(|_| "invalid outbound JSON")?);
+        let authorization = Zeroizing::new(format!("Bearer {bearer}"));
+        self.post_body(url, "application/json", &authorization, &body, &[200, 201])
+    }
+
+    fn post_body(
+        &self,
+        url: &str,
+        content_type: &str,
+        authorization: &str,
+        body: &[u8],
+        accepted: &[u16],
+    ) -> Result<Value, &'static str> {
+        if body.len() > MAX_DOCUMENT
+            || authorization.len() > 48 * 1024
+            || authorization.bytes().any(|b| b < 32 || b == 127)
+        {
+            return Err("outbound request bound or header violation");
+        }
+        let (endpoint, target) = self.endpoint(url, "https")?;
+        let mut stream = endpoint.tls(endpoint.connect()?)?;
+        let head = Zeroizing::new(format!(
+            "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: {}\r\nAuthorization: {}\r\nContent-Length: {}\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
+            target.path,
+            target.authority,
+            content_type,
+            authorization,
+            body.len()
+        ));
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.write_all(body))
+            .and_then(|()| stream.flush())
+            .map_err(|_| "outbound POST failed; no retry")?;
+        read_json_response_status(&mut stream, accepted)
+    }
+}
+
+/// RFC 3986 unreserved encoding; also valid for application/x-www-form-urlencoded.
+/// Space uses %20. Never concatenate caller values directly into a URL or header.
+pub(crate) fn form_component(value: &str) -> String {
+    let mut output = String::new();
+    const HEX: &[u8; 16] = b"0123456789ABCDEF";
+    for b in value.bytes() {
+        if b.is_ascii_alphanumeric() || b"-._~".contains(&b) {
+            output.push(char::from(b));
+        } else {
+            output.push('%');
+            output.push(char::from(HEX[(b >> 4) as usize]));
+            output.push(char::from(HEX[(b & 15) as usize]));
+        }
+    }
+    output
+}
+impl Outbound {
+    pub(crate) fn exchange_oidc(
+        &self,
+        url: &str,
+        client_id: &str,
+        client_secret: &str,
+        code: &str,
+        redirect: &str,
+        verifier: &str,
+    ) -> Result<Value, &'static str> {
+        use base64::{Engine as _, engine::general_purpose::STANDARD};
+        let body = Zeroizing::new(format!(
+            "grant_type=authorization_code&code={}&redirect_uri={}&code_verifier={}",
+            form_component(code),
+            form_component(redirect),
+            form_component(verifier)
+        ));
+        let credentials = Zeroizing::new(format!(
+            "{}:{}",
+            form_component(client_id),
+            form_component(client_secret)
+        ));
+        let header = Zeroizing::new(format!("Basic {}", STANDARD.encode(credentials.as_bytes())));
+        self.post_body(
+            url,
+            "application/x-www-form-urlencoded",
+            &header,
+            body.as_bytes(),
+            &[200],
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -398,5 +517,52 @@ mod tests {
         let raw=b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n";
         assert_eq!(read_json_response(&mut &raw[..])?, serde_json::json!({}));
         Ok(())
+    }
+    #[test]
+    fn online_post_statuses_do_not_widen_get_or_exchange_admission() {
+        for code in [200, 201, 202, 204, 301, 302, 307, 400, 401, 500] {
+            let message = format!(
+                "HTTP/1.1 {code} Result\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{{}}"
+            );
+            assert_eq!(
+                read_json_response_status(&mut message.as_bytes(), &[200, 201]).is_ok(),
+                matches!(code, 200 | 201)
+            );
+            assert_eq!(
+                read_json_response(&mut message.as_bytes()).is_ok(),
+                code == 200
+            );
+        }
+        for status in [
+            "HTTP/1.1 2000 OK",
+            "HTTP/1.1 +200 OK",
+            "HTTP/1.1 200",
+            "HTTP/2 200 OK",
+        ] {
+            let message = format!(
+                "{status}\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{{}}"
+            );
+            assert!(read_json_response_status(&mut message.as_bytes(), &[200, 201]).is_err());
+        }
+    }
+    #[test]
+    fn online_form_components_and_headers_cannot_inject_authority() {
+        assert_eq!(form_component("safe-A_z.0~"), "safe-A_z.0~");
+        assert_eq!(
+            form_component("a:b+c&d=e ?\r\n"),
+            "a%3Ab%2Bc%26d%3De%20%3F%0D%0A"
+        );
+        assert_eq!(form_component("é"), "%C3%A9");
+        let outbound = Outbound::default();
+        for credential in ["", "x y", "x\r\nAuthorization: Basic bad", "x\0y"] {
+            assert_eq!(
+                outbound.post_json_bearer(
+                    "https://issuer:443/",
+                    credential,
+                    &serde_json::json!({})
+                ),
+                Err("invalid outbound bearer")
+            );
+        }
     }
 }

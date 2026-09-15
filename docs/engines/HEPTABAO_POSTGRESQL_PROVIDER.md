@@ -136,9 +136,11 @@ profile does not protect against the PostgreSQL administrator.
 
 Role/tombstone retention needs an operator-designed archival/retirement policy.
 Do not delete a tombstone while delayed operations can still reach that provider.
-The SQL contract has not been run against an actual PostgreSQL server in this
-execution environment, so syntax, OID/DDL semantics and session termination are
-not qualified by the protocol model. Real database acceptance is mandatory.
+The baseline `0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5` ran real PostgreSQL
+acceptance in GitHub Actions run `34924284502` (head and prospective merge).
+This is repository-controlled execution, not independent provider qualification.
+Every changed candidate must execute the real runner again; the wire model cannot
+substitute for SQL, OID/DDL semantics, login or session-termination evidence.
 
 ## Bounds, recovery and operation
 
@@ -186,3 +188,14 @@ They do not execute SQL. The last runner requires real `postgres`, `initdb` and
 installs the SQL, checks actual login/renew/revoke, SIGKILL/restart and provider
 side denial. Missing prerequisites produce **exit 77 and blocked_prerequisite**;
 it must never be replaced by a mock, counted as pass or hidden as an ordinary skip.
+
+## Completion publication failure precedence
+
+After PostgreSQL has applied an operation and returned matching readback, a local
+state/capacity/validation failure is HTTP 503 with the original lease identity,
+`reconcile_required=true`, `retry_allowed=false` and any local recovery reference.
+It cannot be presented as HTTP 507/400 failed-before-entry. The encrypted pending
+intent is retained; no credential is returned and no fresh issuance is retried.
+`provider_completion_publication_failure_is_never_before_entry_rejection` tests
+this response boundary and secret redaction. This unit regression is not actual
+PostgreSQL SQL acceptance, which still needs a real server for each candidate.

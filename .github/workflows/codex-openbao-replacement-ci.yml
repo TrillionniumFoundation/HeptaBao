@@ -57,7 +57,10 @@ jobs:
 
       - name: Install Python validation dependencies
         shell: bash
-        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/verify_python_environment.py
 
       - name: Install exact Rust toolchain
         shell: bash
@@ -103,14 +106,23 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
 
-      - name: Exercise actual capacity refusal compaction and restart
+      - name: Preserve the original PR96 capacity response and fixture
         if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
-          reports="$RUNNER_TEMP/heptabao-capacity-reports"
+          reports="$RUNNER_TEMP/heptabao-legacy-capacity-evidence"
           mkdir -m 700 "$reports"
-          timeout 240 python qa/openbao-acceptance/capacity_live.py \
+          timeout 240 python qa/openbao-acceptance/capacity_legacy_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
+
+      - name: Exercise bounded state saturation and replay-preserving capacity recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-capacity-evidence"
+          mkdir -m 700 "$reports"
+          timeout 180 python qa/openbao-acceptance/capacity_live.py \
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Exercise real three-process HA with synthetic state
@@ -188,6 +200,35 @@ jobs:
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
+      - name: Exercise online authentication and durable cross-node code consumption
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-online-authentication"
+          python -c 'import os,sys; os.mkdir(sys.argv[1],0o700); os.chmod(sys.argv[1],0o700)' "$reports"
+          timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
+          timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
+          timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
+          # A controlled TokenReview fixture is not an actual Kubernetes cluster.
+          # No secret-bearing service/issuer/client directories are uploaded.
+
+      - name: Observe real migration catalogs and target capacity without cutover
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-preflight-evidence"
+          mkdir -m 700 "$reports"
+          timeout 180 python qa/openbao-acceptance/migration_preflight_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/preflight.json"
+
       - name: Execute all bounded official-binary differential profiles
         if: ${{ success() || failure() }}
         shell: bash
@@ -261,6 +302,25 @@ jobs:
           timeout 360 python qa/openbao-acceptance/raft_membership_live.py \
             --binary "$PWD/target/debug/heptabao-server" --dead-cleanup \
             --output "$RUNNER_TEMP/heptabao-raft-membership.json"
+
+      - name: Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tools="$RUNNER_TEMP/heptabao-kind-input"
+          reports="$RUNNER_TEMP/heptabao-real-kubernetes-reports"
+          mkdir -m 700 "$tools" "$reports"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --max-time 120 https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 \
+            --output "$tools/kind"
+          printf '%s  %s\n' eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa "$tools/kind" | sha256sum -c -
+          chmod 700 "$tools/kind"
+          timeout 600 python qa/openbao-acceptance/kubernetes_cluster_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --kind "$tools/kind" \
+            --output "$reports/actual-kubernetes.json" --allow-disposable-cluster
+          # Exit 77, missing Docker, image failure, timeout and any failed case block CI.
+          # No kubeconfig, TokenRequest response, private key or cluster data is uploaded.
 
       - name: Confirm source remained immutable
         if: ${{ success() || failure() }}

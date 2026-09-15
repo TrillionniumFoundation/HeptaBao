@@ -139,3 +139,19 @@ See `docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md` for its exact configuratio
 unknown-outcome behavior, output retrieval, plaintext-memory limitations and
 operator-owned cutover. This does not convert the original ciphertext in place
 or provide key import, raw snapshots or full-instance migration.
+
+## Native OIDC callback login
+
+`heptabao-oidc-login` (also `python -m heptabao.oidc_login`) is an executable
+S256 code-flow consumer for an already enrolled confidential issuer/client and
+exact loopback redirect. It reserves a private output inode before login, keeps
+the independent client proof out of the browser URL, enforces absolute callback
+deadlines and exact Host/state/query, and never prints a bearer token. It does
+not automatically retry failed/uncertain login; an incomplete reserved file is
+preserved after failure. `--display-auth-url` explicitly exposes only the temporary
+authorization URL to a trusted terminal; do not capture it in shared logs.
+`--open-browser` is the alternative explicit local browser launch. Read
+`docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md` from the repository root for commands,
+all protocol/state limits and the distinction from a complete bao CLI or web UI.
+
+Implementation owner: `heptabao/oidc_login.py`; tests: `tests/test_oidc_login.py`.

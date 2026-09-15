@@ -1,89 +1,149 @@
 #!/usr/bin/env python3
-"""Exercise the real server's current capacity refusal/recovery, not a scale claim."""
-from pathlib import Path
+"""Measure the real bounded service on a new synthetic loopback TLS instance.
+
+No existing endpoint, credentials or data directory can be supplied. A pass
+proves the bounded profile's refusal/reopen semantics, never production scale.
+"""
+from __future__ import annotations
+
 import importlib.util
 import json
 import os
+from pathlib import Path
+import shutil
+import subprocess
 import tempfile
-from bao_http import BaoError, SafeArgumentParser, private_write
-from heptabao.private_state import StateDirectory
-from official_openbao_launcher import file_digest
+import time
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
-def run(binary, output):
-    checks = []
-    def check(name, value):
-        if not value:
-            raise BaoError('capacity_live_' + name)
-        checks.append(name)
-    spec = importlib.util.spec_from_file_location('capacity_smoke', ROOT / 'qa/single-node/smoke.py')
-    smoke = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(smoke)
-    with tempfile.TemporaryDirectory(prefix='heptabao-capacity-live-') as temporary:
-        root = Path(temporary)
-        root.chmod(0o700)
-        instance = smoke.Instance(binary.resolve(), root / 'candidate')
-        try:
-            instance.start()
-            status, init = instance.call('POST', 'sys/init', {'secret_shares': 1, 'secret_threshold': 1})
-            check('init', status == 200)
-            instance.token = init['root_token']
-            key = init['keys_base64'][0]
-            check('unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
-            path = 'sys/internal/storage/capacity'
-            status, response = instance.call('GET', path)
-            check('current_limit_visible', status == 200 and response['data']['state_limit_bytes'] == 768 * 1024)
-            check('unauthenticated_denied', instance.call('GET', path, token='not-authorized')[0] == 403)
-            accepted = 0
-            for n in range(80):
-                status, _ = instance.call('POST', 'secret/data/capacity-' + str(n), {'data': {'v': 'synthetic-capacity-' + 'x' * 16384}})
-                if status == 507:
-                    break
-                check('accepted_' + str(n), status == 200)
-                accepted += 1
-            check('bounded_capacity_refusal_observed', status == 507 and 1 <= accepted < 80)
-            check('rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
-            status, before = instance.call('GET', path)
-            check('refusal_does_not_poison_service', status == 200 and before['data']['recovery_required'] is False)
-            status, compacted = instance.call('POST', 'sys/storage/raft/compact', {})
-            check('explicit_compaction_preserves_ids', status == 200 and compacted['data']['retained_requests'] == before['data']['retained_requests'])
-            instance.stop()
-            instance.start()
-            check('restart_unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
-            for n in (0, accepted - 1):
-                status, data = instance.call('GET', 'secret/data/capacity-' + str(n))
-                check('acknowledged_readback_' + str(n), status == 200 and data['data']['data']['v'].startswith('synthetic-capacity-'))
-            status, after = instance.call('GET', path)
-            check('restart_preserves_ledger', status == 200 and after['data']['retained_requests'] == before['data']['retained_requests'])
-            result = {'schema': 'heptabao.capacity-live.v1', 'status': 'passed_bounded_capacity',
-                      'count': len(checks), 'checks': checks, 'accepted_16k_objects': accepted,
-                      'candidate_binary_sha256': file_digest(binary), 'state_limit_bytes': 768 * 1024,
-                      'production_capacity_qualified': False, 'compatibility_claim': False}
-            private_write(output, result, replace=False)
-            return result
-        finally:
-            instance.stop()
+from bao_http import SafeArgumentParser, private_write
+from core_isolation import ROOT, ScenarioFailure, file_hash
 
 
-def main(argv=None):
+def validate_observation(data: dict) -> None:
+    names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
+             'retained_operations', 'operation_limit', 'operations_remaining',
+             'journal_bytes', 'journal_limit_bytes')
+    if not isinstance(data, dict) or any(type(data.get(k)) is not int or data[k] < 0 for k in names):
+        raise ScenarioFailure('capacity.invalid_observation')
+    for used, limit, remaining in (
+        ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes'),
+        ('retained_operations', 'operation_limit', 'operations_remaining'),
+    ):
+        if data[used] > data[limit] or data[remaining] != data[limit] - data[used]:
+            raise ScenarioFailure('capacity.inconsistent_bound')
+    if data['journal_bytes'] > data['journal_limit_bytes']:
+        raise ScenarioFailure('capacity.journal_bound')
+    for key in ('admission_reserved', 'compaction_reclaims_operation_identities',
+                'full_openbao_compatibility', 'production_qualified'):
+        if data.get(key) is not False:
+            raise ScenarioFailure('capacity.inflated_claim')
+
+
+def main() -> int:
     parser = SafeArgumentParser(description=__doc__)
-    parser.add_argument('--binary', required=True, type=Path)
-    parser.add_argument('--output', required=True, type=Path)
-    args = parser.parse_args(argv)
-    with StateDirectory(args.output.absolute().parent):
-        if os.path.lexists(args.output):
-            raise BaoError('output_already_exists')
-    result = run(args.binary, args.output)
-    print(json.dumps({k: result[k] for k in ('status', 'count', 'accepted_16k_objects', 'production_capacity_qualified')}))
-    return 0
+    parser.add_argument('--binary', required=True)
+    parser.add_argument('--output', required=True)
+    args = parser.parse_args()
+    binary = Path(args.binary).resolve(strict=True)
+    output = Path(args.output).absolute()
+    info = output.parent.stat()
+    if os.path.lexists(output) or output.parent.is_symlink() or info.st_uid != os.geteuid() or info.st_mode & 0o077:
+        parser.error('new output in private caller-owned directory required')
+    root = Path(tempfile.mkdtemp(prefix='heptabao-capacity-live-'))
+    root.chmod(0o700)
+    instance = None
+    report = {'schema': 'heptabao.capacity-live.v1', 'synthetic_only': True, 'cases': [],
+              'binary_sha256': file_hash(binary), 'runner_sha256': file_hash(Path(__file__)),
+              'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+              'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(),
+              'source_worktree_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT)),
+              'production_qualified': False, 'full_openbao_compatibility': False,
+              'started_at_unix': time.time(), 'status': 'failed'}
+
+    def check(name, condition):
+        report['cases'].append({'case': name, 'passed': bool(condition)})
+        if not condition:
+            raise ScenarioFailure(name)
+
+    def observe():
+        status, body = instance.call('GET', 'sys/internal/capacity')
+        check('capacity.observation.' + str(len(report['cases'])), status == 200)
+        data = body.get('data')
+        validate_observation(data)
+        return data
+
+    try:
+        spec = importlib.util.spec_from_file_location('capacity_smoke', ROOT/'qa/single-node/smoke.py')
+        smoke = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(smoke)
+        instance = smoke.Instance(binary, root/'server')
+        instance.start()
+        status, init = instance.call('POST', 'sys/init', {'secret_shares': 1, 'secret_threshold': 1})
+        check('capacity.init', status == 200)
+        instance.token = init['root_token']
+        key = init['keys_base64'][0]
+        check('capacity.unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
+        initial = observe()
+        check('capacity.profile_is_bounded', initial['state_limit_bytes'] == 768 * 1024)
+        original = instance.token
+        instance.token = 'synthetic-invalid-token'
+        check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
+        instance.token = original
+        payload = {'data': {'synthetic': 'x' * (32 * 1024)}}
+        previous = observe()
+        latencies = []
+        accepted = 0
+        for number in range(32):
+            start = time.monotonic()
+            status, _ = instance.call('POST', 'secret/data/capacity-' + str(number), payload)
+            latencies.append((time.monotonic() - start) * 1000)
+            if status == 507:
+                report['rejected_key_index'] = number
+                break
+            check('capacity.write.' + str(number), status == 200)
+            accepted += 1
+            previous = observe()
+        else:
+            raise ScenarioFailure('capacity.did_not_reach_declared_bound')
+        check('capacity.nontrivial_growth', accepted > 1)
+        saturated = observe()
+        check('capacity.rejection_no_state_or_identity_effect', saturated == previous)
+        check('capacity.rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
+        check('capacity.committed_value_readable', instance.call('GET', 'secret/data/capacity-0')[1].get('data', {}).get('data') == payload['data'])
+        check('capacity.compact', instance.call('POST', 'sys/storage/raft/compact', {})[0] == 200)
+        compacted = observe()
+        check('capacity.compaction_not_ledger_gc', compacted['retained_operations'] == saturated['retained_operations'])
+        check('capacity.compaction_not_state_growth', compacted['state_bytes'] == saturated['state_bytes'])
+        instance.stop()
+        instance.start()
+        check('capacity.reopen_sealed', instance.call('GET', 'sys/internal/capacity')[0] == 503)
+        check('capacity.reopen_unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
+        reopened = observe()
+        check('capacity.reopen_exact', reopened == compacted)
+        check('capacity.reopen_rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
+        check('capacity.binary_unchanged', file_hash(binary) == report['binary_sha256'])
+        report.update(status='passed', initial=initial, saturated=saturated, after_compaction=compacted,
+                      accepted_writes=accepted,
+                      latency_ms={'min': min(latencies), 'max': max(latencies),
+                                  'mean': sum(latencies)/len(latencies)},
+                      scope='bounded_capacity_refusal_not_scale_qualification')
+    except Exception as error:
+        report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
+    finally:
+        if instance is not None:
+            try:
+                instance.stop()
+            except Exception:
+                report['status'], report['failure'] = 'failed', 'cleanup_failed'
+        try:
+            shutil.rmtree(root)
+        except OSError:
+            report['status'], report['failure'] = 'failed', 'private_fixture_cleanup_failed'
+        report['finished_at_unix'] = time.time()
+        private_write(output, report, replace=False)
+    print(json.dumps({'status': report['status'], 'cases': len(report['cases']), 'failure': report.get('failure')}))
+    return 0 if report['status'] == 'passed' else 1
 
 
 if __name__ == '__main__':
-    try:
-        raise SystemExit(main())
-    except Exception as error:
-        reason = str(error) if isinstance(error, BaoError) and str(error).startswith('capacity_live_') else 'capacity_fixture_failed'
-        print(json.dumps({'status': 'failed', 'reason': reason, 'production_capacity_qualified': False}))
-        raise SystemExit(2) from None
+    raise SystemExit(main())

@@ -180,3 +180,12 @@ The `TEST_SEQUENCE` counter and its atomic imports are compiled only with the
 Linux command-runner tests that consume them. Portable contract tests and strict
 Clippy remain enabled on macOS. This removes unused Linux test support from the
 non-Linux compilation unit; it does not add macOS sandbox or durable-host support.
+
+## Descendant cleanup fixture publication
+
+The Linux process-group timeout fixture publishes its complete PID/proc identity
+with a temporary file followed by atomic rename. A concurrent timeout must not
+expose an empty or half-written identity as if it named a surviving process. The
+200 ms invocation deadline, two-second overall cleanup assertion and real proc
+termination checks are unchanged; missing publication remains a test failure.
+This is a fixture race correction, not a change to the production sandbox runner.

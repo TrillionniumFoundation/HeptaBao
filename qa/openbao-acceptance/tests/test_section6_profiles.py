@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-import capacity_live
+import capacity_legacy_live as capacity_live
 import transit_migration_live
 from bao_http import BaoError
 

@@ -1,0 +1,1896 @@
+{
+  "schema": "heptabao.replacement-execution.v1",
+  "plan_id": "HEPTABAO-PLAN-2026-09-07-V2.1",
+  "target_version": "2.6.2",
+  "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+  "acceptance_axes": {
+    "protocol": "Positive endpoint/method/parameter and exact status/body/error-precedence differential. Equal failures are not successful behavior.",
+    "authorization": "Default-deny, least privilege, namespace/mount/owner and live revocation checks at actual runtime entry.",
+    "effect_readback": "Observe actual persisted or provider-side effects; absence of a response is not proof of no effect.",
+    "crash_replay": "Before/after intent, publication, commit and response interruption; duplicated/ambiguous requests never repeat effects blindly.",
+    "expiry_revocation": "Clock regression, TTL, revoke and idle lifecycle must survive restart and HA without resurrection.",
+    "migration_upgrade": "Exact version pair, all owned data and key/tombstone formats, no dropped assets and no unsafe old-binary fallback.",
+    "capacity_operations": "Declared capacity, latency/memory/recovery cost, long-run saturation, safe diagnostics and operator recovery.",
+    "independent_admission": "Use the existing external-evidence verifier and full declared scope, exact source/artifact identity, freshness and revoked-key checks. Repository CI cannot self-issue this."
+  },
+  "surfaces": [
+    {
+      "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H07-WP01",
+        "H07-WP02",
+        "H07-WP06",
+        "H07-WP10"
+      ],
+      "public_baseline_reference": "public-docs://internals/architecture",
+      "api_families": [
+        "/v1/*"
+      ],
+      "positive": "Trace authenticated request through one owner and accepted/result audit",
+      "hostile": "Reject duplicate headers, ambiguous paths, expired principals and denied effects",
+      "lifecycle": "Recover each intent/state/commit/response failure without blind replay",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/http.rs",
+        "crates/heptabao-server/src/service.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Must distinguish pure reads, durable mutations and side-effecting reads."
+    },
+    {
+      "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H07-WP05",
+        "H07-WP09"
+      ],
+      "public_baseline_reference": "public-source-surface://vault/logical_system.go",
+      "api_families": [
+        "sys/init",
+        "sys/unseal",
+        "sys/seal",
+        "sys/rekey/*",
+        "sys/health"
+      ],
+      "positive": "Enumerate supported methods, request fields and success envelopes for every sys route",
+      "hostile": "Verify sealed, missing-root and malformed-field error precedence",
+      "lifecycle": "Reopen initialization, lost response and verified rekey without publishing two roots",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Endpoint-level inventory remains incomplete."
+    },
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H07-WP03",
+        "H07-WP04",
+        "H07-WP07"
+      ],
+      "public_baseline_reference": "public-docs://concepts/mounts",
+      "api_families": [
+        "sys/mounts/*",
+        "sys/auth/*",
+        "sys/audit/*",
+        "sys/remount"
+      ],
+      "positive": "Enable, inspect, tune, relocate and disable all declared mount classes",
+      "hostile": "Reject overlapping mounts, unauthorized tune and cross-namespace relocation",
+      "lifecycle": "Persist mount incarnations and revoke old leases and credentials after disable/recreate",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/engines.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Requires revision, CAS, cache invalidation and crash fixtures."
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H08-WP01",
+        "H08-WP02",
+        "H08-WP03",
+        "H08-WP04",
+        "H08-WP05",
+        "H08-WP06",
+        "H08-WP07",
+        "H08-WP08",
+        "H08-WP09",
+        "H08-WP10"
+      ],
+      "public_baseline_reference": "public-docs://concepts/policies",
+      "api_families": [
+        "sys/policies/acl/*",
+        "sys/capabilities*"
+      ],
+      "positive": "Match full ACL specificity, templates and parameter constraints against official behavior",
+      "hostile": "Check glob/segment ties, explicit deny and malformed policy without privilege union",
+      "lifecycle": "Apply live policy replacement and deletion to existing tokens across HA/reopen",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth_acl.rs",
+        "crates/heptabao-server/src/service_capabilities.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_CAPABILITIES.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/core_isolation.py",
+        "qa/openbao-acceptance/capabilities_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Security advisories and path/glob/list/scan edge cases require dedicated corpus."
+    },
+    {
+      "surface_id": "HB-SURFACE-IDENTITY",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H09-WP01",
+        "H09-WP02",
+        "H09-WP03",
+        "H09-WP04",
+        "H09-WP05",
+        "H09-WP06",
+        "H09-WP07",
+        "H09-WP08",
+        "H09-WP09",
+        "H09-WP10"
+      ],
+      "public_baseline_reference": "public-docs://concepts/identity",
+      "api_families": [
+        "identity/entity/*",
+        "identity/group/*",
+        "identity/mfa/*",
+        "identity/oidc/*"
+      ],
+      "positive": "Compose entities, aliases, internal/external groups, MFA and provider identity",
+      "hostile": "Reject merge cycles, stale mount aliases and cross-namespace policy binding",
+      "lifecycle": "Persist merge lineage, disabled entities and group revocation through failover",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/identity.rs",
+        "crates/heptabao-server/src/service_identity.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/identity_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Namespace and mount non-interference are release blockers."
+    },
+    {
+      "surface_id": "HB-SURFACE-TOKEN",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H10-WP01",
+        "H10-WP02",
+        "H10-WP03",
+        "H10-WP04",
+        "H10-WP05",
+        "H10-WP06",
+        "H10-WP11"
+      ],
+      "public_baseline_reference": "public-docs://concepts/tokens",
+      "api_families": [
+        "auth/token/*"
+      ],
+      "positive": "Cover service/batch/recovery, parent/orphan, periodic/max TTL, finite uses and CIDR",
+      "hostile": "Deny policy escalation, accessor leakage and using a consumed token twice",
+      "lifecycle": "Observe expiry, cascaded revocation and lost-response creation across restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Includes parent/orphan, periodic, explicit max TTL, uses and CIDR semantics."
+    },
+    {
+      "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H10-WP07",
+        "H10-WP08"
+      ],
+      "public_baseline_reference": "public-docs://concepts/response-wrapping",
+      "api_families": [
+        "cubbyhole/*",
+        "sys/wrapping/*"
+      ],
+      "positive": "Read token-private values and wrap/lookup/rewrap/unwrap exact response envelopes",
+      "hostile": "Deny peer/root access to another token cubbyhole and wrapping-token general authority",
+      "lifecycle": "Race unwrap across leader failure; verify one release and durable expiration",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth_cubbyhole.rs",
+        "crates/heptabao-server/src/auth_wrapping.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_RESPONSE_WRAPPING.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/core_isolation.py",
+        "qa/openbao-acceptance/response_wrapping.py",
+        "qa/openbao-acceptance/wrapping_ha.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Single-use and active/standby response-loss behavior require race fixtures."
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "category": "core_system",
+      "owner_work_packages": [
+        "H11-WP01",
+        "H11-WP02",
+        "H11-WP03",
+        "H11-WP04",
+        "H11-WP05",
+        "H11-WP06",
+        "H11-WP07",
+        "H11-WP08",
+        "H11-WP09",
+        "H11-WP10",
+        "H11-WP11"
+      ],
+      "public_baseline_reference": "public-docs://concepts/lease",
+      "api_families": [
+        "sys/leases/*"
+      ],
+      "positive": "Issue, renew, lookup and revoke local and external leases using actual provider readback",
+      "hostile": "Deny cross-mount prefix revocation, stale owner use and lease resurrection",
+      "lifecycle": "Recover ambiguous provider replies, idle expiry and cancellation without orphan effects",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engine_leases.rs",
+        "crates/heptabao-server/src/service_lifecycle.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/idle_lifecycle_ha.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "External effect ambiguity must remain indeterminate until evidence."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-TOKEN",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP01",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/token",
+      "api_families": [
+        "auth/token/lookup*",
+        "auth/token/renew*",
+        "auth/token/revoke*"
+      ],
+      "positive": "Use token bearer authentication with exact public error and response shapes",
+      "hostile": "Reject invalid, expired, wrong-namespace and exhausted tokens",
+      "lifecycle": "Persist accepted finite-use consumption even when later handler authorization fails",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "HTTP/API projection delegates durable token state to heptabao-token."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-USERPASS",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP02",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/userpass",
+      "api_families": [
+        "auth/{mount}/users/*",
+        "auth/{mount}/login/*"
+      ],
+      "positive": "Authenticate salted password records and enrolled MFA with documented lockout",
+      "hostile": "Reject wrong password, replayed OTP and another mount's username",
+      "lifecycle": "Rotate password and disable/remount while existing sessions and children are active",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Password hashing, lockout and audit require exact profiles."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-APPROLE",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP03",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/approle",
+      "api_families": [
+        "auth/{mount}/role/*",
+        "auth/{mount}/login"
+      ],
+      "positive": "Configure RoleID, custom/generated SecretID, wrapping, TTL and CIDR restrictions",
+      "hostile": "Reject cross-role SecretID, exhausted uses and client-controlled identity fields",
+      "lifecycle": "Race SecretID consumption and revoke issuer or auth mount through restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Role ID, secret ID, wrapping, CIDR and single-use behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-CERT",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP04",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/cert",
+      "api_families": [
+        "auth/{mount}/certs/*",
+        "auth/{mount}/login"
+      ],
+      "positive": "Authenticate real verified client chains and bind allowed certificate identities",
+      "hostile": "Reject revoked leaf, bad EKU, unrelated CA and untrusted forwarded certificates",
+      "lifecycle": "Refresh CRL/OCSP and rotate CA without resurrecting revoked sessions",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Chain, CRL, OCSP and trusted-forwarded-certificate behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP05",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/jwt",
+      "api_families": [
+        "auth/{mount}/config",
+        "auth/{mount}/role/*",
+        "auth/{mount}/login",
+        "auth/{mount}/oidc/*"
+      ],
+      "positive": "Verify static/remote keys and complete browser authorization-code callback flow",
+      "hostile": "Reject algorithm confusion, bad issuer/audience, nonce/state/PKCE and unapproved egress",
+      "lifecycle": "Rotate JWKS, expire browser state and recover token issuance after response loss",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth_remote.rs",
+        "crates/heptabao-server/src/federated_auth.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/auth_oidc.rs",
+        "crates/heptabao-server/src/service_online_auth.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md",
+        "docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/remote_jwks_compare.py",
+        "qa/openbao-acceptance/oidc_code_live.py",
+        "qa/openbao-acceptance/online_auth_ha.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Full jwt/oidc mount aliases and fields, arbitrary scopes/claim mappings/CEL, UserInfo/refresh/public clients, browser rendering/consent, external MFA, independent provider and production qualification."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP06",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/kubernetes",
+      "api_families": [
+        "auth/{mount}/config",
+        "auth/{mount}/role/*",
+        "auth/{mount}/login"
+      ],
+      "positive": "Use real TokenReview and service-account namespace/name/audience binding",
+      "hostile": "Reject forged JWT, untrusted API CA and TokenReview identity mismatch",
+      "lifecycle": "Rotate reviewer credentials and service-account tokens across API outage and restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth_kubernetes.rs",
+        "crates/heptabao-server/src/service_online_auth.rs",
+        "crates/heptabao-server/src/outbound.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/kubernetes_online.py",
+        "qa/openbao-acceptance/online_auth_ha.py",
+        "qa/openbao-acceptance/kubernetes_cluster_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "The actual pinned KIND API/etcd/RBAC fixture must execute on this exact source; no prior protocol pass is inherited. Remaining distribution coverage, TTL/renewal/alias configuration compatibility, external MFA and independent acceptance remain open."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-LDAP",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP07",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/ldap",
+      "api_families": [
+        "auth/{mount}/config",
+        "auth/{mount}/users/*",
+        "auth/{mount}/groups/*",
+        "auth/{mount}/login/*"
+      ],
+      "positive": "Bind/search real directory and map only authorized user/group policies",
+      "hostile": "Reject LDAP-filter injection, empty-password bind and invalid TLS identity",
+      "lifecycle": "Rotate bind password and reconcile live external-group membership changes",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Bind/search/group escaping, TLS and credential rotation."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-RADIUS",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP08",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/radius",
+      "api_families": [
+        "auth/{mount}/config",
+        "auth/{mount}/users/*",
+        "auth/{mount}/login/*"
+      ],
+      "positive": "Authenticate against real RADIUS with response authenticator validation",
+      "hostile": "Reject replay, bad shared-secret response and response/request mismatches",
+      "lifecycle": "Handle packet loss and credential rotation without granting on timeout",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Shared-secret handling, replay, timeout and fail-closed behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KERBEROS",
+      "category": "auth_methods",
+      "owner_work_packages": [
+        "H16-WP09",
+        "H16-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/credential/kerberos",
+      "api_families": [
+        "auth/{mount}/config",
+        "auth/{mount}/login"
+      ],
+      "positive": "Validate real SPNEGO/PAC and constrained realm/service identity",
+      "hostile": "Reject replayed tickets, untrusted realm and excessive clock skew",
+      "lifecycle": "Rotate keytab and recover replay state across server restart",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "SPNEGO/PAC, realm and clock behavior; may be feature-gated but remains v2.6.2 target."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KV",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H17-WP02",
+        "H17-WP03",
+        "H17-WP04",
+        "H17-WP05",
+        "H17-WP06",
+        "H17-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/kv",
+      "api_families": [
+        "{mount}/data/*",
+        "{mount}/metadata/*",
+        "{mount}/delete/*",
+        "{mount}/undelete/*",
+        "{mount}/destroy/*",
+        "{mount}/subkeys/*"
+      ],
+      "positive": "Cover KV1/KV2 history, CAS, patch, metadata, shallow list and pagination",
+      "hostile": "Reject partial multi-version mutation and namespace/path ambiguity",
+      "lifecycle": "Preserve tombstones, pruning and retention across crash, upgrade and migration",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/kv.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "CAS, versions, metadata, delete/undelete/destroy, list/scan and pagination."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TRANSIT",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H17-WP07",
+        "H17-WP08",
+        "H17-WP09"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/transit",
+      "api_families": [
+        "{mount}/keys/*",
+        "{mount}/encrypt/*",
+        "{mount}/decrypt/*",
+        "{mount}/rewrap/*",
+        "{mount}/sign/*",
+        "{mount}/verify/*"
+      ],
+      "positive": "Cover algorithms, derivation, BYOK, context, convergent mode and imported old ciphertext",
+      "hostile": "Reject cross-domain key misuse, wrong AAD and unsupported options without silent fallback",
+      "lifecycle": "Rewrap persisted OpenBao ciphertext under an explicit verified domain-conversion protocol",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/transit.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Key lifecycle, encrypt/decrypt/rewrap/sign/verify/HMAC/hash/random."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TOTP",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H17-WP10"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/totp",
+      "api_families": [
+        "{mount}/keys/*",
+        "{mount}/code/*"
+      ],
+      "positive": "Use all declared import/algorithm/digits/period and generated-key profiles",
+      "hostile": "Reject repeat code, invalid Base32, brute-force budget bypass and clock rollback",
+      "lifecycle": "Persist accepted-code and rate-limit state through remount and restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/totp.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/acceptance.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Import, generate, code, validate, period and expiry."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKI",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H18-WP01",
+        "H18-WP02",
+        "H18-WP03",
+        "H18-WP04",
+        "H18-WP05"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/pki",
+      "api_families": [
+        "{mount}/root/*",
+        "{mount}/intermediate/*",
+        "{mount}/issuer/*",
+        "{mount}/roles/*",
+        "{mount}/issue/*",
+        "{mount}/revoke",
+        "{mount}/crl",
+        "{mount}/ocsp",
+        "{mount}/acme/*"
+      ],
+      "positive": "Cover roots/intermediates/import/issuers, constrained issuance, CRL/OCSP and ACME",
+      "hostile": "Reject domain/TTL/key-usage escape, invalid CSR and unauthorized issuer selection",
+      "lifecycle": "Rotate issuer and preserve issued certificates/revocations and tidy across migration",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/pki.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/pki_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKIEXT",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H18-WP06"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/pkiext",
+      "api_families": [
+        "{mount}/(versioned pkiext protocol inventory)"
+      ],
+      "positive": "Define the separate extension protocol and prove a positive public operation",
+      "hostile": "Reject unsupported extension fields and cross-issuer credential access",
+      "lifecycle": "Version extension state and test interrupted conversion without modifying source",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Separate compatibility and protocol inventory required."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-SSH",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H18-WP07",
+        "H18-WP08",
+        "H18-WP09"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/ssh",
+      "api_families": [
+        "{mount}/roles/*",
+        "{mount}/creds/*",
+        "{mount}/verify",
+        "{mount}/sign/*",
+        "{mount}/config/ca"
+      ],
+      "positive": "Issue OTP and real OpenSSH signed certificates with role/user/domain/TTL constraints",
+      "hostile": "Reject wrong host, CIDR exclusion and unauthorized certificate principals",
+      "lifecycle": "Revoke OTP once across failover and rehearse real sshd/PAM and CA rotation",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/ssh.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_SSH_OTP.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ssh_otp_live.py",
+        "qa/openbao-acceptance/ssh_otp_ha.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Signed certificates, OTP, user/domain constraints and TTL."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-DATABASE",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H19-WP01",
+        "H19-WP02",
+        "H19-WP03",
+        "H19-WP04"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/database",
+      "api_families": [
+        "{mount}/config/*",
+        "{mount}/roles/*",
+        "{mount}/static-roles/*",
+        "{mount}/creds/*",
+        "{mount}/rotate-root/*"
+      ],
+      "positive": "Compose full static/dynamic roles, provider statements and root/static rotation",
+      "hostile": "Reject unapproved provider configuration and ownership-changing SQL output",
+      "lifecycle": "Reconcile timeout after actual SQL effect, expiry, rollback and lease revocation",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs",
+        "crates/heptabao-server/src/postgres_wire.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/postgres_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H19-WP10",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/kubernetes",
+      "api_families": [
+        "{mount}/config",
+        "{mount}/roles/*",
+        "{mount}/creds/*"
+      ],
+      "positive": "Create actual service-account/token credentials through constrained Kubernetes API",
+      "hostile": "Reject service-account/namespace/role escalation and untrusted API server",
+      "lifecycle": "Revoke actual API resources after issuer expiry and reconcile lost creation reply",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Dynamic service-account/token credentials and revocation."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H19-WP11",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/openldap",
+      "api_families": [
+        "{mount}/config",
+        "{mount}/role/*",
+        "{mount}/creds/*"
+      ],
+      "positive": "Create actual constrained directory identities and group membership",
+      "hostile": "Reject DN/filter injection and unauthorized subtree or group changes",
+      "lifecycle": "Reconcile partial directory writes, rotate credentials and prove actual revoke",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Dynamic LDAP credentials, expiry and revoke behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
+      "category": "secret_engines",
+      "owner_work_packages": [
+        "H19-WP12",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/logical/rabbitmq",
+      "api_families": [
+        "{mount}/config/*",
+        "{mount}/roles/*",
+        "{mount}/creds/*"
+      ],
+      "positive": "Create real broker users with exact vhost permissions and lease metadata",
+      "hostile": "Reject admin tag escalation, bad TLS and foreign user ownership",
+      "lifecycle": "Remove issued users/permissions after expiry, restart and lost provider reply",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Users, vhosts, permissions, lease and revocation lifecycle."
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-POSTGRESQL",
+      "category": "database_providers",
+      "owner_work_packages": [
+        "H19-WP05",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-product-surface://database/postgresql",
+      "api_families": [
+        "database/config/*",
+        "database/roles/*",
+        "database/static-roles/*",
+        "database/creds/*"
+      ],
+      "positive": "Support documented SQL statements and real static/dynamic/root rotation beyond provider_role",
+      "hostile": "Deny SQL/template injection and foreign OID ownership while preserving supported statements",
+      "lifecycle": "Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs",
+        "crates/heptabao-server/src/postgres_wire.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/postgres_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Real version/TLS/root-rotation/static/dynamic/renew/revoke matrix required."
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-MYSQL",
+      "category": "database_providers",
+      "owner_work_packages": [
+        "H19-WP06",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-product-surface://database/mysql",
+      "api_families": [
+        "database/config/*",
+        "database/roles/*",
+        "database/static-roles/*"
+      ],
+      "positive": "Run real MySQL/MariaDB static/dynamic user and root-rotation profiles",
+      "hostile": "Reject wrong server identity and privilege-escalating template substitution",
+      "lifecycle": "Recover DDL partial effects and prove host/user revocation after restart",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Real service and statement/rollback matrix required."
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-CASSANDRA",
+      "category": "database_providers",
+      "owner_work_packages": [
+        "H19-WP07",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-product-surface://database/cassandra",
+      "api_families": [
+        "database/config/*",
+        "database/roles/*",
+        "database/creds/*"
+      ],
+      "positive": "Run actual role creation, renewal and revocation on declared Cassandra versions",
+      "hostile": "Reject unauthorized roles and unverified TLS",
+      "lifecycle": "Reconcile partial cluster visibility and revoke under network partition",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Real service, network-partition and revoke matrix required."
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-INFLUXDB",
+      "category": "database_providers",
+      "owner_work_packages": [
+        "H19-WP08",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-product-surface://database/influxdb",
+      "api_families": [
+        "database/config/*",
+        "database/roles/*",
+        "database/creds/*"
+      ],
+      "positive": "Issue real bounded database user/token credentials for declared versions",
+      "hostile": "Reject unbound organization/database and excessive permissions",
+      "lifecycle": "Revoke issued credentials and reconcile lost responses without duplicate users",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Real service and token lifecycle matrix required."
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-VALKEY",
+      "category": "database_providers",
+      "owner_work_packages": [
+        "H19-WP09",
+        "H19-WP13"
+      ],
+      "public_baseline_reference": "public-product-surface://database/valkey",
+      "api_families": [
+        "database/config/*",
+        "database/roles/*",
+        "database/static-roles/*"
+      ],
+      "positive": "Create real Valkey ACL users and rotate static/root credentials over verified TLS",
+      "hostile": "Reject key/channel glob privilege escape and wrong cluster identity",
+      "lifecycle": "Persist ACL revocation and credentials through reconnect and provider restart",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Real version, ACL, TLS, rotate and revoke matrix required."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-FILE",
+      "category": "audit_devices",
+      "owner_work_packages": [
+        "H12-WP05",
+        "H12-WP10",
+        "H12-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/audit/file",
+      "api_families": [
+        "sys/audit/* (file)"
+      ],
+      "positive": "Configure real file audit devices with exact field HMAC/redaction semantics",
+      "hostile": "Reject unsafe file ownership, symlinks and secret-bearing diagnostic output",
+      "lifecycle": "Exercise rotation, partial writes, disk full and retained chain verification",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/audit_rotation.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Permissions, rotation, disk-full and partial-line behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-HTTP",
+      "category": "audit_devices",
+      "owner_work_packages": [
+        "H12-WP06",
+        "H12-WP10",
+        "H12-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/audit/http",
+      "api_families": [
+        "sys/audit/* (http)"
+      ],
+      "positive": "Deliver actual authenticated audit requests to a host-enrolled HTTPS collector",
+      "hostile": "Reject redirects, unapproved destinations and invalid TLS",
+      "lifecycle": "Reconcile timeout/collector outage without unaudited effect or unbounded queue",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "TLS, redirect, timeout, SSRF and blocked destination behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SOCKET",
+      "category": "audit_devices",
+      "owner_work_packages": [
+        "H12-WP07",
+        "H12-WP10",
+        "H12-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/audit/socket",
+      "api_families": [
+        "sys/audit/* (socket)"
+      ],
+      "positive": "Deliver framed audit events to declared socket modes",
+      "hostile": "Reject unexpected peers and partial-frame acceptance",
+      "lifecycle": "Bound backpressure, reconnect and shutdown while preserving audit-before-effect",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Blocking, reconnect, partial write and lifecycle behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
+      "category": "audit_devices",
+      "owner_work_packages": [
+        "H12-WP08",
+        "H12-WP10",
+        "H12-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://builtin/audit/syslog",
+      "api_families": [
+        "sys/audit/* (syslog)"
+      ],
+      "positive": "Deliver real facility/tag events through documented local/network modes",
+      "hostile": "Reject illegal facility, log injection and undeclared transport",
+      "lifecycle": "Handle collector outage and rotation with explicit admission policy",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Facility/tag/network/local delivery and outage behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
+      "category": "storage_backends",
+      "owner_work_packages": [
+        "H04-WP04",
+        "H04-WP05",
+        "H04-WP06",
+        "H04-WP07",
+        "H04-WP08",
+        "H04-WP09"
+      ],
+      "public_baseline_reference": "public-source-surface://physical/postgresql",
+      "api_families": [
+        "storage configuration",
+        "physical CRUD/list/transaction"
+      ],
+      "positive": "Persist actual encrypted physical records with transactions, locks and paginated lists",
+      "hostile": "Reject stale writer, torn record and foreign namespace access",
+      "lifecycle": "Prove crash durability, lock recovery, schema upgrade and storage migration",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-storage-api/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-storage-api.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Transactions, locks, consistency, migration and durability."
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-RAFT",
+      "category": "storage_backends",
+      "owner_work_packages": [
+        "H20-WP01",
+        "H20-WP02",
+        "H20-WP03",
+        "H20-WP04",
+        "H20-WP05",
+        "H20-WP06",
+        "H20-WP07",
+        "H20-WP08",
+        "H20-WP09",
+        "H20-WP10",
+        "H20-WP11",
+        "H20-WP12"
+      ],
+      "public_baseline_reference": "public-source-surface://physical/raft",
+      "api_families": [
+        "sys/storage/raft/*",
+        "native consensus transport"
+      ],
+      "positive": "Persist logs/FSM, chunked snapshots and voter/nonvoter membership on real nodes",
+      "hostile": "Reject stale term, corrupt snapshot and minority writes/read authority",
+      "lifecycle": "Test multi-host crash/disk/power loss, long histories and mixed-version upgrade",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/ha.rs",
+        "crates/heptabao-server/src/ha_state.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ha_destructive.py",
+        "qa/openbao-acceptance/raft_membership_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "FSM, log, snapshot, chunking, membership, non-voter and autopilot."
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-AUTH",
+      "category": "plugin_classes",
+      "owner_work_packages": [
+        "H13-WP01",
+        "H13-WP02",
+        "H13-WP03",
+        "H13-WP04",
+        "H13-WP09"
+      ],
+      "public_baseline_reference": "public-docs://plugins/auth",
+      "api_families": [
+        "sys/plugins/catalog/*",
+        "sys/auth/*"
+      ],
+      "positive": "Load real compatible external auth plugin and validate its token result contract",
+      "hostile": "Reject checksum drift, undeclared capabilities and sandbox escapes",
+      "lifecycle": "Handle plugin restart, deadline and reload without duplicated token issuance",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-plugin-host/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-plugin-host.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Go plugin interoperability and token result contracts."
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-SECRET",
+      "category": "plugin_classes",
+      "owner_work_packages": [
+        "H13-WP01",
+        "H13-WP02",
+        "H13-WP03",
+        "H13-WP04",
+        "H13-WP10"
+      ],
+      "public_baseline_reference": "public-docs://plugins/secret",
+      "api_families": [
+        "sys/plugins/catalog/*",
+        "sys/mounts/*"
+      ],
+      "positive": "Load real external secret plugin and bind lease/effect/rollback callbacks",
+      "hostile": "Reject secret output before durable commit and cross-mount capabilities",
+      "lifecycle": "Reconcile process death after external effect and preserve lease ownership",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-plugin-host/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-plugin-host.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Lease/effect lifecycle and rollback callbacks."
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
+      "category": "plugin_classes",
+      "owner_work_packages": [
+        "H13-WP01",
+        "H13-WP02",
+        "H13-WP03",
+        "H13-WP04",
+        "H13-WP11"
+      ],
+      "public_baseline_reference": "public-docs://plugins/database",
+      "api_families": [
+        "sys/plugins/catalog/database/*",
+        "database/config/*"
+      ],
+      "positive": "Load actual external database plugin and drive static/dynamic/root lifecycle",
+      "hostile": "Reject interface/version mismatch, changed executable and foreign credential ownership",
+      "lifecycle": "Restart plugin across uncertain SQL effect and reconcile exactly one lease",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-plugin-host/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-plugin-host.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Connection lifecycle, static/dynamic users and root rotation."
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-KMS",
+      "category": "plugin_classes",
+      "owner_work_packages": [
+        "H13-WP01",
+        "H13-WP02",
+        "H13-WP03",
+        "H13-WP04",
+        "H13-WP12"
+      ],
+      "public_baseline_reference": "public-docs://plugins/kms",
+      "api_families": [
+        "seal configuration",
+        "KMS plugin lifecycle"
+      ],
+      "positive": "Auto-unseal with actual provider and bound key identity/version/context",
+      "hostile": "Reject wrong key, disabled version and invented custody evidence",
+      "lifecycle": "Exercise provider outage, key rotation and disaster recovery with isolated custody",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-kms-contracts/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-kms-contracts.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Key identity, version, outage and recovery behavior."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-MTLS",
+      "category": "cluster_ha",
+      "owner_work_packages": [
+        "H21-WP01",
+        "H21-WP02",
+        "H21-WP03"
+      ],
+      "public_baseline_reference": "public-docs://internals/ha",
+      "api_families": [
+        "cluster listener",
+        "join handshake"
+      ],
+      "positive": "Authenticate node and cluster identity and enroll through the documented challenge",
+      "hostile": "Reject unknown node, wrong certificate pin, replay and cross-cluster frames",
+      "lifecycle": "Rotate peer certificates and recover admission state across restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/ha.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-ha-service.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ha_destructive.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Cluster ID, node ID, cert rotation, join challenge and replay."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-FORWARDING",
+      "category": "cluster_ha",
+      "owner_work_packages": [
+        "H21-WP04",
+        "H21-WP05",
+        "H21-WP09"
+      ],
+      "public_baseline_reference": "public-docs://concepts/ha",
+      "api_families": [
+        "standby /v1/*",
+        "leader forwarding"
+      ],
+      "positive": "Preserve namespace, token, wrapping and response semantics through real forwarding",
+      "hostile": "Reject wrong origin, hop recursion and leaked bearer on redirect",
+      "lifecycle": "Lose leader reply and prove no blind mutation retry or double response release",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/ha_forward.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ha_destructive.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Token/wrap/namespace/context preservation and origin protection."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-READ-STANDBY",
+      "category": "cluster_ha",
+      "owner_work_packages": [
+        "H21-WP06",
+        "H21-WP07"
+      ],
+      "public_baseline_reference": "public-docs://configuration/read-standby",
+      "api_families": [
+        "standby reads",
+        "ReadIndex"
+      ],
+      "positive": "Read committed state under declared freshness and non-mutating-read policy",
+      "hostile": "Reject stale minority success and treating dynamic-credential GET as a pure read",
+      "lifecycle": "Track acknowledged values through partitions, follower catch-up and leader restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/ha.rs",
+        "crates/heptabao-server/src/service.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ha_network_partition.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "HTTP GET is not automatically safe; lease-issuing reads remain active-only."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-STEPDOWN",
+      "category": "cluster_ha",
+      "owner_work_packages": [
+        "H21-WP08",
+        "H21-WP10"
+      ],
+      "public_baseline_reference": "public-docs://commands/operator-step-down",
+      "api_families": [
+        "sys/step-down",
+        "sys/leader"
+      ],
+      "positive": "Transfer leadership after explicit authorization with exact public status",
+      "hostile": "Reject non-sudo caller and isolate old leader from new effect authority",
+      "lifecycle": "Prove old writer stops before new writer enters under repeated transfer and partition",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/ha.rs",
+        "crates/heptabao-server/src/service.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ha_step_down.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Old owner effects must stop before a new owner starts."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
+      "category": "cluster_ha",
+      "owner_work_packages": [
+        "H20-WP10",
+        "H21-WP11"
+      ],
+      "public_baseline_reference": "public-source-surface://physical/raft/autopilot",
+      "api_families": [
+        "sys/storage/raft/autopilot/*"
+      ],
+      "positive": "Use actual contact/replication history for stabilization, promotion and cleanup",
+      "hostile": "Reject invented health, last-voter deletion and config authority escalation",
+      "lifecycle": "Persist policy and reset stabilization after leadership/gap while honoring cleanup grace",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_raft_admin.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/raft_membership_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Health, promotion and membership decisions require deterministic evidence."
+    },
+    {
+      "surface_id": "HB-SURFACE-EDGE-HTTP-TLS",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H22-WP01",
+        "H22-WP02",
+        "H22-WP11"
+      ],
+      "public_baseline_reference": "public-docs://configuration/listener",
+      "api_families": [
+        "TLS listener",
+        "/v1/*",
+        "CORS"
+      ],
+      "positive": "Serve declared TLS/HTTP versions, Host, forwarding and CORS behavior",
+      "hostile": "Reject smuggling, duplicate framing, oversized input and untrusted forwarded certificate",
+      "lifecycle": "Bound slow peers, reload certificates and cancel workers without secret leakage",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/http.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Smuggling, limits, CORS, Host, forwarded certificate, redirect and HTTP/2."
+    },
+    {
+      "surface_id": "HB-SURFACE-CLI-ROOT",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H22-WP03",
+        "H22-WP04",
+        "H22-WP05"
+      ],
+      "public_baseline_reference": "public-source-surface://command",
+      "api_families": [
+        "bao-compatible command/flag/env surface"
+      ],
+      "positive": "Execute documented command/output/exit-code and environment precedence against real service",
+      "hostile": "Reject secret arguments, unsafe output, ambiguous flags and unintended retries",
+      "lifecycle": "Handle signal, broken pipe, token refresh and compatible upgrade of invocation profiles",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "clients/python/heptabao/cli.py",
+        "clients/python/heptabao/oidc_login.py"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "clients/python/README.md",
+        "docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/client_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Command, flag, env, output, exit code and signal inventory incomplete."
+    },
+    {
+      "surface_id": "HB-SURFACE-AGENT",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H22-WP06",
+        "H22-WP07"
+      ],
+      "public_baseline_reference": "public-docs://agent",
+      "api_families": [
+        "agent auto-auth/cache/templates/sinks"
+      ],
+      "positive": "Run actual supported auto-auth methods, renewal, templates and private sinks",
+      "hostile": "Reject stale/foreign sink, template secret leakage and arbitrary egress",
+      "lifecycle": "Reauthenticate and invalidate caches under restart, expiry and unknown renewal reply",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "clients/python/heptabao/agent.py"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/agent_proxy_helper_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Sink permissions, rotation, stale-cache and secret-output controls."
+    },
+    {
+      "surface_id": "HB-SURFACE-PROXY",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H22-WP08"
+      ],
+      "public_baseline_reference": "public-docs://proxy",
+      "api_families": [
+        "local proxy",
+        "upstream TLS/cache"
+      ],
+      "positive": "Forward supported protocols with exact token replacement and cache semantics",
+      "hostile": "Reject credential smuggling, wrong namespace, forbidden routes and proxying ambiguous writes twice",
+      "lifecycle": "Invalidate cache and credentials on issuer revocation, restart and upstream outage",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "clients/python/heptabao/proxy.py"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/agent_proxy_helper_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Proxy must not bypass server policy/audit or replay ambiguous requests."
+    },
+    {
+      "surface_id": "HB-SURFACE-OPENAPI-UI",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H22-WP09",
+        "H22-WP10"
+      ],
+      "public_baseline_reference": "public-docs://api/openapi",
+      "api_families": [
+        "sys/internal/specs/openapi",
+        "browser UI"
+      ],
+      "positive": "Generate supported API schema and provide browser flows reflecting actual handlers",
+      "hostile": "Reject XSS/CSRF, schema privilege leakage and undocumented feature claims",
+      "lifecycle": "Version browser/client state and invalidate authentication correctly after upgrade",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "UI implementation language is not part of the Rust server claim."
+    },
+    {
+      "surface_id": "HB-SURFACE-OPERATIONS",
+      "category": "client_operator",
+      "owner_work_packages": [
+        "H23-WP01",
+        "H23-WP02",
+        "H23-WP03",
+        "H23-WP04",
+        "H23-WP05",
+        "H23-WP06",
+        "H23-WP07",
+        "H23-WP08",
+        "H23-WP09",
+        "H23-WP10",
+        "H23-WP11"
+      ],
+      "public_baseline_reference": "public-docs://operations",
+      "api_families": [
+        "sys/health",
+        "sys/metrics",
+        "quotas",
+        "diagnose",
+        "reload"
+      ],
+      "positive": "Expose real capacity/telemetry and qualify quotas, lockout and atomic reload",
+      "hostile": "Reject secret labels and reset-style recovery that discards replay or tombstones",
+      "lifecycle": "Benchmark growing state/long writes and prove compaction, alerting and bounded recovery",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_capacity.rs",
+        "crates/heptabao-server/src/audit_rotation.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/capacity_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Atomic reload and no-secret observability are critical."
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-TREE",
+      "category": "namespace_workflow",
+      "owner_work_packages": [
+        "H14-WP01",
+        "H14-WP02",
+        "H14-WP03",
+        "H14-WP04",
+        "H14-WP05",
+        "H14-WP06"
+      ],
+      "public_baseline_reference": "public-docs://concepts/namespaces",
+      "api_families": [
+        "sys/namespaces/*",
+        "X-Vault-Namespace"
+      ],
+      "positive": "Create nested namespaces and isolate every state owner with stable namespace identity",
+      "hostile": "Reject traversal, sibling access and delegated cross-namespace policy escalation",
+      "lifecycle": "Disable/delete/recreate and restore without binding old tokens or leases to a new namespace",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/engines.rs"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/modules/heptabao-server.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/core_isolation.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Storage, policy, identity, token, lease, audit and plugin context isolation."
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
+      "category": "namespace_workflow",
+      "owner_work_packages": [
+        "H14-WP07",
+        "H14-WP08",
+        "H14-WP09",
+        "H14-WP10"
+      ],
+      "public_baseline_reference": "public-docs://concepts/namespace-seal",
+      "api_families": [
+        "namespace seal/unseal and key lifecycle"
+      ],
+      "positive": "Seal namespace independently with separate authenticated key custody",
+      "hostile": "Reject parent/sibling key use and unauthorized recovery",
+      "lifecycle": "Synchronize seal state under HA, key rotation and delete/recreate/restore",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-namespace/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-namespace.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Delete/recreate/restore and standby synchronization require dedicated state models."
+    },
+    {
+      "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
+      "category": "namespace_workflow",
+      "owner_work_packages": [
+        "H15-WP01",
+        "H15-WP02",
+        "H15-WP03",
+        "H15-WP04",
+        "H15-WP05",
+        "H15-WP06",
+        "H15-WP10"
+      ],
+      "public_baseline_reference": "public-docs://workflows",
+      "api_families": [
+        "profiles/workflow configuration and execution"
+      ],
+      "positive": "Execute declared CEL/template workflows with explicit internal request authority",
+      "hostile": "Reject SSRF, unbounded evaluation, secret echo and caller-forged internal operations",
+      "lifecycle": "Persist workflow progress and reconcile partial effects without replaying completed steps",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Internal operation construction, SSRF, secret echo and resource limits."
+    },
+    {
+      "surface_id": "HB-SURFACE-SELF-INIT",
+      "category": "namespace_workflow",
+      "owner_work_packages": [
+        "H15-WP07",
+        "H15-WP08",
+        "H15-WP09"
+      ],
+      "public_baseline_reference": "public-docs://configuration/self-init",
+      "api_families": [
+        "declarative initialization",
+        "transient-root lifecycle"
+      ],
+      "positive": "Initialize declared configuration using a bounded transient root",
+      "hostile": "Reject repeated initialization and retain no ordinary-output root credential",
+      "lifecycle": "Revoke transient root unconditionally after interruption and resume idempotently",
+      "implementation": "NOT_IMPLEMENTED",
+      "runtime_sources": [],
+      "contract_sources": [],
+      "guides": [
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Crash/resume idempotency and unconditional transient-root revocation."
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
+      "category": "migration",
+      "owner_work_packages": [
+        "H24-WP01",
+        "H24-WP02",
+        "H24-WP03",
+        "H24-WP06",
+        "H24-WP07"
+      ],
+      "public_baseline_reference": "heptabao-plan://H24/logical-migration",
+      "api_families": [
+        "logical export/import and readback tools"
+      ],
+      "positive": "Inventory and copy every asset class including version/tombstone/auth/key/lease dependencies",
+      "hostile": "Reject omitted unsupported assets and false success when only active KV versions copy",
+      "lifecycle": "Reconcile interrupted writes and compare exact source-target version/behavior after reopen",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "qa/openbao-acceptance/migrate_kv2.py",
+        "qa/openbao-acceptance/migration_preflight.py"
+      ],
+      "contract_sources": [],
+      "guides": [
+        "docs/migration/HEPTABAO_OPENBAO_MIGRATION.md",
+        "docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md"
+      ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/live_migration_rehearsal.py",
+        "qa/openbao-acceptance/migration_preflight_live.py"
+      ],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Preferred path; exact source-target version pair required."
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
+      "category": "migration",
+      "owner_work_packages": [
+        "H24-WP04",
+        "H24-WP05"
+      ],
+      "public_baseline_reference": "heptabao-plan://H24/snapshot-conversion",
+      "api_families": [
+        "snapshot inspection/conversion tools"
+      ],
+      "positive": "Inspect declared source snapshot and convert through a reviewed typed adapter",
+      "hostile": "Reject unknown format, changed seal, corruption and direct raft.db mutation",
+      "lifecycle": "Retain original and prove interrupted conversion/restore and anti-resurrection checks",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-migration/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-migration.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Direct raft.db mutation is excluded; parser requires separate qualification."
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
+      "category": "migration",
+      "owner_work_packages": [
+        "H24-WP08",
+        "H24-WP09",
+        "H24-WP10",
+        "H24-WP11",
+        "H24-WP12",
+        "H24-WP13"
+      ],
+      "public_baseline_reference": "heptabao-spec://migration-authority-state-machine-v1",
+      "api_families": [
+        "shadow/freeze/final-delta/cutover/rollback"
+      ],
+      "positive": "Verify all assets, freeze source, apply final delta and switch one writer atomically",
+      "hostile": "Reject simultaneous writers, incomplete inventory and operator-supplied unchecked success",
+      "lifecycle": "Reconcile unknown switch as no-writer and rehearse fenced rollback without resurrection",
+      "implementation": "CONTRACT_ONLY",
+      "runtime_sources": [],
+      "contract_sources": [
+        "crates/heptabao-migration/src/lib.rs"
+      ],
+      "guides": [
+        "docs/modules/heptabao-migration.md"
+      ],
+      "executable_profiles": [],
+      "full_surface_verified": false,
+      "independently_admitted": false,
+      "remaining_scope": "Source and target writers never overlap; unknown authority means no writer."
+    }
+  ],
+  "authority_effect": "NONE"
+}

@@ -6,11 +6,12 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **4**. Its source constant is
+The current Service state schema is **5**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
-internal owners, not competing independent stores. Separate seal metadata uses
+internal owners, not competing independent stores. Schema 5 additionally owns
+encrypted Kubernetes config/role maps and OIDC config/role/session/clock maps. Separate seal metadata uses
 schema 1; the application schema must never be inferred from that number.
 
 ## Read admission and mutation promotion
@@ -20,11 +21,16 @@ schema 1; the application schema must never be inferred from that number.
 | 1 | No live-identity, wrapping, lease or remote-JWT state; no database mount/records; default Raft-admin state. |
 | 2 | Live Identity is permitted; no wrapping, lease or remote-JWT state; no database mount/records; default Raft-admin state. |
 | 3 | Wrapping/local leases are permitted; no remote-JWT state; no database mount/records; default Raft-admin state. |
-| 4 | Current format; all normal scope, lease, wrapper, database and Raft-admin validators still apply. |
+| 4 | No online Kubernetes/OIDC method registry or state; normal scope, lease, wrapper, database and Raft-admin validators still apply. |
+| 5 | Current format, including online method and OIDC one-use session validators. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
+Every schema 1–4 record additionally rejects online authentication state or a
+new online method registry entry. Online maps omitted from legacy records are
+default-empty, not evidence of equivalent future state.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 4. An authenticated
+it. Initialization and committed mutations use schema 5. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -38,18 +44,25 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-4-capable rollback binary with compatible
+fields it happens to know. Keep a schema-5-capable rollback binary with compatible
 HA and provider formats. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-4 rolling upgrade receipt. Mixed-version cluster operation, source
+not a schema-5 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Restoring database provider records is also
 refused: a local snapshot cannot revoke or reconcile an external database role.
 
 ## External state and uncertainty
+
+OIDC code flow removes its encrypted, independently client-proven session before
+upstream exchange, then commits token and live Identity together. Expiry denial
+is durable; uncertain exchanges are not retried. Kubernetes login performs one
+verified online TokenReview per attempt and commits only a bounded nonrenewable
+local token. Read [online authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md).
+
 
 Database issue/renew/revoke commits a pending intent before TLS/SCRAM provider
 entry, verifies independent readback and commits the terminal local result before

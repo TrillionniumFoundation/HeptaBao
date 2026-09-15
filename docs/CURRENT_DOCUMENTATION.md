@@ -19,7 +19,7 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
-- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 4, legacy read admission, commit promotion and rollback boundaries.
+- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 5, legacy read admission, commit promotion and rollback boundaries.
 
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
@@ -172,3 +172,34 @@ audited capacity observation, safe journal checkpoint maintenance and an explici
 Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
 limits, import raw OpenBao snapshots, update application ciphertext references,
 or advance Hepta's independently requalified consumer pin.
+
+## Next-stage execution navigation
+
+The existing plan's per-surface requirements are in
+`docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`, backed by
+`planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json`. This is not a competing global
+plan. Current capacity behavior and the remaining scalable-storage exit are in
+`docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`. Observed historical passes do
+not transfer to a changed candidate; preserve exact source and scope.
+
+Current live metadata/capacity preflight: `docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md`.
+It does not replace bounded KV transfer, full asset conversion or cutover admission.
+
+## Current online authentication increment
+
+[Online Kubernetes / OIDC authentication](auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
+TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
+loopback callback CLI. The separate remote-JWT profile above remains a bearer
+verifier, not code flow. Current application writes use schema 5. The new profiles
+retain root-controlled enrollment, live Identity, audit and durable/HA publication.
+They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
+independent acceptance or production authority.
+
+
+## Integrated remote continuation
+
+`docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.md` records the reconciled PR96
+and local online-auth inputs, both capacity response contracts, unified durable
+maintenance, retained Transit tooling, the actual Kubernetes API/etcd/RBAC gate
+and exact direct-Python-version validation. Source presence and workflow wiring
+are not execution receipts. The separate record-store source is not included.

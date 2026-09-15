@@ -201,6 +201,29 @@ impl JwtVerifier {
     /// The caller still owns role authorization and durable replay admission;
     /// `heptabao-server` commits both with token issuance in its encrypted state.
     pub fn verify(&self, token: &str, now: u64) -> Result<VerifiedPrincipal, AuthError> {
+        self.verify_internal(token, now, None)
+    }
+
+    /// ID-token verification for an already consumed authorization session.
+    /// This does not admit a request or grant a service Principal. The caller
+    /// binds redirect, client proof, one-use state, role and durable publication.
+    pub(crate) fn verify_oidc(
+        &self,
+        token: &str,
+        now: u64,
+        nonce: &str,
+        access_token: &str,
+        code: &str,
+    ) -> Result<VerifiedPrincipal, AuthError> {
+        self.verify_internal(token, now, Some((nonce, access_token, code)))
+    }
+
+    fn verify_internal(
+        &self,
+        token: &str,
+        now: u64,
+        oidc: Option<(&str, &str, &str)>,
+    ) -> Result<VerifiedPrincipal, AuthError> {
         if token.is_empty() || token.len() > MAX_TOKEN_BYTES || !token.is_ascii() {
             return Err(AuthError::MalformedToken);
         }
@@ -246,7 +269,43 @@ impl JwtVerifier {
         let expires_at = take_u64(&mut claims, "exp")?;
         let issued_at = take_u64(&mut claims, "iat")?;
         let not_before = take_optional_u64(&mut claims, "nbf")?.unwrap_or(issued_at);
-        let token_id = take_string(&mut claims, "jti")?;
+        let token_id = if let Some((nonce, access_token, code)) = oidc {
+            // Code flow uses durable one-use state and a verified nonce; OIDC
+            // ID tokens are not required to carry the separate JWT profile's jti.
+            let _ = take_optional_string(&mut claims, "jti")?;
+            if key.algorithm == JwtAlgorithm::Ed25519
+                || self.policy.audiences.len() != 1
+                || take_string(&mut claims, "nonce")? != nonce
+            {
+                return Err(AuthError::ClaimDenied);
+            }
+            let client_id = self
+                .policy
+                .audiences
+                .iter()
+                .next()
+                .ok_or(AuthError::InvalidPolicy)?;
+            let azp = take_optional_string(&mut claims, "azp")?;
+            if !audiences.contains(client_id)
+                || azp.as_ref().is_some_and(|v| v != client_id)
+                || audiences.len() > 1 && azp.as_ref() != Some(client_id)
+            {
+                return Err(AuthError::ClaimDenied);
+            }
+            for (field, input) in [("at_hash", access_token), ("c_hash", code)] {
+                if let Some(expected) = take_optional_string(&mut claims, field)? {
+                    let digest = digest::digest(&digest::SHA256, input.as_bytes());
+                    let encoded = base64::engine::general_purpose::URL_SAFE_NO_PAD
+                        .encode(&digest.as_ref()[..16]);
+                    if encoded != expected {
+                        return Err(AuthError::ClaimDenied);
+                    }
+                }
+            }
+            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(digest_bytes(token.as_bytes()))
+        } else {
+            take_string(&mut claims, "jti")?
+        };
         let namespace = take_optional_string(&mut claims, "heptabao_namespace")?;
         let groups = take_string_set(&mut claims, "groups")?;
 
@@ -1180,5 +1239,90 @@ mod tests {
         ));
         let _ = fs::remove_file(root.join("writer.lock"));
         fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn oidc_id_token_binds_nonce_authorized_party_and_token_hashes_without_relaxing_jwt() {
+        use ring::rand::SystemRandom;
+        use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
+        let rng = SystemRandom::new();
+        let document =
+            EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, &rng).unwrap();
+        let pair =
+            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, document.as_ref(), &rng)
+                .unwrap();
+        let policy = TrustPolicy::new(
+            "https://issuer.example:443",
+            BTreeSet::from(["client".into()]),
+            None,
+            0,
+            600,
+        )
+        .unwrap();
+        let key = VerificationKey::new(
+            "p256",
+            JwtAlgorithm::Es256,
+            pair.public_key().as_ref().to_vec(),
+        )
+        .unwrap();
+        let verifier = JwtVerifier::new(policy, [key]).unwrap();
+        let sign = |claims: &Value| {
+            let h = URL_SAFE_NO_PAD.encode(br#"{"alg":"ES256","kid":"p256","typ":"JWT"}"#);
+            let payload = URL_SAFE_NO_PAD.encode(serde_json::to_vec(claims).unwrap());
+            let input = format!("{h}.{payload}");
+            let signature = pair.sign(&rng, input.as_bytes()).unwrap();
+            format!("{input}.{}", URL_SAFE_NO_PAD.encode(signature.as_ref()))
+        };
+        let short_hash = |s: &str| {
+            URL_SAFE_NO_PAD.encode(&digest::digest(&digest::SHA256, s.as_bytes()).as_ref()[..16])
+        };
+        let original = json!({"iss":"https://issuer.example:443","sub":"alice","aud":"client",
+            "iat":100,"exp":400,"nonce":"nonce","at_hash":short_hash("access"),"c_hash":short_hash("code")});
+        let encoded = sign(&original);
+        assert!(
+            verifier
+                .verify_oidc(&encoded, 110, "nonce", "access", "code")
+                .is_ok()
+        );
+        assert!(verifier.verify(&encoded, 110).is_err()); // original JWT still requires jti
+        assert!(
+            verifier
+                .verify_oidc(&encoded, 110, "other", "access", "code")
+                .is_err()
+        );
+        assert!(
+            verifier
+                .verify_oidc(&encoded, 110, "nonce", "changed", "code")
+                .is_err()
+        );
+        assert!(
+            verifier
+                .verify_oidc(&encoded, 110, "nonce", "access", "changed")
+                .is_err()
+        );
+        for (field, value) in [
+            ("azp", json!("other")),
+            ("aud", json!(["client", "other"])),
+            ("iss", json!("https://other.example:443")),
+            ("nonce", json!(false)),
+            ("exp", json!(110)),
+            ("iat", json!(111)),
+        ] {
+            let mut bad = original.clone();
+            bad[field] = value;
+            assert!(
+                verifier
+                    .verify_oidc(&sign(&bad), 110, "nonce", "access", "code")
+                    .is_err(),
+                "{field}"
+            );
+        }
+        let mut multiple = original;
+        multiple["aud"] = json!(["client", "other"]);
+        multiple["azp"] = json!("client");
+        assert!(
+            verifier
+                .verify_oidc(&sign(&multiple), 110, "nonce", "access", "code")
+                .is_ok()
+        );
     }
 }

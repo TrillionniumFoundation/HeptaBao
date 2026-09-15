@@ -7,7 +7,9 @@ not a separate crate or an independent production authority grant.
 ## Responsibility and durable transaction boundary
 
 `AuthState` owns token verifiers, ACL policies, user password verifiers,
-user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers, the auth mount registry and pinned-key JWT trust/role/replay state. It derives `Clone`, `Serialize` and
+user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers, the auth mount registry and pinned-key JWT trust/role/replay state. The online
+extension also owns encrypted Kubernetes reviewer configuration and OIDC
+client/session state; see `HEPTABAO_ONLINE_AUTHENTICATION.md`. It derives `Clone`, `Serialize` and
 `Deserialize`; neither this state nor credential-bearing records implements
 `Debug`. The surrounding service serializes it inside the encrypted durable
 server state. It is not a separate plaintext authentication database.
@@ -233,7 +235,7 @@ Not supported: custom secret IDs, CIDR binding on authentication methods, extern
 
 ## Authentication mount registry
 
-`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle` or `jwt`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes` or `oidc`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
 
 Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
 
@@ -241,7 +243,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current mutually exclusive remote-key profile fetches enrolled `jwks_url` or OIDC Discovery keys as specified in [remote key sources](HEPTABAO_REMOTE_JWT_KEYS.md). Neither profile implements browser authorization-code callbacks or the full OpenBao JWT/OIDC claim-mapping API.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports host-enrolled `jwks_url` and OIDC Discovery over verified HTTPS; see [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks and full OpenBao claim-mapping semantics remain unimplemented. Static and remote trust sources are mutually exclusive.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 
@@ -399,3 +401,12 @@ The SSH engine's CIDR rules are not authentication-method CIDR support.
 ## Remote key-source extension
 
 The current [remote JWKS / OIDC Discovery JWT implementation](HEPTABAO_REMOTE_JWT_KEYS.md) adds host-enrolled verified HTTPS, login-time key refresh and RSA/RS256. Static keys remain a separate mutually exclusive profile. Browser authorization-code OIDC, MFA and arbitrary claim mapping are not implied. Newly persisted source/algorithm constraints require schema 4.
+
+## Online methods and schema 5
+
+The current [online authentication guide](HEPTABAO_ONLINE_AUTHENTICATION.md)
+specifies actual Kubernetes TokenReview and confidential OIDC code flow, including
+all supported input fields, boundaries and executable tests. Those use distinct
+`kubernetes` and `oidc` mount types; the static/remote `jwt` sections retain their
+existing verifier scope and jti requirement. Complete JWT/OIDC alias/API parity,
+real Kubernetes control-plane qualification and full external MFA remain open.

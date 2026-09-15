@@ -113,7 +113,7 @@ bearer, before optional wrapping; accessor lookup never reconstructs a credentia
 
 ## State and data model
 
-The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 4 owns cluster identity, token/policy/auth state, namespace/mount-qualified engine maps, database intent/lease state and Raft administration policy. TOTP anti-replay and guess-count state remain in the same encrypted transaction. [The current state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md) defines legacy read admission, mutation promotion and rollback; schema numbers in retained increment descriptions are not current rollout instructions. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
+The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 5 owns cluster identity, token/policy/auth state, namespace/mount-qualified engine maps, database intent/lease state and Raft administration policy. TOTP anti-replay and guess-count state remain in the same encrypted transaction. [The current state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md) defines legacy read admission, mutation promotion and rollback; schema numbers in retained increment descriptions are not current rollout instructions. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
 
 ## Invariants and authorization
 
@@ -135,11 +135,13 @@ The request principal is an internal capability, not a public authentication tok
 
 ## Persistence and compatibility
 
-All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and refuses requests that exceed current aggregate-state or retained-identity capacity. Before a journal-budget-only refusal, the current writer can perform one authenticated checkpoint and retry the same proven pre-entry-rejected request; it never discards replay identities or retries unknown effects. The journal remains bounded to 64 MiB. Root-authorized manual compaction and encrypted backup export/restore are implemented; compaction preserves retained operation identities. Audit rotates automatically at `audit.segment_bytes` (4 KiB–32 MiB, default 32 MiB), retaining `audit.retained_segments` (1–64, default 8) sealed segments plus the active file. An HMAC-authenticated manifest preserves retained-chain and evicted-prefix frontiers; evicted event contents require external archival. Audit corruption or I/O failure still fails closed. Qualified format upgrades and external archive delivery remain open. The snapshot response uses the HeptaBao encrypted-backup profile, not OpenBao snapshot bytes. Direct local restore is rejected when HA is enabled. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
+All auth and engine state shares the durable transaction boundary. KV data, passwords/verifiers, token digests and Transit keys survive SIGKILL/reopen only after durable acknowledgment. Auth passwords use salted PBKDF2; bearer and AppRole secret IDs persist as digests. The bounded profile limits state to 768 KiB, retains 32,000 operation identities and rejects new durable entry before the 64 MiB journal budget is exhausted. Before-entry journal-capacity rejection triggers one authenticated checkpoint and one exact-envelope retry, without evicting replay identities. Root-authorized manual compaction and encrypted backup export/restore are implemented; compaction preserves retained operation identities. Audit rotates automatically at `audit.segment_bytes` (4 KiB–32 MiB, default 32 MiB), retaining `audit.retained_segments` (1–64, default 8) sealed segments plus the active file. An HMAC-authenticated manifest preserves retained-chain and evicted-prefix frontiers; evicted event contents require external archival. Audit corruption or I/O failure still fails closed. Qualified format upgrades and external archive delivery remain open. The snapshot response uses the HeptaBao encrypted-backup profile, not OpenBao snapshot bytes. Direct local restore is rejected when HA is enabled. HTTP wire behavior implements a documented subset of OpenBao v1 routes; independent differential observations cover only named cases and cannot confer overall compatibility.
 
 ## Observability
 
-The process logs only listener readiness and safe errors. `sys/health`, `sys/seal-status` and `sys/leader` report seal/recovery and single-node state. Audit writes request and response events with timestamp, keyed route/principal fingerprint, sequence, previous MAC and current HMAC. Invalid framing rejected at the HTTP boundary enters the fixed wire-rejection audit path without recording raw request material. Audit capacity, verification, sync and lock failures stop admission. Operators must preserve data, journal, ledger, audit and audit-key files together for analysis, keeping keys outside ordinary logs.
+`GET sys/internal/capacity` is a root-token, root-namespace-only service endpoint. It reports the serving leader's local state bytes, permanent operation count, journal budget and generation. It accepts no mutation/reset fields and does not reserve headroom. Ordinary request/result audit and sealed/recovery rejection still apply. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md` and `crates/heptabao-server/src/service_capacity.rs` for actual code and negative/reopen tests. This is a HeptaBao extension, not a newly completed OpenBao compatibility surface.
+
+The process logs only listener readiness and safe errors. `sys/health`, `sys/seal-status` and `sys/leader` report seal/recovery and single-node state. Audit writes request and response events with timestamp, keyed route/principal fingerprint, sequence, previous MAC and current HMAC. Framing rejections entering `handle_wire_rejection` produce redacted service audit records. Failures before that hook, such as TLS handshake failure, do not carry a parsed service request. Audit capacity, verification, sync and lock failures stop admission. Operators must preserve data, journal, ledger, audit and audit-key files together for analysis, keeping keys outside ordinary logs.
 
 ## Operations
 
@@ -330,14 +332,14 @@ preserve the legacy canonical bytes and HA base digest. Merely unsealing or
 reading a valid schema-1 store does not silently write a migration.
 
 The first committed auth/engine mutation, including finite-use consumption
-before a subsequently denied request, stages the current schema 4 with the existing atomic
+before a subsequently denied request, stages the current schema 5 with the existing atomic
 state commit. A rejected precommit does not publish a schema transition. New
 initialization starts at 4. Unseal, durable refresh and HA state admission all
 reject unsupported versions and schema-1 records carrying identity-aware fields.
 The original schema-1-only binary therefore refuses upgraded state instead of
 ignoring the new identity constraints.
 
-Rollback from current state requires a schema-4-capable predecessor, compatible
+Rollback from current state requires a schema-5-capable predecessor, compatible
 provider/HA formats and the current revocation state. Never edit the discriminator, discard new fields, or restore a stale
 schema-1 backup to make an old binary run. This format fence is not an external
 monotonic rollback anchor and does not qualify mixed-version rolling upgrades.
@@ -358,14 +360,42 @@ profile and independent platform gates remain unchanged.
 
 ## Schema 4 runtime extensions
 
-Current Service integrates [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT keys](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) through its existing writer. Source files `service_database.rs`, `postgres_wire.rs`, `outbound.rs`, `auth_remote.rs` and `service_raft_admin.rs` own the corresponding concrete boundaries; server package existence alone does not qualify them. Database effect intent and exact readback are durable. Remote destinations are enrolled at startup. Native membership acknowledgement requires stable committed configuration. Actual PostgreSQL SQL execution, browser OIDC, mixed-version/forced restore and independent production acceptance remain open. Service schema 4 prevents older readers from ignoring these new fields. See the linked guides for limits, configuration, state machine, failures and exact test commands.
+Current Service integrates [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT keys](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) through its existing writer. Source files `service_database.rs`, `postgres_wire.rs`, `outbound.rs`, `auth_remote.rs` and `service_raft_admin.rs` own the corresponding concrete boundaries; server package existence alone does not qualify them. Database effect intent and exact readback are durable. Remote destinations are enrolled at startup. Native membership acknowledgement requires stable committed configuration. Real PostgreSQL execution remains an exact-candidate gate, distinct from protocol models. Current online code-flow authentication is described below; full OIDC/MFA, mixed-version/forced restore and independent production acceptance remain open. These earlier fields required schema 4; current writes use schema 5 and old readers must not ignore the new state. See the linked guides for limits, configuration, state machine, failures and exact test commands.
 
-## Current capacity observation and automatic journal checkpoint
+## Current online authentication and native callback
 
-`GET /v1/sys/internal/storage/capacity` is an audited, root-token-only and root-namespace-only metadata endpoint. It accepts no input fields, returns 403 on unauthorized access and 405 for a non-GET method. Responses report the current local durable generation, stored value bytes, journal usage/limit, retained operation count/limit, remaining slots and recovery fence. This is not an OpenBao endpoint, a tenant metrics API, a physical disk reservation or an HA capacity promise. A forwarded request describes the node that actually handles it.
+`auth_kubernetes.rs`, `auth_oidc.rs` and `service_online_auth.rs` add actual
+Service-integrated TokenReview and confidential S256 authorization-code OIDC.
+Read [the complete online authentication guide](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md)
+for per-route fields, encrypted state, error precedence, expiry/role invalidation,
+identity aliases, CA enrollment, two-commit code-exchange sequencing, owned
+credential cleanup, private native-client output and actual test commands.
+No separate public Principal or authentication bypass is exposed. Online login
+wrapping is rejected before any issuer request or session consumption.
 
-The Service checks deterministic local retained-ID exhaustion before submitting a new HA proposal. `persist_local` uses `DurableService::put_with_maintenance` and fences the Service cache if **any** failure leaves its durable owner requiring recovery. Only an explicit pre-entry `JournalCapacityExhausted` can trigger a checkpoint and one same-binding retry. OutcomeUnknown, capacity of the replay ledger, I/O errors and a failed checkpoint do not authorize retry or identity eviction. HA synchronization can still fail on an individual replica; this change does not solve cluster-wide capacity admission.
+The branch's current schema is 5; schema 1–4 cannot carry new method state.
+Kubernetes tokens are nonrenewable and online review is per login, not continuous
+revocation of issued local tokens. OIDC sessions are at most 128 per mount and
+live for 300 seconds; client proof is independent of browser-visible state.
+Config/role changes invalidate the affected sessions, and realm/client changes
+require remount. Current HA uses the same durable state and ReadIndex path.
 
-State schema 4, the 768 KiB aggregate State, 32,000 retained operations, HA framing limits and backup format are unchanged. The metadata `stored_value_bytes` counts durable plaintext value lengths in memory without returning their contents; it excludes encrypted-frame overhead. Automatic checkpointing removes one journal-liveness obstruction, **not** the architecture's aggregate-state or lifetime-operation limits.
+Native tests `oidc_service_commits_consumption_before_failed_egress_and_reopen_rejects_replay`,
+`oidc_service_pre_entry_capacity_refusal_preserves_session_without_code_exchange`,
+`oidc_service_observed_expiry_is_durable_even_on_denial` and
+`oidc_service_request_audit_failure_preserves_session_and_result_failure_never_refunds_it`
+anchor effect ordering. Actual executable profiles are
+`kubernetes_online.py`, `oidc_code_live.py` and `online_auth_ha.py` under
+`qa/openbao-acceptance/`; none changes the fixed corpus or independent authority.
 
-`service_capacity_tests.rs` verifies audit, root/namespace isolation, method/field rejection and pre-entry 507 without changing admitted state. The real executable `qa/openbao-acceptance/capacity_live.py` fills a fresh synthetic TLS service until refusal, verifies the rejected object is absent, compacts, restarts and checks all selected acknowledged state/ledger observations. It deliberately asserts the present limit rather than inventing a production scale result. See [capacity and growth](../storage/HEPTABAO_CAPACITY_AND_GROWTH.md).
+
+## Retained capacity endpoint compatibility
+
+The PR96 `GET sys/internal/storage/capacity` endpoint remains available alongside
+`GET sys/internal/capacity`. Both remain root-token/root-namespace only and audited;
+the former retains its original response shape, while the latter supplies the
+expanded observation contract used by migration preflight. Neither reserves
+capacity. `service_capacity_tests.rs` retains the older route's negative tests.
+Both durable maintenance method names delegate to the same policy, checkpointing
+only after a definite pre-entry journal-capacity refusal; permanent identities
+and uncertain effects are never discarded.

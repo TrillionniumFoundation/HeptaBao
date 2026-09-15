@@ -41,13 +41,7 @@ impl<B: Barrier> DurableService<B> {
         &mut self,
         request: PutRequest,
     ) -> Result<MutationOutcome, ServiceError> {
-        match self.put(request.clone()) {
-            Err(ServiceError::JournalCapacityExhausted) if !self.unresolved => {
-                self.compact()?;
-                self.put(request)
-            }
-            outcome => outcome,
-        }
+        self.put_with_compaction(request)
     }
 }
 

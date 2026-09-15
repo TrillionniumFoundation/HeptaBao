@@ -240,3 +240,6 @@ See `docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md` for its exact configuratio
 unknown-outcome behavior, output retrieval, plaintext-memory limitations and
 operator-owned cutover. This does not convert the original ciphertext in place
 or provide key import, raw snapshots or full-instance migration.
+
+Current live metadata/capacity preflight: `docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md`.
+It does not replace bounded KV transfer, full asset conversion or cutover admission.

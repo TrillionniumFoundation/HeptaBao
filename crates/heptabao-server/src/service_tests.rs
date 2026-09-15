@@ -1,11 +1,11 @@
 use super::*;
 use std::sync::atomic::{AtomicU64, Ordering};
 static ROOT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
-struct Root {
-    path: PathBuf,
+pub(super) struct Root {
+    pub(super) path: PathBuf,
 }
 impl Root {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         let path = std::env::temp_dir().join(format!(
             "heptabao-service-test-{}-{}",
             std::process::id(),
@@ -13,7 +13,7 @@ impl Root {
         ));
         Self { path }
     }
-    fn service(&self) -> Result<Service, Box<dyn std::error::Error>> {
+    pub(super) fn service(&self) -> Result<Service, Box<dyn std::error::Error>> {
         if !self.path.exists() {
             private_directory(&self.path)?;
         }
@@ -25,10 +25,18 @@ impl Drop for Root {
         let _ = fs::remove_dir_all(&self.path);
     }
 }
-fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
+pub(super) fn call(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> Response {
     service.handle_at(method, path, "", token, body, 100)
 }
-fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {
+pub(super) fn bootstrap(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
     let response = call(
         service,
         "PUT",
@@ -52,7 +60,7 @@ fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::err
     );
     Ok((key, token))
 }
-fn limited_token(
+pub(super) fn limited_token(
     service: &mut Service,
     root: &str,
     policy: &str,

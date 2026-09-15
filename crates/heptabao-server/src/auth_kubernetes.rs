@@ -1,0 +1,617 @@
+//! Online, audience-aware Kubernetes TokenReview authentication. The returned
+//! ServiceAccount identity is trusted only after verified, host-enrolled TLS.
+//! Caller-supplied JWT claims are never treated as identity or authorization.
+use super::*;
+use crate::outbound::{Outbound, Target};
+
+const MAX_KUBERNETES_ROLES: usize = 1024;
+const MAX_LOGIN_TTL: u64 = 3600;
+const TOKEN_REVIEW_PATH: &str = "/apis/authentication.k8s.io/v1/tokenreviews";
+
+#[derive(Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub(super) struct KubernetesMount {
+    config: Option<KubernetesConfig>,
+    roles: BTreeMap<String, KubernetesRole>,
+}
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct KubernetesConfig {
+    kubernetes_host: String,
+    token_reviewer_jwt: String,
+}
+impl Drop for KubernetesConfig {
+    fn drop(&mut self) {
+        self.token_reviewer_jwt.zeroize();
+    }
+}
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct KubernetesRole {
+    bound_service_account_names: BTreeSet<String>,
+    bound_service_account_namespaces: BTreeSet<String>,
+    audience: String,
+    token_policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_num_uses: u64,
+}
+
+fn dns_name(value: &str, namespace: bool) -> bool {
+    !value.is_empty()
+        && value.len() <= if namespace { 63 } else { 253 }
+        && (!namespace || !value.contains('.'))
+        && value.split('.').all(|s| {
+            !s.is_empty()
+                && s.len() <= 63
+                && s.as_bytes().first().is_some_and(u8::is_ascii_alphanumeric)
+                && s.as_bytes().last().is_some_and(u8::is_ascii_alphanumeric)
+                && s.bytes()
+                    .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
+        })
+}
+fn credential(value: &str) -> bool {
+    (16..=32 * 1024).contains(&value.len()) && value.bytes().all(|c| c.is_ascii_graphic())
+}
+fn audience(value: &str) -> bool {
+    !value.is_empty() && value.len() <= 1024 && value.bytes().all(|b| b.is_ascii_graphic())
+}
+fn names(body: &Value, field: &str, namespace: bool) -> Result<BTreeSet<String>, AuthError> {
+    let value = body
+        .get(field)
+        .ok_or_else(|| bad("explicit ServiceAccount binding required"))?;
+    let values: Vec<&str> = match value {
+        Value::String(v) => v.split(',').map(str::trim).collect(),
+        Value::Array(v) => v
+            .iter()
+            .map(|s| s.as_str().ok_or_else(|| bad("binding must be strings")))
+            .collect::<Result<_, _>>()?,
+        _ => return Err(bad("binding must be array or comma-separated names")),
+    };
+    if values.is_empty()
+        || values.len() > 128
+        || values.iter().any(|v| *v != "*" && !dns_name(v, namespace))
+    {
+        return Err(bad("invalid ServiceAccount binding"));
+    }
+    let result: BTreeSet<_> = values.iter().map(|v| (*v).to_owned()).collect();
+    if result.len() != values.len() || result.contains("*") && result.len() != 1 {
+        return Err(bad("duplicate or ambiguous ServiceAccount binding"));
+    }
+    Ok(result)
+}
+impl KubernetesConfig {
+    fn validate(&self) -> Result<(), AuthError> {
+        let target = Target::parse(&self.kubernetes_host, "https").map_err(bad)?;
+        if target.origin != self.kubernetes_host || !credential(&self.token_reviewer_jwt) {
+            return Err(bad("invalid Kubernetes host or reviewer credential"));
+        }
+        Ok(())
+    }
+}
+impl KubernetesRole {
+    fn validate(&self) -> Result<(), AuthError> {
+        let shape = serde_json::to_value(self).map_err(|_| bad("invalid role"))?;
+        names(&shape, "bound_service_account_names", false)?;
+        names(&shape, "bound_service_account_namespaces", true)?;
+        if !audience(&self.audience)
+            || self.token_policies.is_empty()
+            || self.token_policies.len() > 128
+            || self
+                .token_policies
+                .iter()
+                .any(|p| !valid_name(p) || p == "root")
+            || self.token_ttl == 0
+            || self.token_ttl > MAX_LOGIN_TTL
+        {
+            return Err(bad("invalid Kubernetes role policy, TTL or audience"));
+        }
+        Ok(())
+    }
+    fn bind_review(&self, review: &Value) -> Result<(String, String, String), AuthError> {
+        if review.get("apiVersion").and_then(Value::as_str) != Some("authentication.k8s.io/v1")
+            || review.get("kind").and_then(Value::as_str) != Some("TokenReview")
+        {
+            return Err(denied());
+        }
+        let status = review
+            .get("status")
+            .and_then(Value::as_object)
+            .ok_or_else(denied)?;
+        if status.get("authenticated").and_then(Value::as_bool) != Some(true)
+            || status.get("error").is_some_and(|v| v.as_str() != Some(""))
+        {
+            return Err(denied());
+        }
+        let audiences = status
+            .get("audiences")
+            .and_then(Value::as_array)
+            .ok_or_else(denied)?;
+        if audiences.is_empty()
+            || audiences.len() > 64
+            || audiences
+                .iter()
+                .any(|v| v.as_str().is_none_or(|s| !audience(s)))
+            || !audiences.iter().any(|v| v.as_str() == Some(&self.audience))
+        {
+            return Err(denied());
+        }
+        let user = status
+            .get("user")
+            .and_then(Value::as_object)
+            .ok_or_else(denied)?;
+        let username = user
+            .get("username")
+            .and_then(Value::as_str)
+            .ok_or_else(denied)?;
+        let uid = user
+            .get("uid")
+            .and_then(Value::as_str)
+            .filter(|v| {
+                !v.is_empty()
+                    && v.len() <= 128
+                    && v.bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || b"-_.".contains(&b))
+            })
+            .ok_or_else(denied)?;
+        let rest = username
+            .strip_prefix("system:serviceaccount:")
+            .ok_or_else(denied)?;
+        let (namespace, name) = rest.split_once(':').ok_or_else(denied)?;
+        if !dns_name(namespace, true)
+            || !dns_name(name, false)
+            || !(self.bound_service_account_namespaces.contains("*")
+                || self.bound_service_account_namespaces.contains(namespace))
+            || !(self.bound_service_account_names.contains("*")
+                || self.bound_service_account_names.contains(name))
+        {
+            return Err(denied());
+        }
+        Ok((namespace.to_owned(), name.to_owned(), uid.to_owned()))
+    }
+}
+
+impl AuthState {
+    pub(super) fn online_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
+        self.effective_auth_mounts(namespace)
+            .get(mount)
+            .is_some_and(|v| v.kind == kind)
+    }
+    pub(crate) fn online_mount_route(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String, String)> {
+        let rest = path.strip_prefix("auth/")?;
+        self.effective_auth_mounts(namespace)
+            .into_iter()
+            .find_map(|(mount, entry)| {
+                if !matches!(entry.kind.as_str(), "kubernetes" | "oidc") {
+                    return None;
+                }
+                rest.strip_prefix(&format!("{mount}/"))
+                    .map(|suffix| (entry.kind, mount.clone(), suffix.to_owned()))
+            })
+    }
+    pub(crate) fn has_online_auth_state(&self) -> bool {
+        self.has_oidc_state()
+            || self.kubernetes_mounts.values().any(|m| !m.is_empty())
+            || self.auth_mounts.values().any(|m| {
+                m.values()
+                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc"))
+            })
+    }
+    pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
+        self.validate_oidc_state()?;
+        for (namespace, mounts) in &self.kubernetes_mounts {
+            validate_namespace(namespace)?;
+            for (mount, state) in mounts {
+                if !self.online_mount_enabled(namespace, mount, "kubernetes")
+                    || state.roles.len() > MAX_KUBERNETES_ROLES
+                {
+                    return Err(denied());
+                }
+                if let Some(config) = &state.config {
+                    config.validate()?;
+                }
+                for (name, role) in &state.roles {
+                    if !valid_name(name) {
+                        return Err(denied());
+                    }
+                    role.validate()?;
+                }
+            }
+        }
+        Ok(())
+    }
+    fn kubernetes_at(&self, scope: AuthScope<'_>) -> Option<&KubernetesMount> {
+        self.kubernetes_mounts
+            .get(scope.namespace)?
+            .get(scope.mount)
+    }
+    fn kubernetes_mut(&mut self, scope: AuthScope<'_>) -> &mut KubernetesMount {
+        self.kubernetes_mounts
+            .entry(scope.namespace.into())
+            .or_default()
+            .entry(scope.mount.into())
+            .or_default()
+    }
+    pub(crate) fn check_online_enrollment(
+        &self,
+        namespace: &str,
+        path: &str,
+        outbound: &Outbound,
+    ) -> Result<(), AuthError> {
+        self.check_oidc_enrollment(namespace, path, outbound)?;
+        let Some((_, mount, suffix)) = self.online_mount_route(namespace, path) else {
+            return Ok(());
+        };
+        if suffix != "config" {
+            return Ok(());
+        }
+        if let Some(config) = self
+            .kubernetes_at(AuthScope {
+                namespace,
+                mount: &mount,
+            })
+            .and_then(|s| s.config.as_ref())
+        {
+            outbound
+                .endpoint(
+                    &format!("{}{TOKEN_REVIEW_PATH}", config.kubernetes_host),
+                    "https",
+                )
+                .map_err(|_| err(503, "Kubernetes TokenReview target is not host-enrolled"))?;
+        }
+        Ok(())
+    }
+    pub(super) fn kubernetes_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        suffix: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/{suffix}", scope.mount);
+        let capability = if matches!(method, "GET" | "LIST") {
+            if suffix == "role" { "list" } else { "read" }
+        } else {
+            "update"
+        };
+        let actor = self.permission(principal, scope.namespace, &path, capability, now)?;
+        if !matches!(method, "GET" | "LIST") {
+            self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+        }
+        if suffix == "config" {
+            return match method {
+                "GET" => {
+                    reject_unknown(body, &[])?;
+                    let config = self
+                        .kubernetes_at(scope)
+                        .and_then(|s| s.config.as_ref())
+                        .ok_or_else(|| err(404, "Kubernetes configuration missing"))?;
+                    Ok(response(
+                        json!({"kubernetes_host":config.kubernetes_host,"token_reviewer_jwt_set":true,
+                        "disable_local_ca_jwt":true}),
+                        false,
+                    ))
+                }
+                "POST" | "PUT" => {
+                    reject_unknown(
+                        body,
+                        &[
+                            "kubernetes_host",
+                            "token_reviewer_jwt",
+                            "disable_local_ca_jwt",
+                        ],
+                    )?;
+                    if body
+                        .get("disable_local_ca_jwt")
+                        .is_some_and(|v| v.as_bool() != Some(true))
+                    {
+                        return Err(bad(
+                            "implicit in-pod trust or reviewer credentials are forbidden",
+                        ));
+                    }
+                    let config = KubernetesConfig {
+                        kubernetes_host: string_field(body, "kubernetes_host")?.into(),
+                        token_reviewer_jwt: string_field(body, "token_reviewer_jwt")?.into(),
+                    };
+                    config.validate()?;
+                    if self
+                        .kubernetes_at(scope)
+                        .and_then(|s| s.config.as_ref())
+                        .is_some_and(|old| old.kubernetes_host != config.kubernetes_host)
+                    {
+                        return Err(err(
+                            409,
+                            "changing Kubernetes cluster requires a new auth mount",
+                        ));
+                    }
+                    self.kubernetes_mut(scope).config = Some(config);
+                    Ok(empty(true))
+                }
+                "DELETE" => Err(err(
+                    405,
+                    "disable the auth mount to remove cluster binding and issued tokens",
+                )),
+                _ => Err(err(405, "method not allowed")),
+            };
+        }
+        if suffix == "role" && matches!(method, "GET" | "LIST") {
+            reject_unknown(body, &[])?;
+            let keys: Vec<_> = self
+                .kubernetes_at(scope)
+                .map(|s| s.roles.keys().cloned().collect())
+                .unwrap_or_default();
+            return Ok(response(json!({"keys":keys}), false));
+        }
+        let name = suffix
+            .strip_prefix("role/")
+            .filter(|n| valid_name(n))
+            .ok_or_else(|| err(404, "unsupported Kubernetes route"))?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let role = self
+                    .kubernetes_at(scope)
+                    .and_then(|s| s.roles.get(name))
+                    .ok_or_else(|| err(404, "Kubernetes role missing"))?;
+                let mut data = serde_json::to_value(role)
+                    .map_err(|_| err(500, "role serialization failed"))?;
+                data["alias_name_source"] = json!("serviceaccount_uid");
+                data["token_type"] = json!("service");
+                data["token_renewable"] = json!(false);
+                Ok(response(data, false))
+            }
+            "POST" | "PUT" => {
+                reject_unknown(
+                    body,
+                    &[
+                        "bound_service_account_names",
+                        "bound_service_account_namespaces",
+                        "audience",
+                        "token_policies",
+                        "token_ttl",
+                        "token_num_uses",
+                        "alias_name_source",
+                        "token_type",
+                    ],
+                )?;
+                if body
+                    .get("alias_name_source")
+                    .is_some_and(|v| v.as_str() != Some("serviceaccount_uid"))
+                    || body
+                        .get("token_type")
+                        .is_some_and(|v| v.as_str() != Some("service"))
+                {
+                    return Err(bad("unsupported Kubernetes token or alias profile"));
+                }
+                let role = KubernetesRole {
+                    bound_service_account_names: names(body, "bound_service_account_names", false)?,
+                    bound_service_account_namespaces: names(
+                        body,
+                        "bound_service_account_namespaces",
+                        true,
+                    )?,
+                    audience: string_field(body, "audience")?.into(),
+                    token_policies: policies(body, "token_policies", &BTreeSet::new(), true)?,
+                    token_ttl: duration(body, "token_ttl", 300)?,
+                    token_num_uses: number(body, "token_num_uses", 0)?,
+                };
+                role.validate()?;
+                self.validate_assignment(actor, &role.token_policies)?;
+                let state = self.kubernetes_mut(scope);
+                if state.roles.len() >= MAX_KUBERNETES_ROLES && !state.roles.contains_key(name) {
+                    return Err(err(507, "Kubernetes role capacity reached"));
+                }
+                let changed = state.roles.get(name) != Some(&role);
+                state.roles.insert(name.into(), role);
+                Ok(empty(changed))
+            }
+            "DELETE" => {
+                reject_unknown(body, &[])?;
+                Ok(empty(
+                    self.kubernetes_mut(scope).roles.remove(name).is_some(),
+                ))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+    pub(crate) fn kubernetes_login(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        now: u64,
+        outbound: &Outbound,
+    ) -> Result<AuthResponse, AuthError> {
+        validate_namespace(namespace)?;
+        if !self.online_mount_enabled(namespace, mount, "kubernetes") {
+            return Err(denied());
+        }
+        reject_unknown(body, &["role", "jwt"])?;
+        let role_name = string_field(body, "role")?;
+        if !valid_name(role_name) {
+            return Err(bad("invalid Kubernetes role name"));
+        }
+        let presented = string_field(body, "jwt")?;
+        if !credential(presented) {
+            return Err(bad("invalid Kubernetes credential"));
+        }
+        let state = self
+            .kubernetes_at(AuthScope { namespace, mount })
+            .ok_or_else(denied)?;
+        let role = state.roles.get(role_name).cloned().ok_or_else(denied)?;
+        let config = state
+            .config
+            .as_ref()
+            .ok_or_else(|| err(503, "Kubernetes auth is not configured"))?;
+        let mut request = json!({"apiVersion":"authentication.k8s.io/v1","kind":"TokenReview",
+            "spec":{"token":presented,"audiences":[role.audience]}});
+        let started = std::time::Instant::now();
+        let result = outbound.post_json_bearer(
+            &format!("{}{TOKEN_REVIEW_PATH}", config.kubernetes_host),
+            &config.token_reviewer_jwt,
+            &request,
+        );
+        crate::service::erase_json(&mut request);
+        let mut reviewed =
+            result.map_err(|_| err(503, "Kubernetes TokenReview unavailable or untrusted"))?;
+        let identity = role.bind_review(&reviewed);
+        crate::service::erase_json(&mut reviewed);
+        let (sa_namespace, sa_name, uid) = identity?;
+        let elapsed = started.elapsed();
+        let now = now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        );
+        let mut issued = self.issue_online_token(
+            AuthScope { namespace, mount },
+            &uid,
+            role.token_policies,
+            role.token_ttl,
+            role.token_num_uses,
+            now,
+        )?;
+        issued.body["auth"]["metadata"] = json!({"service_account_namespace":sa_namespace,"service_account_name":sa_name,
+            "service_account_uid":uid,"role":role_name});
+        Ok(issued)
+    }
+    pub(super) fn issue_online_token(
+        &mut self,
+        scope: AuthScope<'_>,
+        alias: &str,
+        policies: BTreeSet<String>,
+        ttl: u64,
+        uses: u64,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        if policies.contains("root") || ttl == 0 || ttl > MAX_LOGIN_TTL {
+            return Err(denied());
+        }
+        let token = Token {
+            wrapping: None,
+            entity_id: None,
+            cubbyhole: cubbyhole::TokenCubbyhole::default(),
+            accessor: random_id("a.")?,
+            namespace: namespace.into(),
+            policies,
+            root: false,
+            parent: None,
+            created_at: now,
+            expires_at: Some(checked_expiry(now, ttl)?),
+            max_expires_at: Some(checked_expiry(now, ttl)?),
+            period: 0,
+            renewable: false,
+            uses_remaining: unlimited_zero(uses),
+            display_name: format!("online-{}", &hash(alias)[..16]),
+            auth_mount: Some(mount.into()),
+            auth_origin_known: true,
+        };
+        let (id, token, mut issued) = Self::prepare_issue(token, now)?;
+        issued.login_identity = Some(LoginIdentity {
+            mount: mount.into(),
+            alias: alias.into(),
+        });
+        self.tokens.insert(id, token);
+        Ok(issued)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn role() -> KubernetesRole {
+        KubernetesRole {
+            bound_service_account_names: BTreeSet::from(["worker".into()]),
+            bound_service_account_namespaces: BTreeSet::from(["application".into()]),
+            audience: "heptabao".into(),
+            token_policies: BTreeSet::from(["default".into()]),
+            token_ttl: 300,
+            token_num_uses: 0,
+        }
+    }
+    fn review() -> Value {
+        json!({"apiVersion":"authentication.k8s.io/v1","kind":"TokenReview","status":{
+        "authenticated":true,"audiences":["heptabao"],"user":{"username":"system:serviceaccount:application:worker","uid":"abc-123"}}})
+    }
+    #[test]
+    fn tokenreview_requires_authenticated_identity_uid_audience_and_version() {
+        let original = review();
+        assert!(role().bind_review(&original).is_ok());
+        for (pointer, value) in [
+            ("/status/authenticated", json!("true")),
+            ("/status/audiences", json!([])),
+            ("/status/audiences", json!(["other"])),
+            ("/status/user/uid", Value::Null),
+            (
+                "/status/user/username",
+                json!("system:serviceaccount:other:worker"),
+            ),
+            (
+                "/status/user/username",
+                json!("system:serviceaccount:application:admin"),
+            ),
+            ("/status/user/username", json!("admin")),
+            ("/apiVersion", json!("authentication.k8s.io/v1beta1")),
+            ("/kind", json!("Status")),
+        ] {
+            let mut v = original.clone();
+            if let Some(slot) = v.pointer_mut(pointer) {
+                *slot = value;
+            }
+            assert!(role().bind_review(&v).is_err(), "{pointer}");
+        }
+        let mut v = original;
+        v["status"]["error"] = json!("untrusted diagnostic");
+        assert!(role().bind_review(&v).is_err());
+    }
+    #[test]
+    fn service_account_name_patterns_are_explicit_and_canonical() {
+        for v in [
+            json!([]),
+            json!(["*", "worker"]),
+            json!(["a", "a"]),
+            json!(["UPPER"]),
+            json!(["../escape"]),
+        ] {
+            assert!(names(&json!({"names":v}), "names", false).is_err());
+        }
+        assert!(names(&json!({"names":["*"]}), "names", false).is_ok());
+        assert!(dns_name("a.b", false));
+        assert!(!dns_name("a.b", true));
+    }
+    #[test]
+    fn credential_and_egress_configuration_have_no_ambient_fallback() {
+        for value in ["", "too-short", "1234567890123456\r\nx: y"] {
+            assert!(!credential(value));
+        }
+        for host in [
+            "http://localhost:443",
+            "https://localhost:443/path",
+            "https://user@localhost:443",
+        ] {
+            assert!(
+                KubernetesConfig {
+                    kubernetes_host: host.into(),
+                    token_reviewer_jwt: "reviewer-for-tests-only".into()
+                }
+                .validate()
+                .is_err()
+            );
+        }
+    }
+    #[test]
+    fn role_cannot_assign_root_or_unbounded_lifetime() {
+        let mut r = role();
+        r.token_policies.insert("root".into());
+        assert!(r.validate().is_err());
+        let mut r = role();
+        r.token_ttl = 3601;
+        assert!(r.validate().is_err());
+    }
+}

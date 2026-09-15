@@ -68,3 +68,12 @@ corpus status is not advanced by standalone profile success.
 ## Additional current server-owned routes
 
 The server's internal `service_database.rs` and `postgres_wire.rs` implement the bounded PostgreSQL provider/renewable-lease path; `auth_remote.rs` and `outbound.rs` implement remote JWT keys; `service_raft_admin.rs` composes native `process/admin.rs` membership/snapshot observations and guarded Autopilot. These extend existing server/runtime package rows without adding a separate database package or changing the 46-package denominator. See [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [JWT](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for exact current limits and unexecuted qualification boundaries.
+
+## Online authentication: actual internal owners
+
+The server now routes online `kubernetes` and `oidc` mounts through
+`auth_kubernetes.rs`, `auth_oidc.rs` and `service_online_auth.rs`. This adds no
+Cargo package and does not turn `heptabao-authbus-contracts` into a runtime edge.
+The Python native callback client remains outside the Cargo package table.
+See [online authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md) for exact
+state, routes, denial behavior, realm/accessor bindings and scoped HA tests.

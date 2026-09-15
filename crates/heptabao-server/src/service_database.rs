@@ -5,6 +5,22 @@ use super::*;
 use crate::{auth::LeaseIssuer, outbound::Target, postgres_wire::PgSession};
 use std::collections::BTreeSet;
 
+/// The provider has already been entered and its effect observed. No local
+/// persistence failure can now mean that issuance/renewal/revocation was absent.
+/// Keep the durable pending intent and expose only reconciliation metadata.
+fn post_provider_publication_failure(error: Response, id: &str) -> Response {
+    let mut body = json!({
+        "errors": ["provider effect observed but local completion not established; durable intent retained; do not blindly retry"],
+        "lease_id": id,
+        "reconcile_required": true,
+        "retry_allowed": false
+    });
+    if let Some(reference) = error.body.get("recovery_reference").and_then(Value::as_str) {
+        body["recovery_reference"] = json!(reference);
+    }
+    Response { status: 503, body }
+}
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 pub(super) struct DatabaseState {
@@ -747,6 +763,7 @@ impl Service {
             current.last_renewal = Some(now);
         }
         self.publish_database(next)
+            .map_err(|error| post_provider_publication_failure(error, id))
     }
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let l = state
@@ -1018,6 +1035,27 @@ mod tests {
     impl From<Response> for TestFailure {
         fn from(_: Response) -> Self {
             Self
+        }
+    }
+
+    #[test]
+    fn provider_completion_publication_failure_is_never_before_entry_rejection() {
+        for status in [400, 503, 507] {
+            let error = Response {
+                status,
+                body: json!({"recovery_reference":"synthetic-local-reference", "password":"must-not-escape"}),
+            };
+            let result =
+                post_provider_publication_failure(error, "database/creds/reader/synthetic");
+            assert_eq!(result.status, 503);
+            assert_eq!(result.body["lease_id"], "database/creds/reader/synthetic");
+            assert_eq!(result.body["reconcile_required"], true);
+            assert_eq!(result.body["retry_allowed"], false);
+            assert_eq!(
+                result.body["recovery_reference"],
+                "synthetic-local-reference"
+            );
+            assert!(result.body.get("password").is_none());
         }
     }
 

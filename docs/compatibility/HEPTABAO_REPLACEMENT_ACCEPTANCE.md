@@ -179,12 +179,21 @@ No flag is promoted by this document or by a green repository workflow:
 records and distinguish `not implemented`, `not executed`, `failed`, `scoped pass`
 and `independently admitted` instead of collapsing them into a completion percent.
 
-## Executable work inventory
+## Next-stage execution navigation
 
-`planning/HEPTABAO_SURFACE_WORK_V1.json` decomposes every original surface into
-API/protocol, positive/hostile behavior, state/effect, crash, isolation and
-migration/upgrade work. `python scripts/surface_work.py --surface
-HB-SURFACE-SECRET-TRANSIT` displays one contract and existing executable profiles.
-Its success validates the inventory, not compatibility; original corpus states
-remain untouched. New bounded capacity and Transit re-encryption profiles are
-required on both exact-head and prospective-merge CI paths.
+The existing plan's per-surface requirements are in
+`docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`, backed by
+`planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json`. This is not a competing global
+plan. Current capacity behavior and the remaining scalable-storage exit are in
+`docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`. Observed historical passes do
+not transfer to a changed candidate; preserve exact source and scope.
+
+
+## Retained PR96 Transit execution
+
+`qa/openbao-acceptance/transit_migration_live.py` remains a required real
+source-decrypt/destination-encrypt/readback profile. Its checkpoint and lost-ack
+limits are described in `docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md`.
+`planning/HEPTABAO_SURFACE_WORK_V1.json` is the retained profile/corpus-binding
+catalog; the replacement execution map supplies deeper per-surface requirements.
+Neither catalog advances the fixed corpus or substitutes for an execution receipt.

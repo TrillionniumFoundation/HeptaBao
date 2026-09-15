@@ -16,6 +16,12 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_oidc.rs"]
+mod oidc;
+
+#[path = "auth_kubernetes.rs"]
+mod kubernetes;
+
 #[path = "auth_remote.rs"]
 mod remote;
 use remote::RemoteJwtSource;
@@ -64,6 +70,10 @@ pub struct AuthState {
     auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
     #[serde(default)]
     jwt_mounts: BTreeMap<String, BTreeMap<String, JwtMountState>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    kubernetes_mounts: BTreeMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    oidc_mounts: BTreeMap<String, BTreeMap<String, oidc::OidcMount>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -751,6 +761,8 @@ impl AuthState {
             mounted_roles: BTreeMap::new(),
             auth_mounts: BTreeMap::new(),
             jwt_mounts: BTreeMap::new(),
+            kubernetes_mounts: BTreeMap::new(),
+            oidc_mounts: BTreeMap::new(),
         };
         let token = Token {
             wrapping: None,
@@ -1068,6 +1080,12 @@ impl AuthState {
     }
 
     fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
+        if let Some(mounts) = self.oidc_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.kubernetes_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         self.users_at_mut(scope).clear();
         self.roles_at_mut(scope).clear();
         if let Some(mounts) = self.jwt_mounts.get_mut(scope.namespace) {
@@ -1205,7 +1223,7 @@ impl AuthState {
                     .get("type")
                     .and_then(Value::as_str)
                     .ok_or_else(|| bad("auth mount type is required"))?;
-                if !matches!(kind, "userpass" | "approle" | "jwt") {
+                if !matches!(kind, "userpass" | "approle" | "jwt" | "kubernetes" | "oidc") {
                     return Err(err(501, "auth method type is not implemented"));
                 }
                 let description = body
@@ -1320,6 +1338,8 @@ impl AuthState {
                     self.role_route(principal, scope, method, path, body, now)
                 }
                 "jwt" => self.jwt_route(principal, scope, method, path, body, now),
+                "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
+                "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
                 _ => Err(err(404, "unsupported auth route")),
             };
             return result.map(Some);

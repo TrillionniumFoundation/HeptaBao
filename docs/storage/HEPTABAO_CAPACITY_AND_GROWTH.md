@@ -31,8 +31,8 @@ retained-ID budget is full. ReadIndex and recovery fences are not bypassed.
 
 ## Safe automatic checkpoint
 
-`DurableService::put_with_maintenance` is explicitly selected by the current
-server's local persistence adapter. Its state machine is:
+`DurableService::put_with_maintenance` is the retained compatibility name and
+delegates to `put_with_compaction`, selected by the current Service adapter. Its state machine is:
 
 ```text
 put(same authorized request)
@@ -51,8 +51,8 @@ authoritative recovery remain the way to classify uncertain state.
 
 No operation ID, revocation tombstone, state generation or application secret is
 removed to free capacity. Checkpointing is not retention expiry. A full replay
-ledger still rejects new mutations. This implementation clones a bounded request
-for the single permitted retry, and still serializes whole state; it is not a
+ledger still rejects new mutations. The unified policy retains the bounded request
+for the single permitted retry and still serializes whole state; it is not a
 performance optimization or an indexed storage engine.
 
 ## Executable evidence and fault limits
@@ -64,7 +64,8 @@ an actual filesystem checkpoint-publication failure. Two Service tests in
 `service_capacity_tests.rs` exercise authorization/audit and pre-entry capacity
 rejection without changing admitted state.
 
-`qa/openbao-acceptance/capacity_live.py` starts a fresh synthetic real TLS server,
+`qa/openbao-acceptance/capacity_live.py` uses the expanded `sys/internal/capacity`
+observation route and starts a fresh synthetic real TLS server,
 fills it with bounded objects until 507, verifies the rejected object is absent,
 checks the recovery flag, compacts, restarts and reads selected acknowledged
 values. Its count is a fixture observation, not an estimate of supported users,

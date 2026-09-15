@@ -1,5 +1,6 @@
 """Mutation tests for the current-schema/backend documentation boundary."""
 import importlib.util
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -35,7 +36,9 @@ class RuntimeDocumentationTests(unittest.TestCase):
         self.assertEqual(module.validate(self.root), [])
 
     def test_schema_change_requires_current_contract_update(self):
-        self.change('crates/heptabao-server/src/service.rs', 'CURRENT_STATE_SCHEMA: u32 = 4', 'CURRENT_STATE_SCHEMA: u32 = 5')
+        source=(self.root/'crates/heptabao-server/src/service.rs').read_text()
+        current=int(re.search(r'CURRENT_STATE_SCHEMA: u32 = (\d+)',source).group(1))
+        self.change('crates/heptabao-server/src/service.rs', f'CURRENT_STATE_SCHEMA: u32 = {current}', f'CURRENT_STATE_SCHEMA: u32 = {current+1}')
         self.assertIn('current format contract differs from the source schema', module.validate(self.root))
 
     def test_backend_addition_requires_state_diagram_update(self):

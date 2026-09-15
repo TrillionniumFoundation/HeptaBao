@@ -30,7 +30,10 @@ class SectionSixIntegrationTests(unittest.TestCase):
     def test_capacity_extension_does_not_silently_raise_source_limits(self):
         source = (ROOT/'crates/heptabao-server/src/service.rs').read_text()
         self.assertIn('MAX_STATE_BYTES: usize = 768 * 1024', source)
-        self.assertIn('put_with_maintenance', source)
+        self.assertIn('.put_with_compaction(request)', source)
+        alias = (ROOT/'crates/heptabao-durable-service/src/capacity.rs').read_text()
+        self.assertIn('pub fn put_with_maintenance(', alias)
+        self.assertIn('self.put_with_compaction(request)', alias)
         contract = (ROOT/'docs/storage/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
         self.assertIn('32,000', contract)
         self.assertIn('whole state', contract)

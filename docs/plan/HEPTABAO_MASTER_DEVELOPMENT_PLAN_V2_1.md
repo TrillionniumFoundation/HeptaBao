@@ -134,3 +134,13 @@ authority_effect=NONE
 ```
 
 The project may accurately describe repository-controlled implementation and test progress. It may not describe the candidate as a production OpenBao replacement merely because all repository unit tests are green.
+
+## Execution decomposition of the unchanged replacement target
+
+Use `planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json` and its rendered
+`docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md` to implement every existing
+surface's positive, hostile and lifecycle exits. These subordinate requirements
+retain the original work-package IDs and all 60 corpus surfaces. They do not
+supersede this plan, classify standalone contracts as running features, or issue
+compatibility/production authority. Capacity and migration preflights are not
+permission to cut over or advance the Hepta consumer pin.

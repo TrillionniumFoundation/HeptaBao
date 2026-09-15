@@ -19,7 +19,7 @@ The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RES
 [SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
 [Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
 not only a contract. These remain bounded development profiles, not full OpenBao
-compatibility or production readiness. The wrapping increment introduced schema 3; current schema 4 also refuses unsafe old-binary fallback;
+compatibility or production readiness. The wrapping increment introduced schema 3; current schema 5 also refuses unsafe old-binary fallback;
 no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
 worker, full Agent/Proxy or independent acceptance is created by these additions.
 
@@ -28,7 +28,18 @@ adds a bounded AppRole auto-auth/renewal process, generation-checked private sin
 Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
 maintenance through the existing audited durable/Raft writer. These are scoped
 executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
-external-provider revocation. The current Service state is schema 4; see `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
+external-provider revocation. The current Service state is schema 5; see `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
+
+## Current capacity and migration prerequisites
+
+The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
+expose actual bounded-state/replay/journal headroom and checkpoint the journal only
+on a proven before-entry budget rejection. Retained request identities are never
+evicted; 768 KiB aggregate state and 32,000 identities remain hard limits, not
+production scale. [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md)
+observes real source catalogs and target headroom without copying or cutover.
+The [per-surface execution map](docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md)
+retains all original 60 surfaces and their work packages without issuing passes.
 
 ## Current source of truth
 
@@ -109,7 +120,17 @@ authority_effect: NONE
 
 ## Current external-provider and cluster-administration additions
 
-The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. Actual PostgreSQL server/SQL execution is a mandatory real-service CI step. The earlier exact candidate `0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5` passed both tracks of run `34924284502`; this is bounded repository-controlled evidence, not independent provider admission, and does not validate subsequent source changes. Protocol-model tests alone never qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.
+The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. The baseline candidate `0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5` executed real PostgreSQL acceptance in repository-controlled CI run `34924284502`, on both head and prospective-merge jobs. See `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md`. This is a baseline observation, not a pass for later source or independent qualification; protocol-model tests alone do not qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.
+
+## Current online authentication increment
+
+[Online Kubernetes / OIDC authentication](docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
+TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
+loopback callback CLI. The separate remote-JWT profile above remains a bearer
+verifier, not code flow. Current application writes use schema 5. The new profiles
+retain root-controlled enrollment, live Identity, audit and durable/HA publication.
+They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
+independent acceptance or production authority.
 
 ## Section-six execution increment
 
@@ -122,3 +143,12 @@ audited capacity observation, safe journal checkpoint maintenance and an explici
 Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
 limits, import raw OpenBao snapshots, update application ciphertext references,
 or advance Hepta's independently requalified consumer pin.
+
+
+## Integrated remote continuation
+
+`docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.md` records the reconciled PR96
+and local online-auth inputs, both capacity response contracts, unified durable
+maintenance, retained Transit tooling, the actual Kubernetes API/etcd/RBAC gate
+and exact direct-Python-version validation. Source presence and workflow wiring
+are not execution receipts. The separate record-store source is not included.

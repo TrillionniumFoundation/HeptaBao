@@ -236,6 +236,22 @@ pub struct CompactionOutcome {
     pub journal_bytes_after: usize,
 }
 
+/// Read-only local capacity facts. These are not a reservation or a promise
+/// that a later operation will fit; ciphertext overhead and I/O can still fail.
+/// No resource names, request identities, values or key material are exposed.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CapacitySnapshot {
+    pub generation: u64,
+    pub logical_payload_bytes: usize,
+    pub entry_count: usize,
+    pub retained_requests: usize,
+    pub max_retained_requests: usize,
+    pub journal_bytes: usize,
+    pub journal_limit_bytes: usize,
+    pub max_value_bytes: usize,
+    pub max_file_bytes: usize,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct RestoreOutcome {
     pub previous_generation: u64,
@@ -523,8 +539,17 @@ impl<B: Barrier> DurableService<B> {
 
     pub fn put_with_failpoint(
         &mut self,
+        request: PutRequest,
+        failpoint: Failpoint,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.put_with_policy(request, failpoint, false)
+    }
+
+    fn put_with_policy(
+        &mut self,
         mut request: PutRequest,
         failpoint: Failpoint,
+        compact_before_entry: bool,
     ) -> Result<MutationOutcome, ServiceError> {
         request.validate()?;
         let value_digest = digest32(b"heptabao.durable-service.value.v1", request.value.expose());
@@ -543,6 +568,7 @@ impl<B: Barrier> DurableService<B> {
             binding,
             Some(std::mem::take(&mut request.value.0)),
             failpoint,
+            compact_before_entry,
         )
     }
 
@@ -567,7 +593,7 @@ impl<B: Barrier> DurableService<B> {
             authorization_digest: request.authorization_digest,
             value_digest: digest32(b"heptabao.durable-service.delete.v1", b"delete"),
         };
-        self.execute(binding, None, failpoint)
+        self.execute(binding, None, failpoint, false)
     }
 
     pub fn get(&self, namespace: &str, resource: &str) -> Result<Option<Secret>, ServiceError> {
@@ -632,6 +658,56 @@ impl<B: Barrier> DurableService<B> {
     #[must_use]
     pub fn retained_request_count(&self) -> usize {
         self.ledger.len()
+    }
+
+    /// Report committed local capacity only. Recovery fencing and descriptor
+    /// identity are checked before returning even non-secret counters.
+    pub fn capacity(&self) -> Result<CapacitySnapshot, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.directory.verify().map_err(map_guard_error)?;
+        let logical_payload_bytes = self
+            .snapshot
+            .entries
+            .values()
+            .try_fold(0_usize, |total, value| {
+                total.checked_add(value.expose().len())
+            })
+            .ok_or(ServiceError::CorruptState)?;
+        Ok(CapacitySnapshot {
+            generation: self.snapshot.generation,
+            logical_payload_bytes,
+            entry_count: self.snapshot.entries.len(),
+            retained_requests: self.ledger.len(),
+            max_retained_requests: self.max_retained_requests,
+            journal_bytes: self.journal_bytes,
+            journal_limit_bytes: self.journal_limit,
+            max_value_bytes: MAX_SECRET_BYTES,
+            max_file_bytes: MAX_FILE_BYTES,
+        })
+    }
+
+    /// Reject a *new* identity when its known local budget is already exhausted.
+    /// This is a preflight, not a reservation. Duplicate operations should use
+    /// `put` directly because their retained identity requires no new slot.
+    pub fn preflight_new_identity(&self) -> Result<(), ServiceError> {
+        let capacity = self.capacity()?;
+        if capacity.retained_requests >= capacity.max_retained_requests {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        Ok(())
+    }
+
+    /// Attempt one put, checkpoint only on an explicit before-entry journal
+    /// capacity rejection, then attempt that same exact request once more.
+    /// Never retry an unknown outcome, I/O failure, binding conflict, or an
+    /// exhausted replay ledger. Compaction retains the complete replay ledger.
+    pub fn put_with_compaction(
+        &mut self,
+        request: PutRequest,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.put_with_policy(request, Failpoint::None, true)
     }
 
     /// Replace the replay journal with one authenticated checkpoint for the
@@ -754,6 +830,7 @@ impl<B: Barrier> DurableService<B> {
         binding: Binding,
         value: Option<Vec<u8>>,
         failpoint: Failpoint,
+        compact_before_entry: bool,
     ) -> Result<MutationOutcome, ServiceError> {
         let value = value.map(Zeroizing::new);
         if self.unresolved {
@@ -808,7 +885,7 @@ impl<B: Barrier> DurableService<B> {
         }
         let mut candidate_ledger = self.ledger.clone();
         candidate_ledger.insert(
-            binding.key,
+            binding.key.clone(),
             LedgerRecord {
                 binding_digest,
                 recovery_reference: recovery_reference.clone(),
@@ -839,6 +916,32 @@ impl<B: Barrier> DurableService<B> {
                 .and_then(|n| n.checked_add(commit.len()))
                 .is_none_or(|n| n > self.journal_limit)
         {
+            if compact_before_entry {
+                // No intent has entered the journal. Only this rare capacity
+                // path needs another value copy; the normal put does not.
+                let retry_value = match binding.kind {
+                    MutationKind::Put => Some(Zeroizing::new(
+                        candidate
+                            .entries
+                            .get(&binding.storage_key())
+                            .ok_or(ServiceError::CorruptState)?
+                            .expose()
+                            .to_vec(),
+                    )),
+                    MutationKind::Delete => None,
+                };
+                drop(candidate);
+                drop(candidate_ledger);
+                drop(snapshot_bytes);
+                drop(ledger_bytes);
+                self.compact()?;
+                return self.execute(
+                    binding,
+                    retry_value.map(|mut value| std::mem::take(&mut *value)),
+                    failpoint,
+                    false,
+                );
+            }
             return Err(ServiceError::JournalCapacityExhausted);
         }
         // Even write_all/sync_all failures can have published bytes. Poison the
@@ -2192,7 +2295,7 @@ mod tests {
         )
     }
 
-    fn recovery_from_result(
+    pub(super) fn recovery_from_result(
         result: Result<MutationOutcome, ServiceError>,
     ) -> Result<String, ServiceError> {
         match result {
@@ -2839,3 +2942,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "capacity_tests.rs"]
+mod capacity_tests;

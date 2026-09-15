@@ -21,7 +21,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 4;
+const CURRENT_STATE_SCHEMA: u32 = 5;
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -35,6 +35,8 @@ mod database;
 mod identity;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_online_auth.rs"]
+mod online_auth;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 pub(crate) use lifecycle::start_lifecycle_worker;
@@ -577,6 +579,7 @@ impl Service {
             ) || path.starts_with("sys/rekey/")
                 || path.starts_with("sys/storage/")
                 || path.starts_with("sys/internal/recovery/")
+                || path == "sys/internal/capacity"
                 || matches!(method, "HEAD" | "DELETE")
             {
                 Some((
@@ -853,6 +856,12 @@ impl Service {
             }
             return self.capacity_route(method, body);
         }
+        if path == "sys/internal/capacity" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.capacity_response(method, body);
+        }
         if path.starts_with("sys/internal/recovery/")
             || matches!(
                 path,
@@ -892,6 +901,9 @@ impl Service {
                 status: 204,
                 body: Value::Null,
             };
+        }
+        if let Some(response) = self.online_login(&admitted, &request) {
+            return response;
         }
         let before = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
@@ -934,6 +946,15 @@ impl Service {
                 transaction
                     .auth
                     .refresh_remote_jwt(namespace, path, method, &self.outbound, true)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if response.status < 300
+            && matches!(method, "POST" | "PUT")
+            && let Err(error) =
+                transaction
+                    .auth
+                    .check_online_enrollment(namespace, path, &self.outbound)
         {
             return Response::error(error.status, &error.message);
         }
@@ -2117,18 +2138,21 @@ impl Service {
         let Some(durable) = self.durable.as_ref() else {
             return Response::error(503, "server is sealed");
         };
-        let capacity = durable.capacity_status();
+        let capacity = match durable.capacity() {
+            Ok(value) => value,
+            Err(_) => return Response::error(503, "durable capacity unavailable"),
+        };
         Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
             "state_limit_bytes": MAX_STATE_BYTES,
-            "stored_value_bytes": capacity.stored_value_bytes,
+            "stored_value_bytes": capacity.logical_payload_bytes,
             "generation": capacity.generation,
             "journal_bytes": capacity.journal_bytes,
             "journal_limit_bytes": capacity.journal_limit_bytes,
             "retained_requests": capacity.retained_requests,
-            "retained_request_limit": capacity.retained_request_limit,
-            "remaining_request_slots": capacity.retained_request_limit.saturating_sub(capacity.retained_requests),
-            "recovery_required": capacity.recovery_required,
+            "retained_request_limit": capacity.max_retained_requests,
+            "remaining_request_slots": capacity.max_retained_requests.saturating_sub(capacity.retained_requests),
+            "recovery_required": false,
             "automatic_journal_checkpoint": true,
             "replay_id_eviction": false
         }}))
@@ -2353,23 +2377,18 @@ impl Service {
     }
 
     fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {
-        // This deterministic local limit must reject BEFORE proposing a new HA
-        // effect. It is not a reservation against physical I/O or peer failures.
-        let capacity = self
-            .durable
+        // This request will allocate a fresh identity. Refuse a known full
+        // local replay ledger BEFORE proposing an otherwise committed HA effect.
+        self.durable
             .as_ref()
             .ok_or_else(|| Response::error(503, "server is sealed"))?
-            .capacity_status();
-        if capacity.recovery_required {
-            self.recovery_required = true;
-            return Err(Response::error(503, "durable recovery required"));
-        }
-        if capacity.retained_requests >= capacity.retained_request_limit {
-            return Err(Response::error(
-                507,
-                "retained operation capacity exhausted",
-            ));
-        }
+            .preflight_new_identity()
+            .map_err(|error| match error {
+                ServiceError::RequestCapacityExhausted => {
+                    Response::error(507, "retained operation capacity exhausted")
+                }
+                _ => Response::error(503, "durable capacity preflight unavailable"),
+            })?;
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
         if let Some(ha) = self.ha.as_ref() {
@@ -2386,6 +2405,7 @@ impl Service {
             Err(error) => {
                 if self.ha.is_some() {
                     self.recovery_required = true;
+                    return Err(Self::ha_committed_local_failure(error));
                 }
                 Err(error)
             }
@@ -2408,7 +2428,7 @@ impl Service {
             .durable
             .as_mut()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let result = durable.put_with_maintenance(request);
+        let result = durable.put_with_compaction(request);
         if durable.recovery_required() {
             self.recovery_required = true;
         }
@@ -2421,10 +2441,21 @@ impl Service {
                     body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
                 })
             }
-            Err(_) => Err(Response::error(
-                503,
-                "durable state rejected; no response released",
+            Err(
+                ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted,
+            ) => Err(Response::error(
+                507,
+                "durable capacity exhausted; no response released",
             )),
+            Err(_) => {
+                // Checkpoint publication may have failed without a new user
+                // intent. Fence the Service just as the durable owner is fenced.
+                self.recovery_required |= durable.recovery_required();
+                Err(Response::error(
+                    503,
+                    "durable state rejected; no response released",
+                ))
+            }
         }
     }
 
@@ -2458,7 +2489,10 @@ impl Service {
             ));
         }
         let operation_id = format!("hasync-{}", hex(&committed.digest));
-        self.persist_local(&committed.bytes, &operation_id)?;
+        if let Err(error) = self.persist_local(&committed.bytes, &operation_id) {
+            self.recovery_required = true;
+            return Err(Self::ha_committed_local_failure(error));
+        }
         self.state = Some(state);
         self.recovery_required = false;
         Ok(())
@@ -3273,6 +3307,8 @@ mod ssh_service_tests;
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
 
+#[path = "service_capacity.rs"]
+mod capacity;
 #[cfg(test)]
 #[path = "service_capacity_tests.rs"]
 mod capacity_tests;

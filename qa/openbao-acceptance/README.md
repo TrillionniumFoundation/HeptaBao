@@ -75,3 +75,21 @@ requires the exact schema-2 legacy binary hash and exercises actual schema-3
 wrapping/OTP mutation, old-reader rejection and recovery. Use absolute binaries,
 new output names and an existing mode-0700 evidence directory. All fixture secrets
 remain in temporary private directories and are removed by these launchers.
+
+Capacity saturation/reopen and real metadata preflight use `capacity_live.py` and
+`migration_preflight_live.py`. Both create only new synthetic TLS instances;
+preflight fixture success never authorizes a full-instance migration. See
+`docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md` and
+`docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md`.
+
+## Online authentication profiles
+
+`kubernetes_online.py` exercises the actual server and pinned-TLS TokenReview
+protocol; it explicitly does not qualify a kube-apiserver or Kubernetes RBAC.
+`oidc_code_live.py` uses the fixed official 2.6.2 issuer, actual code/PKCE exchange,
+ID-token signatures and the native callback executable. `online_auth_ha.py`
+extends the real three-process fixture with leader death, quorum loss and
+concurrent code consumption. All need a new report in an owner-only directory;
+the latter two also require the existing verified official binary/archive.
+These profiles do not alter fixed-corpus surface status, production authority
+or independent admission. See `docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md`.

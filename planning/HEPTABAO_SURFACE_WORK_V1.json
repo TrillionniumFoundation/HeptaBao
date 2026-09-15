@@ -224,6 +224,29 @@
         "official_openbao_2.6.2"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "actual_kubernetes": {
+      "script": "qa/openbao-acceptance/kubernetes_cluster_live.py",
+      "arguments": [
+        "--binary",
+        "<candidate>",
+        "--kind",
+        "<pinned-kind>",
+        "--output",
+        "<private-new-output>",
+        "--allow-disposable-cluster"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "oidc_code_live": {
+      "script": "qa/openbao-acceptance/oidc_code_live.py",
+      "arguments": [
+        "--binary",
+        "<candidate>",
+        "--output",
+        "<private-new-output>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -491,36 +514,39 @@
       "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
       "category": "auth_methods",
       "implementation_status": "runtime_partial",
-      "runtime_source": "crates/heptabao-server/src/auth_remote.rs",
+      "runtime_source": "crates/heptabao-server/src/auth_oidc.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, role, login and OIDC browser callback target",
         "required_positive_and_hostile_behavior": "Pinned/static/remote keys, issuer/audience/algorithm, JWKS rotation, discovery URL enrollment and replay",
-        "remaining_semantics_and_effect_checks": "Browser code+PKCE, state/nonce, callback binding, full claim mapping and external MFA remain to implement",
+        "remaining_semantics_and_effect_checks": "Current confidential S256 code-flow and native callback are partial runtime; complete issuer and parameter compatibility, actual browser UI, external-group synchronization and MFA separately.",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-JWT-OIDC, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [],
       "available_scoped_profiles": [
-        "jwt"
+        "jwt",
+        "oidc_code_live"
       ],
       "whole_surface_admitted": false
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
       "category": "auth_methods",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_kubernetes.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, role/* and login",
         "required_positive_and_hostile_behavior": "Real TokenReview, issuer/audience, bound service accounts, namespace, reviewer RBAC and API TLS",
-        "remaining_semantics_and_effect_checks": "Reject review outage and deleted service account; do not treat locally decoded JWT as successful TokenReview",
+        "remaining_semantics_and_effect_checks": "Execute actual Kubernetes API/etcd/RBAC and UID recreation gate on this exact head; complete the remaining role, renewal, alias and distribution semantics without inferring success from a protocol model.",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-KUBERNETES, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "available_scoped_profiles": [
+        "actual_kubernetes"
+      ],
       "whole_surface_admitted": false
     },
     {

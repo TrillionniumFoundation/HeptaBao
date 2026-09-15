@@ -14,6 +14,15 @@ impl State {
             .map_err(|_| Response::error(503, "invalid wrapping state"))?;
         self.database.validate_scope(&self.cluster_id)?;
         self.raft_admin.validate()?;
+        self.auth
+            .validate_online_auth()
+            .map_err(|_| Response::error(503, "invalid online authentication state"))?;
+        if self.schema < 5 && self.auth.has_online_auth_state() {
+            return Err(Response::error(
+                503,
+                "online authentication requires schema 5",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -34,7 +43,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            CURRENT_STATE_SCHEMA => Ok(()),
+            4 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
