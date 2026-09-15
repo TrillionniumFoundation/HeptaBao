@@ -1,0 +1,96 @@
+name: Section6 data-only blob publication
+on:
+  push:
+    branches: [ops/section6-source-transport-20260915-v1]
+    paths: [.github/workflows/section6-blob-forwarder.yml]
+permissions:
+  contents: write
+jobs:
+  publish-blobs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify fixed patch and publish data blobs without executing candidate code
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, hashlib, json, lzma, os, pathlib, re, subprocess, urllib.request
+          BASE = '1425b9e20fdbba0c78c75a67849feef418adbf1c'
+          TREE = '9082a0cb582dc186ad38f2159c8b1c1ca965b0f8'
+          CHASH = 'c9336f280d4c7af9128d21c173394f10d6c0f4e6c5ac074a0f90de6617c893bb'
+          PHASH = '7c9f653fc3dbc95baf19f16a14970314c86044c994f17175e2ed0756a0b5b10c'
+          env = {k:v for k,v in os.environ.items() if k not in ('GH_TOKEN','GITHUB_TOKEN')}
+          def git(*args):
+              return subprocess.check_output(['git', *args], env=env, stderr=subprocess.DEVNULL)
+          source = git('rev-parse','HEAD').decode().strip()
+          assert source == os.environ['GITHUB_SHA']
+          parts = []
+          for n in range(13):
+              p = pathlib.Path(f'transport/part-{n:02}.b64')
+              assert p.is_file() and not p.is_symlink()
+              data = p.read_bytes()
+              assert len(data) <= 12288 and re.fullmatch(rb'[A-Za-z0-9+/=]+', data)
+              parts.append(data)
+          compressed = base64.b64decode(b''.join(parts), validate=True)
+          assert len(compressed) == 111552 and hashlib.sha256(compressed).hexdigest() == CHASH
+          z = lzma.LZMADecompressor(memlimit=512*1024*1024)
+          patch = z.decompress(compressed, max_length=2*1024*1024)
+          assert z.eof and not z.unused_data
+          assert len(patch) == 617589 and hashlib.sha256(patch).hexdigest() == PHASH
+          out = pathlib.Path(os.environ['RUNNER_TEMP'])/'section6-blob-receipt'
+          out.mkdir(mode=0o700)
+          patchfile = out/'input.patch'
+          patchfile.write_bytes(patch)
+          git('read-tree', BASE)
+          git('apply','--cached','--binary', str(patchfile))
+          assert git('write-tree').decode().strip() == TREE
+          changed = git('diff','--cached','--name-only','-z',BASE).split(b'\0')[:-1]
+          assert len(changed) == 70 and len(set(changed)) == 70
+          indexed = {}
+          for raw in git('ls-files','--stage','-z').split(b'\0')[:-1]:
+              metadata, path = raw.split(b'\t',1)
+              mode, sha, stage = metadata.split()
+              indexed[path] = (mode.decode(), sha.decode(), stage)
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  raise RuntimeError('redirect denied')
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+          entries = []
+          for path in changed:
+              name = path.decode('utf-8')
+              assert not name.startswith('/') and '..' not in pathlib.PurePosixPath(name).parts
+              assert name == 'README.md' or name.startswith(('crates/','clients/','qa/','scripts/','tests/','docs/','planning/','.github/workflows/'))
+              mode, sha, stage = indexed[path]
+              assert stage == b'0' and mode in ('100644','100755') and re.fullmatch('[0-9a-f]{40}',sha)
+              blob = git('cat-file','blob',sha)
+              assert len(blob) <= 4*1024*1024
+              assert hashlib.sha1(b'blob '+str(len(blob)).encode()+b'\0'+blob).hexdigest() == sha
+              payload = json.dumps({'encoding':'base64','content':base64.b64encode(blob).decode()}).encode()
+              req = urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs', data=payload, method='POST', headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'})
+              try:
+                  with opener.open(req,timeout=60) as response:
+                      result = json.loads(response.read(16384))
+                  assert result['sha'] == sha
+              except Exception:
+                  raise SystemExit('fixed blob publication failed; no ref was updated') from None
+              entries.append({'path':name,'mode':mode,'type':'blob','sha':sha})
+          patchfile.unlink()
+          receipt = {'schema':'heptabao.data-only-blob-publication.v1','transport_commit':source,'base':BASE,'tree':TREE,'blob_count':len(entries),'entries':entries,'candidate_executed':False,'ref_updated':False,'qualification':False}
+          (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps({k:v for k,v in receipt.items() if k!='entries'}))
+          PY
+      - name: Upload safe blob receipt only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: section6-published-blob-receipt
+          path: ${{ runner.temp }}/section6-blob-receipt/receipt.json
+          retention-days: 3
+          if-no-files-found: error
