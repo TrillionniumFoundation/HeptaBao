@@ -8,6 +8,7 @@ Missing binaries are BLOCKED, exit 77; never fall back to the PG-wire model.
 """
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -25,6 +26,32 @@ import time
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'qa/single-node'))
 from smoke import Instance
+
+
+@contextmanager
+def psql_environment(root: Path, *, port: int, database: str, user: str,
+                     password: str, ca: Path, application: str = "hb-provider-test"):
+    """Use an owner-only passfile, never secret argv/PGPASSWORD or inherited PG routing."""
+    def escape(value):
+        if not isinstance(value, str) or any(c in value for c in "\n\r\0"):
+            raise ValueError("invalid_pgpass_field")
+        return value.replace("\\", "\\\\").replace(":", "\\:")
+    fields = ["localhost", str(port), database, user, password]
+    line = ":".join(escape(value) for value in fields) + "\n"
+    fd, name = tempfile.mkstemp(prefix="pgpass-", dir=root)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            stream.write(line)
+        env = {key: value for key, value in os.environ.items() if not key.startswith("PG")}
+        env.update(PGHOST="localhost", PGHOSTADDR="127.0.0.1", PGPORT=str(port),
+                   PGDATABASE=database, PGUSER=user, PGPASSFILE=name,
+                   PGSSLMODE="verify-full", PGSSLROOTCERT=str(ca),
+                   PGREQUIREAUTH="scram-sha-256", PGGSSENCMODE="disable",
+                   PGCONNECT_TIMEOUT="3", PGAPPNAME=application,
+                   PGOPTIONS="-c statement_timeout=5000", LC_ALL="C")
+        yield env
+    finally:
+        Path(name).unlink(missing_ok=True)
 
 
 class Postgres:
@@ -49,8 +76,31 @@ class Postgres:
         with p.open('a') as f:
             f.write("\nlisten_addresses = '127.0.0.1'\nport = "+str(self.port)+"\nunix_socket_directories = ''\nssl = on\nssl_cert_file = '"+str(root/'tls.crt')+"'\nssl_key_file = '"+str(root/'tls.key')+"'\npassword_encryption = 'scram-sha-256'\nmax_connections = 24\nfsync = on\nsynchronous_commit = on\n")
     def sql(self,text,user='hb_bootstrap',password=None,database='app',timeout=10):
-        env=dict(os.environ,PGHOST='localhost',PGHOSTADDR='127.0.0.1',PGPORT=str(self.port),PGDATABASE=database,PGUSER=user,PGPASSWORD=self.password if password is None else password,PGSSLMODE='verify-full',PGSSLROOTCERT=str(self.ca),PGCONNECT_TIMEOUT='3',PGOPTIONS='-c statement_timeout=5000',LC_ALL='C')
-        return subprocess.run([str(self.bin/'psql'),'-X','-qAt','-v','ON_ERROR_STOP=1'],input=text,text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,env=env,timeout=timeout)
+        with psql_environment(self.root.parent, port=self.port, database=database, user=user,
+                              password=self.password if password is None else password, ca=self.ca) as env:
+            return subprocess.run([str(self.bin/'psql'),'-X','-qAt','-w','-v','ON_ERROR_STOP=1'],input=text,text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,env=env,timeout=timeout)
+    @contextmanager
+    def active_session(self, user, password):
+        application='hb-session-'+secrets.token_hex(12)
+        with psql_environment(self.root.parent, port=self.port, database='app', user=user,
+                              password=password, ca=self.ca, application=application) as env:
+            env['PGOPTIONS']='-c statement_timeout=90000'
+            process=subprocess.Popen([str(self.bin/'psql'),'-X','-qAt','-w','-v','ON_ERROR_STOP=1'],
+                stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,env=env,text=True)
+            try:
+                process.stdin.write('SELECT pg_sleep(60);\n');process.stdin.close()
+                deadline=time.monotonic()+5
+                while time.monotonic()<deadline:
+                    result=self.sql("SELECT count(*) FROM pg_stat_activity WHERE application_name='"+application+"' AND state='active'")
+                    if result.returncode==0 and result.stdout.strip()=='1':break
+                    if process.poll() is not None:raise RuntimeError('active_session_failed_to_connect')
+                    time.sleep(.05)
+                else:raise RuntimeError('active_session_not_observed')
+                yield process, application
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=5)
     def start(self):
         if self.process is not None:raise RuntimeError('postgres_already_started')
         self.log=(self.root/'postgres.log').open('ab');(self.root/'postgres.log').chmod(0o600)
@@ -98,7 +148,14 @@ def run(binary,bin_dir,root,checks):
         check('renew',instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120))[0]==200)
         instance.stop();instance.start();check('service_restart_unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
         check('renewed_credential_survives_service_restart',pg.login(cred['username'],cred['password']))
-        check('revoke_provider_side',instance.call('POST','sys/leases/revoke',dict(lease_id=identity))[0]==204)
+        with pg.active_session(cred['username'],cred['password']) as (session,application):
+            check('real_active_database_session_observed',session.poll() is None)
+            check('revoke_provider_side',instance.call('POST','sys/leases/revoke',dict(lease_id=identity))[0]==204)
+            try:exit_status=session.wait(timeout=5)
+            except subprocess.TimeoutExpired:exit_status=0
+            check('revoke_terminates_existing_database_session',exit_status!=0)
+            remaining=pg.sql("SELECT count(*) FROM pg_stat_activity WHERE application_name='"+application+"'")
+            check('revoked_database_session_absent',remaining.returncode==0 and remaining.stdout.strip()=='0')
         check('revoke_really_prevents_pg_login',not pg.login(cred['username'],cred['password']))
         check('provider_manager_cannot_bypass_ledger',pg.sql('DELETE FROM heptabao_provider.leases','hb_manager',pg.manager_password).returncode!=0)
         status,issued=instance.call('GET','database/creds/reader');check('outage_seed',status==200);cred=issued['data'];identity=issued['lease_id']
@@ -108,10 +165,14 @@ def run(binary,bin_dir,root,checks):
         status,_=instance.call('POST','sys/leases/reconcile/'+identity,{})
         check('restart_reconcile',status==204);check('reconciled_role_denied',not pg.login(cred['username'],cred['password']))
         status,issued=instance.call('GET','database/creds/short');check('idle_expiry_seed',status==200);cred=issued['data']
-        time.sleep(4)
+        deadline=time.monotonic()+15
+        while True:
+            q=pg.sql("SELECT NOT rolcanlogin FROM pg_roles WHERE rolname='"+cred['username']+"'")
+            disabled=q.returncode==0 and q.stdout.strip()=='t'
+            if disabled or time.monotonic()>=deadline:break
+            time.sleep(.1)
+        check('worker_really_disabled_pg_role_not_only_ttl',disabled)
         check('idle_expiry_provider_login_denied',not pg.login(cred['username'],cred['password']))
-        q=pg.sql("SELECT NOT rolcanlogin FROM pg_roles WHERE rolname='"+cred['username']+"'")
-        check('worker_really_disabled_pg_role_not_only_ttl',q.returncode==0 and q.stdout.strip()=='t')
         check('stored_provider_contract_version',pg.sql('SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password).stdout.strip()=='heptabao-postgresql-provider-v1')
     finally:
         instance.stop()

@@ -19,7 +19,7 @@ The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RES
 [SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
 [Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
 not only a contract. These remain bounded development profiles, not full OpenBao
-compatibility or production readiness. Schema 3 refuses unsafe old-binary fallback;
+compatibility or production readiness. The wrapping increment introduced schema 3; current schema 4 also refuses unsafe old-binary fallback;
 no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
 worker, full Agent/Proxy or independent acceptance is created by these additions.
 
@@ -28,7 +28,7 @@ adds a bounded AppRole auto-auth/renewal process, generation-checked private sin
 Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
 maintenance through the existing audited durable/Raft writer. These are scoped
 executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
-external-provider revocation. Existing state remains schema 3.
+external-provider revocation. The current Service state is schema 4; see `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
 
 ## Current source of truth
 
@@ -109,4 +109,4 @@ authority_effect: NONE
 
 ## Current external-provider and cluster-administration additions
 
-The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. **Actual PostgreSQL server/SQL acceptance has not been executed in this delivery**; protocol-model tests do not qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**; preceding schema 3 statements describe earlier profiles, not a downgrade permission. Full OpenBao compatibility and production authority remain false.
+The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. **Actual PostgreSQL server/SQL acceptance has not been executed in this delivery**; protocol-model tests do not qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.

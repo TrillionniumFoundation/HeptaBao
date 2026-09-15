@@ -72,6 +72,12 @@ def validate(root: Path = ROOT) -> list[str]:
     coverage_module = importlib.util.module_from_spec(coverage_spec)
     coverage_spec.loader.exec_module(coverage_module)
     errors: list[str] = coverage_module.validate(root)
+    truth_spec = importlib.util.spec_from_file_location("runtime_doc_truth", Path(__file__).with_name("validate_runtime_doc_truth.py"))
+    if truth_spec is None or truth_spec.loader is None:
+        return errors + ["cannot load current runtime documentation guard"]
+    truth_module = importlib.util.module_from_spec(truth_spec)
+    truth_spec.loader.exec_module(truth_module)
+    errors.extend(truth_module.validate(root))
     spec = importlib.util.spec_from_file_location("semantic_inventory", root / "scripts/current_source_inventory.py")
     if spec is None or spec.loader is None:
         return ["cannot load current inventory for documentation semantics"]

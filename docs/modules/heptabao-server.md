@@ -4,7 +4,7 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 ## Purpose and non-goals
 
-This package provides the runnable Linux HTTPS secrets service. It joins persistent token/userpass/AppRole and bounded JWT/JWKS authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP, SSH OTP and internal PKI engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. It includes per-process networked Raft composition and authenticated explicit leadership transfer. This remains a bounded development candidate: it does not establish production HA qualification, qualified KMS auto-unseal, dynamic database/cloud credentials, the complete PKI/JWT/OIDC surfaces, an external rollback anchor or full OpenBao compatibility.
+This package provides the runnable Linux HTTPS secrets service. It joins persistent token/userpass/AppRole and bounded JWT/JWKS authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP, SSH OTP and internal PKI engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. It includes per-process networked Raft composition and authenticated explicit leadership transfer. This remains a bounded development candidate: it does not establish production HA qualification, qualified KMS auto-unseal, fully qualified dynamic database/cloud credentials, the complete PKI/JWT/OIDC surfaces, an external rollback anchor or full OpenBao compatibility.
 
 ## Public API and ownership
 
@@ -113,7 +113,7 @@ bearer, before optional wrapping; accessor lookup never reconstructs a credentia
 
 ## State and data model
 
-The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 3 owns cluster identity, token/policy/auth state and namespace/mount-qualified engine maps, including TOTP anti-replay and guess-count state. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
+The lifecycle is uninitialized → initialized/sealed → unsealed → sealed. Startup never implicitly unseals. Initialization accepts a bounded Shamir share/threshold profile, returns freshly generated shares and a root token over TLS, then seals. Unsupported initialization options fail before creating state. `State` schema 4 owns cluster identity, token/policy/auth state, namespace/mount-qualified engine maps, database intent/lease state and Raft administration policy. TOTP anti-replay and guess-count state remain in the same encrypted transaction. [The current state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md) defines legacy read admission, mutation promotion and rollback; schema numbers in retained increment descriptions are not current rollout instructions. A single `(system,state)` record stores its serialization through durable HBS2/HBJ2/HBL2 formats and the HBA1 AES-256-GCM barrier envelope. See the durable guide for snapshot/intent/commit/ledger relations and explicit rejection of legacy ambiguous schemas.
 
 ## Invariants and authorization
 
@@ -321,23 +321,24 @@ behavior. This does not change all other Identity mutation response shapes.
 
 ## Identity-aware persisted state format and rollback
 
-The Service discriminator is now `State.schema = 2`; seal metadata remains
-schema 1, and the underlying HBS2/HBJ2/HBL2/HBA1 envelopes are unchanged. Schema
+The Identity increment originally introduced `State.schema = 2`; the current
+discriminator is 4 as defined in the [current state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md).
+Seal metadata remains schema 1, and the underlying HBS2/HBJ2/HBL2/HBA1 envelopes are unchanged. Schema
 1 can be read only without the new persisted token/entity and mount-accessor
 bindings. Missing optional identity fields are omitted during serialization to
 preserve the legacy canonical bytes and HA base digest. Merely unsealing or
 reading a valid schema-1 store does not silently write a migration.
 
 The first committed auth/engine mutation, including finite-use consumption
-before a subsequently denied request, stages schema 2 with the existing atomic
+before a subsequently denied request, stages the current schema 4 with the existing atomic
 state commit. A rejected precommit does not publish a schema transition. New
-initialization starts at 2. Unseal, durable refresh and HA state admission all
+initialization starts at 4. Unseal, durable refresh and HA state admission all
 reject unsupported versions and schema-1 records carrying identity-aware fields.
 The original schema-1-only binary therefore refuses upgraded state instead of
 ignoring the new identity constraints.
 
-Rollback requires a schema-2-capable predecessor and the current revocation
-state. Never edit the discriminator, discard new fields, or restore a stale
+Rollback from current state requires a schema-4-capable predecessor, compatible
+provider/HA formats and the current revocation state. Never edit the discriminator, discard new fields, or restore a stale
 schema-1 backup to make an old binary run. This format fence is not an external
 monotonic rollback anchor and does not qualify mixed-version rolling upgrades.
 `identity_upgrade.py` exercises actual legacy and new binaries through fresh

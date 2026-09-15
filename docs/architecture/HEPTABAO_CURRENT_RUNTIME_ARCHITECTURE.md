@@ -80,13 +80,14 @@ All current boundaries, capacity limits and unqualified surfaces are documented 
 
 `service_lifecycle.rs` performs bounded local OTP/wrapper expiry through the same
 single authoritative Service writer and HA commit path. It has no remotely selected
-clock and no general external provider callbacks. The Python `agent`, `proxy` and
+clock. The bounded PostgreSQL lifecycle is now composed through the same Service
+writer; this does not provide a general provider callback registry. The Python `agent`, `proxy` and
 `ssh_helper` process entry points make actual verified HTTPS calls, with an AppRole
 pending checkpoint/token sink, a Linux same-UID Unix listener, and explicit host/user/
 role verification respectively. Their protocol/operations/remaining boundaries are
 in `docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md`. The existing Rust agent/proxy
 model crates remain outside the normal server closure; no package-count inference
-is made. Service schema remains 3 and mixed-version HA is not qualified.
+is made. Service schema is 4; [current format and rollback rules](HEPTABAO_CURRENT_STATE_FORMAT.md) supersede earlier increment descriptions. Mixed-version HA is not qualified.
 
 ## Current PKI, JWKS and explicit leadership-transfer increment
 

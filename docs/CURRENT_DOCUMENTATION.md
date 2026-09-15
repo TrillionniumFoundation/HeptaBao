@@ -19,6 +19,8 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
+- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 4, legacy read admission, commit promotion and rollback boundaries.
+
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
 
@@ -89,6 +91,12 @@ entry point can issue independent or production admission.
 The raw authentication state and per-request `Principal` are deliberately non-exported. External callers enter only through `Service`, which creates one transaction-scoped capability and never returns it. Repository tests fail if that public boundary is reopened.
 
 Compatibility remains false until an isolated Oracle corpus and independent admission exist.
+
+## Replacement execution map
+
+[Current replacement acceptance boundaries](compatibility/HEPTABAO_REPLACEMENT_ACCEPTANCE.md)
+binds the fixed corpus to required real-service, Oracle, migration and cluster
+profiles without granting independent or production authority.
 
 ## Current validation commands
 

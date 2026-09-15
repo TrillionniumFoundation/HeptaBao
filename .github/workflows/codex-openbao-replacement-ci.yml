@@ -145,6 +145,94 @@ jobs:
             --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
             --output "$evidence/idle-ha.json"
 
+      - name: Install the real PostgreSQL 17 prerequisite from signed packages
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17
+          /usr/lib/postgresql/17/bin/postgres --version
+          dpkg-query -W postgresql-17 postgresql-client-17
+
+      - name: Exercise actual PostgreSQL SQL and active-session revocation
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/postgres_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --output "$RUNNER_TEMP/heptabao-postgresql-real.json"
+          # The runner returns 77 for missing real binaries; that is a blocking
+          # failure here, never a successful skip or a protocol-model fallback.
+
+      - name: Acquire the checksum-pinned official binary in the Oracle lane
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Execute all bounded official-binary differential profiles
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          failed=0
+          for profile in core_isolation identity_live response_wrapping pki_live remote_jwks_compare; do
+            if timeout 240 python "qa/openbao-acceptance/$profile.py" \
+                --binary "$binary" --output "$RUNNER_TEMP/heptabao-$profile.json"; then
+              printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
+            else
+              status=$?
+              printf 'profile=%s process_exit=%s scope=blocked_or_failed\n' "$profile" "$status"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+
+      - name: Execute the fixed corpus against the official OpenBao binary
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/run_official_comparison.py \
+            --binary "$PWD/target/debug/heptabao-server" --candidate-source "$PWD" \
+            --work-dir "$RUNNER_TEMP/heptabao-fixed-corpus-comparison"
+
+      - name: Rehearse the real bounded KV migration and lost acknowledgement
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/live_migration_rehearsal.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
+            --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
+
+      - name: Exercise committed membership snapshot catch-up and real cleanup grace
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 360 python qa/openbao-acceptance/raft_membership_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --dead-cleanup \
+            --output "$RUNNER_TEMP/heptabao-raft-membership.json"
+
       - name: Confirm source remained immutable
         if: ${{ success() || failure() }}
         shell: bash

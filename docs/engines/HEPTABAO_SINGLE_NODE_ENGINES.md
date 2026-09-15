@@ -3,7 +3,9 @@
 Status: implemented candidate; explicit API subset; not a production or complete
 OpenBao replacement acceptance. This document describes the code under
 `crates/heptabao-server/src/engines.rs`, `engines/{kv,transit,totp}.rs` and
-`engine_tests.rs`. It is separate from the older in-memory domain-model crates.
+`engine_tests.rs`, with current PKI/SSH/lease and database routing extensions
+below. It is separate from the older in-memory domain-model crates. Current
+state-format rules are in [the Service format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md).
 
 ## Responsibility and integration boundary
 
@@ -68,7 +70,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Kv1 | Kv2 | Transit | Totp}
+  .backend.{Database | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]
 ```
 
@@ -105,17 +107,19 @@ still protect the host and snapshot encryption keys.
 | Method and path | Implemented behavior |
 | --- | --- |
 | `GET sys/mounts` | Namespace-local descriptors, backend types, options and default lease settings |
-| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit` or `totp` after option validation |
+| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit`, `totp`, bounded `pki`/`ssh`, or the Service-owned `database` route after option validation |
 | `GET sys/mounts/:path` | Read one mount descriptor |
 | `DELETE sys/mounts/:path` | Remove the mount and its namespace-local resources |
 | `GET sys/mounts/:path/tune` | Read supported mount configuration |
-| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version |
+| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version; enforce supported PKI/SSH TTL tuning |
 
 Online KV version conversion, custom lease tuning, local mount replication
 semantics, seal wrapping and external entropy sources are not implemented.
-Requests for these options return explicit errors. PKI, SSH, database, LDAP,
-Kubernetes and other engine types return HTTP 501 instead of registering a
-nonfunctional mount. There is no generic plugin-success route.
+Requests for these options return explicit errors. Bounded PKI and SSH implementations are described below. `database` is a
+routing marker whose effects, configuration and leases are owned by Service, not
+an unauthenticated EngineState callback; read the [PostgreSQL contract](HEPTABAO_POSTGRESQL_PROVIDER.md).
+LDAP, Kubernetes and other unimplemented engine types return HTTP 501 instead
+of registering a nonfunctional mount. There is no generic plugin-success route.
 
 ## KV v1
 
@@ -346,6 +350,7 @@ revocation/tidy behavior remain outside the current implementation.
 [SSH OTP and registered local leases](HEPTABAO_SSH_OTP.md) now supports actual
 role CRUD, online credential issuance/verification, mount TTL tuning, local lease
 lookup/list/exact and segment-bound prefix revocation. It does not implement SSH
-CA, a host/PAM integration, general renewable-provider callbacks or a background
-lease worker. The real `Service` owns authorization, issuer liveness, durable
+CA, a host/PAM integration, general renewable-provider callbacks. The current bounded Service
+lifecycle worker and its expiry rules are documented in
+[the operational consumer contract](../operations/HEPTABAO_AGENT_PROXY_HELPER.md). The real `Service` owns authorization, issuer liveness, durable
 consumption and commit-before-response; standalone `EngineState` is not a bypass.
