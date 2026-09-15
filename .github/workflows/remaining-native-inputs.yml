@@ -1,0 +1,82 @@
+name: Remaining implementation native inputs
+
+on:
+  push:
+    branches: [work/remaining-runtime-20260915]
+    paths: [.github/workflows/remaining-native-inputs.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout immutable source without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare pinned Rust storage dependency outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          rustup toolchain install 1.98.0 --profile minimal
+          output="$RUNNER_TEMP/remaining-native-inputs"
+          scratch="$RUNNER_TEMP/storage-input-project"
+          mkdir -p "$output" "$scratch/src"
+          printf '[package]\nname = "heptabao-storage-native-input"\nversion = "0.0.0"\nedition = "2024"\npublish = false\n[dependencies]\nredb = "=4.1.0"\nlibc = "=0.2.189"\n' > "$scratch/Cargo.toml"
+          printf 'fn main() {}\n' > "$scratch/src/main.rs"
+          cargo +1.98.0 generate-lockfile --manifest-path "$scratch/Cargo.toml"
+          cargo +1.98.0 vendor --locked --manifest-path "$scratch/Cargo.toml" "$RUNNER_TEMP/storage-native-vendor" > "$output/vendor-config.toml"
+          cp "$scratch/Cargo.lock" "$output/storage-input.Cargo.lock"
+          tar -C "$RUNNER_TEMP" -czf "$output/storage-native-vendor.tar.gz" storage-native-vendor
+          printf 'repository=TrillionniumFoundation/HeptaBao\nsource_commit=%s\nsource_tree=%s\nredb=4.1.0\nlibc=0.2.189\nqualification=false\n' "$GITHUB_SHA" "$(git rev-parse 'HEAD^{tree}')" > "$output/provenance.txt"
+      - name: Export actual PostgreSQL 17 runtime from signed packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17
+          output="$RUNNER_TEMP/remaining-native-inputs"
+          runtime="$RUNNER_TEMP/postgresql-native-runtime"
+          mkdir -p "$runtime/usr/lib/postgresql" "$runtime/usr/share/postgresql" "$runtime/dependency-libs"
+          cp -a /usr/lib/postgresql/17 "$runtime/usr/lib/postgresql/"
+          cp -a /usr/share/postgresql/17 "$runtime/usr/share/postgresql/"
+          RUNTIME="$runtime" python - <<'PY'
+          import os, pathlib, shutil, subprocess
+          root=pathlib.Path(os.environ['RUNTIME'])
+          libraries=set()
+          for binary in (root/'usr/lib/postgresql/17/bin').iterdir():
+              if not binary.is_file(): continue
+              result=subprocess.run(['ldd',str(binary)],capture_output=True,text=True)
+              if result.returncode: continue
+              for line in result.stdout.splitlines():
+                  parts=line.split()
+                  if len(parts)>2 and parts[1]==' =>' : raise RuntimeError('invalid dependency line')
+                  if len(parts)>2 and parts[1]=='=>' and parts[2].startswith('/'):
+                      libraries.add(pathlib.Path(parts[2]))
+          for library in sorted(libraries):
+              # Use the host libc/loader. Other linked runtime libraries are
+              # portable prerequisites, not source or qualification evidence.
+              if library.name.startswith(('libc.so','libpthread.so','libm.so','libdl.so','librt.so','ld-linux')): continue
+              shutil.copyfile(library,root/'dependency-libs'/library.name)
+          PY
+          /usr/lib/postgresql/17/bin/postgres --version > "$output/postgresql-version.txt"
+          dpkg-query -W postgresql-17 postgresql-client-17 >> "$output/postgresql-version.txt"
+          tar -C "$RUNNER_TEMP" -czf "$output/postgresql-native-runtime.tar.gz" postgresql-native-runtime
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          (cd "$output" && sha256sum storage-native-vendor.tar.gz postgresql-native-runtime.tar.gz storage-input.Cargo.lock provenance.txt postgresql-version.txt > SHA256SUMS)
+      - name: Upload prerequisites only, never runtime secret state
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: remaining-native-inputs
+          path: ${{ runner.temp }}/remaining-native-inputs/
+          if-no-files-found: error
+          retention-days: 3
