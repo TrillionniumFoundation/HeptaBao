@@ -230,3 +230,13 @@ Do not run two launcher instances against the same Oracle storage simultaneously
 The rehearsal starts both services in its own process/network context and shuts
 them down afterward. Root credentials and unseal material are written only to
 owner-only synthetic test files; no secret appears in a subprocess argument.
+
+## Explicit Transit re-encryption
+
+The separately opted-in `qa/openbao-acceptance/migrate_transit.py` CLI and
+`clients/python/heptabao/transit_migration.py` implement real source decrypt /
+destination encrypt / decrypt-readback with descriptor-locked private checkpoints.
+See `docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md` for its exact configuration,
+unknown-outcome behavior, output retrieval, plaintext-memory limitations and
+operator-owned cutover. This does not convert the original ciphertext in place
+or provide key import, raw snapshots or full-instance migration.

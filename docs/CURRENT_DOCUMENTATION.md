@@ -160,3 +160,15 @@ server dependencies. Current module status and all independent gates are unchang
 - [Raft membership / persisted snapshots / Autopilot](operations/HEPTABAO_RAFT_ADMINISTRATION.md): same-version pre-enrolled native consensus operations, not full restore/migration parity.
 
 These current implementation notes supersede earlier absence-of-implementation statements only for their exact bounded profiles. Original 60-surface admission statuses and independent authority remain unchanged.
+
+## Section-six execution increment
+
+The current work inventory is `planning/HEPTABAO_SURFACE_WORK_V1.json`, checked by
+`scripts/surface_work.py`. It retains every original surface/case binding and links
+existing real executables; it is subordinate to the active V2.1 plan, not a second
+plan or completion evidence. Technical contracts and open work are described in
+`docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
+audited capacity observation, safe journal checkpoint maintenance and an explicit
+Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
+limits, import raw OpenBao snapshots, update application ciphertext references,
+or advance Hepta's independently requalified consumer pin.

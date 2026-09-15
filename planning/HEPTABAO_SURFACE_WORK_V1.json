@@ -1,0 +1,1395 @@
+{
+  "schema": "heptabao.surface-work.v1",
+  "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
+  "target": "OpenBao 2.6.2",
+  "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+  "corpus_sha256": "0b049b702be75b72c1cab6acf03693ea5aad18ca932b983eca074c71d3d28484",
+  "profile_definitions": {
+    "fixed": {
+      "script": "qa/openbao-acceptance/run_official_comparison.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--candidate-source",
+        "{source}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "core": {
+      "script": "qa/openbao-acceptance/core_isolation.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "identity": {
+      "script": "qa/openbao-acceptance/identity_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "wrapping": {
+      "script": "qa/openbao-acceptance/response_wrapping.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "jwt": {
+      "script": "qa/openbao-acceptance/remote_jwks_compare.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "pki": {
+      "script": "qa/openbao-acceptance/pki_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres": {
+      "script": "qa/openbao-acceptance/postgres_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--postgres-bin",
+        "{postgres_bin}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha": {
+      "script": "qa/openbao-acceptance/ha_destructive.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "network": {
+      "script": "qa/openbao-acceptance/ha_network_partition.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "raft": {
+      "script": "qa/openbao-acceptance/raft_membership_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--dead-cleanup",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ssh": {
+      "script": "qa/openbao-acceptance/ssh_otp_ha.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "idle": {
+      "script": "qa/openbao-acceptance/idle_lifecycle_ha.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "client": {
+      "script": "qa/openbao-acceptance/client_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "agent": {
+      "script": "qa/openbao-acceptance/agent_proxy_helper_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "capacity": {
+      "script": "qa/openbao-acceptance/capacity_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "transit-migration": {
+      "script": "qa/openbao-acceptance/transit_migration_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "kv-migration": {
+      "script": "qa/openbao-acceptance/live_migration_rehearsal.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--oracle-launcher",
+        "qa/openbao-acceptance/official_openbao_launcher.py",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    }
+  },
+  "required_completion_evidence": [
+    "positive_and_hostile_behavior",
+    "side_effect_readback",
+    "crash_reopen",
+    "namespace_and_authority_isolation",
+    "format_upgrade_or_explicit_migration",
+    "exact_head_and_prospective_merge",
+    "independent_admission"
+  ],
+  "surfaces": [
+    {
+      "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/http.rs",
+      "technical_contract": {
+        "api_or_protocol": "HTTP /v1/*, request IDs and method/body framing",
+        "required_positive_and_hostile_behavior": "Reject duplicate length, duplicate JSON, encoded path escape and unauthorized dispatch before allocation",
+        "remaining_semantics_and_effect_checks": "No denied application effect; post-entry uncertainty remains reconcile-only",
+        "crash_reopen": "Interrupt HTTP /v1/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CORE-REQUEST-PIPELINE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "core.unknown_route_denied"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/init, sys/unseal, sys/seal, sys/health, sys/rekey/*",
+        "required_positive_and_hostile_behavior": "Threshold share reconstruction, recovery after lost initialization reply, rekey verification and sealed denial",
+        "remaining_semantics_and_effect_checks": "No shares, root tokens or recoverable keys in audit; old shares fail after verified rekey",
+        "crash_reopen": "Interrupt sys/init before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SYSTEM-BACKEND, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "system.init_status"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/mounts/:path and mount-local backend dispatch",
+        "required_positive_and_hostile_behavior": "Create/list/disable mount, reject overlap and unknown backend fields, isolate equal paths in different namespaces",
+        "remaining_semantics_and_effect_checks": "Disabling/remounting cannot revive old secrets, leases or auth ownership",
+        "crash_reopen": "Interrupt sys/mounts/:path and mount-local backend dispatch before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-MOUNT-REGISTRY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "kv.mount",
+        "transit.mount"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_acl.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/policies/acl/* and sys/capabilities[-self,-accessor]",
+        "required_positive_and_hostile_behavior": "Winning-pattern specificity, same-pattern union, explicit deny, create/update distinction and sudo separation",
+        "remaining_semantics_and_effect_checks": "Existing tokens see policy removal immediately; denial leaves application state unchanged",
+        "crash_reopen": "Interrupt sys/policies/acl/* and sys/capabilities[-self before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-POLICY-ACL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "token.policy",
+        "token.write_denied",
+        "token.denial_no_effect"
+      ],
+      "available_scoped_profiles": [
+        "core"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-IDENTITY",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/identity.rs",
+      "technical_contract": {
+        "api_or_protocol": "identity/entity, entity-alias, group, group-alias and merge",
+        "required_positive_and_hostile_behavior": "Entity/group updates, merge lineage, alias mount incarnation, cycle rejection and disabled entity behavior",
+        "remaining_semantics_and_effect_checks": "Old tokens must use live policy, not a copied permanently granted policy set",
+        "crash_reopen": "Interrupt identity/entity before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-IDENTITY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "identity"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-TOKEN",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "technical_contract": {
+        "api_or_protocol": "auth/token/create, lookup, renew, revoke and accessor APIs",
+        "required_positive_and_hostile_behavior": "TTL/period/max-TTL, parent chains, orphan semantics, finite uses, accessor lookup and revocation",
+        "remaining_semantics_and_effect_checks": "Final-use consumption is durable even on denied dispatch and cannot be replayed after restart",
+        "crash_reopen": "Interrupt auth/token/create before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-TOKEN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "token.create",
+        "token.revoke",
+        "token.create_expiring",
+        "token.expired_denied"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_cubbyhole.rs",
+      "technical_contract": {
+        "api_or_protocol": "cubbyhole/*, sys/wrapping/wrap, lookup, unwrap and rewrap",
+        "required_positive_and_hostile_behavior": "Owner-private maps, namespace isolation, one-shot delivery, expiry and concurrent unwrap",
+        "remaining_semantics_and_effect_checks": "Root cannot read another token cubbyhole; response-audit failure cannot release payload or restore consumed token",
+        "crash_reopen": "Interrupt cubbyhole/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CUBBYHOLE-WRAPPING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "core",
+        "wrapping"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "category": "core_system",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_leases.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/leases/lookup, renew, revoke, revoke-prefix and idle maintenance",
+        "required_positive_and_hostile_behavior": "Lease ownership, TTL ceiling, segment-bounded prefix, owner revocation and provider readback",
+        "remaining_semantics_and_effect_checks": "Logical expiry is not proof of external revocation; idle worker must commit tombstones before reporting cleanup",
+        "crash_reopen": "Interrupt sys/leases/lookup before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-LEASE-EXPIRATION, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "idle"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-TOKEN",
+      "category": "auth_methods",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "technical_contract": {
+        "api_or_protocol": "Bearer token admission on authenticated /v1 routes",
+        "required_positive_and_hostile_behavior": "Invalid, expired, revoked, finite-use and wrong-namespace credentials",
+        "remaining_semantics_and_effect_checks": "Authentication never implies authorization; request-local capability is not exportable",
+        "crash_reopen": "Interrupt Bearer token admission on authenticated /v1 routes before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-TOKEN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "token.read_allowed",
+        "token.revoked_denied",
+        "token.invalid_denied"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-USERPASS",
+      "category": "auth_methods",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/users/:name and auth/:mount/login/:name",
+        "required_positive_and_hostile_behavior": "Password rotation, mount isolation, policy grants, password hashing, bounded login and configured TOTP",
+        "remaining_semantics_and_effect_checks": "Old password and replayed second factor fail after restart; no timing/detail credential oracle",
+        "crash_reopen": "Interrupt auth/:mount/users/:name and auth/:mount/login/:name before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-USERPASS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "userpass.login"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-APPROLE",
+      "category": "auth_methods",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/role/*, role-id, secret-id and login",
+        "required_positive_and_hostile_behavior": "Secret-ID expiry/use limit/destroy, role bindings, custom mounts and forbidden privilege escalation",
+        "remaining_semantics_and_effect_checks": "Consumed secret ID never reappears after crash, role deletion or mount replacement",
+        "crash_reopen": "Interrupt auth/:mount/role/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-APPROLE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "approle.login"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-CERT",
+      "category": "auth_methods",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/certs/* and auth/:mount/login",
+        "required_positive_and_hostile_behavior": "Certificate chain, EKU, name constraints, serial revocation, client possession and policy mapping",
+        "remaining_semantics_and_effect_checks": "Real mutual TLS login required; certificate metadata alone is never authentication",
+        "crash_reopen": "Interrupt auth/:mount/certs/* and auth/:mount/login before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-CERT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
+      "category": "auth_methods",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_remote.rs",
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/config, role, login and OIDC browser callback target",
+        "required_positive_and_hostile_behavior": "Pinned/static/remote keys, issuer/audience/algorithm, JWKS rotation, discovery URL enrollment and replay",
+        "remaining_semantics_and_effect_checks": "Browser code+PKCE, state/nonce, callback binding, full claim mapping and external MFA remain to implement",
+        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-JWT-OIDC, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "jwt"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
+      "category": "auth_methods",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/config, role/* and login",
+        "required_positive_and_hostile_behavior": "Real TokenReview, issuer/audience, bound service accounts, namespace, reviewer RBAC and API TLS",
+        "remaining_semantics_and_effect_checks": "Reject review outage and deleted service account; do not treat locally decoded JWT as successful TokenReview",
+        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-KUBERNETES, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-LDAP",
+      "category": "auth_methods",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/config, users/*, groups/* and login/:name",
+        "required_positive_and_hostile_behavior": "Real TLS bind/search, escaped filters/DNs, nested group policy and timeout/error precedence",
+        "remaining_semantics_and_effect_checks": "Directory password and group revocation must change subsequent login authorization; no LDAP injection",
+        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-LDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-RADIUS",
+      "category": "auth_methods",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/config, users/* and login",
+        "required_positive_and_hostile_behavior": "Authenticators, shared-secret custody, challenge flow, retransmission bounds and source peer checks",
+        "remaining_semantics_and_effect_checks": "Spoofed replies or duplicate replies cannot create a token; real RADIUS acceptance required",
+        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-RADIUS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KERBEROS",
+      "category": "auth_methods",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "auth/:mount/config, role/* and SPNEGO login",
+        "required_positive_and_hostile_behavior": "Service principal/keytab custody, real ticket validation, replay cache and channel binding",
+        "remaining_semantics_and_effect_checks": "Clock skew, wrong service principal and duplicate authenticator fail across restart",
+        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUTH-KERBEROS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KV",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/kv.rs",
+      "technical_contract": {
+        "api_or_protocol": "KV v1 and v2 data, metadata, delete, undelete, destroy, subkeys and scan",
+        "required_positive_and_hostile_behavior": "CAS and partial patch atomicity, version lifecycle, retention, exact namespaces and bounded pagination",
+        "remaining_semantics_and_effect_checks": "Preserve tombstones and history; rejected mixed-version destroy must be atomic",
+        "crash_reopen": "Interrupt KV v1 and v2 data before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-KV, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "kv.write_v1",
+        "kv.read_v1",
+        "kv.write_v2",
+        "kv.read_old_version",
+        "kv.cas_rejected",
+        "kv.cas_no_effect",
+        "kv.list",
+        "kv.soft_delete",
+        "kv.deleted_read",
+        "kv.deleted_metadata",
+        "kv.undelete",
+        "kv.restored_read",
+        "kv.destroy_v1",
+        "kv.destroyed_read",
+        "kv.destroyed_metadata",
+        "kv.metadata_write",
+        "kv.metadata_read"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TRANSIT",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/transit.rs",
+      "technical_contract": {
+        "api_or_protocol": "transit keys, encrypt, decrypt, rewrap, sign, verify, HMAC and datakey",
+        "required_positive_and_hostile_behavior": "AEAD/AAD/version semantics, key rotation, min versions, batches and explicit non-exportability",
+        "remaining_semantics_and_effect_checks": "Old OpenBao ciphertext needs real conversion; derivation, BYOK and extra algorithms are not silently approximated",
+        "crash_reopen": "Interrupt transit keys before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-TRANSIT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "transit.create_key",
+        "transit.read_key",
+        "transit.encrypt_v1",
+        "transit.decrypt_v1",
+        "transit.rotate",
+        "transit.read_rotated_key",
+        "transit.encrypt_v2",
+        "transit.decrypt_v2",
+        "transit.decrypt_old_after_rotation"
+      ],
+      "available_scoped_profiles": [
+        "fixed",
+        "transit-migration"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TOTP",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/totp.rs",
+      "technical_contract": {
+        "api_or_protocol": "totp/keys/* and totp/code/*",
+        "required_positive_and_hostile_behavior": "RFC vectors, enrollment URL parsing, algorithm/digit/window, deletion and replay",
+        "remaining_semantics_and_effect_checks": "Clock regression and restart cannot revive used codes; guessing budget must be persistent",
+        "crash_reopen": "Interrupt totp/keys/* and totp/code/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-TOTP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "totp.roundtrip"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKI",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/pki.rs",
+      "technical_contract": {
+        "api_or_protocol": "pki/root, roles, issue, sign, revoke, cert and CRL targets",
+        "required_positive_and_hostile_behavior": "Verify DER chain, SAN/domain constraints, issuer lifetime, private-key custody and revocation readback",
+        "remaining_semantics_and_effect_checks": "Complete intermediates, imported keys, CSR, OCSP/ACME and issuer rotation need real certificate clients",
+        "crash_reopen": "Interrupt pki/root before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-PKI, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "pki.mount",
+        "pki.root",
+        "pki.role",
+        "pki.role_read",
+        "pki.issue",
+        "pki.lease_lookup",
+        "pki.cert_lookup",
+        "pki.lease_revoke",
+        "pki.revoked_lease_absent",
+        "pki.crl_json"
+      ],
+      "available_scoped_profiles": [
+        "pki"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKIEXT",
+      "category": "secret_engines",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "PKIext provider enrollment and CA request/response boundary",
+        "required_positive_and_hostile_behavior": "Pin supported upstream PKIext version/API before implementation; map external CA identity and revocation protocol",
+        "remaining_semantics_and_effect_checks": "A generic HTTP wrapper cannot count as CA issuance or revocation; unknown issuance needs provider reconciliation",
+        "crash_reopen": "Interrupt PKIext provider enrollment and CA request/response boundary before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-PKIEXT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-SSH",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/ssh.rs",
+      "technical_contract": {
+        "api_or_protocol": "ssh/roles/*, creds/*, verify and SSH CA sign target",
+        "required_positive_and_hostile_behavior": "OTP host/user/CIDR ownership and one-shot verification; CA signing principal/TTL rules",
+        "remaining_semantics_and_effect_checks": "Real sshd/PAM and SSH certificate authentication required; OTP success is not SSH CA parity",
+        "crash_reopen": "Interrupt ssh/roles/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-SSH, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "ssh"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-DATABASE",
+      "category": "secret_engines",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "technical_contract": {
+        "api_or_protocol": "database/config/*, roles/*, creds/*, rotate-root and static roles targets",
+        "required_positive_and_hostile_behavior": "Provider-committed issue/renew/revoke, SQL templates, connection TLS, role mapping and retained intents",
+        "remaining_semantics_and_effect_checks": "Existing custom provider_role profile is not arbitrary OpenBao SQL-template compatibility",
+        "crash_reopen": "Interrupt database/config/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "postgres"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
+      "category": "secret_engines",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "kubernetes/config, roles/* and creds/*",
+        "required_positive_and_hostile_behavior": "Real service-account token creation, namespace/RBAC binding, expiry and deletion",
+        "remaining_semantics_and_effect_checks": "Persist an intent before Kubernetes effect; lease expiry must verify token invalidation where promised",
+        "crash_reopen": "Interrupt kubernetes/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-KUBERNETES, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
+      "category": "secret_engines",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "ldap/config, roles/*, static-role rotation and creds/*",
+        "required_positive_and_hostile_behavior": "Real directory dynamic accounts, password rotation, groups and DN escaping",
+        "remaining_semantics_and_effect_checks": "Deletion/rotation errors cannot be reported as revoked; external account ownership must be provable",
+        "crash_reopen": "Interrupt ldap/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-OPENLDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
+      "category": "secret_engines",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "rabbitmq/config/connection, roles/* and creds/*",
+        "required_positive_and_hostile_behavior": "Real broker user creation, vhost/topic permissions, TTL and user revocation",
+        "remaining_semantics_and_effect_checks": "Verify old connections and new logins after revoke, using provider readback not local metadata",
+        "crash_reopen": "Interrupt rabbitmq/config/connection before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SECRET-RABBITMQ, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-POSTGRESQL",
+      "category": "database_providers",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/postgres_wire.rs",
+      "technical_contract": {
+        "api_or_protocol": "PostgreSQL database plugin and native provider lifecycle",
+        "required_positive_and_hostile_behavior": "TLS/SCRAM, creation/renew/revoke SQL, static rotation, root rotation and session termination",
+        "remaining_semantics_and_effect_checks": "Custom bootstrap SQL and provider_role are a scoped profile; full plugin SQL contract and privileges remain open",
+        "crash_reopen": "Interrupt PostgreSQL database plugin and native provider lifecycle before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-DB-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "postgres"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-MYSQL",
+      "category": "database_providers",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "MySQL/MariaDB database provider",
+        "required_positive_and_hostile_behavior": "TLS/auth plugins, SQL template escaping, host-qualified user identity and password/root rotation",
+        "remaining_semantics_and_effect_checks": "Verify committed SQL, existing sessions, delayed renewal after revoke and idempotent restart recovery",
+        "crash_reopen": "Interrupt MySQL/MariaDB database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-DB-MYSQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-CASSANDRA",
+      "category": "database_providers",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Cassandra database provider",
+        "required_positive_and_hostile_behavior": "TLS/native authentication, role grants, consistency, TTL and delayed cluster propagation",
+        "remaining_semantics_and_effect_checks": "Never claim revoked until readback and new authentication prove provider-side denial",
+        "crash_reopen": "Interrupt Cassandra database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-DB-CASSANDRA, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-INFLUXDB",
+      "category": "database_providers",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "InfluxDB database provider",
+        "required_positive_and_hostile_behavior": "Pin provider/API version, map users/tokens, databases/buckets and privileges",
+        "remaining_semantics_and_effect_checks": "Distinguish legacy user API from token API; create/revoke/readback require actual supported server",
+        "crash_reopen": "Interrupt InfluxDB database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-DB-INFLUXDB, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-VALKEY",
+      "category": "database_providers",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Valkey database provider",
+        "required_positive_and_hostile_behavior": "ACL users, command/key/channel patterns, TLS, password rotation and connections",
+        "remaining_semantics_and_effect_checks": "Demonstrate ACL deletion/revocation on actual server; no success inferred from local lease removal",
+        "crash_reopen": "Interrupt Valkey database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-DB-VALKEY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-FILE",
+      "category": "audit_devices",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/audit_rotation.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/audit file-device lifecycle and current authenticated file sink",
+        "required_positive_and_hostile_behavior": "Pre-entry durability, keyed chaining, rotation/crash recovery, permission and disk-full failures",
+        "remaining_semantics_and_effect_checks": "Current local HMAC log is not full OpenBao audit-device API/HMAC byte compatibility",
+        "crash_reopen": "Interrupt sys/audit file-device lifecycle and current authenticated file sink before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUDIT-FILE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-HTTP",
+      "category": "audit_devices",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/audit HTTP device",
+        "required_positive_and_hostile_behavior": "Endpoint enrollment/TLS, bounded delivery, batching/backpressure and response classification",
+        "remaining_semantics_and_effect_checks": "Untrusted redirect never gets audit payload; delivery failures follow configured admission semantics",
+        "crash_reopen": "Interrupt sys/audit HTTP device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUDIT-HTTP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SOCKET",
+      "category": "audit_devices",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/audit socket device",
+        "required_positive_and_hostile_behavior": "Unix/TCP peer identity, bounded framing, partial writes and reconnect",
+        "remaining_semantics_and_effect_checks": "No blind acknowledgement after partial delivery; secret-field filtering identical to audit policy",
+        "crash_reopen": "Interrupt sys/audit socket device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUDIT-SOCKET, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
+      "category": "audit_devices",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/audit syslog device",
+        "required_positive_and_hostile_behavior": "Facility/priority, structured message encoding, availability and truncation",
+        "remaining_semantics_and_effect_checks": "No newline injection or silent loss of mandatory fields; qualified local syslog collection required",
+        "crash_reopen": "Interrupt sys/audit syslog device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AUDIT-SYSLOG, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
+      "category": "storage_backends",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "PostgreSQL storage backend, distinct from database secrets provider",
+        "required_positive_and_hostile_behavior": "Opaque encrypted records, transaction isolation, HA lock/leadership and crash-consistent recovery",
+        "remaining_semantics_and_effect_checks": "SQL credential provider does not establish storage-backend support; real failover and locking evidence required",
+        "crash_reopen": "Interrupt PostgreSQL storage backend before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-STORAGE-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-RAFT",
+      "category": "storage_backends",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/storage/raft, membership, snapshot and durable state machine",
+        "required_positive_and_hostile_behavior": "ReadIndex, durable acknowledgment, torn/corrupt snapshot rejection, catch-up and membership",
+        "remaining_semantics_and_effect_checks": "OpenBao raft.snap bytes and physical disk/power-fault recovery remain unsupported",
+        "crash_reopen": "Interrupt sys/storage/raft before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-STORAGE-RAFT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "ha",
+        "raft"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-AUTH",
+      "category": "plugin_classes",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/plugins catalog and mounted authentication plugin",
+        "required_positive_and_hostile_behavior": "Version/checksum pinning, process RPC, mount ownership, cancellation and token authority boundary",
+        "remaining_semantics_and_effect_checks": "Standalone plugin-host must be integrated through the same audited private auth dispatcher",
+        "crash_reopen": "Interrupt sys/plugins catalog and mounted authentication plugin before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PLUGIN-AUTH, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-SECRET",
+      "category": "plugin_classes",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/plugins catalog and secret plugin mounts",
+        "required_positive_and_hostile_behavior": "Versioned RPC, secret-safe IPC, resource limits, sandbox and lease ownership",
+        "remaining_semantics_and_effect_checks": "The server must actually load a qualified plugin; checksum verification alone is not sandbox qualification",
+        "crash_reopen": "Interrupt sys/plugins catalog and secret plugin mounts before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PLUGIN-SECRET, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
+      "category": "plugin_classes",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "database plugin catalog and provider invocation",
+        "required_positive_and_hostile_behavior": "Credential issue/renew/revoke intents, readback, plugin crash and version transition",
+        "remaining_semantics_and_effect_checks": "No plaintext delivery before durable effect metadata; unknown plugin effect is reconcile-only",
+        "crash_reopen": "Interrupt database plugin catalog and provider invocation before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PLUGIN-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-KMS",
+      "category": "plugin_classes",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "KMS plugin catalog and seal provider invocation",
+        "required_positive_and_hostile_behavior": "Versioned wrap/unwrap, key epoch/custody, context binding and provider outage",
+        "remaining_semantics_and_effect_checks": "No fallback to plaintext/local keys; real isolated KMS or HSM acceptance required",
+        "crash_reopen": "Interrupt KMS plugin catalog and seal provider invocation before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PLUGIN-KMS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-MTLS",
+      "category": "cluster_ha",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "technical_contract": {
+        "api_or_protocol": "Cluster peer listener and client/server certificate mapping",
+        "required_positive_and_hostile_behavior": "Wrong node/certificate, replay, revoked trust, rotation and bounded peer frames",
+        "remaining_semantics_and_effect_checks": "Certificate possession must be bound to exactly one enrolled node and cluster",
+        "crash_reopen": "Interrupt Cluster peer listener and client/server certificate mapping before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLUSTER-MTLS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "ha"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-FORWARDING",
+      "category": "cluster_ha",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/ha_forward.rs",
+      "technical_contract": {
+        "api_or_protocol": "Standby request forwarding to current leader",
+        "required_positive_and_hostile_behavior": "Bind method/path/namespace/body/auth/wrapping to one bounded frame and reject loops",
+        "remaining_semantics_and_effect_checks": "Dropped acknowledgement never leads to blind mutation retry; forwarded principals are not caller authority",
+        "crash_reopen": "Interrupt Standby request forwarding to current leader before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLUSTER-FORWARDING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "ha"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-READ-STANDBY",
+      "category": "cluster_ha",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "technical_contract": {
+        "api_or_protocol": "Standby and leader read admission",
+        "required_positive_and_hostile_behavior": "ReadIndex freshness, minority rejection, leadership transition and read-only retry",
+        "remaining_semantics_and_effect_checks": "Successful stale read is a failure even if a retry later returns fresh state",
+        "crash_reopen": "Interrupt Standby and leader read admission before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLUSTER-READ-STANDBY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "network"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-STEPDOWN",
+      "category": "cluster_ha",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/step-down leadership transfer",
+        "required_positive_and_hostile_behavior": "Root authorization, valid successor, committed membership and no dual writer",
+        "remaining_semantics_and_effect_checks": "Real handoff under load, interrupted transfer and restart must preserve every acknowledged write",
+        "crash_reopen": "Interrupt sys/step-down leadership transfer before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLUSTER-STEPDOWN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
+      "category": "cluster_ha",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_raft_admin.rs",
+      "technical_contract": {
+        "api_or_protocol": "sys/storage/raft/autopilot config/state and membership changes",
+        "required_positive_and_hostile_behavior": "Stabilization windows, healthy voter quorum, learner catch-up and dead-server grace",
+        "remaining_semantics_and_effect_checks": "Never fabricate last-contact health or remove the last safe quorum; multi-host qualification remains open",
+        "crash_reopen": "Interrupt sys/storage/raft/autopilot config/state and membership changes before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLUSTER-AUTOPILOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "raft"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-EDGE-HTTP-TLS",
+      "category": "client_operator",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/http.rs",
+      "technical_contract": {
+        "api_or_protocol": "HTTPS listener, /v1 envelope, timeouts and connection budgets",
+        "required_positive_and_hostile_behavior": "TLS 1.2/1.3 validation, header limits, smuggling, total deadline, rate bounds and cancellation",
+        "remaining_semantics_and_effect_checks": "No verification bypass, secret query, bearer redirect or unbounded response allocation",
+        "crash_reopen": "Interrupt HTTPS listener before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-EDGE-HTTP-TLS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "edge_tls.health"
+      ],
+      "available_scoped_profiles": [
+        "fixed"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-CLI-ROOT",
+      "category": "client_operator",
+      "implementation_status": "tooling_partial",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "bao-compatible CLI command tree and current Python private-output CLI",
+        "required_positive_and_hostile_behavior": "Command/flag/exit compatibility, noninteractive auth, safe files and pipeline output",
+        "remaining_semantics_and_effect_checks": "A generic HTTP CLI is not full bao CLI; compatibility tests must invoke actual subprocesses",
+        "crash_reopen": "Interrupt bao-compatible CLI command tree and current Python private-output CLI before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-CLI-ROOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "client"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-AGENT",
+      "category": "client_operator",
+      "implementation_status": "tooling_partial",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "AppRole auto-auth, renewal, private sink and Agent targets",
+        "required_positive_and_hostile_behavior": "Crash/checkpoint state, refresh budgets, pending login, sink generation and template/exec targets",
+        "remaining_semantics_and_effect_checks": "Current Python Agent has bounded auto-auth only; full caching/template/exec semantics remain open",
+        "crash_reopen": "Interrupt AppRole auto-auth before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-AGENT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "agent"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PROXY",
+      "category": "client_operator",
+      "implementation_status": "tooling_partial",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Unix proxy and OpenBao Proxy listener/cache targets",
+        "required_positive_and_hostile_behavior": "Peer identity, allowlisted methods/routes, authority-header replacement and token snapshot",
+        "remaining_semantics_and_effect_checks": "Current Unix proxy does not provide full Proxy caching/listener/service-manager semantics",
+        "crash_reopen": "Interrupt Unix proxy and OpenBao Proxy listener/cache targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PROXY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "agent"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-OPENAPI-UI",
+      "category": "client_operator",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "sys/internal/specs/openapi and browser UI targets",
+        "required_positive_and_hostile_behavior": "Source-derived API schema, supported field enumeration, real browser login and accessible operation flows",
+        "remaining_semantics_and_effect_checks": "Do not document unsupported routes as implemented; run browser tests without persisting credentials",
+        "crash_reopen": "Interrupt sys/internal/specs/openapi and browser UI targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-OPENAPI-UI, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-OPERATIONS",
+      "category": "client_operator",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "technical_contract": {
+        "api_or_protocol": "Health, seal, recovery, capacity, compaction and backup operations",
+        "required_positive_and_hostile_behavior": "Root-only metadata, bounded storage refusal, fail-closed audit and repeatable recovery",
+        "remaining_semantics_and_effect_checks": "768 KiB state and 32000 retained requests remain limits; production SLO/retention needs real capacity work",
+        "crash_reopen": "Interrupt Health before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-OPERATIONS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [
+        "operations.seal_status"
+      ],
+      "available_scoped_profiles": [
+        "capacity"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-TREE",
+      "category": "namespace_workflow",
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "technical_contract": {
+        "api_or_protocol": "Namespace lifecycle and parent/child policy administration targets",
+        "required_positive_and_hostile_behavior": "Create/delete/list hierarchy, isolation, root/child privileges and recursive ownership",
+        "remaining_semantics_and_effect_checks": "Header namespace separation alone is not tree administration or parent-authority semantics",
+        "crash_reopen": "Interrupt Namespace lifecycle and parent/child policy administration targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-NAMESPACE-TREE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
+      "category": "namespace_workflow",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Per-namespace seal and key ownership targets",
+        "required_positive_and_hostile_behavior": "Explicit custody/availability semantics, parent isolation and sealed child request routing",
+        "remaining_semantics_and_effect_checks": "Global server seal does not establish per-namespace seal; define recovery and key hierarchy before coding",
+        "crash_reopen": "Interrupt Per-namespace seal and key ownership targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-NAMESPACE-SEAL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
+      "category": "namespace_workflow",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "OpenBao 2.6 workflow/profile API and executor targets",
+        "required_positive_and_hostile_behavior": "Pin each target route, caller, state transition, retry and effect boundary from upstream specification",
+        "remaining_semantics_and_effect_checks": "Workflow receipt/plan types cannot stand in for an executable authorized workflow",
+        "crash_reopen": "Interrupt OpenBao 2.6 workflow/profile API and executor targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-PROFILES-WORKFLOWS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-SELF-INIT",
+      "category": "namespace_workflow",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Self-initialization and bootstrap enrollment targets",
+        "required_positive_and_hostile_behavior": "One-time bootstrap, out-of-band trust, race exclusion and lost-ack recovery",
+        "remaining_semantics_and_effect_checks": "Never self-grant root or substitute a dev-mode startup; independent bootstrap custody required",
+        "crash_reopen": "Interrupt Self-initialization and bootstrap enrollment targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-SELF-INIT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
+      "category": "migration",
+      "implementation_status": "tooling_partial",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Explicit logical asset inventory and per-class transfer adapters",
+        "required_positive_and_hostile_behavior": "Read source, checkpoint before effects, exact object readback and resume without duplication",
+        "remaining_semantics_and_effect_checks": "KV and Transit conversions do not migrate policies, Identity, active leases or all provider effects",
+        "crash_reopen": "Interrupt Explicit logical asset inventory and per-class transfer adapters before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-MIGRATION-LOGICAL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [
+        "kv-migration",
+        "transit-migration"
+      ],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
+      "category": "migration",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "OpenBao snapshot format conversion and native HeptaBao backup",
+        "required_positive_and_hostile_behavior": "Authenticate input, prove seal/key binding, preserve tombstones and restore into a fenced new root",
+        "remaining_semantics_and_effect_checks": "A native backup is not OpenBao raft.snap; raw copy is forbidden until format adapter is verified",
+        "crash_reopen": "Interrupt OpenBao snapshot format conversion and native HeptaBao backup before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-MIGRATION-SNAPSHOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
+      "category": "migration",
+      "implementation_status": "not_implemented",
+      "runtime_source": null,
+      "technical_contract": {
+        "api_or_protocol": "Source write-freeze, target activation and rollback controller",
+        "required_positive_and_hostile_behavior": "Every declared asset verified, source writer provably fenced, atomic cutover decision and target rollback fence",
+        "remaining_semantics_and_effect_checks": "Do not cut over on partial inventory or fabricate completion from dry-run; test real dual-writer prevention",
+        "crash_reopen": "Interrupt Source write-freeze before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "isolation": "For HB-SURFACE-MIGRATION-CUTOVER, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+      },
+      "fixture_case_ids": [],
+      "available_scoped_profiles": [],
+      "whole_surface_admitted": false
+    }
+  ],
+  "compatibility_claim": false,
+  "production_authority": false
+}

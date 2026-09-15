@@ -847,6 +847,12 @@ impl Service {
             }
             return self.rekey_route(method, path, body);
         }
+        if path == "sys/internal/storage/capacity" {
+            if !namespace.is_empty() || !principal.as_ref().is_some_and(Principal::is_root) {
+                return Response::error(403, "permission denied");
+            }
+            return self.capacity_route(method, body);
+        }
         if path.starts_with("sys/internal/recovery/")
             || matches!(
                 path,
@@ -2101,6 +2107,33 @@ impl Service {
         }))
     }
 
+    fn capacity_route(&self, method: &str, body: &Value) -> Response {
+        if method != "GET" {
+            return Response::error(405, "capacity observation requires GET");
+        }
+        if !body.is_null() && body.as_object().is_none_or(|v| !v.is_empty()) {
+            return Response::error(400, "capacity observation accepts no fields");
+        }
+        let Some(durable) = self.durable.as_ref() else {
+            return Response::error(503, "server is sealed");
+        };
+        let capacity = durable.capacity_status();
+        Response::ok(json!({"data": {
+            "scope": "local_node_bounded_runtime",
+            "state_limit_bytes": MAX_STATE_BYTES,
+            "stored_value_bytes": capacity.stored_value_bytes,
+            "generation": capacity.generation,
+            "journal_bytes": capacity.journal_bytes,
+            "journal_limit_bytes": capacity.journal_limit_bytes,
+            "retained_requests": capacity.retained_requests,
+            "retained_request_limit": capacity.retained_request_limit,
+            "remaining_request_slots": capacity.retained_request_limit.saturating_sub(capacity.retained_requests),
+            "recovery_required": capacity.recovery_required,
+            "automatic_journal_checkpoint": true,
+            "replay_id_eviction": false
+        }}))
+    }
+
     fn maintenance_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
         if let Some(reference) = path.strip_prefix("sys/internal/recovery/") {
             if method != "GET" {
@@ -2320,6 +2353,23 @@ impl Service {
     }
 
     fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {
+        // This deterministic local limit must reject BEFORE proposing a new HA
+        // effect. It is not a reservation against physical I/O or peer failures.
+        let capacity = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?
+            .capacity_status();
+        if capacity.recovery_required {
+            self.recovery_required = true;
+            return Err(Response::error(503, "durable recovery required"));
+        }
+        if capacity.retained_requests >= capacity.retained_request_limit {
+            return Err(Response::error(
+                507,
+                "retained operation capacity exhausted",
+            ));
+        }
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
         if let Some(ha) = self.ha.as_ref() {
@@ -2358,7 +2408,11 @@ impl Service {
             .durable
             .as_mut()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        match durable.put(request) {
+        let result = durable.put_with_maintenance(request);
+        if durable.recovery_required() {
+            self.recovery_required = true;
+        }
+        match result {
             Ok(_) => Ok(()),
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                 self.recovery_required = true;
@@ -3218,3 +3272,7 @@ mod ssh_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
+
+#[cfg(test)]
+#[path = "service_capacity_tests.rs"]
+mod capacity_tests;

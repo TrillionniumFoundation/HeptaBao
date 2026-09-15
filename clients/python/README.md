@@ -129,3 +129,13 @@ The real-process fixture supports both source imports and an installed wheel via
 against the pinned official OpenBao service; that proves only the selected workflow,
 not general Agent/Proxy compatibility. Python memory copies are not zeroization
 claims. Linux x86_64 execution cannot establish other-platform qualification.
+
+## Explicit Transit re-encryption
+
+The separately opted-in `qa/openbao-acceptance/migrate_transit.py` CLI and
+`clients/python/heptabao/transit_migration.py` implement real source decrypt /
+destination encrypt / decrypt-readback with descriptor-locked private checkpoints.
+See `docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md` for its exact configuration,
+unknown-outcome behavior, output retrieval, plaintext-memory limitations and
+operator-owned cutover. This does not convert the original ciphertext in place
+or provide key import, raw snapshots or full-instance migration.

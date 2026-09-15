@@ -229,7 +229,7 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding on authentication methods, external-group login synchronization, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, external-group login synchronization, batch tokens, LDAP, browser authorization-code OIDC login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
@@ -241,7 +241,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. It still does not fetch a `jwks_url`, perform OIDC discovery/browser callbacks, or implement the full OpenBao JWT/OIDC configuration and claim-mapping API.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current mutually exclusive remote-key profile fetches enrolled `jwks_url` or OIDC Discovery keys as specified in [remote key sources](HEPTABAO_REMOTE_JWT_KEYS.md). Neither profile implements browser authorization-code callbacks or the full OpenBao JWT/OIDC claim-mapping API.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 

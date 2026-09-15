@@ -68,6 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
+          python scripts/surface_work.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
           python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
@@ -101,6 +102,16 @@ jobs:
           python qa/single-node/smoke.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
+
+      - name: Exercise actual capacity refusal compaction and restart
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-capacity-reports"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/capacity_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Exercise real three-process HA with synthetic state
         shell: bash
@@ -202,6 +213,20 @@ jobs:
             fi
           done
           test "$failed" -eq 0
+
+      - name: Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-transit-migration-reports"
+          mkdir -m 700 "$reports"
+          timeout 300 python qa/openbao-acceptance/transit_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/transit.json"
+          # Missing official binaries (exit 77) remain a blocking failure.
 
       - name: Execute the fixed corpus against the official OpenBao binary
         if: ${{ success() || failure() }}

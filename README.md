@@ -109,4 +109,16 @@ authority_effect: NONE
 
 ## Current external-provider and cluster-administration additions
 
-The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. **Actual PostgreSQL server/SQL acceptance has not been executed in this delivery**; protocol-model tests do not qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.
+The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. Actual PostgreSQL server/SQL execution is a mandatory real-service CI step. The earlier exact candidate `0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5` passed both tracks of run `34924284502`; this is bounded repository-controlled evidence, not independent provider admission, and does not validate subsequent source changes. Protocol-model tests alone never qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions require **Service schema 4**. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.
+
+## Section-six execution increment
+
+The current work inventory is `planning/HEPTABAO_SURFACE_WORK_V1.json`, checked by
+`scripts/surface_work.py`. It retains every original surface/case binding and links
+existing real executables; it is subordinate to the active V2.1 plan, not a second
+plan or completion evidence. Technical contracts and open work are described in
+`docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
+audited capacity observation, safe journal checkpoint maintenance and an explicit
+Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
+limits, import raw OpenBao snapshots, update application ciphertext references,
+or advance Hepta's independently requalified consumer pin.

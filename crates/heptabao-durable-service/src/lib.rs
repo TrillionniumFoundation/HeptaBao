@@ -23,6 +23,9 @@ use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
+mod capacity;
+pub use capacity::CapacityStatus;
+
 const SNAPSHOT_MAGIC: &[u8; 4] = b"HBS2";
 const SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP2";
 const JOURNAL_MAGIC: &[u8; 4] = b"HBJ2";
@@ -2100,7 +2103,7 @@ mod tests {
     // marked CLOEXEC. Serialize process-spawning tests with all writer owners.
     static TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
-    fn serial_test() -> std::sync::MutexGuard<'static, ()> {
+    pub(super) fn serial_test() -> std::sync::MutexGuard<'static, ()> {
         match TEST_SERIAL.lock() {
             Ok(guard) => guard,
             Err(poisoned) => poisoned.into_inner(),
@@ -2108,12 +2111,12 @@ mod tests {
     }
 
     #[derive(Clone)]
-    struct TestBarrier {
+    pub(super) struct TestBarrier {
         key: [u8; 32],
     }
 
     impl TestBarrier {
-        const fn new() -> Self {
+        pub(super) const fn new() -> Self {
             Self { key: [0x5a; 32] }
         }
 
@@ -2152,10 +2155,10 @@ mod tests {
         }
     }
 
-    struct TestRoot(PathBuf);
+    pub(super) struct TestRoot(pub(super) PathBuf);
 
     impl TestRoot {
-        fn new(label: &str) -> Result<Self, ServiceError> {
+        pub(super) fn new(label: &str) -> Result<Self, ServiceError> {
             let sequence = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "heptabao-durable-service-{label}-{}-{sequence}",
@@ -2178,7 +2181,7 @@ mod tests {
         [value; 32]
     }
 
-    fn put_request(id: &str, value: &[u8]) -> Result<PutRequest, ServiceError> {
+    pub(super) fn put_request(id: &str, value: &[u8]) -> Result<PutRequest, ServiceError> {
         PutRequest::new(
             "principal-a",
             "root/team-a",

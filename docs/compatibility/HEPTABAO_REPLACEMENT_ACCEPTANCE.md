@@ -178,3 +178,13 @@ No flag is promoted by this document or by a green repository workflow:
 `migration_authority=false`, `release_authority=false`. Preserve failed execution
 records and distinguish `not implemented`, `not executed`, `failed`, `scoped pass`
 and `independently admitted` instead of collapsing them into a completion percent.
+
+## Executable work inventory
+
+`planning/HEPTABAO_SURFACE_WORK_V1.json` decomposes every original surface into
+API/protocol, positive/hostile behavior, state/effect, crash, isolation and
+migration/upgrade work. `python scripts/surface_work.py --surface
+HB-SURFACE-SECRET-TRANSIT` displays one contract and existing executable profiles.
+Its success validates the inventory, not compatibility; original corpus states
+remain untouched. New bounded capacity and Transit re-encryption profiles are
+required on both exact-head and prospective-merge CI paths.
