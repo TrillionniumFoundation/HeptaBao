@@ -1,0 +1,43 @@
+name: Pinned Kubernetes native test inputs
+
+on:
+  push:
+    branches: [exec/kubernetes-native-inputs-20260915-r2]
+    paths: [.github/workflows/kubernetes-native-inputs-r2.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Read immutable source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Acquire pinned official SIG controller-tools envtest archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          output="$RUNNER_TEMP/heptabao-kubernetes-native-inputs"
+          mkdir -m 700 "$output"
+          curl --fail --location --proto '=https' --proto-redir '=https' --max-time 180 \
+            https://github.com/kubernetes-sigs/controller-tools/releases/download/envtest-v1.35.0/envtest-v1.35.0-linux-amd64.tar.gz \
+            --output "$output/envtest-v1.35.0-linux-amd64.tar.gz"
+          printf '%s  %s\n' 5716719def14a3fec3ed285e5e8c4280e6268854039b5073a96e8c0adafb1c02 envtest-v1.35.0-linux-amd64.tar.gz > "$output/SHA256SUMS"
+          (cd "$output" && sha256sum -c SHA256SUMS)
+          printf 'source_commit=%s\nsource_tree=%s\nupstream=kubernetes-sigs/controller-tools\nrelease=envtest-v1.35.0\nrelease_asset_id=330214967\nqualification=false\n' "$GITHUB_SHA" "$(git rev-parse 'HEAD^{tree}')" > "$output/provenance.txt"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Export prerequisites only; no running-cluster state or credentials
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-kubernetes-native-inputs-v1.35.0-r2
+          path: ${{ runner.temp }}/heptabao-kubernetes-native-inputs/
+          if-no-files-found: error
+          retention-days: 3
