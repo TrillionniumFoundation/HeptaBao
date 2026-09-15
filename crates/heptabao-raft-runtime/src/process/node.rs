@@ -15,9 +15,9 @@ use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
 
 pub struct ProcessRaftNode {
-    id: u64,
-    raft: DurableRaft,
-    state_machine: DurableStateMachine,
+    pub(super) id: u64,
+    pub(super) raft: DurableRaft,
+    pub(super) state_machine: DurableStateMachine,
     rpc_service: RaftRpcService,
 }
 

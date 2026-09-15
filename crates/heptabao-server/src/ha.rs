@@ -70,6 +70,9 @@ pub struct HaProcessConfig {
     pub peers: BTreeMap<u64, HaPeerConfig>,
     #[serde(default)]
     pub bootstrap: bool,
+    /// Initial voters may be a subset of the statically enrolled peer registry.
+    #[serde(default)]
+    pub initial_voters: Option<BTreeSet<u64>>,
     #[serde(default = "default_peer_timeout_ms")]
     pub peer_timeout_ms: u64,
     #[serde(default = "default_max_inflight")]
@@ -410,13 +413,14 @@ impl HaProcess {
                     tokio::time::sleep(Duration::from_millis(20)).await;
                 }
             })?;
-            for peer_id in peer_ids.iter().copied().filter(|id| *id != config.node_id) {
+            let voters = config.initial_voters.clone().unwrap_or(peer_ids);
+            for peer_id in voters.iter().copied().filter(|id| *id != config.node_id) {
                 runtime
                     .block_on(node.add_learner(peer_id))
                     .map_err(|error| error.to_string())?;
             }
             runtime
-                .block_on(node.change_membership(peer_ids))
+                .block_on(node.change_membership(voters))
                 .map_err(|error| error.to_string())?;
         }
 
@@ -524,9 +528,13 @@ impl HaProcess {
         if self.runtime.block_on(node.current_leader()) != Some(local) {
             return Err("HA step-down requires the current leader".into());
         }
-        let targets: Vec<u64> = self
-            .peers
-            .keys()
+        let membership = self
+            .runtime
+            .block_on(node.membership_observation())
+            .map_err(|_| "membership unavailable")?;
+        let targets: Vec<u64> = membership
+            .voters
+            .iter()
             .copied()
             .filter(|id| *id != local)
             .collect();
@@ -555,6 +563,37 @@ impl HaProcess {
         })
     }
 
+    pub fn enrolled(&self, id: u64) -> bool {
+        self.peers.contains_key(&id)
+    }
+    pub fn membership(&self) -> Result<heptabao_raft_runtime::MembershipObservation, String> {
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.ensure_linearizable()?;
+        self.runtime
+            .block_on(node.membership_observation())
+            .map_err(|_| "membership observation failed".into())
+    }
+    pub fn modify_membership(
+        &self,
+        index: u64,
+        id: u64,
+        operation: &str,
+    ) -> Result<heptabao_raft_runtime::MembershipObservation, String> {
+        if !self.enrolled(id) {
+            return Err("peer is not host-enrolled".into());
+        }
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.runtime
+            .block_on(node.change_membership_guarded(index, id, operation))
+            .map_err(|_| "membership operation requires reconciliation".into())
+    }
+    pub fn observed_snapshot(&self) -> Result<heptabao_raft_runtime::SnapshotObservation, String> {
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.runtime
+            .block_on(node.snapshot_observed())
+            .map_err(|_| "snapshot completion unobserved".into())
+    }
+
     pub fn ensure_linearizable(&self) -> Result<(), String> {
         let node = self
             .node
@@ -571,7 +610,8 @@ impl HaProcess {
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
         self.runtime
-            .block_on(node.trigger_snapshot())
+            .block_on(node.snapshot_observed())
+            .map(|_| ())
             .map_err(|error| error.to_string())
     }
 
@@ -677,6 +717,14 @@ impl Drop for HaProcess {
 }
 
 fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
+    if config.initial_voters.as_ref().is_some_and(|v| {
+        v.len() < 3
+            || v.len() > 9
+            || v.iter().any(|id| !config.peers.contains_key(id))
+            || config.bootstrap && !v.contains(&config.node_id)
+    }) {
+        return Err("invalid initial voter subset".into());
+    }
     if config.node_id == 0
         || config.peers.len() < 3
         || config.peers.len() > 9

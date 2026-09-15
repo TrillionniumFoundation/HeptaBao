@@ -77,6 +77,8 @@ struct Mount {
 
 #[derive(Clone, Serialize, Deserialize)]
 enum Backend {
+    // Runtime provider state and effects belong to the audited Service writer.
+    Database,
     Kv1(BTreeMap<String, Value>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
@@ -139,6 +141,7 @@ impl Mount {
 
     fn descriptor(&self) -> Value {
         let (kind, options) = match self.backend {
+            Backend::Database => ("database", json!({})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
@@ -316,6 +319,26 @@ fn list_keys<'a>(
 impl EngineState {
     /// The caller must authorize this capability under the same service lock used
     /// by `handle`. `None` means this module does not own the supplied route.
+    pub(crate) fn database_mount(&self, namespace: &str, path: &str) -> Option<&str> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(mount, value)| {
+                matches!(value.backend, Backend::Database).then_some(mount.as_str())
+            })
+    }
+
+    pub(crate) fn has_database_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|m| matches!(m.backend, Backend::Database))
+        })
+    }
+
     pub fn required_capability(
         &self,
         namespace: &str,
@@ -351,7 +374,7 @@ impl EngineState {
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
-                Backend::Pki(_) | Backend::Ssh(_) => None,
+                Backend::Database | Backend::Pki(_) | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -441,6 +464,12 @@ impl EngineState {
                 .get_mut(&mount_path)
                 .ok_or_else(not_found)?;
             match &mut mount.backend {
+                Backend::Database => {
+                    return Err(error(
+                        501,
+                        "database operations require the audited external-effect dispatcher",
+                    ));
+                }
                 Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
                 Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
                 Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
@@ -598,6 +627,15 @@ fn handle_mounts(
                 "2" => Backend::Kv2(kv::Kv2::default()),
                 _ => return Err(bad("KV version must be 1 or 2")),
             }
+        }
+        "database" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("database mount options are not supported"));
+            }
+            Backend::Database
         }
         "transit" => {
             if body

@@ -19,6 +19,8 @@ pub mod ha;
 mod ha_forward;
 pub mod ha_state;
 pub mod http;
+pub mod outbound;
+mod postgres_wire;
 mod service;
 pub use service::AuditConfig;
 pub use service::ServiceRequest;

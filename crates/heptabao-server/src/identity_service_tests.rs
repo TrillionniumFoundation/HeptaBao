@@ -555,6 +555,8 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
         cluster_id: "legacy-synthetic".into(),
         auth,
         engines: EngineState::default(),
+        database: database::DatabaseState::default(),
+        raft_admin: raft_admin::RaftAdminState::default(),
     };
     let bytes = serde_json::to_vec(&state)?;
     let restored: State = serde_json::from_slice(&bytes)?;

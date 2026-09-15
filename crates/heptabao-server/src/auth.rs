@@ -16,6 +16,10 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_remote.rs"]
+mod remote;
+use remote::RemoteJwtSource;
+
 #[path = "auth_acl.rs"]
 mod acl;
 #[path = "auth_capabilities.rs"]
@@ -70,6 +74,10 @@ struct JwtKeyRecord {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    remote: Option<RemoteJwtSource>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    jwt_supported_algs: Option<BTreeSet<String>>,
     issuer: String,
     audiences: BTreeSet<String>,
     required_namespace: Option<String>,
@@ -91,7 +99,7 @@ fn insert_jwt_key(
     if !valid_jwt_kid(kid) || keys.contains_key(kid) {
         return Err(bad("invalid or duplicate JWT key id"));
     }
-    if !matches!(algorithm, "EdDSA" | "ES256") {
+    if !matches!(algorithm, "EdDSA" | "ES256" | "RS256") {
         return Err(bad("unsupported JWT algorithm"));
     }
     if bytes.is_empty() || bytes.len() > 16 * 1024 {
@@ -144,7 +152,7 @@ fn parse_jwks(jwks: &Value) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError>
         if object.keys().any(|key| {
             !matches!(
                 key.as_str(),
-                "kid" | "kty" | "crv" | "x" | "y" | "alg" | "use" | "key_ops"
+                "kid" | "kty" | "crv" | "x" | "y" | "n" | "e" | "alg" | "use" | "key_ops"
             )
         }) {
             return Err(bad("unsupported JWK member"));
@@ -163,8 +171,34 @@ fn parse_jwks(jwks: &Value) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError>
             }
         }
         let kty = string_field(value, "kty")?;
-        let crv = string_field(value, "crv")?;
         let alg = string_field(value, "alg")?;
+        if kty == "RSA" {
+            if alg != "RS256" || ["crv", "x", "y"].iter().any(|k| object.contains_key(*k)) {
+                return Err(bad("unsupported RSA JWK profile"));
+            }
+            let n = URL_SAFE_NO_PAD
+                .decode(string_field(value, "n")?)
+                .map_err(|_| bad("invalid RSA modulus"))?;
+            let e = URL_SAFE_NO_PAD
+                .decode(string_field(value, "e")?)
+                .map_err(|_| bad("invalid RSA exponent"))?;
+            if !(256..=512).contains(&n.len())
+                || n.first().is_none_or(|v| *v < 0x80)
+                || e != [1, 0, 1]
+            {
+                return Err(bad("RSA key must use 2048..4096 bits and exponent 65537"));
+            }
+            let mut bytes = Vec::with_capacity(n.len() + 5);
+            bytes.extend_from_slice(&(n.len() as u16).to_be_bytes());
+            bytes.extend(n);
+            bytes.extend(e);
+            insert_jwt_key(&mut keys, kid, alg, bytes)?;
+            continue;
+        }
+        if object.contains_key("n") || object.contains_key("e") {
+            return Err(bad("RSA fields on non-RSA key"));
+        }
+        let crv = string_field(value, "crv")?;
         let x = URL_SAFE_NO_PAD
             .decode(string_field(value, "x")?)
             .map_err(|_| bad("invalid JWK x coordinate"))?;
@@ -204,9 +238,17 @@ impl JwtConfig {
         .map_err(|_| bad("invalid JWT trust policy"))?;
         let mut keys = Vec::with_capacity(self.keys.len());
         for (key_id, record) in &self.keys {
+            if self
+                .jwt_supported_algs
+                .as_ref()
+                .is_some_and(|algs| !algs.contains(&record.algorithm))
+            {
+                continue;
+            }
             let algorithm = match record.algorithm.as_str() {
                 "EdDSA" => JwtAlgorithm::Ed25519,
                 "ES256" => JwtAlgorithm::Es256,
+                "RS256" => JwtAlgorithm::Rs256,
                 _ => return Err(bad("unsupported JWT algorithm")),
             };
             keys.push(
@@ -1328,7 +1370,14 @@ impl AuthState {
                 .and_then(|roles| roles.get(role_name))
                 .cloned()
                 .ok_or_else(denied)?;
-            let verified = config.verifier()?.verify(jwt, now).map_err(|_| denied())?;
+            let mut verification_config = config.clone();
+            if verification_config.audiences.is_empty() {
+                verification_config.audiences = role.bound_audiences.clone();
+            }
+            let verified = verification_config
+                .verifier()?
+                .verify(jwt, now)
+                .map_err(|_| denied())?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
                 || !role.bound_groups.is_subset(&verified.groups)
@@ -1443,7 +1492,10 @@ impl AuthState {
                     .collect();
                 Ok(response(
                     json!({
+                        "jwks_url": config.remote.as_ref().and_then(|s| s.jwks_url.as_deref()),
+                        "oidc_discovery_url": config.remote.as_ref().and_then(|s| s.oidc_discovery_url.as_deref()),
                         "issuer": config.issuer,
+                        "jwt_supported_algs": config.jwt_supported_algs,
                         "audiences": config.audiences,
                         "required_namespace": config.required_namespace,
                         "clock_skew_seconds": config.clock_skew_seconds,
@@ -1466,9 +1518,22 @@ impl AuthState {
                         "maximum_token_lifetime_seconds",
                         "keys",
                         "jwks",
+                        "jwks_url",
+                        "oidc_discovery_url",
+                        "bound_issuer",
+                        "jwt_supported_algs",
                     ],
                 )?;
-                let issuer = string_field(body, "issuer")?.to_owned();
+                reject_alias_pair(body, "issuer", "bound_issuer")?;
+                let issuer = string_field(
+                    body,
+                    if body.get("issuer").is_some() {
+                        "issuer"
+                    } else {
+                        "bound_issuer"
+                    },
+                )?
+                .to_owned();
                 let audiences = claim_values(body, "audiences")?;
                 let required_namespace = body
                     .get("required_namespace")
@@ -1493,7 +1558,23 @@ impl AuthState {
                 if body.get("keys").is_some() && body.get("jwks").is_some() {
                     return Err(bad("configure either JWT keys or jwks, not both"));
                 }
-                let keys = if let Some(jwks) = body.get("jwks") {
+                let jwt_supported_algs = if body.get("jwt_supported_algs").is_some() {
+                    let values = claim_values(body, "jwt_supported_algs")?;
+                    if values.is_empty()
+                        || values
+                            .iter()
+                            .any(|v| !matches!(v.as_str(), "EdDSA" | "ES256" | "RS256"))
+                    {
+                        return Err(bad("unsupported JWT algorithm allowlist"));
+                    }
+                    Some(values)
+                } else {
+                    None
+                };
+                let remote = RemoteJwtSource::parse(body)?;
+                let keys = if remote.is_some() {
+                    BTreeMap::new()
+                } else if let Some(jwks) = body.get("jwks") {
                     parse_jwks(jwks)?
                 } else {
                     let key_values = body
@@ -1503,6 +1584,8 @@ impl AuthState {
                     parse_legacy_jwt_keys(key_values)?
                 };
                 let config = JwtConfig {
+                    remote,
+                    jwt_supported_algs,
                     issuer,
                     audiences,
                     required_namespace,
@@ -1510,7 +1593,22 @@ impl AuthState {
                     maximum_token_lifetime_seconds,
                     keys,
                 };
-                config.verifier()?;
+                if config.remote.is_none() {
+                    config.verifier()?;
+                } else {
+                    let mut audiences = config.audiences.clone();
+                    if audiences.is_empty() {
+                        audiences.insert("configuration-shape-only".into());
+                    }
+                    TrustPolicy::new(
+                        config.issuer.clone(),
+                        audiences,
+                        config.required_namespace.clone().filter(|s| !s.is_empty()),
+                        config.clock_skew_seconds,
+                        config.maximum_token_lifetime_seconds,
+                    )
+                    .map_err(|_| bad("invalid remote JWT trust policy"))?;
+                }
                 let mutated =
                     self.jwt_at(scope).and_then(|state| state.config.as_ref()) != Some(&config);
                 self.jwt_at_mut(scope).config = Some(config);
@@ -1559,6 +1657,8 @@ impl AuthState {
                 reject_unknown(
                     body,
                     &[
+                        "role_type",
+                        "user_claim",
                         "bound_groups",
                         "bound_subject",
                         "bound_audiences",
@@ -1569,6 +1669,18 @@ impl AuthState {
                         "token_num_uses",
                     ],
                 )?;
+                if body
+                    .get("role_type")
+                    .is_some_and(|v| v.as_str() != Some("jwt"))
+                    || body
+                        .get("user_claim")
+                        .is_some_and(|v| v.as_str() != Some("sub"))
+                {
+                    return Err(err(
+                        501,
+                        "only role_type jwt with sub identity is implemented",
+                    ));
+                }
                 let bound_groups = claim_values(body, "bound_groups")?;
                 let bound_audiences = claim_values(body, "bound_audiences")?;
                 let bound_subject = body

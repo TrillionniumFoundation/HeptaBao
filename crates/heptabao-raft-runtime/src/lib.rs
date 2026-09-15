@@ -26,8 +26,8 @@ use std::path::Path;
 use cluster::DurableCluster;
 
 pub use process::{
-    ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory,
-    RemoteRaftError,
+    MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
+    RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
 };
 
 const MAX_OPERATION_ID_BYTES: usize = 128;

@@ -46,6 +46,9 @@ pub struct Config {
     /// Zero explicitly disables idle maintenance. Active request checks remain mandatory.
     #[serde(default = "default_lifecycle_interval")]
     pub lifecycle_interval_seconds: u64,
+    /// Deployment-owned egress allowlist; API configuration cannot widen it.
+    #[serde(default)]
+    pub outbound_endpoints: Vec<crate::outbound::EndpointConfig>,
 }
 fn default_lifecycle_interval() -> u64 {
     5
@@ -196,6 +199,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
+    service
+        .lock()
+        .map_err(|_| "service lock unavailable")?
+        .install_outbound_endpoints(config.outbound_endpoints)?;
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {

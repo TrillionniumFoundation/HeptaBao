@@ -38,6 +38,7 @@ const REPLAY_FRAME_BYTES: usize = REPLAY_BODY_BYTES + REPLAY_TAG_BYTES;
 pub enum JwtAlgorithm {
     Ed25519,
     Es256,
+    Rs256,
 }
 
 impl JwtAlgorithm {
@@ -45,6 +46,7 @@ impl JwtAlgorithm {
         match self {
             Self::Ed25519 => "EdDSA",
             Self::Es256 => "ES256",
+            Self::Rs256 => "RS256",
         }
     }
 }
@@ -66,6 +68,7 @@ impl VerificationKey {
         let valid_encoding = match algorithm {
             JwtAlgorithm::Ed25519 => bytes.len() == 32,
             JwtAlgorithm::Es256 => bytes.len() == 65 && bytes.first() == Some(&4),
+            JwtAlgorithm::Rs256 => rsa_components(&bytes).is_some(),
         };
         if !valid_encoding || bytes.len() > MAX_KEY_BYTES {
             return Err(AuthError::InvalidKey);
@@ -661,6 +664,23 @@ fn decode_segment(value: &str) -> Result<Vec<u8>, AuthError> {
         .map_err(|_| AuthError::MalformedToken)
 }
 
+/// Internal canonical public RSA encoding: big-endian u16 modulus length,
+/// modulus, then exponent 65537. Admission is restricted to 2048..4096 bits.
+fn rsa_components(bytes: &[u8]) -> Option<(&[u8], &[u8])> {
+    if bytes.len() < 2 {
+        return None;
+    }
+    let n = u16::from_be_bytes([bytes[0], bytes[1]]) as usize;
+    if !(256..=512).contains(&n)
+        || bytes.len() != n + 5
+        || bytes[2] < 0x80
+        || bytes[2 + n..] != [1, 0, 1]
+    {
+        return None;
+    }
+    Some((&bytes[2..2 + n], &bytes[2 + n..]))
+}
+
 fn verify_signature(
     key: &VerificationKey,
     message: &[u8],
@@ -669,6 +689,14 @@ fn verify_signature(
     let result = match key.algorithm {
         JwtAlgorithm::Ed25519 => signature::UnparsedPublicKey::new(&signature::ED25519, &key.bytes)
             .verify(message, signature_bytes),
+        JwtAlgorithm::Rs256 => {
+            let (n, e) = rsa_components(&key.bytes).ok_or(AuthError::InvalidKey)?;
+            signature::RsaPublicKeyComponents { n, e }.verify(
+                &signature::RSA_PKCS1_2048_8192_SHA256,
+                message,
+                signature_bytes,
+            )
+        }
         JwtAlgorithm::Es256 => {
             signature::UnparsedPublicKey::new(&signature::ECDSA_P256_SHA256_FIXED, &key.bytes)
                 .verify(message, signature_bytes)

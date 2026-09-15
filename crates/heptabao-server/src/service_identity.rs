@@ -12,14 +12,28 @@ impl State {
         self.auth
             .validate_wrapping_state()
             .map_err(|_| Response::error(503, "invalid wrapping state"))?;
+        self.database.validate_scope(&self.cluster_id)?;
+        self.raft_admin.validate()?;
+        let pre_database = self.database.is_empty()
+            && !self.engines.has_database_mount()
+            && self.raft_admin.is_default();
         match self.schema {
-            1 if !self.auth.has_live_identity_state()
+            1 if pre_database
+                && !self.auth.has_remote_jwt_state()
+                && !self.auth.has_live_identity_state()
                 && !self.auth.has_wrapping_state()
                 && !self.engines.has_lease_state() =>
             {
                 Ok(())
             }
-            2 if !self.auth.has_wrapping_state() && !self.engines.has_lease_state() => Ok(()),
+            2 if pre_database
+                && !self.auth.has_remote_jwt_state()
+                && !self.auth.has_wrapping_state()
+                && !self.engines.has_lease_state() =>
+            {
+                Ok(())
+            }
+            3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,

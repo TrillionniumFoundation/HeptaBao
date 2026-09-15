@@ -21,7 +21,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 3;
+const CURRENT_STATE_SCHEMA: u32 = 4;
 const MAX_STATE_BYTES: usize = 768 * 1024;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -29,10 +29,14 @@ const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 mod audit_rotation;
 #[path = "service_capabilities.rs"]
 mod capabilities;
+#[path = "service_database.rs"]
+mod database;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_raft_admin.rs"]
+mod raft_admin;
 pub(crate) use lifecycle::start_lifecycle_worker;
 
 #[path = "service_leases.rs"]
@@ -139,6 +143,13 @@ struct State {
     cluster_id: String,
     auth: AuthState,
     engines: EngineState,
+    #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
+    database: database::DatabaseState,
+    #[serde(
+        default,
+        skip_serializing_if = "raft_admin::RaftAdminState::is_default"
+    )]
+    raft_admin: raft_admin::RaftAdminState,
 }
 
 pub struct Response {
@@ -273,6 +284,9 @@ struct RequestView<'a> {
 }
 
 pub struct Service {
+    outbound: crate::outbound::Outbound,
+    database_cursor: Option<(String, String, String)>,
+    raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
     audit_rotation: AuditRotation,
@@ -296,6 +310,18 @@ pub struct Service {
 }
 
 impl Service {
+    /// Install the trusted process configuration before unseal, never via HTTP.
+    pub fn install_outbound_endpoints(
+        &mut self,
+        endpoints: Vec<crate::outbound::EndpointConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("outbound policy is immutable while unsealed".into());
+        }
+        self.outbound = crate::outbound::Outbound::new(endpoints).map_err(str::to_owned)?;
+        Ok(())
+    }
+
     /// The TLS private key and audit file belong outside the exclusively owned
     /// data directory. The directory is never initialized implicitly on serve.
     pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {
@@ -368,6 +394,9 @@ impl Service {
         });
         let unseal_nonce = hex(&crypto::random::<16>()?);
         Ok(Self {
+            outbound: crate::outbound::Outbound::default(),
+            database_cursor: None,
+            raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
             audit_rotation,
@@ -758,6 +787,12 @@ impl Service {
         {
             return error;
         }
+        if Self::is_raft_admin_path(path) {
+            return self.raft_admin_route(admitted, principal.as_ref(), &request);
+        }
+        if self.database_handles(&admitted, namespace, path, body) {
+            return self.database_route(admitted, principal.as_ref(), &request);
+        }
         if path == "sys/leader" && method == "GET" {
             let Some(principal) = principal.as_ref() else {
                 return Response::error(403, "missing client token");
@@ -857,6 +892,13 @@ impl Service {
             Err(_) => return Response::error(500, "state serialization failed"),
         };
         let mut transaction = admitted.clone();
+        if let Err(error) =
+            transaction
+                .auth
+                .refresh_remote_jwt(namespace, path, method, &self.outbound, false)
+        {
+            return Response::error(error.status, &error.message);
+        }
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
                 .auth
@@ -881,6 +923,14 @@ impl Service {
                 now,
             )
         };
+        if response.status < 300
+            && let Err(error) =
+                transaction
+                    .auth
+                    .refresh_remote_jwt(namespace, path, method, &self.outbound, true)
+        {
+            return Response::error(error.status, &error.message);
+        }
         // The durable AuthState stores only token digests. After successful
         // token renewal, echo only the exact credential already supplied on
         // this authorized request. Do this before optional response wrapping;
@@ -1237,6 +1287,8 @@ impl Service {
             cluster_id,
             auth,
             engines: EngineState::default(),
+            database: database::DatabaseState::default(),
+            raft_admin: raft_admin::RaftAdminState::default(),
         };
         let mut stage = match InitializationStage::create(&self.data_dir) {
             Ok(value) => value,
@@ -2160,6 +2212,16 @@ impl Service {
                 return Response::error(
                     409,
                     "direct local snapshot restore is forbidden while HA is enabled",
+                );
+            }
+            if self
+                .state
+                .as_ref()
+                .is_some_and(|state| !state.database.is_empty())
+            {
+                return Response::error(
+                    409,
+                    "database provider epochs cannot be rolled back with a local snapshot",
                 );
             }
             if !matches!(method, "POST" | "PUT") {

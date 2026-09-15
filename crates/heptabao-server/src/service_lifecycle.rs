@@ -1,6 +1,6 @@
 //! Idle expiry uses exactly the existing Service writer and Raft commit path.
-//! This is not a general external-provider revocation executor. No HTTP caller
-//! can choose its time, broaden its operation, or pass a bearer credential.
+//! Separate registered database reconciliation and Raft administration use the
+//! same worker and writer. No HTTP caller can choose worker time or pass a bearer.
 use super::*;
 use std::{
     sync::{Arc, Mutex, mpsc},
@@ -62,7 +62,8 @@ impl Service {
 
 /// One host-owned worker, no unbounded queue or detached retry tasks. Drop wakes
 /// and joins it. try_lock avoids waiting behind an active request. A tick only
-/// invalidates expired/revoked local leases and erases expired wrapped payloads.
+/// advances at most one enrolled DB effect, one guarded consensus change and
+/// the existing local expiry pass. Provider failure cannot suppress local expiry.
 pub(crate) struct LifecycleWorker {
     stop: mpsc::Sender<()>,
     join: Option<JoinHandle<()>>,
@@ -101,6 +102,13 @@ pub(crate) fn start_lifecycle_worker(
                 let Ok(now) = SystemTime::now().duration_since(UNIX_EPOCH) else {
                     continue;
                 };
+                // A failed provider cannot suppress independent local expiry.
+                if writer.maintain_raft_admin().is_err() {
+                    eprintln!("heptabao-lifecycle: autopilot transition pending");
+                }
+                if writer.maintain_database(now.as_secs()).is_err() {
+                    eprintln!("heptabao-lifecycle: provider reconciliation pending");
+                }
                 if writer.maintain_lifetimes_at(now.as_secs()).is_err() {
                     // Fixed text only. The Service recovery fence decides whether
                     // another bounded tick may attempt a transient ReadIndex failure.
