@@ -1,0 +1,219 @@
+name: Four-track exact-candidate native gate
+
+on:
+  push:
+    branches:
+      - exec/four-track-native-gate-20260915
+
+permissions:
+  contents: read
+
+concurrency:
+  group: four-track-native-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: four-track native / ${{ matrix.source_kind }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        source_kind: [exact, merge]
+    env:
+      CANDIDATE_SHA: fef9059837c6309515c19e6176b96c84c438b6b1
+      CANDIDATE_TREE: 81cb7a0f2f3cd03d2e2e1e802117a344f5d5519f
+      CANDIDATE_PARENT: 0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5
+      BUNDLE_SHA256: 9084e8339281d9fb0dc511e138bfe0d8e9b7e34f74c499bed580e400aa9285fa
+    steps:
+      - name: Checkout validation carrier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Materialize and verify exact candidate
+        shell: bash
+        env:
+          SOURCE_KIND: ${{ matrix.source_kind }}
+        run: |
+          set -euo pipefail
+          cp .qualification/candidate.bundle "$RUNNER_TEMP/candidate.bundle"
+          test "$(sha256sum "$RUNNER_TEMP/candidate.bundle" | cut -d ' ' -f 1)" = "$BUNDLE_SHA256"
+          git bundle verify "$RUNNER_TEMP/candidate.bundle"
+          git fetch "$RUNNER_TEMP/candidate.bundle" "$CANDIDATE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse FETCH_HEAD^)" = "$CANDIDATE_PARENT"
+          test "$(git rev-parse FETCH_HEAD^{tree})" = "$CANDIDATE_TREE"
+          if test "$SOURCE_KIND" = exact; then
+            git checkout --detach "$CANDIDATE_SHA"
+            test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          else
+            git fetch origin main
+            base="$(git rev-parse origin/main)"
+            git checkout --detach "$base"
+            git -c user.name='HeptaBao qualification' -c user.email='qualification@invalid' merge --no-ff --no-edit "$CANDIDATE_SHA"
+            test "$(git rev-parse HEAD^1)" = "$base"
+            test "$(git rev-parse HEAD^2)" = "$CANDIDATE_SHA"
+            printf 'prospective_main=%s\n' "$base"
+          fi
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+          printf 'source_kind=%s\nsource_commit=%s\nsource_tree=%s\nparents=%s\n' \
+            "$SOURCE_KIND" "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" "$(git show -s --format=%P HEAD)"
+
+      - name: Install Python validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+          rustc +1.98.0 --version --verbose
+          cargo +1.98.0 --version
+
+      - name: Validate repository and all Python suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
+          python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
+
+      - name: Test locked Rust workspace
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: cargo +1.98.0 test --locked --workspace --all-targets
+
+      - name: Check formatting strict Clippy and rustdoc
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked --workspace --no-deps
+
+      - name: Build and exercise real TLS service
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 build --locked -p heptabao-server
+          binary="$PWD/target/debug/heptabao-server"
+          printf 'candidate_binary_sha256=%s\n' "$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          python qa/single-node/smoke.py --binary "$binary" --work-dir "$RUNNER_TEMP/heptabao-smoke"
+
+      - name: Exercise HA partitions and operational clients
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 240 python qa/openbao-acceptance/ha_destructive.py --binary "$binary" --expected-binary-sha256 "$digest" --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
+          timeout 360 python qa/openbao-acceptance/ha_network_partition.py --binary "$binary" --expected-binary-sha256 "$digest" --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
+          evidence="$RUNNER_TEMP/heptabao-runtime-profile-evidence"
+          mkdir -m 700 "$evidence"
+          python qa/openbao-acceptance/client_live.py --binary "$binary" --output "$evidence/client.json"
+          timeout 180 python qa/openbao-acceptance/agent_proxy_helper_live.py --binary "$binary" --output "$evidence/agent-proxy-helper.json"
+          timeout 360 python qa/openbao-acceptance/ssh_otp_ha.py --binary "$binary" --expected-binary-sha256 "$digest" --output "$evidence/ssh-ha.json"
+          timeout 240 python qa/openbao-acceptance/idle_lifecycle_ha.py --binary "$binary" --expected-binary-sha256 "$digest" --output "$evidence/idle-ha.json"
+
+      - name: Install real PostgreSQL 17 prerequisite
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17
+          /usr/lib/postgresql/17/bin/postgres --version
+          dpkg-query -W postgresql-17 postgresql-client-17
+
+      - name: Exercise real PostgreSQL
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/postgres_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --output "$RUNNER_TEMP/heptabao-postgresql-real.json"
+
+      - name: Acquire checksum-pinned official OpenBao input
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Run official differentials fixed corpus migration and Raft
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          reports="$RUNNER_TEMP/heptabao-official-profile-reports"
+          mkdir -m 700 "$reports"
+          failed=0
+          for profile in core_isolation identity_live response_wrapping pki_live remote_jwks_compare; do
+            if timeout 240 python "qa/openbao-acceptance/$profile.py" --binary "$binary" --output "$reports/$profile.json"; then
+              printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
+            else
+              status=$?
+              printf 'profile=%s process_exit=%s scope=blocked_or_failed\n' "$profile" "$status"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+          timeout 300 python qa/openbao-acceptance/run_official_comparison.py --binary "$binary" --candidate-source "$PWD" --work-dir "$RUNNER_TEMP/heptabao-fixed-corpus-comparison"
+          timeout 300 python qa/openbao-acceptance/live_migration_rehearsal.py --binary "$binary" --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
+          timeout 360 python qa/openbao-acceptance/raft_membership_live.py --binary "$binary" --dead-cleanup --output "$RUNNER_TEMP/heptabao-raft-membership.json"
+
+      - name: Run new four-track native profiles
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          reports="$RUNNER_TEMP/heptabao-four-track-reports"
+          mkdir -m 700 "$reports"
+          failed=0
+          for profile in agent-auth policy-staging cas-history; do
+            if timeout --kill-after=15 360 python qa/openbao-acceptance/four_track_live.py \
+                --profile "$profile" --binary "$binary" --expected-binary-sha256 "$digest" \
+                --output "$reports/$profile.json"; then
+              printf 'four_track_profile=%s process_exit=0\n' "$profile"
+            else
+              status=$?
+              printf 'four_track_profile=%s process_exit=%s\n' "$profile" "$status"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+
+      - name: Final immutable-source receipt
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+          binary="$PWD/target/debug/heptabao-server"
+          printf 'final_source_commit=%s\nfinal_source_tree=%s\nfinal_parents=%s\nfinal_binary_sha256=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" "$(git show -s --format=%P HEAD)" \
+            "$(sha256sum "$binary" | cut -d ' ' -f 1)"
