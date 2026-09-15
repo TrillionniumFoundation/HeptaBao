@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import core_isolation
@@ -31,6 +32,30 @@ class CoreIsolationHarnessTests(unittest.TestCase):
             core_isolation.run_scenarios(FailingClient(), observations)
         self.assertEqual(len(observations), 2)
         self.assertFalse(observations[-1]["passed"])
+
+    def test_nonprivate_output_parent_is_rejected_before_allocating_a_fixture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            parent.chmod(0o755)
+            argv = ['compare', '--binary', sys.executable, '--output', str(parent / 'report.json')]
+            with patch.object(sys, 'argv', argv), patch.object(core_isolation.tempfile, 'mkdtemp') as allocate:
+                with self.assertRaises(SystemExit) as raised:
+                    core_isolation.main()
+                self.assertEqual(raised.exception.code, 2)
+                allocate.assert_not_called()
+            self.assertFalse((parent / 'report.json').exists())
+
+    def test_private_output_parent_passes_admission_before_fixture_allocation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            parent.chmod(0o700)
+            argv = ['compare', '--binary', sys.executable, '--output', str(parent / 'report.json')]
+            with patch.object(sys, 'argv', argv), patch.object(core_isolation.tempfile, 'mkdtemp',
+                    side_effect=RuntimeError('fixture-allocation-reached')) as allocate:
+                with self.assertRaisesRegex(RuntimeError, '^fixture-allocation-reached$'):
+                    core_isolation.main()
+                allocate.assert_called_once()
+            self.assertFalse((parent / 'report.json').exists())
 
     def test_binary_binding_hashes_file_bytes(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -104,6 +104,11 @@ class ReadinessPrerequisiteTests(unittest.TestCase):
         self.assertIn('["head","merge"]',workflow)
         self.assertIn('persist-credentials: false',workflow)
         self.assertNotIn('contents: write',workflow)
+        # Do not weaken the runner's private output boundary to fit RUNNER_TEMP.
+        self.assertIn('reports="$RUNNER_TEMP/heptabao-official-profile-reports"',workflow)
+        self.assertIn('mkdir -m 700 "$reports"',workflow)
+        self.assertIn('--output "$reports/$profile.json"',workflow)
+        self.assertNotIn('--output "$RUNNER_TEMP/heptabao-$profile.json"',workflow)
 
 
 if __name__=='__main__':unittest.main()

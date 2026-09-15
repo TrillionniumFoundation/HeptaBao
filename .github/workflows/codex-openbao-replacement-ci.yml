@@ -186,10 +186,14 @@ jobs:
         run: |
           set -euo pipefail
           binary="$PWD/target/debug/heptabao-server"
+          # The comparison runners require a new caller-owned 0700 output parent;
+          # RUNNER_TEMP itself may be searchable by other users. Keep that guard.
+          reports="$RUNNER_TEMP/heptabao-official-profile-reports"
+          mkdir -m 700 "$reports"
           failed=0
           for profile in core_isolation identity_live response_wrapping pki_live remote_jwks_compare; do
             if timeout 240 python "qa/openbao-acceptance/$profile.py" \
-                --binary "$binary" --output "$RUNNER_TEMP/heptabao-$profile.json"; then
+                --binary "$binary" --output "$reports/$profile.json"; then
               printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
             else
               status=$?
