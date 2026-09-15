@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: four-track-native-gate-${{ github.ref }}
+  group: four-track-native-gate-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
           SOURCE_KIND: ${{ matrix.source_kind }}
         run: |
           set -euo pipefail
-          cp .qualification/candidate.bundle "$RUNNER_TEMP/candidate.bundle"
+          cat .qualification/candidate.bundle.b64.* | base64 -d > "$RUNNER_TEMP/candidate.bundle"
           test "$(sha256sum "$RUNNER_TEMP/candidate.bundle" | cut -d ' ' -f 1)" = "$BUNDLE_SHA256"
           git bundle verify "$RUNNER_TEMP/candidate.bundle"
           git fetch "$RUNNER_TEMP/candidate.bundle" "$CANDIDATE_SHA"
@@ -88,12 +88,10 @@ jobs:
           python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
 
       - name: Test locked Rust workspace
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
 
       - name: Check formatting strict Clippy and rustdoc
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -102,7 +100,6 @@ jobs:
           cargo +1.98.0 doc --locked --workspace --no-deps
 
       - name: Build and exercise real TLS service
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -112,7 +109,6 @@ jobs:
           python qa/single-node/smoke.py --binary "$binary" --work-dir "$RUNNER_TEMP/heptabao-smoke"
 
       - name: Exercise HA partitions and operational clients
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -128,7 +124,6 @@ jobs:
           timeout 240 python qa/openbao-acceptance/idle_lifecycle_ha.py --binary "$binary" --expected-binary-sha256 "$digest" --output "$evidence/idle-ha.json"
 
       - name: Install real PostgreSQL 17 prerequisite
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,7 +135,6 @@ jobs:
           dpkg-query -W postgresql-17 postgresql-client-17
 
       - name: Exercise real PostgreSQL
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -150,12 +144,10 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-postgresql-real.json"
 
       - name: Acquire checksum-pinned official OpenBao input
-        if: ${{ success() || failure() }}
         shell: bash
         run: python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
       - name: Run official differentials fixed corpus migration and Raft
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -181,7 +173,6 @@ jobs:
           timeout 360 python qa/openbao-acceptance/raft_membership_live.py --binary "$binary" --dead-cleanup --output "$RUNNER_TEMP/heptabao-raft-membership.json"
 
       - name: Run new four-track native profiles
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -207,7 +198,6 @@ jobs:
           test "$failed" -eq 0
 
       - name: Final immutable-source receipt
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
