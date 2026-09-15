@@ -1,0 +1,63 @@
+name: Import reviewed HeptaBao Git history
+on:
+  push:
+    branches: [ops/heptabao-validated-history-20260915]
+    paths:
+      - '.github/workflows/heptabao-validated-history-import.yml'
+      - 'transport/validated-history/**'
+permissions:
+  contents: read
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the exact transport revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconstruct exact commits without running candidate code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 transport/validated-history/import_history.py > "$RUNNER_TEMP/import-receipt.json"
+          cat "$RUNNER_TEMP/import-receipt.json"
+      - name: Fast-forward only the isolated review branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=b316cb841868c64e27e62a5fc0c7306c98631a00
+          head=08d2954f7c6b2fc094f61b39ef73d1aa508e08b2
+          tree=a0767a089039c842668d5194521a5aa671bd535b
+          destination=refs/heads/work/heptabao-validated-import-20260915
+          test "$(git rev-parse "$head^{tree}")" = "$tree"
+          git merge-base --is-ancestor "$base" "$head"
+          authorization="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$authorization"
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $authorization"
+          current="$(git ls-remote --heads origin "$destination" | cut -f1)"
+          if test "$current" = "$base"; then
+            git push origin "$head:$destination"
+          elif test "$current" != "$head"; then
+            echo 'Destination drift; refusing to modify the branch' >&2
+            exit 1
+          fi
+          test "$(git ls-remote --heads origin "$destination" | cut -f1)" = "$head"
+          printf 'Verified review branch %s at %s / %s\n' "$destination" "$head" "$tree"
+      - name: Retain source transport receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-reviewed-history-import-receipt
+          path: ${{ runner.temp }}/import-receipt.json
+          retention-days: 7
+          if-no-files-found: error
