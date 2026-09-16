@@ -23,12 +23,6 @@ impl State {
                 "online authentication requires schema 5",
             ));
         }
-        if self.schema < 5 && self.replay_epoch != 0 {
-            return Err(Response::error(
-                503,
-                "replay epoch state requires schema 5",
-            ));
-        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();

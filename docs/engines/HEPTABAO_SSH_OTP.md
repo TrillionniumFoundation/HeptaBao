@@ -37,7 +37,7 @@ by the server API tests.
 ## Durable state and lifecycle
 
 Each mount owns at most 128 roles and 1,024 registered OTP leases; the global
-the aggregate service-state cap (16 MiB local; 768 KiB on the current HA proposal path) may reject earlier. A lease ID is a separately random
+768 KiB service-state cap may reject earlier. A lease ID is a separately random
 suffix under the exact mount/credential-role path. The store keeps an OTP SHA-256
 verifier, issuer digest, bound IP/user, issue/expiry times and consumed state—not
 the original OTP. An intentionally response-wrapped OTP is retained only inside

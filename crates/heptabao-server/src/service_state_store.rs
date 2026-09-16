@@ -11,7 +11,7 @@ use std::fmt;
 
 pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-chunks-v1";
 pub(crate) const STATE_CHUNK_BYTES: usize = 512 * 1024;
-pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = 16 * 1024 * 1024;
+pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
 pub(crate) const MAX_STATE_CHUNKS: usize = MAX_SERIALIZED_STATE_BYTES / STATE_CHUNK_BYTES;
 const STATE_SLOT_COUNT: u8 = 2;
 

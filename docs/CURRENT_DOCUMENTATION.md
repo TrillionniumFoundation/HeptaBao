@@ -20,7 +20,6 @@ The exact Git commit and tree outrank generated status prose.
 ## Architecture
 
 - `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 5, legacy read admission, commit promotion and rollback boundaries.
-- `docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md` — authenticated replay retirement, Raft epoch ordering, follower catch-up and recovery fencing.
 
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.

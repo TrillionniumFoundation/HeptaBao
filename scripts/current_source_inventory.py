@@ -22,7 +22,7 @@ SNAPSHOT = "planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json"
 HISTORICAL = "planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml"
 # Exact preserved bytes at the reviewed input to this remediation, not regenerated.
 HISTORICAL_SHA256 = "4b88d830ad088b9b611f051164b1c202d3cfcee986d100ae67706c701f5c8cf7"
-SCHEMA = "heptabao.current-source-inventory.v2"
+SCHEMA = "heptabao.current-source-inventory.v3"
 PUBLIC = re.compile(r"^\s*pub(?:\([^)]*\))?\s+(?:(?:async|unsafe|const)\s+)*(fn|struct|enum|trait|type|mod|use|static|const)\s+([A-Za-z_][A-Za-z0-9_]*)")
 TEST = re.compile(r"^\s*#\[(?:test|(?:tokio|async_std)::test)(?:\([^]]*\))?\]\s*$")
 FN = re.compile(r"\b(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)")
@@ -140,11 +140,13 @@ def inventory(root: Path = ROOT) -> tuple[dict[str, Any], dict[str, Any]]:
     guides = {p.stem for p in (root / "docs/modules").glob("heptabao-*.md")}
     if guides != set(all_details):
         raise ValueError("module guide set differs from the expanded workspace")
+    binding = {"workspace_sha256": digest(read(root, "Cargo.toml")),
+               "lockfile_sha256": digest(read(root, "Cargo.lock")),
+               "historical_v1_4_7_sha256": HISTORICAL_SHA256,
+               "modules": rows}
     snapshot = {"schema": SCHEMA, "scope": "source-and-document-binding-only",
-                "workspace_sha256": digest(read(root, "Cargo.toml")),
-                "lockfile_sha256": digest(read(root, "Cargo.lock")),
-                "historical_v1_4_7_sha256": HISTORICAL_SHA256,
-                "package_count": len(rows), "modules": rows,
+                "package_count": len(rows),
+                "inventory_sha256": digest(canonical(binding)),
                 "qualification": False, "compatibility_claim": False,
                 "production_authority": False, "release_authority": False}
     return snapshot, all_details
@@ -154,7 +156,7 @@ def validate(root: Path = ROOT) -> list[str]:
     try:
         expected, _ = inventory(root)
         if read(root, SNAPSHOT) != canonical(expected):
-            return ["current source inventory drift: regenerate and review the V2 snapshot, not V1.4.7"]
+            return ["current source inventory drift: regenerate and review the compact current snapshot, not V1.4.7"]
         return []
     except (OSError, ValueError, KeyError, TypeError) as error:
         return [f"current source inventory: {error}"]

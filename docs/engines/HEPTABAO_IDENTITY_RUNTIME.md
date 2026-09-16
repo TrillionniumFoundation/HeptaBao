@@ -55,7 +55,7 @@ Metadata permits 64 entries, keys up to 128 bytes and values up to 1,024 bytes.
 Policies are bounded to 64 names. Membership/merge inputs are bounded to 256
 IDs, and nested-group traversal has a depth bound of 32.
 
-These input limits do not replace the aggregate Service state bounds (16 MiB local chunk/manifest persistence and the tighter 768 KiB HA proposal boundary)
+These input limits do not replace the 768 KiB aggregate Service state ceiling
 or qualify a production-scale entity index. Live projection rejects more than
 4,096 group records, 256 reached groups, depth greater than 32, or 256 effective
 policy names. Login-created entity/alias maps each have a 4,096-record ceiling.

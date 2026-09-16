@@ -11,10 +11,7 @@ The current Service state schema is **5**. Its source constant is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
 internal owners, not competing independent stores. Schema 5 additionally owns
-encrypted Kubernetes config/role maps, OIDC config/role/session/clock maps, and
-the cluster-visible `replay_epoch` used to coordinate explicit durable replay
-retirement. A zero epoch is omitted from canonical JSON for historical byte
-stability. Separate seal metadata uses
+encrypted Kubernetes config/role maps and OIDC config/role/session/clock maps. Separate seal metadata uses
 schema 1; the application schema must never be inferred from that number.
 
 ## Read admission and mutation promotion
@@ -25,11 +22,11 @@ schema 1; the application schema must never be inferred from that number.
 | 2 | Live Identity is permitted; no wrapping, lease or remote-JWT state; no database mount/records; default Raft-admin state. |
 | 3 | Wrapping/local leases are permitted; no remote-JWT state; no database mount/records; default Raft-admin state. |
 | 4 | No online Kubernetes/OIDC method registry or state; normal scope, lease, wrapper, database and Raft-admin validators still apply. |
-| 5 | Current format, including online method/OIDC one-use session validators and a nonzero replay epoch when retirement has occurred. |
+| 5 | Current format, including online method and OIDC one-use session validators. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
-Every schema 1–4 record additionally rejects online authentication state, a
-new online method registry entry, or a nonzero replay epoch. Online maps omitted from legacy records are
+Every schema 1–4 record additionally rejects online authentication state or a
+new online method registry entry. Online maps omitted from legacy records are
 default-empty, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
@@ -77,13 +74,6 @@ is outside this format contract.
 Raft membership and persisted snapshots are native consensus facts, distinct from
 Service configuration. Read [the Raft administration contract](../operations/HEPTABAO_RAFT_ADMINISTRATION.md).
 No local schema or authenticated snapshot is an external monotonic rollback anchor.
-
-Replay retirement has its own ordering contract. The application `replay_epoch`
-must never lead authenticated durable replay authority; an older application
-marker may only be normalized upward to an already-published durable epoch during
-recovery. In HA, the next epoch is first part of the committed application state
-and each node retires locally while applying that state. See
-[Replay epoch retirement and HA application protocol](HEPTABAO_REPLAY_EPOCH_PROTOCOL.md).
 
 ## Verification and release distinction
 

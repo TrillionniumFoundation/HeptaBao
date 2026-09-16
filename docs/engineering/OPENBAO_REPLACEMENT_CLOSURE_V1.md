@@ -12,7 +12,7 @@ The repository may have many development branches. They are inputs to engineerin
 
 ## 2. Storage architecture closure
 
-The current server owns one logical `State`, but local durability now publishes a versioned chunk/manifest representation with a 16 MiB serialized-state bound and 512 KiB chunks. The logical mutation path still serializes the complete state and current HA proposals remain bounded to 768 KiB. The replay ledger is bounded to 32,000 detailed identities per authenticated epoch, with explicit epoch retirement. Chunking, epoch rotation, or raising constants alone is not storage-scale closure.
+The current server persists the native product state as one serialized `State` value at `system/state`. The service-level preflight currently bounds that whole value at 768 KiB and the replay ledger retains a bounded set of operation identities. Raising those constants is not closure.
 
 The storage transition must preserve the existing barrier and crash semantics while moving to record-oriented state. The required order is:
 
@@ -28,7 +28,7 @@ Until all seven properties have executable evidence, `scalable_state_storage` re
 
 ## 3. Replay identity lifecycle closure
 
-Journal compaction is not replay-ledger retirement. Ordinary compaction deliberately preserves the current epoch ledger. The runtime now has an authenticated replay-epoch retirement protocol and this candidate carries the epoch in replicated application state; admission still requires exact multi-host execution across retirement, stale retry, snapshot and failover boundaries.
+Journal compaction is not replay-ledger retirement. The current replay ledger deliberately survives compaction, so its finite retained-identity budget remains a lifetime ceiling.
 
 Retirement therefore needs its own protocol. It must prove that an identity retired from the active exact set can never be replayed as a fresh mutation after process restart, snapshot restore, HA leadership change, or stale client retry. An implementation may use epochs, durable high-water marks, immutable retired digests, or another exact scheme, but probabilistic acceptance is forbidden. False negatives would violate idempotency; silently dropping old identities is not permitted.
 

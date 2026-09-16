@@ -38,7 +38,7 @@ periodic rewrite; clocks cannot regress. Tick latency is not an expiry SLO under
 contention, disk failure, quorum loss or clock failure. Clients still face the
 online time/issuer check before receiving data.
 
-The current local state/replay bounds are inherited (16 MiB chunked local state; HA proposals retain the tighter 768 KiB
+The maximum source state and registry bounds are inherited (including the 768 KiB
 service state ceiling). The current code clones/scans bounded state; it is not an
 indexed million-lease scheduler and has no general database/PKI/cloud callback.
 No new durable fields were added by the worker: Service schema remains 3.

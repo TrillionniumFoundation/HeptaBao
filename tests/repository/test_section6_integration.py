@@ -29,14 +29,18 @@ class SectionSixIntegrationTests(unittest.TestCase):
 
     def test_capacity_extension_is_explicit_bounded_and_atomically_published(self):
         service = (ROOT/'crates/heptabao-server/src/service.rs').read_text()
+        lib = (ROOT/'crates/heptabao-server/src/lib.rs').read_text()
         state_store = (ROOT/'crates/heptabao-server/src/service_state_store.rs').read_text()
+        ha_state = (ROOT/'crates/heptabao-server/src/ha_state.rs').read_text()
         durable = (ROOT/'crates/heptabao-durable-service/src/capacity.rs').read_text()
 
         self.assertIn(
             'MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES',
             service,
         )
-        self.assertIn('MAX_SERIALIZED_STATE_BYTES: usize = 16 * 1024 * 1024', state_store)
+        self.assertIn('MAX_APPLICATION_STATE_BYTES: usize = 16 * 1024 * 1024', lib)
+        self.assertIn('MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES', state_store)
+        self.assertIn('MAX_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES', ha_state)
         self.assertIn('STATE_CHUNK_BYTES: usize = 512 * 1024', state_store)
         self.assertIn('const STATE_SLOT_COUNT: u8 = 2', state_store)
         self.assertIn('heptabao-state-chunks-v1', state_store)
