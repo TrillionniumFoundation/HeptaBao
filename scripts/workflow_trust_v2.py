@@ -262,85 +262,53 @@ def _download(
     options: dict[str, Any], filename: str, location: str, job: dict[str, Any],
     observer_exception: ObserverException, env: dict[str, str],
 ) -> None:
-    if set(options) != {"pattern", "path", "merge-multiple"}:
-        raise base.PolicyError(f"{location}: download-artifact input set outside closed schema")
-    expected = APPROVED_DOWNLOAD_OPTIONS.get((filename, location))
-    actual = {name: options.get(name) for name in ("pattern", "path", "merge-multiple")}
-    if expected != actual:
-        raise base.PolicyError(f"{location}: download-artifact inputs are not the reviewed invocation")
+    if APPROVED_DOWNLOAD_OPTIONS.get((filename, location)) != options:
+        raise base.PolicyError(f"{location}: download-artifact invocation outside closed schema")
+    for match in EXPRESSION_RE.finditer(str(options["pattern"])):
+        _check_expression(match.group(1), job, f"{location}.with.pattern", observer_exception, env)
+    check_upload_path(str(options["path"]), job, f"{location}.with.path", observer_exception, env)
     if options.get("merge-multiple") is not False:
         raise base.PolicyError(f"{location}: artifact merging is forbidden")
-    _check_template(options["pattern"], job, f"{location}.with.pattern", observer_exception, env)
-    check_upload_path(options["path"], job, f"{location}.with.path", observer_exception, env)
-
-
-def _action(
-    step: dict[str, Any], filename: str, location: str, job: dict[str, Any],
-    observer_exception: ObserverException, env: dict[str, str],
-) -> None:
-    action = step.get("uses")
-    options = step.get("with", {})
-    if not isinstance(action, str) or not isinstance(options, dict):
-        raise base.PolicyError(f"{location}: invalid action step")
-    if action == CHECKOUT_ACTION:
-        _checkout(options, location, env)
-    elif action == SETUP_PYTHON_ACTION:
-        _setup_python(options, location)
-    elif action == UPLOAD_ARTIFACT_ACTION:
-        _upload(options, filename, location, job, observer_exception, env)
-    elif action == DOWNLOAD_ARTIFACT_ACTION:
-        _download(options, filename, location, job, observer_exception, env)
-    elif action not in base.PINNED_ACTIONS:
-        raise base.PolicyError(f"{location}: action is not pinned in the executable allowlist")
 
 
 def validate_extra(text: str, filename: str = "workflow.yml") -> None:
-    workflow = base.load_workflow(text, filename)
-    if not isinstance(workflow, dict):
-        raise base.PolicyError("workflow root must be a mapping")
+    workflow = base.parse_workflow(text)
+    frozen = (
+        filename == base.HISTORICAL_READ_TOKEN_FILE
+        and hashlib.sha256(text.encode("utf-8")).hexdigest() == base.HISTORICAL_READ_TOKEN_DIGEST
+    )
+
+    def observer_exception(location: str, value: Any) -> bool:
+        return frozen and location in base.HISTORICAL_READ_TOKEN_LOCATIONS and value == "${{ github.token }}"
+
     root_env = workflow.get("env", {})
     if not isinstance(root_env, dict):
-        raise base.PolicyError("workflow env must be a mapping")
-    jobs = workflow.get("jobs")
-    if not isinstance(jobs, dict):
-        raise base.PolicyError("workflow jobs must be a mapping")
-    observer_exception = base.make_observer_exception(filename)
-    for job_name, job in jobs.items():
+        raise base.PolicyError("workflow.env: explicit mapping required")
+    _check_env(root_env, {}, "workflow.env", observer_exception, dict(root_env))
+    for job_name, job in workflow["jobs"].items():
         location = f"workflow.jobs.{job_name}"
-        if not isinstance(job, dict):
-            raise base.PolicyError(f"{location}: job must be a mapping")
-        effective_env: dict[str, str] = {}
-        _check_env(root_env, job, "workflow.env", observer_exception, effective_env)
-        effective_env.update(root_env)
         job_env = job.get("env", {})
         if not isinstance(job_env, dict):
-            raise base.PolicyError(f"{location}.env: mapping required")
-        _check_env(job_env, job, f"{location}.env", observer_exception, effective_env)
-        effective_env.update(job_env)
-        steps = job.get("steps", [])
-        if not isinstance(steps, list):
-            raise base.PolicyError(f"{location}.steps: list required")
-        for index, step in enumerate(steps):
+            raise base.PolicyError(f"{location}.env: explicit mapping required")
+        effective_job_env = {**root_env, **job_env}
+        _check_env(job_env, job, f"{location}.env", observer_exception, effective_job_env)
+        for index, step in enumerate(job["steps"]):
             step_location = f"{location}.steps[{index}]"
-            if not isinstance(step, dict):
-                raise base.PolicyError(f"{step_location}: mapping required")
             step_env = step.get("env", {})
             if not isinstance(step_env, dict):
                 raise base.PolicyError(f"{step_location}.env: mapping required")
-            scoped_env = dict(effective_env)
-            _check_env(step_env, job, f"{step_location}.env", observer_exception, scoped_env)
-            scoped_env.update(step_env)
-            if "uses" in step:
-                _action(step, filename, step_location, job, observer_exception, scoped_env)
-            run = step.get("run")
-            if run is not None:
-                if not isinstance(run, str):
-                    raise base.PolicyError(f"{step_location}.run: script must be a string")
-                for match in EXPRESSION_RE.finditer(run):
-                    _check_expression(match.group(1), job, f"{step_location}.run", observer_exception, scoped_env)
-                _check_env_sinks(run, scoped_env, f"{step_location}.run")
-
-
-def registry_digest() -> str:
-    path = Path(__file__).with_name("workflow_trust_action_registry_v2.json")
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+            env = {**effective_job_env, **step_env}
+            _check_env(step_env, job, f"{step_location}.env", observer_exception, env)
+            if "run" in step:
+                _check_env_sinks(step["run"], env, step_location)
+                continue
+            uses = step.get("uses")
+            options = step.get("with", {})
+            if uses == CHECKOUT_ACTION:
+                _checkout(options, step_location, env)
+            elif uses == SETUP_PYTHON_ACTION:
+                _setup_python(options, step_location)
+            elif uses == UPLOAD_ARTIFACT_ACTION:
+                _upload(options, filename, step_location, job, observer_exception, env)
+            elif uses == DOWNLOAD_ARTIFACT_ACTION:
+                _download(options, filename, step_location, job, observer_exception, env)
