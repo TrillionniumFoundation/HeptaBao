@@ -1746,3 +1746,102 @@ fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_re
     );
     Ok(())
 }
+
+#[test]
+fn system_backend_health_seal_and_error_precedence_are_executable()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+
+    let health = call(&mut service, "GET", "sys/health", "", json!({}));
+    assert_eq!(health.status, 501);
+    assert_eq!(health.body["initialized"], false);
+    assert_eq!(health.body["sealed"], true);
+    assert_eq!(
+        call(&mut service, "GET", "sys/init", "", json!({})).body,
+        json!({"initialized":false})
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/init",
+            "",
+            json!({"secret_shares":1,"secret_threshold":1,"unknown":true}),
+        )
+        .status,
+        400
+    );
+    assert!(!service.initialized());
+
+    let initialized = call(
+        &mut service,
+        "POST",
+        "sys/init",
+        "",
+        json!({"secret_shares":2,"secret_threshold":2}),
+    );
+    assert_eq!(initialized.status, 200);
+    let shares = initialized.body["keys_base64"]
+        .as_array()
+        .ok_or("missing initialization shares")?
+        .iter()
+        .map(|value| value.as_str().ok_or("invalid share").map(str::to_owned))
+        .collect::<Result<Vec<_>, _>>()?;
+    let root_token = initialized.body["root_token"]
+        .as_str()
+        .ok_or("missing root token")?
+        .to_owned();
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", "", json!({})).status,
+        503
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/blocked",
+            &root_token,
+            json!({})
+        )
+        .status,
+        503,
+        "sealed state must win before active authenticated dispatch"
+    );
+    for share in &shares {
+        assert_eq!(
+            call(&mut service, "POST", "sys/unseal", "", json!({"key":share}),).status,
+            200
+        );
+    }
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", "", json!({})).status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", "", json!({})).status,
+        403,
+        "root authorization must precede seal mutation"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/rekey/update",
+            &root_token,
+            json!({"nonce":"missing","key":"bad"}),
+        )
+        .status,
+        400
+    );
+    assert_eq!(service.seal.as_ref().ok_or("missing seal")?.generation, 1);
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "HEAD", "sys/health", "", json!({})).status,
+        503
+    );
+    Ok(())
+}

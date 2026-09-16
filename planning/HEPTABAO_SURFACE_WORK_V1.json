@@ -333,7 +333,7 @@
     {
       "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
       "category": "core_system",
-      "implementation_status": "runtime_partial",
+      "implementation_status": "runtime_complete",
       "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "sys/init, sys/unseal, sys/seal, sys/health, sys/rekey/*",
@@ -349,7 +349,37 @@
       "available_scoped_profiles": [
         "fixed"
       ],
-      "whole_surface_admitted": false
+      "whole_surface_admitted": false,
+      "implementation_evidence": {
+        "source_paths": [
+          "crates/heptabao-server/src/service.rs",
+          "planning/HEPTABAO_SYSTEM_BACKEND_ENDPOINT_INVENTORY_V1.json"
+        ],
+        "test_anchors": [
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "initialization_recovery_survives_response_loss_and_requires_root_ack"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "verified_rekey_survives_response_loss_restart_and_cancel"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "system_backend_health_seal_and_error_precedence_are_executable"
+          }
+        ],
+        "local_dimensions": [
+          "protocol_framing",
+          "authorization_before_effect",
+          "effect_readback",
+          "crash_reopen"
+        ]
+      }
     },
     {
       "surface_id": "HB-SURFACE-MOUNT-REGISTRY",

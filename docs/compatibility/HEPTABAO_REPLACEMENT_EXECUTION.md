@@ -62,7 +62,7 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 ### HB-SURFACE-SYSTEM-BACKEND
 
-Implementation: `PARTIAL_RUNTIME`. Original work packages: `H07-WP05`, `H07-WP09`.
+Implementation: `RUNTIME_COMPLETE_LOCAL`. Original work packages: `H07-WP05`, `H07-WP09`.
 API families: `sys/init`; `sys/unseal`; `sys/seal`; `sys/rekey/*`; `sys/health`.
 Runtime source: `crates/heptabao-server/src/service.rs`.
 Separate contracts: none claimed.
@@ -74,7 +74,7 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Lifecycle:** Reopen initialization, lost response and verified rekey without publishing two roots.
 
-**Remaining scope:** Endpoint-level inventory remains incomplete.
+**Remaining scope:** Local system endpoint/method/field inventory, sealed/error precedence, initialization reply-loss recovery, threshold unseal and verified rekey/reopen behavior are executable; format migration, real multi-host upgrade/fault, full OpenBao 2.6.2 differential and independent admission remain later phases.
 
 Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
