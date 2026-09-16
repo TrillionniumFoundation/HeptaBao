@@ -5,95 +5,124 @@ and unresolved scalability exit, not a new plan or a production-capacity claim.
 
 ## Real owner and interface
 
-The running Service owns one serialized encrypted application record. Auth,
-Identity, KV, Transit, PKI, SSH, wrappers, local leases, PostgreSQL intents and
-Raft-admin state share that record. The current limit is **768 KiB aggregate**,
-not 768 KiB per secret. The server retains **32,000 operation identities**. Each
-underlying durable file/journal is bounded to **64 MiB**; values are bounded to
-1 MiB. Request parsing limits do not override this smaller aggregate limit.
+The running Service owns one logical serialized `State` containing Auth, Identity,
+KV, Transit, PKI, SSH, wrappers, local leases, PostgreSQL intents and Raft-admin
+state. The durable representation is no longer one 768 KiB value: a state
+publication is split into **512 KiB** immutable chunks plus a versioned
+`heptabao-state-chunks-v1` manifest and is committed by one durable atomic batch.
+The shared serialized-state admission bound is **16 MiB**, and HA replication uses
+that same bound. A point mutation can still serialize and replicate the complete
+logical state, so this is bounded chunking rather than record-oriented scalability.
+
+The active replay ledger admits at most **32,000 identities per epoch**. In
+single-node mode a root-authorized replay retirement operation creates a durable
+authenticated generation frontier, advances the replay epoch, checkpoints the
+journal and allows new identities without making retired requests fresh again.
+HA mode deliberately rejects replay retirement until a coordinated cluster epoch
+transition is implemented and qualified. Each underlying durable file/journal is
+bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 
 `GET /v1/sys/internal/capacity` accepts an empty request object and reports:
 
 | Field | Meaning |
 |---|---|
-| `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | Current aggregate committed application payload and hard bound. |
-| `retained_operations`, `operation_limit`, `operations_remaining` | Non-evicted local durable replay identities and hard bound. |
+| `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | Current serialized logical application payload and 16 MiB hard bound. |
+| `retained_operations`, `operation_limit`, `operations_remaining` | Active-epoch local durable replay identities and remaining slots. |
 | `journal_bytes`, `journal_limit_bytes` | Current local replay journal and configured hard bound. |
 | `generation` | Durable committed local generation, not a cluster-wide capacity reservation. |
 | `admission_reserved` | Always false: sizes, ciphertext overhead, concurrent activity or I/O may invalidate headroom. |
-| `compaction_reclaims_operation_identities` | Always false. Compaction is not ledger garbage collection. |
+| `compaction_reclaims_operation_identities` | Always false. Ordinary compaction is not replay retirement. |
 
-Only a root token in the root namespace may enter this diagnostic. A non-root
-policy with read/sudo is not sufficient. Normal request and result audit remain;
-sealed state and recovery fencing reject observation. HA forwarding returns the
-serving leader's local counters, not a sum or a promise about all replicas.
+Only a root token in the root namespace may enter this diagnostic. Normal request
+and result audit remain; sealed state and recovery fencing reject observation. HA
+forwarding returns the serving leader's local counters, not a sum or reservation.
 No token, key, path, resource name, request identity or credential is returned.
 This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
+## State publication and legacy migration
+
+`system/state` may contain either the historical serialized `State` record or the
+current manifest. A writer alternates between two bounded chunk slots. All chunks
+for the next state and the new manifest are submitted through one
+`DurableService::apply_batch` binding, so one logical state publication consumes
+one replay identity and one durable generation. A reader accepts only a complete
+manifest whose state schema, chunk count, total length and SHA-256 binding verify.
+
+On unseal, a valid legacy state is decoded before conversion and is rewritten
+through the same atomic batch protocol. Malformed manifests, missing chunks,
+digest mismatches or indeterminate publication outcomes never fall back to an
+older representation by guesswork. Fresh initialization and HA catch-up use the
+same state publication path.
+
 ## Before-entry capacity handling
 
-`DurableService::preflight_new_identity` rejects a known full replay ledger before
-`Service::persist` proposes a fresh HA operation. This preflight is not a future
-I/O guarantee. Exact duplicates still use their existing retained record.
+`DurableService::preflight_new_identity` rejects a known-full active replay epoch
+before `Service::persist` proposes a fresh HA operation. This preflight is not a
+future I/O guarantee. Exact duplicates inside the active epoch use their retained
+record; identities at or before a retired authenticated frontier remain stale and
+cannot be admitted as new work.
 
 The server uses `put_with_compaction`: attempt once, and only on the specific
-`JournalCapacityExhausted` result (before an intent was appended), create one
+`JournalCapacityExhausted` result before an intent was appended, create one
 existing authenticated checkpoint and attempt that exact envelope once more.
 There is no retry loop. `OutcomeUnknown`, corruption, I/O failure, binding conflict
-and full retained-identity capacity never trigger retry. A checkpoint publication
-failure fences the Service when it fences its durable owner. The old strict
-`put` API retains its original behavior for callers that do not opt in.
+and full active-epoch capacity never trigger retry. A checkpoint publication
+failure fences the Service when it fences its durable owner.
 
-Every committed identity remains in the checkpoint's authenticated ledger.
-Before-HA-publication state/identity capacity refusals return HTTP 507. Once Raft
-has committed the effect, any local persistence failure (including capacity during
-leader publication or follower synchronization) is instead HTTP 503, fences the
-Service and preserves any local recovery reference. It cannot be treated as a
-failed-before-entry write. Unknown effects remain 503 with
-recovery semantics and never release the requested secret. A failed domain
-request does not restore a finite token use that already committed at admission.
-Deleting journals, lowering schema numbers or resetting identities is unsupported.
+Before-HA-publication state or identity capacity refusal returns HTTP 507. Once
+Raft has committed an effect, any local persistence failure instead returns 503,
+fences the Service and preserves its recovery reference. It cannot be relabelled
+as a safe before-entry failure. Unknown effects never release requested secret
+material or become automatic retries.
+
+## Replay retirement
+
+`POST`/`PUT /v1/sys/storage/raft/replay-retire` with an empty object is root-only.
+In single-node mode it compacts first, commits a new replay epoch and authenticated
+retired-through generation, checkpoints that state, and returns the previous and
+current epoch plus retired counts. Restart, crash-window and encrypted
+backup/restore tests verify that requests from the retired epoch remain rejected.
+
+When HA is enabled the route returns 409. Retiring one node's active set without a
+quorum-ordered epoch transition could permit replicas to disagree about whether a
+stale request is a duplicate, so HA retirement remains a replacement blocker.
+The required cluster protocol must order the epoch/frontier through consensus,
+apply it on every voter before old identities are discarded, survive leader loss,
+snapshot install and stale-node rejoin, and reject delayed old-epoch traffic.
 
 ## Executable evidence
 
-`crates/heptabao-durable-service/src/capacity_tests.rs` tests repeated real durable
-puts across a deliberately small journal budget, exact duplicate preservation,
-known ledger saturation, wrong-binding no-retry, unknown-outcome fencing and
-reopen counters and actual checkpoint I/O failure fencing. `crates/heptabao-server/src/service_capacity.rs` tests the actual
-Service route, authorization, schema/bounds, compaction and reopen.
+Current source anchors include:
 
-`capacity_live.py` (below) starts a new synthetic loopback TLS service,
-fills the actual aggregate state, verifies 507 without a rejected-key side effect,
-checks retained values, compacts and SIGKILL/reopens. Its measurements describe
-that bounded fixture only. It cannot test an existing endpoint or mutate live data.
-Use the current source/binary-bound output; an older successful run is not inherited.
+- `crates/heptabao-server/src/service_state_store.rs` for manifest/chunk framing,
+  shared 16 MiB admission and legacy-state assembly;
+- `crates/heptabao-server/src/ha_state.rs` for authenticated HA replication using
+  the same serialized-state bound, including a >768 KiB round trip;
+- `crates/heptabao-durable-service/src/capacity.rs` for replay retirement restart,
+  crash-window and backup/restore tests;
+- `crates/heptabao-server/src/service_capacity_tests.rs` for root-only retirement
+  and continued state commits in the new epoch;
+- `qa/openbao-acceptance/capacity_live.py` for a real synthetic TLS process.
 
-```bash
-python qa/openbao-acceptance/capacity_live.py \
-  --binary /absolute/heptabao-server --output /private/new-receipt.json
-```
+Commands and source anchors are requirements, not inherited success receipts. The
+exact candidate and prospective merge must execute the native gate before they may
+be used as admission evidence.
 
-## Scalable-storage exit still required
+## Scalable-storage and HA lifecycle exits still required
 
-The current state, snapshot and ledger are still serialized monolithically. Neither
-this diagnostic nor automatic checkpointing changes that complexity or removes
-permanent operation-count saturation. Do not call this an unlimited store.
+Chunking removes the obsolete single-value 768 KiB ceiling but does not remove
+whole-state serialization or whole-state Raft proposals. Production-scale closure
+still requires record ownership or another demonstrated architecture whose write
+amplification, peak memory, snapshot streaming and recovery cost remain bounded as
+the dataset grows. It also requires the coordinated HA replay-epoch protocol above.
 
-The next storage-format implementation must use keyed record deltas and an atomic
-authenticated transaction manifest/frontier shared by Auth, engines and external
-intents, while preserving the existing authorization/audit/durability order. It
-must distinguish the application schema from storage format, preserve the old
-source on migration, and reject unsupported binaries. A request-retirement epoch
-must reject every old identity even after its detailed record is archived; deleting
-records without such a fence would re-enable replay and is not acceptable.
+Before admission, exercise total datasets materially above the legacy ceiling,
+long write histories beyond one replay epoch, leader/follower catch-up,
+snapshot/backup/restore, disk-full/torn-write/fsync faults, stale-node rejoin,
+rolling restart and supported mixed-version behavior. Record peak memory, bytes
+written per mutation, throughput and tail latency versus total stored bytes. Do
+not raise constants and infer scalability from a small happy-path fixture.
 
-Before admission, execute large object counts and total sizes, long-write histories,
-leader/follower catch-up, snapshot/backup/restore, disk-full/torn-write/fsync faults,
-mixed-version refusal, restart and measured RPO/RTO. Record peak memory, bytes
-written per mutation, throughput and tail latency versus total stored bytes. Do not
-raise constants and infer safety or performance from a tiny happy-path fixture.
-
-The same precedence applies after an observed PostgreSQL effect: final local
-publication failure preserves the pending lease and returns reconcile-only 503,
-not a new-attempt capacity rejection. See the provider completion-publication
-contract in `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
+The same precedence applies after an observed external provider effect: final
+local publication failure preserves pending reconciliation state and returns
+reconcile-only 503, not a new-attempt capacity rejection.
