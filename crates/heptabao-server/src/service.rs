@@ -876,6 +876,7 @@ impl Service {
             || matches!(
                 path,
                 "sys/storage/raft/compact"
+                    | "sys/storage/raft/replay-retire"
                     | "sys/storage/raft/snapshot"
                     | "sys/storage/raft/snapshot-force"
             )
@@ -1223,8 +1224,10 @@ impl Service {
             mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
         }
         mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
+        let replay_epoch = durable.replay_epoch();
         if compact_before_entry {
-            durable.apply_batch_with_compaction(
+            durable.apply_batch_with_compaction_in_replay_epoch(
+                replay_epoch,
                 "heptabao-server",
                 "system",
                 operation_id,
@@ -1232,7 +1235,8 @@ impl Service {
                 mutations,
             )
         } else {
-            durable.apply_batch(
+            durable.apply_batch_in_replay_epoch(
+                replay_epoch,
                 "heptabao-server",
                 "system",
                 operation_id,
@@ -2286,7 +2290,10 @@ impl Service {
             "remaining_request_slots": capacity.max_retained_requests.saturating_sub(capacity.retained_requests),
             "recovery_required": false,
             "automatic_journal_checkpoint": true,
-            "replay_id_eviction": false
+            "replay_id_eviction": false,
+            "replay_epoch": durable.replay_epoch(),
+            "retired_through_generation": durable.retired_through_generation(),
+            "replay_retirement": "explicit-single-node"
         }}))
     }
 
@@ -2319,6 +2326,45 @@ impl Service {
                     status: 404,
                     body: json!({"errors":["recovery reference is unknown"]}),
                 },
+            };
+        }
+
+        if path == "sys/storage/raft/replay-retire" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "replay retirement requires POST or PUT");
+            }
+            if body.as_object().is_none_or(|object| !object.is_empty()) {
+                return Response::error(400, "replay retirement accepts an empty JSON object");
+            }
+            // Multi-node epoch transition needs quorum ordering and is deliberately
+            // deferred to the HA fault/upgrade closure. Never retire one node's
+            // replay frontier behind its peers.
+            if self.ha.is_some() {
+                return Response::error(
+                    409,
+                    "replay retirement requires single-node mode until coordinated HA epoch transition is qualified",
+                );
+            }
+            let (result, fenced) = {
+                let Some(durable) = self.durable.as_mut() else {
+                    return Response::error(503, "server is sealed");
+                };
+                let result = durable.retire_replay_epoch();
+                (result, durable.recovery_required())
+            };
+            if fenced {
+                self.recovery_required = true;
+            }
+            return match result {
+                Ok(outcome) => Response::ok(json!({
+                    "data": {
+                        "previous_epoch": outcome.previous_epoch,
+                        "replay_epoch": outcome.current_epoch,
+                        "retired_through_generation": outcome.retired_through_generation,
+                        "retired_requests": outcome.retired_requests,
+                    }
+                })),
+                Err(_) => Response::error(503, "replay retirement failed; inspect durable state"),
             };
         }
 

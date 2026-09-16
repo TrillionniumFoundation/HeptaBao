@@ -682,4 +682,76 @@ mod tests {
         assert_eq!(decoded.len(), 64);
         Ok(())
     }
+
+    #[test]
+    fn replay_retirement_crash_window_recovers_authenticated_frontier() -> Result<(), ServiceError>
+    {
+        let _serial = serial_test();
+        let root = TestRoot::new("replay-retirement-crash-window")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 8)?;
+        service.put_in_replay_epoch(0, put_request("old-a", b"a")?)?;
+        service.put_in_replay_epoch(0, put_request("old-b", b"b")?)?;
+        service.compact()?;
+        let generation = service.generation();
+        let empty = BTreeMap::new();
+        let next_ledger = sealed_ledger(&service.barrier, generation, 1, generation, &empty)?;
+        // Simulate process death after the authenticated HBC3 ledger/frontier
+        // replacement and before the replacement empty-ledger checkpoint.
+        atomic_write(&service.root, &ledger_path(&service.root), &next_ledger)?;
+        drop(service);
+
+        let mut recovered = DurableService::reopen(&root.0, TestBarrier::new(), 8)?;
+        assert_eq!(recovered.replay_epoch(), 1);
+        assert_eq!(recovered.retired_through_generation(), generation);
+        assert_eq!(recovered.retained_request_count(), 0);
+        assert!(matches!(
+            recovered.put_in_replay_epoch(0, put_request("old-a", b"a")?),
+            Err(ServiceError::ReplayEpochMismatch)
+        ));
+        assert!(matches!(
+            recovered.put_in_replay_epoch(1, put_request("new-a", b"c")?)?,
+            MutationOutcome::Committed { generation: 3, .. }
+        ));
+        drop(recovered);
+        let recovered = DurableService::reopen(&root.0, TestBarrier::new(), 8)?;
+        assert_eq!(recovered.replay_epoch(), 1);
+        assert_eq!(recovered.retired_through_generation(), 2);
+        assert_eq!(recovered.generation(), 3);
+        Ok(())
+    }
+
+    #[test]
+    fn replay_retirement_backup_restore_preserves_epoch_and_frontier() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("replay-retirement-backup")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 8)?;
+        service.put_in_replay_epoch(0, put_request("old-a", b"a")?)?;
+        service.retire_replay_epoch()?;
+        let first = service.put_in_replay_epoch(1, put_request("epoch-one", b"b")?)?;
+        let backup = service.export_backup()?;
+        service.put_in_replay_epoch(1, put_request("later", b"c")?)?;
+        let restore = service.restore_backup(&backup, true)?;
+        assert_eq!(restore.restored_generation, 2);
+        assert_eq!(service.replay_epoch(), 1);
+        assert_eq!(service.retired_through_generation(), 1);
+        assert_eq!(service.retained_request_count(), 1);
+        assert!(matches!(
+            service.put_in_replay_epoch(0, put_request("old-a", b"a")?),
+            Err(ServiceError::ReplayEpochMismatch)
+        ));
+        match first {
+            MutationOutcome::Committed {
+                recovery_reference, ..
+            } => assert!(matches!(
+                service.reconcile(&recovery_reference),
+                ReconciliationStatus::Committed { generation: 2 }
+            )),
+            _ => return Err(ServiceError::CorruptState),
+        }
+        assert!(matches!(
+            service.put_in_replay_epoch(1, put_request("epoch-one", b"b")?)?,
+            MutationOutcome::Duplicate { generation: 2, .. }
+        ));
+        Ok(())
+    }
 }
