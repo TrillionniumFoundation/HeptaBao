@@ -284,8 +284,8 @@ mod tests {
     }
 
     #[test]
-    fn seal_subtree_disables_descendants_and_strict_resolution_fails_closed(
-    ) -> Result<(), Box<dyn Error>> {
+    fn seal_subtree_disables_descendants_and_strict_resolution_fails_closed()
+    -> Result<(), Box<dyn Error>> {
         let root = Id::parse("root")?;
         let team = Id::parse("team")?;
         let app = Id::parse("app")?;
