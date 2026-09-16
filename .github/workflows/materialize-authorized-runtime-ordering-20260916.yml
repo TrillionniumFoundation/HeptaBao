@@ -1,0 +1,54 @@
+name: materialize-authorized-runtime-ordering-20260916
+on:
+  push:
+    branches:
+      - codex/next-round-product-closure-20260916
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.sha == 'PLACEHOLDER'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Bind exact parent
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "4105cff705508acc4ddd13a9267630caa40ac1ed"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Repair and qualify authorized runtime ordering truth
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('tests/repository/test_authorized_durable_runtime_v2_1.py')
+          s = p.read_text()
+          old = '''    def test_admission_happens_before_durable_dispatch(self) -> None:\n        source = SOURCE.read_text(encoding="utf-8")\n        start = source.index("pub fn handle_with_failpoint(")\n        end = source.index("pub fn reconcile(", start)\n        body = source[start:end]\n\n        ordered = [\n            ".authenticate(",\n            ".authorize(",\n            "AuditStage::AcceptedBeforeEntry",\n            "PutRequest::new(",\n            ".put_with_failpoint(",\n        ]\n        positions = [body.index(marker) for marker in ordered]\n        self.assertEqual(sorted(positions), positions)\n\n        delete_order = [\n            body.index("AuditStage::AcceptedBeforeEntry"),\n            body.index("DeleteRequest::new("),\n            body.index(".delete_with_failpoint("),\n        ]\n        self.assertEqual(sorted(delete_order), delete_order)\n'''
+          new = '''    def test_admission_happens_before_durable_dispatch(self) -> None:\n        source = SOURCE.read_text(encoding="utf-8")\n        start = source.index("pub fn handle_with_failpoint(")\n        end = source.index("pub fn reconcile(", start)\n        body = source[start:end]\n\n        replay_epoch = "let replay_epoch = self.durable.replay_epoch();"\n        put_dispatch = (\n            ".put_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)"\n        )\n        delete_dispatch = (\n            ".delete_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)"\n        )\n\n        put_order = [\n            ".authenticate(",\n            ".authorize(",\n            "AuditStage::AcceptedBeforeEntry",\n            replay_epoch,\n            "PutRequest::new(",\n            put_dispatch,\n        ]\n        put_positions = [body.index(marker) for marker in put_order]\n        self.assertEqual(sorted(put_positions), put_positions)\n\n        delete_order = [\n            body.index(".authenticate("),\n            body.index(".authorize("),\n            body.index("AuditStage::AcceptedBeforeEntry"),\n            body.index(replay_epoch),\n            body.index("DeleteRequest::new("),\n            body.index(delete_dispatch),\n        ]\n        self.assertEqual(sorted(delete_order), delete_order)\n\n        self.assertEqual(1, body.count(replay_epoch))\n        self.assertNotIn(".put_with_failpoint(", body)\n        self.assertNotIn(".delete_with_failpoint(", body)\n        self.assertNotIn(\n            ".put_with_failpoint_in_replay_epoch(0, mutation, failpoint)", body\n        )\n        self.assertNotIn(\n            ".delete_with_failpoint_in_replay_epoch(0, mutation, failpoint)", body\n        )\n'''
+          if s.count(old) != 1:
+              raise SystemExit(f'authorized ordering block count={s.count(old)}')
+          p.write_text(s.replace(old, new, 1))
+          PY
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python scripts/validate_repository_v2.py
+          python scripts/validate_module_closure.py
+          python -m compileall -q scripts tests
+          git diff --check
+      - name: Remove transport and publish source-truth repair
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-authorized-runtime-ordering-20260916.yml
+          git diff --check
+          git config user.name "OpenAI authorized runtime verifier"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "test(runtime): bind admission ordering to replay epoch dispatch"
+          git push origin HEAD:codex/next-round-product-closure-20260916
