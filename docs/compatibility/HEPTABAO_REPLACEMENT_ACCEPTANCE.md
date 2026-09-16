@@ -76,7 +76,7 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-POLICY-ACL` | `core_system` | `IMPLEMENTED_SCOPED` | `token.policy`, `token.write_denied`, `token.denial_no_effect` |
 | `HB-SURFACE-IDENTITY` | `core_system` | `IMPLEMENTED_SCOPED` | `identity.entity_create`, `identity.entity_read`, `identity.entity_disable`, `identity.entity_disabled`, `identity.entity_delete`, `identity.entity_deleted` |
 | `HB-SURFACE-TOKEN` | `core_system` | `IMPLEMENTED_SCOPED` | `token.create`, `token.revoke`, `token.create_expiring`, `token.expired_denied` |
-| `HB-SURFACE-CUBBYHOLE-WRAPPING` | `core_system` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-CUBBYHOLE-WRAPPING` | `core_system` | `IMPLEMENTED_SCOPED` | `wrapping.create`, `wrapping.unwrap`, `wrapping.replay_denied` |
 | `HB-SURFACE-LEASE-EXPIRATION` | `core_system` | `IMPLEMENTED_SCOPED` | `pki.lease_expire_issue`, `pki.lease_expire_lookup` |
 | `HB-SURFACE-AUTH-TOKEN` | `auth_methods` | `IMPLEMENTED_SCOPED` | `token.read_allowed`, `token.revoked_denied`, `token.invalid_denied` |
 | `HB-SURFACE-AUTH-USERPASS` | `auth_methods` | `IMPLEMENTED_SCOPED` | `userpass.login` |

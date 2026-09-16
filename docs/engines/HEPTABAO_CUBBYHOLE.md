@@ -3,8 +3,9 @@
 This is the current implementation contract for the built-in token-private
 storage in `heptabao-server`. It supplements the V2.1 plan, the server module
 guide, and `HEPTABAO_SINGLE_NODE_AUTH.md`; it does not replace those authorities.
-It does not implement response wrapping or close the combined
-`HB-SURFACE-CUBBYHOLE-WRAPPING` acceptance surface.
+It does not implement the full OpenBao response-wrapping and cubbyhole
+surface. A bounded wrap/create/unwrap/replay fixture is now wired into the
+fixed compatibility corpus; the combined surface remains partial.
 
 ## Ownership and actual call path
 
@@ -160,6 +161,12 @@ and `HB_ORACLE_ARCHIVE`, compares the same selected behavior on both servers,
 and removes its synthetic instance directories. Its report binds binary and
 source identities and labels a dirty worktree rather than inventing a clean
 receipt. It grants neither independent acceptance nor complete compatibility.
+
+The fixed live acceptance suite also exposes the bounded wrapping lifecycle
+through the `wrapping` module (`wrapping.create`, `wrapping.unwrap`, and
+`wrapping.replay_denied`). These cases exercise synthetic opaque delivery only;
+they do not qualify HA response loss, all wrapping constraints, or complete
+OpenBao compatibility.
 
 Remaining work includes response wrapping and wrapping constraints, automatic
 expiry qualification, production capacity, full errors/parameter permutations,

@@ -64,7 +64,7 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
             for case in entry.get("fixture_case_ids", [])
         }
         self.assertEqual(acceptance_case_ids(), mapped)
-        self.assertEqual(63, len(mapped))
+        self.assertEqual(66, len(mapped))
         self.assertEqual(
             0,
             corpus["coverage_summary"][

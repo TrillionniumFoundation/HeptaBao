@@ -31,6 +31,7 @@ CASES = {
     "system": ["init_status"],
     "operations": ["seal_status"],
     "identity": ["entity_create", "entity_read", "entity_disable", "entity_disabled", "entity_delete", "entity_deleted"],
+    "wrapping": ["create", "unwrap", "replay_denied"],
 }
 
 
@@ -51,12 +52,12 @@ class Suite:
         self.policy_owned = False
         self.child_tokens = []
 
-    def call(self, case, method, path, payload=None, *, token=None):
+    def call(self, case, method, path, payload=None, *, token=None, wrap_ttl=None):
         if method not in ("GET", "LIST", "HEAD") and not self.allow_writes:
             raise BaoError("test_write_opt_in_required")
         self.requests[case] = {"method": method, "path_template": path.replace(self.run_id, "{run_id}")}
         try:
-            return self.client.request(method, path, payload, token=token)
+            return self.client.request(method, path, payload, token=token, wrap_ttl=wrap_ttl)
         except BaoError as error:
             self.results[case] = {"result": "failed", "reason": error.code,
                                   "http_status": None, "semantics": {}}
@@ -426,6 +427,38 @@ class Suite:
         r = self.call("operations.seal_status", "GET", "/v1/sys/seal-status")
         self.check("operations.seal_status", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)
 
+    def wrapping_cases(self):
+        """Exercise the bounded opaque response-wrapping lifecycle.
+
+        This deliberately covers only creation, one-shot unwrap and replay
+        rejection. It is a scoped fixture for the combined cubbyhole/wrapping
+        surface, not a claim of complete OpenBao wrapping compatibility.
+        """
+        payload = {"synthetic": "heptabao-wrapping-" + self.run_id, "nested": {"count": 1}}
+        created = self.call("wrapping.create", "POST", "/v1/sys/wrapping/wrap", payload,
+                            wrap_ttl="60s")
+        info = created.body.get("wrap_info", {})
+        self.check(
+            "wrapping.create",
+            created,
+            200,
+            response_redacted=created.body.get("data") is None and created.body.get("auth") is None,
+            wrapper_token_present=isinstance(info.get("token"), str) and bool(info.get("token")),
+            ttl_is_bounded=info.get("ttl") == 60,
+        )
+        wrapper = info.get("token")
+        if not isinstance(wrapper, str) or not wrapper:
+            # Keep malformed server responses inside the bounded result
+            # vocabulary instead of leaking a KeyError or response contents.
+            raise BaoError("unexpected_response_schema")
+        unwrapped = self.call("wrapping.unwrap", "POST", "/v1/sys/wrapping/unwrap", {},
+                              token=wrapper)
+        self.check("wrapping.unwrap", unwrapped, 200,
+                   exact_payload=unwrapped.body.get("data") == payload)
+        replay = self.call("wrapping.replay_denied", "POST", "/v1/sys/wrapping/unwrap", {},
+                           token=wrapper)
+        self.check("wrapping.replay_denied", replay, 400)
+
     def cleanup(self):
         failures = 0
         for token in self.child_tokens:
@@ -479,7 +512,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("core", "kv", "token", "transit", "pki", "totp", "userpass", "approle", "identity", "edge_tls", "system", "operations"):
+            for module in ("core", "kv", "token", "transit", "pki", "totp", "userpass", "approle", "identity", "wrapping", "edge_tls", "system", "operations"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -509,7 +542,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,edge_tls,system,operations")
+    parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",

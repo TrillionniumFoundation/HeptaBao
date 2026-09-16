@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "d1e3eef10786c65ff761d7f64bef260532a79e0683f128d70233463e6c8203f2",
+  "corpus_sha256": "e6ff80d6354c45bd5c76041b757f423ec106de7bbcb3850771c9045ec7da1e48",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -409,7 +409,11 @@
         "isolation": "For HB-SURFACE-CUBBYHOLE-WRAPPING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "wrapping.create",
+        "wrapping.unwrap",
+        "wrapping.replay_denied"
+      ],
       "available_scoped_profiles": [
         "core",
         "wrapping"
