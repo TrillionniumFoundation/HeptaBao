@@ -18,6 +18,7 @@ if str(_SCRIPT_DIR) not in sys.path:
 
 import validate_workflow_trust_v1 as _v1  # noqa: E402
 import workflow_trust_v2 as _v2  # noqa: E402
+import validate_acceptance_immutability as _immutability  # noqa: E402
 from validate_workflow_trust_v1 import *  # noqa: F401,F403,E402
 
 MAX_TEMPLATE_BYTES = _v2.MAX_TEMPLATE_BYTES
@@ -42,7 +43,7 @@ def validate_directory(directory: Path) -> dict[str, object]:
     if not paths or len(paths) > MAX_WORKFLOWS:
         raise PolicyError("empty or excessive workflow set")
     checked: list[str] = []
-    failures: list[dict[str, str]] = []
+    failures: list[dict[str, str]] = _immutability.validate_directory(directory)
     for path in paths:
         try:
             if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_WORKFLOW_BYTES:
