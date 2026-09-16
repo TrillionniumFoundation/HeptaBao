@@ -1,0 +1,69 @@
+schema: heptabao.openbao-replacement-admission.v1
+baseline:
+  product: OpenBao
+  version: 2.6.2
+  scope: complete-replacement
+  frozen: true
+replacement_authority: false
+status: NOT_ADMITTED
+rules:
+  - no gate may be inferred from documentation, branch names, fixture counts, or historical CI
+  - evidence must bind the exact candidate commit or an immutable prospective merge derived from it
+  - partial runtime, tooling, model, contract, and fixture coverage never imply whole-surface admission
+  - a production or release claim requires every required gate to be ADMITTED
+required_gates:
+  - id: exact_head_native
+    status: OPEN
+    owner: ci
+    requirement: exact candidate passes repository, security, Rust fmt/test/clippy/doc/build, OpenBao acceptance, and single-node smoke gates
+    evidence: exact-head receipt emitted by .github/workflows/v2-1-main-exact-and-merge.yml
+  - id: prospective_main_merge
+    status: OPEN
+    owner: ci
+    requirement: immutable prospective main merge passes the same full gate set
+    evidence: prospective-merge receipt emitted by .github/workflows/v2-1-main-exact-and-merge.yml
+  - id: module_evidence_integrity
+    status: OPEN
+    owner: architecture
+    requirement: all 46 module dossiers use checkout-independent source binding and resolve every named executable anchor to the actual source file
+    evidence: scripts/validate_module_closure.py against the exact candidate
+  - id: scalable_state_storage
+    status: OPEN
+    owner: runtime
+    requirement: native server state is record-oriented or otherwise demonstrably production-scalable; complete replacement must not depend on the current monolithic whole-state 768 KiB ceiling
+    evidence: crash/restart/HA tests over a state corpus materially above the legacy monolithic ceiling plus storage-format migration evidence
+  - id: replay_identity_lifecycle
+    status: OPEN
+    owner: runtime
+    requirement: idempotency and replay protection remain safe without a fixed lifetime ceiling such as a permanently retained 32000-operation identity set
+    evidence: deterministic retirement/compaction protocol with restart, snapshot, duplicate, stale-retry, and HA tests
+  - id: complete_surface_admission
+    status: OPEN
+    owner: compatibility
+    requirement: every surface in the frozen OpenBao 2.6.2 comparison corpus is whole-surface admitted; no runtime_partial, tooling_partial, model-only, or fixture-only substitution is accepted
+    evidence: machine-readable surface ledger with whole_surface_admitted true for every required surface
+  - id: external_provider_semantics
+    status: OPEN
+    owner: integration
+    requirement: external-provider features execute against real compatible services, including LDAP directory operations, supported database engines, KMS or seal providers, plugins, and other provider-backed surfaces in scope
+    evidence: provider-specific integration receipts bound to the exact candidate
+  - id: full_asset_migration
+    status: OPEN
+    owner: migration
+    requirement: migration covers all in-scope configuration, policy, identity, auth mounts, secret engines, keys and versions, leases and revocation state, application-visible data, cutover, rollback, and post-cutover validation
+    evidence: inventory-complete migration rehearsal from OpenBao 2.6.2 with rollback and revoked-capability non-resurrection checks
+  - id: multi_host_fault_upgrade
+    status: OPEN
+    owner: reliability
+    requirement: independent hosts survive leader loss, process kill, network partition and heal, restart, snapshot, storage faults, rolling upgrade, and supported mixed-version windows without safety violations
+    evidence: multi-host fault and upgrade receipts from the exact candidate
+  - id: openbao_2_6_2_oracle
+    status: OPEN
+    owner: compatibility
+    requirement: protocol, status, error precedence, authorization effects, persistence, and externally visible side effects match the frozen OpenBao 2.6.2 oracle for all admitted surfaces
+    evidence: differential oracle receipts with candidate and oracle identities
+  - id: security_release_supply_chain
+    status: OPEN
+    owner: release
+    requirement: release artifact provenance, dependency and license review, secret-safe build logs, platform qualification, security review, and release reproducibility are closed for the candidate artifacts
+    evidence: immutable release qualification bundle
