@@ -84,7 +84,7 @@ modules:
   guide: docs/modules/heptabao-durable-service.md
   source: crates/heptabao-durable-service/src
   manifest_sha256: c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad
-  source_sha256: 567656096278520f82e62fb8cffc6ee8c4978b5098d856010aa52ce7cc6d4fbf
+  source_sha256: 6019b698839b30d29c14344f5ad779b7f62eb4fb037422e8fbc845194bf48281
   test_anchor: automatic_checkpoint_retains_every_binding_and_survives_restart
   test_anchor_path: crates/heptabao-durable-service/src/capacity.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -354,7 +354,7 @@ modules:
   guide: docs/modules/heptabao-runtime-service.md
   source: crates/heptabao-runtime-service/src
   manifest_sha256: c8321f283c18f1bdb47e88910d8d0ac052f62eb247b785b6076e81ad6878f927
-  source_sha256: ae2fb215077c73698ef43222661428afa535c792969dc26a05713ea975bd0753
+  source_sha256: 9c08b6dc6c1b27c6a8ab57bb6a353eace9930a191d5f3ba8980ac8dc0006f523
   test_anchor: invalid_credential_cannot_allocate_durable_request_identity
   test_anchor_path: crates/heptabao-runtime-service/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
