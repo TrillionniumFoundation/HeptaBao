@@ -67,22 +67,44 @@ class AuthorizedDurableRuntimeV21Tests(unittest.TestCase):
         end = source.index("pub fn reconcile(", start)
         body = source[start:end]
 
-        ordered = [
+        replay_epoch = "let replay_epoch = self.durable.replay_epoch();"
+        put_dispatch = (
+            ".put_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)"
+        )
+        delete_dispatch = (
+            ".delete_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)"
+        )
+
+        put_order = [
             ".authenticate(",
             ".authorize(",
             "AuditStage::AcceptedBeforeEntry",
+            replay_epoch,
             "PutRequest::new(",
-            ".put_with_failpoint(",
+            put_dispatch,
         ]
-        positions = [body.index(marker) for marker in ordered]
-        self.assertEqual(sorted(positions), positions)
+        put_positions = [body.index(marker) for marker in put_order]
+        self.assertEqual(sorted(put_positions), put_positions)
 
         delete_order = [
+            body.index(".authenticate("),
+            body.index(".authorize("),
             body.index("AuditStage::AcceptedBeforeEntry"),
+            body.index(replay_epoch),
             body.index("DeleteRequest::new("),
-            body.index(".delete_with_failpoint("),
+            body.index(delete_dispatch),
         ]
         self.assertEqual(sorted(delete_order), delete_order)
+
+        self.assertEqual(1, body.count(replay_epoch))
+        self.assertNotIn(".put_with_failpoint(", body)
+        self.assertNotIn(".delete_with_failpoint(", body)
+        self.assertNotIn(
+            ".put_with_failpoint_in_replay_epoch(0, mutation, failpoint)", body
+        )
+        self.assertNotIn(
+            ".delete_with_failpoint_in_replay_epoch(0, mutation, failpoint)", body
+        )
 
     def test_inbound_cannot_supply_authenticated_principal_or_authorization_digest(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")
