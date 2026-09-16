@@ -10,6 +10,12 @@
 //! ```compile_fail
 //! use heptabao_server::auth::Principal;
 //! ```
+
+/// One shared bound for serialized application state across local chunked storage
+/// and HA replication. Keeping one constant prevents a state from being locally
+/// durable but impossible to replicate after HA is enabled.
+pub(crate) const MAX_APPLICATION_STATE_BYTES: usize = 16 * 1024 * 1024;
+
 mod auth;
 mod crypto;
 pub mod engines;
