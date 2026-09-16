@@ -14,6 +14,7 @@ pub struct CapacityStatus {
 }
 
 struct AtomicBatchRequest {
+    replay_epoch: u64,
     principal: String,
     namespace: String,
     request_id: String,
@@ -36,8 +37,28 @@ impl<B: Barrier> DurableService<B> {
         authorization_digest: [u8; 32],
         mutations: Vec<(String, Option<Secret>)>,
     ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_in_replay_epoch(
+            0,
+            principal,
+            namespace,
+            request_id,
+            authorization_digest,
+            mutations,
+        )
+    }
+
+    pub fn apply_batch_in_replay_epoch(
+        &mut self,
+        replay_epoch: u64,
+        principal: impl Into<String>,
+        namespace: impl Into<String>,
+        request_id: impl Into<String>,
+        authorization_digest: [u8; 32],
+        mutations: Vec<(String, Option<Secret>)>,
+    ) -> Result<MutationOutcome, ServiceError> {
         self.apply_batch_with_policy(
             AtomicBatchRequest {
+                replay_epoch,
                 principal: principal.into(),
                 namespace: namespace.into(),
                 request_id: request_id.into(),
@@ -61,8 +82,28 @@ impl<B: Barrier> DurableService<B> {
         authorization_digest: [u8; 32],
         mutations: Vec<(String, Option<Secret>)>,
     ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_with_compaction_in_replay_epoch(
+            0,
+            principal,
+            namespace,
+            request_id,
+            authorization_digest,
+            mutations,
+        )
+    }
+
+    pub fn apply_batch_with_compaction_in_replay_epoch(
+        &mut self,
+        replay_epoch: u64,
+        principal: impl Into<String>,
+        namespace: impl Into<String>,
+        request_id: impl Into<String>,
+        authorization_digest: [u8; 32],
+        mutations: Vec<(String, Option<Secret>)>,
+    ) -> Result<MutationOutcome, ServiceError> {
         self.apply_batch_with_policy(
             AtomicBatchRequest {
+                replay_epoch,
                 principal: principal.into(),
                 namespace: namespace.into(),
                 request_id: request_id.into(),
@@ -86,6 +127,7 @@ impl<B: Barrier> DurableService<B> {
     ) -> Result<MutationOutcome, ServiceError> {
         self.apply_batch_with_policy(
             AtomicBatchRequest {
+                replay_epoch: 0,
                 principal,
                 namespace,
                 request_id,
@@ -106,6 +148,9 @@ impl<B: Barrier> DurableService<B> {
         validate_identifier(&request.principal)?;
         validate_namespace(&request.namespace)?;
         validate_identifier(&request.request_id)?;
+        if request.replay_epoch != self.replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
         if request.authorization_digest == [0; 32] {
             return Err(ServiceError::InvalidAuthorizationDigest);
         }
@@ -127,7 +172,7 @@ impl<B: Barrier> DurableService<B> {
         let key = RequestKey {
             principal: request.principal.clone(),
             namespace: request.namespace.clone(),
-            request_id: request.request_id.clone(),
+            request_id: scope_request_id(request.replay_epoch, &request.request_id)?,
         };
         let mut binding_bytes = Vec::new();
         encode_string(&mut binding_bytes, &key.principal);
@@ -209,7 +254,13 @@ impl<B: Barrier> DurableService<B> {
         );
 
         let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
-        let ledger_bytes = sealed_ledger(&self.barrier, generation, &candidate_ledger)?;
+        let ledger_bytes = sealed_ledger(
+            &self.barrier,
+            generation,
+            self.replay_epoch,
+            self.retired_through_generation,
+            &candidate_ledger,
+        )?;
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
@@ -552,6 +603,83 @@ mod tests {
                 .map(Secret::expose),
             Some(&b"b"[..])
         );
+        Ok(())
+    }
+
+    #[test]
+    fn replay_retirement_rejects_old_epoch_and_survives_restart() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("replay-retirement-restart")?;
+        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 2)?;
+        service.put_in_replay_epoch(0, put_request("old-a", b"a")?)?;
+        service.put_in_replay_epoch(0, put_request("old-b", b"b")?)?;
+        assert_eq!(service.retained_request_count(), 2);
+        let retired = service.retire_replay_epoch()?;
+        assert_eq!(retired.previous_epoch, 0);
+        assert_eq!(retired.current_epoch, 1);
+        assert_eq!(retired.retired_through_generation, 2);
+        assert_eq!(retired.retired_requests, 2);
+        assert_eq!(service.retained_request_count(), 0);
+        assert!(matches!(
+            service.put_in_replay_epoch(0, put_request("old-a", b"a")?),
+            Err(ServiceError::ReplayEpochMismatch)
+        ));
+        let committed = service.put_in_replay_epoch(1, put_request("new-a", b"c")?)?;
+        assert!(matches!(
+            committed,
+            MutationOutcome::Committed { generation: 3, .. }
+        ));
+        drop(service);
+
+        let mut service = DurableService::reopen(&root.0, TestBarrier::new(), 2)?;
+        assert_eq!(service.replay_epoch(), 1);
+        assert_eq!(service.retired_through_generation(), 2);
+        assert_eq!(service.retained_request_count(), 1);
+        assert!(matches!(
+            service.put_in_replay_epoch(0, put_request("old-a", b"a")?),
+            Err(ServiceError::ReplayEpochMismatch)
+        ));
+        assert!(matches!(
+            service.put_in_replay_epoch(1, put_request("new-a", b"c")?)?,
+            MutationOutcome::Duplicate { generation: 3, .. }
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn hbc3_frontier_admits_generation_beyond_legacy_identity_ceiling() -> Result<(), ServiceError>
+    {
+        let mut ledger = BTreeMap::new();
+        let retired_through_generation = 32_000_u64;
+        for offset in 1..=64_u64 {
+            let generation = retired_through_generation + offset;
+            ledger.insert(
+                RequestKey {
+                    principal: "principal-a".to_owned(),
+                    namespace: "tenant-a".to_owned(),
+                    request_id: format!("epoch7:request-{offset}"),
+                },
+                LedgerRecord {
+                    binding_digest: digest32(
+                        b"heptabao.test.replay-retirement.binding",
+                        &generation.to_le_bytes(),
+                    ),
+                    recovery_reference: format!("{generation:032x}"),
+                    generation,
+                },
+            );
+        }
+        validate_ledger_generation(
+            &ledger,
+            retired_through_generation + 64,
+            retired_through_generation,
+        )?;
+        let encoded = encode_ledger_state(7, retired_through_generation, &ledger)?;
+        let (epoch, frontier, decoded) = decode_ledger_state(&encoded)?;
+        assert_eq!(epoch, 7);
+        assert_eq!(frontier, 32_000);
+        assert_eq!(decoded, ledger);
+        assert_eq!(decoded.len(), 64);
         Ok(())
     }
 }
