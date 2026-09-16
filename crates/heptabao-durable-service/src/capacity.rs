@@ -97,10 +97,7 @@ impl<B: Barrier> DurableService<B> {
                 }
             }
         }
-        let binding_digest = digest32(
-            b"heptabao.durable-service.batch-binding.v1",
-            &binding_bytes,
-        );
+        let binding_digest = digest32(b"heptabao.durable-service.batch-binding.v1", &binding_bytes);
         if let Some(existing) = self.ledger.get(&key) {
             if existing.binding_digest != binding_digest {
                 return Err(ServiceError::RequestBindingConflict);
@@ -434,10 +431,7 @@ mod tests {
             "tenant-a",
             "batch-1",
             [7; 32],
-            vec![(
-                "secret/a".to_owned(),
-                Some(Secret::new(b"a".to_vec())?),
-            )],
+            vec![("secret/a".to_owned(), Some(Secret::new(b"a".to_vec())?))],
         )?;
         assert!(matches!(
             service.apply_batch(
