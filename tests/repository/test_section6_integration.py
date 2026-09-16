@@ -27,16 +27,30 @@ class SectionSixIntegrationTests(unittest.TestCase):
         self.assertIn('prospective-merge', workflow)
         self.assertNotIn('continue-on-error: true', workflow)
 
-    def test_capacity_extension_does_not_silently_raise_source_limits(self):
-        source = (ROOT/'crates/heptabao-server/src/service.rs').read_text()
-        self.assertIn('MAX_STATE_BYTES: usize = 768 * 1024', source)
-        self.assertIn('.put_with_compaction(request)', source)
-        alias = (ROOT/'crates/heptabao-durable-service/src/capacity.rs').read_text()
-        self.assertIn('pub fn put_with_maintenance(', alias)
-        self.assertIn('self.put_with_compaction(request)', alias)
+    def test_capacity_extension_is_explicit_bounded_and_atomically_published(self):
+        service = (ROOT/'crates/heptabao-server/src/service.rs').read_text()
+        state_store = (ROOT/'crates/heptabao-server/src/service_state_store.rs').read_text()
+        durable = (ROOT/'crates/heptabao-durable-service/src/capacity.rs').read_text()
+
+        self.assertIn(
+            'MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES',
+            service,
+        )
+        self.assertIn('MAX_SERIALIZED_STATE_BYTES: usize = 16 * 1024 * 1024', state_store)
+        self.assertIn('STATE_CHUNK_BYTES: usize = 512 * 1024', state_store)
+        self.assertIn('const STATE_SLOT_COUNT: u8 = 2', state_store)
+        self.assertIn('heptabao-state-chunks-v1', state_store)
+        self.assertIn('Self::persist_state_batch(', service)
+        self.assertIn('durable.apply_batch(', service)
+        self.assertIn('durable.apply_batch_with_compaction(', service)
+        self.assertIn('pub fn apply_batch(', durable)
+        self.assertIn('pub fn apply_batch_with_compaction(', durable)
+
         contract = (ROOT/'docs/storage/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
+        self.assertIn('16 MiB', contract)
+        self.assertIn('512 KiB', contract)
         self.assertIn('32,000', contract)
-        self.assertIn('whole state', contract)
+        self.assertIn('replay', contract.lower())
 
     def test_all_current_portals_link_the_increment_without_a_second_master(self):
         for name in ['README.md', 'docs/CURRENT_DOCUMENTATION.md']:
