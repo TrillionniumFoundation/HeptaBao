@@ -1,0 +1,98 @@
+name: Materialize versioned state manifest closure
+
+on:
+  push:
+    branches:
+      - exec/materialize-state-manifest-20260916
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-state-manifest-20260916
+  cancel-in-progress: false
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout materializer payload
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: exec/materialize-state-manifest-20260916
+          path: materializer
+          persist-credentials: false
+
+      - name: Checkout exact target branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: codex/next-round-product-closure-20260916
+          path: target
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify target and apply reviewed patch
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "37957020dccf988e2f8760016fa433a6274dfdbe"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          cat ../materializer/materializers/state-manifest-20260916.patch.gz.b64.* \
+            | base64 --decode \
+            | gzip -dc > "$RUNNER_TEMP/state-manifest.patch"
+          git apply --check "$RUNNER_TEMP/state-manifest.patch"
+          git apply "$RUNNER_TEMP/state-manifest.patch"
+          git diff --check
+
+      - name: Install exact qualification dependencies
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Validate state storage closure
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all
+          python scripts/current_source_inventory.py --write
+          python scripts/validate_repository_v2.py
+          python scripts/validate_module_closure.py
+          python scripts/validate_openbao_replacement_admission.py
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --locked -p heptabao-durable-service
+          cargo +1.98.0 clippy --locked -p heptabao-durable-service --all-targets -- -D warnings
+          cargo +1.98.0 test --locked -p heptabao-plugin-host --lib
+          cargo +1.98.0 clippy --locked -p heptabao-plugin-host --all-targets -- -D warnings
+          cargo +1.98.0 test --locked -p heptabao-server --lib
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          cargo +1.98.0 doc --locked -p heptabao-server --no-deps
+          cargo +1.98.0 build --locked -p heptabao-server
+          git diff --check
+
+      - name: Publish one validated implementation commit
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            crates/heptabao-durable-service/src/capacity.rs \
+            crates/heptabao-plugin-host/src/lib.rs \
+            crates/heptabao-server/src/audit_rotation.rs \
+            crates/heptabao-server/src/auth_tests.rs \
+            crates/heptabao-server/src/identity_service_tests.rs \
+            crates/heptabao-server/src/service.rs \
+            crates/heptabao-server/src/service_state_store.rs \
+            crates/heptabao-server/src/service_state_store_integration_tests.rs \
+            planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json \
+            scripts/validate_execution_truth.py
+          test -n "$(git status --porcelain=v1)"
+          git commit -m "feat(storage): atomically version server state manifests"
+          git push origin HEAD:codex/next-round-product-closure-20260916
