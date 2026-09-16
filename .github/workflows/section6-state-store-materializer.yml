@@ -1,0 +1,126 @@
+name: Section 6 chunked state-store materializer
+
+on:
+  push:
+    branches:
+      - integration/section6-hardening-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: integration/section6-hardening-20260916
+          fetch-depth: 0
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+      - name: Integrate dual-slot chunked state storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one exact replacement, found {count}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          def replace_between(path: str, start: str, end: str, replacement: str) -> None:
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              left = text.find(start)
+              if left < 0:
+                  raise SystemExit(f"{path}: start marker not found: {start}")
+              right = text.find(end, left)
+              if right < 0:
+                  raise SystemExit(f"{path}: end marker not found: {end}")
+              p.write_text(text[:left] + replacement + text[right:], encoding="utf-8")
+
+          replace_once(
+              "crates/heptabao-durable-service/src/lib.rs",
+              '''    /// Reject a *new* identity when its known local budget is already exhausted.\n    /// This is a preflight, not a reservation. Duplicate operations should use\n    /// `put` directly because their retained identity requires no new slot.\n    pub fn preflight_new_identity(&self) -> Result<(), ServiceError> {\n        let capacity = self.capacity()?;\n        if capacity.retained_requests >= capacity.max_retained_requests {\n            return Err(ServiceError::RequestCapacityExhausted);\n        }\n        Ok(())\n    }\n''',
+              '''    /// Reject a *new* identity when its known local budget is already exhausted.\n    /// This is a preflight, not a reservation. Duplicate operations should use\n    /// `put` directly because their retained identity requires no new slot.\n    pub fn preflight_new_identity(&self) -> Result<(), ServiceError> {\n        self.preflight_new_identities(1)\n    }\n\n    /// Preflight a bounded group of fresh identities before a higher-level\n    /// transaction begins staging effects. This does not reserve slots, but a\n    /// single-writer durable owner makes it sufficient to reject known local\n    /// replay-ledger exhaustion before an HA state is proposed.\n    pub fn preflight_new_identities(&self, count: usize) -> Result<(), ServiceError> {\n        if count == 0 {\n            return Ok(());\n        }\n        let capacity = self.capacity()?;\n        if capacity\n            .retained_requests\n            .checked_add(count)\n            .is_none_or(|required| required > capacity.max_retained_requests)\n        {\n            return Err(ServiceError::RequestCapacityExhausted);\n        }\n        Ok(())\n    }\n''',
+          )
+
+          replace_once(
+              "crates/heptabao-server/src/service.rs",
+              '''const CURRENT_STATE_SCHEMA: u32 = 5;\nconst MAX_STATE_BYTES: usize = 768 * 1024;\nconst MAX_OPERATIONS: usize = 32_000;\n''',
+              '''#[path = "service_state_store.rs"]\nmod state_store;\n#[cfg(test)]\n#[path = "service_state_store_integration_tests.rs"]\nmod state_store_integration_tests;\n\nconst CURRENT_STATE_SCHEMA: u32 = 5;\nconst MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;\nconst MAX_OPERATIONS: usize = 32_000;\n''',
+          )
+
+          activate = '''    fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {\n        self.durable = None;\n        self.state = None;\n        let barrier =\n            AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;\n        let durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)\n            .map_err(|_| Response::error(400, "unseal or recovery failed"))?;\n        let bytes = Self::load_state_bytes_from_durable(&durable)?;\n        let state: State = serde_json::from_slice(bytes.as_slice())\n            .map_err(|_| Response::error(503, "server state schema is invalid"))?;\n        state.validate_format()?;\n        // Bind durable identity before any local state is admitted into an HA epoch.\n        if let Some(ha) = self.ha.as_ref() {\n            let ha = ha\n                .lock()\n                .map_err(|_| Response::error(503, "HA identity is unavailable during unseal"))?;\n            if state.cluster_id != ha.cluster_id() {\n                return Err(Response::error(\n                    503,\n                    "HA configuration belongs to a different cluster",\n                ));\n            }\n        }\n        self.durable = Some(durable);\n        self.state = Some(state);\n        self.barrier_key = Some(Zeroizing::new(*key));\n        self.recovery_required = false;\n        let sync_as_leader = if let Some(ha) = self.ha.as_ref() {\n            match ha.lock() {\n                Ok(ha) => match ha.is_leader() {\n                    Ok(value) => value,\n                    Err(_) => {\n                        self.recovery_required = true;\n                        return Err(Response::error(503, "HA role is unavailable during unseal"));\n                    }\n                },\n                Err(_) => {\n                    self.recovery_required = true;\n                    return Err(Response::error(503, "HA role is unavailable during unseal"));\n                }\n            }\n        } else {\n            false\n        };\n        if sync_as_leader && let Err(error) = self.sync_from_ha() {\n            self.recovery_required = true;\n            return Err(error);\n        }\n        Ok(())\n    }\n\n'''
+          replace_between(
+              "crates/heptabao-server/src/service.rs",
+              "    fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {",
+              "    fn rotate_unseal_nonce",
+              activate,
+          )
+
+          loader = '''    fn load_state_bytes_from_durable(\n        durable: &DurableService<AeadBarrier>,\n    ) -> Result<Zeroizing<Vec<u8>>, Response> {\n        let pointer = durable\n            .get("system", "state")\n            .map_err(|_| Response::error(503, "server state is unavailable"))?\n            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;\n        let manifest = state_store::decode_manifest(pointer.expose())\n            .map_err(|_| Response::error(503, "server state manifest is invalid"))?;\n        let Some(manifest) = manifest else {\n            return Ok(Zeroizing::new(pointer.expose().to_vec()));\n        };\n        if manifest.state_schema() != CURRENT_STATE_SCHEMA {\n            return Err(Response::error(503, "server state manifest schema is unsupported"));\n        }\n        let mut chunks = Vec::with_capacity(manifest.chunk_count());\n        for index in 0..manifest.chunk_count() {\n            let resource = manifest\n                .chunk_resource(index)\n                .map_err(|_| Response::error(503, "server state manifest is invalid"))?;\n            let chunk = durable\n                .get("system", &resource)\n                .map_err(|_| Response::error(503, "server state chunk is unavailable"))?\n                .ok_or_else(|| Response::error(503, "server state chunk is absent; recovery required"))?;\n            chunks.push(chunk.expose().to_vec());\n        }\n        let bytes = state_store::assemble_state(&manifest, &chunks)\n            .map_err(|_| Response::error(503, "server state chunk authentication failed"))?;\n        Ok(Zeroizing::new(bytes))\n    }\n\n    fn refresh_state_from_durable(&mut self) -> Result<(), Response> {\n        let durable = self\n            .durable\n            .as_ref()\n            .ok_or_else(|| Response::error(503, "server is sealed"))?;\n        let bytes = Self::load_state_bytes_from_durable(durable)?;\n        let state: State = serde_json::from_slice(bytes.as_slice())\n            .map_err(|_| Response::error(503, "server state schema is invalid"))?;\n        state.validate_format()?;\n        self.state = Some(state);\n        self.recovery_required = false;\n        Ok(())\n    }\n\n'''
+          replace_between(
+              "crates/heptabao-server/src/service.rs",
+              "    fn refresh_state_from_durable(&mut self) -> Result<(), Response> {",
+              "    fn verify_active_barrier",
+              loader,
+          )
+
+          persistence = '''    fn state_write_plan(\n        &self,\n        bytes: &[u8],\n        operation_id: &str,\n    ) -> Result<state_store::StateWritePlan, Response> {\n        let durable = self\n            .durable\n            .as_ref()\n            .ok_or_else(|| Response::error(503, "server is sealed"))?;\n        let current = durable\n            .get("system", "state")\n            .map_err(|_| Response::error(503, "server state is unavailable"))?\n            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;\n        let slot = state_store::next_slot(current.expose())\n            .map_err(|_| Response::error(503, "server state manifest is invalid"))?;\n        state_store::StateWritePlan::new(bytes, operation_id, CURRENT_STATE_SCHEMA, slot)\n            .map_err(|error| match error {\n                state_store::StateStoreError::StateTooLarge => {\n                    Response::error(507, "state capacity exhausted")\n                }\n                _ => Response::error(500, "invalid chunked server commit envelope"),\n            })\n    }\n\n    fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {\n        let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;\n        let operation_id = hex(&id);\n        let plan = self.state_write_plan(bytes, &operation_id)?;\n        self.durable\n            .as_ref()\n            .ok_or_else(|| Response::error(503, "server is sealed"))?\n            .preflight_new_identities(plan.required_operations())\n            .map_err(|error| match error {\n                ServiceError::RequestCapacityExhausted => {\n                    Response::error(507, "retained operation capacity exhausted")\n                }\n                _ => Response::error(503, "durable capacity preflight unavailable"),\n            })?;\n        if let Some(ha) = self.ha.as_ref() {\n            let commit = ha\n                .lock()\n                .map_err(|_| Response::error(503, "HA control state is unavailable"))?\n                .commit_state(&operation_id, base_digest, bytes);\n            if let Err(error) = commit {\n                return Err(Response::error(503, &error));\n            }\n        }\n        match self.persist_local_plan(plan) {\n            Ok(()) => Ok(()),\n            Err(error) => {\n                if self.ha.is_some() {\n                    self.recovery_required = true;\n                    return Err(Self::ha_committed_local_failure(error));\n                }\n                Err(error)\n            }\n        }\n    }\n\n    fn persist_local(&mut self, bytes: &[u8], operation_id: &str) -> Result<(), Response> {\n        let plan = self.state_write_plan(bytes, operation_id)?;\n        self.durable\n            .as_ref()\n            .ok_or_else(|| Response::error(503, "server is sealed"))?\n            .preflight_new_identities(plan.required_operations())\n            .map_err(|error| match error {\n                ServiceError::RequestCapacityExhausted => {\n                    Response::error(507, "retained operation capacity exhausted")\n                }\n                _ => Response::error(503, "durable capacity preflight unavailable"),\n            })?;\n        self.persist_local_plan(plan)\n    }\n\n    fn persist_local_plan(&mut self, plan: state_store::StateWritePlan) -> Result<(), Response> {\n        let result = {\n            let durable = self\n                .durable\n                .as_mut()\n                .ok_or_else(|| Response::error(503, "server is sealed"))?;\n            let mut write = |request: PutRequest| -> Result<(), Response> {\n                match durable.put_with_compaction(request) {\n                    Ok(_) => Ok(()),\n                    Err(ServiceError::OutcomeUnknown { recovery_reference }) => Err(Response {\n                        status: 503,\n                        body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),\n                    }),\n                    Err(\n                        ServiceError::RequestCapacityExhausted\n                        | ServiceError::JournalCapacityExhausted,\n                    ) => Err(Response::error(\n                        507,\n                        "durable capacity exhausted; no response released",\n                    )),\n                    Err(_) => Err(Response::error(\n                        503,\n                        "durable state rejected; no response released",\n                    )),\n                }\n            };\n\n            for chunk in plan.chunks {\n                let digest = crypto::digest(&chunk.bytes);\n                let value = Secret::new(chunk.bytes)\n                    .map_err(|_| Response::error(507, "state chunk capacity exhausted"))?;\n                let request = PutRequest::new(\n                    "heptabao-server",\n                    "system",\n                    chunk.request_id,\n                    chunk.resource,\n                    digest,\n                    value,\n                )\n                .map_err(|_| Response::error(500, "invalid state chunk commit envelope"))?;\n                write(request)?;\n            }\n\n            let manifest_digest = crypto::digest(&plan.manifest_bytes);\n            let manifest = Secret::new(plan.manifest_bytes)\n                .map_err(|_| Response::error(507, "state manifest capacity exhausted"))?;\n            let request = PutRequest::new(\n                "heptabao-server",\n                "system",\n                plan.manifest_request_id,\n                "state",\n                manifest_digest,\n                manifest,\n            )\n            .map_err(|_| Response::error(500, "invalid state manifest commit envelope"))?;\n            write(request)\n        };\n        if self\n            .durable\n            .as_ref()\n            .is_some_and(|durable| durable.recovery_required())\n        {\n            self.recovery_required = true;\n        }\n        result\n    }\n\n'''
+          replace_between(
+              "crates/heptabao-server/src/service.rs",
+              "    fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {",
+              "    fn sync_from_ha",
+              persistence,
+          )
+
+          replace_once(
+              "crates/heptabao-server/src/ha_state.rs",
+              "const MAX_STATE_BYTES: usize = 768 * 1024;",
+              "const MAX_STATE_BYTES: usize = 16 * 1024 * 1024;",
+          )
+
+          replace_once(
+              "crates/heptabao-server/src/service_capacity.rs",
+              '''        // The Service stores its complete serialized application state in one\n        // durable record; this is not a per-secret quota or an unlimited store.\n        Response::ok(json!({"data": {\n            "profile": "bounded-single-record-v1",\n''',
+              '''        let serialized_state_bytes = self\n            .state\n            .as_ref()\n            .and_then(|state| serde_json::to_vec(state).ok())\n            .map_or(0, |bytes| bytes.len());\n        // The current state is published by a manifest after revision chunks are\n        // fully staged. Durable payload includes both bounded alternating slots.\n        Response::ok(json!({"data": {\n            "profile": "bounded-dual-slot-chunked-v1",\n            "state_storage_format": state_store::STATE_STORAGE_FORMAT,\n            "state_chunk_bytes": state_store::STATE_CHUNK_BYTES,\n            "state_max_chunks": state_store::MAX_STATE_CHUNKS,\n''',
+          )
+          replace_once(
+              "crates/heptabao-server/src/service_capacity.rs",
+              '''            "state_bytes": capacity.logical_payload_bytes,\n            "state_limit_bytes": state_limit,\n            "state_remaining_bytes": state_limit.saturating_sub(capacity.logical_payload_bytes),\n''',
+              '''            "state_bytes": serialized_state_bytes,\n            "state_limit_bytes": state_limit,\n            "state_remaining_bytes": state_limit.saturating_sub(serialized_state_bytes),\n            "durable_payload_bytes": capacity.logical_payload_bytes,\n''',
+          )
+          PY
+          cargo +1.98.0 fmt --all
+          python3 scripts/current_source_inventory.py --write
+          python3 scripts/validate_repository_v2.py
+          git diff --check
+          cargo +1.98.0 test --locked --workspace --all-targets
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+      - name: Commit validated chunked state-store tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- \
+            crates/heptabao-durable-service/src/lib.rs \
+            crates/heptabao-server/src/service.rs \
+            crates/heptabao-server/src/service_state_store.rs \
+            crates/heptabao-server/src/service_state_store_integration_tests.rs \
+            crates/heptabao-server/src/service_capacity.rs \
+            crates/heptabao-server/src/ha_state.rs \
+            planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json
+          git commit -m 'storage: publish server state through bounded chunk manifests'
+          git push origin HEAD:integration/section6-hardening-20260916
