@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "1005346c94c899ed3a509638f4455aacd7bf5415"
+          test "$(git rev-parse HEAD^)" = "8948652ada6b406a64c908f72949007adcad7aad"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Install toolchains
