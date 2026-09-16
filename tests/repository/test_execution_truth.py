@@ -43,6 +43,30 @@ class ExecutionTruthTests(unittest.TestCase):
         p.write_text(p.read_text().replace('pub fn put_with_compaction(', 'pub fn removed('))
         self.assertTrue(module.validate(self.root))
 
+    def test_service_writer_requires_epoch_aware_compaction(self):
+        p=self.root/'crates/heptabao-server/src/service.rs'
+        p.write_text(p.read_text().replace(
+            'apply_batch_with_compaction_in_replay_epoch(',
+            'apply_batch_with_compaction(',
+            1,
+        ))
+        self.assertIn(
+            'atomic batch compaction is not bound to the current replay epoch in the real Service writer',
+            module.validate(self.root),
+        )
+
+    def test_service_writer_cannot_hardcode_retired_epoch(self):
+        p=self.root/'crates/heptabao-server/src/service.rs'
+        p.write_text(p.read_text().replace(
+            'let replay_epoch = durable.replay_epoch();',
+            'let replay_epoch = 0;',
+            1,
+        ))
+        self.assertIn(
+            'atomic batch compaction is not bound to the current replay epoch in the real Service writer',
+            module.validate(self.root),
+        )
+
     def test_missing_document_rejected(self):
         (self.root/'README.md').unlink()
         self.assertTrue(module.validate(self.root))

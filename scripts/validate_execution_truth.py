@@ -54,8 +54,21 @@ def validate(root: Path = ROOT) -> list[str]:
         if 'sys/internal/capacity' not in text['crates/heptabao-server/src/service.rs']:
             problems.append('capacity guide has no current Service route')
         service_source = text['crates/heptabao-server/src/service.rs']
-        if '.apply_batch_with_compaction(' not in service_source:
-            problems.append('atomic batch compaction is not bound to the real Service writer')
+        # The real Service state writer must bind compaction to the currently
+        # authenticated replay epoch. Matching the legacy epoch-0 wrapper is not
+        # sufficient after replay retirement because it would reject every write
+        # following an epoch transition.
+        epoch_compaction_writer = re.compile(
+            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);\s*"
+            r"if\s+compact_before_entry\s*\{\s*"
+            r"durable\.apply_batch_with_compaction_in_replay_epoch\(\s*"
+            r"replay_epoch\s*,",
+            re.S,
+        )
+        if epoch_compaction_writer.search(service_source) is None:
+            problems.append(
+                'atomic batch compaction is not bound to the current replay epoch in the real Service writer'
+            )
         return problems
     except (OSError, ValueError, KeyError, TypeError, StopIteration, yaml.YAMLError) as exc:
         return ['execution truth inputs invalid: ' + type(exc).__name__]
