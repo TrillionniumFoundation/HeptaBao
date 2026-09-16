@@ -1261,6 +1261,103 @@ fn all_failed_routes_are_audited_and_authenticated_audit_rejects_tampering()
 }
 
 #[test]
+fn request_effect_class_distinguishes_reads_mutations_and_side_effecting_reads() {
+    assert_eq!(
+        RequestEffectClass::observe("GET", Some(7), Some(7)),
+        RequestEffectClass::PureRead
+    );
+    assert_eq!(
+        RequestEffectClass::observe("LIST", Some(7), Some(8)),
+        RequestEffectClass::SideEffectingRead
+    );
+    assert_eq!(
+        RequestEffectClass::observe("POST", Some(7), Some(7)),
+        RequestEffectClass::DurableMutation
+    );
+}
+
+#[test]
+fn pure_read_result_audit_failure_withholds_result_without_recovery_fence()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/pure-read",
+            &token,
+            json!({"data":{"value":"withhold-pure-read-plaintext"}})
+        )
+        .status,
+        200
+    );
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable service")?
+        .generation();
+    let fingerprint = service.request_fingerprint("GET", "secret/data/pure-read", "", &token);
+    let event = AuditUnsigned {
+        schema: 2,
+        sequence: service.audit_sequence + 1,
+        previous: STANDARD.encode(service.audit_previous),
+        time: 100,
+        kind: "request".into(),
+        path_digest: fingerprint,
+        status: None,
+    };
+    let payload = serde_json::to_vec(&event)?;
+    let mac = STANDARD.encode(hmac::sign(&service.audit_key, &payload).as_ref());
+    let next = serde_json::to_vec(&AuditRecord { event, mac })?.len() + 1;
+    service.audit_capacity = service.audit.metadata()?.len() + next as u64;
+
+    let result = call(
+        &mut service,
+        "GET",
+        "secret/data/pure-read",
+        &token,
+        json!({}),
+    );
+    assert_eq!(result.status, 503);
+    assert!(
+        !result
+            .body
+            .to_string()
+            .contains("withhold-pure-read-plaintext")
+    );
+    assert!(!service.recovery_required);
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable service")?
+            .generation(),
+        generation
+    );
+    drop(service);
+
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/pure-read",
+            &token,
+            json!({}),
+        )
+        .body["data"]["data"]["value"],
+        "withhold-pure-read-plaintext"
+    );
+    Ok(())
+}
+
+#[test]
 fn result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_reopen()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();

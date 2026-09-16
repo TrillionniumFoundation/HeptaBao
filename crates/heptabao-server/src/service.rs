@@ -289,6 +289,35 @@ struct RequestView<'a> {
     wrap_ttl_seconds: Option<u64>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RequestEffectClass {
+    PureRead,
+    DurableMutation,
+    SideEffectingRead,
+}
+
+impl RequestEffectClass {
+    fn observe(
+        method: &str,
+        before_generation: Option<u64>,
+        after_generation: Option<u64>,
+    ) -> Self {
+        if matches!(method, "GET" | "HEAD" | "LIST" | "SCAN") {
+            if before_generation == after_generation {
+                Self::PureRead
+            } else {
+                Self::SideEffectingRead
+            }
+        } else {
+            Self::DurableMutation
+        }
+    }
+
+    const fn requires_authoritative_recovery_on_result_audit_failure(self) -> bool {
+        !matches!(self, Self::PureRead)
+    }
+}
+
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
@@ -627,6 +656,7 @@ impl Service {
             }
             return response;
         }
+        let durable_generation_before = self.durable.as_ref().map(DurableService::generation);
         let response = self.handle_inner(RequestView {
             method,
             path,
@@ -637,16 +667,24 @@ impl Service {
             allow_forward,
             wrap_ttl_seconds,
         });
+        let effect_class = RequestEffectClass::observe(
+            method,
+            durable_generation_before,
+            self.durable.as_ref().map(DurableService::generation),
+        );
         erase_json(&mut body);
         if self
             .audit_event("response", &fingerprint, now, Some(response.status))
             .is_err()
         {
-            self.recovery_required = true;
-            return Response::error(
-                503,
-                "response audit failed; outcome unknown; authoritative recovery required",
-            );
+            if effect_class.requires_authoritative_recovery_on_result_audit_failure() {
+                self.recovery_required = true;
+                return Response::error(
+                    503,
+                    "response audit failed; outcome unknown; authoritative recovery required",
+                );
+            }
+            return Response::error(503, "response audit failed; read result withheld");
         }
         response
     }
