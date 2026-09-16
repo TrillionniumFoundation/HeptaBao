@@ -53,8 +53,9 @@ def validate(root: Path = ROOT) -> list[str]:
                 problems.append('capacity guide has no current native API: ' + symbol)
         if 'sys/internal/capacity' not in text['crates/heptabao-server/src/service.rs']:
             problems.append('capacity guide has no current Service route')
-        if '.put_with_compaction(' not in text['crates/heptabao-server/src/service.rs']:
-            problems.append('automatic compaction is not bound to the real Service writer')
+        service_source = text['crates/heptabao-server/src/service.rs']
+        if '.apply_batch_with_compaction(' not in service_source:
+            problems.append('atomic batch compaction is not bound to the real Service writer')
         return problems
     except (OSError, ValueError, KeyError, TypeError, StopIteration, yaml.YAMLError) as exc:
         return ['execution truth inputs invalid: ' + type(exc).__name__]

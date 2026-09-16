@@ -13,6 +13,14 @@ pub struct CapacityStatus {
     pub recovery_required: bool,
 }
 
+struct AtomicBatchRequest {
+    principal: String,
+    namespace: String,
+    request_id: String,
+    authorization_digest: [u8; 32],
+    mutations: Vec<(String, Option<Secret>)>,
+}
+
 impl<B: Barrier> DurableService<B> {
     /// Atomically apply several mutations under one replay identity and one
     /// durable generation. `Some(secret)` is a put and `None` is a delete.
@@ -28,36 +36,84 @@ impl<B: Barrier> DurableService<B> {
         authorization_digest: [u8; 32],
         mutations: Vec<(String, Option<Secret>)>,
     ) -> Result<MutationOutcome, ServiceError> {
-        self.apply_batch_with_failpoint(
-            principal.into(),
-            namespace.into(),
-            request_id.into(),
-            authorization_digest,
-            mutations,
+        self.apply_batch_with_policy(
+            AtomicBatchRequest {
+                principal: principal.into(),
+                namespace: namespace.into(),
+                request_id: request_id.into(),
+                authorization_digest,
+                mutations,
+            },
             Failpoint::None,
+            false,
         )
     }
 
+    /// Apply one atomic batch and, only for a proven pre-entry journal-capacity
+    /// rejection, checkpoint the journal and retry the exact same bound batch once.
+    /// Replay-ledger exhaustion, unknown outcomes, I/O failures and binding
+    /// conflicts are never compacted or retried.
+    pub fn apply_batch_with_compaction(
+        &mut self,
+        principal: impl Into<String>,
+        namespace: impl Into<String>,
+        request_id: impl Into<String>,
+        authorization_digest: [u8; 32],
+        mutations: Vec<(String, Option<Secret>)>,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_with_policy(
+            AtomicBatchRequest {
+                principal: principal.into(),
+                namespace: namespace.into(),
+                request_id: request_id.into(),
+                authorization_digest,
+                mutations,
+            },
+            Failpoint::None,
+            true,
+        )
+    }
+
+    #[cfg(test)]
     fn apply_batch_with_failpoint(
         &mut self,
         principal: String,
         namespace: String,
         request_id: String,
         authorization_digest: [u8; 32],
-        mut mutations: Vec<(String, Option<Secret>)>,
+        mutations: Vec<(String, Option<Secret>)>,
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
-        validate_identifier(&principal)?;
-        validate_namespace(&namespace)?;
-        validate_identifier(&request_id)?;
-        if authorization_digest == [0; 32] {
+        self.apply_batch_with_policy(
+            AtomicBatchRequest {
+                principal,
+                namespace,
+                request_id,
+                authorization_digest,
+                mutations,
+            },
+            failpoint,
+            false,
+        )
+    }
+
+    fn apply_batch_with_policy(
+        &mut self,
+        mut request: AtomicBatchRequest,
+        failpoint: Failpoint,
+        compact_before_entry: bool,
+    ) -> Result<MutationOutcome, ServiceError> {
+        validate_identifier(&request.principal)?;
+        validate_namespace(&request.namespace)?;
+        validate_identifier(&request.request_id)?;
+        if request.authorization_digest == [0; 32] {
             return Err(ServiceError::InvalidAuthorizationDigest);
         }
-        if mutations.is_empty() || mutations.len() > 64 {
+        if request.mutations.is_empty() || request.mutations.len() > 64 {
             return Err(ServiceError::InvalidResource);
         }
         let mut resources = std::collections::BTreeSet::new();
-        for (resource, _) in &mutations {
+        for (resource, _) in &request.mutations {
             validate_resource(resource)?;
             if !resources.insert(resource.clone()) {
                 return Err(ServiceError::InvalidResource);
@@ -69,16 +125,16 @@ impl<B: Barrier> DurableService<B> {
         self.directory.verify().map_err(map_guard_error)?;
 
         let key = RequestKey {
-            principal,
-            namespace: namespace.clone(),
-            request_id,
+            principal: request.principal.clone(),
+            namespace: request.namespace.clone(),
+            request_id: request.request_id.clone(),
         };
         let mut binding_bytes = Vec::new();
         encode_string(&mut binding_bytes, &key.principal);
         encode_string(&mut binding_bytes, &key.namespace);
         encode_string(&mut binding_bytes, &key.request_id);
-        binding_bytes.extend_from_slice(&authorization_digest);
-        for (resource, value) in &mutations {
+        binding_bytes.extend_from_slice(&request.authorization_digest);
+        for (resource, value) in &request.mutations {
             encode_string(&mut binding_bytes, resource);
             match value {
                 Some(secret) => {
@@ -134,8 +190,8 @@ impl<B: Barrier> DurableService<B> {
         let mut candidate = self.snapshot.clone();
         candidate.generation = generation;
         candidate.last_commit = Some(marker.clone());
-        for (resource, value) in &mutations {
-            let storage_key = (namespace.clone(), resource.clone());
+        for (resource, value) in &request.mutations {
+            let storage_key = (request.namespace.clone(), resource.clone());
             if let Some(secret) = value {
                 candidate.entries.insert(storage_key, secret.clone());
             } else {
@@ -174,6 +230,10 @@ impl<B: Barrier> DurableService<B> {
                 .and_then(|n| n.checked_add(commit.len()))
                 .is_none_or(|n| n > self.journal_limit)
         {
+            if compact_before_entry {
+                self.compact()?;
+                return self.apply_batch_with_policy(request, failpoint, false);
+            }
             return Err(ServiceError::JournalCapacityExhausted);
         }
 
@@ -198,7 +258,7 @@ impl<B: Barrier> DurableService<B> {
         })();
         // Ensure caller-owned plaintext is released promptly on both success
         // and failure; `Secret::drop` zeroizes each payload.
-        mutations.clear();
+        request.mutations.clear();
         if result.is_err() {
             return Err(ServiceError::OutcomeUnknown { recovery_reference });
         }

@@ -42,7 +42,7 @@ fn ldap_bounded_profile_config_login_and_injection_rejection() {
         json!({}),
         100,
     );
-    assert_eq!(cfg.body["url"], "ldaps://directory.example.test");
+    assert_eq!(cfg.body["data"]["url"], "ldaps://directory.example.test");
     call(
         &mut state,
         &root,

@@ -963,7 +963,6 @@ mod tests {
         let id = host.manifest().descriptor().id().clone();
         let mut registry = PluginRegistry::default();
         registry.register(host.manifest().descriptor().clone())?;
-        registry.enable(&id)?;
         let candidate = registry.get(&id)?.replacement(
             CanonicalPath::parse("/opt/heptabao/plugins/database-v2")?,
             [11; 32],

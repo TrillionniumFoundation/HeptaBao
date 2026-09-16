@@ -661,16 +661,10 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
         s.state.as_ref().ok_or("state")?.schema,
         CURRENT_STATE_SCHEMA
     );
-    let persisted = s
-        .durable
-        .as_ref()
-        .ok_or("store")?
-        .get("system", "state")?
-        .ok_or("persisted")?;
-    assert_eq!(
-        serde_json::from_slice::<State>(persisted.expose())?.schema,
-        CURRENT_STATE_SCHEMA
-    );
+    let durable = s.durable.as_ref().ok_or("store")?;
+    let (persisted, _, _) =
+        Service::load_state_from_durable(durable).map_err(|_| "persisted state")?;
+    assert_eq!(persisted.schema, CURRENT_STATE_SCHEMA);
     drop(s);
     let mut s = f.service()?;
     assert_eq!(

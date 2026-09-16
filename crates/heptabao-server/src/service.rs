@@ -5,8 +5,10 @@ use crate::{
     ha::HaProcess,
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD};
+#[cfg(test)]
+use heptabao_durable_service::PutRequest;
 use heptabao_durable_service::{
-    Barrier, DurableService, PutRequest, ReconciliationStatus, Secret, ServiceError,
+    Barrier, DurableService, MutationOutcome, ReconciliationStatus, Secret, ServiceError,
 };
 use ring::hmac;
 use serde::{Deserialize, Serialize};
@@ -22,7 +24,7 @@ use std::{
 use zeroize::{Zeroize, Zeroizing};
 
 const CURRENT_STATE_SCHEMA: u32 = 5;
-const MAX_STATE_BYTES: usize = 768 * 1024;
+const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 #[path = "audit_rotation.rs"]
@@ -39,6 +41,8 @@ mod lifecycle;
 mod online_auth;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
+#[path = "service_state_store.rs"]
+mod state_store;
 pub(crate) use lifecycle::start_lifecycle_worker;
 
 #[path = "service_leases.rs"]
@@ -1134,6 +1138,110 @@ impl Service {
         }
     }
 
+    fn load_state_from_durable(
+        durable: &DurableService<AeadBarrier>,
+    ) -> Result<(State, Zeroizing<Vec<u8>>, bool), Response> {
+        let record = durable
+            .get("system", "state")
+            .map_err(|_| Response::error(503, "server state is unavailable"))?
+            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
+        let manifest = state_store::decode_manifest(record.expose())
+            .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+        let (bytes, legacy) = if let Some(manifest) = manifest.as_ref() {
+            let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
+            for index in 0..manifest.chunk_count() {
+                let resource = manifest
+                    .chunk_resource(index)
+                    .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+                let chunk = durable
+                    .get("system", &resource)
+                    .map_err(|_| Response::error(503, "server state chunk is unavailable"))?
+                    .ok_or_else(|| Response::error(503, "server state chunk is absent"))?;
+                chunk_values.push(chunk);
+            }
+            let chunk_refs = chunk_values.iter().map(Secret::expose).collect::<Vec<_>>();
+            let assembled = state_store::assemble_state(manifest, &chunk_refs)
+                .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
+            (Zeroizing::new(assembled), false)
+        } else {
+            if record.expose().len() > MAX_STATE_BYTES {
+                return Err(Response::error(
+                    507,
+                    "legacy server state exceeds migration bound",
+                ));
+            }
+            (Zeroizing::new(record.expose().to_vec()), true)
+        };
+        let state: State = serde_json::from_slice(&bytes)
+            .map_err(|_| Response::error(503, "server state schema is invalid"))?;
+        state.validate_format()?;
+        if let Some(manifest) = manifest
+            && manifest.state_schema() != state.schema
+        {
+            return Err(Response::error(
+                503,
+                "server state manifest schema binding is inconsistent",
+            ));
+        }
+        Ok((state, bytes, legacy))
+    }
+
+    fn persist_state_batch(
+        durable: &mut DurableService<AeadBarrier>,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        compact_before_entry: bool,
+    ) -> Result<MutationOutcome, ServiceError> {
+        if bytes.len() > MAX_STATE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let current = durable.get("system", "state")?;
+        let slot = match current.as_ref() {
+            Some(record) => {
+                state_store::next_slot(record.expose()).map_err(|error| match error {
+                    state_store::StateStoreError::StateTooLarge => {
+                        ServiceError::RequestCapacityExhausted
+                    }
+                    _ => ServiceError::CorruptState,
+                })?
+            }
+            None => 0,
+        };
+        let plan = state_store::StateWritePlan::new(bytes, operation_id, state_schema, slot)
+            .map_err(|error| match error {
+                state_store::StateStoreError::StateTooLarge => {
+                    ServiceError::RequestCapacityExhausted
+                }
+                _ => ServiceError::CorruptState,
+            })?;
+        if plan.required_mutations() > 64 {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let mut mutations = Vec::with_capacity(plan.required_mutations());
+        for chunk in plan.chunks {
+            mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
+        }
+        mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
+        if compact_before_entry {
+            durable.apply_batch_with_compaction(
+                "heptabao-server",
+                "system",
+                operation_id,
+                crypto::digest(bytes),
+                mutations,
+            )
+        } else {
+            durable.apply_batch(
+                "heptabao-server",
+                "system",
+                operation_id,
+                crypto::digest(bytes),
+                mutations,
+            )
+        }
+    }
+
     fn commit_state(&mut self, state: &State) -> Result<(), Response> {
         let bytes = Zeroizing::new(
             serde_json::to_vec(state)
@@ -1355,29 +1463,23 @@ impl Service {
             Ok(value) => value,
             Err(error) => return (Response::error(503, error), false),
         };
-        let value = match Secret::new(bytes.to_vec()) {
-            Ok(value) => value,
-            Err(_) => return (Response::error(507, "state capacity exhausted"), false),
-        };
-        let request = match PutRequest::new(
-            "heptabao-server",
-            "system",
-            hex(&operation_id),
-            "state",
-            crypto::digest(&bytes),
-            value,
-        ) {
-            Ok(value) => value,
-            Err(_) => {
-                return (
-                    Response::error(500, "invalid server commit envelope"),
-                    false,
-                );
-            }
-        };
-        if durable.put(request).is_err() {
+        let operation_id = hex(&operation_id);
+        if let Err(error) =
+            Self::persist_state_batch(&mut durable, &bytes, &operation_id, state.schema, false)
+        {
             return (
-                Response::error(503, "staged initialization state was rejected"),
+                Response::error(
+                    if matches!(
+                        error,
+                        ServiceError::RequestCapacityExhausted
+                            | ServiceError::JournalCapacityExhausted
+                    ) {
+                        507
+                    } else {
+                        503
+                    },
+                    "staged initialization state was rejected",
+                ),
                 false,
             );
         }
@@ -1670,15 +1772,9 @@ impl Service {
         self.state = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
-        let durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
+        let mut durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
             .map_err(|_| Response::error(400, "unseal or recovery failed"))?;
-        let bytes = durable
-            .get("system", "state")
-            .map_err(|_| Response::error(503, "server state is unavailable"))?
-            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
-        let state: State = serde_json::from_slice(bytes.expose())
-            .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-        state.validate_format()?;
+        let (state, bytes, legacy_state_record) = Self::load_state_from_durable(&durable)?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
@@ -1689,6 +1785,36 @@ impl Service {
                     503,
                     "HA configuration belongs to a different cluster",
                 ));
+            }
+        }
+        if legacy_state_record {
+            let operation_id = format!(
+                "state-format-{}",
+                hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
+            );
+            match Self::persist_state_batch(&mut durable, &bytes, &operation_id, state.schema, true)
+            {
+                Ok(_) => {}
+                Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+                    return Err(Response {
+                        status: 503,
+                        body: json!({
+                            "errors":["legacy state migration outcome unknown; retry unseal after durable reconciliation"],
+                            "recovery_reference": recovery_reference,
+                        }),
+                    });
+                }
+                Err(
+                    ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted,
+                ) => {
+                    return Err(Response::error(
+                        507,
+                        "legacy state migration capacity exhausted",
+                    ));
+                }
+                Err(_) => {
+                    return Err(Response::error(503, "legacy state migration failed closed"));
+                }
             }
         }
         self.durable = Some(durable);
@@ -2352,16 +2478,11 @@ impl Service {
     }
 
     fn refresh_state_from_durable(&mut self) -> Result<(), Response> {
-        let bytes = self
+        let durable = self
             .durable
             .as_ref()
-            .ok_or_else(|| Response::error(503, "server is sealed"))?
-            .get("system", "state")
-            .map_err(|_| Response::error(503, "server state is unavailable"))?
-            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
-        let state: State = serde_json::from_slice(bytes.expose())
-            .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-        state.validate_format()?;
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let (state, _, _) = Self::load_state_from_durable(durable)?;
         self.state = Some(state);
         self.recovery_required = false;
         Ok(())
@@ -2419,22 +2540,14 @@ impl Service {
     }
 
     fn persist_local(&mut self, bytes: &[u8], operation_id: &str) -> Result<(), Response> {
-        let value = Secret::new(bytes.to_vec())
-            .map_err(|_| Response::error(507, "state capacity exhausted"))?;
-        let request = PutRequest::new(
-            "heptabao-server",
-            "system",
-            operation_id,
-            "state",
-            crypto::digest(bytes),
-            value,
-        )
-        .map_err(|_| Response::error(500, "invalid server commit envelope"))?;
+        let state: State = serde_json::from_slice(bytes)
+            .map_err(|_| Response::error(503, "server state schema is invalid before commit"))?;
+        state.validate_format()?;
         let durable = self
             .durable
             .as_mut()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let result = durable.put_with_compaction(request);
+        let result = Self::persist_state_batch(durable, bytes, operation_id, state.schema, true);
         if durable.recovery_required() {
             self.recovery_required = true;
         }
@@ -2454,8 +2567,6 @@ impl Service {
                 "durable capacity exhausted; no response released",
             )),
             Err(_) => {
-                // Checkpoint publication may have failed without a new user
-                // intent. Fence the Service just as the durable owner is fenced.
                 self.recovery_required |= durable.recovery_required();
                 Err(Response::error(
                     503,
@@ -3419,6 +3530,10 @@ mod ssh_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
+
+#[cfg(test)]
+#[path = "service_state_store_integration_tests.rs"]
+mod state_store_integration_tests;
 
 #[path = "service_capacity.rs"]
 mod capacity;

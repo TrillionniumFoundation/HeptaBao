@@ -191,12 +191,12 @@ impl AuditRotation {
             Ok(mut file) => {
                 self.manifest = decode_manifest(&mut file, key)?;
                 self.manifest_exists = true;
-                if let Some(persisted) = self.manifest.config {
-                    if persisted != self.config {
-                        return Err(invalid(
-                            "audit rotation policy differs from authenticated checkpoint",
-                        ));
-                    }
+                if let Some(persisted) = self.manifest.config
+                    && persisted != self.config
+                {
+                    return Err(invalid(
+                        "audit rotation policy differs from authenticated checkpoint",
+                    ));
                 }
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {}
