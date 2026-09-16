@@ -1,102 +1,45 @@
 # Current capacity, maintenance and growth boundary
 
-This contract is subordinate to `HEPTABAO-PLAN-2026-09-07-V2.1`. It describes
-implemented bounded behavior and explicitly identifies the next storage change;
-it does not reclassify the server as production-capable.
+This contract is subordinate to `HEPTABAO-PLAN-2026-09-07-V2.1`. It describes the currently implemented bounded storage behavior. It does not grant production authority or claim complete OpenBao replacement.
 
-## Actual request path
+## Current authoritative state format
 
-The HTTP/Service dispatcher owns authentication and pre-entry/result audit.
-The aggregate serialized `State` remains at most 768 KiB. The local durable owner
-retains at most 32,000 operation identities and uses a 64 MiB journal budget.
-HA proposals still carry an entire encrypted state and are bounded by their
-existing codec/frame limits. These are independent bounds, not interchangeable
-configuration parameters. Enlarging just one constant is not a valid growth fix.
+The server no longer stores the entire application state as one 768 KiB durable value. The current source binds `MAX_STATE_BYTES` to `state_store::MAX_SERIALIZED_STATE_BYTES`, which is explicitly bounded at **16 MiB**. A state generation is split into **512 KiB** chunks and framed by the versioned discriminator `heptabao-state-chunks-v1`.
 
-`GET /v1/sys/internal/storage/capacity` follows the existing audited dispatch path,
-requires a root principal in the root namespace, and returns only metadata:
-`scope`, `state_limit_bytes`, `stored_value_bytes`, `generation`, `journal_bytes`,
-`journal_limit_bytes`, `retained_requests`, `retained_request_limit`,
-`remaining_request_slots`, `recovery_required`, `automatic_journal_checkpoint`,
-and `replay_id_eviction`. It accepts GET with no input fields. Unauthorized
-requests return 403; other methods return 405; unavailable/sealed/recovery state
-remains denied by the existing admission path. It never exposes tenant names,
-keys, operation IDs, plaintext, password hashes, tokens or lease identifiers.
+`system/state` is either a legacy serialized `State` value or a small versioned manifest. Chunked writers alternate between two bounded slots. Every chunk for the next state plus the new manifest is submitted through one durable-service atomic batch, so one logical server-state publication consumes one replay identity and one durable generation rather than one identity per chunk. A reader admits only a complete manifest whose state schema, chunk count, byte length and SHA-256 binding all validate.
 
-The local retained-ID check runs before a new HA proposal. It prevents the known
-local full-ledger condition from first creating a replicated effect; it does not
-reserve peer capacity or turn a later disk/peer failure into a pre-entry rejection.
-An individual follower can remain unable to apply new state when its local
-retained-ID budget is full. ReadIndex and recovery fences are not bypassed.
+This is still an aggregate application-state architecture: a point mutation may require serializing the complete logical `State`, HA proposals still carry complete application-state bytes, and the 16 MiB limit is a hard admission bound rather than a scalability claim. Moving from 768 KiB to 16 MiB removes the immediate single-record ceiling but does not turn the service into a record-oriented storage engine.
 
-## Safe automatic checkpoint
+## Legacy migration
 
-`DurableService::put_with_maintenance` is the retained compatibility name and
-delegates to `put_with_compaction`, selected by the current Service adapter. Its state machine is:
+On unseal, the service distinguishes a manifest from the historical raw `State` record. A valid legacy record is decoded and validated first, then rewritten into the current chunk/manifest layout through the same atomic batch primitive. The old state remains the authoritative readable value until the migration batch publishes its new generation. An indeterminate durable outcome returns a recovery reference and fails closed; capacity exhaustion and malformed state also fail closed. Manifest/schema disagreement, missing chunks and digest mismatch are never accepted as legacy fallback.
 
-```text
-put(same authorized request)
-  committed or retained duplicate -> existing result
-  explicit JournalCapacityExhausted before entry, no unresolved effect
-    -> authenticated compact, retaining generation and every replay record
-    -> one put(same authorized request)
-  any other error -> no automatic retry
-```
+Fresh initialization writes the current manifest/chunk format directly. Local state commits and HA catch-up also use the same state-batch publication path, avoiding a second persistence protocol.
 
-A failed checkpoint can return an I/O error while leaving the durable owner
-fenced. Therefore the server mirrors `recovery_required()` on **every** error,
-not only the mutation-specific OutcomeUnknown variant. It does not serve an old
-cached state as healthy after an unresolved local maintenance write. Reopen and
-authoritative recovery remain the way to classify uncertain state.
+## Durable atomic batch boundary
 
-No operation ID, revocation tombstone, state generation or application secret is
-removed to free capacity. Checkpointing is not retention expiry. A full replay
-ledger still rejects new mutations. The unified policy retains the bounded request
-for the single permitted retry and still serializes whole state; it is not a
-performance optimization or an indexed storage engine.
+`DurableService::apply_batch` and `apply_batch_with_compaction` bind an ordered mutation set to one principal/namespace/request identity and one authorization digest. The binding includes each resource, operation kind and value digest. A successful batch advances one generation and records one replay identity; replaying the identical request returns the retained duplicate outcome, while changing the mutation set under the same identity is a binding conflict.
 
-## Executable evidence and fault limits
+The durable crash protocol remains intent -> candidate snapshot -> commit marker -> replay ledger publication. Because the full mutation set is applied to one candidate snapshot before publication, recovery observes the batch as one committed or unresolved logical operation rather than partially committed resources.
 
-Four native tests in `crates/heptabao-durable-service/src/capacity.rs` exercise
-repeated small-budget checkpoints, old duplicate/conflict/reference behavior
-through restart, no identity eviction, no retry after unresolved publication and
-an actual filesystem checkpoint-publication failure. Two Service tests in
-`service_capacity_tests.rs` exercise authorization/audit and pre-entry capacity
-rejection without changing admitted state.
+## Capacity observation
 
-`qa/openbao-acceptance/capacity_live.py` uses the expanded `sys/internal/capacity`
-observation route and starts a fresh synthetic real TLS server,
-fills it with bounded objects until 507, verifies the rejected object is absent,
-checks the recovery flag, compacts, restarts and reads selected acknowledged
-values. Its count is a fixture observation, not an estimate of supported users,
-objects, throughput or availability. Run-specific binary digests belong in the
-result receipt. Physical power loss, disk/controller behavior, long-duration load
-and multi-host capacity campaigns are not established by this fixture.
+`GET /v1/sys/internal/storage/capacity` follows the audited service path, requires a root principal in the root namespace, and exposes metadata only. The response includes the explicit state bound, durable generation, logical payload/journal usage, retained request count and remaining replay slots. It does not expose tenant names, keys, operation IDs, tokens, password material or secret plaintext.
 
-## Required next storage implementation
+The local replay ledger is still bounded at **32,000** retained operation identities in the server profile. Preflight refuses a known-full local ledger before proposing a new HA state effect. Journal compaction retains replay records; it does not create new lifetime capacity. Therefore the previous 32k lifetime ceiling remains an open hard blocker even though a multi-chunk state publication now consumes only one identity.
 
-The aggregate-state and lifetime-operation bounds remain open implementation
-work. The following design constraints must be resolved together before changing
-the persisted format or claiming scalable storage:
+## Checkpoint and recovery behavior
 
-* Record ownership: separate auth, engine, lease and external-effect records with
-  structural namespace/type/key identities and encrypted per-record values. A
-  point mutation must not require serializing every unrelated secret.
-* Transaction and Raft ownership: replicate deterministic operation batches and
-  publish one authenticated commit root after quorum/application. The same root
-  must govern reads, recovery and snapshot generation; do not add an independent
-  side database whose commit can diverge from Raft.
-* Replay lifetime: define a protocol with explicit request expiry/epoch and a
-  durable rejection frontier before garbage-collecting IDs. Requests older than
-  the frontier must remain rejected, never silently become new operations.
-  Revocation/provider tombstones have their own external-effect retention rules.
-* Upgrade and snapshot: stream authenticated snapshot chunks from a pinned commit
-  root, validate a complete manifest before installation, and stage a deliberate
-  old-State-to-record-store migration with rollback fences. Native streaming does
-  not imply OpenBao snapshot-byte compatibility.
+Automatic journal checkpointing is permitted only after a proven pre-entry journal-capacity rejection and retries the same bound request once. Unknown outcomes, filesystem failures and replay-capacity exhaustion are never automatically retried. A failed maintenance publication can fence the durable owner, and the server mirrors that recovery requirement rather than serving cached state as healthy.
 
-These are required future implementation constraints, not code claimed by this
-increment. Acceptance must cover multi-record authorization changes, concurrent
-CAS, reader snapshots, all crash boundaries, disk-full/partial writes, member
-catch-up, old-ID rejection after GC, provider-tombstone preservation, and actual
-latency/memory/recovery measurements at declared supported data sizes.
+No replay identity is currently retired merely because its journal frame was compacted. `replay_id_eviction` therefore remains false until the replay-retirement protocol below is implemented and qualified.
+
+## Remaining replay-lifetime implementation
+
+The next storage hard problem is safe replay identity retirement. It must separate durable generation from the count of actively retained request records and provide an authenticated rejection frontier or equivalent exact mechanism before any old identity is discarded. After retirement, a delayed replay of an old request must remain rejected and must never become a fresh mutation. The implementation must also survive restart, backup/restore, crash at every retirement publication boundary, HA catch-up and legacy ledger upgrade.
+
+Acceptance for replay retirement must include more than 32,000 successful logical mutations without exhausting lifetime capacity, exact duplicate/conflict behavior inside the active retention window, deterministic rejection of retired identities, recovery across retirement checkpoints, and proof that no state generation or external-effect tombstone is incorrectly discarded.
+
+## Wider scalability boundary
+
+Even after replay retirement, full scalable storage still requires record ownership rather than repeated whole-state serialization, deterministic multi-record/Raft transaction ownership, authenticated streaming snapshots, migration/rollback fencing, and declared performance envelopes under real data sizes and failure campaigns. Native manifest/chunk support is not OpenBao snapshot-byte compatibility and does not itself establish production replacement authority.
