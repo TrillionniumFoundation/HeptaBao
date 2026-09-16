@@ -1,6 +1,6 @@
 # heptabao-plugin-host module closure dossier
 
-This dossier is the independently reviewable design, boundary, failure-semantics, and acceptance record for **`heptabao-plugin-host`**. It is generated from the exact candidate tree and must be reviewed whenever the source or manifest hash changes. It does not grant compatibility, production, migration, or release authority.
+This dossier is the independently reviewable design, boundary, failure-semantics, and acceptance record for **`heptabao-plugin-host`**. It is generated from the exact candidate tree and must be reviewed whenever the source or manifest binding changes. It does not grant compatibility, production, migration, or release authority.
 
 ## Design and state ownership
 
@@ -29,13 +29,14 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `7629cde0879c744f9460d40635c45679e8b378e3e6940c9e6a7a7cbead016b61`; manifest SHA-256 `e3b38eb71633b42def1909170307da08a6a6f0ff6e892bb57cf613d745449d87`.
-- **Named executable anchor:** `blocked_stdin_obeys_deadline_before_any_output` in `crates/heptabao-plugin-host/src/command_runner.rs`.
+- **Legacy diagnostic hashes:** source tree SHA-256 `7629cde0879c744f9460d40635c45679e8b378e3e6940c9e6a7a7cbead016b61`; manifest SHA-256 `e3b38eb71633b42def1909170307da08a6a6f0ff6e892bb57cf613d745449d87`. The source SHA was produced by the v1 generator and is not portable across checkout roots; it is not acceptance authority.
+- **Authoritative source binding:** the exact checked-out commit plus the Git tree object for `crates/heptabao-plugin-host/src`, emitted by `scripts/validate_module_closure.py`.
+- **Named executable anchor:** `blocked_stdin_obeys_deadline_before_any_output` in `crates/heptabao-plugin-host/src/command_runner_tests.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-plugin-host` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. 
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.
 
 ## Known gaps and evolution
 
