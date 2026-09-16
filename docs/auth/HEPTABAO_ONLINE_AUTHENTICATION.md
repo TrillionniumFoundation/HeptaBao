@@ -194,7 +194,7 @@ A valid old empty-online state can be read without rewriting it; committed
 mutations promote to 5. Never downgrade the discriminator or drop new fields.
 Other development branches using a number 5 are not automatically this format.
 
-The branch retains the 768 KiB aggregate Service boundary, finite durable identity
+The branch retains bounded aggregate Service state (16 MiB local chunk/manifest format and a tighter 768 KiB HA proposal boundary), finite per-epoch durable identity
 ledger and current HA framing. It does not contain the unavailable later local
 record-store delivery. Online metadata/crypto work executes under the current
 Service serialization lock; this is not a throughput/scalability qualification.

@@ -33,10 +33,12 @@ external-provider revocation. The current Service state is schema 5; see `docs/a
 ## Current capacity and migration prerequisites
 
 The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
-expose actual bounded-state/replay/journal headroom and checkpoint the journal only
-on a proven before-entry budget rejection. Retained request identities are never
-evicted; 768 KiB aggregate state and 32,000 identities remain hard limits, not
-production scale. [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md)
+expose actual bounded-state/replay/journal headroom. Local schema-5 state uses a
+16 MiB chunk/manifest format while current HA proposals remain bounded to 768 KiB.
+The detailed replay ledger is bounded to 32,000 identities per epoch; explicit
+replay-epoch retirement exists, and the current candidate coordinates the epoch
+marker through Raft instead of silently evicting identities. These are bounded
+mechanisms, not production-scale qualification. [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md)
 observes real source catalogs and target headroom without copying or cutover.
 The [per-surface execution map](docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md)
 retains all original 60 surfaces and their work packages without issuing passes.

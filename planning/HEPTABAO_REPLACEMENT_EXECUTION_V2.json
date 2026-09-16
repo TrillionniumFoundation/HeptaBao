@@ -90,7 +90,7 @@
       "positive": "Enumerate supported methods, request fields and success envelopes for every sys route",
       "hostile": "Verify sealed, missing-root and malformed-field error precedence",
       "lifecycle": "Reopen initialization, lost response and verified rekey without publishing two roots",
-      "implementation": "PARTIAL_RUNTIME",
+      "implementation": "RUNTIME_COMPLETE_LOCAL",
       "runtime_sources": [
         "crates/heptabao-server/src/service.rs"
       ],
@@ -103,7 +103,37 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Endpoint-level inventory remains incomplete."
+      "remaining_scope": "Local system endpoint/method/field inventory, sealed/error precedence, initialization reply-loss recovery, threshold unseal and verified rekey/reopen behavior are executable; format migration, real multi-host upgrade/fault, full OpenBao 2.6.2 differential and independent admission remain later phases.",
+      "implementation_evidence": {
+        "source_paths": [
+          "crates/heptabao-server/src/service.rs",
+          "planning/HEPTABAO_SYSTEM_BACKEND_ENDPOINT_INVENTORY_V1.json"
+        ],
+        "test_anchors": [
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "initialization_recovery_survives_response_loss_and_requires_root_ack"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "verified_rekey_survives_response_loss_restart_and_cancel"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "system_backend_health_seal_and_error_precedence_are_executable"
+          }
+        ],
+        "local_dimensions": [
+          "protocol_framing",
+          "authorization_before_effect",
+          "effect_readback",
+          "crash_reopen"
+        ]
+      }
     },
     {
       "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
@@ -123,10 +153,11 @@
       "positive": "Enable, inspect, tune, relocate and disable all declared mount classes",
       "hostile": "Reject overlapping mounts, unauthorized tune and cross-namespace relocation",
       "lifecycle": "Persist mount incarnations and revoke old leases and credentials after disable/recreate",
-      "implementation": "PARTIAL_RUNTIME",
+      "implementation": "RUNTIME_COMPLETE_LOCAL",
       "runtime_sources": [
         "crates/heptabao-server/src/auth.rs",
-        "crates/heptabao-server/src/engines.rs"
+        "crates/heptabao-server/src/engines.rs",
+        "crates/heptabao-server/src/service.rs"
       ],
       "contract_sources": [],
       "guides": [
@@ -137,7 +168,34 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Requires revision, CAS, cache invalidation and crash fixtures."
+      "remaining_scope": "Local secret/auth/audit mount registry, revision CAS, atomic remount, overlap and reserved-path rejection, restart persistence and disable/recreate incarnation or accessor fencing are executable; full asset migration, real multi-host fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain later ordered phases.",
+      "implementation_evidence": {
+        "source_paths": [
+          "crates/heptabao-server/src/auth.rs",
+          "crates/heptabao-server/src/engines.rs",
+          "crates/heptabao-server/src/service.rs"
+        ],
+        "test_anchors": [
+          {
+            "path": "crates/heptabao-server/src/engine_tests.rs",
+            "name": "mount_registry_revision_cas_remount_and_incarnation_are_persisted"
+          },
+          {
+            "path": "crates/heptabao-server/src/auth_tests.rs",
+            "name": "auth_mount_revision_tune_remount_and_recreate_rotate_identity"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "mount_registry_remount_cas_and_restart_fence_stale_incarnations"
+          }
+        ],
+        "local_dimensions": [
+          "protocol_framing",
+          "authorization_before_effect",
+          "effect_readback",
+          "crash_reopen"
+        ]
+      }
     },
     {
       "surface_id": "HB-SURFACE-POLICY-ACL",

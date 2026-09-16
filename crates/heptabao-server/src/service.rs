@@ -147,6 +147,11 @@ struct RekeyState {
 struct State {
     schema: u32,
     cluster_id: String,
+    /// Cluster-visible replay generation. Epoch changes are ordinary replicated
+    /// application-state transitions; each node retires its local detailed
+    /// replay ledger before publishing state for the new epoch.
+    #[serde(default, skip_serializing_if = "replay_epoch_is_zero")]
+    replay_epoch: u64,
     auth: AuthState,
     engines: EngineState,
     #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
@@ -156,6 +161,11 @@ struct State {
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
     )]
     raft_admin: raft_admin::RaftAdminState,
+}
+
+
+fn replay_epoch_is_zero(value: &u64) -> bool {
+    *value == 0
 }
 
 pub struct Response {
@@ -1062,6 +1072,90 @@ impl Service {
         now: u64,
     ) -> Response {
         let principal = principal.as_ref();
+        if path == "sys/remount" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "remount requires POST or PUT");
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = state
+                .auth
+                .authorize_sudo_request(principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "remount requires a JSON object");
+            };
+            if object
+                .keys()
+                .any(|key| !matches!(key.as_str(), "from" | "to" | "cas_revision"))
+            {
+                return Response::error(400, "unsupported remount parameter");
+            }
+            let Some(from) = object.get("from").and_then(Value::as_str) else {
+                return Response::error(400, "remount from is required");
+            };
+            let Some(to) = object.get("to").and_then(Value::as_str) else {
+                return Response::error(400, "remount to is required");
+            };
+            if from.starts_with('/') || to.starts_with('/') {
+                return Response::error(
+                    400,
+                    "remount paths must be relative to the request namespace",
+                );
+            }
+            let cas_revision = match object.get("cas_revision") {
+                Some(value) => match value.as_u64() {
+                    Some(value) => Some(value),
+                    None => {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    }
+                },
+                None => None,
+            };
+            let from = from.trim_end_matches('/');
+            let to = to.trim_end_matches('/');
+            match (from.strip_prefix("auth/"), to.strip_prefix("auth/")) {
+                (Some(from), Some(to)) => {
+                    return match state.auth.remount_mount(namespace, from, to, cas_revision) {
+                        Ok(response) => Response {
+                            status: response.status,
+                            body: response.body,
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                (None, None) => {
+                    if from.starts_with("sys/")
+                        || to.starts_with("sys/")
+                        || from.starts_with("identity/")
+                        || to.starts_with("identity/")
+                        || from.starts_with("cubbyhole/")
+                        || to.starts_with("cubbyhole/")
+                    {
+                        return Response::error(
+                            400,
+                            "remount cannot relocate reserved system paths",
+                        );
+                    }
+                    return match state.engines.remount(namespace, from, to, cas_revision) {
+                        Ok(mut response) => Response {
+                            status: response.status,
+                            body: std::mem::take(&mut response.body),
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                _ => {
+                    return Response::error(
+                        400,
+                        "remount cannot change between auth and secret mount classes",
+                    );
+                }
+            }
+        }
         if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
         {
             return Self::lease_route(state, principal, namespace, method, path, body, now);
@@ -1168,7 +1262,7 @@ impl Service {
             .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
         let manifest = state_store::decode_manifest(record.expose())
             .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
-        let (bytes, legacy) = if let Some(manifest) = manifest.as_ref() {
+        let (mut bytes, mut needs_rewrite) = if let Some(manifest) = manifest.as_ref() {
             let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
             for index in 0..manifest.chunk_count() {
                 let resource = manifest
@@ -1193,7 +1287,7 @@ impl Service {
             }
             (Zeroizing::new(record.expose().to_vec()), true)
         };
-        let state: State = serde_json::from_slice(&bytes)
+        let mut state: State = serde_json::from_slice(&bytes)
             .map_err(|_| Response::error(503, "server state schema is invalid"))?;
         state.validate_format()?;
         if let Some(manifest) = manifest
@@ -1204,7 +1298,25 @@ impl Service {
                 "server state manifest schema binding is inconsistent",
             ));
         }
-        Ok((state, bytes, legacy))
+        let durable_epoch = durable.replay_epoch();
+        if state.replay_epoch > durable_epoch {
+            return Err(Response::error(
+                503,
+                "server state replay epoch is ahead of durable replay authority",
+            ));
+        }
+        // Older single-node builds could retire the durable replay ledger without
+        // recording the epoch in application state. Normalize that one-way legacy
+        // condition and rewrite it before the state may join an HA cluster.
+        if state.replay_epoch < durable_epoch {
+            state.replay_epoch = durable_epoch;
+            bytes = Zeroizing::new(
+                serde_json::to_vec(&state)
+                    .map_err(|_| Response::error(500, "state serialization failed"))?,
+            );
+            needs_rewrite = true;
+        }
+        Ok((state, bytes, needs_rewrite))
     }
 
     fn persist_state_batch(
@@ -1212,10 +1324,21 @@ impl Service {
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
+        target_replay_epoch: u64,
         compact_before_entry: bool,
     ) -> Result<MutationOutcome, ServiceError> {
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let current_replay_epoch = durable.replay_epoch();
+        if target_replay_epoch < current_replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
+        if target_replay_epoch > current_replay_epoch {
+            if current_replay_epoch.checked_add(1) != Some(target_replay_epoch) {
+                return Err(ServiceError::ReplayEpochMismatch);
+            }
+            durable.retire_replay_epoch()?;
         }
         let current = durable.get("system", "state")?;
         let slot = match current.as_ref() {
@@ -1245,6 +1368,9 @@ impl Service {
         }
         mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
         let replay_epoch = durable.replay_epoch();
+        if replay_epoch != target_replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
         if compact_before_entry {
             durable.apply_batch_with_compaction_in_replay_epoch(
                 replay_epoch,
@@ -1450,6 +1576,7 @@ impl Service {
         let state = State {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
+            replay_epoch: 0,
             auth,
             engines: EngineState::default(),
             database: database::DatabaseState::default(),
@@ -1489,7 +1616,14 @@ impl Service {
         };
         let operation_id = hex(&operation_id);
         if let Err(error) =
-            Self::persist_state_batch(&mut durable, &bytes, &operation_id, state.schema, false)
+            Self::persist_state_batch(
+                &mut durable,
+                &bytes,
+                &operation_id,
+                state.schema,
+                state.replay_epoch,
+                false,
+            )
         {
             return (
                 Response::error(
@@ -1798,7 +1932,7 @@ impl Service {
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
         let mut durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
             .map_err(|_| Response::error(400, "unseal or recovery failed"))?;
-        let (state, bytes, legacy_state_record) = Self::load_state_from_durable(&durable)?;
+        let (state, bytes, state_rewrite_required) = Self::load_state_from_durable(&durable)?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
@@ -1811,19 +1945,26 @@ impl Service {
                 ));
             }
         }
-        if legacy_state_record {
+        if state_rewrite_required {
             let operation_id = format!(
                 "state-format-{}",
                 hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
             );
-            match Self::persist_state_batch(&mut durable, &bytes, &operation_id, state.schema, true)
+            match Self::persist_state_batch(
+                &mut durable,
+                &bytes,
+                &operation_id,
+                state.schema,
+                state.replay_epoch,
+                true,
+            )
             {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
                         status: 503,
                         body: json!({
-                            "errors":["legacy state migration outcome unknown; retry unseal after durable reconciliation"],
+                            "errors":["state-format metadata migration outcome unknown; retry unseal after durable reconciliation"],
                             "recovery_reference": recovery_reference,
                         }),
                     });
@@ -1833,11 +1974,11 @@ impl Service {
                 ) => {
                     return Err(Response::error(
                         507,
-                        "legacy state migration capacity exhausted",
+                        "state-format metadata migration capacity exhausted",
                     ));
                 }
                 Err(_) => {
-                    return Err(Response::error(503, "legacy state migration failed closed"));
+                    return Err(Response::error(503, "state-format metadata migration failed closed"));
                 }
             }
         }
@@ -2313,7 +2454,7 @@ impl Service {
             "replay_id_eviction": false,
             "replay_epoch": durable.replay_epoch(),
             "retired_through_generation": durable.retired_through_generation(),
-            "replay_retirement": "explicit-single-node"
+            "replay_retirement": if self.ha.is_some() { "raft-coordinated" } else { "local-epoch" }
         }}))
     }
 
@@ -2356,36 +2497,52 @@ impl Service {
             if body.as_object().is_none_or(|object| !object.is_empty()) {
                 return Response::error(400, "replay retirement accepts an empty JSON object");
             }
-            // Multi-node epoch transition needs quorum ordering and is deliberately
-            // deferred to the HA fault/upgrade closure. Never retire one node's
-            // replay frontier behind its peers.
-            if self.ha.is_some() {
-                return Response::error(
-                    409,
-                    "replay retirement requires single-node mode until coordinated HA epoch transition is qualified",
-                );
-            }
-            let (result, fenced) = {
-                let Some(durable) = self.durable.as_mut() else {
-                    return Response::error(503, "server is sealed");
-                };
-                let result = durable.retire_replay_epoch();
-                (result, durable.recovery_required())
+            let Some(mut next_state) = self.state.clone() else {
+                return Response::error(503, "server is sealed");
             };
-            if fenced {
+            let Some(durable) = self.durable.as_ref() else {
+                return Response::error(503, "server is sealed");
+            };
+            let previous_epoch = durable.replay_epoch();
+            if next_state.replay_epoch != previous_epoch {
                 self.recovery_required = true;
+                return Response::error(503, "replay epoch metadata requires recovery");
             }
-            return match result {
-                Ok(outcome) => Response::ok(json!({
-                    "data": {
-                        "previous_epoch": outcome.previous_epoch,
-                        "replay_epoch": outcome.current_epoch,
-                        "retired_through_generation": outcome.retired_through_generation,
-                        "retired_requests": outcome.retired_requests,
-                    }
-                })),
-                Err(_) => Response::error(503, "replay retirement failed; inspect durable state"),
+            let Some(current_epoch) = previous_epoch.checked_add(1) else {
+                return Response::error(507, "replay epoch exhausted");
             };
+            let retired_requests = durable.retained_request_count();
+            let retired_through_generation = durable.generation();
+            next_state.schema = CURRENT_STATE_SCHEMA;
+            next_state.replay_epoch = current_epoch;
+
+            // The epoch marker is part of the authoritative application state.
+            // In HA mode it is committed by Raft before any node discards its
+            // detailed replay ledger. Each node then retires locally immediately
+            // before publishing the state batch under the new epoch.
+            if let Err(error) = self.commit_state(&next_state) {
+                return error;
+            }
+            self.state = Some(next_state);
+            let Some(durable) = self.durable.as_ref() else {
+                self.recovery_required = true;
+                return Response::error(503, "replay retirement lost durable owner");
+            };
+            if durable.replay_epoch() != current_epoch
+                || durable.retired_through_generation() != retired_through_generation
+            {
+                self.recovery_required = true;
+                return Response::error(503, "replay retirement did not converge locally");
+            }
+            return Response::ok(json!({
+                "data": {
+                    "previous_epoch": previous_epoch,
+                    "replay_epoch": current_epoch,
+                    "retired_through_generation": retired_through_generation,
+                    "retired_requests": retired_requests,
+                    "cluster_coordinated": self.ha.is_some(),
+                }
+            }));
         }
 
         if path == "sys/storage/raft/compact" {
@@ -2570,18 +2727,33 @@ impl Service {
     }
 
     fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {
-        // This request will allocate a fresh identity. Refuse a known full
-        // local replay ledger BEFORE proposing an otherwise committed HA effect.
-        self.durable
+        let target: State = serde_json::from_slice(bytes)
+            .map_err(|_| Response::error(503, "server state schema is invalid before commit"))?;
+        target.validate_format()?;
+        let durable = self
+            .durable
             .as_ref()
-            .ok_or_else(|| Response::error(503, "server is sealed"))?
-            .preflight_new_identity()
-            .map_err(|error| match error {
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let current_epoch = durable.replay_epoch();
+        let next_epoch = current_epoch.checked_add(1);
+        let epoch_transition = next_epoch == Some(target.replay_epoch);
+        if target.replay_epoch < current_epoch
+            || (target.replay_epoch != current_epoch && !epoch_transition)
+        {
+            return Err(Response::error(503, "invalid replay epoch transition"));
+        }
+        // Ordinary requests allocate a new local replay identity and must prove
+        // capacity before a Raft effect. An epoch transition is itself the
+        // authenticated escape from a full detailed ledger, so it is allowed to
+        // replicate before local retirement and then publishes under the new epoch.
+        if !epoch_transition {
+            durable.preflight_new_identity().map_err(|error| match error {
                 ServiceError::RequestCapacityExhausted => {
                     Response::error(507, "retained operation capacity exhausted")
                 }
                 _ => Response::error(503, "durable capacity preflight unavailable"),
             })?;
+        }
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
         if let Some(ha) = self.ha.as_ref() {
@@ -2613,8 +2785,23 @@ impl Service {
             .durable
             .as_mut()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let result = Self::persist_state_batch(durable, bytes, operation_id, state.schema, true);
-        if durable.recovery_required() {
+        let prior_replay_epoch = durable.replay_epoch();
+        let result = Self::persist_state_batch(
+            durable,
+            bytes,
+            operation_id,
+            state.schema,
+            state.replay_epoch,
+            true,
+        );
+        // If retirement itself published but the following state batch failed,
+        // application state and replay authority no longer have the same epoch.
+        // Fence the process even when the durable primitive is otherwise healthy;
+        // restart normalization or HA catch-up is then the only admissible path.
+        let epoch_advanced_without_state = result.is_err()
+            && state.replay_epoch > prior_replay_epoch
+            && durable.replay_epoch() == state.replay_epoch;
+        if durable.recovery_required() || epoch_advanced_without_state {
             self.recovery_required = true;
         }
         match result {
@@ -2745,6 +2932,8 @@ impl Service {
         let device = || {
             json!({
                 "type": "file",
+                "accessor": "audit_file",
+                "revision": 1,
                 "description": "HeptaBao mandatory authenticated file audit device",
                 "options": {
                     "file_path": file_path.as_str(),
@@ -2764,6 +2953,22 @@ impl Service {
                 let Some(object) = body.as_object() else {
                     return Response::error(400, "audit enable requires a JSON object");
                 };
+                if object.keys().any(|key| {
+                    !matches!(
+                        key.as_str(),
+                        "type" | "description" | "options" | "local" | "cas_revision"
+                    )
+                }) {
+                    return Response::error(400, "unsupported file audit parameter");
+                }
+                if let Some(revision) = object.get("cas_revision") {
+                    let Some(revision) = revision.as_u64() else {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    };
+                    if revision != 1 {
+                        return Response::error(409, "stale audit mount revision");
+                    }
+                }
                 if object
                     .get("type")
                     .and_then(Value::as_str)

@@ -2487,3 +2487,134 @@ fn jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_m
     assert!(mixed.is_err());
     assert_eq!(serde_json::to_vec(&state).unwrap(), base);
 }
+
+#[test]
+fn auth_mount_revision_tune_remount_and_recreate_rotate_identity() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/team",
+        json!({"type":"userpass","cas_revision":0}),
+        100,
+    );
+    let created = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/team",
+        json!({}),
+        100,
+    );
+    let accessor = created.body["data"]["accessor"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(created.body["data"]["revision"], 1);
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "sys/auth/team/tune",
+        json!({"description":"team-v2","cas_revision":1}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/team/users/alice",
+        json!({"password":"correct horse battery staple"}),
+        100,
+    );
+    let issued = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/team/login/alice",
+        json!({"password":"correct horse battery staple"}),
+        101,
+    )
+    .body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let moved = state.remount_mount("", "team", "moved", Some(2)).unwrap();
+    assert_eq!(moved.body["data"]["revision"], 3);
+    assert_eq!(moved.body["data"]["accessor"], accessor);
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/team/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .err()
+            .map(|error| error.status),
+        Some(404)
+    );
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/moved/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .unwrap()
+            .unwrap()
+            .status,
+        200
+    );
+    assert!(state.authenticate(&issued, 102).is_ok());
+    let before_stale = serde_json::to_vec(&state).unwrap();
+    assert_eq!(
+        state
+            .remount_mount("", "moved", "other", Some(1))
+            .err()
+            .map(|error| error.status),
+        Some(409)
+    );
+    assert_eq!(before_stale, serde_json::to_vec(&state).unwrap());
+    call(
+        &mut state,
+        &root,
+        "",
+        "DELETE",
+        "sys/auth/moved",
+        json!({"cas_revision":3}),
+        103,
+    );
+    assert!(state.authenticate(&issued, 103).is_err());
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/moved",
+        json!({"type":"userpass","cas_revision":0}),
+        104,
+    );
+    let recreated = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/moved",
+        json!({}),
+        104,
+    );
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_ne!(recreated.body["data"]["accessor"], accessor);
+}

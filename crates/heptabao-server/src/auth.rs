@@ -329,6 +329,8 @@ impl Drop for JwtMountState {
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     accessor: Option<String>,
+    #[serde(default = "auth_mount_revision_one")]
+    revision: u64,
     kind: String,
     description: String,
 }
@@ -339,10 +341,15 @@ struct AuthScope<'a> {
     mount: &'a str,
 }
 
+const fn auth_mount_revision_one() -> u64 {
+    1
+}
+
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
             accessor: None,
+            revision: 1,
             kind: kind.into(),
             description: description.into(),
         }
@@ -352,6 +359,7 @@ impl AuthMount {
         json!({
             "type": self.kind,
             "accessor": self.accessor.as_deref().unwrap_or(""),
+            "revision": self.revision,
             "description": self.description,
             "local": false,
             "seal_wrap": false,
@@ -670,6 +678,36 @@ fn boolean(body: &Value, field: &str, default: bool) -> Result<bool, AuthError> 
         None => Ok(default),
         Some(value) => value.as_bool().ok_or_else(|| bad("expected boolean")),
     }
+}
+fn optional_auth_revision(body: &Value) -> Result<Option<u64>, AuthError> {
+    body.get("cas_revision")
+        .map(|value| {
+            value
+                .as_u64()
+                .ok_or_else(|| bad("cas_revision must be a nonnegative integer"))
+        })
+        .transpose()
+}
+fn require_auth_revision(expected: Option<u64>, current: u64) -> Result<(), AuthError> {
+    if expected.is_some_and(|value| value != current) {
+        return Err(err(409, "stale auth mount revision; no state was changed"));
+    }
+    Ok(())
+}
+fn require_absent_auth_revision(expected: Option<u64>) -> Result<(), AuthError> {
+    if expected.is_some_and(|value| value != 0) {
+        return Err(err(
+            409,
+            "auth mount is absent; cas_revision must be zero for creation",
+        ));
+    }
+    Ok(())
+}
+fn next_auth_revision(current: u64) -> Result<u64, AuthError> {
+    current
+        .max(1)
+        .checked_add(1)
+        .ok_or_else(|| err(507, "auth mount revision exhausted"))
 }
 fn duration(body: &Value, field: &str, default: u64) -> Result<u64, AuthError> {
     match body.get(field) {
@@ -1192,6 +1230,137 @@ impl AuthState {
         )
     }
 
+    pub(super) fn remount_mount(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+    ) -> Result<AuthResponse, AuthError> {
+        if from.is_empty()
+            || to.is_empty()
+            || from == to
+            || from.len() > 256
+            || to.len() > 256
+            || !from.split('/').all(valid_name)
+            || !to.split('/').all(valid_name)
+        {
+            return Err(bad(
+                "auth remount paths must be distinct canonical segments",
+            ));
+        }
+        if from == "token" || to == "token" {
+            return Err(bad("the built-in token auth method cannot be remounted"));
+        }
+        let mut entries = self.effective_auth_mounts(namespace);
+        let mut moved = entries
+            .get(from)
+            .cloned()
+            .ok_or_else(|| err(404, "auth mount not found"))?;
+        require_auth_revision(cas_revision, moved.revision)?;
+        if entries.keys().any(|name| {
+            name != from
+                && (name == to
+                    || name.starts_with(&format!("{to}/"))
+                    || to.starts_with(&format!("{name}/")))
+        }) {
+            return Err(bad(
+                "auth remount destination conflicts with an existing mount",
+            ));
+        }
+        entries.remove(from);
+        moved.revision = next_auth_revision(moved.revision)?;
+        let revision = moved.revision;
+        let accessor = moved.accessor.clone().unwrap_or_default();
+        entries.insert(to.into(), moved);
+        self.auth_mounts.insert(namespace.into(), entries);
+
+        if from == "userpass" {
+            if let Some(users) = self.users.remove(namespace) {
+                self.mounted_users
+                    .entry(namespace.into())
+                    .or_default()
+                    .insert(to.into(), users);
+            }
+        } else if let Some(users) = self
+            .mounted_users
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.mounted_users
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), users);
+        }
+        if from == "approle" {
+            if let Some(roles) = self.roles.remove(namespace) {
+                self.mounted_roles
+                    .entry(namespace.into())
+                    .or_default()
+                    .insert(to.into(), roles);
+            }
+        } else if let Some(roles) = self
+            .mounted_roles
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.mounted_roles
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), roles);
+        }
+        if let Some(value) = self
+            .jwt_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.jwt_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .kubernetes_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.kubernetes_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .oidc_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.oidc_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .ldap_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.ldap_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        for token in self.tokens.values_mut() {
+            if token.namespace == namespace && token.auth_mount.as_deref() == Some(from) {
+                token.auth_mount = Some(to.into());
+            }
+        }
+        Ok(response(
+            json!({"from":format!("auth/{from}/"),"to":format!("auth/{to}/"),
+                "revision":revision,"accessor":accessor}),
+            true,
+        ))
+    }
+
     fn auth_mount_route(
         &mut self,
         principal: Option<&Principal>,
@@ -1217,11 +1386,67 @@ impl AuthState {
                 .collect();
             return Ok(response(Value::Object(entries), false));
         }
-        let mount = suffix.trim_start_matches('/').trim_end_matches('/');
+        let requested = suffix.trim_start_matches('/').trim_end_matches('/');
+        let (mount, tune) = requested
+            .strip_suffix("/tune")
+            .map_or((requested, false), |mount| (mount, true));
         if mount.is_empty() || mount.len() > 256 || !mount.split('/').all(valid_name) {
             return Err(bad("auth mount path must contain canonical segments"));
         }
-        let route = format!("sys/auth/{mount}");
+        let route = if tune {
+            format!("sys/auth/{mount}/tune")
+        } else {
+            format!("sys/auth/{mount}")
+        };
+        if tune {
+            return match method {
+                "GET" => {
+                    self.permission(principal, namespace, &route, "read", now)?;
+                    reject_unknown(body, &[])?;
+                    let entry = self
+                        .effective_auth_mounts(namespace)
+                        .get(mount)
+                        .cloned()
+                        .ok_or_else(|| err(404, "auth mount not found"))?;
+                    Ok(response(
+                        json!({"description":entry.description,"revision":entry.revision,
+                            "accessor":entry.accessor.as_deref().unwrap_or("")}),
+                        false,
+                    ))
+                }
+                "POST" | "PUT" => {
+                    let actor = self.permission(principal, namespace, &route, "update", now)?;
+                    self.authorize_request(actor, namespace, &route, "sudo", now)?;
+                    reject_unknown(body, &["description", "cas_revision"])?;
+                    let mut entries = self.effective_auth_mounts(namespace);
+                    let mut entry = entries
+                        .get(mount)
+                        .cloned()
+                        .ok_or_else(|| err(404, "auth mount not found"))?;
+                    require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
+                    let mut changed = false;
+                    if let Some(description) = body.get("description") {
+                        let description = description
+                            .as_str()
+                            .ok_or_else(|| bad("description must be a string"))?;
+                        if description.len() > 512 || description.chars().any(char::is_control) {
+                            return Err(bad("invalid auth mount description"));
+                        }
+                        if entry.description != description {
+                            entry.description = description.into();
+                            changed = true;
+                        }
+                    }
+                    if changed {
+                        entry.revision = next_auth_revision(entry.revision)?;
+                        entries.insert(mount.into(), entry);
+                        self.auth_mounts.insert(namespace.into(), entries);
+                    }
+                    Ok(empty(changed))
+                }
+                _ => Err(err(405, "method not allowed")),
+            };
+        }
         match method {
             "GET" => {
                 self.permission(principal, namespace, &route, "read", now)?;
@@ -1236,7 +1461,7 @@ impl AuthState {
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &["type", "description"])?;
+                reject_unknown(body, &["type", "description", "cas_revision"])?;
                 let kind = body
                     .get("type")
                     .and_then(Value::as_str)
@@ -1260,7 +1485,8 @@ impl AuthState {
                     return Err(bad("invalid auth mount description"));
                 }
                 let mut entries = self.effective_auth_mounts(namespace);
-                if mount == "token" || entries.get(mount).is_some_and(|old| old.kind != kind) {
+                let existing = entries.get(mount).cloned();
+                if mount == "token" || existing.as_ref().is_some_and(|old| old.kind != kind) {
                     return Err(bad("auth mount is already in use by another method"));
                 }
                 if entries.keys().any(|name| {
@@ -1270,14 +1496,23 @@ impl AuthState {
                 }) {
                     return Err(bad("auth mount paths cannot overlap"));
                 }
+                match existing.as_ref() {
+                    Some(old) => {
+                        require_auth_revision(optional_auth_revision(body)?, old.revision)?
+                    }
+                    None => require_absent_auth_revision(optional_auth_revision(body)?)?,
+                }
                 let mut next = AuthMount::new(kind, description);
-                next.accessor = Some(
-                    match entries.get(mount).and_then(|entry| entry.accessor.as_ref()) {
-                        Some(accessor) => accessor.clone(),
-                        None => random_id("auth_")?,
-                    },
-                );
-                let mutated = entries.get(mount) != Some(&next);
+                if let Some(old) = existing.as_ref() {
+                    next.accessor = old.accessor.clone();
+                    next.revision = old.revision;
+                    if old.description != description {
+                        next.revision = next_auth_revision(old.revision)?;
+                    }
+                } else {
+                    next.accessor = Some(random_id("auth_")?);
+                }
+                let mutated = existing.as_ref() != Some(&next);
                 entries.insert(mount.into(), next);
                 self.auth_mounts.insert(namespace.into(), entries);
                 Ok(empty(mutated))
@@ -1285,19 +1520,20 @@ impl AuthState {
             "DELETE" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &[])?;
+                reject_unknown(body, &["cas_revision"])?;
                 if mount == "token" {
                     return Err(bad("the built-in token auth method cannot be disabled"));
                 }
                 let mut entries = self.effective_auth_mounts(namespace);
-                let mutated = entries.remove(mount).is_some();
+                let current = entries
+                    .get(mount)
+                    .cloned()
+                    .ok_or_else(|| err(404, "auth mount not found"))?;
+                require_auth_revision(optional_auth_revision(body)?, current.revision)?;
+                entries.remove(mount);
                 self.auth_mounts.insert(namespace.into(), entries);
-                if mutated {
-                    self.disable_auth_mount(AuthScope { namespace, mount });
-                    Ok(empty(true))
-                } else {
-                    Err(err(404, "auth mount not found"))
-                }
+                self.disable_auth_mount(AuthScope { namespace, mount });
+                Ok(empty(true))
             }
             _ => Err(err(405, "method not allowed")),
         }

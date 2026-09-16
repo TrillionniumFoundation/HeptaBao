@@ -80,8 +80,8 @@ rollback-protection provider. Consult the detailed Identity and server guides.
 |---|---|---|
 | HTTP headers / normal body | 16 KiB / 256 KiB | Send one canonical JSON request per connection; chunked/pipelined requests are rejected |
 | Snapshot request / response body | 32 MiB / 32 MiB | Snapshot-specific JSON/base64 transfer still has the smaller decoded limit below |
-| Serialized Service state | 768 KiB | Remove obsolete data/credentials using authenticated APIs; compaction alone cannot shrink live secrets |
-| Retained durable operation identities | 32,000 | Compact the journal when needed; compaction retains replay identities and does not reset this limit |
+| Serialized Service state | 16 MiB local chunk/manifest format; current HA proposal path 768 KiB | Remove obsolete data/credentials using authenticated APIs; local capacity does not imply HA admission |
+| Detailed durable operation identities | 32,000 per replay epoch | Ordinary compaction retains identities; use the audited replay-retirement operation only under the documented epoch protocol and verify restart/HA convergence |
 | Durable journal | 64 MiB | Root `POST /v1/sys/storage/raft/compact` with `{}`; inspect returned generation and before/after byte counts |
 | Decoded backup transfer | 20 MiB | Export fails with 507 above the limit; keep size headroom before a restore drill |
 | Active audit segment | 4 KiB–32 MiB, default 32 MiB | Automatic authenticated rotation occurs before the next record would exceed the configured segment |
