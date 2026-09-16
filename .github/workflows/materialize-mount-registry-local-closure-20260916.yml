@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "8948652ada6b406a64c908f72949007adcad7aad"
+          test "$(git rev-parse HEAD^)" = "a4e37332ef9a0d9d314a8bc5a5ec6cb9a9b8e961"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Install toolchains
@@ -34,6 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python scripts/patch_mount_registry_materializer_round2_20260916.py
           python scripts/materialize_mount_registry_local_closure_20260916.py
           cargo +1.98.0 fmt --all
           cargo +1.98.0 test --locked -p heptabao-server
@@ -56,6 +57,7 @@ jobs:
           set -euo pipefail
           rm .github/workflows/materialize-mount-registry-local-closure-20260916.yml
           rm scripts/materialize_mount_registry_local_closure_20260916.py
+          rm scripts/patch_mount_registry_materializer_round2_20260916.py
           git diff --check
           git config user.name "OpenAI mount registry integrator"
           git config user.email "noreply@openai.com"
