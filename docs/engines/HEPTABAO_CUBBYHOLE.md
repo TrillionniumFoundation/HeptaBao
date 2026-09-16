@@ -127,7 +127,7 @@ and external-anchor qualification work.
 
 One token can hold at most 256 entries across its namespaces. Each encoded
 value is limited to 256 KiB. The outer normal HTTP body ceiling and the
-inherited **768 KiB aggregate Service state** ceiling still apply. This
+inherited aggregate Service bounds (**16 MiB local chunk/manifest state; 768 KiB current HA proposal**) still apply. This
 increment does not lift the development-scale storage bottleneck or claim a
 production throughput target. Serialization, cloning and policy evaluation
 must be included in later capacity measurements.

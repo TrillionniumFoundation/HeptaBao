@@ -26,19 +26,17 @@ The durable crash protocol remains intent -> candidate snapshot -> commit marker
 
 `GET /v1/sys/internal/storage/capacity` follows the audited service path, requires a root principal in the root namespace, and exposes metadata only. The response includes the explicit state bound, durable generation, logical payload/journal usage, retained request count and remaining replay slots. It does not expose tenant names, keys, operation IDs, tokens, password material or secret plaintext.
 
-The local replay ledger is still bounded at **32,000** retained operation identities in the server profile. Preflight refuses a known-full local ledger before proposing a new HA state effect. Journal compaction retains replay records; it does not create new lifetime capacity. Therefore the previous 32k lifetime ceiling remains an open hard blocker even though a multi-chunk state publication now consumes only one identity.
+The local replay ledger is bounded at **32,000** detailed operation identities per replay epoch in the server profile. Ordinary preflight refuses a known-full epoch before proposing a new HA state effect. Journal compaction retains active replay records. Explicit replay retirement is a separate authenticated epoch transition and is allowed to proceed even when the detailed ledger is full; it is not implicit FIFO eviction.
 
 ## Checkpoint and recovery behavior
 
 Automatic journal checkpointing is permitted only after a proven pre-entry journal-capacity rejection and retries the same bound request once. Unknown outcomes, filesystem failures and replay-capacity exhaustion are never automatically retried. A failed maintenance publication can fence the durable owner, and the server mirrors that recovery requirement rather than serving cached state as healthy.
 
-No replay identity is currently retired merely because its journal frame was compacted. `replay_id_eviction` therefore remains false until the replay-retirement protocol below is implemented and qualified.
+Ordinary compaction never retires identities, so `replay_id_eviction` remains false. `DurableService::retire_replay_epoch` first checkpoints the active ledger, then publishes an authenticated next-epoch ledger carrying the retired generation frontier, then rewrites the journal checkpoint. Stale explicit epoch writes are rejected. The server now persists `State.replay_epoch`; in HA the marker is Raft-committed before each node retires locally and publishes the corresponding state batch. A retirement/state mismatch fences the node and is normalized only through restart recovery or committed HA catch-up.
 
-## Remaining replay-lifetime implementation
+## Remaining replay-lifetime qualification
 
-The next storage hard problem is safe replay identity retirement. It must separate durable generation from the count of actively retained request records and provide an authenticated rejection frontier or equivalent exact mechanism before any old identity is discarded. After retirement, a delayed replay of an old request must remain rejected and must never become a fresh mutation. The implementation must also survive restart, backup/restore, crash at every retirement publication boundary, HA catch-up and legacy ledger upgrade.
-
-Acceptance for replay retirement must include more than 32,000 successful logical mutations without exhausting lifetime capacity, exact duplicate/conflict behavior inside the active retention window, deterministic rejection of retired identities, recovery across retirement checkpoints, and proof that no state generation or external-effect tombstone is incorrectly discarded.
+Source tests cover restart, deliberately full active ledgers, stale-epoch rejection, follower-style catch-up and a failure after retirement but before state publication. Complete replacement still requires exact-candidate execution of more than 32,000 successful logical mutations, real multi-process leader/follower retirement across partition/heal and snapshot catch-up, and proof that external-effect tombstones or other replay-sensitive ownership are not incorrectly discarded.
 
 ## Wider scalability boundary
 

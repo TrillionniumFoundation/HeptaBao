@@ -59,8 +59,8 @@ def validate(root: Path = ROOT) -> list[str]:
         # sufficient after replay retirement because it would reject every write
         # following an epoch transition.
         epoch_compaction_writer = re.compile(
-            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);\s*"
-            r"if\s+compact_before_entry\s*\{\s*"
+            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);"
+            r"(?:(?!let\s+replay_epoch).){0,600}?"
             r"durable\.apply_batch_with_compaction_in_replay_epoch\(\s*"
             r"replay_epoch\s*,",
             re.S,

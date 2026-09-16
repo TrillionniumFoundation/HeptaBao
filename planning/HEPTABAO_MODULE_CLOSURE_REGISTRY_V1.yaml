@@ -363,7 +363,7 @@ modules:
   guide: docs/modules/heptabao-server.md
   source: crates/heptabao-server/src
   manifest_sha256: d21014fe016940b364b759de364eaebc8865dbdbdd8ba5cee2daf3e3701e2f97
-  source_sha256: 5b60ece27627f2c81e7312225df524d1f53d94fa8ebd84e5bce75b2041eb364c
+  source_sha256: ad61c1f6917b8c5f8dcf15e47167fe927e07f661c69e8c5e8caec000e514d549
   test_anchor: target_abi_opens_private_regular_files_and_real_directories
   test_anchor_path: crates/heptabao-server/src/audit_platform_tests.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
