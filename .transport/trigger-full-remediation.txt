@@ -1,0 +1,1 @@
+trigger isolated full-remediation ordinary-source transport for patch sha256 6895a0b5189a34c9b19671998e7b8b3256ba97f994db4c0dd418f4227af78039
