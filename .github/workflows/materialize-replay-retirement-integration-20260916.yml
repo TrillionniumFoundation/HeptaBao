@@ -1,0 +1,47 @@
+name: materialize-replay-retirement-integration-20260916
+on:
+  push:
+    branches:
+      - codex/next-round-product-closure-20260916
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Bind exact parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "6d46c9ce5a1d44bc4dfc5122a4fc956bffddc1bf"
+      - name: Install Rust 1.98
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Materialize and qualify replay retirement integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/materialize_replay_retirement_integration_20260916.py
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-durable-service
+          cargo +1.98.0 test --locked -p heptabao-server service::capacity_tests
+          cargo +1.98.0 test --locked -p heptabao-server service::state_store_integration_tests
+          cargo +1.98.0 clippy --locked -p heptabao-durable-service -p heptabao-server --all-targets -- -D warnings
+      - name: Remove transport and publish source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm scripts/materialize_replay_retirement_integration_20260916.py
+          rm .github/workflows/materialize-replay-retirement-integration-20260916.yml
+          git diff --check
+          git config user.name "OpenAI replay-retirement integrator"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "feat(server): integrate replay retirement with state persistence"
+          git push origin HEAD:codex/next-round-product-closure-20260916
