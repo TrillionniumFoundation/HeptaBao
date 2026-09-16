@@ -1,0 +1,400 @@
+name: materialize-core-request-pipeline-local-closure-20260916
+on:
+  push:
+    branches: [codex/next-round-product-closure-20260916]
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Bind exact parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "3d871e3165fc8e759fd02873a2519fb5d58fdf85"
+      - name: Install Rust and Python validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Materialize local runtime closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one anchor, found {count}")
+              p.write_text(text.replace(old, new, 1))
+
+          service = 'crates/heptabao-server/src/service.rs'
+          old = '''struct RequestView<'a> {
+              method: &'a str,
+              path: &'a str,
+              namespace: &'a str,
+              token: &'a str,
+              body: &'a Value,
+              now: u64,
+              allow_forward: bool,
+              wrap_ttl_seconds: Option<u64>,
+          }
+
+          pub struct Service {
+          '''
+          new = '''struct RequestView<'a> {
+              method: &'a str,
+              path: &'a str,
+              namespace: &'a str,
+              token: &'a str,
+              body: &'a Value,
+              now: u64,
+              allow_forward: bool,
+              wrap_ttl_seconds: Option<u64>,
+          }
+
+          #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+          enum RequestEffectClass {
+              PureRead,
+              DurableMutation,
+              SideEffectingRead,
+          }
+
+          fn classify_request_effect(method: &str, before: &[u8], after: &[u8]) -> RequestEffectClass {
+              if before == after {
+                  RequestEffectClass::PureRead
+              } else if matches!(method, "GET" | "HEAD" | "LIST" | "SCAN") {
+                  RequestEffectClass::SideEffectingRead
+              } else {
+                  RequestEffectClass::DurableMutation
+              }
+          }
+
+          pub struct Service {
+          '''
+          replace_once(service, old, new)
+
+          old = '''        if *serialized != *before {
+                      if admitted.schema != CURRENT_STATE_SCHEMA {
+                          admitted.schema = CURRENT_STATE_SCHEMA;
+                          serialized = match serde_json::to_vec(&admitted) {
+                              Ok(value) => Zeroizing::new(value),
+                              Err(_) => return Response::error(500, "state serialization failed"),
+                          };
+                      }
+                      if let Err(error) = self.commit_state_bytes(&serialized) {
+                          return error;
+                      }
+                      self.state = Some(admitted);
+                  }
+                  response
+          '''
+          new = '''        match classify_request_effect(method, &before, &serialized) {
+                      RequestEffectClass::PureRead => {}
+                      RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
+                          if admitted.schema != CURRENT_STATE_SCHEMA {
+                              admitted.schema = CURRENT_STATE_SCHEMA;
+                              serialized = match serde_json::to_vec(&admitted) {
+                                  Ok(value) => Zeroizing::new(value),
+                                  Err(_) => return Response::error(500, "state serialization failed"),
+                              };
+                          }
+                          if let Err(error) = self.commit_state_bytes(&serialized) {
+                              return error;
+                          }
+                          self.state = Some(admitted);
+                      }
+                  }
+                  response
+          '''
+          replace_once(service, old, new)
+
+          tests = Path('crates/heptabao-server/src/service_tests.rs')
+          marker = 'fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads'
+          if marker in tests.read_text():
+              raise SystemExit('behavior test already present')
+          tests.write_text(tests.read_text() + r'''
+
+          #[test]
+          fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads()
+          -> Result<(), Box<dyn std::error::Error>> {
+              assert_eq!(
+                  classify_request_effect("GET", b"same", b"same"),
+                  RequestEffectClass::PureRead
+              );
+              assert_eq!(
+                  classify_request_effect("GET", b"before", b"after"),
+                  RequestEffectClass::SideEffectingRead
+              );
+              assert_eq!(
+                  classify_request_effect("PUT", b"before", b"after"),
+                  RequestEffectClass::DurableMutation
+              );
+
+              let root = Root::new();
+              let mut service = root.service()?;
+              let (key, root_token) = bootstrap(&mut service)?;
+
+              let generation = service
+                  .durable
+                  .as_ref()
+                  .ok_or("missing durable service")?
+                  .generation();
+              let pure = call(
+                  &mut service,
+                  "GET",
+                  "auth/token/lookup-self",
+                  &root_token,
+                  json!({}),
+              );
+              assert_eq!(pure.status, 200);
+              assert_eq!(
+                  service
+                      .durable
+                      .as_ref()
+                      .ok_or("missing durable service")?
+                      .generation(),
+                  generation,
+                  "pure authenticated read allocated durable state"
+              );
+
+              let finite = limited_token(
+                  &mut service,
+                  &root_token,
+                  r#"path "auth/token/lookup-self" { capabilities = ["read"] }"#,
+              )?;
+              let generation = service
+                  .durable
+                  .as_ref()
+                  .ok_or("missing durable service")?
+                  .generation();
+              let side_effecting = call(
+                  &mut service,
+                  "GET",
+                  "auth/token/lookup-self",
+                  &finite,
+                  json!({}),
+              );
+              assert_eq!(side_effecting.status, 200);
+              assert!(
+                  service
+                      .durable
+                      .as_ref()
+                      .ok_or("missing durable service")?
+                      .generation()
+                      > generation,
+                  "finite-use read did not durably publish consumption"
+              );
+
+              drop(service);
+              let mut service = root.service()?;
+              assert_eq!(
+                  call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+                  200
+              );
+              assert_eq!(
+                  call(
+                      &mut service,
+                      "GET",
+                      "auth/token/lookup-self",
+                      &finite,
+                      json!({}),
+                  )
+                  .status,
+                  403,
+                  "side-effecting read resurrected consumed authority after reopen"
+              );
+              Ok(())
+          }
+          ''')
+
+          # Upgrade the work-inventory classifier, but keep admission explicitly false.
+          surface = Path('planning/HEPTABAO_SURFACE_WORK_V1.json')
+          doc = json.loads(surface.read_text())
+          row = next(r for r in doc['surfaces'] if r['surface_id'] == 'HB-SURFACE-CORE-REQUEST-PIPELINE')
+          if row['implementation_status'] != 'runtime_partial':
+              raise SystemExit(f"unexpected core pipeline status {row['implementation_status']}")
+          evidence = {
+              'source_paths': [
+                  'crates/heptabao-server/src/http.rs',
+                  'crates/heptabao-server/src/service.rs',
+              ],
+              'test_anchors': [
+                  {
+                      'path': 'crates/heptabao-server/src/http.rs',
+                      'name': 'rejects_duplicate_json_and_ambiguous_namespaces',
+                  },
+                  {
+                      'path': 'crates/heptabao-server/src/service_tests.rs',
+                      'name': 'unknown_commit_releases_no_secret_and_recovers_written_value',
+                  },
+                  {
+                      'path': 'crates/heptabao-server/src/service_tests.rs',
+                      'name': 'request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads',
+                  },
+              ],
+              'local_dimensions': [
+                  'protocol_framing',
+                  'authorization_before_effect',
+                  'effect_readback',
+                  'crash_reopen',
+              ],
+          }
+          row['implementation_status'] = 'runtime_complete'
+          row['implementation_evidence'] = evidence
+          surface.write_text(json.dumps(doc, indent=2) + '\n')
+
+          replace_once(
+              'scripts/surface_work.py',
+              "if row['implementation_status'] not in ('runtime_partial', 'tooling_partial', 'not_implemented'):",
+              "if row['implementation_status'] not in ('runtime_complete', 'runtime_partial', 'tooling_partial', 'not_implemented'):",
+          )
+          old = '''            if row['implementation_status'] == 'runtime_partial' and row['runtime_source'] is None:
+                          raise ValueError('runtime claim needs current source owner')
+          '''
+          new = '''            if row['implementation_status'] in ('runtime_complete', 'runtime_partial') and row['runtime_source'] is None:
+                          raise ValueError('runtime claim needs current source owner')
+                      if row['implementation_status'] == 'runtime_complete':
+                          evidence = row.get('implementation_evidence')
+                          if not isinstance(evidence, dict) or set(evidence) != {'source_paths', 'test_anchors', 'local_dimensions'}:
+                              raise ValueError('runtime completion needs executable implementation evidence')
+                          sources = evidence['source_paths']
+                          anchors = evidence['test_anchors']
+                          dimensions = evidence['local_dimensions']
+                          if (not isinstance(sources, list) or not sources or len(sources) != len(set(sources))
+                                  or not isinstance(anchors, list) or not anchors
+                                  or set(dimensions) != {'protocol_framing', 'authorization_before_effect', 'effect_readback', 'crash_reopen'}):
+                              raise ValueError('runtime completion evidence is incomplete')
+                          for source in sources:
+                              source_path(root, source)
+                          seen = set()
+                          for anchor in anchors:
+                              if not isinstance(anchor, dict) or set(anchor) != {'path', 'name'}:
+                                  raise ValueError('invalid runtime completion test anchor')
+                              path = source_path(root, anchor['path'])
+                              key = (anchor['path'], anchor['name'])
+                              if key in seen or not isinstance(anchor['name'], str) or f"fn {anchor['name']}" not in path.read_text():
+                                  raise ValueError('runtime completion test anchor is absent or duplicated')
+                              seen.add(key)
+                      elif 'implementation_evidence' in row:
+                          raise ValueError('partial surface cannot carry completion evidence')
+          '''
+          replace_once('scripts/surface_work.py', old, new)
+
+          test_surface = Path('tests/repository/test_surface_work.py')
+          if 'test_runtime_complete_requires_executable_evidence' not in test_surface.read_text():
+              test_surface.write_text(test_surface.read_text() + '''\n    def test_runtime_complete_requires_executable_evidence(self):\n        self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0].pop('implementation_evidence')))\n        self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0]['implementation_evidence']['test_anchors'][0].update(name='missing_anchor')))\n''')
+
+          matrix_path = Path('planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json')
+          matrix = json.loads(matrix_path.read_text())
+          mrow = next(r for r in matrix['surfaces'] if r['surface_id'] == 'HB-SURFACE-CORE-REQUEST-PIPELINE')
+          if mrow['implementation'] != 'PARTIAL_RUNTIME':
+              raise SystemExit(f"unexpected execution status {mrow['implementation']}")
+          mrow['implementation'] = 'RUNTIME_COMPLETE_LOCAL'
+          mrow['implementation_evidence'] = evidence
+          mrow['remaining_scope'] = (
+              'Local request framing, authorization-before-effect, pure-read/nonpure-read persistence, '
+              'unknown-outcome recovery and reopen behavior are executable; migration, real multi-host fault/upgrade, '
+              'full OpenBao 2.6.2 differential and independent admission remain owned by later ordered phases.'
+          )
+          matrix_path.write_text(json.dumps(matrix, indent=2) + '\n')
+
+          replace_once(
+              'scripts/validate_replacement_execution.py',
+              "STATES = {'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}",
+              "STATES = {'RUNTIME_COMPLETE_LOCAL', 'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}",
+          )
+          replace_once(
+              'scripts/validate_replacement_execution.py',
+              "'`PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; neither means full compatibility.', '',",
+              "'`RUNTIME_COMPLETE_LOCAL` means repository-local runtime behavior is executable but later migration, physical fault, full differential and independent-admission phases remain open. `PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; none alone means full compatibility.', '',",
+          )
+          old = '''            if (row['implementation'] == 'PARTIAL_RUNTIME') != bool(row['runtime_sources']):
+                          errors.append(sid + ': runtime classification lacks concrete entry')
+                      if row['implementation'] == 'CONTRACT_ONLY' and not row['contract_sources']:
+                          errors.append(sid + ': contract classification lacks source')
+          '''
+          new = '''            if (row['implementation'] in {'PARTIAL_RUNTIME', 'RUNTIME_COMPLETE_LOCAL'}) != bool(row['runtime_sources']):
+                          errors.append(sid + ': runtime classification lacks concrete entry')
+                      if row['implementation'] == 'RUNTIME_COMPLETE_LOCAL':
+                          evidence = row.get('implementation_evidence')
+                          if not isinstance(evidence, dict) or set(evidence) != {'source_paths', 'test_anchors', 'local_dimensions'}:
+                              errors.append(sid + ': local runtime completion lacks executable evidence')
+                          else:
+                              if set(evidence.get('local_dimensions', [])) != {'protocol_framing', 'authorization_before_effect', 'effect_readback', 'crash_reopen'}:
+                                  errors.append(sid + ': local runtime completion dimensions are incomplete')
+                              for value in evidence.get('source_paths', []):
+                                  if not local_file(root, value):
+                                      errors.append(sid + ': missing completion source ' + str(value))
+                              seen = set()
+                              for anchor in evidence.get('test_anchors', []):
+                                  if not isinstance(anchor, dict) or set(anchor) != {'path', 'name'} or not local_file(root, anchor.get('path')):
+                                      errors.append(sid + ': invalid completion test anchor')
+                                      continue
+                                  key = (anchor['path'], anchor['name'])
+                                  if key in seen or f"fn {anchor['name']}" not in (root/anchor['path']).read_text():
+                                      errors.append(sid + ': absent or duplicated completion test anchor')
+                                  seen.add(key)
+                      elif 'implementation_evidence' in row:
+                          errors.append(sid + ': non-complete execution row carries completion evidence')
+                      if row['implementation'] == 'CONTRACT_ONLY' and not row['contract_sources']:
+                          errors.append(sid + ': contract classification lacks source')
+          '''
+          replace_once('scripts/validate_replacement_execution.py', old, new)
+
+          test_exec = Path('tests/repository/test_replacement_execution.py')
+          text = test_exec.read_text()
+          old = '''        for row in self.matrix['surfaces']:
+                      for key in ('runtime_sources', 'contract_sources', 'guides', 'executable_profiles'):
+                          paths.update(row[key])
+          '''
+          new = '''        for row in self.matrix['surfaces']:
+                      for key in ('runtime_sources', 'contract_sources', 'guides', 'executable_profiles'):
+                          paths.update(row[key])
+                      evidence = row.get('implementation_evidence')
+                      if evidence:
+                          paths.update(evidence['source_paths'])
+                          paths.update(anchor['path'] for anchor in evidence['test_anchors'])
+          '''
+          if old not in text:
+              raise SystemExit('replacement execution test setup anchor drift')
+          text = text.replace(old, new, 1)
+          if 'test_runtime_complete_local_requires_evidence' not in text:
+              text += '''\n    def test_runtime_complete_local_requires_evidence(self):\n        self.matrix['surfaces'][0].pop('implementation_evidence')\n        self.assertTrue(self.check())\n'''
+          test_exec.write_text(text)
+          PY
+
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-server
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          python scripts/validate_replacement_execution.py --write
+          python scripts/current_source_inventory.py --write
+          python scripts/generate_module_closure_docs.py
+          python scripts/current_source_inventory.py --check
+          python scripts/validate_module_closure.py
+          python scripts/surface_work.py --surface HB-SURFACE-CORE-REQUEST-PIPELINE
+          python scripts/validate_replacement_execution.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          git diff --check
+      - name: Remove transport and publish source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-core-request-pipeline-local-closure-20260916.yml
+          git diff --check
+          git config user.name "OpenAI surface closure integrator"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "feat(runtime): close local core request pipeline surface"
+          git push origin HEAD:codex/next-round-product-closure-20260916
