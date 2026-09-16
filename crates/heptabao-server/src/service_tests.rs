@@ -1602,3 +1602,55 @@ fn legacy_unkeyed_audit_and_partial_audit_tail_are_rejected()
     assert!(root.service().is_err());
     Ok(())
 }
+
+#[test]
+fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_key, token) = bootstrap(&mut service)?;
+
+    let list = call(&mut service, "GET", "sys/audit", &token, json!({}));
+    assert_eq!(list.status, 200);
+    assert_eq!(list.body["data"]["file/"]["type"], "file");
+    let configured_path = list.body["data"]["file/"]["options"]["file_path"]
+        .as_str()
+        .ok_or("missing configured audit path")?;
+
+    let read = call(&mut service, "GET", "sys/audit/file", &token, json!({}));
+    assert_eq!(read.status, 200);
+    assert_eq!(read.body["data"]["options"]["file_path"], configured_path);
+
+    let enable = call(
+        &mut service,
+        "PUT",
+        "sys/audit/file",
+        &token,
+        json!({"type":"file","options":{"file_path":configured_path}}),
+    );
+    assert_eq!(enable.status, 204);
+
+    let wrong_path = call(
+        &mut service,
+        "PUT",
+        "sys/audit/file",
+        &token,
+        json!({"type":"file","options":{"file_path":"/tmp/other-audit.jsonl"}}),
+    );
+    assert_eq!(wrong_path.status, 409);
+    assert_eq!(
+        call(&mut service, "DELETE", "sys/audit/file", &token, json!({})).status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/audit/file",
+            &token,
+            json!({"type":"http"}),
+        )
+        .status,
+        501
+    );
+    Ok(())
+}

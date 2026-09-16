@@ -8,7 +8,7 @@
 
 use super::{
     DynamicLeaseRecord, DynamicLeaseSpec, DynamicLeaseState, DynamicLeaseView, DynamicSecretBroker,
-    DynamicSecretIssue, PluginHostError, PluginHostState, PluginOperation, SandboxRunner,
+    DynamicSecretIssue, PluginHostError, PluginHostState, PluginManifest, PluginOperation, SandboxRunner,
     SecretEnvironment, sha256,
 };
 use heptabao_domain::{CanonicalPath, Id, SecretValue, Tick};
@@ -195,6 +195,14 @@ impl<B: Barrier, R: SandboxRunner> DurableDynamicSecretBroker<B, R> {
             operation: intent.operation,
             generation: intent.generation,
         })
+    }
+
+    /// Perform a generation-fenced host handoff when no durable invocation is
+    /// pending. The underlying host admits the replacement before swapping;
+    /// persisted lease projections remain unchanged.
+    pub fn upgrade(&mut self, replacement: PluginManifest) -> Result<(), PluginHostError> {
+        self.ensure_ready()?;
+        self.broker.host.upgrade(replacement)
     }
 
     pub fn view(&mut self, lease_id: &Id, now: Tick) -> Result<DynamicLeaseView, PluginHostError> {

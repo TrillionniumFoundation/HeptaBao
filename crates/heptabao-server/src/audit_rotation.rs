@@ -158,6 +158,10 @@ impl AuditRotation {
     pub(super) fn active_path(&self) -> PathBuf {
         self.access.join(&self.name)
     }
+
+    pub(super) fn config(&self) -> AuditConfig {
+        self.config
+    }
     fn sidecar(&self, suffix: &str) -> PathBuf {
         self.access.join(format!("{}.{suffix}", self.name))
     }

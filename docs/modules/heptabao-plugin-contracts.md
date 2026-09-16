@@ -14,7 +14,7 @@ This package owns plugin descriptors, registry lifecycle and the semantic distin
 
 `PluginDescriptor::new(id, kind, command, checksum, protocol_version)` owns a canonical command path and metadata. It rejects an all-zero 32-byte checksum and protocol version 0. It does not open the executable, compute its checksum, authenticate a publisher or negotiate RPC; callers must perform those checks using a host/provider before execution.
 
-`PluginRegistry::register` owns a descriptor under a unique ID, while `get` borrows it. `enable` accepts Registered/Disabled, `disable` accepts Enabled, and `revoke` accepts any non-revoked status; successful transitions advance a saturating generation. Revoked is terminal and no API deletes/replaces a descriptor. The registry alone does not synchronize an already running plugin with an administrative change.
+`PluginRegistry::register` owns a descriptor under a unique ID, while `get` borrows it. `enable` accepts Registered/Disabled, `disable` accepts Enabled, and `revoke` accepts any non-revoked status; successful transitions advance a saturating generation. `PluginDescriptor::replacement` creates a newer Registered candidate with the same ID/kind, and `PluginRegistry::upgrade` atomically enables that candidate only when the current descriptor is Enabled and the generation is newer. Admission of the executable belongs to the caller, so a failed provider check leaves the old descriptor untouched. Revoked is terminal; the registry does not drain running processes, migrate leases or qualify a provider sandbox.
 
 `PluginCallOutcome<T>` distinguishes `BeforeEntryFailure`, `Completed(T)` and `OutcomeUnknownAfterEntry { recovery_reference }`. The host must preserve this classification across process/IPC failure, bind the exact descriptor generation to each call, and obtain authoritative readback before retrying uncertainty. The enum carries no automatic retry or reconciliation implementation.
 
@@ -82,7 +82,7 @@ Recommended events include `plugin.registered`, `plugin.enabled`, `plugin.revoke
 
 ## Operations
 
-Operators may disable or revoke a descriptor before replacing it. Production upgrades require drain, checksum admission, rollback and reconciliation procedures.
+Operators may use `replacement` plus `upgrade` for a generation-fenced handoff after external checksum/provider admission. Production upgrades still require process drain, lease migration, rollback and reconciliation procedures; this registry does not claim mixed-version or OpenBao plugin compatibility.
 
 ## Tests and executable evidence
 
@@ -90,6 +90,7 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 
 - [`tests::lifecycle_is_monotonic_after_revocation`](../../crates/heptabao-plugin-contracts/src/lib.rs) checks register/enable/disable/re-enable/revoke and the terminal revocation guard.
 - [`tests::invalid_descriptor_is_rejected_before_registration`](../../crates/heptabao-plugin-contracts/src/lib.rs) checks zero-checksum rejection before a descriptor exists.
+- [`tests::replacement_is_monotonic_and_upgrade_is_atomic`](../../crates/heptabao-plugin-contracts/src/lib.rs) checks generation fencing, kind preservation and atomic replacement.
 
 `cargo test -p heptabao-plugin-contracts` covers descriptor validation and terminal revocation. The current repository validator requires this V3 guide and at least one Rust test.
 

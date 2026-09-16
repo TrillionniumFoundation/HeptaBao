@@ -15,6 +15,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_PATH = ROOT / "qa/openbao-acceptance/complete_surface_corpus_v1.json"
 ACCEPTANCE_PATH = ROOT / "qa/openbao-acceptance/acceptance.py"
+EXTERNAL_CASE_REGISTRY_PATH = ROOT / "qa/openbao-acceptance/external_fixture_case_registry_v1.json"
 EXPECTED_SCHEMA = "heptabao.compatibility-corpus.v1"
 FALSE_CLAIMS: dict[str, Any] = {
     "complete_fixture_coverage": False,
@@ -60,6 +61,36 @@ def acceptance_cases(path: Path = ACCEPTANCE_PATH) -> set[str]:
                     if case_id in result:
                         raise ValueError(f"acceptance CASES duplicates {case_id}")
                     result.add(case_id)
+            # Live differential acceptance is intentionally kept separate from
+            # provider-specific fixtures that need a disposable issuer/cluster.
+            # Admit those cases through an explicit, source-bound registry so a
+            # corpus row can reference a real executable script without making
+            # the generic OpenBao comparison runner pretend to execute it.
+            registry_path = path.with_name("external_fixture_case_registry_v1.json")
+            if registry_path.is_file():
+                registry = _json_mapping(registry_path, "external fixture case registry")
+                if registry.get("schema") != "heptabao.external-fixture-case-registry.v1":
+                    raise ValueError("external fixture case registry schema is invalid")
+                external = registry.get("cases")
+                if not isinstance(external, dict):
+                    raise ValueError("external fixture case registry cases must be a mapping")
+                for module_name, declaration in external.items():
+                    if not isinstance(module_name, str) or not isinstance(declaration, dict):
+                        raise ValueError("external fixture case registry entry is invalid")
+                    script = declaration.get("script")
+                    names = declaration.get("case_ids")
+                    if not isinstance(script, str) or not isinstance(names, list) or not names:
+                        raise ValueError(f"external fixture case registry entry {module_name} is invalid")
+                    script_path = registry_path.parents[2] / script
+                    if not script_path.is_file():
+                        raise ValueError(f"external fixture script is missing: {script}")
+                    for name in names:
+                        if not isinstance(name, str) or not name:
+                            raise ValueError("external fixture case registry contains an invalid case")
+                        case_id = f"{module_name}.{name}"
+                        if case_id in result:
+                            raise ValueError(f"acceptance CASES duplicates {case_id}")
+                        result.add(case_id)
             return result
     raise ValueError("acceptance.py does not define CASES")
 

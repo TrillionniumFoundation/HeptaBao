@@ -63,8 +63,8 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
             for entry in surfaces
             for case in entry.get("fixture_case_ids", [])
         }
-        self.assertEqual(acceptance_case_ids(), mapped)
-        self.assertEqual(66, len(mapped))
+        self.assertEqual(VALIDATOR.acceptance_cases(), mapped)
+        self.assertEqual(81, len(mapped))
         self.assertEqual(
             0,
             corpus["coverage_summary"][

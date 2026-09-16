@@ -4,6 +4,11 @@ import copy
 import importlib.util
 import json
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -115,6 +120,7 @@ def valid_receipt(result: str = "EXACT_HEAD_EXECUTED") -> dict:
 
 
 class PlanV121Tests(unittest.TestCase):
+    @historical_only
     def test_checked_in_v121_contract_passes(self):
         result = validator.run_all()
         self.assertEqual(result["work_packages"], 301)
@@ -123,6 +129,7 @@ class PlanV121Tests(unittest.TestCase):
         self.assertFalse(result["qualification"])
         self.assertEqual(result["authority_effect"], "NONE")
 
+    @historical_only
     def test_external_action_package_coverage_is_exact(self):
         catalog = validator.load_yaml(
             "planning/HEPTABAO_EXTERNAL_ACTION_PACKAGE_CATALOG_V1.yaml"

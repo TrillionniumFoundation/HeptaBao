@@ -131,6 +131,7 @@ impl Service {
                 | "sys/storage/raft/demote"
                 | "sys/storage/raft/promote"
                 | "sys/storage/raft/snapshot-status"
+                | "sys/storage/raft/linearizable-read"
                 | "sys/storage/raft/autopilot/state"
                 | "sys/storage/raft/autopilot/configuration"
         )
@@ -223,6 +224,9 @@ impl Service {
                     )),
                     "sys/storage/raft/snapshot-status" => Ok(Response::ok(
                         json!({"data":{"applied_index":o.applied_index,"snapshot_index":o.snapshot_index,"purged_index":o.purged_index,"membership_index":o.membership_index}}),
+                    )),
+                    "sys/storage/raft/linearizable-read" => Ok(Response::ok(
+                        linearizable_read_body(&o),
                     )),
                     _ => Err(Response::error(405, "Raft mutation requires POST or PUT")),
                 };
@@ -376,6 +380,18 @@ impl Service {
         self.state = Some(state);
         Ok(())
     }
+
+    fn linearizable_read_body(o: &MembershipObservation) -> Response {
+        Response::ok(json!({"data": {
+            "linearizable": true,
+            "leader": o.leader,
+            "term": o.term,
+            "membership_index": o.membership_index,
+            "applied_index": o.applied_index,
+            "observation_scope": "native-raft-ReadIndex"
+        }}))
+    }
+
     fn autopilot_body(o: &MembershipObservation, state: &RaftAdminState) -> Value {
         let c = &state.config;
         let healthy_voters = o.voters.iter().filter(|id| healthy(o, **id, c)).count();
@@ -520,6 +536,19 @@ mod tests {
         assert!(!s.stabilized(4, &c, start + Duration::from_secs(41)));
     }
     #[test]
+    fn linearizable_read_route_is_admitted_as_admin_path() {
+        assert!(Service::is_raft_admin_path("sys/storage/raft/linearizable-read"));
+    }
+
+    #[test]
+    fn linearizable_read_body_declares_read_index_observation() {
+        let body = Service::linearizable_read_body(&observation()).body;
+        assert_eq!(body["data"]["linearizable"], true);
+        assert_eq!(body["data"]["observation_scope"], "native-raft-ReadIndex");
+        assert_eq!(body["data"]["leader"], 1);
+        assert_eq!(body["data"]["applied_index"], 20);
+    }
+
     fn policy_bounds_and_failure_tolerance_are_conservative() {
         let mut p = RaftAdminState::default();
         assert!(p.validate().is_ok());

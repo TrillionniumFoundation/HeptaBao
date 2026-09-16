@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.external-fixture-case-registry.v1",
+  "cases": {
+    "remote_jwks_live": {
+      "script": "qa/openbao-acceptance/remote_jwks_live.py",
+      "case_ids": [
+        "real_rsa_signature_login",
+        "same_assertion_replay_rejected",
+        "p256_rotation_login",
+        "disabled_subject_login_rejected",
+        "restart_current_key_login"
+      ]
+    },
+    "kubernetes_online": {
+      "script": "qa/openbao-acceptance/kubernetes_online.py",
+      "case_ids": [
+        "online_review_to_real_token",
+        "reviewer_request_binding",
+        "disabled_identity_denies_new_login",
+        "finite_replay_denied",
+        "all_egress_requests_match_review_contract"
+      ]
+    },
+    "audit_file_live": {
+      "script": "qa/openbao-acceptance/audit_file_live.py",
+      "case_ids": [
+        "list",
+        "path_present",
+        "read_binding",
+        "enable_idempotent",
+        "disable_rejected"
+      ]
+    }
+  }
+}

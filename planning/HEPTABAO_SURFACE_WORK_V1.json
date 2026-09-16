@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "e6ff80d6354c45bd5c76041b757f423ec106de7bbcb3850771c9045ec7da1e48",
+  "corpus_sha256": "a22caddc2396ca60291a2b2e541f1318bf7fc537d2d0aef20c1aa38935cf083f",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -537,7 +537,13 @@
         "isolation": "For HB-SURFACE-AUTH-JWT-OIDC, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "remote_jwks_live.real_rsa_signature_login",
+        "remote_jwks_live.same_assertion_replay_rejected",
+        "remote_jwks_live.p256_rotation_login",
+        "remote_jwks_live.disabled_subject_login_rejected",
+        "remote_jwks_live.restart_current_key_login"
+      ],
       "available_scoped_profiles": [
         "jwt",
         "oidc_code_live"
@@ -557,7 +563,13 @@
         "isolation": "For HB-SURFACE-AUTH-KUBERNETES, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "kubernetes_online.online_review_to_real_token",
+        "kubernetes_online.reviewer_request_binding",
+        "kubernetes_online.disabled_identity_denies_new_login",
+        "kubernetes_online.finite_replay_denied",
+        "kubernetes_online.all_egress_requests_match_review_contract"
+      ],
       "available_scoped_profiles": [
         "actual_kubernetes"
       ],
@@ -938,7 +950,13 @@
         "isolation": "For HB-SURFACE-AUDIT-FILE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "audit_file_live.list",
+        "audit_file_live.path_present",
+        "audit_file_live.read_binding",
+        "audit_file_live.enable_idempotent",
+        "audit_file_live.disable_rejected"
+      ],
       "available_scoped_profiles": [],
       "whole_surface_admitted": false
     },

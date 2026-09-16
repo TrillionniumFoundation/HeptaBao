@@ -790,6 +790,18 @@ impl Service {
         {
             return error;
         }
+        if path == "sys/audit" || path.starts_with("sys/audit/") {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            return self.audit_route(
+                principal,
+                namespace,
+                method,
+                path,
+                body,
+            );
+        }
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
         }
@@ -1028,7 +1040,6 @@ impl Service {
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
     ) -> Response {
         let principal = principal.as_ref();
         if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
@@ -2538,6 +2549,110 @@ impl Service {
             "performance_standby": false,
             "performance_standby_last_remote_wal": 0
         }))
+    }
+
+    /// Manage the mandatory local file audit device through the OpenBao
+    /// `sys/audit` surface. The service keeps one authenticated file sink for
+    /// every request; changing or disabling it at runtime would bypass the
+    /// admission audit invariant, so this route exposes an idempotent enable
+    /// and read/list operations while rejecting unsafe device changes.
+    fn audit_route(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Response {
+        if !namespace.is_empty() || !principal.is_root() {
+            return Response::error(403, "permission denied");
+        }
+        let config = self.audit_rotation.config();
+        let file_path = self.audit_rotation.active_path();
+        let file_path = file_path.to_string_lossy().into_owned();
+        let device = || {
+            json!({
+                "type": "file",
+                "description": "HeptaBao mandatory authenticated file audit device",
+                "options": {
+                    "file_path": file_path.as_str(),
+                    "segment_bytes": config.segment_bytes,
+                    "retained_segments": config.retained_segments,
+                },
+                "local": true,
+                "log_raw": false,
+                "seal_wrap": false,
+            })
+        };
+        let path = path.trim_end_matches('/');
+        match (path, method) {
+            ("sys/audit", "GET" | "LIST") => Response::ok(json!({"data":{"file/":device()}})),
+            ("sys/audit/file", "GET") => Response::ok(json!({"data":device()})),
+            ("sys/audit/file", "POST" | "PUT") => {
+                let Some(object) = body.as_object() else {
+                    return Response::error(400, "audit enable requires a JSON object");
+                };
+                if object
+                    .get("type")
+                    .and_then(Value::as_str)
+                    .is_none_or(|kind| kind != "file")
+                {
+                    return Response::error(
+                        501,
+                        "only the mandatory file audit device is supported",
+                    );
+                }
+                if let Some(options) = object.get("options") {
+                    let Some(options) = options.as_object() else {
+                        return Response::error(400, "audit options must be a JSON object");
+                    };
+                    if let Some(requested) = options.get("file_path") {
+                        let Some(requested) = requested.as_str() else {
+                            return Response::error(400, "audit file_path must be a string");
+                        };
+                        if requested != file_path.as_str() {
+                            return Response::error(
+                                409,
+                                "the mandatory audit file path is fixed at process startup",
+                            );
+                        }
+                    }
+                    if let Some(requested) = options.get("segment_bytes") {
+                        if requested.as_u64() != Some(config.segment_bytes) {
+                            return Response::error(
+                                409,
+                                "the audit segment bound is fixed at process startup",
+                            );
+                        }
+                    }
+                    if let Some(requested) = options.get("retained_segments") {
+                        if requested.as_u64() != Some(config.retained_segments as u64) {
+                            return Response::error(
+                                409,
+                                "the audit retention bound is fixed at process startup",
+                            );
+                        }
+                    }
+                    for key in options.keys() {
+                        if !matches!(key.as_str(), "file_path" | "segment_bytes" | "retained_segments") {
+                            return Response::error(400, "unsupported file audit option");
+                        }
+                    }
+                }
+                Response {
+                    status: 204,
+                    body: Value::Null,
+                }
+            }
+            ("sys/audit/file", "DELETE") => Response::error(
+                400,
+                "the mandatory file audit device cannot be disabled while the service is running",
+            ),
+            ("sys/audit", _) | ("sys/audit/file", _) => {
+                Response::error(405, "unsupported sys/audit method")
+            }
+            _ => Response::error(404, "audit device not found"),
+        }
     }
 
     fn wire_rejection_fingerprint(

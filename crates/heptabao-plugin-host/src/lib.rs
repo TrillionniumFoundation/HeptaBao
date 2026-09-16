@@ -360,6 +360,47 @@ impl<R: SandboxRunner> PluginHost<R> {
         &self.manifest
     }
 
+    /// Admit and atomically switch to a newer plugin descriptor.
+    ///
+    /// Admission happens before mutating host state.  The plugin ID/kind and
+    /// previously declared capabilities must remain stable or grow, while a
+    /// strictly newer descriptor generation fences stale callers.  This is a
+    /// repository-side rolling handoff primitive; draining an external
+    /// process, migrating provider credentials and proving rollback remain
+    /// deployment qualification work.
+    pub fn upgrade(&mut self, replacement: PluginManifest) -> Result<(), PluginHostError> {
+        if self.state != PluginHostState::Active {
+            return Err(match self.state {
+                PluginHostState::ReconciliationRequired => PluginHostError::ReconciliationRequired,
+                PluginHostState::Revoked => PluginHostError::PluginRevoked,
+                PluginHostState::Active => PluginHostError::InvalidUpgrade,
+            });
+        }
+        let current = self.manifest.descriptor();
+        let next = replacement.descriptor();
+        if next.id() != current.id()
+            || next.kind() != current.kind()
+            || next.generation() <= current.generation()
+            || !self
+                .manifest
+                .operations()
+                .iter()
+                .all(|operation| replacement.operations().contains(operation))
+            || !self
+                .manifest
+                .environment_allowlist()
+                .iter()
+                .all(|name| replacement.environment_allowlist().contains(name))
+        {
+            return Err(PluginHostError::InvalidUpgrade);
+        }
+        self.runner
+            .admit(&replacement)
+            .map_err(|_| PluginHostError::SandboxUnavailable)?;
+        self.manifest = replacement;
+        Ok(())
+    }
+
     pub fn invoke(
         &mut self,
         operation: PluginOperation,
@@ -733,6 +774,7 @@ pub enum PluginHostError {
     CorruptDurablePluginState,
     Durable(heptabao_durable_service::ServiceError),
     GenerationOverflow,
+    InvalidUpgrade,
 }
 
 impl fmt::Display for PluginHostError {
@@ -766,6 +808,7 @@ impl fmt::Display for PluginHostError {
             Self::CorruptDurablePluginState => "durable plugin state failed closed",
             Self::Durable(_) => "durable plugin transition failed",
             Self::GenerationOverflow => "plugin or lease generation overflow",
+            Self::InvalidUpgrade => "plugin replacement is not a compatible newer generation",
         })
     }
 }
@@ -911,6 +954,34 @@ mod tests {
             Err(PluginHostError::ProcessBeforeEntry)
         ));
         assert_eq!(PluginHostState::Active, host.state());
+        Ok(())
+    }
+
+    #[test]
+    fn compatible_upgrade_admits_before_swapping_generation() -> Result<(), Box<dyn Error>> {
+        let mut host = manifest(Behavior::Echo)?;
+        let id = host.manifest().descriptor().id().clone();
+        let mut registry = PluginRegistry::default();
+        registry.register(host.manifest().descriptor().clone())?;
+        registry.enable(&id)?;
+        let candidate = registry.get(&id)?.replacement(
+            CanonicalPath::parse("/opt/heptabao/plugins/database-v2")?,
+            [11; 32],
+            2,
+        )?;
+        registry.upgrade(&id, candidate)?;
+        let descriptor = registry.get(&id)?.clone();
+        let replacement = PluginManifest::new(
+            descriptor,
+            host.manifest().sandbox().clone(),
+            host.manifest().limits(),
+            host.manifest().operations().clone(),
+            host.manifest().environment_allowlist().clone(),
+        )?;
+        host.upgrade(replacement)?;
+        assert_eq!(3, host.manifest().descriptor().generation());
+        assert_eq!(2, host.manifest().descriptor().protocol_version());
+        assert_eq!([11; 32], *host.manifest().descriptor().checksum());
         Ok(())
     }
 

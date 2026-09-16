@@ -109,3 +109,14 @@ same-binary loopback tests, not five physical hosts or simulated power failures.
 ARM64/macOS/Windows, large-state load, physical disk faults, OpenBao binary-format
 parity, automatic arbitrary-node challenge enrollment, force restore and rolling
 mixed-version upgrade require separate evidence.
+
+### Explicit linearizable read probe
+
+`GET sys/storage/raft/linearizable-read` is a root-scoped diagnostic route. It
+first executes the native OpenRaft `ReadIndex` barrier and only then reads the
+current term, committed membership frontier and applied index. A successful
+`200` response includes `data.linearizable=true` and
+`observation_scope=native-raft-ReadIndex`; a lost leader or quorum returns
+`503` and no stale success is emitted. The route is an HeptaBao qualification
+probe, not an OpenBao compatibility claim, and still requires independent
+partition/failover evidence before production authority can be granted.

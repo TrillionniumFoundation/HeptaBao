@@ -65,6 +65,9 @@ module guides and tests jointly prove them complete:
    for the admitted OpenBao replacement profile;
 3. interruption-safe full-format migration and rollback across mounts, policy,
    auth, identity, tokens, leases, Transit, audit and seal/KMS metadata;
+   The bounded `sys/audit` file-device management profile is documented in
+   `docs/audit/HEPTABAO_SYS_AUDIT_FILE_MANAGEMENT_V1.md` and covered by the
+   `audit_file_live` fixture. HTTP, socket and syslog devices remain open.
 4. complete independently observed OpenBao API, error, client and side-effect
    compatibility fixtures for the closed surface inventory.
 5. plugin sandbox and provider qualification across Linux, macOS and Windows,

@@ -82,8 +82,8 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-AUTH-USERPASS` | `auth_methods` | `IMPLEMENTED_SCOPED` | `userpass.login` |
 | `HB-SURFACE-AUTH-APPROLE` | `auth_methods` | `IMPLEMENTED_SCOPED` | `approle.login` |
 | `HB-SURFACE-AUTH-CERT` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-AUTH-JWT-OIDC` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-AUTH-KUBERNETES` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AUTH-JWT-OIDC` | `auth_methods` | `IMPLEMENTED_SCOPED` | `remote_jwks_live.real_rsa_signature_login`, `remote_jwks_live.same_assertion_replay_rejected`, `remote_jwks_live.p256_rotation_login`, `remote_jwks_live.disabled_subject_login_rejected`, `remote_jwks_live.restart_current_key_login` |
+| `HB-SURFACE-AUTH-KUBERNETES` | `auth_methods` | `IMPLEMENTED_SCOPED` | `kubernetes_online.online_review_to_real_token`, `kubernetes_online.reviewer_request_binding`, `kubernetes_online.disabled_identity_denies_new_login`, `kubernetes_online.finite_replay_denied`, `kubernetes_online.all_egress_requests_match_review_contract` |
 | `HB-SURFACE-AUTH-LDAP` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUTH-RADIUS` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUTH-KERBEROS` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
@@ -102,7 +102,7 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-DB-CASSANDRA` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-DB-INFLUXDB` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-DB-VALKEY` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-AUDIT-FILE` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AUDIT-FILE` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_file_live.list`, `audit_file_live.path_present`, `audit_file_live.read_binding`, `audit_file_live.enable_idempotent`, `audit_file_live.disable_rejected` |
 | `HB-SURFACE-AUDIT-HTTP` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-SOCKET` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-SYSLOG` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |

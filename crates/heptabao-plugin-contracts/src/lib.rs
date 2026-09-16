@@ -88,6 +88,39 @@ impl PluginDescriptor {
     pub fn protocol_version(&self) -> u16 {
         self.protocol_version
     }
+
+    /// Build a candidate descriptor for a rolling replacement.
+    ///
+    /// The candidate is deliberately returned in `Registered` state.  A
+    /// registry (or another admission controller) must verify the new
+    /// executable before enabling it.  Generation is monotonic and therefore
+    /// lets callers fence stale in-flight invocations after the swap.
+    pub fn replacement(
+        &self,
+        command: CanonicalPath,
+        checksum: [u8; 32],
+        protocol_version: u16,
+    ) -> Result<Self, PluginError> {
+        if checksum == [0; 32] {
+            return Err(PluginError::InvalidChecksum);
+        }
+        if protocol_version == 0 {
+            return Err(PluginError::InvalidProtocolVersion);
+        }
+        let generation = self
+            .generation
+            .checked_add(1)
+            .ok_or(PluginError::GenerationOverflow)?;
+        Ok(Self {
+            id: self.id.clone(),
+            kind: self.kind,
+            command,
+            checksum,
+            protocol_version,
+            status: PluginStatus::Registered,
+            generation,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -147,6 +180,28 @@ impl PluginRegistry {
         plugin.generation = plugin.generation.saturating_add(1);
         Ok(())
     }
+
+    /// Atomically install an admitted replacement while keeping the plugin ID.
+    ///
+    /// The old descriptor must be enabled and the candidate must have been
+    /// produced by `PluginDescriptor::replacement`.  The candidate is enabled
+    /// only at the commit point, so a failed external admission leaves the old
+    /// descriptor untouched.  This is registry lifecycle support; it does not
+    /// itself drain processes, migrate leases or qualify a provider sandbox.
+    pub fn upgrade(&mut self, id: &Id, mut replacement: PluginDescriptor) -> Result<(), PluginError> {
+        let current = self.plugins.get(id).ok_or(PluginError::MissingPlugin)?;
+        if current.status != PluginStatus::Enabled
+            || replacement.id() != id
+            || replacement.kind() != current.kind
+            || replacement.status() != PluginStatus::Registered
+            || replacement.generation() <= current.generation
+        {
+            return Err(PluginError::InvalidTransition);
+        }
+        replacement.status = PluginStatus::Enabled;
+        self.plugins.insert(id.clone(), replacement);
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -156,6 +211,7 @@ pub enum PluginError {
     DuplicatePlugin,
     MissingPlugin,
     InvalidTransition,
+    GenerationOverflow,
 }
 
 impl fmt::Display for PluginError {
@@ -166,6 +222,7 @@ impl fmt::Display for PluginError {
             Self::DuplicatePlugin => "plugin already exists",
             Self::MissingPlugin => "plugin does not exist",
             Self::InvalidTransition => "plugin lifecycle transition is invalid",
+            Self::GenerationOverflow => "plugin generation overflowed",
         })
     }
 }
@@ -213,6 +270,38 @@ mod tests {
                 1,
             )
         );
+        Ok(())
+    }
+
+    #[test]
+    fn replacement_is_monotonic_and_upgrade_is_atomic() -> Result<(), Box<dyn Error>> {
+        let plugin = descriptor()?;
+        let id = plugin.id().clone();
+        let mut registry = PluginRegistry::default();
+        registry.register(plugin.clone())?;
+        registry.enable(&id)?;
+        let candidate = registry.get(&id)?.replacement(
+            CanonicalPath::parse("/opt/heptabao/plugins/database-v2")?,
+            [9; 32],
+            2,
+        )?;
+        assert_eq!(candidate.status(), PluginStatus::Registered);
+        assert_eq!(candidate.generation(), registry.get(&id)?.generation() + 1);
+        registry.upgrade(&id, candidate)?;
+        let active = registry.get(&id)?;
+        assert_eq!(active.status(), PluginStatus::Enabled);
+        assert_eq!(active.protocol_version(), 2);
+        assert_eq!(active.checksum(), &[9; 32]);
+
+        let bad = PluginDescriptor::new(
+            id.clone(),
+            PluginKind::Secrets,
+            CanonicalPath::parse("/opt/heptabao/plugins/wrong-kind")?,
+            [8; 32],
+            1,
+        )?;
+        assert_eq!(Err(PluginError::InvalidTransition), registry.upgrade(&id, bad));
+        assert_eq!(PluginStatus::Enabled, registry.get(&id)?.status());
         Ok(())
     }
 }

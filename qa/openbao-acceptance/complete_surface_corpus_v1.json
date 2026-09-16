@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 17,
-    "defined_not_implemented_surface_count": 43,
-    "fixture_case_count": 66,
+    "implemented_surface_count": 20,
+    "defined_not_implemented_surface_count": 40,
+    "fixture_case_count": 81,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -169,18 +169,30 @@
       "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "remote_jwks_live.real_rsa_signature_login",
+        "remote_jwks_live.same_assertion_replay_rejected",
+        "remote_jwks_live.p256_rotation_login",
+        "remote_jwks_live.disabled_subject_login_rejected",
+        "remote_jwks_live.restart_current_key_login"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kubernetes_online.online_review_to_real_token",
+        "kubernetes_online.reviewer_request_binding",
+        "kubernetes_online.disabled_identity_denies_new_login",
+        "kubernetes_online.finite_replay_denied",
+        "kubernetes_online.all_egress_requests_match_review_contract"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -390,9 +402,15 @@
       "surface_id": "HB-SURFACE-AUDIT-FILE",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_file_live.list",
+        "audit_file_live.path_present",
+        "audit_file_live.read_binding",
+        "audit_file_live.enable_idempotent",
+        "audit_file_live.disable_rejected"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
