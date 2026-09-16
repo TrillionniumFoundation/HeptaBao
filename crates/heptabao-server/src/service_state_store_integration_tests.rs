@@ -1,6 +1,16 @@
 use super::tests::{Root, bootstrap};
 use super::*;
 
+fn response_ok<T>(result: Result<T, Response>) -> Result<T, Box<dyn std::error::Error>> {
+    result.map_err(|response| {
+        std::io::Error::other(format!(
+            "service response {}: {}",
+            response.status, response.body
+        ))
+        .into()
+    })
+}
+
 #[test]
 fn legacy_state_upgrades_to_manifest_on_next_local_commit()
 -> Result<(), Box<dyn std::error::Error>> {
@@ -14,7 +24,7 @@ fn legacy_state_upgrades_to_manifest_on_next_local_commit()
     assert!(state_store::decode_manifest(legacy.expose())?.is_none());
 
     let state = serde_json::to_vec(service.state.as_ref().ok_or("state missing")?)?;
-    service.persist_local(&state, "upgrade-state-format")?;
+    response_ok(service.persist_local(&state, "upgrade-state-format"))?;
     let durable = service.durable.as_ref().ok_or("durable missing")?;
     let pointer = durable
         .get("system", "state")?
@@ -22,7 +32,10 @@ fn legacy_state_upgrades_to_manifest_on_next_local_commit()
     let manifest = state_store::decode_manifest(pointer.expose())?.ok_or("manifest missing")?;
     assert_eq!(manifest.state_schema(), CURRENT_STATE_SCHEMA);
     assert_eq!(manifest.slot(), 0);
-    assert_eq!(Service::load_state_bytes_from_durable(durable)?.as_slice(), state);
+    assert_eq!(
+        response_ok(Service::load_state_bytes_from_durable(durable))?.as_slice(),
+        state
+    );
     Ok(())
 }
 
@@ -33,7 +46,7 @@ fn multi_chunk_state_round_trips_and_alternates_slots()
     let mut service = root.service()?;
     let _ = bootstrap(&mut service)?;
     let first = vec![0x41_u8; state_store::STATE_CHUNK_BYTES + 31];
-    service.persist_local(&first, "large-state-one")?;
+    response_ok(service.persist_local(&first, "large-state-one"))?;
     let durable = service.durable.as_ref().ok_or("durable missing")?;
     let first_pointer = durable
         .get("system", "state")?
@@ -41,10 +54,13 @@ fn multi_chunk_state_round_trips_and_alternates_slots()
     let first_manifest =
         state_store::decode_manifest(first_pointer.expose())?.ok_or("first manifest missing")?;
     assert_eq!(first_manifest.slot(), 0);
-    assert_eq!(Service::load_state_bytes_from_durable(durable)?.as_slice(), first);
+    assert_eq!(
+        response_ok(Service::load_state_bytes_from_durable(durable))?.as_slice(),
+        first
+    );
 
     let second = vec![0x42_u8; state_store::STATE_CHUNK_BYTES + 47];
-    service.persist_local(&second, "large-state-two")?;
+    response_ok(service.persist_local(&second, "large-state-two"))?;
     let durable = service.durable.as_ref().ok_or("durable missing")?;
     let second_pointer = durable
         .get("system", "state")?
@@ -52,7 +68,10 @@ fn multi_chunk_state_round_trips_and_alternates_slots()
     let second_manifest =
         state_store::decode_manifest(second_pointer.expose())?.ok_or("second manifest missing")?;
     assert_eq!(second_manifest.slot(), 1);
-    assert_eq!(Service::load_state_bytes_from_durable(durable)?.as_slice(), second);
+    assert_eq!(
+        response_ok(Service::load_state_bytes_from_durable(durable))?.as_slice(),
+        second
+    );
     assert_eq!(
         durable.list("system", "state-chunks")?,
         vec!["0/".to_owned(), "1/".to_owned()]
