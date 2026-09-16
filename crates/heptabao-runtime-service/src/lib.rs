@@ -1094,4 +1094,51 @@ mod tests {
         assert_eq!(runtime.generation(), 1);
         Ok(())
     }
+
+    #[test]
+    fn runtime_mutations_continue_after_replay_epoch_retirement() -> Result<(), RuntimeError> {
+        let root = Root::new("replay-retirement")?;
+        let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;
+        assert!(matches!(
+            runtime.handle(inbound(
+                b"token-a",
+                "before-retirement",
+                "secret/before",
+                b"one"
+            )?)?,
+            RuntimeOutcome::Committed { generation: 1, .. }
+        ));
+        assert_eq!(runtime.durable.replay_epoch(), 0);
+        assert_eq!(runtime.retained_request_count(), 1);
+
+        runtime
+            .durable
+            .retire_replay_epoch()
+            .map_err(map_durable_error)?;
+        assert_eq!(runtime.durable.replay_epoch(), 1);
+        assert_eq!(runtime.retained_request_count(), 0);
+
+        assert!(matches!(
+            runtime.handle(inbound(
+                b"token-a",
+                "after-retirement",
+                "secret/after",
+                b"two"
+            )?)?,
+            RuntimeOutcome::Committed { generation: 2, .. }
+        ));
+        assert_eq!(runtime.retained_request_count(), 1);
+        assert_eq!(
+            runtime
+                .read(
+                    &Credential::new(b"token-a".to_vec())?,
+                    "root/team-a",
+                    "secret/after",
+                    "read-after-retirement"
+                )?
+                .map(|secret| secret.expose().to_vec()),
+            Some(b"two".to_vec())
+        );
+        Ok(())
+    }
 }
