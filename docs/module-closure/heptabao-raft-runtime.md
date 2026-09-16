@@ -1,6 +1,6 @@
 # heptabao-raft-runtime module closure dossier
 
-This dossier is the independently reviewable design, boundary, failure-semantics, and acceptance record for **`heptabao-raft-runtime`**. It is generated from the exact candidate tree and must be reviewed whenever the source or manifest hash changes. It does not grant compatibility, production, migration, or release authority.
+This dossier is the independently reviewable design, boundary, failure-semantics, and acceptance record for **`heptabao-raft-runtime`**. It is generated from the exact candidate tree and must be reviewed whenever the source or manifest binding changes. It does not grant compatibility, production, migration, or release authority.
 
 ## Design and state ownership
 
@@ -29,13 +29,14 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `1b615f9cdbae36bd31a2884679f06868441d4a55c02e8a586e94b14ce190c815`; manifest SHA-256 `2f60db3259415fdf977e757a82741c6af2b8d5757d159d1ada347e28596d4087`.
-- **Named executable anchor:** `envelope_status_v2_round_trip_and_v1_compatibility` in `crates/heptabao-raft-runtime/src/cluster.rs`.
+- **Legacy diagnostic hashes:** source tree SHA-256 `1b615f9cdbae36bd31a2884679f06868441d4a55c02e8a586e94b14ce190c815`; manifest SHA-256 `2f60db3259415fdf977e757a82741c6af2b8d5757d159d1ada347e28596d4087`. The source SHA was produced by the v1 generator and is not portable across checkout roots; it is not acceptance authority.
+- **Authoritative source binding:** the exact checked-out commit plus the Git tree object for `crates/heptabao-raft-runtime/src`, emitted by `scripts/validate_module_closure.py`.
+- **Named executable anchor:** `envelope_status_v2_round_trip_and_v1_compatibility` in `crates/heptabao-raft-runtime/src/lib.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-raft-runtime` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. 
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.
 
 ## Known gaps and evolution
 
