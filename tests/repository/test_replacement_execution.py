@@ -24,6 +24,10 @@ class ReplacementExecutionTests(unittest.TestCase):
         for row in self.matrix['surfaces']:
             for key in ('runtime_sources', 'contract_sources', 'guides', 'executable_profiles'):
                 paths.update(row[key])
+            evidence = row.get('implementation_evidence')
+            if evidence:
+                paths.update(evidence['source_paths'])
+                paths.update(anchor['path'] for anchor in evidence['test_anchors'])
         for name in paths:
             dest = self.root/name
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -108,3 +112,7 @@ class ReplacementExecutionTests(unittest.TestCase):
         except OSError:
             self.skipTest('symlink unavailable')
         self.assertTrue(module.validate(self.root))
+
+    def test_runtime_complete_local_requires_evidence(self):
+        self.matrix['surfaces'][0].pop('implementation_evidence')
+        self.assertTrue(self.check())

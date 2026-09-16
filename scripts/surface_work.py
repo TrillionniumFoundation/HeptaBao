@@ -73,7 +73,7 @@ def validate(root=ROOT):
                 raise ValueError('work catalog cannot change fixed fixture bindings')
             if row['whole_surface_admitted'] is not False:
                 raise ValueError('work catalog cannot self-admit a surface')
-            if row['implementation_status'] not in ('runtime_partial', 'tooling_partial', 'not_implemented'):
+            if row['implementation_status'] not in ('runtime_complete', 'runtime_partial', 'tooling_partial', 'not_implemented'):
                 raise ValueError('unrecognized implementation status')
             if set(row['technical_contract']) != FIELDS or any(not isinstance(v, str) or len(v.strip()) < 20 for v in row['technical_contract'].values()):
                 raise ValueError('missing per-surface technical contract')
@@ -82,8 +82,32 @@ def validate(root=ROOT):
                 raise ValueError('duplicate or missing executable profile')
             if row['runtime_source'] is not None:
                 source_path(root, row['runtime_source'])
-            if row['implementation_status'] == 'runtime_partial' and row['runtime_source'] is None:
+            if row['implementation_status'] in ('runtime_complete', 'runtime_partial') and row['runtime_source'] is None:
                 raise ValueError('runtime claim needs current source owner')
+            if row['implementation_status'] == 'runtime_complete':
+                evidence = row.get('implementation_evidence')
+                if not isinstance(evidence, dict) or set(evidence) != {'source_paths', 'test_anchors', 'local_dimensions'}:
+                    raise ValueError('runtime completion needs executable implementation evidence')
+                sources = evidence['source_paths']
+                anchors = evidence['test_anchors']
+                dimensions = evidence['local_dimensions']
+                if (not isinstance(sources, list) or not sources or len(sources) != len(set(sources))
+                        or not isinstance(anchors, list) or not anchors
+                        or set(dimensions) != {'protocol_framing', 'authorization_before_effect', 'effect_readback', 'crash_reopen'}):
+                    raise ValueError('runtime completion evidence is incomplete')
+                for source in sources:
+                    source_path(root, source)
+                seen = set()
+                for anchor in anchors:
+                    if not isinstance(anchor, dict) or set(anchor) != {'path', 'name'}:
+                        raise ValueError('invalid runtime completion test anchor')
+                    path = source_path(root, anchor['path'])
+                    key = (anchor['path'], anchor['name'])
+                    if key in seen or not isinstance(anchor['name'], str) or f"fn {anchor['name']}" not in path.read_text():
+                        raise ValueError('runtime completion test anchor is absent or duplicated')
+                    seen.add(key)
+            elif 'implementation_evidence' in row:
+                raise ValueError('partial surface cannot carry completion evidence')
     except (OSError, ValueError, TypeError, KeyError) as error:
         errors.append('surface work: ' + str(error))
     return errors

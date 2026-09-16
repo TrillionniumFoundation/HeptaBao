@@ -289,6 +289,23 @@ struct RequestView<'a> {
     wrap_ttl_seconds: Option<u64>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RequestEffectClass {
+    PureRead,
+    DurableMutation,
+    SideEffectingRead,
+}
+
+fn classify_request_effect(method: &str, before: &[u8], after: &[u8]) -> RequestEffectClass {
+    if before == after {
+        RequestEffectClass::PureRead
+    } else if matches!(method, "GET" | "HEAD" | "LIST" | "SCAN") {
+        RequestEffectClass::SideEffectingRead
+    } else {
+        RequestEffectClass::DurableMutation
+    }
+}
+
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
@@ -1016,18 +1033,21 @@ impl Service {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
         };
-        if *serialized != *before {
-            if admitted.schema != CURRENT_STATE_SCHEMA {
-                admitted.schema = CURRENT_STATE_SCHEMA;
-                serialized = match serde_json::to_vec(&admitted) {
-                    Ok(value) => Zeroizing::new(value),
-                    Err(_) => return Response::error(500, "state serialization failed"),
-                };
+        match classify_request_effect(method, &before, &serialized) {
+            RequestEffectClass::PureRead => {}
+            RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
+                if admitted.schema != CURRENT_STATE_SCHEMA {
+                    admitted.schema = CURRENT_STATE_SCHEMA;
+                    serialized = match serde_json::to_vec(&admitted) {
+                        Ok(value) => Zeroizing::new(value),
+                        Err(_) => return Response::error(500, "state serialization failed"),
+                    };
+                }
+                if let Err(error) = self.commit_state_bytes(&serialized) {
+                    return error;
+                }
+                self.state = Some(admitted);
             }
-            if let Err(error) = self.commit_state_bytes(&serialized) {
-                return error;
-            }
-            self.state = Some(admitted);
         }
         response
     }

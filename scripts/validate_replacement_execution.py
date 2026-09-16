@@ -16,7 +16,7 @@ GUIDE = 'docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
 AXES = {'protocol', 'authorization', 'effect_readback', 'crash_replay',
         'expiry_revocation', 'migration_upgrade', 'capacity_operations', 'independent_admission'}
-STATES = {'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}
+STATES = {'RUNTIME_COMPLETE_LOCAL', 'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}
 
 
 def unique_object(pairs):
@@ -50,7 +50,7 @@ def render(matrix: dict) -> str:
         f'Edit `{MATRIX}` and run `python scripts/validate_replacement_execution.py --write`.',
         'The fixed corpus remains the denominator; this table neither adds a pass receipt nor reduces its scope.',
         'A listed profile is an executable entry point, not coverage of all requirements in its row.',
-        '`PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; neither means full compatibility.', '',
+        '`RUNTIME_COMPLETE_LOCAL` means repository-local runtime behavior is executable but later migration, physical fault, full differential and independent-admission phases remain open. `PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; none alone means full compatibility.', '',
         '## Common acceptance dimensions', '',
     ]
     for key, value in matrix['acceptance_axes'].items():
@@ -141,8 +141,29 @@ def validate(root: Path = ROOT, *, check_render: bool = True) -> list[str]:
                 for value in values:
                     if not local_file(root, value):
                         errors.append(sid + ': missing or unsafe source ' + str(value))
-            if (row['implementation'] == 'PARTIAL_RUNTIME') != bool(row['runtime_sources']):
+            if (row['implementation'] in {'PARTIAL_RUNTIME', 'RUNTIME_COMPLETE_LOCAL'}) != bool(row['runtime_sources']):
                 errors.append(sid + ': runtime classification lacks concrete entry')
+            if row['implementation'] == 'RUNTIME_COMPLETE_LOCAL':
+                evidence = row.get('implementation_evidence')
+                if not isinstance(evidence, dict) or set(evidence) != {'source_paths', 'test_anchors', 'local_dimensions'}:
+                    errors.append(sid + ': local runtime completion lacks executable evidence')
+                else:
+                    if set(evidence.get('local_dimensions', [])) != {'protocol_framing', 'authorization_before_effect', 'effect_readback', 'crash_reopen'}:
+                        errors.append(sid + ': local runtime completion dimensions are incomplete')
+                    for value in evidence.get('source_paths', []):
+                        if not local_file(root, value):
+                            errors.append(sid + ': missing completion source ' + str(value))
+                    seen = set()
+                    for anchor in evidence.get('test_anchors', []):
+                        if not isinstance(anchor, dict) or set(anchor) != {'path', 'name'} or not local_file(root, anchor.get('path')):
+                            errors.append(sid + ': invalid completion test anchor')
+                            continue
+                        key = (anchor['path'], anchor['name'])
+                        if key in seen or f"fn {anchor['name']}" not in (root/anchor['path']).read_text():
+                            errors.append(sid + ': absent or duplicated completion test anchor')
+                        seen.add(key)
+            elif 'implementation_evidence' in row:
+                errors.append(sid + ': non-complete execution row carries completion evidence')
             if row['implementation'] == 'CONTRACT_ONLY' and not row['contract_sources']:
                 errors.append(sid + ': contract classification lacks source')
         if check_render and (root/GUIDE).read_text(encoding='utf-8') != render(m):

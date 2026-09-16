@@ -4,7 +4,7 @@ Subordinate to `HEPTABAO-PLAN-2026-09-07-V2.1`; not a new global plan.
 Edit `planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json` and run `python scripts/validate_replacement_execution.py --write`.
 The fixed corpus remains the denominator; this table neither adds a pass receipt nor reduces its scope.
 A listed profile is an executable entry point, not coverage of all requirements in its row.
-`PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; neither means full compatibility.
+`RUNTIME_COMPLETE_LOCAL` means repository-local runtime behavior is executable but later migration, physical fault, full differential and independent-admission phases remain open. `PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; none alone means full compatibility.
 
 ## Common acceptance dimensions
 
@@ -44,7 +44,7 @@ Use the existing external-evidence verifier and full declared scope, exact sourc
 
 ### HB-SURFACE-CORE-REQUEST-PIPELINE
 
-Implementation: `PARTIAL_RUNTIME`. Original work packages: `H07-WP01`, `H07-WP02`, `H07-WP06`, `H07-WP10`.
+Implementation: `RUNTIME_COMPLETE_LOCAL`. Original work packages: `H07-WP01`, `H07-WP02`, `H07-WP06`, `H07-WP10`.
 API families: `/v1/*`.
 Runtime source: `crates/heptabao-server/src/http.rs`, `crates/heptabao-server/src/service.rs`.
 Separate contracts: none claimed.
@@ -56,7 +56,7 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Lifecycle:** Recover each intent/state/commit/response failure without blind replay.
 
-**Remaining scope:** Must distinguish pure reads, durable mutations and side-effecting reads.
+**Remaining scope:** Local request framing, authorization-before-effect, pure-read/nonpure-read persistence, unknown-outcome recovery and reopen behavior are executable; migration, real multi-host fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain owned by later ordered phases.
 
 Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 

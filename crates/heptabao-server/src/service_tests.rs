@@ -1654,3 +1654,95 @@ fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std
     );
     Ok(())
 }
+
+#[test]
+fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads()
+-> Result<(), Box<dyn std::error::Error>> {
+    assert_eq!(
+        classify_request_effect("GET", b"same", b"same"),
+        RequestEffectClass::PureRead
+    );
+    assert_eq!(
+        classify_request_effect("GET", b"before", b"after"),
+        RequestEffectClass::SideEffectingRead
+    );
+    assert_eq!(
+        classify_request_effect("PUT", b"before", b"after"),
+        RequestEffectClass::DurableMutation
+    );
+
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, root_token) = bootstrap(&mut service)?;
+
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable service")?
+        .generation();
+    let pure = call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(pure.status, 200);
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable service")?
+            .generation(),
+        generation,
+        "pure authenticated read allocated durable state"
+    );
+
+    let finite = limited_token(
+        &mut service,
+        &root_token,
+        r#"path "auth/token/lookup-self" { capabilities = ["read"] }"#,
+    )?;
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable service")?
+        .generation();
+    let side_effecting = call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &finite,
+        json!({}),
+    );
+    assert_eq!(side_effecting.status, 200);
+    assert!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable service")?
+            .generation()
+            > generation,
+        "finite-use read did not durably publish consumption"
+    );
+
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &finite,
+            json!({}),
+        )
+        .status,
+        403,
+        "side-effecting read resurrected consumed authority after reopen"
+    );
+    Ok(())
+}

@@ -62,3 +62,7 @@ class SurfaceWorkTests(unittest.TestCase):
             path.write_text('{"status":false,"status":true}')
             with self.assertRaises(ValueError):
                 work.read_json(path)
+
+    def test_runtime_complete_requires_executable_evidence(self):
+        self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0].pop('implementation_evidence')))
+        self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0]['implementation_evidence']['test_anchors'][0].update(name='missing_anchor')))

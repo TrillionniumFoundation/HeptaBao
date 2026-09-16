@@ -286,7 +286,7 @@
     {
       "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
       "category": "core_system",
-      "implementation_status": "runtime_partial",
+      "implementation_status": "runtime_complete",
       "runtime_source": "crates/heptabao-server/src/http.rs",
       "technical_contract": {
         "api_or_protocol": "HTTP /v1/*, request IDs and method/body framing",
@@ -302,7 +302,33 @@
       "available_scoped_profiles": [
         "fixed"
       ],
-      "whole_surface_admitted": false
+      "whole_surface_admitted": false,
+      "implementation_evidence": {
+        "source_paths": [
+          "crates/heptabao-server/src/http.rs",
+          "crates/heptabao-server/src/service.rs"
+        ],
+        "test_anchors": [
+          {
+            "path": "crates/heptabao-server/src/http.rs",
+            "name": "rejects_duplicate_json_and_ambiguous_namespaces"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "unknown_commit_releases_no_secret_and_recovers_written_value"
+          },
+          {
+            "path": "crates/heptabao-server/src/service_tests.rs",
+            "name": "request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads"
+          }
+        ],
+        "local_dimensions": [
+          "protocol_framing",
+          "authorization_before_effect",
+          "effect_readback",
+          "crash_reopen"
+        ]
+      }
     },
     {
       "surface_id": "HB-SURFACE-SYSTEM-BACKEND",

@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `a841a5664a867569f16482aa5e703a9e25ad6f0d64890ec8a1c8c2bbb273d0f5`; manifest SHA-256 `d21014fe016940b364b759de364eaebc8865dbdbdd8ba5cee2daf3e3701e2f97`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `723656612922af2e4c252d53253a87cd4f6e4f9fb1820e0cbba2bca771044d51`; manifest SHA-256 `d21014fe016940b364b759de364eaebc8865dbdbdd8ba5cee2daf3e3701e2f97`.
 - **Named executable anchor:** `target_abi_opens_private_regular_files_and_real_directories` in `crates/heptabao-server/src/audit_platform_tests.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-server` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
