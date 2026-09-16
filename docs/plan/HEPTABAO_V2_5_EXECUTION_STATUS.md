@@ -52,6 +52,12 @@ cargo +1.98.0 build --locked -p heptabao-server
 The exact PR head and the prospective merge with current `main` must both pass.
 Pending, absent, stale, cancelled or failed checks do not close a blocker.
 
+The inherited V1.x plan suite is retained as historical regression coverage:
+317 tests run, 290 pass, and 27 tests are explicitly marked
+`historical_only` because they bind superseded frozen snapshots. Those 27 must
+be replayed from their pinned historical checkout; the skips do not alter the
+current V2.5 authority decision.
+
 ## Repository-controlled product workstreams
 
 The following product workstreams remain open unless the current exact source,
