@@ -1,0 +1,114 @@
+name: phase5-core-pipeline-evidence-materializer-20260916
+on:
+  push:
+    branches:
+      - codex/phase5-60-surface-closure-20260916
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Bind exact parent
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "950ed7a34a2ff641deec98b57e4a176037b97ed3"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Materialize runtime-complete classification and documentation
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          validator = Path('scripts/validate_replacement_execution.py')
+          s = validator.read_text()
+          old = "STATES = {'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}"
+          new = "STATES = {'RUNTIME_COMPLETE', 'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}"
+          if s.count(old) != 1:
+              raise SystemExit(f'STATES anchor count={s.count(old)}')
+          s = s.replace(old, new, 1)
+          old = "        '`PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; neither means full compatibility.', '',"
+          new = "        '`RUNTIME_COMPLETE` means the repository-owned local runtime gap for that row is closed; it is not full OpenBao verification or independent admission. `PARTIAL_RUNTIME` means real bounded code with a known local runtime gap; `CONTRACT_ONLY` means a separate model/interface.', '',"
+          if s.count(old) != 1:
+              raise SystemExit(f'render legend anchor count={s.count(old)}')
+          s = s.replace(old, new, 1)
+          old = "            if (row['implementation'] == 'PARTIAL_RUNTIME') != bool(row['runtime_sources']):\n                errors.append(sid + ': runtime classification lacks concrete entry')"
+          new = "            if (row['implementation'] in {'RUNTIME_COMPLETE', 'PARTIAL_RUNTIME'}) != bool(row['runtime_sources']):\n                errors.append(sid + ': runtime classification lacks concrete entry')"
+          if s.count(old) != 1:
+              raise SystemExit(f'runtime classification anchor count={s.count(old)}')
+          validator.write_text(s.replace(old, new, 1))
+
+          tests = Path('tests/repository/test_replacement_execution.py')
+          t = tests.read_text()
+          anchor = '''    def test_runtime_requires_real_entry_not_a_label(self):\n        self.matrix['surfaces'][0]['runtime_sources'] = []\n        self.assertTrue(self.check())\n\n'''
+          addition = anchor + '''    def test_runtime_complete_is_local_only_and_requires_runtime_source(self):\n        row = self.matrix['surfaces'][0]\n        row['implementation'] = 'RUNTIME_COMPLETE'\n        row['full_surface_verified'] = False\n        row['independently_admitted'] = False\n        self.assertEqual(self.check(), [])\n        row['runtime_sources'] = []\n        self.assertTrue(self.check())\n\n'''
+          if t.count(anchor) != 1:
+              raise SystemExit(f'replacement test anchor count={t.count(anchor)}')
+          tests.write_text(t.replace(anchor, addition, 1))
+
+          matrix_path = Path('planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json')
+          matrix = json.loads(matrix_path.read_text())
+          rows = [row for row in matrix['surfaces'] if row['surface_id'] == 'HB-SURFACE-CORE-REQUEST-PIPELINE']
+          if len(rows) != 1:
+              raise SystemExit(f'core pipeline row count={len(rows)}')
+          row = rows[0]
+          if row['implementation'] != 'PARTIAL_RUNTIME':
+              raise SystemExit(f'unexpected core pipeline state={row["implementation"]}')
+          if row['full_surface_verified'] is not False or row['independently_admitted'] is not False:
+              raise SystemExit('core pipeline row illegally pre-admitted')
+          row['implementation'] = 'RUNTIME_COMPLETE'
+          row['remaining_scope'] = (
+              'Local request-effect classification, durable publication and result-audit recovery semantics are closed; '
+              'full OpenBao differential and independent admission remain deferred to phases 9 and 10.'
+          )
+          matrix_path.write_text(json.dumps(matrix, indent=2, ensure_ascii=False) + '\n')
+
+          arch = Path('docs/architecture/HEPTABAO_V2_1_AUTHORIZED_DURABLE_PIPELINE.md')
+          a = arch.read_text()
+          anchor = '''The operational retry rule is **never blind retry** after durable entry. Authentication or authorization rejection means **no replay identity allocated**. A **post-commit audit failure** withholds normal success and is reconciled from durable state.\n\n'''
+          section = anchor + '''## Current server request-effect classification\n\nThe current `heptabao-server` composition classifies each completed dispatch from the actual durable generation observed immediately before and after `handle_inner`; it does not infer side effects from the HTTP verb alone. Read-like methods (`GET`, `HEAD`, `LIST`, `SCAN`) with no durable generation transition are `PureRead`. A read-like request that advances the durable generation is `SideEffectingRead`; finite-use bearer consumption is a concrete example. Non-read methods are `DurableMutation`.\n\nThis classification is consumed by result-audit failure handling. A failed result audit always withholds the response. For `PureRead`, no authoritative state transition occurred, so the service returns 503 without manufacturing a recovery fence. For `SideEffectingRead` and `DurableMutation`, an authoritative durable effect may have occurred, so the service enters recovery-required state and never permits blind replay. Tests bind all three classes and separately prove pure-read result withholding versus finite-use side-effect persistence across reopen.\n\n'''
+          if a.count(anchor) != 1:
+              raise SystemExit(f'architecture anchor count={a.count(anchor)}')
+          arch.write_text(a.replace(anchor, section, 1))
+
+          guide = Path('docs/modules/heptabao-server.md')
+          g = guide.read_text()
+          anchor = '''## Failure, retry and reconciliation\n\n'''
+          section = '''### Request effect classes\n\nThe HTTP service records the durable generation around actual dispatch and classifies the completed request as `PureRead`, `SideEffectingRead` or `DurableMutation`. Read-like verbs are pure only when the generation is unchanged; finite-use token consumption therefore turns an otherwise read-like request into a side-effecting read. Result-audit failure withholds every response, but only a side-effecting read or durable mutation creates an authoritative-recovery fence. This distinction is executable behavior, not a route-label convention.\n\n'''
+          if g.count(anchor) != 1:
+              raise SystemExit(f'server guide anchor count={g.count(anchor)}')
+          guide.write_text(g.replace(anchor, section + anchor, 1))
+          PY
+          python scripts/validate_replacement_execution.py --write
+          python scripts/current_source_inventory.py --write
+          python scripts/generate_module_closure_docs.py
+          python scripts/current_source_inventory.py --write
+          python scripts/current_source_inventory.py --check
+          python scripts/validate_module_closure.py
+          python scripts/validate_current_documentation_semantics.py
+          python scripts/validate_runtime_doc_truth.py
+          python scripts/validate_replacement_execution.py
+          python scripts/validate_execution_truth.py
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m compileall -q scripts tests
+          git diff --check
+      - name: Remove transport and publish evidence
+        run: |
+          set -euo pipefail
+          rm .github/workflows/phase5-core-pipeline-evidence-materializer-20260916.yml
+          git diff --check
+          git config user.name "OpenAI phase5 core pipeline evidence"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "docs(runtime): close core request pipeline local gap"
+          git push origin HEAD:codex/phase5-60-surface-closure-20260916
