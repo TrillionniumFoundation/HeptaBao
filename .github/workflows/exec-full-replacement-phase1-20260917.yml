@@ -24,7 +24,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .github/exec-data/full-replacement-phase1/part-* > "$RUNNER_TEMP/phase1.b64"
+          cat \
+            .github/exec-data/full-replacement-phase1/part-00 \
+            .github/exec-data/full-replacement-phase1/part-01 \
+            .github/exec-data/full-replacement-phase1/part-02 \
+            .github/exec-data/full-replacement-phase1/part-03 \
+            .github/exec-data/full-replacement-phase1/part-04 \
+            .github/exec-data/full-replacement-phase1/part-05 \
+            .github/exec-data/full-replacement-phase1/part-06a \
+            .github/exec-data/full-replacement-phase1/part-06b \
+            .github/exec-data/full-replacement-phase1/part-07 \
+            > "$RUNNER_TEMP/phase1.b64"
           base64 -d "$RUNNER_TEMP/phase1.b64" | gzip -dc > "$RUNNER_TEMP/phase1.diff"
           test "$(sha256sum "$RUNNER_TEMP/phase1.diff" | awk '{print $1}')" = "151f98a3553351e24f644473b17be633053d1c3ffa9d3f97cc4f2ed6c01a8e5e"
           git fetch origin codex/full-replacement-closure-20260917
