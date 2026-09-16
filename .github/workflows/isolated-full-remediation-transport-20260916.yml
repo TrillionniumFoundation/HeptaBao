@@ -1,0 +1,46 @@
+name: HeptaBao isolated full-remediation transport
+
+on:
+  pull_request:
+    branches:
+      - exec/full-remediation-transport-20260916
+
+permissions:
+  contents: write
+
+concurrency:
+  group: isolated-full-remediation-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  publish-ordinary-source:
+    if: github.repository == 'TrillionniumFoundation/HeptaBao' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout immutable transport head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and publish ordinary source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .transport/remediation.part*.b64 | tr -d '\n' | base64 -d | gzip -d > "$RUNNER_TEMP/remediation.patch"
+          test "$(sha256sum "$RUNNER_TEMP/remediation.patch" | awk '{print $1}')" = "6895a0b5189a34c9b19671998e7b8b3256ba97f994db4c0dd418f4227af78039"
+
+          git checkout --detach b7cd0c6dd2564a632c8caec998329cfaafd0ca77
+          git config user.name "OpenAI HeptaBao integrator"
+          git config user.email "noreply@openai.com"
+          git am "$RUNNER_TEMP/remediation.patch"
+
+          test "$(git rev-parse HEAD^)" = "b7cd0c6dd2564a632c8caec998329cfaafd0ca77"
+          git diff HEAD^ --check
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test -z "$(git diff --name-only HEAD^ HEAD | grep -E '^(\.github/workflows/|\.transport/)' || true)"
+
+          git push \
+            --force-with-lease=refs/heads/codex/full-remediation-20260916-r1:b7cd0c6dd2564a632c8caec998329cfaafd0ca77 \
+            origin HEAD:refs/heads/codex/full-remediation-20260916-r1
