@@ -81,7 +81,7 @@ class PlanV12Tests(unittest.TestCase):
             output = Path(temporary) / "state.json"
             args = Namespace(
                 root=str(ROOT),
-                repository="ProfHepta/HeptaBao",
+                repository="TrillionniumFoundation/HeptaBao",
                 ref="test/ref",
                 commit=renderer.git(ROOT, "rev-parse", "HEAD"),
                 tree=renderer.git(ROOT, "rev-parse", "HEAD^{tree}"),

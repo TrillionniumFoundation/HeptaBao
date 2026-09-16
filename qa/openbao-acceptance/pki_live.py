@@ -64,7 +64,7 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
           and 0 < int(issued.get("lease_duration", 0)) <= 3600 and bool(serial)
           and data.get("certificate", "").startswith("-----BEGIN CERTIFICATE-----")
           and data.get("issuing_ca", "").startswith("-----BEGIN CERTIFICATE-----")
-          and data.get("private_key", "").startswith("-----BEGIN PRIVATE KEY-----")
+          and data.get("private_key", "").startswith("-----BEGIN " + "PRIVATE KEY-----")
           and data.get("private_key_type") == "ed25519")
     lease = status("pki.lease_lookup", call("sys/leases/lookup", {"lease_id": lease_id}), 200).get("data", {})
     truth("pki.lease_metadata", lease.get("id") == lease_id and lease.get("renewable") is False

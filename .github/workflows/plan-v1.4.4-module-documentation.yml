@@ -1,6 +1,7 @@
 name: plan-v1.4.4-module-documentation
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - codex/plan-v1.4.4-module-documentation-closure-v1

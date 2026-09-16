@@ -33,7 +33,7 @@ def valid_receipt(result: str = "EXACT_HEAD_EXECUTED") -> dict:
         "blocker_id": "HB-BLK-REPO-012",
         "blocker_class": "REPOSITORY_CONTROLLED",
         "source_binding": {
-            "repository": "ProfHepta/HeptaBao",
+            "repository": "TrillionniumFoundation/HeptaBao",
             "ref": "codex/test",
             "commit": "1" * 40,
             "tree": "2" * 40,

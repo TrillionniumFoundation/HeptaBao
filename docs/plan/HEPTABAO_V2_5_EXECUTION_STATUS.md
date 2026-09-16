@@ -2,11 +2,14 @@
 
 ## Candidate
 
-The authoritative implementation candidate is the current exact head of
-`codex/openbao-replacement-v2.4-authoritative-closure-20260909`, proposed to
-`main` by draft pull request #81. A mutable branch name, predecessor commit,
-prospective merge commit or historical green workflow is not current-head
-evidence.
+The authoritative implementation candidate for this execution packet is the
+exact local head of `codex/full-gap-closure-20260916` in repository
+`TrillionniumFoundation/HeptaBao`. Before admission, record
+`git rev-parse --verify HEAD` and `git rev-parse --verify HEAD^{tree}` in the
+external evidence packet; those immutable values, rather than a mutable branch
+name, bind the source. A predecessor commit, prospective merge commit or
+historical green workflow is not current-head evidence. Any subsequent source
+change invalidates the packet and requires a new binding.
 
 ## Repository-side closure added in V2.5
 
@@ -64,6 +67,9 @@ module guides and tests jointly prove them complete:
    auth, identity, tokens, leases, Transit, audit and seal/KMS metadata;
 4. complete independently observed OpenBao API, error, client and side-effect
    compatibility fixtures for the closed surface inventory.
+5. plugin sandbox and provider qualification across Linux, macOS and Windows,
+   including process-tree termination, authenticated multiplexed transport,
+   real provider connectors, rolling upgrade and destructive qualification.
 
 A contract, denominator, in-memory test or repository-authored fixture alone is
 not completion of these workstreams.
@@ -82,7 +88,8 @@ controlled governance process:
 - `HB-BLK-EXT-004`: production signer and KMS/HSM custody;
 - `HB-BLK-EXT-005`: independently controlled OpenBao Oracle evidence;
 - `HB-BLK-EXT-006`: destructive multi-platform qualification;
-- `HB-BLK-EXT-007`: independent reproduction.
+- `HB-BLK-EXT-007`: independent reproduction;
+- `HB-BLK-EXT-008`: plugin sandbox and provider qualification.
 
 Repository administrator access cannot manufacture an independent actor,
 production custody, destructive campaign or operational history.

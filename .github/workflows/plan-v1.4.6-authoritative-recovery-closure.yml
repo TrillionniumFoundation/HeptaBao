@@ -1,6 +1,7 @@
 name: HeptaBao V1.4.6 authoritative recovery closure
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:

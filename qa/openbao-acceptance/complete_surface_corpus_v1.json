@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 14,
-    "defined_not_implemented_surface_count": 46,
-    "fixture_case_count": 55,
+    "implemented_surface_count": 16,
+    "defined_not_implemented_surface_count": 44,
+    "fixture_case_count": 63,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -70,9 +70,16 @@
       "surface_id": "HB-SURFACE-IDENTITY",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 6,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "identity.entity_create",
+        "identity.entity_read",
+        "identity.entity_disable",
+        "identity.entity_disabled",
+        "identity.entity_delete",
+        "identity.entity_deleted"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -102,9 +109,12 @@
       "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 2,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "pki.lease_expire_issue",
+        "pki.lease_expire_lookup"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

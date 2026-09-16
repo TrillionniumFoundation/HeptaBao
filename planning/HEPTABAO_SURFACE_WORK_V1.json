@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "0b049b702be75b72c1cab6acf03693ea5aad18ca932b983eca074c71d3d28484",
+  "corpus_sha256": "d1e3eef10786c65ff761d7f64bef260532a79e0683f128d70233463e6c8203f2",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -359,7 +359,14 @@
         "isolation": "For HB-SURFACE-IDENTITY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "identity.entity_create",
+        "identity.entity_read",
+        "identity.entity_disable",
+        "identity.entity_disabled",
+        "identity.entity_delete",
+        "identity.entity_deleted"
+      ],
       "available_scoped_profiles": [
         "identity"
       ],
@@ -422,7 +429,10 @@
         "isolation": "For HB-SURFACE-LEASE-EXPIRATION, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "pki.lease_expire_issue",
+        "pki.lease_expire_lookup"
+      ],
       "available_scoped_profiles": [
         "idle"
       ],

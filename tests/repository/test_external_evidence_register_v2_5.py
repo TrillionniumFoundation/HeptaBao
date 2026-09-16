@@ -48,6 +48,7 @@ class ExternalEvidenceRegisterV25Tests(unittest.TestCase):
                 "HB-BLK-EXT-005",
                 "HB-BLK-EXT-006",
                 "HB-BLK-EXT-007",
+                "HB-BLK-EXT-008",
             },
         )
         for gate in gates:
