@@ -1034,6 +1034,7 @@ impl Service {
         method: &str,
         path: &str,
         body: &Value,
+        now: u64,
     ) -> Response {
         let principal = principal.as_ref();
         if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
@@ -2611,21 +2612,21 @@ impl Service {
                             );
                         }
                     }
-                    if let Some(requested) = options.get("segment_bytes") {
-                        if requested.as_u64() != Some(config.segment_bytes) {
-                            return Response::error(
-                                409,
-                                "the audit segment bound is fixed at process startup",
-                            );
-                        }
+                    if let Some(requested) = options.get("segment_bytes")
+                        && requested.as_u64() != Some(config.segment_bytes)
+                    {
+                        return Response::error(
+                            409,
+                            "the audit segment bound is fixed at process startup",
+                        );
                     }
-                    if let Some(requested) = options.get("retained_segments") {
-                        if requested.as_u64() != Some(config.retained_segments as u64) {
-                            return Response::error(
-                                409,
-                                "the audit retention bound is fixed at process startup",
-                            );
-                        }
+                    if let Some(requested) = options.get("retained_segments")
+                        && requested.as_u64() != Some(config.retained_segments as u64)
+                    {
+                        return Response::error(
+                            409,
+                            "the audit retention bound is fixed at process startup",
+                        );
                     }
                     for key in options.keys() {
                         if !matches!(
