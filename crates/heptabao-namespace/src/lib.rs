@@ -283,7 +283,8 @@ mod tests {
         Ok(())
     }
     #[test]
-    fn seal_subtree_disables_descendants_and_strict_resolution_fails_closed() -> Result<(), Box<dyn Error>> {
+    fn seal_subtree_disables_descendants_and_strict_resolution_fails_closed()
+    -> Result<(), Box<dyn Error>> {
         let root = Id::parse("root")?;
         let team = Id::parse("team")?;
         let app = Id::parse("app")?;
@@ -305,11 +306,18 @@ mod tests {
         );
         assert_eq!(
             &sibling,
-            store.resolve_strict(&CanonicalPath::parse("/sibling/secret")?)?.id()
+            store
+                .resolve_strict(&CanonicalPath::parse("/sibling/secret")?)?
+                .id()
         );
-        assert_eq!(Err(NamespaceError::AlreadyDisabled), store.seal_subtree(&team));
-        assert_eq!(Err(NamespaceError::CannotDisableRoot), store.seal_subtree(&root));
+        assert_eq!(
+            Err(NamespaceError::AlreadyDisabled),
+            store.seal_subtree(&team)
+        );
+        assert_eq!(
+            Err(NamespaceError::CannotDisableRoot),
+            store.seal_subtree(&root)
+        );
         Ok(())
     }
-
 }

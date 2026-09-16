@@ -225,9 +225,7 @@ impl Service {
                     "sys/storage/raft/snapshot-status" => Ok(Response::ok(
                         json!({"data":{"applied_index":o.applied_index,"snapshot_index":o.snapshot_index,"purged_index":o.purged_index,"membership_index":o.membership_index}}),
                     )),
-                    "sys/storage/raft/linearizable-read" => Ok(Response::ok(
-                        linearizable_read_body(&o),
-                    )),
+                    "sys/storage/raft/linearizable-read" => Ok(Self::linearizable_read_body(&o)),
                     _ => Err(Response::error(405, "Raft mutation requires POST or PUT")),
                 };
             }
@@ -537,18 +535,21 @@ mod tests {
     }
     #[test]
     fn linearizable_read_route_is_admitted_as_admin_path() {
-        assert!(Service::is_raft_admin_path("sys/storage/raft/linearizable-read"));
+        assert!(Service::is_raft_admin_path(
+            "sys/storage/raft/linearizable-read"
+        ));
     }
 
     #[test]
     fn linearizable_read_body_declares_read_index_observation() {
-        let body = Service::linearizable_read_body(&observation()).body;
+        let body = Service::linearizable_read_body(&observation()).body.clone();
         assert_eq!(body["data"]["linearizable"], true);
         assert_eq!(body["data"]["observation_scope"], "native-raft-ReadIndex");
         assert_eq!(body["data"]["leader"], 1);
         assert_eq!(body["data"]["applied_index"], 20);
     }
 
+    #[test]
     fn policy_bounds_and_failure_tolerance_are_conservative() {
         let mut p = RaftAdminState::default();
         assert!(p.validate().is_ok());
