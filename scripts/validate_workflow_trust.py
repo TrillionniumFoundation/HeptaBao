@@ -66,6 +66,7 @@ def validate_directory(directory: Path) -> dict[str, object]:
             "not credential-free"
         ),
         "artifact_export_model": "EXACT_PER_INVOCATION_PATH_AND_ACTION_INPUT_SCHEMA",
+        "source_mutation_model": "FORBIDDEN_IN_ACCEPTANCE_WORKFLOWS",
         "transitive_script_sandbox": False,
         "runtime_symlink_state": "NOT_ESTABLISHED_BY_STATIC_POLICY",
         "requires_live_runner_environment_and_independent_policy_controls": True,
