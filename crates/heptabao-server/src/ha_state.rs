@@ -21,7 +21,7 @@ const DIGEST_BYTES: usize = 32;
 const TAG_BYTES: usize = 16;
 const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_OPERATION_ID_BYTES: usize = 128;
-const MAX_STATE_BYTES: usize = 768 * 1024;
+const MAX_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
 const HEADER_BYTES: usize = MAGIC.len() + DIGEST_BYTES + NONCE_BYTES;
 
 #[derive(Clone, Eq, PartialEq)]
@@ -367,6 +367,23 @@ mod tests {
                 .as_slice(),
             state
         );
+        Ok(())
+    }
+
+    #[test]
+    fn ha_replication_accepts_state_above_legacy_768k_bound_and_rejects_over_shared_limit()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let codec = ClusterStateCodec::new("cluster-large", [11; 32])?;
+        let base = [5; 32];
+        let state = vec![0x5a; 1024 * 1024];
+        let proposal = codec.seal("request-large", base, &state)?;
+        assert_eq!(codec.open(&proposal, base)?.as_slice(), state.as_slice());
+
+        let oversized = vec![0_u8; MAX_STATE_BYTES + 1];
+        assert!(matches!(
+            codec.seal("request-too-large", base, &oversized),
+            Err(ReplicatedStateError::InvalidState)
+        ));
         Ok(())
     }
 
