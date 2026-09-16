@@ -794,13 +794,7 @@ impl Service {
             let Some(principal) = principal.as_ref() else {
                 return Response::error(403, "missing client token");
             };
-            return self.audit_route(
-                principal,
-                namespace,
-                method,
-                path,
-                body,
-            );
+            return self.audit_route(principal, namespace, method, path, body);
         }
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
@@ -2634,7 +2628,10 @@ impl Service {
                         }
                     }
                     for key in options.keys() {
-                        if !matches!(key.as_str(), "file_path" | "segment_bytes" | "retained_segments") {
+                        if !matches!(
+                            key.as_str(),
+                            "file_path" | "segment_bytes" | "retained_segments"
+                        ) {
                             return Response::error(400, "unsupported file audit option");
                         }
                     }

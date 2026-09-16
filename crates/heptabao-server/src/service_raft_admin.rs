@@ -225,9 +225,9 @@ impl Service {
                     "sys/storage/raft/snapshot-status" => Ok(Response::ok(
                         json!({"data":{"applied_index":o.applied_index,"snapshot_index":o.snapshot_index,"purged_index":o.purged_index,"membership_index":o.membership_index}}),
                     )),
-                    "sys/storage/raft/linearizable-read" => Ok(Response::ok(
-                        linearizable_read_body(&o),
-                    )),
+                    "sys/storage/raft/linearizable-read" => {
+                        Ok(Response::ok(linearizable_read_body(&o)))
+                    }
                     _ => Err(Response::error(405, "Raft mutation requires POST or PUT")),
                 };
             }
@@ -537,7 +537,9 @@ mod tests {
     }
     #[test]
     fn linearizable_read_route_is_admitted_as_admin_path() {
-        assert!(Service::is_raft_admin_path("sys/storage/raft/linearizable-read"));
+        assert!(Service::is_raft_admin_path(
+            "sys/storage/raft/linearizable-read"
+        ));
     }
 
     #[test]

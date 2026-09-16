@@ -884,8 +884,7 @@ impl DurableMigrationJournal {
                 | DurableMigrationPhase::CutoverReady
                 | DurableMigrationPhase::TargetActive
                 | DurableMigrationPhase::TargetFenced
-        )
-            && self.record.source_fence_sha256.as_deref() == Some(receipt.sha256.as_str())
+        ) && self.record.source_fence_sha256.as_deref() == Some(receipt.sha256.as_str())
             && self.record.source_fence_generation == Some(receipt.generation)
             && receipt.endpoint_id == self.record.source_id
             && !receipt.writer_enabled
@@ -999,16 +998,16 @@ impl DurableMigrationJournal {
                 attempt,
             }) => (observed, *attempt),
             Some(MigrationObjectState::OutcomeUnknownAfterEntry { .. }) => {
-                return Err(MigrationJournalError::ReconciliationRequired)
+                return Err(MigrationJournalError::ReconciliationRequired);
             }
             Some(MigrationObjectState::Verified { .. }) => {
-                return Err(MigrationJournalError::InvalidTransition)
+                return Err(MigrationJournalError::InvalidTransition);
             }
             Some(MigrationObjectState::Pending { .. }) => {
-                return Err(MigrationJournalError::InvalidTransition)
+                return Err(MigrationJournalError::InvalidTransition);
             }
             Some(MigrationObjectState::FailedClosed { .. }) => {
-                return Err(MigrationJournalError::FailedClosed)
+                return Err(MigrationJournalError::FailedClosed);
             }
             None => return Err(MigrationJournalError::UnknownObject),
         };
@@ -1859,11 +1858,8 @@ mod tests {
         let directory = TestDirectory::new()?;
         let inventory = inventory()?;
         let expected = binding(&inventory)?;
-        let mut journal = DurableMigrationJournal::create_new(
-            &directory.path,
-            expected,
-            inventory,
-        )?;
+        let mut journal =
+            DurableMigrationJournal::create_new(&directory.path, expected, inventory)?;
         let fence = source_fence()?;
         journal.fence_source(&fence)?;
         let generation = journal.generation();

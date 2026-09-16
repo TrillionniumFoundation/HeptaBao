@@ -188,7 +188,11 @@ impl PluginRegistry {
     /// only at the commit point, so a failed external admission leaves the old
     /// descriptor untouched.  This is registry lifecycle support; it does not
     /// itself drain processes, migrate leases or qualify a provider sandbox.
-    pub fn upgrade(&mut self, id: &Id, mut replacement: PluginDescriptor) -> Result<(), PluginError> {
+    pub fn upgrade(
+        &mut self,
+        id: &Id,
+        mut replacement: PluginDescriptor,
+    ) -> Result<(), PluginError> {
         let current = self.plugins.get(id).ok_or(PluginError::MissingPlugin)?;
         if current.status != PluginStatus::Enabled
             || replacement.id() != id
@@ -300,7 +304,10 @@ mod tests {
             [8; 32],
             1,
         )?;
-        assert_eq!(Err(PluginError::InvalidTransition), registry.upgrade(&id, bad));
+        assert_eq!(
+            Err(PluginError::InvalidTransition),
+            registry.upgrade(&id, bad)
+        );
         assert_eq!(PluginStatus::Enabled, registry.get(&id)?.status());
         Ok(())
     }

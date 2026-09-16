@@ -688,11 +688,7 @@ mod tests {
             })
         }
         fn service_with_config(&self, config: AuditConfig) -> Result<Service, &'static str> {
-            Service::new_with_audit_config(
-                self.0.join("data"),
-                &self.path(),
-                config,
-            )
+            Service::new_with_audit_config(self.0.join("data"), &self.path(), config)
         }
     }
     impl Drop for Root {
@@ -935,12 +931,13 @@ mod tests {
         assert!(checkpoint_text.contains("segment_bytes"));
         assert!(checkpoint_text.contains("retained_segments"));
         drop(service);
-        assert!(root
-            .service_with_config(AuditConfig {
+        assert!(
+            root.service_with_config(AuditConfig {
                 segment_bytes: 4096,
                 retained_segments: 3,
             })
-            .is_err());
+            .is_err()
+        );
         assert!(root.service_with_config(config).is_ok());
         Ok(())
     }
