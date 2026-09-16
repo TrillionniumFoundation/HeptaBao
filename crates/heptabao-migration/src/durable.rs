@@ -1076,10 +1076,10 @@ impl DurableMigrationJournal {
             target_sha256: recorded,
             ..
         }) = self.record.objects.get(object_id)
+            && observed == operation_id
+            && recorded == target_sha256
         {
-            if observed == operation_id && recorded == target_sha256 {
-                return Ok(());
-            }
+            return Ok(());
         }
         let attempt = active_attempt(self.record.objects.get(object_id), operation_id)?;
         let mut candidate = self.record.clone();
