@@ -1,10 +1,10 @@
 //! Versioned chunk plan for the authoritative server state.
 //!
-//! The durable `system/state` record remains the only publication point.  A
-//! writer first persists revision-specific chunks and only then replaces that
-//! record with a small manifest.  Readers therefore observe either the previous
-//! complete state or the next complete state; a crash while staging chunks does
-//! not publish a partial application state.
+//! The durable `system/state` record remains the only publication point. A
+//! writer stages the next complete state into the slot not referenced by the
+//! current manifest and only then replaces `system/state` with a small manifest.
+//! Two alternating slots bound orphaned/staged storage while preserving atomic
+//! visibility across process crashes.
 
 use crate::crypto;
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,7 @@ pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-chunks-v1";
 pub(crate) const STATE_CHUNK_BYTES: usize = 512 * 1024;
 pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = 16 * 1024 * 1024;
 pub(crate) const MAX_STATE_CHUNKS: usize = MAX_SERIALIZED_STATE_BYTES / STATE_CHUNK_BYTES;
+const STATE_SLOT_COUNT: u8 = 2;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -21,6 +22,7 @@ pub(crate) struct StateManifest {
     storage_format: String,
     manifest_schema: u32,
     state_schema: u32,
+    slot: u8,
     revision: String,
     total_bytes: u64,
     chunk_bytes: u32,
@@ -71,12 +73,16 @@ impl std::error::Error for StateStoreError {}
 
 impl StateManifest {
     fn validate(&self) -> Result<(), StateStoreError> {
-        let total_bytes = usize::try_from(self.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
-        let chunk_bytes = usize::try_from(self.chunk_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
-        let chunk_count = usize::try_from(self.chunk_count).map_err(|_| StateStoreError::InvalidManifest)?;
+        let total_bytes =
+            usize::try_from(self.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
+        let chunk_bytes =
+            usize::try_from(self.chunk_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
+        let chunk_count =
+            usize::try_from(self.chunk_count).map_err(|_| StateStoreError::InvalidManifest)?;
         if self.storage_format != STATE_STORAGE_FORMAT
             || self.manifest_schema != 1
             || self.state_schema == 0
+            || self.slot >= STATE_SLOT_COUNT
             || total_bytes == 0
             || total_bytes > MAX_SERIALIZED_STATE_BYTES
             || chunk_bytes != STATE_CHUNK_BYTES
@@ -95,6 +101,14 @@ impl StateManifest {
         self.state_schema
     }
 
+    pub fn slot(&self) -> u8 {
+        self.slot
+    }
+
+    pub fn next_slot(&self) -> u8 {
+        (self.slot + 1) % STATE_SLOT_COUNT
+    }
+
     pub fn chunk_count(&self) -> usize {
         usize::try_from(self.chunk_count).unwrap_or(0)
     }
@@ -103,7 +117,7 @@ impl StateManifest {
         if index >= self.chunk_count() {
             return Err(StateStoreError::InvalidChunk);
         }
-        Ok(format!("state-chunks/{}/{index:04}", self.revision))
+        Ok(chunk_resource(self.slot, index))
     }
 }
 
@@ -112,6 +126,7 @@ impl StateWritePlan {
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
+        slot: u8,
     ) -> Result<Self, StateStoreError> {
         if bytes.is_empty() {
             return Err(StateStoreError::EmptyState);
@@ -127,7 +142,7 @@ impl StateWritePlan {
         {
             return Err(StateStoreError::InvalidOperationId);
         }
-        if state_schema == 0 {
+        if state_schema == 0 || slot >= STATE_SLOT_COUNT {
             return Err(StateStoreError::InvalidManifest);
         }
 
@@ -135,8 +150,8 @@ impl StateWritePlan {
         let mut chunks = Vec::with_capacity(bytes.len().div_ceil(STATE_CHUNK_BYTES));
         for (index, chunk) in bytes.chunks(STATE_CHUNK_BYTES).enumerate() {
             chunks.push(StateChunk {
-                resource: format!("state-chunks/{revision}/{index:04}"),
-                request_id: format!("{operation_id}:chunk:{index}"),
+                resource: chunk_resource(slot, index),
+                request_id: format!("{operation_id}:chunk:{slot}:{index}"),
                 bytes: chunk.to_vec(),
             });
         }
@@ -144,6 +159,7 @@ impl StateWritePlan {
             storage_format: STATE_STORAGE_FORMAT.to_owned(),
             manifest_schema: 1,
             state_schema,
+            slot,
             revision,
             total_bytes: u64::try_from(bytes.len()).map_err(|_| StateStoreError::StateTooLarge)?,
             chunk_bytes: u32::try_from(STATE_CHUNK_BYTES)
@@ -153,7 +169,8 @@ impl StateWritePlan {
             sha256: hex(&crypto::digest(bytes)),
         };
         manifest.validate()?;
-        let manifest_bytes = serde_json::to_vec(&manifest).map_err(|_| StateStoreError::Serialization)?;
+        let manifest_bytes =
+            serde_json::to_vec(&manifest).map_err(|_| StateStoreError::Serialization)?;
         Ok(Self {
             chunks,
             manifest_request_id: format!("{operation_id}:manifest"),
@@ -167,7 +184,7 @@ impl StateWritePlan {
 }
 
 /// Detect a chunked-state manifest without mistaking a legacy State JSON object
-/// for one.  Once the storage-format discriminator is present, malformed or
+/// for one. Once the storage-format discriminator is present, malformed or
 /// unsupported content fails closed instead of falling back to legacy parsing.
 pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<StateManifest>, StateStoreError> {
     let value: serde_json::Value = match serde_json::from_slice(bytes) {
@@ -186,6 +203,13 @@ pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<StateManifest>, Sta
     Ok(Some(manifest))
 }
 
+pub(crate) fn next_slot(current_state_record: &[u8]) -> Result<u8, StateStoreError> {
+    Ok(match decode_manifest(current_state_record)? {
+        Some(manifest) => manifest.next_slot(),
+        None => 0,
+    })
+}
+
 pub(crate) fn assemble_state(
     manifest: &StateManifest,
     chunks: &[Vec<u8>],
@@ -194,11 +218,15 @@ pub(crate) fn assemble_state(
     if chunks.len() != manifest.chunk_count() {
         return Err(StateStoreError::InvalidChunk);
     }
-    let total = usize::try_from(manifest.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
+    let total =
+        usize::try_from(manifest.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
     let mut state = Vec::with_capacity(total);
     for (index, chunk) in chunks.iter().enumerate() {
         let last = index + 1 == chunks.len();
-        if chunk.is_empty() || (!last && chunk.len() != STATE_CHUNK_BYTES) || chunk.len() > STATE_CHUNK_BYTES {
+        if chunk.is_empty()
+            || (!last && chunk.len() != STATE_CHUNK_BYTES)
+            || chunk.len() > STATE_CHUNK_BYTES
+        {
             return Err(StateStoreError::InvalidChunk);
         }
         state.extend_from_slice(chunk);
@@ -210,6 +238,10 @@ pub(crate) fn assemble_state(
         return Err(StateStoreError::DigestMismatch);
     }
     Ok(state)
+}
+
+fn chunk_resource(slot: u8, index: usize) -> String {
+    format!("state-chunks/{slot}/{index:04}")
 }
 
 fn is_hex(value: &str, exact_len: usize) -> bool {
@@ -233,41 +265,58 @@ mod tests {
     #[test]
     fn one_chunk_plan_round_trips() -> Result<(), Box<dyn std::error::Error>> {
         let state = br#"{"schema":5,"value":"small"}"#;
-        let plan = StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5)?;
+        let plan = StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5, 0)?;
         assert_eq!(plan.required_operations(), 2);
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
-        let chunks = plan.chunks.iter().map(|chunk| chunk.bytes.clone()).collect::<Vec<_>>();
+        assert_eq!(manifest.slot(), 0);
+        assert_eq!(manifest.next_slot(), 1);
+        let chunks = plan
+            .chunks
+            .iter()
+            .map(|chunk| chunk.bytes.clone())
+            .collect::<Vec<_>>();
         assert_eq!(assemble_state(&manifest, &chunks)?, state);
         Ok(())
     }
 
     #[test]
-    fn multiple_chunks_have_revision_scoped_resources() -> Result<(), Box<dyn std::error::Error>> {
+    fn alternating_slots_bound_staged_storage() -> Result<(), Box<dyn std::error::Error>> {
         let state = vec![0x5a; STATE_CHUNK_BYTES + 17];
-        let plan = StateWritePlan::new(&state, "op-1", 5)?;
-        assert_eq!(plan.chunks.len(), 2);
-        assert_ne!(plan.chunks[0].resource, plan.chunks[1].resource);
-        assert!(plan.chunks[0].resource.starts_with("state-chunks/"));
-        let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
-        let chunks = plan.chunks.iter().map(|chunk| chunk.bytes.clone()).collect::<Vec<_>>();
-        assert_eq!(assemble_state(&manifest, &chunks)?, state);
+        let first = StateWritePlan::new(&state, "op-1", 5, 0)?;
+        let first_manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
+        let second = StateWritePlan::new(&state, "op-2", 5, first_manifest.next_slot())?;
+        let second_manifest =
+            decode_manifest(&second.manifest_bytes)?.ok_or("manifest missing")?;
+        assert_eq!(first_manifest.slot(), 0);
+        assert_eq!(second_manifest.slot(), 1);
+        assert_ne!(first.chunks[0].resource, second.chunks[0].resource);
+        assert_eq!(second_manifest.next_slot(), 0);
         Ok(())
     }
 
     #[test]
-    fn legacy_json_is_not_misclassified_as_manifest() -> Result<(), Box<dyn std::error::Error>> {
-        assert!(decode_manifest(br#"{"schema":5,"cluster_id":"legacy"}"#)?.is_none());
+    fn legacy_json_selects_initial_slot() -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = br#"{"schema":5,"cluster_id":"legacy"}"#;
+        assert!(decode_manifest(legacy)?.is_none());
+        assert_eq!(next_slot(legacy)?, 0);
         Ok(())
     }
 
     #[test]
     fn manifest_tampering_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
         let state = vec![7_u8; STATE_CHUNK_BYTES + 1];
-        let plan = StateWritePlan::new(&state, "op-2", 5)?;
+        let plan = StateWritePlan::new(&state, "op-2", 5, 1)?;
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
-        let mut chunks = plan.chunks.iter().map(|chunk| chunk.bytes.clone()).collect::<Vec<_>>();
+        let mut chunks = plan
+            .chunks
+            .iter()
+            .map(|chunk| chunk.bytes.clone())
+            .collect::<Vec<_>>();
         chunks[1][0] ^= 1;
-        assert_eq!(assemble_state(&manifest, &chunks), Err(StateStoreError::DigestMismatch));
+        assert_eq!(
+            assemble_state(&manifest, &chunks),
+            Err(StateStoreError::DigestMismatch)
+        );
         Ok(())
     }
 
@@ -275,7 +324,7 @@ mod tests {
     fn oversized_state_is_rejected_before_staging() {
         let state = vec![1_u8; MAX_SERIALIZED_STATE_BYTES + 1];
         assert_eq!(
-            StateWritePlan::new(&state, "op-3", 5),
+            StateWritePlan::new(&state, "op-3", 5, 0),
             Err(StateStoreError::StateTooLarge)
         );
     }
