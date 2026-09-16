@@ -60,6 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
+          python scripts/validate_openbao_replacement_admission.py
           python scripts/validate_module_closure.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s tests/security -p 'test_*.py' -v
@@ -87,6 +88,7 @@ jobs:
             --profile v2.1-exact-head \
             --result pass \
             --command "python scripts/validate_repository_v2.py" \
+            --command "python scripts/validate_openbao_replacement_admission.py" \
             --command "python scripts/validate_module_closure.py" \
             --command "cargo +1.98.0 fmt --all -- --check" \
             --command "cargo +1.98.0 test --locked --workspace --all-targets" \
@@ -156,6 +158,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
+          python scripts/validate_openbao_replacement_admission.py
           python scripts/validate_module_closure.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s tests/security -p 'test_*.py' -v
@@ -183,6 +186,7 @@ jobs:
             --profile v2.1-prospective-main-merge \
             --result pass \
             --command "python scripts/validate_repository_v2.py" \
+            --command "python scripts/validate_openbao_replacement_admission.py" \
             --command "python scripts/validate_module_closure.py" \
             --command "cargo +1.98.0 fmt --all -- --check" \
             --command "cargo +1.98.0 test --locked --workspace --all-targets" \
