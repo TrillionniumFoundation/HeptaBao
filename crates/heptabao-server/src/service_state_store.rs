@@ -101,6 +101,7 @@ impl StateManifest {
         self.state_schema
     }
 
+    #[cfg(test)]
     pub fn slot(&self) -> u8 {
         self.slot
     }
