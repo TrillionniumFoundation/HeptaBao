@@ -1,60 +1,130 @@
 #!/usr/bin/env python3
 """Generate source-bound module closure dossiers for every workspace crate."""
 from __future__ import annotations
-import hashlib, re, tomllib
+
+import hashlib
+import re
+import tomllib
 from pathlib import Path
+
 import yaml
 
-ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'docs/module-closure'; OUT.mkdir(parents=True, exist_ok=True)
-mat=yaml.safe_load((ROOT/'planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml').read_text())
-domains={x['crate']:x for x in mat['modules']}
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "docs/module-closure"
+OUT.mkdir(parents=True, exist_ok=True)
+mat = yaml.safe_load((ROOT / "planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml").read_text())
+domains = {item["crate"]: item for item in mat["modules"]}
 
-def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-def sha_many(paths):
-    h=hashlib.sha256()
-    for path in paths:
-        h.update(str(path).encode()); h.update(b'\0'); h.update(path.read_bytes())
-    return h.hexdigest()
-def rust_files(crate): return sorted((ROOT/crate).glob('src/**/*.rs'))
-def symbols(text):
-    out=[]
-    for m in re.finditer(r'(?m)^\s*pub(?:\([^)]*\))?\s+(struct|enum|trait|fn|type|const|static|mod)\s+([A-Za-z_][A-Za-z0-9_]*)', text):
-        out.append(f'{m.group(1)} `{m.group(2)}`')
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def sha_many(paths: list[Path]) -> str:
+    """Portable source binding using repository-relative paths plus file bytes."""
+    digest = hashlib.sha256()
+    for path in sorted(paths, key=lambda item: item.relative_to(ROOT).as_posix()):
+        relative = path.relative_to(ROOT).as_posix().encode()
+        digest.update(relative)
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def rust_files(crate: str) -> list[Path]:
+    return sorted((ROOT / crate).glob("src/**/*.rs"))
+
+
+def symbols(text: str) -> list[str]:
+    out = []
+    for match in re.finditer(
+        r"(?m)^\s*pub(?:\([^)]*\))?\s+(struct|enum|trait|fn|type|const|static|mod)\s+([A-Za-z_][A-Za-z0-9_]*)",
+        text,
+    ):
+        out.append(f"{match.group(1)} `{match.group(2)}`")
     return out
 
-def errors(text):
-    vals=[]
-    for m in re.finditer(r'enum\s+([A-Za-z_][A-Za-z0-9_]*(?:Error|Failure|Reject|Outcome))\s*\{([^}]*)\}', text, re.S):
-        vs=re.findall(r'(?m)^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:\([^\n]*\)|\{[^\n]*\})?\s*,?',m.group(2))
-        vals.extend(f'{m.group(1)}::{v}' for v in vs[:20])
-    return vals
 
-def tests(text):
-    return re.findall(r'#\[test\][\s\S]{0,160}?\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(', text)
+def errors(text: str) -> list[str]:
+    values = []
+    for match in re.finditer(
+        r"enum\s+([A-Za-z_][A-Za-z0-9_]*(?:Error|Failure|Reject|Outcome))\s*\{([^}]*)\}",
+        text,
+        re.S,
+    ):
+        variants = re.findall(
+            r"(?m)^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:\([^\n]*\)|\{[^\n]*\})?\s*,?",
+            match.group(2),
+        )
+        values.extend(f"{match.group(1)}::{variant}" for variant in variants[:20])
+    return values
 
-def deps(manifest):
-    m=tomllib.loads(manifest.read_text()); out=[]
-    for sec in ('dependencies','dev-dependencies','build-dependencies'):
-        for k in (m.get(sec) or {}):
-            if k.startswith('heptabao-'): out.append(k)
+
+def discovered_tests(paths: list[Path]) -> list[tuple[str, str]]:
+    """Return (repository-relative path, function name) for concrete #[test] definitions."""
+    found = []
+    pattern = re.compile(r"#\[test\][\s\S]{0,160}?\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+    for path in paths:
+        relative = path.relative_to(ROOT).as_posix()
+        for name in pattern.findall(path.read_text(errors="replace")):
+            found.append((relative, name))
+    return found
+
+
+def deps(manifest: Path) -> list[str]:
+    data = tomllib.loads(manifest.read_text())
+    out = []
+    for section in ("dependencies", "dev-dependencies", "build-dependencies"):
+        for key in data.get(section) or {}:
+            if key.startswith("heptabao-"):
+                out.append(key)
     return sorted(set(out))
 
-rows=[]
-for manifest in sorted((ROOT/'crates').glob('*/Cargo.toml')):
-    m=tomllib.loads(manifest.read_text()); name=m['package']['name']; crate=str(manifest.parent.relative_to(ROOT)); files=rust_files(crate)
-    text='\n'.join(p.read_text(errors='replace') for p in files)
-    syms=symbols(text); ers=errors(text); ts=tests(text); info=domains.get(name,{})
-    test_anchor=ts[0] if ts else None
-    p=OUT/f'{name}.md'
-    source_list=', '.join(f'`{x.relative_to(ROOT)}`' for x in files) or 'none'
-    dep_list=', '.join(f'`{x}`' for x in deps(manifest)) or 'none'
-    sym_list='; '.join(syms[:30]) or 'No public Rust declarations; behavior is represented by private implementation or build metadata.'
-    err_list='; '.join(f'`{x}`' for x in ers) or 'No public error enum matching the repository naming convention; callers must treat Result/Option and validation branches in the source as the failure contract.'
-    test_text=f'`{test_anchor}` in `{files[0].relative_to(ROOT) if files else crate}`' if test_anchor else 'No in-crate test function was discovered; acceptance is currently limited to repository/documentation validation and this is an open evidence item.'
-    runtime='yes' if info.get('state','').startswith('IMPLEMENTED') and name in {'heptabao-server','heptabao-durable-service','heptabao-filesystem-guard','heptabao-ha-service','heptabao-raft-runtime'} else 'no/standalone or indirect; verify CURRENT_RUNTIME_MAP'
-    state=info.get('state','UNMAPPED')
-    body=f'''# {name} module closure dossier
+
+rows = []
+for manifest in sorted((ROOT / "crates").glob("*/Cargo.toml")):
+    package = tomllib.loads(manifest.read_text())
+    name = package["package"]["name"]
+    crate = manifest.parent.relative_to(ROOT).as_posix()
+    files = rust_files(crate)
+    text = "\n".join(path.read_text(errors="replace") for path in files)
+    syms = symbols(text)
+    errs = errors(text)
+    tests = discovered_tests(files)
+    info = domains.get(name, {})
+    test_anchor_path, test_anchor = tests[0] if tests else (None, None)
+    dossier = OUT / f"{name}.md"
+    source_list = ", ".join(f"`{path.relative_to(ROOT).as_posix()}`" for path in files) or "none"
+    dep_list = ", ".join(f"`{dependency}`" for dependency in deps(manifest)) or "none"
+    sym_list = "; ".join(syms[:30]) or (
+        "No public Rust declarations; behavior is represented by private implementation or build metadata."
+    )
+    err_list = "; ".join(f"`{value}`" for value in errs) or (
+        "No public error enum matching the repository naming convention; callers must treat Result/Option "
+        "and validation branches in the source as the failure contract."
+    )
+    test_text = (
+        f"`{test_anchor}` in `{test_anchor_path}`"
+        if test_anchor
+        else "No in-crate test function was discovered; acceptance is currently limited to repository/documentation validation and this is an open evidence item."
+    )
+    runtime = (
+        "yes"
+        if info.get("state", "").startswith("IMPLEMENTED")
+        and name
+        in {
+            "heptabao-server",
+            "heptabao-durable-service",
+            "heptabao-filesystem-guard",
+            "heptabao-ha-service",
+            "heptabao-raft-runtime",
+        }
+        else "no/standalone or indirect; verify CURRENT_RUNTIME_MAP"
+    )
+    state = info.get("state", "UNMAPPED")
+    source_sha = sha_many(files) if files else "none"
+    body = f'''# {name} module closure dossier
 
 This dossier is the independently reviewable design, boundary, failure-semantics, and acceptance record for **`{name}`**. It is generated from the exact candidate tree and must be reviewed whenever the source or manifest hash changes. It does not grant compatibility, production, migration, or release authority.
 
@@ -85,7 +155,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `{sha_many(files) if files else 'none'}`; manifest SHA-256 `{sha(manifest)}`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `{source_sha}`; manifest SHA-256 `{sha(manifest)}`.
 - **Named executable anchor:** {test_text}.
 - **Required command:** `cargo +1.98.0 test --locked -p {name}` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
@@ -97,11 +167,44 @@ The acceptance status for this dossier is **source-bound, execution-pending** un
 
 Current open boundaries include full API/error-surface review, adversarial and crash/reopen cases, platform qualification, and any integration claimed by a different package. When behavior changes, update this dossier, the module guide, capability matrix, runtime map and named tests together. Never replace an unexecuted or failed acceptance result with prose claiming completion.
 '''
-    p.write_text(body)
-    guide=ROOT/'docs/modules'/f'{name}.md'
-    link=f'\n\n## Independent module closure dossier\n\nThe detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/{name}.md).\n'
-    gt=guide.read_text()
-    if '## Independent module closure dossier' not in gt: guide.write_text(gt.rstrip()+link)
-    rows.append({'crate':name,'dossier':str(p.relative_to(ROOT)),'guide':str(guide.relative_to(ROOT)),'source':str((manifest.parent/'src').relative_to(ROOT)),'manifest_sha256':sha(manifest),'source_sha256':sha_many(files) if files else None,'test_anchor':test_anchor,'state':state})
-(ROOT/'planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml').write_text(yaml.safe_dump({'schema':'heptabao.module-closure-registry.v1','commit':'generated-at-source-review','required_sections':['Design and state ownership','Module boundaries and trust assumptions','Failure semantics and ordering','Acceptance evidence','Known gaps and evolution'],'modules':rows},sort_keys=False))
-print(f'generated {len(rows)} dossiers')
+    dossier.write_text(body)
+    guide = ROOT / "docs/modules" / f"{name}.md"
+    link = (
+        "\n\n## Independent module closure dossier\n\n"
+        f"The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/{name}.md).\n"
+    )
+    guide_text = guide.read_text()
+    if "## Independent module closure dossier" not in guide_text:
+        guide.write_text(guide_text.rstrip() + link)
+    rows.append(
+        {
+            "crate": name,
+            "dossier": dossier.relative_to(ROOT).as_posix(),
+            "guide": guide.relative_to(ROOT).as_posix(),
+            "source": (manifest.parent / "src").relative_to(ROOT).as_posix(),
+            "manifest_sha256": sha(manifest),
+            "source_sha256": source_sha if files else None,
+            "test_anchor": test_anchor,
+            "test_anchor_path": test_anchor_path,
+            "state": state,
+        }
+    )
+
+(ROOT / "planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml").write_text(
+    yaml.safe_dump(
+        {
+            "schema": "heptabao.module-closure-registry.v1",
+            "commit": "generated-at-source-review",
+            "required_sections": [
+                "Design and state ownership",
+                "Module boundaries and trust assumptions",
+                "Failure semantics and ordering",
+                "Acceptance evidence",
+                "Known gaps and evolution",
+            ],
+            "modules": rows,
+        },
+        sort_keys=False,
+    )
+)
+print(f"generated {len(rows)} dossiers")
