@@ -83,3 +83,7 @@ The consuming server runs a fixed bounded peer worker pool rather than placing
 all consensus and forwarded-client work behind one serial TLS receiver. These
 changes do not supply membership policy, remote key custody or independent HA
 qualification. The server guide defines its configured timing and admission bounds.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-ha-service.md).

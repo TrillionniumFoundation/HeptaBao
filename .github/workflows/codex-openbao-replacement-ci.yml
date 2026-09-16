@@ -71,6 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
+          python scripts/validate_module_closure.py
           python scripts/surface_work.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v

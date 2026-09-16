@@ -43,6 +43,9 @@ source tables; those tables are historical, not current API inventories.
 
 - `docs/modules/README.md` — complete index for all 46 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
+- `planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml` and `docs/module-closure/` —
+  one source-bound design, boundary, failure-semantics and acceptance dossier
+  for every package, checked by `scripts/validate_module_closure.py`.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V2.md` — inherited standard for historical V1.4.7 packages.
 - `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md` — shared engineering contracts.
 

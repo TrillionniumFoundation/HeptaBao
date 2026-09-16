@@ -8,6 +8,14 @@ Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
 The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`, `planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml`, source roots and this guide set. Shared rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`; V3 guides follow `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md`.
 
+Every package also has one source-bound closure dossier in
+[`docs/module-closure/`](../module-closure/) and one entry in
+[`planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml`](../../planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml).
+The dossier is the independent record of module design and state ownership,
+trust and integration boundaries, failure and retry semantics, and exact-head
+acceptance evidence. A guide without its matching dossier is incomplete.
+Run `python scripts/validate_module_closure.py` to check the closed set.
+
 ## Current package index
 
 | Package | Domain | Guide standard | Source state | Guide |

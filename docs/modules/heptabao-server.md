@@ -399,3 +399,7 @@ capacity. `service_capacity_tests.rs` retains the older route's negative tests.
 Both durable maintenance method names delegate to the same policy, checkpointing
 only after a definite pre-entry journal-capacity refusal; permanent identities
 and uncertain effects are never discarded.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-server.md).

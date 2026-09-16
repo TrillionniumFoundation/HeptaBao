@@ -206,3 +206,7 @@ Real network fault evidence is separately described in
 ## Current native administration
 
 `src/process/admin.rs` now exposes committed membership/replication observations, guarded native learner add/promotion/demotion/removal and persisted snapshot metadata/digests. See [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for the expected-index fence, joint-to-stable completion, bounds and five-process acceptance command. This does not establish OpenBao snapshot format, forced restore, mixed-version rollout or independent qualification.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-raft-runtime.md).

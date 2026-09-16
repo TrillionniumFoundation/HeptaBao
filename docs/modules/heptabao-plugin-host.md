@@ -191,3 +191,7 @@ expose an empty or half-written identity as if it named a surviving process. The
 200 ms invocation deadline, two-second overall cleanup assertion and real proc
 termination checks are unchanged; missing publication remains a test failure.
 This is a fixture race correction, not a change to the production sandbox runner.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-plugin-host.md).
