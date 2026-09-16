@@ -394,6 +394,7 @@ where
             })
             .map_err(|_| RuntimeError::AuditUnavailableBeforeEntry)?;
 
+        let replay_epoch = self.durable.replay_epoch();
         let result = match request.operation {
             InboundOperation::Put(value) => PutRequest::new(
                 principal.as_str(),
@@ -406,7 +407,7 @@ where
             .map_err(map_durable_error)
             .and_then(|mutation| {
                 self.durable
-                    .put_with_failpoint(mutation, failpoint)
+                    .put_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)
                     .map_err(map_durable_error)
             }),
             InboundOperation::Delete => DeleteRequest::new(
@@ -419,7 +420,7 @@ where
             .map_err(map_durable_error)
             .and_then(|mutation| {
                 self.durable
-                    .delete_with_failpoint(mutation, failpoint)
+                    .delete_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)
                     .map_err(map_durable_error)
             }),
         };
@@ -629,7 +630,8 @@ fn map_durable_error(error: ServiceError) -> RuntimeError {
         | ServiceError::InvalidResource
         | ServiceError::InvalidSecret
         | ServiceError::InvalidAuthorizationDigest => RuntimeError::InvalidRequest,
-        ServiceError::RequestBindingConflict
+        ServiceError::ReplayEpochMismatch
+        | ServiceError::RequestBindingConflict
         | ServiceError::RequestCapacityExhausted
         | ServiceError::BackupRollbackRejected
         | ServiceError::GenerationOverflow

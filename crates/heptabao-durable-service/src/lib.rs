@@ -570,7 +570,16 @@ impl<B: Barrier> DurableService<B> {
         request: PutRequest,
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
-        self.put_with_policy(request, failpoint, false)
+        self.put_with_failpoint_in_replay_epoch(0, request, failpoint)
+    }
+
+    pub fn put_with_failpoint_in_replay_epoch(
+        &mut self,
+        replay_epoch: u64,
+        request: PutRequest,
+        failpoint: Failpoint,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.put_with_epoch_policy(request, failpoint, false, replay_epoch)
     }
 
     fn put_with_policy(
@@ -630,7 +639,16 @@ impl<B: Barrier> DurableService<B> {
         request: DeleteRequest,
         failpoint: Failpoint,
     ) -> Result<MutationOutcome, ServiceError> {
-        self.delete_with_epoch_failpoint(request, failpoint, 0)
+        self.delete_with_failpoint_in_replay_epoch(0, request, failpoint)
+    }
+
+    pub fn delete_with_failpoint_in_replay_epoch(
+        &mut self,
+        replay_epoch: u64,
+        request: DeleteRequest,
+        failpoint: Failpoint,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.delete_with_epoch_failpoint(request, failpoint, replay_epoch)
     }
 
     fn delete_with_epoch_failpoint(
