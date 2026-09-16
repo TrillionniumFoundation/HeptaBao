@@ -161,7 +161,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. {('The absence of a discovered test is itself an open acceptance gap.' if not test_anchor else '')}
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.{(' The absence of a discovered test is itself an open acceptance gap.' if not test_anchor else '')}
 
 ## Known gaps and evolution
 

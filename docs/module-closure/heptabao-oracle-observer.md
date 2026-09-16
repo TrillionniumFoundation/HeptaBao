@@ -29,13 +29,13 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `ec8a0ec156e9badc9ca42f9ddb2e9a2d1bd9dae688ae560075cc27fec4e5ad64`; manifest SHA-256 `389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `9fd965245645497f9b20a567156b086620008e14de740d3a0bbbda9c07011687`; manifest SHA-256 `389fea56d59c50d4ef110537338a47968454d5782c17d70b1b1738f526366429`.
 - **Named executable anchor:** `synthetic_contract_has_no_authority` in `crates/heptabao-oracle-observer/src/lib.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-oracle-observer` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. 
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.
 
 ## Known gaps and evolution
 

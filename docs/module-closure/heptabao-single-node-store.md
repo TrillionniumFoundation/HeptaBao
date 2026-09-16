@@ -29,13 +29,13 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `4dc37a4b40331fc2996a7529568bfeae62f43ce226c0cd5e21b6727cc5a6d92a`; manifest SHA-256 `5bdf319b0ad7bb439ac31c2f5a24364a1ce8f972aa540141c0008d565e1751b4`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `78226ca5bf76870084ed17288f8dd59da72981cf6c6eb9cd6f6d3573397226db`; manifest SHA-256 `5bdf319b0ad7bb439ac31c2f5a24364a1ce8f972aa540141c0008d565e1751b4`.
 - **Named executable anchor:** `create_commit_load_and_reopen_round_trip` in `crates/heptabao-single-node-store/src/lib.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-single-node-store` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. 
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.
 
 ## Known gaps and evolution
 

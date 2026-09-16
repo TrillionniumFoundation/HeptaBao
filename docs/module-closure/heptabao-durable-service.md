@@ -9,7 +9,7 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 - **Source root:** `crates/heptabao-durable-service`; Rust files: `crates/heptabao-durable-service/src/capacity.rs`, `crates/heptabao-durable-service/src/capacity_tests.rs`, `crates/heptabao-durable-service/src/lib.rs`.
 - **Internal dependencies:** `heptabao-filesystem-guard`.
 - **Runtime placement:** `yes`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** struct `CapacityStatus`; fn `capacity_status`; fn `put_with_maintenance`; struct `BarrierError`; trait `Barrier`; struct `Secret`; fn `new`; fn `expose`; struct `PutRequest`; fn `new`; struct `DeleteRequest`; fn `new`; enum `Failpoint`; enum `MutationOutcome`; enum `ReconciliationStatus`; struct `CompactionOutcome`; struct `CapacitySnapshot`; struct `RestoreOutcome`; enum `ServiceError`; struct `DurableService`; fn `create_new`; fn `reopen`; fn `put`; fn `put_with_failpoint`; fn `delete`; fn `delete_with_failpoint`; fn `get`; fn `list`; const `fn`; fn `reconcile`
+- **Public design surface:** struct `CapacityStatus`; fn `apply_batch`; fn `apply_batch_in_replay_epoch`; fn `apply_batch_with_compaction`; fn `apply_batch_with_compaction_in_replay_epoch`; fn `capacity_status`; fn `put_with_maintenance`; struct `BarrierError`; trait `Barrier`; struct `Secret`; fn `new`; fn `expose`; struct `PutRequest`; fn `new`; struct `DeleteRequest`; fn `new`; enum `Failpoint`; enum `MutationOutcome`; enum `ReconciliationStatus`; struct `CompactionOutcome`; struct `CapacitySnapshot`; struct `RestoreOutcome`; struct `ReplayRetirementOutcome`; enum `ServiceError`; struct `DurableService`; fn `create_new`; fn `reopen`; fn `put`; fn `put_in_replay_epoch`; fn `put_with_failpoint`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -21,7 +21,7 @@ The module does not own external clocks, network peers, KMS/HSM custody, filesys
 
 ## Failure semantics and ordering
 
-The source-defined failure vocabulary is: `MutationOutcome::Committed`; `MutationOutcome::generation`; `MutationOutcome::recovery_reference`; `ServiceError::InvalidRoot`; `ServiceError::RootNotEmpty`; `ServiceError::WriterLocked`; `ServiceError::UnsupportedProfile`; `ServiceError::LegacySchema`; `ServiceError::RecoveryRequired`; `ServiceError::JournalCapacityExhausted`; `ServiceError::InvalidIdentifier`; `ServiceError::InvalidNamespace`; `ServiceError::InvalidResource`; `ServiceError::InvalidSecret`; `ServiceError::InvalidAuthorizationDigest`; `ServiceError::RequestBindingConflict`; `ServiceError::RequestCapacityExhausted`; `ServiceError::BackupRollbackRejected`; `ServiceError::GenerationOverflow`; `ServiceError::OutcomeUnknown`
+The source-defined failure vocabulary is: `MutationOutcome::Committed`; `MutationOutcome::generation`; `MutationOutcome::recovery_reference`; `ServiceError::InvalidRoot`; `ServiceError::RootNotEmpty`; `ServiceError::WriterLocked`; `ServiceError::UnsupportedProfile`; `ServiceError::LegacySchema`; `ServiceError::RecoveryRequired`; `ServiceError::JournalCapacityExhausted`; `ServiceError::InvalidIdentifier`; `ServiceError::InvalidNamespace`; `ServiceError::InvalidResource`; `ServiceError::InvalidSecret`; `ServiceError::InvalidAuthorizationDigest`; `ServiceError::RequestBindingConflict`; `ServiceError::ReplayEpochMismatch`; `ServiceError::RequestCapacityExhausted`; `ServiceError::BackupRollbackRejected`; `ServiceError::GenerationOverflow`; `ServiceError::OutcomeUnknown`
 
 Validation must happen before irreversible state mutation. A caller must distinguish a definite pre-entry rejection from an outcome that became unknown after provider, journal, network, or publication entry. Unknown-after-entry outcomes require authoritative readback/reconciliation and must not be retried blindly. Invalid transitions, stale generations/terms, malformed identifiers, unauthorized inputs, exhausted capacity, and I/O/transport errors remain failures unless the source explicitly converts them into a typed safe state. This dossier does not reinterpret a missing error enum as success.
 
@@ -29,13 +29,13 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** source tree SHA-256 `d906e4a02426ec50eebe4c441dc401981af90f32815b2582a20bed2e9aba4d80`; manifest SHA-256 `c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `567656096278520f82e62fb8cffc6ee8c4978b5098d856010aa52ce7cc6d4fbf`; manifest SHA-256 `c421ca0c1a3e5535c845e32b38868481956ee8bd96ebf5229335223653e232ad`.
 - **Named executable anchor:** `automatic_checkpoint_retains_every_binding_and_survives_restart` in `crates/heptabao-durable-service/src/capacity.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-durable-service` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
-The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit. 
+The acceptance status for this dossier is **source-bound, execution-pending** until the exact-head command and applicable integration profile produce a receipt bound to the same commit.
 
 ## Known gaps and evolution
 
