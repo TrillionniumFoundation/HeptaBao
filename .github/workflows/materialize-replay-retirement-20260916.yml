@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "b5f3f565f9f0f5cce912b65207c85875ee5948ec"
+          test "$(git rev-parse HEAD^)" = "119b0c2db316b0d20abb8947e3a391697a3b1267"
       - name: Install Rust 1.98
         shell: bash
         run: |
@@ -28,6 +28,21 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/materialize_replay_retirement_20260916.py
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('crates/heptabao-durable-service/src/lib.rs')
+          s = p.read_text()
+          old = 'persist_ledger(&root.0, &TestBarrier::new(), 1, &ledger)?;'
+          new = 'persist_ledger(&root.0, &TestBarrier::new(), 1, 0, 0, &ledger)?;'
+          if s.count(old) != 1:
+              raise SystemExit(f'legacy persist_ledger fixture count={s.count(old)}')
+          s = s.replace(old, new, 1)
+          old = '''    if replay_epoch == 0 && retired_through_generation != 0 {\n        return Err(ServiceError::CorruptState);\n    }\n    if replay_epoch > 0 && retired_through_generation == 0 {\n        return Err(ServiceError::CorruptState);\n    }\n'''
+          new = '''    if replay_epoch == 0 && retired_through_generation != 0 {\n        return Err(ServiceError::CorruptState);\n    }\n'''
+          if s.count(old) != 1:
+              raise SystemExit('replay epoch/frontier invariant patch mismatch')
+          p.write_text(s.replace(old, new, 1))
+          PY
           cargo +1.98.0 fmt --all
           cargo +1.98.0 test --locked -p heptabao-durable-service
           cargo +1.98.0 clippy --locked -p heptabao-durable-service --all-targets -- -D warnings
