@@ -1,0 +1,39 @@
+name: exec-regenerate-compact-inventory-20260917
+
+on:
+  push:
+    branches:
+      - exec/compact-inventory-regenerate-20260917
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact execution branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: exec/compact-inventory-regenerate-20260917
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Regenerate and validate compact inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/current_source_inventory.py --write
+          python scripts/current_source_inventory.py --check
+          python scripts/validate_current_documentation_semantics.py
+          git diff --check
+      - name: Commit generated inventory on execution branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI inventory regenerator"
+          git config user.email "noreply@openai.com"
+          git add planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json
+          git diff --cached --quiet && exit 1
+          git commit -m "chore(inventory): regenerate compact current source snapshot"
+          git push origin HEAD:exec/compact-inventory-regenerate-20260917
