@@ -105,3 +105,13 @@ parameter/error compatibility, database/cloud/PKI providers, general renewable
 lease callbacks, external side-effect reconciliation, a production lease worker,
 and independent multi-host/hardware/platform evidence. This scoped implementation
 never sets complete compatibility, production, migration or release authority.
+
+## Current bounded evidence binding
+
+The current compatibility corpus admits the executable `ssh_otp_live.py` profile for
+nine selected OTP behaviors: mount and role creation, bounded issuance, exact target
+verification, replay rejection, explicit revoke and revoked-use rejection, response
+wrapping, and successful unwrapped verification. The profile runs those requests
+against a fresh candidate and a pinned OpenBao 2.6.2 oracle through the isolated
+harness. It remains a selected OTP comparison: SSH CA signing, sshd/PAM login,
+host-account effects, and independent qualification stay outside this admission.

@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "a22caddc2396ca60291a2b2e541f1318bf7fc537d2d0aef20c1aa38935cf083f",
+  "corpus_sha256": "ab78eae1172eee165841b82eeb38f3d7e7c7fa95f70a8295b27dfce970be1488",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -243,6 +243,30 @@
       "arguments": [
         "--binary",
         "<candidate>",
+        "--output",
+        "<private-new-output>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ldap_bounded": {
+      "script": "qa/openbao-acceptance/ldap_bounded.py",
+      "arguments": [
+        "--output",
+        "<private-new-output>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ssh_otp_live": {
+      "script": "qa/openbao-acceptance/ssh_otp_live.py",
+      "arguments": [
+        "--output",
+        "<private-new-output>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres_pipeline_simulated": {
+      "script": "qa/openbao-acceptance/postgres_pipeline_simulated.py",
+      "arguments": [
         "--output",
         "<private-new-output>"
       ],
@@ -578,18 +602,24 @@
     {
       "surface_id": "HB-SURFACE-AUTH-LDAP",
       "category": "auth_methods",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, users/*, groups/* and login/:name",
-        "required_positive_and_hostile_behavior": "Real TLS bind/search, escaped filters/DNs, nested group policy and timeout/error precedence",
-        "remaining_semantics_and_effect_checks": "Directory password and group revocation must change subsequent login authorization; no LDAP injection",
+        "required_positive_and_hostile_behavior": "Bounded LDAP mount configuration, durable directory fixture login, MFA/revocation and strict URL/template validation; external TLS bind/search remains qualification-gated",
+        "remaining_semantics_and_effect_checks": "Real external LDAP bind/search, escaped filters/DNs, nested groups and provider timeout/error precedence remain external",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-LDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "ldap_bounded.config_roundtrip",
+        "ldap_bounded.login_and_revocation",
+        "ldap_bounded.filter_injection_rejected"
+      ],
+      "available_scoped_profiles": [
+        "ldap_bounded"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -774,9 +804,20 @@
         "isolation": "For HB-SURFACE-SECRET-SSH, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "ssh_otp_live.ssh.mount",
+        "ssh_otp_live.ssh.role",
+        "ssh_otp_live.ssh.issue",
+        "ssh_otp_live.ssh.verify_exact_target",
+        "ssh_otp_live.ssh.replay_denied",
+        "ssh_otp_live.ssh.revoke",
+        "ssh_otp_live.ssh.revoked_denied",
+        "ssh_otp_live.ssh.wrapped_issue",
+        "ssh_otp_live.ssh.unwrapped_otp_works"
+      ],
       "available_scoped_profiles": [
-        "ssh"
+        "ssh",
+        "ssh_otp_live"
       ],
       "whole_surface_admitted": false
     },
@@ -793,9 +834,19 @@
         "isolation": "For HB-SURFACE-SECRET-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "postgres_pipeline_simulated.verified_scram_configuration",
+        "postgres_pipeline_simulated.configuration_never_returns_password",
+        "postgres_pipeline_simulated.no_arbitrary_sql",
+        "postgres_pipeline_simulated.issue_after_durable_intent_and_readback",
+        "postgres_pipeline_simulated.model_observed_matches_returned_credentials",
+        "postgres_pipeline_simulated.renew_external_expiry_then_commit",
+        "postgres_pipeline_simulated.precise_revoke",
+        "postgres_pipeline_simulated.lost_post_apply_response_no_secret"
+      ],
       "available_scoped_profiles": [
-        "postgres"
+        "postgres",
+        "postgres_pipeline_simulated"
       ],
       "whole_surface_admitted": false
     },
@@ -1129,7 +1180,9 @@
         "isolation": "For HB-SURFACE-CLUSTER-MTLS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "ha_mtls.peer_identity_and_cluster_authentication"
+      ],
       "available_scoped_profiles": [
         "ha"
       ],
@@ -1148,7 +1201,9 @@
         "isolation": "For HB-SURFACE-CLUSTER-FORWARDING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "ha_forwarding.standby_mutation_forwarding_and_context"
+      ],
       "available_scoped_profiles": [
         "ha"
       ],
@@ -1167,7 +1222,9 @@
         "isolation": "For HB-SURFACE-CLUSTER-READ-STANDBY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "ha_read_standby.readindex_committed_state_and_partition_fence"
+      ],
       "available_scoped_profiles": [
         "network"
       ],
@@ -1186,7 +1243,9 @@
         "isolation": "For HB-SURFACE-CLUSTER-STEPDOWN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "ha_step_down.explicit_leadership_transfer_and_old_writer_fence"
+      ],
       "available_scoped_profiles": [],
       "whole_surface_admitted": false
     },

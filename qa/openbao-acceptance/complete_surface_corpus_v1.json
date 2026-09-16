@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 20,
-    "defined_not_implemented_surface_count": 40,
-    "fixture_case_count": 81,
+    "implemented_surface_count": 27,
+    "defined_not_implemented_surface_count": 33,
+    "fixture_case_count": 105,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -199,9 +199,13 @@
       "surface_id": "HB-SURFACE-AUTH-LDAP",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 3,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ldap_bounded.config_roundtrip",
+        "ldap_bounded.login_and_revocation",
+        "ldap_bounded.filter_injection_rejected"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -312,18 +316,37 @@
       "surface_id": "HB-SURFACE-SECRET-SSH",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ssh_otp_live.ssh.mount",
+        "ssh_otp_live.ssh.role",
+        "ssh_otp_live.ssh.issue",
+        "ssh_otp_live.ssh.verify_exact_target",
+        "ssh_otp_live.ssh.replay_denied",
+        "ssh_otp_live.ssh.revoke",
+        "ssh_otp_live.ssh.revoked_denied",
+        "ssh_otp_live.ssh.wrapped_issue",
+        "ssh_otp_live.ssh.unwrapped_otp_works"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-SECRET-DATABASE",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "postgres_pipeline_simulated.verified_scram_configuration",
+        "postgres_pipeline_simulated.configuration_never_returns_password",
+        "postgres_pipeline_simulated.no_arbitrary_sql",
+        "postgres_pipeline_simulated.issue_after_durable_intent_and_readback",
+        "postgres_pipeline_simulated.model_observed_matches_returned_credentials",
+        "postgres_pipeline_simulated.renew_external_expiry_then_commit",
+        "postgres_pipeline_simulated.precise_revoke",
+        "postgres_pipeline_simulated.lost_post_apply_response_no_secret"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -499,8 +522,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_mtls.peer_identity_and_cluster_authentication"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -508,8 +533,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_forwarding.standby_mutation_forwarding_and_context"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -517,8 +544,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_read_standby.readindex_committed_state_and_partition_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -526,8 +555,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_step_down.explicit_leadership_transfer_and_old_writer_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

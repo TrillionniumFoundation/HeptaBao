@@ -243,3 +243,14 @@ or provide key import, raw snapshots or full-instance migration.
 
 Current live metadata/capacity preflight: `docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md`.
 It does not replace bounded KV transfer, full asset conversion or cutover admission.
+
+## Selected inventory consistency fence
+
+Before a transfer or export starts, the tool reads the explicitly allowed keys
+as one bounded selected inventory. It records each object's source metadata and
+record digest, then re-reads all selected metadata. Any difference aborts with
+`source_inventory_changed_during_snapshot`; the resulting `inventory_digest` is
+bound into the checkpoint and private export. This closes a local mixed-read or
+replay ambiguity for the selected allowlist. It remains an application-level
+fence and does not provide a global OpenBao snapshot, Raft barrier-key
+compatibility, or atomic multi-object cutover.

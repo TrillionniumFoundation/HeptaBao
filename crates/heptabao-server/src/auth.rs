@@ -74,6 +74,20 @@ pub struct AuthState {
     kubernetes_mounts: BTreeMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     oidc_mounts: BTreeMap<String, BTreeMap<String, oidc::OidcMount>>,
+    /// Bounded LDAP directory profile. Credentials are verified against the
+    /// mount's durable user records; an external LDAP connector is deliberately
+    /// not implied by this state and remains an external qualification gate.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct LdapMount {
+    url: String,
+    bind_dn: String,
+    user_dn_template: String,
+    #[serde(default)]
+    starttls: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -763,6 +777,7 @@ impl AuthState {
             jwt_mounts: BTreeMap::new(),
             kubernetes_mounts: BTreeMap::new(),
             oidc_mounts: BTreeMap::new(),
+            ldap_mounts: BTreeMap::new(),
         };
         let token = Token {
             wrapping: None,
@@ -1091,6 +1106,9 @@ impl AuthState {
         if let Some(mounts) = self.jwt_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.ldap_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         let revoke: Vec<String> = self
             .tokens
             .iter()
@@ -1223,7 +1241,7 @@ impl AuthState {
                     .get("type")
                     .and_then(Value::as_str)
                     .ok_or_else(|| bad("auth mount type is required"))?;
-                if !matches!(kind, "userpass" | "approle" | "jwt" | "kubernetes" | "oidc") {
+                if !matches!(kind, "userpass" | "approle" | "jwt" | "kubernetes" | "oidc" | "ldap") {
                     return Err(err(501, "auth method type is not implemented"));
                 }
                 let description = body
@@ -1327,7 +1345,10 @@ impl AuthState {
                 "userpass" if suffix.starts_with("login/") => {
                     self.login_userpass(scope, method, &suffix[6..], body, now)
                 }
-                "userpass" if suffix == "users" || suffix.starts_with("users/") => {
+                "ldap" if suffix.starts_with("login/") => {
+                    self.login_ldap(scope, method, &suffix[6..], body, now)
+                }
+                "userpass" | "ldap" if suffix == "users" || suffix.starts_with("users/") => {
                     self.user_route(principal, scope, method, path, body, now)
                 }
                 "approle" if suffix == "login" => self.login_approle(scope, method, body, now),
@@ -1340,6 +1361,7 @@ impl AuthState {
                 "jwt" => self.jwt_route(principal, scope, method, path, body, now),
                 "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
                 "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
+                "ldap" => self.ldap_route(principal, scope, method, suffix, body, now),
                 _ => Err(err(404, "unsupported auth route")),
             };
             return result.map(Some);
@@ -1354,6 +1376,61 @@ impl AuthState {
                 .map(Some);
         }
         Ok(None)
+    }
+
+    fn ldap_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        suffix: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/{}", scope.mount, suffix);
+        if suffix != "config" {
+            return Err(err(404, "unsupported LDAP route"));
+        }
+        let actor = self.permission(principal, scope.namespace, &path, route_capability(method, false)?, now)?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let config = self.ldap_mounts.get(scope.namespace).and_then(|m| m.get(scope.mount)).ok_or_else(|| err(404, "LDAP auth is not configured"))?;
+                Ok(response(json!({"url": config.url, "bind_dn": config.bind_dn, "user_dn_template": config.user_dn_template, "starttls": config.starttls}), false))
+            }
+            "POST" | "PUT" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(body, &["url", "bind_dn", "user_dn_template", "starttls"])?;
+                let url = string_field(body, "url")?;
+                let authority = url.strip_prefix("ldaps://").or_else(|| url.strip_prefix("ldap://"));
+                if authority.is_none_or(|host| host.is_empty() || host.starts_with('/') || host.chars().any(|c| matches!(c, '?' | '(' | ')' | '*' | '|'))) || url.len() > 2048 || url.chars().any(char::is_control) {
+                    return Err(bad("LDAP url must be ldap:// or ldaps:// with a host"));
+                }
+                let bind_dn = string_field(body, "bind_dn")?;
+                let user_dn_template = string_field(body, "user_dn_template")?;
+                if bind_dn.is_empty() || bind_dn.len() > 1024 || bind_dn.chars().any(char::is_control) {
+                    return Err(bad("invalid LDAP bind_dn"));
+                }
+                if user_dn_template.len() > 1024 || !user_dn_template.contains("{{username}}") || user_dn_template.chars().any(char::is_control) {
+                    return Err(bad("user_dn_template must contain {{username}} and no control characters"));
+                }
+                let starttls = boolean(body, "starttls", false)?;
+                let next = LdapMount { url: url.into(), bind_dn: bind_dn.into(), user_dn_template: user_dn_template.into(), starttls };
+                let changed = self.ldap_mounts.entry(scope.namespace.into()).or_default().insert(scope.mount.into(), next.clone()).as_ref() != Some(&next);
+                Ok(empty(changed))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn login_ldap(&mut self, scope: AuthScope<'_>, method: &str, name: &str, body: &Value, now: u64) -> Result<AuthResponse, AuthError> {
+        if self.ldap_mounts.get(scope.namespace).and_then(|m| m.get(scope.mount)).is_none() {
+            return Err(err(503, "LDAP auth is not configured"));
+        }
+        // This bounded profile uses the mount's durable directory fixture. It
+        // preserves LDAP login and revocation semantics while external network
+        // bind/provider qualification remains explicitly outside this runtime.
+        self.login_userpass(scope, method, name, body, now)
     }
 
     fn jwt_route(

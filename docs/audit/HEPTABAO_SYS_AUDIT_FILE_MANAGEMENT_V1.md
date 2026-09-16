@@ -7,6 +7,10 @@ for its mandatory authenticated file audit device:
 * `GET /v1/sys/audit/file` returns its type, fixed path and rotation bounds;
 * `PUT`/`POST /v1/sys/audit/file` accepts an idempotent `type=file` binding
   when `options.file_path` matches the path selected at process startup.
+* The authenticated rotation checkpoint persists `segment_bytes` and
+  `retained_segments`; reopening with a different policy fails closed instead
+  of silently changing retention semantics. Legacy checkpoints are upgraded
+  on their next durable rotation.
 
 The route requires the root namespace and a root principal. The audit writer,
 HMAC chain and rotation lock remain live for every request. Therefore `DELETE`
@@ -18,3 +22,7 @@ The executable fixture `qa/openbao-acceptance/audit_file_live.py` covers list,
 path binding, detail read, idempotent enable and fail-closed disable. This is a
 bounded implementation fixture, not independent OpenBao compatibility or
 production qualification evidence.
+
+This closes file-device configuration continuity only. HTTP, socket and
+syslog delivery, multi-device fan-out, and OpenBao audit-device replication
+remain open blockers.

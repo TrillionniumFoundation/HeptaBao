@@ -771,7 +771,18 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Signed certificates, OTP, user/domain constraints and TTL."
+      "remaining_scope": "Signed certificates, OTP, user/domain constraints and TTL.",
+      "fixture_case_ids": [
+        "ssh_otp_live.ssh.mount",
+        "ssh_otp_live.ssh.role",
+        "ssh_otp_live.ssh.issue",
+        "ssh_otp_live.ssh.verify_exact_target",
+        "ssh_otp_live.ssh.replay_denied",
+        "ssh_otp_live.ssh.revoke",
+        "ssh_otp_live.ssh.revoked_denied",
+        "ssh_otp_live.ssh.wrapped_issue",
+        "ssh_otp_live.ssh.unwrapped_otp_works"
+      ]
     },
     {
       "surface_id": "HB-SURFACE-SECRET-DATABASE",
@@ -807,7 +818,17 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback."
+      "remaining_scope": "Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback.",
+      "fixture_case_ids": [
+        "postgres_pipeline_simulated.verified_scram_configuration",
+        "postgres_pipeline_simulated.configuration_never_returns_password",
+        "postgres_pipeline_simulated.no_arbitrary_sql",
+        "postgres_pipeline_simulated.issue_after_durable_intent_and_readback",
+        "postgres_pipeline_simulated.model_observed_matches_returned_credentials",
+        "postgres_pipeline_simulated.renew_external_expiry_then_commit",
+        "postgres_pipeline_simulated.precise_revoke",
+        "postgres_pipeline_simulated.lost_post_apply_response_no_secret"
+      ]
     },
     {
       "surface_id": "HB-SURFACE-SECRET-KUBERNETES",

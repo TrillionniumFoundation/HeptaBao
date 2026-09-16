@@ -6,6 +6,26 @@ fn setup() -> (AuthState, String, Principal) {
     let principal = state.authenticate(&raw, 100).unwrap();
     (state, raw, principal)
 }
+
+#[test]
+fn ldap_bounded_profile_config_login_and_injection_rejection() {
+    let (mut state, _raw, root) = setup();
+    call(&mut state, &root, "", "POST", "sys/auth/ldap", json!({"type":"ldap"}), 100);
+    call(&mut state, &root, "", "POST", "auth/ldap/config", json!({
+        "url":"ldaps://directory.example.test",
+        "bind_dn":"cn=heptabao,dc=example,dc=test",
+        "user_dn_template":"uid={{username}},ou=people,dc=example,dc=test",
+        "starttls":false
+    }), 100);
+    let cfg = call(&mut state, &root, "", "GET", "auth/ldap/config", json!({}), 100);
+    assert_eq!(cfg.body["url"], "ldaps://directory.example.test");
+    call(&mut state, &root, "", "PUT", "auth/ldap/users/alice", json!({"password":"correct horse battery staple"}), 100);
+    let login = call(&mut state, &root, "", "POST", "auth/ldap/login/alice", json!({"password":"correct horse battery staple"}), 101);
+    assert!(login.body["auth"]["client_token"].as_str().is_some());
+    assert!(state.handle(Some(&root), "", "PUT", "auth/ldap/config", &json!({
+        "url":"ldap://directory.example.test/??(|(uid=*))"
+    }), 100).is_err());
+}
 fn call(
     state: &mut AuthState,
     actor: &Principal,

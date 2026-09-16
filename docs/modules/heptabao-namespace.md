@@ -16,7 +16,7 @@ This package owns hierarchical namespaces and the mapping from namespace identif
 
 `get(id)` borrows a record even if disabled. `resolve(path)` returns the longest active namespace prefix; it can fall back to an active ancestor when a more specific namespace is disabled. `qualify(namespace_id, resource_path)` checks the selected record is active and prefixes its root; `/` selects the namespace root. It does not infer a namespace from authorization or validate the state of all ancestors.
 
-`disable(id)` forbids root and repeated disable, and changes only that record. Existing descendants remain active, and resolving a path is not an authorization barrier for a disabled subtree. Callers needing recursive disable must explicitly enforce ancestor checks and descendant handling before policy, mount and storage access. The current API provides no deletion, reparenting, enabling or per-namespace keyring.
+`disable(id)` forbids root and repeated disable, and changes only that record. `seal_subtree(id)` is the explicit subtree operation: it atomically marks the selected child and all descendants disabled, returns their sorted IDs, and rejects root/replay. `resolve_strict(path)` selects the longest matching namespace and then verifies every ancestor is active, so a sealed subtree cannot fall back to an active ancestor. The legacy `resolve(path)` behavior remains available for callers that intentionally need active-ancestor fallback. The current API provides no deletion, reparenting, enabling or per-namespace keyring.
 
 This model feeds qualified-resource policy evaluation in `heptabao-service-core` and is outside the current server dependency closure. It does not prove OpenBao namespace isolation, delegated administration or namespace sealing in the native server.
 
@@ -85,13 +85,14 @@ Root bootstrap is a one-time operation. Disabling a child blocks direct qualific
 Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
 
 - [`tests::hierarchy_and_longest_prefix_resolution_are_deterministic`](../../crates/heptabao-namespace/src/lib.rs) checks nested path resolution and qualification.
-- [`tests::disabled_namespace_fails_closed`](../../crates/heptabao-namespace/src/lib.rs) checks direct qualification of the disabled record and root protection; it does not prove recursive subtree disable.
+- [`tests::disabled_namespace_fails_closed`](../../crates/heptabao-namespace/src/lib.rs) checks direct qualification of the disabled record and root protection.
+- [`tests::seal_subtree_disables_descendants_and_strict_resolution_fails_closed`](../../crates/heptabao-namespace/src/lib.rs) checks atomic descendant sealing, deterministic IDs, replay/root rejection and strict path denial.
 
-`cargo test -p heptabao-namespace` covers hierarchy, longest-prefix resolution, qualification, direct disabled-record rejection and root protection. The V2 repository validator binds the package to this guide.
+`cargo test -p heptabao-namespace` covers hierarchy, longest-prefix resolution, qualification, direct disabled-record rejection, root protection, subtree sealing, replay rejection and strict sealed-path resolution. The V2 repository validator binds the package to this guide.
 
 ## Evolution and open boundaries
 
-Deletion, reparenting, namespace quotas and HA replication remain open. They require tombstones, cycle checks and recovery semantics before implementation.
+Deletion, reparenting, namespace quotas, namespace administration routes and HA replication remain open. Subtree sealing is an in-memory bounded primitive; durable namespace seal state, delegated policy administration and restart/replication evidence require a server integration and qualification before any compatibility claim.
 
 ## Machine-verified source truth
 

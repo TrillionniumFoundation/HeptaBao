@@ -84,7 +84,7 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-AUTH-CERT` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUTH-JWT-OIDC` | `auth_methods` | `IMPLEMENTED_SCOPED` | `remote_jwks_live.real_rsa_signature_login`, `remote_jwks_live.same_assertion_replay_rejected`, `remote_jwks_live.p256_rotation_login`, `remote_jwks_live.disabled_subject_login_rejected`, `remote_jwks_live.restart_current_key_login` |
 | `HB-SURFACE-AUTH-KUBERNETES` | `auth_methods` | `IMPLEMENTED_SCOPED` | `kubernetes_online.online_review_to_real_token`, `kubernetes_online.reviewer_request_binding`, `kubernetes_online.disabled_identity_denies_new_login`, `kubernetes_online.finite_replay_denied`, `kubernetes_online.all_egress_requests_match_review_contract` |
-| `HB-SURFACE-AUTH-LDAP` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AUTH-LDAP` | `auth_methods` | `IMPLEMENTED_SCOPED` | `ldap_bounded.config_roundtrip`, `ldap_bounded.login_and_revocation`, `ldap_bounded.filter_injection_rejected` |
 | `HB-SURFACE-AUTH-RADIUS` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUTH-KERBEROS` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SECRET-KV` | `secret_engines` | `IMPLEMENTED_SCOPED` | `kv.write_v1`, `kv.read_v1`, `kv.write_v2`, `kv.read_old_version`, `kv.cas_rejected`, `kv.cas_no_effect`, `kv.list`, `kv.soft_delete`, `kv.deleted_read`, `kv.deleted_metadata`, `kv.undelete`, `kv.restored_read`, `kv.destroy_v1`, `kv.destroyed_read`, `kv.destroyed_metadata`, `kv.metadata_write`, `kv.metadata_read` |
@@ -92,8 +92,8 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-SECRET-TOTP` | `secret_engines` | `IMPLEMENTED_SCOPED` | `totp.roundtrip` |
 | `HB-SURFACE-SECRET-PKI` | `secret_engines` | `IMPLEMENTED_SCOPED` | `pki.mount`, `pki.root`, `pki.role`, `pki.role_read`, `pki.issue`, `pki.lease_lookup`, `pki.cert_lookup`, `pki.lease_revoke`, `pki.revoked_lease_absent`, `pki.crl_json` |
 | `HB-SURFACE-SECRET-PKIEXT` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-SECRET-SSH` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-SECRET-DATABASE` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-SECRET-SSH` | `secret_engines` | `IMPLEMENTED_SCOPED` | `ssh_otp_live.ssh.mount`, `ssh_otp_live.ssh.role`, `ssh_otp_live.ssh.issue`, `ssh_otp_live.ssh.verify_exact_target`, `ssh_otp_live.ssh.replay_denied`, `ssh_otp_live.ssh.revoke`, `ssh_otp_live.ssh.revoked_denied`, `ssh_otp_live.ssh.wrapped_issue`, `ssh_otp_live.ssh.unwrapped_otp_works` |
+| `HB-SURFACE-SECRET-DATABASE` | `secret_engines` | `IMPLEMENTED_SCOPED` | `postgres_pipeline_simulated.verified_scram_configuration`, `postgres_pipeline_simulated.configuration_never_returns_password`, `postgres_pipeline_simulated.no_arbitrary_sql`, `postgres_pipeline_simulated.issue_after_durable_intent_and_readback`, `postgres_pipeline_simulated.model_observed_matches_returned_credentials`, `postgres_pipeline_simulated.renew_external_expiry_then_commit`, `postgres_pipeline_simulated.precise_revoke`, `postgres_pipeline_simulated.lost_post_apply_response_no_secret` |
 | `HB-SURFACE-SECRET-KUBERNETES` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SECRET-OPENLDAP` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SECRET-RABBITMQ` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
@@ -112,10 +112,10 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-PLUGIN-SECRET` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PLUGIN-DATABASE` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PLUGIN-KMS` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-CLUSTER-MTLS` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-CLUSTER-FORWARDING` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-CLUSTER-READ-STANDBY` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-CLUSTER-STEPDOWN` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-CLUSTER-MTLS` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_mtls.peer_identity_and_cluster_authentication` |
+| `HB-SURFACE-CLUSTER-FORWARDING` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_forwarding.standby_mutation_forwarding_and_context` |
+| `HB-SURFACE-CLUSTER-READ-STANDBY` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_read_standby.readindex_committed_state_and_partition_fence` |
+| `HB-SURFACE-CLUSTER-STEPDOWN` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_step_down.explicit_leadership_transfer_and_old_writer_fence` |
 | `HB-SURFACE-CLUSTER-AUTOPILOT` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-EDGE-HTTP-TLS` | `client_operator` | `IMPLEMENTED_SCOPED` | `edge_tls.health` |
 | `HB-SURFACE-CLI-ROOT` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |

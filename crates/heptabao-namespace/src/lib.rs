@@ -131,6 +131,62 @@ impl NamespaceStore {
             .ok_or(NamespaceError::MissingNamespace)
     }
 
+    /// Seals a namespace and every descendant in one deterministic transition.
+    ///
+    /// A sealed subtree cannot be used for strict path resolution or qualification.
+    /// The root namespace is intentionally excluded because sealing it would make
+    /// the entire control plane unreachable; callers must use the service seal API
+    /// for that operation.
+    pub fn seal_subtree(&mut self, id: &Id) -> Result<Vec<Id>, NamespaceError> {
+        let target = self
+            .namespaces
+            .get(id)
+            .ok_or(NamespaceError::MissingNamespace)?;
+        if target.parent_id.is_none() {
+            return Err(NamespaceError::CannotDisableRoot);
+        }
+        if target.state == NamespaceState::Disabled {
+            return Err(NamespaceError::AlreadyDisabled);
+        }
+
+        let target_path = target.path.clone();
+        let mut sealed = Vec::new();
+        for namespace in self.namespaces.values_mut() {
+            let descendant = namespace.id == *id || namespace.path.matches_prefix(&target_path);
+            if descendant && namespace.state == NamespaceState::Active {
+                namespace.state = NamespaceState::Disabled;
+                namespace.generation = namespace.generation.saturating_add(1);
+                sealed.push(namespace.id.clone());
+            }
+        }
+        sealed.sort_by(|left, right| left.as_str().cmp(right.as_str()));
+        Ok(sealed)
+    }
+
+    /// Resolves a path while enforcing that every namespace in its ancestry is active.
+    /// This closes the disabled-subtree fallback that `resolve` deliberately preserves
+    /// for legacy callers.
+    pub fn resolve_strict(&self, path: &CanonicalPath) -> Result<&Namespace, NamespaceError> {
+        let namespace = self
+            .namespaces
+            .values()
+            .filter(|candidate| path.matches_prefix(&candidate.path))
+            .max_by_key(|candidate| candidate.path.as_str().len())
+            .ok_or(NamespaceError::MissingNamespace)?;
+        let mut cursor = Some(namespace.id());
+        while let Some(id) = cursor {
+            let ancestor = self
+                .namespaces
+                .get(id)
+                .ok_or(NamespaceError::MissingNamespace)?;
+            if ancestor.state != NamespaceState::Active {
+                return Err(NamespaceError::NamespaceDisabled);
+            }
+            cursor = ancestor.parent_id.as_ref();
+        }
+        Ok(namespace)
+    }
+
     pub fn qualify(
         &self,
         namespace_id: &Id,
@@ -226,4 +282,34 @@ mod tests {
         assert_eq!(Err(NamespaceError::CannotDisableRoot), store.disable(&root));
         Ok(())
     }
+    #[test]
+    fn seal_subtree_disables_descendants_and_strict_resolution_fails_closed() -> Result<(), Box<dyn Error>> {
+        let root = Id::parse("root")?;
+        let team = Id::parse("team")?;
+        let app = Id::parse("app")?;
+        let sibling = Id::parse("sibling")?;
+        let mut store = NamespaceStore::default();
+        store.bootstrap_root(root.clone())?;
+        store.create(team.clone(), &root)?;
+        store.create(app.clone(), &team)?;
+        store.create(sibling.clone(), &root)?;
+
+        let sealed = store.seal_subtree(&team)?;
+        assert_eq!(vec![app.clone(), team.clone()], sealed);
+        assert_eq!(NamespaceState::Disabled, store.get(&team)?.state());
+        assert_eq!(NamespaceState::Disabled, store.get(&app)?.state());
+        assert_eq!(NamespaceState::Active, store.get(&sibling)?.state());
+        assert_eq!(
+            Err(NamespaceError::NamespaceDisabled),
+            store.resolve_strict(&CanonicalPath::parse("/team/app/secret")?)
+        );
+        assert_eq!(
+            &sibling,
+            store.resolve_strict(&CanonicalPath::parse("/sibling/secret")?)?.id()
+        );
+        assert_eq!(Err(NamespaceError::AlreadyDisabled), store.seal_subtree(&team));
+        assert_eq!(Err(NamespaceError::CannotDisableRoot), store.seal_subtree(&root));
+        Ok(())
+    }
+
 }

@@ -1,35 +1,94 @@
 {
-  "schema": "heptabao.external-fixture-case-registry.v1",
   "cases": {
-    "remote_jwks_live": {
-      "script": "qa/openbao-acceptance/remote_jwks_live.py",
-      "case_ids": [
-        "real_rsa_signature_login",
-        "same_assertion_replay_rejected",
-        "p256_rotation_login",
-        "disabled_subject_login_rejected",
-        "restart_current_key_login"
-      ]
-    },
-    "kubernetes_online": {
-      "script": "qa/openbao-acceptance/kubernetes_online.py",
-      "case_ids": [
-        "online_review_to_real_token",
-        "reviewer_request_binding",
-        "disabled_identity_denies_new_login",
-        "finite_replay_denied",
-        "all_egress_requests_match_review_contract"
-      ]
-    },
     "audit_file_live": {
-      "script": "qa/openbao-acceptance/audit_file_live.py",
       "case_ids": [
         "list",
         "path_present",
         "read_binding",
         "enable_idempotent",
         "disable_rejected"
-      ]
+      ],
+      "script": "qa/openbao-acceptance/audit_file_live.py"
+    },
+    "ha_forwarding": {
+      "case_ids": [
+        "standby_mutation_forwarding_and_context"
+      ],
+      "script": "qa/openbao-acceptance/wrapping_ha.py"
+    },
+    "ha_mtls": {
+      "case_ids": [
+        "peer_identity_and_cluster_authentication"
+      ],
+      "script": "qa/openbao-acceptance/ha_destructive.py"
+    },
+    "ha_read_standby": {
+      "case_ids": [
+        "readindex_committed_state_and_partition_fence"
+      ],
+      "script": "qa/openbao-acceptance/ha_network_partition.py"
+    },
+    "ha_step_down": {
+      "case_ids": [
+        "explicit_leadership_transfer_and_old_writer_fence"
+      ],
+      "script": "qa/openbao-acceptance/ha_step_down.py"
+    },
+    "kubernetes_online": {
+      "case_ids": [
+        "online_review_to_real_token",
+        "reviewer_request_binding",
+        "disabled_identity_denies_new_login",
+        "finite_replay_denied",
+        "all_egress_requests_match_review_contract"
+      ],
+      "script": "qa/openbao-acceptance/kubernetes_online.py"
+    },
+    "ldap_bounded": {
+      "case_ids": [
+        "config_roundtrip",
+        "login_and_revocation",
+        "filter_injection_rejected"
+      ],
+      "script": "qa/openbao-acceptance/ldap_bounded.py"
+    },
+    "postgres_pipeline_simulated": {
+      "case_ids": [
+        "verified_scram_configuration",
+        "configuration_never_returns_password",
+        "no_arbitrary_sql",
+        "issue_after_durable_intent_and_readback",
+        "model_observed_matches_returned_credentials",
+        "renew_external_expiry_then_commit",
+        "precise_revoke",
+        "lost_post_apply_response_no_secret"
+      ],
+      "script": "qa/openbao-acceptance/postgres_pipeline_simulated.py"
+    },
+    "remote_jwks_live": {
+      "case_ids": [
+        "real_rsa_signature_login",
+        "same_assertion_replay_rejected",
+        "p256_rotation_login",
+        "disabled_subject_login_rejected",
+        "restart_current_key_login"
+      ],
+      "script": "qa/openbao-acceptance/remote_jwks_live.py"
+    },
+    "ssh_otp_live": {
+      "case_ids": [
+        "ssh.mount",
+        "ssh.role",
+        "ssh.issue",
+        "ssh.verify_exact_target",
+        "ssh.replay_denied",
+        "ssh.revoke",
+        "ssh.revoked_denied",
+        "ssh.wrapped_issue",
+        "ssh.unwrapped_otp_works"
+      ],
+      "script": "qa/openbao-acceptance/ssh_otp_live.py"
     }
-  }
+  },
+  "schema": "heptabao.external-fixture-case-registry.v1"
 }

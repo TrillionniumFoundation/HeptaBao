@@ -13,7 +13,7 @@ use std::{
 const MAX_SEGMENT_BYTES: u64 = 32 * 1024 * 1024;
 const MAX_MANIFEST_BYTES: u64 = 128 * 1024;
 const STAGING_MAGIC: &[u8] = b"heptabao-audit-manifest-staging-v1\n";
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(default, deny_unknown_fields)]
 pub struct AuditConfig {
     pub segment_bytes: u64,
@@ -56,6 +56,12 @@ struct Segment {
 #[serde(deny_unknown_fields)]
 struct Manifest {
     schema: u32,
+    /// The startup rotation policy is carried inside the authenticated
+    /// checkpoint once the first rotation is published.  `None` is accepted
+    /// only for manifests written before policy persistence was introduced;
+    /// the next checkpoint upgrades such manifests in place.
+    #[serde(default)]
+    config: Option<AuditConfig>,
     generation: u64,
     base: Frontier,
     segments: Vec<Segment>,
@@ -146,6 +152,7 @@ impl AuditRotation {
                 config,
                 manifest: Manifest {
                     schema: 1,
+                    config: Some(config),
                     ..Manifest::default()
                 },
                 manifest_exists: false,
@@ -184,6 +191,13 @@ impl AuditRotation {
             Ok(mut file) => {
                 self.manifest = decode_manifest(&mut file, key)?;
                 self.manifest_exists = true;
+                if let Some(persisted) = self.manifest.config {
+                    if persisted != self.config {
+                        return Err(invalid(
+                            "audit rotation policy differs from authenticated checkpoint",
+                        ));
+                    }
+                }
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {}
             Err(e) => return Err(e),
@@ -422,6 +436,10 @@ impl AuditRotation {
         self.publish(complete, key)
     }
     fn publish(&mut self, manifest: Manifest, key: &hmac::Key) -> io::Result<()> {
+        let mut manifest = manifest;
+        // Persist the effective startup policy in the signed checkpoint. This
+        // also upgrades a legacy checkpoint that did not carry configuration.
+        manifest.config = Some(self.config);
         let target = self.sidecar("rotation.json");
         match open_read(&target) {
             Ok(mut file) => {
@@ -664,13 +682,16 @@ mod tests {
             self.0.join("audit.jsonl")
         }
         fn service(&self, retained: usize) -> Result<Service, &'static str> {
+            self.service_with_config(AuditConfig {
+                segment_bytes: 4096,
+                retained_segments: retained,
+            })
+        }
+        fn service_with_config(&self, config: AuditConfig) -> Result<Service, &'static str> {
             Service::new_with_audit_config(
                 self.0.join("data"),
                 &self.path(),
-                AuditConfig {
-                    segment_bytes: 4096,
-                    retained_segments: retained,
-                },
+                config,
             )
         }
     }
@@ -897,6 +918,30 @@ mod tests {
             assert!(AuditRotation::open(&root.path(), config).is_err());
         }
         assert!(!root.path().exists());
+        Ok(())
+    }
+    #[test]
+    fn audit_rotation_persists_policy_and_rejects_restart_mismatch() -> ResultTest {
+        let root = Root::new()?;
+        let config = AuditConfig {
+            segment_bytes: 4096,
+            retained_segments: 2,
+        };
+        let mut service = root.service_with_config(config)?;
+        requests(&mut service, 2);
+        rotate(&mut service)?;
+        let checkpoint = service.audit_rotation.sidecar("rotation.json");
+        let checkpoint_text = fs::read_to_string(&checkpoint)?;
+        assert!(checkpoint_text.contains("segment_bytes"));
+        assert!(checkpoint_text.contains("retained_segments"));
+        drop(service);
+        assert!(root
+            .service_with_config(AuditConfig {
+                segment_bytes: 4096,
+                retained_segments: 3,
+            })
+            .is_err());
+        assert!(root.service_with_config(config).is_ok());
         Ok(())
     }
     #[test]

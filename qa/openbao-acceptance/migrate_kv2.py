@@ -130,6 +130,27 @@ def snapshot(client, mount, key):
                                 "max_versions": max(current, maximum), "delete_version_after": "0s"}}
 
 
+def snapshot_inventory(client, mount, keys):
+    """Read a bounded, selected inventory with a before/after consistency fence.
+
+    This proves that the explicitly selected objects did not change while the
+    inventory was read.  It is intentionally scoped to ``keys`` and does not
+    claim a complete OpenBao instance snapshot or a Raft-consistent view.
+    """
+    if not keys or len(keys) > MAX_KEYS or len(set(keys)) != len(keys):
+        raise BaoError("bounded_unique_key_allowlist_required")
+    before = {key: read_metadata(client, mount, key) for key in keys}
+    records = [snapshot(client, mount, key) for key in keys]
+    after = {key: read_metadata(client, mount, key) for key in keys}
+    if before != after:
+        raise BaoError("source_inventory_changed_during_snapshot")
+    manifest = {"mount": mount,
+                "objects": [{"key": record["key"],
+                             "source_digest": digest(record["source_metadata"]),
+                             "record_digest": digest(record)} for record in records]}
+    return records, digest(manifest)
+
+
 def validate_export_record(record):
     if not isinstance(record, dict) or not isinstance(record.get("key"), str):
         raise BaoError("invalid_export_object")
@@ -309,9 +330,11 @@ def main(argv=None):
             if (not isinstance(bundle, dict) or bundle.get("schema") != SCHEMA
                     or bundle.get("source_writes_frozen_attestation") is not True
                     or not isinstance(bundle.get("source_identity"), dict)
-                    or not isinstance(bundle.get("objects"), list) or not 0 < len(bundle["objects"]) <= MAX_KEYS):
+                    or not isinstance(bundle.get("objects"), list) or not 0 < len(bundle["objects"]) <= MAX_KEYS
+                    or not isinstance(bundle.get("inventory_digest"), str)):
                 raise BaoError("invalid_or_unfrozen_export")
             records, source_identity = bundle["objects"], bundle["source_identity"]
+            inventory_digest = bundle["inventory_digest"]
             if (not isinstance(source_identity.get("endpoint"), str)
                     or endpoint(source_identity["endpoint"]) != source_identity["endpoint"]
                     or not isinstance(source_identity.get("cluster_id"), str) or not source_identity["cluster_id"]
@@ -326,6 +349,12 @@ def main(argv=None):
             keys = [r["key"] for r in records]
             if len(set(keys)) != len(keys):
                 raise BaoError("duplicate_export_objects")
+            expected_manifest = {"mount": source_identity["mount"],
+                                "objects": [{"key": record["key"],
+                                             "source_digest": digest(record["source_metadata"]),
+                                             "record_digest": digest(record)} for record in records]}
+            if inventory_digest != digest(expected_manifest):
+                raise BaoError("export_inventory_digest_mismatch")
             result["source_live_revalidated"] = False
         if args.action in ("transfer", "import"):
             target = Client.from_env(args.target_prefix)
@@ -341,7 +370,17 @@ def main(argv=None):
                 raise BaoError("apply_requires_checkpoint_exclusive_target_and_frozen_source")
         elif args.apply and (not args.export_file or not args.allow_plaintext_export or not args.source_writes_frozen):
             raise BaoError("export_requires_private_path_plaintext_opt_in_and_frozen_source")
-        binding = {"source_identity": source_identity, "keys_digest": digest(keys), "profile": SCHEMA}
+        if source:
+            records, inventory_digest = snapshot_inventory(source, args.source_mount, keys)
+        elif records is not None:
+            expected_manifest = {"mount": source_identity["mount"],
+                                "objects": [{"key": record["key"],
+                                             "source_digest": digest(record["source_metadata"]),
+                                             "record_digest": digest(record)} for record in records]}
+            if inventory_digest != digest(expected_manifest):
+                raise BaoError("export_inventory_digest_mismatch")
+        binding = {"source_identity": source_identity, "keys_digest": digest(keys),
+                   "inventory_digest": inventory_digest, "profile": SCHEMA}
         if target:
             binding["target_identity"] = {"endpoint": target.address, "namespace": target.namespace,
                                           "mount": args.target_mount, "cluster_id": target_health["cluster_id"]}
@@ -353,7 +392,7 @@ def main(argv=None):
                 lock.__enter__()
                 checkpoint = Checkpoint(args.checkpoint, binding)
             for index, key in enumerate(keys):
-                record = snapshot(source, args.source_mount, key) if source else records[index]
+                record = records[index]
                 result["objects_checked"] += 1
                 if args.action == "export":
                     if args.apply:
@@ -372,7 +411,8 @@ def main(argv=None):
                         result["target_existing_objects"] = result.get("target_existing_objects", 0) + 1
             if args.action == "export" and args.apply:
                 private_write(args.export_file, {"schema": SCHEMA, "source_identity": source_identity,
-                              "source_writes_frozen_attestation": True, "objects": exported}, replace=False)
+                              "source_writes_frozen_attestation": True,
+                              "inventory_digest": inventory_digest, "objects": exported}, replace=False)
         finally:
             if lock:
                 lock.__exit__(None, None, None)
