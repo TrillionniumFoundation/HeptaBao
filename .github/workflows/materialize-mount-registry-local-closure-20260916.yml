@@ -1,0 +1,64 @@
+name: materialize-mount-registry-local-closure-20260916
+
+on:
+  push:
+    branches:
+      - codex/next-round-product-closure-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Bind exact transport parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "1005346c94c899ed3a509638f4455aacd7bf5415"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Materialize and qualify mount registry closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/materialize_mount_registry_local_closure_20260916.py
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-server
+          cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+          python scripts/validate_replacement_execution.py --write
+          python scripts/current_source_inventory.py --write
+          python scripts/generate_module_closure_docs.py
+          python scripts/current_source_inventory.py --check
+          python scripts/validate_module_closure.py
+          python scripts/surface_work.py --surface HB-SURFACE-MOUNT-REGISTRY
+          python scripts/validate_replacement_execution.py
+          python -m unittest tests.repository.test_mount_registry_runtime -v
+          python -m unittest discover -s tests/repository -p 'test_*.py' -v
+          python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
+          git diff --check
+
+      - name: Publish product source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-mount-registry-local-closure-20260916.yml
+          rm scripts/materialize_mount_registry_local_closure_20260916.py
+          git diff --check
+          git config user.name "OpenAI mount registry integrator"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "feat(mounts): close local mount registry surface"
+          git push origin HEAD:codex/next-round-product-closure-20260916
