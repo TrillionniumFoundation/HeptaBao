@@ -16,7 +16,7 @@ GUIDE = 'docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
 AXES = {'protocol', 'authorization', 'effect_readback', 'crash_replay',
         'expiry_revocation', 'migration_upgrade', 'capacity_operations', 'independent_admission'}
-STATES = {'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}
+STATES = {'RUNTIME_COMPLETE', 'PARTIAL_RUNTIME', 'CONTRACT_ONLY', 'NOT_IMPLEMENTED'}
 
 
 def unique_object(pairs):
@@ -50,7 +50,7 @@ def render(matrix: dict) -> str:
         f'Edit `{MATRIX}` and run `python scripts/validate_replacement_execution.py --write`.',
         'The fixed corpus remains the denominator; this table neither adds a pass receipt nor reduces its scope.',
         'A listed profile is an executable entry point, not coverage of all requirements in its row.',
-        '`PARTIAL_RUNTIME` means real bounded code; `CONTRACT_ONLY` means a separate model/interface; neither means full compatibility.', '',
+        '`RUNTIME_COMPLETE` means the repository-owned local runtime gap for that row is closed; it is not full OpenBao verification or independent admission. `PARTIAL_RUNTIME` means real bounded code with a known local runtime gap; `CONTRACT_ONLY` means a separate model/interface.', '',
         '## Common acceptance dimensions', '',
     ]
     for key, value in matrix['acceptance_axes'].items():
@@ -141,7 +141,7 @@ def validate(root: Path = ROOT, *, check_render: bool = True) -> list[str]:
                 for value in values:
                     if not local_file(root, value):
                         errors.append(sid + ': missing or unsafe source ' + str(value))
-            if (row['implementation'] == 'PARTIAL_RUNTIME') != bool(row['runtime_sources']):
+            if (row['implementation'] in {'RUNTIME_COMPLETE', 'PARTIAL_RUNTIME'}) != bool(row['runtime_sources']):
                 errors.append(sid + ': runtime classification lacks concrete entry')
             if row['implementation'] == 'CONTRACT_ONLY' and not row['contract_sources']:
                 errors.append(sid + ': contract classification lacks source')

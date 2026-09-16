@@ -45,6 +45,12 @@ The durable runtime uses the principal, namespace, and request identifier as the
 
 The operational retry rule is **never blind retry** after durable entry. Authentication or authorization rejection means **no replay identity allocated**. A **post-commit audit failure** withholds normal success and is reconciled from durable state.
 
+## Current server request-effect classification
+
+The current `heptabao-server` composition classifies each completed dispatch from the actual durable generation observed immediately before and after `handle_inner`; it does not infer side effects from the HTTP verb alone. Read-like methods (`GET`, `HEAD`, `LIST`, `SCAN`) with no durable generation transition are `PureRead`. A read-like request that advances the durable generation is `SideEffectingRead`; finite-use bearer consumption is a concrete example. Non-read methods are `DurableMutation`.
+
+This classification is consumed by result-audit failure handling. A failed result audit always withholds the response. For `PureRead`, no authoritative state transition occurred, so the service returns 503 without manufacturing a recovery fence. For `SideEffectingRead` and `DurableMutation`, an authoritative durable effect may have occurred, so the service enters recovery-required state and never permits blind replay. Tests bind all three classes and separately prove pure-read result withholding versus finite-use side-effect persistence across reopen.
+
 ## Failure classification
 
 | Failure point | Durable effect possible | Response |

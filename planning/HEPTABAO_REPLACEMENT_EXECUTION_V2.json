@@ -30,7 +30,7 @@
       "positive": "Trace authenticated request through one owner and accepted/result audit",
       "hostile": "Reject duplicate headers, ambiguous paths, expired principals and denied effects",
       "lifecycle": "Recover each intent/state/commit/response failure without blind replay",
-      "implementation": "PARTIAL_RUNTIME",
+      "implementation": "RUNTIME_COMPLETE",
       "runtime_sources": [
         "crates/heptabao-server/src/http.rs",
         "crates/heptabao-server/src/service.rs"
@@ -44,7 +44,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Must distinguish pure reads, durable mutations and side-effecting reads."
+      "remaining_scope": "Local request-effect classification, durable publication and result-audit recovery semantics are closed; full OpenBao differential and independent admission remain deferred to phases 9 and 10."
     },
     {
       "surface_id": "HB-SURFACE-SYSTEM-BACKEND",

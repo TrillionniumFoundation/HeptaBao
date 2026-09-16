@@ -52,6 +52,15 @@ class ReplacementExecutionTests(unittest.TestCase):
         self.matrix['surfaces'][0]['runtime_sources'] = []
         self.assertTrue(self.check())
 
+    def test_runtime_complete_is_local_only_and_requires_runtime_source(self):
+        row = self.matrix['surfaces'][0]
+        row['implementation'] = 'RUNTIME_COMPLETE'
+        row['full_surface_verified'] = False
+        row['independently_admitted'] = False
+        self.assertEqual(self.check(), [])
+        row['runtime_sources'] = []
+        self.assertTrue(self.check())
+
     def test_requirements_cannot_self_admit(self):
         for value in (True, 0, None, 'false'):
             with self.subTest(value=value):
