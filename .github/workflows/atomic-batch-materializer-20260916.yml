@@ -1,0 +1,48 @@
+name: atomic-batch-materializer-20260916
+
+on:
+  push:
+    branches:
+      - codex/next-round-product-closure-20260916
+    paths:
+      - .github/workflows/atomic-batch-materializer-20260916.yml
+      - ops/atomic-batch-materialize-20260916.patch
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atomic-batch-materializer-20260916
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Install Rust 1.98
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt
+      - name: Materialize, format, test, and bind source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse --abbrev-ref HEAD)" = "codex/next-round-product-closure-20260916"
+          git apply --check ops/atomic-batch-materialize-20260916.patch
+          git apply ops/atomic-batch-materialize-20260916.patch
+          cargo +1.98.0 fmt --all
+          python scripts/current_source_inventory.py --write
+          python scripts/validate_repository_v2.py
+          cargo +1.98.0 test --locked -p heptabao-durable-service
+          git diff --check
+          rm ops/atomic-batch-materialize-20260916.patch
+          rm .github/workflows/atomic-batch-materializer-20260916.yml
+          python scripts/current_source_inventory.py --write
+          git add -A
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'storage: add durable atomic batch transaction'
+          git push origin HEAD:codex/next-round-product-closure-20260916
