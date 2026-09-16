@@ -65,6 +65,24 @@ def runtime_closure(root: Path, packages: dict[str, dict]) -> set[str]:
     return closure
 
 
+def current_packages(root: Path, inventory_module, details: dict[str, dict]) -> dict[str, dict]:
+    """Reconstruct package navigation from manifests, independent of compact snapshot shape."""
+    packages: dict[str, dict] = {}
+    for member in inventory_module.members(root):
+        manifest = tomllib.loads((root / member / "Cargo.toml").read_text())
+        name = manifest["package"]["name"]
+        if name in packages:
+            raise ValueError(f"duplicate current package: {name}")
+        packages[name] = {
+            "package": name,
+            "root": member,
+            "guide": f"docs/modules/{name}.md",
+        }
+    if set(packages) != set(details):
+        raise ValueError("compact inventory details differ from current workspace package set")
+    return packages
+
+
 def validate(root: Path = ROOT) -> list[str]:
     coverage_spec = importlib.util.spec_from_file_location("documentation_coverage", Path(__file__).with_name("current_compatibility_coverage.py"))
     if coverage_spec is None or coverage_spec.loader is None:
@@ -84,8 +102,8 @@ def validate(root: Path = ROOT) -> list[str]:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     try:
-        snapshot, details = module.inventory(root)
-        packages = {row["package"]: row for row in snapshot["modules"]}
+        _snapshot, details = module.inventory(root)
+        packages = current_packages(root, module, details)
         closure = runtime_closure(root, packages)
         for name, row in packages.items():
             text = (root / row["guide"]).read_text()
