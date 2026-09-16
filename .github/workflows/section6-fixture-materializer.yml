@@ -1,0 +1,60 @@
+name: Section 6 full-test fixture materializer
+
+on:
+  push:
+    branches:
+      - integration/section6-hardening-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: integration/section6-hardening-20260916
+          fetch-depth: 0
+      - name: Apply reviewed full-test fixture repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "crates/heptabao-plugin-host/src/lib.rs",
+              """        registry.register(host.manifest().descriptor().clone())?;\n        registry.enable(&id)?;\n        let candidate = registry.get(&id)?.replacement(\n""",
+              """        registry.register(host.manifest().descriptor().clone())?;\n        let candidate = registry.get(&id)?.replacement(\n""",
+          )
+          replace_once(
+              "crates/heptabao-server/src/service_state_store.rs",
+              """    pub fn slot(&self) -> u8 {\n""",
+              """    #[cfg(test)]\n    pub fn slot(&self) -> u8 {\n""",
+          )
+          PY
+          python3 scripts/current_source_inventory.py --write
+          git diff --check
+      - name: Commit fixture repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- \
+            crates/heptabao-plugin-host/src/lib.rs \
+            crates/heptabao-server/src/service_state_store.rs \
+            planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json
+          git commit -m 'test: repair plugin upgrade lifecycle fixture'
+          git push origin HEAD:integration/section6-hardening-20260916
