@@ -30,12 +30,12 @@ required_gates:
   - id: scalable_state_storage
     status: OPEN
     owner: runtime
-    requirement: native server state is record-oriented or otherwise demonstrably production-scalable; complete replacement must not depend on the current monolithic whole-state 768 KiB ceiling
+    requirement: native server state is record-oriented or otherwise demonstrably production-scalable; complete replacement must not depend on repeated whole-state serialization/Raft publication or merely raising the current bounded 16 MiB manifest/chunk limit
     evidence: crash/restart/HA tests over a state corpus materially above the legacy monolithic ceiling plus storage-format migration evidence
   - id: replay_identity_lifecycle
     status: OPEN
     owner: runtime
-    requirement: idempotency and replay protection remain safe without a fixed lifetime ceiling such as a permanently retained 32000-operation identity set
+    requirement: idempotency and replay protection remain safe for long-running HA clusters; single-node epoch retirement exists, but complete replacement requires coordinated quorum-ordered retirement without a fixed lifetime ceiling or stale-replay resurrection
     evidence: deterministic retirement/compaction protocol with restart, snapshot, duplicate, stale-retry, and HA tests
   - id: complete_surface_admission
     status: OPEN
