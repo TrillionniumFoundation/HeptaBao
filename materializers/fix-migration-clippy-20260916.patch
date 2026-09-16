@@ -1,0 +1,18 @@
+diff --git a/crates/heptabao-migration/src/durable.rs b/crates/heptabao-migration/src/durable.rs
+index d457c00..a9cbbfd 100644
+--- a/crates/heptabao-migration/src/durable.rs
++++ b/crates/heptabao-migration/src/durable.rs
+@@ -1076,10 +1076,10 @@ impl DurableMigrationJournal {
+             target_sha256: recorded,
+             ..
+         }) = self.record.objects.get(object_id)
++            && observed == operation_id
++            && recorded == target_sha256
+         {
+-            if observed == operation_id && recorded == target_sha256 {
+-                return Ok(());
+-            }
++            return Ok(());
+         }
+         let attempt = active_attempt(self.record.objects.get(object_id), operation_id)?;
+         let mut candidate = self.record.clone();
