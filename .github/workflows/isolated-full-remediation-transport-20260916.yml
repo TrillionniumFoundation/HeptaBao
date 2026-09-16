@@ -1,7 +1,7 @@
 name: HeptaBao isolated full-remediation transport
 
 on:
-  pull_request:
+  push:
     branches:
       - exec/full-remediation-transport-20260916
 
@@ -9,18 +9,18 @@ permissions:
   contents: write
 
 concurrency:
-  group: isolated-full-remediation-${{ github.event.pull_request.head.sha }}
+  group: isolated-full-remediation-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   publish-ordinary-source:
-    if: github.repository == 'TrillionniumFoundation/HeptaBao' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.repository == 'TrillionniumFoundation/HeptaBao'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout immutable transport head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
