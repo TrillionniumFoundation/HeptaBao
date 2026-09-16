@@ -80,9 +80,9 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 ### HB-SURFACE-MOUNT-REGISTRY
 
-Implementation: `PARTIAL_RUNTIME`. Original work packages: `H07-WP03`, `H07-WP04`, `H07-WP07`.
+Implementation: `RUNTIME_COMPLETE_LOCAL`. Original work packages: `H07-WP03`, `H07-WP04`, `H07-WP07`.
 API families: `sys/mounts/*`; `sys/auth/*`; `sys/audit/*`; `sys/remount`.
-Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/engines.rs`.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/engines.rs`, `crates/heptabao-server/src/service.rs`.
 Separate contracts: none claimed.
 Guides: `docs/modules/heptabao-server.md`.
 
@@ -92,7 +92,7 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Lifecycle:** Persist mount incarnations and revoke old leases and credentials after disable/recreate.
 
-**Remaining scope:** Requires revision, CAS, cache invalidation and crash fixtures.
+**Remaining scope:** Local secret/auth/audit mount registry, revision CAS, atomic remount, overlap and reserved-path rejection, restart persistence and disable/recreate incarnation or accessor fencing are executable; full asset migration, real multi-host fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain later ordered phases.
 
 Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 

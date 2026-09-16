@@ -1062,6 +1062,90 @@ impl Service {
         now: u64,
     ) -> Response {
         let principal = principal.as_ref();
+        if path == "sys/remount" {
+            if !matches!(method, "POST" | "PUT") {
+                return Response::error(405, "remount requires POST or PUT");
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = state
+                .auth
+                .authorize_sudo_request(principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(object) = body.as_object() else {
+                return Response::error(400, "remount requires a JSON object");
+            };
+            if object
+                .keys()
+                .any(|key| !matches!(key.as_str(), "from" | "to" | "cas_revision"))
+            {
+                return Response::error(400, "unsupported remount parameter");
+            }
+            let Some(from) = object.get("from").and_then(Value::as_str) else {
+                return Response::error(400, "remount from is required");
+            };
+            let Some(to) = object.get("to").and_then(Value::as_str) else {
+                return Response::error(400, "remount to is required");
+            };
+            if from.starts_with('/') || to.starts_with('/') {
+                return Response::error(
+                    400,
+                    "remount paths must be relative to the request namespace",
+                );
+            }
+            let cas_revision = match object.get("cas_revision") {
+                Some(value) => match value.as_u64() {
+                    Some(value) => Some(value),
+                    None => {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    }
+                },
+                None => None,
+            };
+            let from = from.trim_end_matches('/');
+            let to = to.trim_end_matches('/');
+            match (from.strip_prefix("auth/"), to.strip_prefix("auth/")) {
+                (Some(from), Some(to)) => {
+                    return match state.auth.remount_mount(namespace, from, to, cas_revision) {
+                        Ok(response) => Response {
+                            status: response.status,
+                            body: response.body,
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                (None, None) => {
+                    if from.starts_with("sys/")
+                        || to.starts_with("sys/")
+                        || from.starts_with("identity/")
+                        || to.starts_with("identity/")
+                        || from.starts_with("cubbyhole/")
+                        || to.starts_with("cubbyhole/")
+                    {
+                        return Response::error(
+                            400,
+                            "remount cannot relocate reserved system paths",
+                        );
+                    }
+                    return match state.engines.remount(namespace, from, to, cas_revision) {
+                        Ok(mut response) => Response {
+                            status: response.status,
+                            body: std::mem::take(&mut response.body),
+                        },
+                        Err(error) => Response::error(error.status, &error.message),
+                    };
+                }
+                _ => {
+                    return Response::error(
+                        400,
+                        "remount cannot change between auth and secret mount classes",
+                    );
+                }
+            }
+        }
         if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
         {
             return Self::lease_route(state, principal, namespace, method, path, body, now);
@@ -2745,6 +2829,8 @@ impl Service {
         let device = || {
             json!({
                 "type": "file",
+                "accessor": "audit_file",
+                "revision": 1,
                 "description": "HeptaBao mandatory authenticated file audit device",
                 "options": {
                     "file_path": file_path.as_str(),
@@ -2764,6 +2850,22 @@ impl Service {
                 let Some(object) = body.as_object() else {
                     return Response::error(400, "audit enable requires a JSON object");
                 };
+                if object.keys().any(|key| {
+                    !matches!(
+                        key.as_str(),
+                        "type" | "description" | "options" | "local" | "cas_revision"
+                    )
+                }) {
+                    return Response::error(400, "unsupported file audit parameter");
+                }
+                if let Some(revision) = object.get("cas_revision") {
+                    let Some(revision) = revision.as_u64() else {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    };
+                    if revision != 1 {
+                        return Response::error(409, "stale audit mount revision");
+                    }
+                }
                 if object
                     .get("type")
                     .and_then(Value::as_str)

@@ -354,3 +354,15 @@ CA, a host/PAM integration, general renewable-provider callbacks. The current bo
 lifecycle worker and its expiry rules are documented in
 [the operational consumer contract](../operations/HEPTABAO_AGENT_PROXY_HELPER.md). The real `Service` owns authorization, issuer liveness, durable
 consumption and commit-before-response; standalone `EngineState` is not a bypass.
+
+## Mount registry revision and remount boundary
+
+Secret-engine mounts now persist a monotonically increasing `revision` and a path
+`incarnation`. Mutating tune/delete/remount calls may provide `cas_revision`; a stale
+value returns conflict before state mutation. Disable records the next path incarnation,
+so recreating the same path cannot resurrect the old mount identity or embedded dynamic
+state. `sys/remount` moves the complete backend atomically inside the Service transaction,
+invalidates the old route immediately, rejects overlapping/reserved destinations, and is
+fenced while dynamic leases are live. Repository-local restart tests verify the moved
+backend, revision/incarnation and disable/recreate boundary. Later migration, multi-host
+fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain open.

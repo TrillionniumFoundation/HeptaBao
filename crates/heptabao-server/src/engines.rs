@@ -41,9 +41,18 @@ fn lease_clock_is_zero(value: &u64) -> bool {
     *value == 0
 }
 
+const fn mount_revision_one() -> u64 {
+    1
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct NamespaceState {
     mounts: BTreeMap<String, Mount>,
+    /// Next path incarnation after disable/recreate. The active Mount carries
+    /// its own incarnation; this tombstone map prevents stale path identity
+    /// from being resurrected after deletion.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    mount_epochs: BTreeMap<String, u64>,
     #[serde(default)]
     identity: identity::IdentityState,
 }
@@ -64,6 +73,7 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
         }
     }
@@ -71,6 +81,10 @@ impl Default for NamespaceState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Mount {
+    #[serde(default = "mount_revision_one")]
+    revision: u64,
+    #[serde(default = "mount_revision_one")]
+    incarnation: u64,
     description: String,
     backend: Backend,
 }
@@ -133,7 +147,13 @@ impl Drop for SecretJson {
 
 impl Mount {
     fn new(backend: Backend, description: &str) -> Self {
+        Self::with_incarnation(backend, description, 1)
+    }
+
+    fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
         Self {
+            revision: 1,
+            incarnation: incarnation.max(1),
             description: description.into(),
             backend,
         }
@@ -155,6 +175,7 @@ impl Mount {
             _ => (0, 0),
         };
         json!({"type":kind,"description":self.description,"options":options,
+            "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
             "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}})
     }
@@ -331,6 +352,67 @@ impl EngineState {
             })
     }
 
+    /// Atomically relocate one registered secret-engine mount inside the
+    /// caller's namespace. The backend moves as one value, so old route lookup
+    /// cannot observe it after publication. A revision CAS fences stale
+    /// operators and path-incarnation tombstones prevent disable/recreate ABA.
+    pub(crate) fn remount(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+    ) -> Result<EngineResponse> {
+        let from = canonical_secret_mount(from)?;
+        let to = canonical_secret_mount(to)?;
+        if from == to {
+            return Err(bad("remount source and destination must differ"));
+        }
+        if self.has_live_leases() {
+            return Err(error(
+                409,
+                "secret-engine remount is fenced while dynamic leases are live",
+            ));
+        }
+        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+        let from_name = format!("{from}/");
+        let to_name = format!("{to}/");
+        let current = candidate
+            .mounts
+            .get(&from_name)
+            .cloned()
+            .ok_or_else(not_found)?;
+        require_mount_revision(cas_revision, current.revision)?;
+        if candidate.mounts.keys().any(|existing| {
+            existing != &from_name
+                && (existing.starts_with(&to_name) || to_name.starts_with(existing))
+        }) {
+            return Err(bad("remount destination conflicts with an existing mount"));
+        }
+        let mut moved = candidate.mounts.remove(&from_name).ok_or_else(not_found)?;
+        moved.revision = next_mount_revision(moved.revision)?;
+        let destination_floor = candidate
+            .mount_epochs
+            .get(&to_name)
+            .copied()
+            .unwrap_or(moved.incarnation);
+        moved.incarnation = moved.incarnation.max(destination_floor).max(1);
+        let old_next = moved
+            .incarnation
+            .checked_add(1)
+            .ok_or_else(|| error(507, "mount incarnation exhausted"))?;
+        candidate.mount_epochs.insert(from_name, old_next);
+        let revision = moved.revision;
+        let incarnation = moved.incarnation;
+        candidate.mounts.insert(to_name, moved);
+        self.namespaces.insert(namespace.into(), candidate);
+        Ok(ok(
+            json!({"from":format!("{from}/"),"to":format!("{to}/"),
+                "revision":revision,"incarnation":incarnation}),
+            true,
+        ))
+    }
+
     pub(crate) fn has_database_mount(&self) -> bool {
         self.namespaces.values().any(|ns| {
             ns.mounts
@@ -493,6 +575,42 @@ fn cubbyhole_descriptor() -> Value {
         "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
 }
 
+fn canonical_secret_mount(value: &str) -> Result<String> {
+    let value = value.trim_end_matches('/');
+    valid_path(value)?;
+    if matches!(
+        value.split('/').next(),
+        Some("sys" | "auth" | "identity" | "cubbyhole")
+    ) {
+        return Err(bad("reserved mount path"));
+    }
+    Ok(value.to_owned())
+}
+
+fn require_mount_revision(expected: Option<u64>, current: u64) -> Result<()> {
+    if expected.is_some_and(|value| value != current) {
+        return Err(error(409, "stale mount revision; no state was changed"));
+    }
+    Ok(())
+}
+
+fn require_absent_mount_revision(expected: Option<u64>) -> Result<()> {
+    if expected.is_some_and(|value| value != 0) {
+        return Err(error(
+            409,
+            "mount is absent; cas_revision must be zero for creation",
+        ));
+    }
+    Ok(())
+}
+
+fn next_mount_revision(current: u64) -> Result<u64> {
+    current
+        .max(1)
+        .checked_add(1)
+        .ok_or_else(|| error(507, "mount revision exhausted"))
+}
+
 fn handle_mounts(
     state: &mut NamespaceState,
     method: &str,
@@ -501,37 +619,60 @@ fn handle_mounts(
 ) -> Result<EngineResponse> {
     let requested = requested.trim_end_matches('/');
     if let Some(mount_path) = requested.strip_suffix("/tune") {
-        let mount = state
-            .mounts
-            .get_mut(&format!("{mount_path}/"))
-            .ok_or_else(not_found)?;
+        let name = format!("{mount_path}/");
+        let mount = state.mounts.get_mut(&name).ok_or_else(not_found)?;
         if method == "GET" {
             return Ok(ok(
                 json!({"description":mount.description,"options":mount.descriptor()["options"],
                     "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
-                    "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"]}),
+                    "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"],
+                    "revision":mount.revision,"incarnation":mount.incarnation}),
                 false,
             ));
         }
         if !write_method(method) {
             return Err(unsupported());
         }
+        let expected = optional_u64(body, "cas_revision")?;
+        require_mount_revision(expected, mount.revision)?;
+        let before = serde_json::to_vec(&*mount)
+            .map_err(|_| error(500, "mount state serialization failed"))?;
+        let mut tune = body.clone();
+        tune.as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .remove("cas_revision");
         if let Backend::Ssh(engine) = &mut mount.backend {
-            reject_unknown(body, &["description", "default_lease_ttl", "max_lease_ttl"])?;
-            engine.tune(body)?;
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            engine.tune(&tune)?;
         } else if let Backend::Pki(engine) = &mut mount.backend {
-            reject_unknown(body, &["description", "default_lease_ttl", "max_lease_ttl"])?;
-            engine.tune(body)?;
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            engine.tune(&tune)?;
         } else {
-            reject_unknown(body, &["description", "options"])?;
+            reject_unknown(body, &["description", "options", "cas_revision"])?;
         }
-        if let Some(description) = body.get("description") {
+        if let Some(description) = tune.get("description") {
             mount.description = description
                 .as_str()
                 .ok_or_else(|| bad("description must be a string"))?
                 .into();
         }
-        if let Some(options) = body.get("options") {
+        if let Some(options) = tune.get("options") {
             reject_unknown(options, &["version"])?;
             let version = options
                 .get("version")
@@ -547,18 +688,21 @@ fn handle_mounts(
                 }
             }
         }
+        let after = serde_json::to_vec(&*mount)
+            .map_err(|_| error(500, "mount state serialization failed"))?;
+        if before == after {
+            return Ok(empty(false));
+        }
+        mount.revision = next_mount_revision(mount.revision)?;
         return Ok(empty(true));
     }
-    valid_path(requested)?;
-    if requested == "cubbyhole" && method == "GET" {
-        return Ok(ok(cubbyhole_descriptor(), false));
-    }
-    if matches!(
-        requested.split('/').next(),
-        Some("sys" | "auth" | "identity" | "cubbyhole")
-    ) {
+    if requested == "cubbyhole" {
+        if method == "GET" {
+            return Ok(ok(cubbyhole_descriptor(), false));
+        }
         return Err(bad("reserved mount path"));
     }
+    let requested = canonical_secret_mount(requested)?;
     let name = format!("{requested}/");
     if method == "GET" {
         return state
@@ -568,7 +712,20 @@ fn handle_mounts(
             .ok_or_else(not_found);
     }
     if method == "DELETE" {
-        return Ok(empty(state.mounts.remove(&name).is_some()));
+        reject_unknown(body, &["cas_revision"])?;
+        let Some(current) = state.mounts.get(&name) else {
+            return Ok(empty(false));
+        };
+        require_mount_revision(optional_u64(body, "cas_revision")?, current.revision)?;
+        let incarnation = current.incarnation.max(1);
+        state.mounts.remove(&name);
+        state.mount_epochs.insert(
+            name,
+            incarnation
+                .checked_add(1)
+                .ok_or_else(|| error(507, "mount incarnation exhausted"))?,
+        );
+        return Ok(empty(true));
     }
     if !write_method(method) {
         return Err(unsupported());
@@ -583,8 +740,10 @@ fn handle_mounts(
             "local",
             "seal_wrap",
             "external_entropy_access",
+            "cas_revision",
         ],
     )?;
+    require_absent_mount_revision(optional_u64(body, "cas_revision")?)?;
     if state
         .mounts
         .keys()
@@ -693,7 +852,11 @@ fn handle_mounts(
         })
         .transpose()?
         .unwrap_or("");
-    state.mounts.insert(name, Mount::new(backend, description));
+    let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
+    state.mounts.insert(
+        name,
+        Mount::with_incarnation(backend, description, incarnation),
+    );
     Ok(empty(true))
 }
 

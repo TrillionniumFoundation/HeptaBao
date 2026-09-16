@@ -410,3 +410,14 @@ all supported input fields, boundaries and executable tests. Those use distinct
 `kubernetes` and `oidc` mount types; the static/remote `jwt` sections retain their
 existing verifier scope and jti requirement. Complete JWT/OIDC alias/API parity,
 real Kubernetes control-plane qualification and full external MFA remain open.
+
+## Auth mount revision, tune and remount boundary
+
+Auth mounts expose a persisted `revision` alongside the existing accessor. Tune, disable
+and remount accept `cas_revision` and reject stale operators without mutation. A remount
+preserves the accessor while atomically moving mount-local users, roles, JWT/OIDC,
+Kubernetes and bounded LDAP state and retagging issued-token mount provenance. Disabling
+the moved mount retains the existing credential/token revocation behavior; recreating the
+path issues a different accessor and revision 1. `sys/remount` cannot cross auth/secret
+classes or namespaces. These are repository-local runtime guarantees, not full external
+provider or OpenBao compatibility admission.

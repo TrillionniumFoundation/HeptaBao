@@ -1845,3 +1845,253 @@ fn system_backend_health_seal_and_error_precedence_are_executable()
     );
     Ok(())
 }
+
+#[test]
+fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/team",
+            &token,
+            json!({"type":"kv","options":{"version":"2"},"cas_revision":0})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "team/data/app",
+            &token,
+            json!({"data":{"value":"persisted"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/remount",
+            &token,
+            json!({"from":"team/","to":"archive/","cas_revision":1})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "GET", "team/data/app", &token, json!({})).status,
+        404
+    );
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).body["data"]["data"]["value"],
+        "persisted"
+    );
+    let audit = call(&mut service, "GET", "sys/audit/file", &token, json!({}));
+    assert_eq!(audit.body["data"]["revision"], 1);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/audit/file",
+            &token,
+            json!({"type":"file","cas_revision":2})
+        )
+        .status,
+        409
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/audit/file",
+            &token,
+            json!({"type":"file","cas_revision":1})
+        )
+        .status,
+        204
+    );
+    drop(service);
+
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let descriptor = call(&mut service, "GET", "sys/mounts/archive", &token, json!({}));
+    assert_eq!(descriptor.body["data"]["revision"], 2);
+    assert_eq!(descriptor.body["data"]["incarnation"], 1);
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).body["data"]["data"]["value"],
+        "persisted"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/mounts/archive/tune",
+            &token,
+            json!({"description":"stale","cas_revision":1})
+        )
+        .status,
+        409
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/mounts/archive",
+            &token,
+            json!({"cas_revision":2})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/archive",
+            &token,
+            json!({"type":"kv","options":{"version":"2"},"cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let recreated = call(&mut service, "GET", "sys/mounts/archive", &token, json!({}));
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_eq!(recreated.body["data"]["incarnation"], 2);
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).status,
+        404
+    );
+
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team",
+            &token,
+            json!({"type":"userpass","cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let auth_before = call(&mut service, "GET", "sys/auth/team", &token, json!({}));
+    let auth_accessor = auth_before.body["data"]["accessor"]
+        .as_str()
+        .ok_or("missing auth accessor")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "auth/team/users/alice",
+            &token,
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        204
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/team/login/alice",
+        "",
+        json!({"password":"correct horse battery staple"}),
+    );
+    let issued_token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("missing auth token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/remount",
+            &token,
+            json!({"from":"auth/team/","to":"auth/moved/","cas_revision":1})
+        )
+        .status,
+        200
+    );
+    let auth_after = call(&mut service, "GET", "sys/auth/moved", &token, json!({}));
+    assert_eq!(auth_after.body["data"]["revision"], 2);
+    assert_eq!(auth_after.body["data"]["accessor"], auth_accessor);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/login/alice",
+            "",
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/moved/login/alice",
+            "",
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &issued_token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/auth/moved",
+            &token,
+            json!({"cas_revision":2})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &issued_token,
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/moved",
+            &token,
+            json!({"type":"userpass","cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let auth_recreated = call(&mut service, "GET", "sys/auth/moved", &token, json!({}));
+    assert_eq!(auth_recreated.body["data"]["revision"], 1);
+    assert_ne!(auth_recreated.body["data"]["accessor"], auth_accessor);
+    Ok(())
+}
