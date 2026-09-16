@@ -1,0 +1,372 @@
+diff --git a/crates/heptabao-durable-service/src/capacity.rs b/crates/heptabao-durable-service/src/capacity.rs
+index 82b3601..23bcdae 100644
+--- a/crates/heptabao-durable-service/src/capacity.rs
++++ b/crates/heptabao-durable-service/src/capacity.rs
+@@ -1,6 +1,56 @@
+ //! Capacity observations and opt-in journal maintenance. Neither erases replay IDs.
+ use super::*;
+ 
++const MAX_BATCH_MUTATIONS: usize = 1024;
++
++struct BatchRequest {
++    principal: String,
++    namespace: String,
++    request_id: String,
++    authorization_digest: [u8; 32],
++    mutations: Vec<(String, Option<Secret>)>,
++}
++
++impl BatchRequest {
++    fn new(
++        principal: impl Into<String>,
++        namespace: impl Into<String>,
++        request_id: impl Into<String>,
++        authorization_digest: [u8; 32],
++        mutations: Vec<(String, Option<Secret>)>,
++    ) -> Result<Self, ServiceError> {
++        let request = Self {
++            principal: principal.into(),
++            namespace: namespace.into(),
++            request_id: request_id.into(),
++            authorization_digest,
++            mutations,
++        };
++        request.validate()?;
++        Ok(request)
++    }
++
++    fn validate(&self) -> Result<(), ServiceError> {
++        validate_identifier(&self.principal)?;
++        validate_namespace(&self.namespace)?;
++        validate_identifier(&self.request_id)?;
++        if self.authorization_digest == [0; 32] {
++            return Err(ServiceError::InvalidAuthorizationDigest);
++        }
++        if self.mutations.is_empty() || self.mutations.len() > MAX_BATCH_MUTATIONS {
++            return Err(ServiceError::InvalidResource);
++        }
++        let mut resources = std::collections::BTreeSet::new();
++        for (resource, _) in &self.mutations {
++            validate_resource(resource)?;
++            if !resources.insert(resource.as_str()) {
++                return Err(ServiceError::InvalidResource);
++            }
++        }
++        Ok(())
++    }
++}
++
+ /// Metadata only. Bounds are admission limits, not a production capacity claim.
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+ pub struct CapacityStatus {
+@@ -32,6 +82,184 @@ impl<B: Barrier> DurableService<B> {
+         }
+     }
+ 
++    pub fn apply_batch(
++        &mut self,
++        principal: impl Into<String>,
++        namespace: impl Into<String>,
++        request_id: impl Into<String>,
++        authorization_digest: [u8; 32],
++        mutations: Vec<(String, Option<Secret>)>,
++    ) -> Result<MutationOutcome, ServiceError> {
++        let request = BatchRequest::new(
++            principal,
++            namespace,
++            request_id,
++            authorization_digest,
++            mutations,
++        )?;
++        self.execute_batch(request, Failpoint::None)
++    }
++
++    #[cfg(test)]
++    fn apply_batch_with_failpoint(
++        &mut self,
++        request: BatchRequest,
++        failpoint: Failpoint,
++    ) -> Result<MutationOutcome, ServiceError> {
++        request.validate()?;
++        self.execute_batch(request, failpoint)
++    }
++
++    fn execute_batch(
++        &mut self,
++        mut request: BatchRequest,
++        failpoint: Failpoint,
++    ) -> Result<MutationOutcome, ServiceError> {
++        if self.unresolved {
++            return Err(ServiceError::RecoveryRequired);
++        }
++        self.directory.verify().map_err(map_guard_error)?;
++        let key = RequestKey {
++            principal: request.principal.clone(),
++            namespace: request.namespace.clone(),
++            request_id: request.request_id.clone(),
++        };
++        let mut binding_bytes = Vec::new();
++        encode_string(&mut binding_bytes, &request.principal);
++        encode_string(&mut binding_bytes, &request.namespace);
++        encode_string(&mut binding_bytes, &request.request_id);
++        binding_bytes.extend_from_slice(&request.authorization_digest);
++        binding_bytes.extend_from_slice(&(request.mutations.len() as u64).to_le_bytes());
++        for (resource, value) in &request.mutations {
++            encode_string(&mut binding_bytes, resource);
++            if let Some(value) = value {
++                binding_bytes.push(1);
++                binding_bytes.extend_from_slice(&digest32(
++                    b"heptabao.durable-service.value.v1",
++                    value.expose(),
++                ));
++            } else {
++                binding_bytes.push(2);
++                binding_bytes.extend_from_slice(&digest32(
++                    b"heptabao.durable-service.delete.v1",
++                    b"delete",
++                ));
++            }
++        }
++        let binding_digest = digest32(
++            b"heptabao.durable-service.batch-binding.v1",
++            &binding_bytes,
++        );
++        if let Some(existing) = self.ledger.get(&key) {
++            if existing.binding_digest != binding_digest {
++                return Err(ServiceError::RequestBindingConflict);
++            }
++            return Ok(MutationOutcome::Duplicate {
++                generation: existing.generation,
++                recovery_reference: existing.recovery_reference.clone(),
++            });
++        }
++        if self.ledger.len() >= self.max_retained_requests {
++            return Err(ServiceError::RequestCapacityExhausted);
++        }
++        let generation = self
++            .snapshot
++            .generation
++            .checked_add(1)
++            .ok_or(ServiceError::GenerationOverflow)?;
++        let intent_sequence = self
++            .journal_sequence
++            .checked_add(1)
++            .ok_or(ServiceError::GenerationOverflow)?;
++        let terminal_sequence = intent_sequence
++            .checked_add(1)
++            .ok_or(ServiceError::GenerationOverflow)?;
++        let recovery_reference = recovery_reference(&binding_digest, generation, intent_sequence);
++        let marker = CommitMarker {
++            key: key.clone(),
++            binding_digest,
++            recovery_reference: recovery_reference.clone(),
++            generation,
++        };
++        let mut candidate = self.snapshot.clone();
++        candidate.generation = generation;
++        candidate.last_commit = Some(marker.clone());
++        for (resource, value) in request.mutations.drain(..) {
++            let storage_key = (request.namespace.clone(), resource);
++            if let Some(mut value) = value {
++                candidate
++                    .entries
++                    .insert(storage_key, Secret(std::mem::take(&mut value.0)));
++            } else {
++                candidate.entries.remove(&storage_key);
++            }
++        }
++        let mut candidate_ledger = self.ledger.clone();
++        candidate_ledger.insert(
++            key,
++            LedgerRecord {
++                binding_digest,
++                recovery_reference: recovery_reference.clone(),
++                generation,
++            },
++        );
++        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
++        let ledger_bytes = sealed_ledger(&self.barrier, generation, &candidate_ledger)?;
++        let intent = sealed_journal_record(
++            &self.barrier,
++            intent_sequence,
++            &JournalEvent::Intent(marker.clone()),
++        )?;
++        let commit = sealed_journal_record(
++            &self.barrier,
++            terminal_sequence,
++            &JournalEvent::Commit(marker),
++        )?;
++        if snapshot_bytes.len() > MAX_FILE_BYTES || ledger_bytes.len() > MAX_FILE_BYTES {
++            return Err(ServiceError::RequestCapacityExhausted);
++        }
++        if terminal_sequence > MAX_RECORDS as u64
++            || self
++                .journal_bytes
++                .checked_add(intent.len())
++                .and_then(|n| n.checked_add(commit.len()))
++                .is_none_or(|n| n > self.journal_limit)
++        {
++            return Err(ServiceError::JournalCapacityExhausted);
++        }
++        self.unresolved = true;
++        let result = (|| {
++            self.append_frame(&intent)?;
++            if failpoint == Failpoint::AfterIntent {
++                return Err(ServiceError::RecoveryRequired);
++            }
++            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
++            self.snapshot = candidate;
++            if failpoint == Failpoint::AfterSnapshotPublication {
++                return Err(ServiceError::RecoveryRequired);
++            }
++            self.append_frame(&commit)?;
++            if failpoint == Failpoint::AfterCommitJournal {
++                return Err(ServiceError::RecoveryRequired);
++            }
++            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
++            self.ledger = candidate_ledger;
++            Ok(())
++        })();
++        if result.is_err() {
++            return Err(ServiceError::OutcomeUnknown { recovery_reference });
++        }
++        self.reconciliation.insert(
++            recovery_reference.clone(),
++            ReconciliationStatus::Committed { generation },
++        );
++        self.unresolved = false;
++        Ok(MutationOutcome::Committed {
++            generation,
++            recovery_reference,
++        })
++    }
++
+     /// Retry only a proven *pre-entry journal-capacity rejection*, after one
+     /// authenticated checkpoint. The same request/binding is retained; unknown
+     /// outcomes, I/O failures and exhausted replay capacity are never retried.
+@@ -166,4 +394,125 @@ mod tests {
+         assert_eq!(service.generation(), 1);
+         Ok(())
+     }
++
++    fn batch_mutations() -> Result<Vec<(String, Option<Secret>)>, ServiceError> {
++        Ok(vec![
++            ("secret/a".into(), Some(Secret::new(b"alpha".to_vec())?)),
++            ("secret/b".into(), Some(Secret::new(b"beta".to_vec())?)),
++            ("secret/c".into(), None),
++        ])
++    }
++
++    #[test]
++    fn atomic_batch_commits_multiple_resources_under_one_identity() -> Result<(), ServiceError> {
++        let _serial = serial_test();
++        let root = TestRoot::new("atomic-batch")?;
++        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 8)?;
++        service.put(PutRequest::new(
++            "principal-a",
++            "tenant-a",
++            "seed",
++            "secret/c",
++            [8; 32],
++            Secret::new(b"old".to_vec())?,
++        )?)?;
++        let before = service.retained_request_count();
++        assert!(matches!(
++            service.apply_batch(
++                "principal-a",
++                "tenant-a",
++                "batch-1",
++                [9; 32],
++                batch_mutations()?,
++            )?,
++            MutationOutcome::Committed { generation: 2, .. }
++        ));
++        assert_eq!(service.retained_request_count(), before + 1);
++        assert_eq!(
++            service.get("tenant-a", "secret/a")?.unwrap().expose(),
++            b"alpha"
++        );
++        assert_eq!(
++            service.get("tenant-a", "secret/b")?.unwrap().expose(),
++            b"beta"
++        );
++        assert!(service.get("tenant-a", "secret/c")?.is_none());
++        assert!(matches!(
++            service.apply_batch(
++                "principal-a",
++                "tenant-a",
++                "batch-1",
++                [9; 32],
++                batch_mutations()?,
++            )?,
++            MutationOutcome::Duplicate { generation: 2, .. }
++        ));
++        assert_eq!(service.retained_request_count(), before + 1);
++        Ok(())
++    }
++
++    #[test]
++    fn atomic_batch_binding_conflict_rejects_changed_mutation_set() -> Result<(), ServiceError> {
++        let _serial = serial_test();
++        let root = TestRoot::new("atomic-batch-conflict")?;
++        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 8)?;
++        service.apply_batch(
++            "principal-a",
++            "tenant-a",
++            "batch-1",
++            [9; 32],
++            batch_mutations()?,
++        )?;
++        assert!(matches!(
++            service.apply_batch(
++                "principal-a",
++                "tenant-a",
++                "batch-1",
++                [9; 32],
++                vec![(
++                    "secret/a".into(),
++                    Some(Secret::new(b"changed".to_vec())?),
++                )],
++            ),
++            Err(ServiceError::RequestBindingConflict)
++        ));
++        Ok(())
++    }
++
++    #[test]
++    fn atomic_batch_published_snapshot_reconciles_after_restart() -> Result<(), ServiceError> {
++        let _serial = serial_test();
++        let root = TestRoot::new("atomic-batch-reconcile")?;
++        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 8)?;
++        let request = BatchRequest::new(
++            "principal-a",
++            "tenant-a",
++            "batch-1",
++            [9; 32],
++            batch_mutations()?,
++        )?;
++        let recovery_reference = match service
++            .apply_batch_with_failpoint(request, Failpoint::AfterSnapshotPublication)
++        {
++            Err(ServiceError::OutcomeUnknown { recovery_reference }) => recovery_reference,
++            _ => return Err(ServiceError::CorruptState),
++        };
++        drop(service);
++        let service = DurableService::reopen(&root.0, TestBarrier::new(), 8)?;
++        assert_eq!(
++            service.reconcile(&recovery_reference),
++            ReconciliationStatus::Committed { generation: 1 }
++        );
++        assert_eq!(service.retained_request_count(), 1);
++        assert_eq!(
++            service.get("tenant-a", "secret/a")?.unwrap().expose(),
++            b"alpha"
++        );
++        assert_eq!(
++            service.get("tenant-a", "secret/b")?.unwrap().expose(),
++            b"beta"
++        );
++        assert!(service.get("tenant-a", "secret/c")?.is_none());
++        Ok(())
++    }
+ }
