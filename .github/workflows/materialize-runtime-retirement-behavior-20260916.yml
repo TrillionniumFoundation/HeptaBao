@@ -1,0 +1,54 @@
+name: materialize-runtime-retirement-behavior-20260916
+on:
+  push:
+    branches:
+      - codex/next-round-product-closure-20260916
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Bind exact parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "b54b248ffee4216816d32cec40d2f620446f1c42"
+      - name: Install Rust 1.98 components
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Add and qualify post-retirement runtime behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('crates/heptabao-runtime-service/src/lib.rs')
+          s = p.read_text()
+          anchor = '''        assert_eq!(runtime.generation(), 1);\n        Ok(())\n    }\n}\n'''
+          test = '''        assert_eq!(runtime.generation(), 1);\n        Ok(())\n    }\n\n    #[test]\n    fn runtime_mutations_continue_after_replay_epoch_retirement() -> Result<(), RuntimeError> {\n        let root = Root::new("replay-retirement")?;\n        let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;\n        assert!(matches!(\n            runtime.handle(inbound(\n                b"token-a",\n                "before-retirement",\n                "secret/before",\n                b"one"\n            )?)?,\n            RuntimeOutcome::Committed { generation: 1, .. }\n        ));\n        assert_eq!(runtime.durable.replay_epoch(), 0);\n        assert_eq!(runtime.retained_request_count(), 1);\n\n        runtime\n            .durable\n            .retire_replay_epoch()\n            .map_err(map_durable_error)?;\n        assert_eq!(runtime.durable.replay_epoch(), 1);\n        assert_eq!(runtime.retained_request_count(), 0);\n\n        assert!(matches!(\n            runtime.handle(inbound(\n                b"token-a",\n                "after-retirement",\n                "secret/after",\n                b"two"\n            )?)?,\n            RuntimeOutcome::Committed { generation: 2, .. }\n        ));\n        assert_eq!(runtime.retained_request_count(), 1);\n        assert_eq!(\n            runtime\n                .read(\n                    &Credential::new(b"token-a".to_vec())?,\n                    "root/team-a",\n                    "secret/after",\n                    "read-after-retirement"\n                )?\n                .map(|secret| secret.expose().to_vec()),\n            Some(b"two".to_vec())\n        );\n        Ok(())\n    }\n}\n'''
+          if s.count(anchor) != 1:
+              raise SystemExit(f'behavior-test anchor count={s.count(anchor)}')
+          p.write_text(s.replace(anchor, test, 1))
+          PY
+          cargo +1.98.0 fmt --all
+          cargo +1.98.0 test --locked -p heptabao-durable-service -p heptabao-runtime-service
+          cargo +1.98.0 clippy --locked -p heptabao-durable-service -p heptabao-runtime-service --all-targets -- -D warnings
+          git diff --check
+      - name: Remove transport and publish behavior test
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/materialize-runtime-retirement-behavior-20260916.yml
+          git diff --check
+          git config user.name "OpenAI replay retirement verifier"
+          git config user.email "noreply@openai.com"
+          git add -A
+          git commit -m "test(runtime): verify mutations after replay retirement"
+          git push origin HEAD:codex/next-round-product-closure-20260916
