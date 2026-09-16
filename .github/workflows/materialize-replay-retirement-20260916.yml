@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "486ea0d0c51d4262b9f69924f3fb7a1b992f14bb"
+          test "$(git rev-parse HEAD^)" = "f1c8a2fdde53a79d919631601f1692259413df29"
       - name: Install Rust 1.98
         shell: bash
         run: |
@@ -33,7 +33,7 @@ jobs:
           p = Path('crates/heptabao-durable-service/src/lib.rs')
           s = p.read_text()
           old = 'persist_ledger(&root.0, &TestBarrier::new(), 1, &ledger)?;'
-          new = 'persist_ledger(&root.0, &TestBarrier::new(), 1, 0, 0, &ledger)?;'
+          new = 'persist_ledger(&root.0, &TestBarrier::new(), 2, 0, 0, &ledger)?;'
           if s.count(old) != 1:
               raise SystemExit(f'legacy persist_ledger fixture count={s.count(old)}')
           s = s.replace(old, new, 1)
@@ -43,7 +43,7 @@ jobs:
               raise SystemExit('replay epoch/frontier invariant patch mismatch')
           s = s.replace(old, new, 1)
           old = '        let ledger = service.ledger.clone();\n'
-          new = '''        let ledger = service\n            .ledger\n            .iter()\n            .filter(|(_, record)| record.generation <= 1)\n            .map(|(key, record)| (key.clone(), record.clone()))\n            .collect::<BTreeMap<_, _>>();\n'''
+          new = '''        let mut ledger = service.ledger.clone();\n        let record = ledger\n            .values_mut()\n            .find(|record| record.generation == 1)\n            .ok_or(ServiceError::CorruptState)?;\n        record.binding_digest[0] ^= 0x80;\n'''
           if s.count(old) != 1:
               raise SystemExit(f'hostile ledger fixture count={s.count(old)}')
           p.write_text(s.replace(old, new, 1))
