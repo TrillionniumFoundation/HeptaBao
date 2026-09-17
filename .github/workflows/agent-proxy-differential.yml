@@ -1,0 +1,84 @@
+name: HeptaBao Agent Proxy official differential
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-proxy-differential-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  agent-proxy-differential:
+    name: agent proxy / exact head / official OpenBao 2.6.2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+      HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+    steps:
+      - name: Checkout immutable exact head without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal
+
+      - name: Build exact candidate server
+        shell: bash
+        run: cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Acquire checksum-pinned official OpenBao 2.6.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Run candidate and official operational process profiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          reports="$RUNNER_TEMP/heptabao-agent-proxy-differential"
+          mkdir -m 700 "$reports"
+          binary="$PWD/target/debug/heptabao-server"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" \
+            --output "$reports/candidate.json"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" \
+            --oracle \
+            --output "$reports/oracle.json"
+          python qa/openbao-acceptance/compare_operational_reports.py \
+            --candidate "$reports/candidate.json" \
+            --oracle "$reports/oracle.json" \
+            --output "$reports/comparison.json"
+          python - "$reports/comparison.json" <<'PY'
+          import json, pathlib, sys
+          report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["matched"] is True
+          assert report["common_observations"] >= 49
+          assert report["full_openbao_compatibility"] is False
+          assert report["independent_qualification"] is False
+          assert report["production_authority"] is False
+          print(json.dumps(report, sort_keys=True, separators=(",", ":")))
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
