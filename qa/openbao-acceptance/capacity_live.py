@@ -2,7 +2,8 @@
 """Measure the real bounded service on a new synthetic loopback TLS instance.
 
 No existing endpoint, credentials or data directory can be supplied. A pass
-proves the bounded profile's refusal/reopen semantics, never production scale.
+proves the current 16 MiB chunked whole-state profile's refusal/reopen semantics,
+never production scale or record-oriented scalability.
 """
 from __future__ import annotations
 
@@ -17,6 +18,11 @@ import time
 
 from bao_http import SafeArgumentParser, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
+
+CURRENT_STATE_LIMIT_BYTES = 16 * 1024 * 1024
+LEGACY_STATE_LIMIT_BYTES = 768 * 1024
+SATURATION_PAYLOAD_BYTES = 224 * 1024
+MAX_SATURATION_WRITES = 96
 
 
 def validate_observation(data: dict) -> None:
@@ -52,7 +58,7 @@ def main() -> int:
     root = Path(tempfile.mkdtemp(prefix='heptabao-capacity-live-'))
     root.chmod(0o700)
     instance = None
-    report = {'schema': 'heptabao.capacity-live.v1', 'synthetic_only': True, 'cases': [],
+    report = {'schema': 'heptabao.capacity-live.v2', 'synthetic_only': True, 'cases': [],
               'binary_sha256': file_hash(binary), 'runner_sha256': file_hash(Path(__file__)),
               'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(),
@@ -84,16 +90,19 @@ def main() -> int:
         key = init['keys_base64'][0]
         check('capacity.unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
         initial = observe()
-        check('capacity.profile_is_bounded', initial['state_limit_bytes'] == 768 * 1024)
+        check('capacity.profile_is_current_bound', initial['state_limit_bytes'] == CURRENT_STATE_LIMIT_BYTES)
+        check('capacity.legacy_bound_retired', initial['state_limit_bytes'] > LEGACY_STATE_LIMIT_BYTES)
         original = instance.token
         instance.token = 'synthetic-invalid-token'
         check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
         instance.token = original
-        payload = {'data': {'synthetic': 'x' * (32 * 1024)}}
+
+        payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
         accepted = 0
-        for number in range(32):
+        crossed_legacy = False
+        for number in range(MAX_SATURATION_WRITES):
             start = time.monotonic()
             status, _ = instance.call('POST', 'secret/data/capacity-' + str(number), payload)
             latencies.append((time.monotonic() - start) * 1000)
@@ -103,9 +112,13 @@ def main() -> int:
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            if previous['state_bytes'] > LEGACY_STATE_LIMIT_BYTES:
+                crossed_legacy = True
         else:
             raise ScenarioFailure('capacity.did_not_reach_declared_bound')
+
         check('capacity.nontrivial_growth', accepted > 1)
+        check('capacity.crossed_legacy_ceiling_before_refusal', crossed_legacy)
         saturated = observe()
         check('capacity.rejection_no_state_or_identity_effect', saturated == previous)
         check('capacity.rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
@@ -124,9 +137,12 @@ def main() -> int:
         check('capacity.binary_unchanged', file_hash(binary) == report['binary_sha256'])
         report.update(status='passed', initial=initial, saturated=saturated, after_compaction=compacted,
                       accepted_writes=accepted,
+                      legacy_state_limit_bytes=LEGACY_STATE_LIMIT_BYTES,
+                      current_state_limit_bytes=CURRENT_STATE_LIMIT_BYTES,
+                      saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
                       latency_ms={'min': min(latencies), 'max': max(latencies),
                                   'mean': sum(latencies)/len(latencies)},
-                      scope='bounded_capacity_refusal_not_scale_qualification')
+                      scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
     except Exception as error:
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
     finally:
