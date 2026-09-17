@@ -18,7 +18,7 @@ from core_isolation import ScenarioFailure
 
 
 def observation():
-    return dict(profile='bounded-single-record-v1', scope='serving-leader-local', state_bytes=40,
+    return dict(profile='bounded-chunked-state-v1', scope='serving-leader-local', state_bytes=40,
         state_limit_bytes=100, state_remaining_bytes=60, generation=1, retained_operations=1,
         operation_limit=10, operations_remaining=9, journal_bytes=20, journal_limit_bytes=200,
         admission_reserved=False, compaction_reclaims_operation_identities=False,

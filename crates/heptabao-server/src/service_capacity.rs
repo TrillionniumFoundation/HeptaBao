@@ -39,10 +39,12 @@ impl Service {
         let state_limit = MAX_STATE_BYTES;
         #[cfg(test)]
         let state_limit = self.state_capacity;
-        // The Service stores its complete serialized application state in one
-        // durable record; this is not a per-secret quota or an unlimited store.
+        // The Service admits one bounded serialized logical application state.
+        // Local durability uses 512 KiB chunks plus an authenticated manifest,
+        // while HA still proposes the complete serialized state. This is not a
+        // per-secret quota and it is not a record-oriented scalability claim.
         Response::ok(json!({"data": {
-            "profile": "bounded-single-record-v1",
+            "profile": "bounded-chunked-state-v1",
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
             "state_bytes": capacity.logical_payload_bytes,
