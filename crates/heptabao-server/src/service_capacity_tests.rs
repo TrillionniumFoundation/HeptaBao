@@ -360,6 +360,72 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
 }
 
 #[test]
+fn ha_catch_up_crosses_multiple_replay_epochs_and_restart_preserves_frontier()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = std::env::temp_dir().join(format!(
+        "heptabao-replay-ha-multi-{}-{}",
+        std::process::id(),
+        hex(&crypto::random::<16>()?)
+    ));
+    private_directory(&root)?;
+    let result = (|| -> Result<(), Box<dyn std::error::Error>> {
+        let data = root.join("data");
+        let audit = root.join("audit.jsonl");
+        let mut service = Service::new(data.clone(), &audit)?;
+        let init = service.handle_at(
+            "POST",
+            "sys/init",
+            "",
+            "",
+            json!({"secret_shares": 1, "secret_threshold": 1}),
+            100,
+        );
+        assert_eq!(init.status, 200);
+        let key = init.body["keys_base64"][0]
+            .as_str()
+            .ok_or("missing key")?
+            .to_owned();
+        assert_eq!(
+            service
+                .handle_at("POST", "sys/unseal", "", "", json!({"key": key}), 100)
+                .status,
+            200
+        );
+
+        let mut committed = service.state.clone().ok_or("missing state")?;
+        committed.schema = CURRENT_STATE_SCHEMA;
+        committed.replay_epoch = 3;
+        let bytes = serde_json::to_vec(&committed)?;
+        service
+            .persist_local(&bytes, "hasync-multi-epoch-transition")
+            .map_err(|_| "multi-epoch HA catch-up persistence failed")?;
+        let durable = service.durable.as_ref().ok_or("missing durable")?;
+        assert_eq!(durable.replay_epoch(), 3);
+        assert_eq!(durable.retired_through_generation() + 1, durable.generation());
+        assert_eq!(durable.retained_request_count(), 1);
+        drop(service);
+
+        let mut reopened = Service::new(data, &audit)?;
+        assert_eq!(
+            reopened
+                .handle_at("POST", "sys/unseal", "", "", json!({"key": key}), 101)
+                .status,
+            200
+        );
+        assert_eq!(
+            reopened.state.as_ref().ok_or("missing state")?.replay_epoch,
+            3
+        );
+        let durable = reopened.durable.as_ref().ok_or("missing durable")?;
+        assert_eq!(durable.replay_epoch(), 3);
+        assert_eq!(durable.retired_through_generation() + 1, durable.generation());
+        Ok(())
+    })();
+    let _ = fs::remove_dir_all(&root);
+    result
+}
+
+#[test]
 fn failed_state_publication_after_epoch_retirement_fences_service()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = std::env::temp_dir().join(format!(
