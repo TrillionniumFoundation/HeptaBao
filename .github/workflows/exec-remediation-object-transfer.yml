@@ -1,0 +1,112 @@
+name: HeptaBao Git object transfer (not validation)
+
+# One-shot development transport only. This branch/workflow must never be merged
+# into the product candidate. It writes content-addressed blobs, never Git refs,
+# releases or acceptance receipts, and never executes the proposed source code.
+on:
+  push:
+    branches: [exec/heptabao-remediation-objects-20260917-r1]
+
+permissions:
+  contents: write
+
+jobs:
+  transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 713eefea365137befbb5b49d1e939ab8ffcec1d8
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Reconstruct and byte-verify ordinary source blobs without executing source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -I - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request, zlib
+          BASE = '713eefea365137befbb5b49d1e939ab8ffcec1d8'
+          REPO = 'TrillionniumFoundation/HeptaBao'
+          PARTS = ['b52088286f7bace90dca6c547ea13bdc6fd0ca79', '01b5a97d8c49b63f33b86ae6929fae950b61d35e', 'c0ba7b4376fb804014fd547767363ac95576526e']
+          EXPECTED = {
+              '.github/workflows/codex-openbao-replacement-ci.yml': '747eca0e0fea5d7500c6c68e678dccc92ec298ea',
+              'crates/heptabao-durable-service/src/capacity.rs': 'f6b5c5be551e13db1966cf3f844c74dfd0c124e0',
+              'crates/heptabao-durable-service/src/lib.rs': 'bab184ad2ad24c2636b38d44199499fae05b3418',
+              'crates/heptabao-server/src/http.rs': '0e6c1d7730c6f50efb50726dcacb0c28a3853123',
+              'crates/heptabao-server/src/service.rs': '8af50ea18ab5ffe823674e20b46a662ef8804e96',
+              'crates/heptabao-server/src/service_capacity_tests.rs': '2d2580749c90d5c409aeb65170eeb2a2771e6511',
+              'docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md': '73ea1109028da8c960e945a96d3b53c097116fdc',
+              'docs/modules/heptabao-durable-service.md': '592b1358df4090e7cc06f98831ef6051af7a3ec1',
+              'docs/modules/heptabao-server.md': 'e90deba9757fbe857b075ded3716b8e3fd261317',
+              'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md': '8efe2e06a80bf3cb356f886c2be2138a5e63d6f4',
+              'planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json': '6f35bef7395007870ce9101b251076e511b5ac63',
+              'qa/openbao-acceptance/replay_epoch_ha.py': '3bcab83f29c84c770b354c67d5aeac5f2bcada07',
+              'qa/openbao-acceptance/storage_growth.py': '48de18df4a8cbc6c01f718e4666d5fc3d3b1eedb',
+              'qa/openbao-acceptance/tests/test_storage_growth.py': '41da39764bea1c493da9e2631225d665cd1bfcec',
+              'scripts/validate_runtime_doc_truth.py': '87c95aeebde16a8f5b36bd343f7b8d945c346466',
+              'tests/repository/test_runtime_doc_truth.py': 'b7405263636f323b75d1e0759a9ae4cde6bca4cc',
+              'tests/repository/test_section6_integration.py': 'fb068c6b4649bb15774a43ed854e65e37bdb83c2',
+          }
+          MODES = {'qa/openbao-acceptance/replay_epoch_ha.py': '100755', 'scripts/validate_runtime_doc_truth.py': '100755'}
+          def git(*args, data=None):
+              return subprocess.run(['git', *args], input=data, check=True, stdout=subprocess.PIPE).stdout
+          def oid(data):
+              return hashlib.sha1(('blob ' + str(len(data)) + '\0').encode() + data).hexdigest()
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+          def api(path, body=None):
+              payload = None if body is None else json.dumps(body).encode()
+              request = urllib.request.Request('https://api.github.com/repos/' + REPO + path, data=payload,
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with opener.open(request, timeout=60) as response:
+                  raw = response.read(1024 * 1024 + 1)
+                  if len(raw) > 1024 * 1024:
+                      raise RuntimeError('unbounded API response')
+                  return json.loads(raw)
+          if git('rev-parse', 'HEAD').decode().strip() != BASE or git('status', '--porcelain'):
+              raise RuntimeError('wrong or dirty source base')
+          compressed = bytearray()
+          for sha in PARTS:
+              value = api('/git/blobs/' + sha)
+              if value.get('encoding') != 'base64':
+                  raise RuntimeError('invalid transport encoding')
+              data = base64.b64decode(value['content'])
+              if oid(data) != sha:
+                  raise RuntimeError('transport object mismatch')
+              compressed.extend(data)
+          decoder = zlib.decompressobj()
+          patch = decoder.decompress(compressed, 63681)
+          if not decoder.eof or decoder.unused_data or len(patch) != 63680:
+              raise RuntimeError('invalid bounded patch framing')
+          if hashlib.sha256(patch).hexdigest() != '72c7d20ec78427b559012ccedc73fd30f8d11f78f63fa284d827d0e14c9a05c3':
+              raise RuntimeError('patch digest mismatch')
+          git('apply', '--check', '--index', '-', data=patch)
+          git('apply', '--index', '-', data=patch)
+          changed = git('diff', '--cached', '--name-only').decode().splitlines()
+          if set(changed) != set(EXPECTED) or len(changed) != len(EXPECTED):
+              raise RuntimeError('patch path set mismatch')
+          entries = []
+          for name in sorted(changed):
+              info = git('ls-files', '-s', '--', name).decode().split()
+              mode, sha = info[0], info[1]
+              data = git('show', ':' + name)
+              if mode != MODES.get(name, '100644') or sha != EXPECTED[name] or oid(data) != sha:
+                  raise RuntimeError('proposed source bytes/mode differ from reviewed local patch')
+              returned = api('/git/blobs', {'encoding': 'base64', 'content': base64.b64encode(data).decode()})
+              if returned.get('sha') != sha:
+                  raise RuntimeError('uploaded object mismatch')
+              entries.append({'path': name, 'mode': mode, 'type': 'blob', 'sha': sha})
+          report = {'base': BASE, 'tree': git('write-tree').decode().strip(), 'entries': entries,
+                    'source_execution': False, 'refs_updated': False, 'qualification': False}
+          pathlib.Path(os.environ['RUNNER_TEMP'], 'heptabao-object-transfer.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, sort_keys=True))
+          PY
+      - name: Export only byte-verified Git object identities
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: heptabao-object-transfer-20260917
+          path: ${{ runner.temp }}/heptabao-object-transfer.json
+          if-no-files-found: error
+          retention-days: 1
