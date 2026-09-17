@@ -84,8 +84,21 @@ def validate(root: Path = ROOT) -> list[str]:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     try:
-        snapshot, details = module.inventory(root)
-        packages = {row["package"]: row for row in snapshot["modules"]}
+        _snapshot, details = module.inventory(root)
+        # The current inventory v3 intentionally commits only a compact digest
+        # snapshot. Reconstruct package/root/guide ownership from the exact
+        # workspace instead of reaching into the removed v2 snapshot["modules"]
+        # field. The detailed lexical inventory remains the source for tests/API
+        # anchors below.
+        packages = {}
+        for member in module.members(root):
+            manifest = tomllib.loads((root / member / "Cargo.toml").read_text())
+            name = manifest["package"]["name"]
+            packages[name] = {
+                "package": name,
+                "root": member,
+                "guide": f"docs/modules/{name}.md",
+            }
         closure = runtime_closure(root, packages)
         for name, row in packages.items():
             text = (root / row["guide"]).read_text()

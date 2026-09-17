@@ -14,13 +14,15 @@ The shared serialized-state admission bound is **16 MiB**, and HA replication us
 that same bound. A point mutation can still serialize and replicate the complete
 logical state, so this is bounded chunking rather than record-oriented scalability.
 
-The active replay ledger admits at most **32,000 identities per epoch**. In
-single-node mode a root-authorized replay retirement operation creates a durable
-authenticated generation frontier, advances the replay epoch, checkpoints the
-journal and allows new identities without making retired requests fresh again.
-HA mode deliberately rejects replay retirement until a coordinated cluster epoch
-transition is implemented and qualified. Each underlying durable file/journal is
-bounded to **64 MiB**; request parsing bounds are separate from state capacity.
+The active replay ledger admits at most **32,000 identities per epoch**. A
+root-authorized replay retirement operation advances an authenticated durable
+frontier and the schema-5 application `replay_epoch`; retired requests do not
+become fresh. In HA mode the next epoch is first ordered as ordinary replicated
+application state, and each admitted node advances its local durable replay epoch
+immediately before publishing that committed state. The source protocol is present,
+but destructive leader-change/partition/snapshot/stale-rejoin qualification across
+retirement remains required. Each underlying durable file/journal is bounded to
+**64 MiB**; request parsing bounds are separate from state capacity.
 
 `GET /v1/sys/internal/capacity` accepts an empty request object and reports:
 
@@ -78,17 +80,19 @@ material or become automatic retries.
 ## Replay retirement
 
 `POST`/`PUT /v1/sys/storage/raft/replay-retire` with an empty object is root-only.
-In single-node mode it compacts first, commits a new replay epoch and authenticated
-retired-through generation, checkpoints that state, and returns the previous and
-current epoch plus retired counts. Restart, crash-window and encrypted
-backup/restore tests verify that requests from the retired epoch remain rejected.
+It requires application and durable epochs to agree, advances exactly one epoch,
+and returns the previous/current epoch plus retired counts. In single-node mode the
+transition is local. In HA mode the schema-5 epoch marker is committed through the
+existing Raft state transition before the local detailed replay ledger is retired;
+follower catch-up uses the same durable state-publication path. A node cannot jump
+multiple epochs, and a crash after durable retirement but before matching state
+publication fences the process for restart normalization or HA catch-up.
 
-When HA is enabled the route returns 409. Retiring one node's active set without a
-quorum-ordered epoch transition could permit replicas to disagree about whether a
-stale request is a duplicate, so HA retirement remains a replacement blocker.
-The required cluster protocol must order the epoch/frontier through consensus,
-apply it on every voter before old identities are discarded, survive leader loss,
-snapshot install and stale-node rejoin, and reject delayed old-epoch traffic.
+This closes the previous source-level `409` placeholder; it does **not** by itself
+close replacement admission. The exact candidate still needs a destructive
+multi-process fixture that crosses retirement under leader loss, partition/heal,
+snapshot install, stale-node rejoin and more than 32,000 logical operations while
+proving delayed old-epoch traffic remains rejected.
 
 ## Executable evidence
 
@@ -114,7 +118,8 @@ Chunking removes the obsolete single-value 768 KiB ceiling but does not remove
 whole-state serialization or whole-state Raft proposals. Production-scale closure
 still requires record ownership or another demonstrated architecture whose write
 amplification, peak memory, snapshot streaming and recovery cost remain bounded as
-the dataset grows. It also requires the coordinated HA replay-epoch protocol above.
+the dataset grows. The HA replay-epoch protocol now exists in source; its destructive
+multi-process and long-history qualification remains a separate admission exit.
 
 Before admission, exercise total datasets materially above the legacy ceiling,
 long write histories beyond one replay epoch, leader/follower catch-up,

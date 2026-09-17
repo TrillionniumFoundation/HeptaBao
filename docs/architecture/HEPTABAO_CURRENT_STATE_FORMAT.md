@@ -11,7 +11,12 @@ The current Service state schema is **5**. Its source constant is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
 internal owners, not competing independent stores. Schema 5 additionally owns
-encrypted Kubernetes config/role maps and OIDC config/role/session/clock maps. Separate seal metadata uses
+the cluster-visible `replay_epoch`, encrypted Kubernetes config/role maps and OIDC
+config/role/session/clock maps. `replay_epoch=0` is omitted for canonical legacy
+bytes; a nonzero replay epoch is invalid on schema 1–4. On reopen, application
+state ahead of durable replay authority fails closed, while a durable epoch ahead
+of legacy application metadata is normalized one-way and rewritten before HA
+admission. Separate seal metadata uses
 schema 1; the application schema must never be inferred from that number.
 
 ## Read admission and mutation promotion

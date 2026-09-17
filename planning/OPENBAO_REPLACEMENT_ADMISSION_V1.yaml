@@ -35,8 +35,8 @@ required_gates:
   - id: replay_identity_lifecycle
     status: OPEN
     owner: runtime
-    requirement: idempotency and replay protection remain safe for long-running HA clusters; single-node epoch retirement exists, but complete replacement requires coordinated quorum-ordered retirement without a fixed lifetime ceiling or stale-replay resurrection
-    evidence: deterministic retirement/compaction protocol with restart, snapshot, duplicate, stale-retry, and HA tests
+    requirement: idempotency and replay protection remain safe for long-running HA clusters; quorum-ordered schema-5 epoch retirement now exists in source, but complete replacement still requires destructive long-history proof without stale-replay resurrection
+    evidence: deterministic retirement/compaction protocol plus exact-head leader-change, partition/heal, snapshot/rejoin, duplicate, stale-retry, and >32000-operation HA receipts
   - id: complete_surface_admission
     status: OPEN
     owner: compatibility

@@ -84,16 +84,19 @@ def main() -> int:
         key = init['keys_base64'][0]
         check('capacity.unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
         initial = observe()
-        check('capacity.profile_is_bounded', initial['state_limit_bytes'] == 768 * 1024)
+        check('capacity.profile_is_bounded', initial['state_limit_bytes'] == 16 * 1024 * 1024)
         original = instance.token
         instance.token = 'synthetic-invalid-token'
         check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
         instance.token = original
-        payload = {'data': {'synthetic': 'x' * (32 * 1024)}}
+        # Stay below the normal 256 KiB request-body limit while reaching the
+        # current 16 MiB aggregate state bound in a bounded number of writes.
+        # This intentionally exercises whole-state growth; it is not a scale SLO.
+        payload = {'data': {'synthetic': 'x' * (224 * 1024)}}
         previous = observe()
         latencies = []
         accepted = 0
-        for number in range(32):
+        for number in range(96):
             start = time.monotonic()
             status, _ = instance.call('POST', 'secret/data/capacity-' + str(number), payload)
             latencies.append((time.monotonic() - start) * 1000)

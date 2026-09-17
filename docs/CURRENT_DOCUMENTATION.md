@@ -170,11 +170,13 @@ The current work inventory is `planning/HEPTABAO_SURFACE_WORK_V1.json`, checked 
 `scripts/surface_work.py`. It retains every original surface/case binding and links
 existing real executables; it is subordinate to the active V2.1 plan, not a second
 plan or completion evidence. Technical contracts and open work are described in
-`docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
-audited capacity observation, safe journal checkpoint maintenance and an explicit
-Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
-limits, import raw OpenBao snapshots, update application ciphertext references,
-or advance Hepta's independently requalified consumer pin.
+`docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime line includes audited capacity observation, safe journal
+checkpoint maintenance, 16 MiB chunk/manifest application-state publication,
+explicit replay-epoch retirement and a Transit ciphertext re-encryption tool. The
+HA epoch transition is specified in `docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md`.
+These mechanisms do not make storage record-oriented, import raw OpenBao snapshots,
+update application ciphertext references, or advance Hepta's independently
+requalified consumer pin.
 
 ## Next-stage execution navigation
 

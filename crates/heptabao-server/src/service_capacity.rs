@@ -39,10 +39,11 @@ impl Service {
         let state_limit = MAX_STATE_BYTES;
         #[cfg(test)]
         let state_limit = self.state_capacity;
-        // The Service stores its complete serialized application state in one
-        // durable record; this is not a per-secret quota or an unlimited store.
+        // The Service still serializes one complete logical application-state image.
+        // The durable representation is chunked+manifest, but this remains an
+        // aggregate state bound rather than a per-secret quota or scalable store.
         Response::ok(json!({"data": {
-            "profile": "bounded-single-record-v1",
+            "profile": "bounded-whole-state-v2",
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
             "state_bytes": capacity.logical_payload_bytes,
