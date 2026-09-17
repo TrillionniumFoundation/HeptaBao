@@ -58,6 +58,8 @@ def main() -> int:
     root = Path(tempfile.mkdtemp(prefix='heptabao-capacity-live-'))
     root.chmod(0o700)
     instance = None
+    started = time.monotonic()
+    stage = 'setup'
     report = {'schema': 'heptabao.capacity-live.v2', 'synthetic_only': True, 'cases': [],
               'binary_sha256': file_hash(binary), 'runner_sha256': file_hash(Path(__file__)),
               'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -71,6 +73,15 @@ def main() -> int:
         if not condition:
             raise ScenarioFailure(name)
 
+    def progress(event, **fields):
+        safe = {
+            'schema': 'heptabao.capacity-live-progress.v1',
+            'event': event,
+            'elapsed_ms': int((time.monotonic() - started) * 1000),
+        }
+        safe.update(fields)
+        print(json.dumps(safe, sort_keys=True), flush=True)
+
     def observe():
         status, body = instance.call('GET', 'sys/internal/capacity')
         check('capacity.observation.' + str(len(report['cases'])), status == 200)
@@ -79,6 +90,8 @@ def main() -> int:
         return data
 
     try:
+        stage = 'initialize'
+        progress('phase', stage=stage)
         spec = importlib.util.spec_from_file_location('capacity_smoke', ROOT/'qa/single-node/smoke.py')
         smoke = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(smoke)
@@ -97,6 +110,9 @@ def main() -> int:
         check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
         instance.token = original
 
+        stage = 'saturation'
+        progress('phase', stage=stage, state_limit_bytes=initial['state_limit_bytes'],
+                 payload_bytes=SATURATION_PAYLOAD_BYTES, max_writes=MAX_SATURATION_WRITES)
         payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
@@ -108,10 +124,20 @@ def main() -> int:
             latencies.append((time.monotonic() - start) * 1000)
             if status == 507:
                 report['rejected_key_index'] = number
+                progress('saturation_refused', attempt=number, accepted=accepted,
+                         state_bytes=previous['state_bytes'], journal_bytes=previous['journal_bytes'],
+                         retained_operations=previous['retained_operations'])
                 break
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            if accepted == 1 or accepted % 8 == 0:
+                progress('saturation_progress', accepted=accepted,
+                         state_bytes=previous['state_bytes'],
+                         state_remaining_bytes=previous['state_remaining_bytes'],
+                         journal_bytes=previous['journal_bytes'],
+                         retained_operations=previous['retained_operations'],
+                         last_write_ms=round(latencies[-1], 3))
             if previous['state_bytes'] > LEGACY_STATE_LIMIT_BYTES:
                 crossed_legacy = True
         else:
@@ -123,10 +149,15 @@ def main() -> int:
         check('capacity.rejection_no_state_or_identity_effect', saturated == previous)
         check('capacity.rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
         check('capacity.committed_value_readable', instance.call('GET', 'secret/data/capacity-0')[1].get('data', {}).get('data') == payload['data'])
+        stage = 'compaction'
+        progress('phase', stage=stage, accepted=accepted, state_bytes=saturated['state_bytes'],
+                 journal_bytes=saturated['journal_bytes'], retained_operations=saturated['retained_operations'])
         check('capacity.compact', instance.call('POST', 'sys/storage/raft/compact', {})[0] == 200)
         compacted = observe()
         check('capacity.compaction_not_ledger_gc', compacted['retained_operations'] == saturated['retained_operations'])
         check('capacity.compaction_not_state_growth', compacted['state_bytes'] == saturated['state_bytes'])
+        stage = 'restart'
+        progress('phase', stage=stage, generation=compacted['generation'])
         instance.stop()
         instance.start()
         check('capacity.reopen_sealed', instance.call('GET', 'sys/internal/capacity')[0] == 503)
@@ -144,6 +175,7 @@ def main() -> int:
                                   'mean': sum(latencies)/len(latencies)},
                       scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
     except Exception as error:
+        progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
     finally:
         if instance is not None:
