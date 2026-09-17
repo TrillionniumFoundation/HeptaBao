@@ -65,12 +65,12 @@ def run(binary, output):
             check('crossed_observation', status == 200)
             check(
                 'historical_ceiling_crossed',
-                crossed_data.get('state_bytes', 0) > LEGACY_STATE_LIMIT_BYTES,
+                crossed_data.get('stored_value_bytes', 0) > LEGACY_STATE_LIMIT_BYTES,
             )
             check('crossing_does_not_poison_service', crossed_data.get('recovery_required') is False)
             check(
                 'current_bound_still_enforced',
-                crossed_data.get('state_bytes', CURRENT_STATE_LIMIT_BYTES + 1) < CURRENT_STATE_LIMIT_BYTES,
+                crossed_data.get('stored_value_bytes', CURRENT_STATE_LIMIT_BYTES + 1) < CURRENT_STATE_LIMIT_BYTES,
             )
 
             status, compacted = instance.call('POST', 'sys/storage/raft/compact', {})
@@ -97,7 +97,7 @@ def run(binary, output):
             )
             check(
                 'restart_preserves_crossed_state',
-                after.get('data', {}).get('state_bytes', 0) > LEGACY_STATE_LIMIT_BYTES,
+                after.get('data', {}).get('stored_value_bytes', 0) > LEGACY_STATE_LIMIT_BYTES,
             )
             result = {
                 'schema': 'heptabao.capacity-legacy-crossing.v2',
@@ -109,7 +109,7 @@ def run(binary, output):
                 'candidate_binary_sha256': file_digest(binary),
                 'legacy_state_limit_bytes': LEGACY_STATE_LIMIT_BYTES,
                 'current_state_limit_bytes': CURRENT_STATE_LIMIT_BYTES,
-                'observed_state_bytes_after_crossing': after.get('data', {}).get('state_bytes'),
+                'observed_state_bytes_after_crossing': after.get('data', {}).get('stored_value_bytes'),
                 'production_capacity_qualified': False,
                 'compatibility_claim': False,
             }
