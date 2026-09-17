@@ -39,6 +39,26 @@ impl Service {
         let state_limit = MAX_STATE_BYTES;
         #[cfg(test)]
         let state_limit = self.state_capacity;
+
+        // `DurableService::capacity().logical_payload_bytes` measures the bytes
+        // owned by the local durable store. With alternating chunk slots that
+        // includes the previous slot plus the current slot and manifest, so it
+        // can legitimately exceed the serialized application-state bound even
+        // while the current State itself is still admissible. The public
+        // `state_*` fields are an application-state contract, not a physical
+        // storage-amplification counter; derive them from the exact in-memory
+        // State that would be passed to commit_state_bytes().
+        let state_bytes = match self.state.as_ref() {
+            Some(state) => match serde_json::to_vec(state) {
+                Ok(bytes) => Zeroizing::new(bytes).len(),
+                Err(_) => return Response::error(503, "server state serialization unavailable"),
+            },
+            None => return Response::error(503, "server is sealed"),
+        };
+        if state_bytes > state_limit {
+            return Response::error(503, "committed server state exceeds configured capacity");
+        }
+
         // The Service admits one bounded serialized logical application state.
         // Local durability uses 512 KiB chunks plus an authenticated manifest,
         // while HA still proposes the complete serialized state. This is not a
@@ -47,9 +67,9 @@ impl Service {
             "profile": "bounded-chunked-state-v1",
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
-            "state_bytes": capacity.logical_payload_bytes,
+            "state_bytes": state_bytes,
             "state_limit_bytes": state_limit,
-            "state_remaining_bytes": state_limit.saturating_sub(capacity.logical_payload_bytes),
+            "state_remaining_bytes": state_limit - state_bytes,
             "generation": capacity.generation,
             "retained_operations": capacity.retained_requests,
             "operation_limit": capacity.max_retained_requests,
@@ -138,6 +158,55 @@ mod tests {
         let encoded = serde_json::to_string(&response.body)?;
         assert!(!encoded.contains(&token));
         assert!(!encoded.contains(root.path.to_str().ok_or("path encoding")?));
+        Ok(())
+    }
+
+    #[test]
+    fn capacity_reports_serialized_application_state_not_chunk_slot_bytes()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        service.state_capacity = 1024 * 1024;
+
+        // Three growing writes force both 512 KiB state slots to retain chunks.
+        // The physical durable payload is therefore larger than the currently
+        // serialized State even though the application state remains admissible.
+        let value = "x".repeat(280 * 1024);
+        for index in 0..3 {
+            let response = call(
+                &mut service,
+                "POST",
+                &format!("secret/data/capacity-logical-{index}"),
+                &token,
+                json!({"data": {"synthetic": value}}),
+            );
+            assert_eq!(response.status, 200, "write {index} unexpectedly failed");
+        }
+
+        let durable_bytes = service
+            .durable
+            .as_ref()
+            .ok_or("durable missing")?
+            .capacity()?
+            .logical_payload_bytes;
+        let response = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(response.status, 200);
+        let data = &response.body["data"];
+        let state_bytes = data["state_bytes"].as_u64().ok_or("state bytes missing")? as usize;
+        let state_limit = data["state_limit_bytes"].as_u64().ok_or("state limit missing")? as usize;
+        let remaining = data["state_remaining_bytes"].as_u64().ok_or("remaining missing")? as usize;
+        assert_eq!(state_limit, service.state_capacity);
+        assert!(state_bytes < state_limit);
+        assert_eq!(remaining, state_limit - state_bytes);
+        assert!(durable_bytes > state_bytes);
+        assert!(durable_bytes > state_limit);
         Ok(())
     }
 
