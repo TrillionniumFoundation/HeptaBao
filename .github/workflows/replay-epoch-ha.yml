@@ -1,0 +1,65 @@
+name: HeptaBao replay epoch HA lifecycle
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: replay-epoch-ha-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  replay-epoch-ha:
+    name: replay epoch / exact head / three process
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout immutable exact head without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+
+      - name: Print compact current-source inventory preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/current_source_inventory.py --details \
+            | python -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["snapshot"], sort_keys=True, separators=(",", ":")))'
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal
+
+      - name: Build exact candidate server
+        shell: bash
+        run: cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Exercise replay retirement across two real leader failovers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/replay_epoch_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --work-dir "$RUNNER_TEMP/heptabao-replay-epoch-ha"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code

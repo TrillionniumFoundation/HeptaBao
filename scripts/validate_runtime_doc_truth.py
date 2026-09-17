@@ -11,6 +11,8 @@ ENGINE = 'docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md'
 SERVER = 'docs/modules/heptabao-server.md'
 ARCH = 'docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md'
 CAPACITY = 'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md'
+REPLAY = 'docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md'
+REPLAY_HA = 'qa/openbao-acceptance/replay_epoch_ha.py'
 ACCEPTANCE = 'docs/compatibility/HEPTABAO_REPLACEMENT_ACCEPTANCE.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
 SERVER_LIB = 'crates/heptabao-server/src/lib.rs'
@@ -60,6 +62,8 @@ def validate(root: Path = ROOT) -> list[str]:
 
         server_guide = (root / SERVER).read_text()
         capacity_guide = (root / CAPACITY).read_text()
+        replay_guide = (root / REPLAY).read_text()
+        replay_fixture = (root / REPLAY_HA).read_text()
         server_lib = (root / SERVER_LIB).read_text()
         state_store = (root / STATE_STORE).read_text()
         state_mib = _one(
@@ -74,12 +78,27 @@ def validate(root: Path = ROOT) -> list[str]:
             'state chunk bound is missing or ambiguous',
             errors,
         )
+        operations_raw = _one(
+            r'^const MAX_OPERATIONS: usize = ([\d_]+);$',
+            source,
+            'replay operation-identity bound is missing or ambiguous',
+            errors,
+        )
         if state_mib is not None:
             if f'**{state_mib} MiB**' not in capacity_guide or f'{state_mib} MiB' not in server_guide:
                 errors.append('current capacity documentation differs from MAX_APPLICATION_STATE_BYTES')
+            if f'**{state_mib} MiB**' not in replay_guide:
+                errors.append('replay protocol differs from MAX_APPLICATION_STATE_BYTES')
         if chunk_kib is not None:
             if f'**{chunk_kib} KiB**' not in capacity_guide or f'{chunk_kib} KiB' not in server_guide:
                 errors.append('current capacity documentation differs from STATE_CHUNK_BYTES')
+            if f'**{chunk_kib} KiB**' not in replay_guide:
+                errors.append('replay protocol differs from STATE_CHUNK_BYTES')
+        if operations_raw is not None:
+            operations = int(operations_raw.replace('_', ''))
+            formatted = f'{operations:,}'
+            if formatted not in server_guide or f'**{formatted}**' not in replay_guide:
+                errors.append('replay documentation differs from MAX_OPERATIONS')
         stale_server_claims = (
             'limits state to 768 KiB',
             'A single `(system,state)` record stores its serialization',
@@ -91,6 +110,50 @@ def validate(root: Path = ROOT) -> list[str]:
                 errors.append(f'{SERVER}: stale current storage/schema claim')
         if 'heptabao-state-chunks-v1' not in server_guide:
             errors.append(f'{SERVER}: missing current chunk-manifest storage format')
+
+        replay_source_markers = (
+            'replay_epoch: u64',
+            'sys/storage/raft/replay-retire',
+            'durable.retire_replay_epoch()',
+            'apply_batch_in_replay_epoch',
+            '"raft-coordinated"',
+        )
+        for marker in replay_source_markers:
+            if marker not in source:
+                errors.append(f'current replay source missing required marker: {marker}')
+        replay_doc_markers = (
+            'replay_epoch',
+            'sys/storage/raft/replay-retire',
+            'raft-coordinated',
+            'heptabao-state-chunks-v1',
+            'qa/openbao-acceptance/replay_epoch_ha.py',
+        )
+        for marker in replay_doc_markers:
+            if marker not in replay_guide:
+                errors.append(f'{REPLAY}: missing current replay marker: {marker}')
+        if Path(REPLAY).name not in server_guide:
+            errors.append(f'{SERVER}: missing replay protocol navigation')
+        for marker in ('replay_epoch', 'sys/storage/raft/replay-retire', '32,000'):
+            if marker not in server_guide:
+                errors.append(f'{SERVER}: missing current replay lifecycle marker: {marker}')
+        stale_replay_claims = (
+            'replay retirement requires single-node mode',
+            'current HA state codec remains separately bounded to 768 KiB',
+        )
+        for claim in stale_replay_claims:
+            if claim in server_guide or claim in replay_guide:
+                errors.append('replay documentation contains a superseded single-node/768 KiB claim')
+        replay_fixture_markers = (
+            'heptabao.replay-epoch-ha.v1',
+            'sys/storage/raft/replay-retire',
+            'sys/step-down',
+            'replay_retirement_not_raft_coordinated',
+            'leader_before.stop()',
+            'second_leader.stop()',
+        )
+        for marker in replay_fixture_markers:
+            if marker not in replay_fixture:
+                errors.append(f'{REPLAY_HA}: missing cross-node replay lifecycle marker: {marker}')
 
         rows = json.loads((root / CORPUS).read_text())["surfaces"]
         expected = []
