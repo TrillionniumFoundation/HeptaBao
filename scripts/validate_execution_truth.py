@@ -54,18 +54,26 @@ def validate(root: Path = ROOT) -> list[str]:
         if 'sys/internal/capacity' not in text['crates/heptabao-server/src/service.rs']:
             problems.append('capacity guide has no current Service route')
         service_source = text['crates/heptabao-server/src/service.rs']
-        # The real Service state writer must bind compaction to the currently
-        # authenticated replay epoch. Matching the legacy epoch-0 wrapper is not
-        # sufficient after replay retirement because it would reject every write
-        # following an epoch transition.
-        epoch_compaction_writer = re.compile(
-            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);\s*"
-            r"if\s+compact_before_entry\s*\{\s*"
-            r"durable\.apply_batch_with_compaction_in_replay_epoch\(\s*"
-            r"replay_epoch\s*,",
-            re.S,
+        # This is only a source-presence/drift guard. Native Service tests carry
+        # the epoch/compaction behavioral invariant. Do not require adjacent
+        # statements: validation between epoch lookup and dispatch is legitimate.
+        # Restrict the check to the real writer so an unrelated helper/test cannot
+        # accidentally satisfy it.
+        writer_match = re.search(
+            r"^    fn persist_state_batch\([\s\S]*?(?=^    fn |\Z)",
+            service_source,
+            re.M,
         )
-        if epoch_compaction_writer.search(service_source) is None:
+        writer = writer_match.group(0) if writer_match else ""
+        epoch_lookup = re.search(
+            r"let\s+replay_epoch\s*=\s*durable\s*\.\s*replay_epoch\s*\(\s*\)\s*;",
+            writer,
+        )
+        epoch_call = re.search(
+            r"durable\s*\.\s*apply_batch_with_compaction_in_replay_epoch\s*\(\s*replay_epoch\s*,",
+            writer,
+        )
+        if epoch_lookup is None or epoch_call is None or epoch_lookup.end() > epoch_call.start():
             problems.append(
                 'atomic batch compaction is not bound to the current replay epoch in the real Service writer'
             )
