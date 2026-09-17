@@ -33,12 +33,17 @@ external-provider revocation. The current Service state is schema 5; see `docs/a
 ## Current capacity and migration prerequisites
 
 The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
-expose actual bounded-state/replay/journal headroom and checkpoint the journal only
-on a proven before-entry budget rejection. Retained request identities are never
-evicted; 768 KiB aggregate state and 32,000 identities remain hard limits, not
-production scale. [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md)
-observes real source catalogs and target headroom without copying or cutover.
-The [per-surface execution map](docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md)
+expose the actual bounded-state/replay/journal headroom. The authoritative Service
+state is serialized as one logical image, split into 512 KiB immutable chunks plus
+a versioned manifest, and published through one durable atomic batch. Local state
+and HA replication share a **16 MiB serialized-state bound**. This removes the old
+768 KiB ceiling but does not make the store record-oriented: a point mutation can
+still clone, serialize and replicate the complete logical state. The active replay
+ledger remains bounded to 32,000 identities per epoch, and ordinary compaction does
+not evict identities. These are bounded mechanisms, not production-scale proof.
+[Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md) observes
+real source catalogs and target headroom without copying or cutover. The
+[per-surface execution map](docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md)
 retains all original 60 surfaces and their work packages without issuing passes.
 
 ## Current source of truth
@@ -140,10 +145,11 @@ existing real executables; it is subordinate to the active V2.1 plan, not a seco
 plan or completion evidence. Technical contracts and open work are described in
 `docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
 audited capacity observation, safe journal checkpoint maintenance and an explicit
-Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
-limits, import raw OpenBao snapshots, update application ciphertext references,
-or advance Hepta's independently requalified consumer pin.
-
+Transit ciphertext re-encryption tool. It raises the historical 768 KiB state ceiling
+to the current 16 MiB chunked whole-state bound, but does not make storage
+record-oriented, remove the 32,000-identities-per-epoch bound, import raw OpenBao
+snapshots, update application ciphertext references, or advance Hepta's
+independently requalified consumer pin.
 
 ## Integrated remote continuation
 
