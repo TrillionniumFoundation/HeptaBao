@@ -18,13 +18,14 @@ The operator transition is root-namespace `POST` or `PUT sys/storage/raft/replay
 
 A valid transition obeys all of the following rules.
 
-1. The next epoch is exactly current epoch + 1. Jumps, regressions, overflow, or a state/durable mismatch fail closed.
+1. An operator/leader retirement request may advance authoritative cluster state by **exactly current epoch + 1**. Regressions, overflow, or a leader-side jump fail closed.
 2. Normal application mutations stay in the current epoch and cannot retire the replay ledger as a side effect.
 3. The active **32,000**-identity bound applies per replay epoch. Reaching it refuses ordinary new durable identities; an authenticated one-step retirement remains the explicit escape path.
-4. In HA, the epoch marker is committed as ordinary authoritative Raft application state. A node applying a higher committed epoch retires its local durable replay ledger immediately before publishing that state locally.
-5. A node never publishes application state for epoch N while its local durable replay owner remains in an older epoch.
-6. Failure after local retirement but before state publication is not relabelled as a safe pre-entry rejection. The service is fenced for reopen/reconciliation.
-7. Standby HTTP forwarding is not evidence of follower-local convergence. Cross-node acceptance must force a former follower to become leader and commit after the retirement.
+4. In HA, each +1 epoch marker is committed as ordinary authoritative Raft application state. A node applying a higher already-committed epoch retires its local durable replay ledger immediately before publishing that state locally.
+5. A follower or restarted node may have missed several already-committed +1 retirements while offline. Catch-up may therefore advance its **node-local** durable ledger through multiple epochs, but only monotonically one durable retirement at a time until it reaches the replay epoch contained in the authoritative Raft state. This local catch-up cannot create, skip, or reorder cluster transitions.
+6. A node never publishes application state for epoch N while its local durable replay owner remains in an older epoch.
+7. Failure after any local retirement but before state publication is not relabelled as a safe pre-entry rejection. The service is fenced for reopen/reconciliation, including partial multi-epoch catch-up where only a prefix of the required local retirements persisted.
+8. Standby HTTP forwarding is not evidence of follower-local convergence. Cross-node acceptance must force a former or restarted follower to become leader and commit after catch-up.
 
 ## Single-node sequence
 
@@ -36,7 +37,9 @@ If the operation-identity ledger is already full, the retirement path is still a
 
 In HA, the leader performs the same authorization and one-step validation, but the target `State.replay_epoch` is first proposed through the existing Raft application-state path. Committing that state defines the cluster order of the transition; it does not by itself delete every node's local ledger.
 
-When the leader or a follower applies the committed target state, `persist_state_batch` compares the target epoch with the node-local durable epoch. For exactly one-step advancement it calls the durable replay-retirement primitive, verifies the resulting epoch, and only then publishes the local chunk manifest/state batch. Follower catch-up therefore uses the same ordering rule as the leader rather than a special unguarded restore path.
+When an online node applies the next committed target state, `persist_state_batch` compares the target epoch with the node-local durable epoch, retires the local detailed replay ledger to the target epoch, verifies the resulting epoch, and only then publishes the local chunk manifest/state batch. A node that remained online normally advances once because it observes each committed transition.
+
+A node that was offline can observe a latest committed state several epochs ahead of its local durable ledger. Its catch-up path must execute the same authenticated durable retirement primitive repeatedly, one local epoch at a time, until the local durable epoch equals the already-committed target. The cluster-visible target is never synthesized locally: leader request admission remains restricted to one-step transitions, and a target below the local durable epoch is rejected.
 
 A newly elected leader must be able to observe the committed epoch locally and commit an ordinary mutation in it. That behavioral check is important because a standby HTTP request can be forwarded to the leader and cannot prove the standby's local replay ledger advanced.
 
@@ -44,7 +47,7 @@ A newly elected leader must be able to observe the committed epoch locally and c
 
 On unseal/reopen, application state ahead of the durable replay authority is rejected because publishing it would lose the detailed replay fence. Older single-node candidates could retire the durable ledger without recording the epoch in application state. The current reader permits only that one-way legacy condition: if the durable epoch is ahead, current state is normalized upward and rewritten before the state can participate in HA.
 
-A partial retirement/publication failure sets the Service recovery fence. The caller must not blindly replay the maintenance request or a preceding write after an ambiguous result. Recovery follows the ordinary durable reconciliation boundary; deleting ledger or journal material to resume is invalid.
+A partial retirement/publication failure sets the Service recovery fence. This includes the multi-epoch case where durable retirement advanced by one or more epochs but did not reach the target before failure. The caller must not blindly replay the maintenance request or a preceding write after an ambiguous result. Recovery follows the ordinary durable reconciliation boundary; deleting ledger or journal material to resume is invalid.
 
 ## Storage and capacity interaction
 
@@ -59,9 +62,10 @@ Focused Rust source scenarios in `crates/heptabao-server/src/service_capacity_te
 - `replay_retirement_is_root_only_and_state_commits_continue_in_new_epoch`;
 - `replay_epoch_transition_bypasses_full_ledger_and_restart_preserves_frontier`;
 - `ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication`;
+- `ha_catch_up_crosses_multiple_replay_epochs_and_restart_preserves_frontier`;
 - `failed_state_publication_after_epoch_retirement_fences_service`.
 
-`qa/openbao-acceptance/replay_epoch_ha.py` extends the existing real three-process mTLS/Raft destructive harness. On private synthetic loopback state it performs a first retirement, kills the acknowledged leader with the harness' process-kill path, requires a former follower to become leader and commit in the new epoch, restarts the old leader, makes the restarted process authoritative again and commits, then performs a second retirement followed by another leader loss and mutation. The result binds the exact server binary digest and remains repository-controlled evidence.
+`qa/openbao-acceptance/replay_epoch_ha.py` extends the existing real three-process mTLS/Raft destructive harness. On private synthetic loopback state it exercises repeated retirements, leader loss and rejoin, and additionally keeps one voter offline across multiple committed retirements before forcing that restarted voter to become authoritative and commit. The result binds the exact server binary digest and remains repository-controlled evidence.
 
 `.github/workflows/replay-epoch-ha.yml` runs that fixture against the pull request's immutable exact head with read-only repository permissions and no persisted checkout credentials. A source file or workflow being present is not a pass receipt; only the current exact-head run establishes the named observation.
 
