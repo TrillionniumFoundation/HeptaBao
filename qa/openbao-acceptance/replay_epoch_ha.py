@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Exercise replay-epoch retirement through a real three-process TLS/Raft lifecycle.
 
-The fixture extends the repository's destructive HA harness with two replay-epoch
-transitions. It proves only the named exact-binary scenarios on private synthetic
-loopback state. It is not multi-host, independent, release, migration, or
-production qualification.
+The fixture extends the repository's destructive HA harness with repeated replay-epoch
+transitions, including a voter that remains offline across multiple committed epochs.
+It proves only the named exact-binary scenarios on private synthetic loopback state.
+It is not multi-host, independent, release, migration, or production qualification.
 """
 from __future__ import annotations
 
@@ -190,6 +190,73 @@ class ReplayEpochCluster(Cluster):
         ):
             self.read(node, path, value)
         self.check("all_replay_lifecycle_acknowledgements_read_back_after_rejoin", True)
+
+        # Keep one voter completely offline while the two-voter quorum commits two
+        # additional +1 retirements. Restarting that voter then presents it with a
+        # committed state two epochs ahead of its local durable replay authority.
+        # Make the laggard authoritative before inspecting capacity so standby
+        # forwarding cannot conceal a failure to catch up its local ledger.
+        current = self.leader()
+        laggard = next(node for node in self.running() if node is not current)
+        laggard.stop()
+        self.check("multi_epoch_laggard_offline_with_two_voter_quorum", len(self.running()) == 2)
+
+        third_epoch = self.retire_epoch(
+            current,
+            second_epoch,
+            "third_replay_epoch_retirement_while_laggard_offline",
+        )
+        third_value = secrets.token_hex(16)
+        self.write(current, "replay-laggard-offline-epoch-one", third_value)
+        self.check("two_voter_quorum_commits_after_first_missed_epoch", True)
+
+        fourth_epoch = self.retire_epoch(
+            current,
+            third_epoch,
+            "fourth_replay_epoch_retirement_while_laggard_offline",
+        )
+        fourth_value = secrets.token_hex(16)
+        self.write(current, "replay-laggard-offline-epoch-two", fourth_value)
+        self.check("two_voter_quorum_commits_after_second_missed_epoch", True)
+
+        self.restart(laggard)
+        current = self.leader()
+        transfer_spectator = next(
+            node
+            for node in self.running()
+            if node is not current and node is not laggard
+        )
+        transfer_spectator.stop()
+        self.check("multi_epoch_catchup_transfer_uses_two_live_voters", len(self.running()) == 2)
+        if current is not laggard:
+            status, _ = current.call(
+                "POST",
+                "sys/step-down",
+                {},
+                token=self.root_token,
+                timeout=15,
+            )
+            self.check("leadership_transfer_to_multi_epoch_laggard_acknowledged", status == 204)
+        laggard_leader = self.leader()
+        self.check("multi_epoch_laggard_became_authoritative", laggard_leader is laggard)
+        laggard_capacity = self.replay_capacity(laggard_leader)
+        self.check(
+            "multi_epoch_laggard_local_replay_authority_caught_up",
+            laggard_capacity["replay_epoch"] == fourth_epoch,
+        )
+        laggard_value = secrets.token_hex(16)
+        self.write(laggard_leader, "replay-multi-epoch-laggard-write", laggard_value)
+        self.check("multi_epoch_laggard_commits_after_catchup", True)
+
+        self.restart(transfer_spectator)
+        stable_leader = self.leader()
+        for path, value in (
+            ("replay-laggard-offline-epoch-one", third_value),
+            ("replay-laggard-offline-epoch-two", fourth_value),
+            ("replay-multi-epoch-laggard-write", laggard_value),
+        ):
+            self.read(stable_leader, path, value)
+        self.check("multi_epoch_catchup_acknowledgements_read_back_after_full_rejoin", True)
 
 
 def main() -> int:
