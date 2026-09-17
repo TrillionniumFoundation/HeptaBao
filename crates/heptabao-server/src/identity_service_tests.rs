@@ -553,6 +553,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     let state = State {
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
+        replay_epoch: 0,
         auth,
         engines: EngineState::default(),
         database: database::DatabaseState::default(),
