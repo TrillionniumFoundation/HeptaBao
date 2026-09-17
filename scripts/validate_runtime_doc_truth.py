@@ -10,8 +10,19 @@ FORMAT = 'docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md'
 ENGINE = 'docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md'
 SERVER = 'docs/modules/heptabao-server.md'
 ARCH = 'docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md'
+CAPACITY = 'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md'
 ACCEPTANCE = 'docs/compatibility/HEPTABAO_REPLACEMENT_ACCEPTANCE.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
+SERVER_LIB = 'crates/heptabao-server/src/lib.rs'
+STATE_STORE = 'crates/heptabao-server/src/service_state_store.rs'
+
+
+def _one(pattern: str, text: str, error: str, errors: list[str]) -> str | None:
+    matches = re.findall(pattern, text, re.M)
+    if len(matches) != 1:
+        errors.append(error)
+        return None
+    return matches[0]
 
 
 def validate(root: Path = ROOT) -> list[str]:
@@ -46,6 +57,41 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append('engine guide still denies currently implemented backends')
         if 'HEPTABAO_POSTGRESQL_PROVIDER.md' not in engine:
             errors.append('engine guide must distinguish Service-owned database effects')
+
+        server_guide = (root / SERVER).read_text()
+        capacity_guide = (root / CAPACITY).read_text()
+        server_lib = (root / SERVER_LIB).read_text()
+        state_store = (root / STATE_STORE).read_text()
+        state_mib = _one(
+            r'^pub\(crate\) const MAX_APPLICATION_STATE_BYTES: usize = (\d+) \* 1024 \* 1024;$',
+            server_lib,
+            'shared application-state bound is missing or ambiguous',
+            errors,
+        )
+        chunk_kib = _one(
+            r'^pub\(crate\) const STATE_CHUNK_BYTES: usize = (\d+) \* 1024;$',
+            state_store,
+            'state chunk bound is missing or ambiguous',
+            errors,
+        )
+        if state_mib is not None:
+            if f'**{state_mib} MiB**' not in capacity_guide or f'{state_mib} MiB' not in server_guide:
+                errors.append('current capacity documentation differs from MAX_APPLICATION_STATE_BYTES')
+        if chunk_kib is not None:
+            if f'**{chunk_kib} KiB**' not in capacity_guide or f'{chunk_kib} KiB' not in server_guide:
+                errors.append('current capacity documentation differs from STATE_CHUNK_BYTES')
+        stale_server_claims = (
+            'limits state to 768 KiB',
+            'A single `(system,state)` record stores its serialization',
+            'current discriminator is 4',
+            'New initialization starts at 4',
+        )
+        for claim in stale_server_claims:
+            if claim in server_guide:
+                errors.append(f'{SERVER}: stale current storage/schema claim')
+        if 'heptabao-state-chunks-v1' not in server_guide:
+            errors.append(f'{SERVER}: missing current chunk-manifest storage format')
+
         rows = json.loads((root / CORPUS).read_text())["surfaces"]
         expected = []
         for row in rows:
