@@ -30,7 +30,8 @@ class SectionSixIntegrationTests(unittest.TestCase):
     def test_capacity_extension_is_explicit_bounded_and_atomically_published(self):
         service = (ROOT/'crates/heptabao-server/src/service.rs').read_text()
         lib = (ROOT/'crates/heptabao-server/src/lib.rs').read_text()
-        state_store = (ROOT/'crates/heptabao-server/src/service_state_store.rs').read_text()
+        owner_store = (ROOT/'crates/heptabao-server/src/service_owner_store.rs').read_text()
+        legacy_state_store = (ROOT/'crates/heptabao-server/src/service_state_store.rs').read_text()
         ha_state = (ROOT/'crates/heptabao-server/src/ha_state.rs').read_text()
         durable = (ROOT/'crates/heptabao-durable-service/src/capacity.rs').read_text()
 
@@ -39,12 +40,19 @@ class SectionSixIntegrationTests(unittest.TestCase):
             service,
         )
         self.assertIn('MAX_APPLICATION_STATE_BYTES: usize = 16 * 1024 * 1024', lib)
-        self.assertIn('MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES', state_store)
+        self.assertIn(
+            'MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES',
+            owner_store,
+        )
         self.assertIn('MAX_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES', ha_state)
-        self.assertIn('STATE_CHUNK_BYTES: usize = 512 * 1024', state_store)
-        self.assertIn('const STATE_SLOT_COUNT: u8 = 2', state_store)
-        self.assertIn('heptabao-state-chunks-v1', state_store)
-        self.assertIn('Self::persist_state_batch(', service)
+        self.assertIn('STATE_CHUNK_BYTES: usize = 512 * 1024', owner_store)
+        self.assertIn('heptabao-state-owners-v4', owner_store)
+        for owner in ['namespaces', 'auth', 'engines', 'database', 'raft_admin']:
+            self.assertIn(f'"{owner}"', owner_store)
+        # V1-V3 is retained strictly as a migration reader, not the current writer.
+        self.assertIn('heptabao-state-chunks-v1', legacy_state_store)
+        self.assertIn('Self::persist_owner_state_batch(', service)
+        self.assertIn('OwnerWritePlan::new(', service)
         self.assertIn('let replay_epoch = durable.replay_epoch();', service)
         self.assertIn('durable.apply_batch_in_replay_epoch(', service)
         self.assertIn('durable.apply_batch_with_compaction_in_replay_epoch(', service)
