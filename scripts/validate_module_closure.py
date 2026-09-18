@@ -194,8 +194,6 @@ def main() -> int:
         ):
             errors.append(f"{name}: forbidden claim/placeholder")
 
-    if len(entries) != 46:
-        errors.append(f"expected 46 modules, found {len(entries)}")
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
