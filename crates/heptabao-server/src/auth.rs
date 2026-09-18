@@ -27,6 +27,7 @@ pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLog
 
 #[path = "auth_remote.rs"]
 mod remote;
+pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
 use remote::RemoteJwtSource;
 
 #[path = "auth_acl.rs"]
