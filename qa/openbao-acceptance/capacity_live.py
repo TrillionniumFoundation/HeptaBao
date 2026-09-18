@@ -2,7 +2,7 @@
 """Measure the real bounded service on a new synthetic loopback TLS instance.
 
 No existing endpoint, credentials or data directory can be supplied. A pass
-proves the current 16 MiB chunked whole-state profile's refusal/reopen semantics,
+proves the current 16 MiB owner-scoped local-state profile's refusal/reopen semantics,
 never production scale or record-oriented scalability.
 """
 from __future__ import annotations
@@ -128,8 +128,8 @@ def validate_observation(data: dict) -> None:
              'journal_bytes', 'journal_limit_bytes', 'state_chunk_target_bytes')
     if not isinstance(data, dict) or any(type(data.get(k)) is not int or data[k] < 0 for k in names):
         raise ScenarioFailure('capacity.invalid_observation')
-    if (data.get('profile') != 'bounded-content-defined-state-v3'
-            or data.get('state_storage_format') != 'heptabao-state-chunks-v3'
+    if (data.get('profile') != 'bounded-owner-state-v4'
+            or data.get('state_storage_format') != 'heptabao-state-owners-v4'
             or data['state_chunk_target_bytes'] != 512 * 1024):
         raise ScenarioFailure('capacity.storage_profile_drift')
     for used, limit, remaining in (
@@ -341,7 +341,7 @@ def run(binary: Path, output: Path) -> int:
                       peak_rss_kib=max((sample['rss_kib'] for sample in growth_samples
                                         if sample['rss_kib'] is not None), default=None),
                       durable_bytes_at_refusal=tree_bytes(instance.root / 'data'),
-                      scope='bounded_content_defined_whole_state_with_physical_write_amplification_throughput_tail_latency_rss_and_recovery_curves_not_scale_qualification')
+                      scope='bounded_owner_scoped_local_state_with_whole_logical_state_limit_physical_write_amplification_throughput_tail_latency_rss_and_recovery_curves_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__

@@ -131,13 +131,13 @@ mod tests {
         assert_eq!(data["state_limit_bytes"], MAX_STATE_BYTES);
         assert_eq!(
             data["state_storage_format"],
-            state_store::STATE_STORAGE_FORMAT
+            owner_store::STATE_STORAGE_FORMAT
         );
         assert_eq!(
             data["state_chunk_target_bytes"],
-            state_store::STATE_CHUNK_BYTES
+            owner_store::STATE_CHUNK_BYTES
         );
-        assert_eq!(data["profile"], "bounded-content-defined-state-v3");
+        assert_eq!(data["profile"], "bounded-owner-state-v4");
         assert_eq!(data["operation_limit"], MAX_OPERATIONS);
         assert_eq!(data["admission_reserved"], false);
         assert_eq!(data["compaction_reclaims_operation_identities"], false);
@@ -181,7 +181,7 @@ mod tests {
         let (_, token) = bootstrap(&mut service)?;
         service.state_capacity = 1024 * 1024;
 
-        // Growing writes exercise V3 chunk replacement/reuse. The physical
+        // Growing writes exercise V4 owner-scoped chunk replacement/reuse. The physical
         // durable payload can be larger than the currently serialized State even
         // though the application state itself remains admissible.
         let value = "x".repeat(280 * 1024);
@@ -205,7 +205,7 @@ mod tests {
         let logical_bytes =
             serde_json::to_vec(service.state.as_ref().ok_or("state missing")?)?.len();
         assert!(durable_bytes > logical_bytes + 1);
-        // V3 retires obsolete chunks instead of retaining an alternating slot.
+        // V4 retires obsolete owner chunks instead of retaining an alternating slot.
         // Put the test-only bound between actual logical and physical sizes;
         // growth must not depend on the amount of historical garbage retained.
         service.state_capacity = logical_bytes + (durable_bytes - logical_bytes) / 2;
