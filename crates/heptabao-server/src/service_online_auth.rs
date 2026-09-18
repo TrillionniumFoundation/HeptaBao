@@ -3,7 +3,8 @@
 use super::*;
 use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, OidcBeginObservation,
-    OidcBeginPlan, OidcExchange, OidcLoginObservation,
+    OidcBeginPlan, OidcExchange, OidcLoginObservation, RemoteJwtLoginObservation,
+    RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -22,6 +23,7 @@ fn auth_error(error: AuthError) -> Response {
 }
 
 pub(super) enum OnlineAuthEffect {
+    RemoteJwt(RemoteJwtLoginPlan),
     Kubernetes(KubernetesLoginPlan),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
@@ -41,6 +43,7 @@ pub(super) struct OnlineAuthEffectPlan {
 }
 
 pub(super) enum OnlineAuthObservation {
+    RemoteJwt(RemoteJwtLoginObservation),
     Kubernetes(KubernetesLoginObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
@@ -49,6 +52,10 @@ pub(super) enum OnlineAuthObservation {
 impl OnlineAuthEffectPlan {
     pub(super) fn execute(&self) -> Result<OnlineAuthObservation, Response> {
         match &self.effect {
+            OnlineAuthEffect::RemoteJwt(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::RemoteJwt)
+                .map_err(auth_error),
             OnlineAuthEffect::Kubernetes(plan) => plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Kubernetes)
@@ -81,6 +88,40 @@ impl Service {
         admitted: &State,
         request: &RequestView<'_>,
     ) -> Option<Response> {
+        // Remote-JWT login is a normal auth route, but its discovery/JWKS read
+        // must not hold the Service writer. Wrapped JWT login keeps the legacy
+        // path until wrapping and split-phase publication share one envelope.
+        if request.wrap_ttl_seconds.is_none() {
+            match admitted.auth.prepare_remote_jwt_login(
+                request.namespace,
+                request.path,
+                request.method,
+                request.body,
+                request.now,
+            ) {
+                Ok(Some(plan)) => {
+                    if self.pending_online_auth_effect.is_some() {
+                        return Some(Response::error(
+                            503,
+                            "online authentication dispatch state is unavailable",
+                        ));
+                    }
+                    self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+                        outbound: self.outbound.clone(),
+                        namespace: request.namespace.into(),
+                        request_now: request.now,
+                        effect: OnlineAuthEffect::RemoteJwt(plan),
+                    });
+                    return Some(Response::error(
+                        500,
+                        "remote JWT refresh was not dispatched",
+                    ));
+                }
+                Err(error) => return Some(auth_error(error)),
+                Ok(None) => {}
+            }
+        }
+
         let (kind, mount, suffix) = admitted
             .auth
             .online_mount_route(request.namespace, request.path)?;
@@ -196,6 +237,9 @@ impl Service {
         };
 
         let issued = match (plan.effect, observation) {
+            (OnlineAuthEffect::RemoteJwt(auth_plan), OnlineAuthObservation::RemoteJwt(observed)) => {
+                state.auth.finish_remote_jwt_login(auth_plan, observed)
+            }
             (OnlineAuthEffect::Kubernetes(auth_plan), OnlineAuthObservation::Kubernetes(observed)) => {
                 state.auth.finish_kubernetes_login(auth_plan, observed)
             }
