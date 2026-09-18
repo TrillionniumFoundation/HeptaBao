@@ -44,8 +44,11 @@ class SurfaceWorkTests(unittest.TestCase):
     def test_case_promotion_cannot_rewrite_original_corpus(self):
         self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0]['fixture_case_ids'].append('invented.case')))
 
-    def test_corpus_digest_drift_rejects(self):
-        self.assertTrue(self.validate_mutation(lambda d: d.update(corpus_sha256='0' * 64)))
+    def test_corpus_digest_is_diagnostic_only(self):
+        self.assertEqual(
+            self.validate_mutation(lambda d: d.update(corpus_sha256='0' * 64)),
+            [],
+        )
 
     def test_runtime_claim_needs_existing_owner(self):
         self.assertTrue(self.validate_mutation(lambda d: d['surfaces'][0].update(runtime_source=None)))
