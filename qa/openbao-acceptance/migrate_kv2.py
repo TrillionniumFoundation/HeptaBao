@@ -183,6 +183,23 @@ def settings_match(meta, settings):
                else meta.get(name) == value for name, value in settings.items())
 
 
+def checkpoint_binding(source_identity, keys, inventory_digest, target, target_mount, target_health):
+    binding = {
+        "source_identity": source_identity,
+        "keys_digest": digest(keys),
+        "inventory_digest": inventory_digest,
+        "profile": SCHEMA,
+    }
+    if target is not None:
+        binding["target_identity"] = {
+            "endpoint": target.address,
+            "namespace": target.namespace,
+            "mount": target_mount,
+            "cluster_id": target_health["cluster_id"],
+        }
+    return binding
+
+
 class Checkpoint:
     def __init__(self, filename, binding):
         self.filename = filename
@@ -379,11 +396,14 @@ def main(argv=None):
                                              "record_digest": digest(record)} for record in records]}
             if inventory_digest != digest(expected_manifest):
                 raise BaoError("export_inventory_digest_mismatch")
-        binding = {"source_identity": source_identity, "keys_digest": digest(keys),
-                   "inventory_digest": inventory_digest, "profile": SCHEMA}
-        if target:
-            binding["target_identity"] = {"endpoint": target.address, "namespace": target.namespace,
-                                          "mount": args.target_mount, "cluster_id": target_health["cluster_id"]}
+        binding = checkpoint_binding(
+            source_identity,
+            keys,
+            inventory_digest,
+            target,
+            args.target_mount,
+            target_health if target else None,
+        )
         checkpoint = lock = None
         exported = []
         try:
