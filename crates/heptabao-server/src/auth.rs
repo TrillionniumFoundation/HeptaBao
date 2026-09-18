@@ -926,17 +926,62 @@ impl AuthState {
                 namespaces.insert(token.namespace.clone());
             }
         }
-        namespaces.extend(self.policies.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(
+            self.policies
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces.extend(self.users.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(self.roles.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.mounted_users.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.mounted_roles.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.auth_mounts.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.jwt_mounts.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.kubernetes_mounts.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.oidc_mounts.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.ldap_mounts.keys().filter(|value| !value.is_empty()).cloned());
-        namespaces.extend(self.ldap_groups.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(
+            self.mounted_users
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.mounted_roles
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.auth_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.jwt_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.kubernetes_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.oidc_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.ldap_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.ldap_groups
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces.extend(
             self.plugin_auth_mounts
                 .keys()
@@ -947,18 +992,54 @@ impl AuthState {
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
-        !self.tokens.values().any(|token| token.namespace == namespace)
-            && self.policies.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.users.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.roles.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.mounted_users.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.mounted_roles.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.auth_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.jwt_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.kubernetes_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.oidc_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.ldap_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
-            && self.ldap_groups.get(namespace).is_none_or(|entries| entries.is_empty())
+        !self
+            .tokens
+            .values()
+            .any(|token| token.namespace == namespace)
+            && self
+                .policies
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .mounted_users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .mounted_roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .auth_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .jwt_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .kubernetes_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .oidc_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .ldap_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .ldap_groups
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
             && self
                 .plugin_auth_mounts
                 .get(namespace)
@@ -1977,8 +2058,8 @@ impl AuthState {
         if body.as_object().is_none() {
             return Err(bad("plugin login requires a JSON object"));
         }
-        let encoded = serde_json::to_vec(body)
-            .map_err(|_| bad("plugin login request encoding failed"))?;
+        let encoded =
+            serde_json::to_vec(body).map_err(|_| bad("plugin login request encoding failed"))?;
         if encoded.len() > 256 * 1024 {
             return Err(err(413, "plugin login request exceeds bound"));
         }
@@ -2024,11 +2105,8 @@ impl AuthState {
         if plan.config.policies.contains("root") {
             return Err(denied());
         }
-        let (token_ttl, token_max_ttl) = self.auth_mount_token_limits(
-            scope,
-            plan.config.token_ttl,
-            plan.config.token_max_ttl,
-        )?;
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
         let alias_hash = hash(alias);
         let suffix = alias_hash.get(..16).unwrap_or(alias_hash.as_str());
         let mut token = login_token(
@@ -2104,8 +2182,7 @@ impl AuthState {
                 } else {
                     "policies"
                 };
-                let configured_policies =
-                    policies(body, policy_field, &BTreeSet::new(), true)?;
+                let configured_policies = policies(body, policy_field, &BTreeSet::new(), true)?;
                 if configured_policies.contains("root") {
                     return Err(bad("plugin authentication cannot grant root policy"));
                 }

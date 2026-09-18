@@ -36,12 +36,12 @@ mod capabilities;
 mod database;
 #[path = "service_identity.rs"]
 mod identity;
-#[path = "service_namespaces.rs"]
-mod namespaces;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_namespaces.rs"]
+mod namespaces;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_plugin.rs"]
@@ -49,10 +49,10 @@ mod plugin;
 pub use plugin::{PluginAuthConfig, PluginSecretConfig};
 #[path = "service_openapi.rs"]
 mod openapi;
-#[path = "service_raft_admin.rs"]
-mod raft_admin;
 #[path = "service_owner_store.rs"]
 mod owner_store;
+#[path = "service_raft_admin.rs"]
+mod raft_admin;
 #[path = "service_state_store.rs"]
 mod state_store;
 pub(crate) use lifecycle::start_lifecycle_worker;
@@ -229,7 +229,10 @@ struct State {
     /// replay ledger before publishing state for the new epoch.
     #[serde(default, skip_serializing_if = "replay_epoch_is_zero")]
     replay_epoch: u64,
-    #[serde(default, skip_serializing_if = "namespaces::NamespaceRegistry::is_empty")]
+    #[serde(
+        default,
+        skip_serializing_if = "namespaces::NamespaceRegistry::is_empty"
+    )]
     namespaces: namespaces::NamespaceRegistry,
     auth: CowOwner<AuthState>,
     engines: CowOwner<EngineState>,
@@ -612,10 +615,7 @@ impl Service {
         Ok(())
     }
 
-    pub fn install_auth_plugins(
-        &mut self,
-        configs: Vec<PluginAuthConfig>,
-    ) -> Result<(), String> {
+    pub fn install_auth_plugins(&mut self, configs: Vec<PluginAuthConfig>) -> Result<(), String> {
         if self.state.is_some() {
             return Err("plugin runtime configuration is immutable while unsealed".into());
         }
@@ -2104,9 +2104,7 @@ impl Service {
             legacy_deletes,
         )
         .map_err(|error| match error {
-            owner_store::OwnerStoreError::StateTooLarge => {
-                ServiceError::RequestCapacityExhausted
-            }
+            owner_store::OwnerStoreError::StateTooLarge => ServiceError::RequestCapacityExhausted,
             _ => ServiceError::CorruptState,
         })?;
         if plan.required_mutations() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS {
@@ -3549,7 +3547,13 @@ impl Service {
                 return Err(Response::error(503, &error));
             }
         }
-        match self.persist_local(state, bytes, &operation_id, state_schema, target_replay_epoch) {
+        match self.persist_local(
+            state,
+            bytes,
+            &operation_id,
+            state_schema,
+            target_replay_epoch,
+        ) {
             Ok(()) => Ok(()),
             Err(error) => {
                 if self.ha.is_some() {

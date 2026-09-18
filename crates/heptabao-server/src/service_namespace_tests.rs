@@ -30,15 +30,12 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
     assert_eq!(team.status, 200);
     assert_eq!(team.body["path"], "team/");
     assert_eq!(team.body["custom_metadata"]["owner"], "platform");
-    let first_id = team.body["id"].as_str().ok_or("missing namespace id")?.to_owned();
+    let first_id = team.body["id"]
+        .as_str()
+        .ok_or("missing namespace id")?
+        .to_owned();
 
-    let list = call(
-        &mut service,
-        "LIST",
-        "sys/namespaces",
-        &token,
-        json!({}),
-    );
+    let list = call(&mut service, "LIST", "sys/namespaces", &token, json!({}));
     assert_eq!(list.status, 200);
     assert_eq!(list.body["data"]["keys"], json!(["team/"]));
     assert_eq!(list.body["data"]["key_info"]["team/"]["id"], first_id);
@@ -92,13 +89,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
             .status,
         204
     );
-    let scan = call(
-        &mut service,
-        "SCAN",
-        "sys/namespaces",
-        &token,
-        json!({}),
-    );
+    let scan = call(&mut service, "SCAN", "sys/namespaces", &token, json!({}));
     assert_eq!(scan.status, 200);
     assert_eq!(scan.body["data"]["keys"], json!(["team/", "team/child/"]));
     assert_eq!(

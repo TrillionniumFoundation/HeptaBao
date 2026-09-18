@@ -90,7 +90,10 @@ fn validate_metadata_value(key: &str, value: &str) -> Result<(), Response> {
         || key.chars().any(char::is_control)
         || value.chars().any(char::is_control)
     {
-        return Err(Response::error(400, "namespace custom metadata is outside bounds"));
+        return Err(Response::error(
+            400,
+            "namespace custom metadata is outside bounds",
+        ));
     }
     Ok(())
 }
@@ -99,7 +102,10 @@ fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
     let object = body
         .as_object()
         .ok_or_else(|| Response::error(400, "namespace request body must be an object"))?;
-    if object.keys().any(|key| !matches!(key.as_str(), "custom_metadata" | "seal")) {
+    if object
+        .keys()
+        .any(|key| !matches!(key.as_str(), "custom_metadata" | "seal"))
+    {
         return Err(Response::error(400, "unsupported namespace parameter"));
     }
     if object.contains_key("seal") {
@@ -128,15 +134,15 @@ fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
     Ok(out)
 }
 
-fn patch_metadata(
-    current: &mut BTreeMap<String, String>,
-    body: &Value,
-) -> Result<(), Response> {
+fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Result<(), Response> {
     let object = body
         .as_object()
         .ok_or_else(|| Response::error(400, "namespace request body must be an object"))?;
     if object.keys().any(|key| key != "custom_metadata") {
-        return Err(Response::error(400, "unsupported namespace patch parameter"));
+        return Err(Response::error(
+            400,
+            "unsupported namespace patch parameter",
+        ));
     }
     let metadata = object
         .get("custom_metadata")
@@ -150,9 +156,9 @@ fn patch_metadata(
             current.remove(key);
             continue;
         }
-        let value = value
-            .as_str()
-            .ok_or_else(|| Response::error(400, "custom_metadata patch values must be strings or null"))?;
+        let value = value.as_str().ok_or_else(|| {
+            Response::error(400, "custom_metadata patch values must be strings or null")
+        })?;
         validate_metadata_value(key, value)?;
         current.insert(key.clone(), value.to_owned());
     }
@@ -178,7 +184,8 @@ impl NamespaceRegistry {
             return Err(Response::error(503, "namespace catalog exceeds bounds"));
         }
         for (path, entry) in &self.entries {
-            canonical_path(path).map_err(|_| Response::error(503, "invalid namespace catalog path"))?;
+            canonical_path(path)
+                .map_err(|_| Response::error(503, "invalid namespace catalog path"))?;
             let parent = parent_path(path);
             if !parent.is_empty() && !self.entries.contains_key(parent) {
                 return Err(Response::error(503, "namespace catalog parent is absent"));
@@ -198,13 +205,20 @@ impl NamespaceRegistry {
                 .get(path)
                 .is_some_and(|next| *next <= entry.incarnation)
             {
-                return Err(Response::error(503, "namespace incarnation frontier is stale"));
+                return Err(Response::error(
+                    503,
+                    "namespace incarnation frontier is stale",
+                ));
             }
         }
         for (path, next) in &self.next_incarnation {
-            canonical_path(path).map_err(|_| Response::error(503, "invalid namespace tombstone path"))?;
+            canonical_path(path)
+                .map_err(|_| Response::error(503, "invalid namespace tombstone path"))?;
             if *next == 0 {
-                return Err(Response::error(503, "invalid namespace incarnation frontier"));
+                return Err(Response::error(
+                    503,
+                    "invalid namespace incarnation frontier",
+                ));
             }
         }
         Ok(())
@@ -292,7 +306,11 @@ impl NamespaceRegistry {
     fn remove(&mut self, path: &str) -> Result<(), Response> {
         let path = canonical_path(path)?;
         let child_prefix = format!("{path}/");
-        if self.entries.keys().any(|candidate| candidate.starts_with(&child_prefix)) {
+        if self
+            .entries
+            .keys()
+            .any(|candidate| candidate.starts_with(&child_prefix))
+        {
             return Err(Response::error(409, "namespace has child namespaces"));
         }
         let entry = self
@@ -453,7 +471,10 @@ impl Service {
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {
                     return Response::error(400, "namespace read accepts an empty request body");
                 }
-                state.namespaces.read(request.namespace, &target).unwrap_or_else(|error| error)
+                state
+                    .namespaces
+                    .read(request.namespace, &target)
+                    .unwrap_or_else(|error| error)
             }
             "POST" | "PUT" => {
                 let parent = parent_path(&target).to_owned();
@@ -464,7 +485,10 @@ impl Service {
                     Ok(metadata) => metadata,
                     Err(error) => return error,
                 };
-                if let Err(error) = state.namespaces.create(&state.cluster_id, &target, metadata) {
+                if let Err(error) = state
+                    .namespaces
+                    .create(&state.cluster_id, &target, metadata)
+                {
                     return error;
                 }
                 state.schema = CURRENT_STATE_SCHEMA;
@@ -475,7 +499,10 @@ impl Service {
                     return error;
                 }
                 self.state = Some(state);
-                Response { status: 204, body: Value::Null }
+                Response {
+                    status: 204,
+                    body: Value::Null,
+                }
             }
             "PATCH" => {
                 if let Err(error) = state.namespaces.patch(&target, request.body) {
@@ -489,7 +516,10 @@ impl Service {
                     return error;
                 }
                 self.state = Some(state);
-                Response { status: 204, body: Value::Null }
+                Response {
+                    status: 204,
+                    body: Value::Null,
+                }
             }
             "DELETE" => {
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {
@@ -512,7 +542,10 @@ impl Service {
                     return error;
                 }
                 self.state = Some(state);
-                Response { status: 204, body: Value::Null }
+                Response {
+                    status: 204,
+                    body: Value::Null,
+                }
             }
             _ => Response::error(405, "unsupported namespace method"),
         }

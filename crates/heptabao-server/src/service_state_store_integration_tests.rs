@@ -123,8 +123,7 @@ fn legacy_raw_state_is_eagerly_migrated_to_owner_manifest_in_one_generation()
 }
 
 #[test]
-fn tampered_or_missing_owner_chunk_fails_unseal_closed()
--> Result<(), Box<dyn std::error::Error>> {
+fn tampered_or_missing_owner_chunk_fails_unseal_closed() -> Result<(), Box<dyn std::error::Error>> {
     for missing in [false, true] {
         let root = Root::new();
         let mut service = root.service()?;
@@ -146,7 +145,11 @@ fn tampered_or_missing_owner_chunk_fails_unseal_closed()
         durable.apply_batch(
             "state-corruption-test",
             "system",
-            if missing { "missing-owner" } else { "tampered-owner" },
+            if missing {
+                "missing-owner"
+            } else {
+                "tampered-owner"
+            },
             [91; 32],
             vec![mutation],
         )?;
@@ -243,14 +246,10 @@ fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
     let (key, token) = bootstrap(&mut service)?;
     let state = service.state.as_ref().ok_or("state unavailable")?.clone();
     let bytes = serde_json::to_vec(&state)?;
-    let old = state_store::StateWritePlan::new(
-        &bytes,
-        "synthetic-v3-downgrade",
-        state.schema,
-        None,
-    )?;
-    let old_manifest = state_store::decode_manifest(&old.manifest_bytes)?
-        .ok_or("v3 manifest missing")?;
+    let old =
+        state_store::StateWritePlan::new(&bytes, "synthetic-v3-downgrade", state.schema, None)?;
+    let old_manifest =
+        state_store::decode_manifest(&old.manifest_bytes)?.ok_or("v3 manifest missing")?;
     let old_resources = old_manifest.unique_chunk_resources()?;
     let owner_resources = current_manifest(&service)?.unique_chunk_resources()?;
     let durable = service
@@ -295,7 +294,10 @@ fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
             "legacy V3 chunk survived V4 publication"
         );
     }
-    assert_eq!(current_manifest(&service)?.storage_format(), STATE_STORAGE_FORMAT);
+    assert_eq!(
+        current_manifest(&service)?.storage_format(),
+        STATE_STORAGE_FORMAT
+    );
     drop(service);
 
     let mut service = root.service()?;
@@ -304,8 +306,14 @@ fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
         200
     );
     assert_eq!(
-        call(&mut service, "GET", "secret/data/promote-v4", &token, json!({}))
-            .body["data"]["data"]["value"],
+        call(
+            &mut service,
+            "GET",
+            "secret/data/promote-v4",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"]["value"],
         "v4"
     );
     Ok(())

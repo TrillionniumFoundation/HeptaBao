@@ -350,7 +350,9 @@ impl DatabaseState {
     }
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
-        self.mounts.get(namespace).is_none_or(|mounts| mounts.is_empty())
+        self.mounts
+            .get(namespace)
+            .is_none_or(|mounts| mounts.is_empty())
     }
 
     pub(super) fn is_empty(&self) -> bool {

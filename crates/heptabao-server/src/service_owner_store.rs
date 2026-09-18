@@ -120,8 +120,8 @@ impl OwnerStateManifest {
             {
                 return Err(OwnerStoreError::InvalidManifest);
             }
-            let expected_total =
-                usize::try_from(descriptor.total_bytes).map_err(|_| OwnerStoreError::InvalidManifest)?;
+            let expected_total = usize::try_from(descriptor.total_bytes)
+                .map_err(|_| OwnerStoreError::InvalidManifest)?;
             let mut observed_total = 0_usize;
             for (index, size) in descriptor.chunk_sizes.iter().enumerate() {
                 let size = usize::try_from(*size).map_err(|_| OwnerStoreError::InvalidManifest)?;
@@ -223,8 +223,8 @@ impl OwnerStateManifest {
         if chunks.len() != descriptor.chunks.len() {
             return Err(OwnerStoreError::InvalidChunk);
         }
-        let total =
-            usize::try_from(descriptor.total_bytes).map_err(|_| OwnerStoreError::InvalidManifest)?;
+        let total = usize::try_from(descriptor.total_bytes)
+            .map_err(|_| OwnerStoreError::InvalidManifest)?;
         let mut bytes = Vec::with_capacity(total);
         for (index, chunk) in chunks.iter().enumerate() {
             let expected_size = descriptor
@@ -237,8 +237,7 @@ impl OwnerStateManifest {
                 .get(index)
                 .ok_or(OwnerStoreError::InvalidChunk)?;
             let observed_digest = hex(&crypto::digest(chunk));
-            if chunk.len() != expected_size
-                || observed_digest.as_str() != expected_digest.as_str()
+            if chunk.len() != expected_size || observed_digest.as_str() != expected_digest.as_str()
             {
                 return Err(OwnerStoreError::DigestMismatch);
             }
@@ -316,9 +315,7 @@ impl OwnerWritePlan {
                 let resource = owner_chunk_resource(name, &digest)?;
                 next_resources.insert(resource.clone());
                 digests.push(digest);
-                sizes.push(
-                    u32::try_from(chunk.len()).map_err(|_| OwnerStoreError::InvalidChunk)?,
-                );
+                sizes.push(u32::try_from(chunk.len()).map_err(|_| OwnerStoreError::InvalidChunk)?);
                 if previous_resources.contains(&resource) {
                     required_existing.insert(resource);
                 } else {
@@ -327,7 +324,8 @@ impl OwnerWritePlan {
             }
             descriptors.push(OwnerDescriptor {
                 name: name.to_owned(),
-                total_bytes: u64::try_from(bytes.len()).map_err(|_| OwnerStoreError::StateTooLarge)?,
+                total_bytes: u64::try_from(bytes.len())
+                    .map_err(|_| OwnerStoreError::StateTooLarge)?,
                 chunk_count: u32::try_from(digests.len())
                     .map_err(|_| OwnerStoreError::StateTooLarge)?,
                 chunks: digests,
@@ -381,9 +379,7 @@ impl OwnerWritePlan {
     }
 }
 
-pub(crate) fn decode_manifest(
-    bytes: &[u8],
-) -> Result<Option<OwnerStateManifest>, OwnerStoreError> {
+pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<OwnerStateManifest>, OwnerStoreError> {
     let value: serde_json::Value = match serde_json::from_slice(bytes) {
         Ok(value) => value,
         Err(_) => return Ok(None),
@@ -391,7 +387,9 @@ pub(crate) fn decode_manifest(
     let Some(object) = value.as_object() else {
         return Ok(None);
     };
-    if object.get("storage_format").and_then(serde_json::Value::as_str)
+    if object
+        .get("storage_format")
+        .and_then(serde_json::Value::as_str)
         != Some(STATE_STORAGE_FORMAT)
     {
         return Ok(None);
@@ -491,8 +489,8 @@ mod tests {
     }
 
     #[test]
-    fn owner_manifest_round_trips_and_binds_logical_state()
-    -> Result<(), Box<dyn std::error::Error>> {
+    fn owner_manifest_round_trips_and_binds_logical_state() -> Result<(), Box<dyn std::error::Error>>
+    {
         let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
         let plan = OwnerWritePlan::new(
             logical,

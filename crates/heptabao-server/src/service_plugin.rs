@@ -249,9 +249,7 @@ impl PluginAuthPlan {
             .get("alias")
             .and_then(Value::as_str)
             .filter(|value| {
-                !value.is_empty()
-                    && value.len() <= 1024
-                    && !value.chars().any(char::is_control)
+                !value.is_empty() && value.len() <= 1024 && !value.chars().any(char::is_control)
             })
             .ok_or_else(|| Response::error(503, "authentication plugin alias is invalid"))?;
         Ok(PluginAuthObservation {
