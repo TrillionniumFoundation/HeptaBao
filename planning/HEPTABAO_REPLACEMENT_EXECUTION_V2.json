@@ -1366,18 +1366,24 @@
       "positive": "Load real compatible external auth plugin and validate its token result contract",
       "hostile": "Reject checksum drift, undeclared capabilities and sandbox escapes",
       "lifecycle": "Handle plugin restart, deadline and reload without duplicated token issuance",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_plugin.rs",
+        "crates/heptabao-server/src/auth.rs"
+      ],
       "contract_sources": [
         "crates/heptabao-plugin-host/src/lib.rs"
       ],
       "guides": [
+        "docs/modules/heptabao-server.md",
         "docs/modules/heptabao-plugin-host.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/plugin_auth_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Go plugin interoperability and token result contracts."
+      "remaining_scope": "Checksum-bound sandboxed authentication plugins are executable through the real Service with server-owned token policy/TTL authority, digest fencing, restart persistence and mount-disable revocation. OpenBao Go plugin RPC compatibility, plugin reload/deadline parity and independently qualified sandbox containment remain open."
     },
     {
       "surface_id": "HB-SURFACE-PLUGIN-SECRET",

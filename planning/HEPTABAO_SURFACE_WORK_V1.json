@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "d3299be21d561d0ade13f360ad22aeff6877a1508c407b6b6cc810097d036bb4",
+  "corpus_sha256": "f3e6b32a46cd9ba93eb39eaaccf576747424e2960242a6ef014dfe1451f9e4ba",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -355,6 +355,19 @@
       ],
       "prerequisites": [
         "pinned_official_openbao_2_6_2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_auth": {
+      "script": "qa/openbao-acceptance/plugin_auth_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "linux_checksum_pinned_sandbox_wrapper"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
@@ -1312,18 +1325,28 @@
     {
       "surface_id": "HB-SURFACE-PLUGIN-AUTH",
       "category": "plugin_classes",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
       "technical_contract": {
         "api_or_protocol": "sys/plugins catalog and mounted authentication plugin",
         "required_positive_and_hostile_behavior": "Version/checksum pinning, process RPC, mount ownership, cancellation and token authority boundary",
-        "remaining_semantics_and_effect_checks": "Standalone plugin-host must be integrated through the same audited private auth dispatcher",
+        "remaining_semantics_and_effect_checks": "The server composes a checksum-bound authentication plugin through the audited private auth dispatcher. The plugin may return only an authentication decision and bounded alias; token policy, TTL and authority remain server-owned. OpenBao Go plugin RPC compatibility, reload semantics and independently qualified sandbox containment remain open.",
         "crash_reopen": "Interrupt sys/plugins catalog and mounted authentication plugin before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-PLUGIN-AUTH, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "plugin_auth_live.login",
+        "plugin_auth_live.denied",
+        "plugin_auth_live.plugin_authority_fields_rejected",
+        "plugin_auth_live.server_owned_policy",
+        "plugin_auth_live.restart_login",
+        "plugin_auth_live.digest_fence",
+        "plugin_auth_live.issued_token_revoked_on_disable"
+      ],
+      "available_scoped_profiles": [
+        "plugin_auth"
+      ],
       "whole_surface_admitted": false
     },
     {

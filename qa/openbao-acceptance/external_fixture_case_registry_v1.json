@@ -267,6 +267,18 @@
         "namespace.recreate_changes_identity",
         "namespace.cleanup_parent"
       ]
+    },
+    "plugin_auth_live": {
+      "script": "qa/openbao-acceptance/plugin_auth_live.py",
+      "case_ids": [
+        "login",
+        "denied",
+        "plugin_authority_fields_rejected",
+        "server_owned_policy",
+        "restart_login",
+        "digest_fence",
+        "issued_token_revoked_on_disable"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

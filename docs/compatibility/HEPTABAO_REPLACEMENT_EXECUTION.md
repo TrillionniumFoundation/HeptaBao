@@ -728,11 +728,11 @@ Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openba
 
 ### HB-SURFACE-PLUGIN-AUTH
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP09`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP09`.
 API families: `sys/plugins/catalog/*`; `sys/auth/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_plugin.rs`, `crates/heptabao-server/src/auth.rs`.
 Separate contracts: `crates/heptabao-plugin-host/src/lib.rs`.
-Guides: `docs/modules/heptabao-plugin-host.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/modules/heptabao-plugin-host.md`.
 
 **Positive:** Load real compatible external auth plugin and validate its token result contract.
 
@@ -740,9 +740,9 @@ Guides: `docs/modules/heptabao-plugin-host.md`.
 
 **Lifecycle:** Handle plugin restart, deadline and reload without duplicated token issuance.
 
-**Remaining scope:** Go plugin interoperability and token result contracts.
+**Remaining scope:** Checksum-bound sandboxed authentication plugins are executable through the real Service with server-owned token policy/TTL authority, digest fencing, restart persistence and mount-disable revocation. OpenBao Go plugin RPC compatibility, plugin reload/deadline parity and independently qualified sandbox containment remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_auth_live.py`.
 
 ### HB-SURFACE-PLUGIN-SECRET
 

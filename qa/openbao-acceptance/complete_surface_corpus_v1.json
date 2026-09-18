@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 42,
-    "defined_not_implemented_surface_count": 18,
-    "fixture_case_count": 219,
+    "implemented_surface_count": 43,
+    "defined_not_implemented_surface_count": 17,
+    "fixture_case_count": 226,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -544,9 +544,17 @@
       "surface_id": "HB-SURFACE-PLUGIN-AUTH",
       "category": "plugin_classes",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 7,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_auth_live.login",
+        "plugin_auth_live.denied",
+        "plugin_auth_live.plugin_authority_fields_rejected",
+        "plugin_auth_live.server_owned_policy",
+        "plugin_auth_live.restart_login",
+        "plugin_auth_live.digest_fence",
+        "plugin_auth_live.issued_token_revoked_on_disable"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
