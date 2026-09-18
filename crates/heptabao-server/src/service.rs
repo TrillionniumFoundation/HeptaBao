@@ -1346,6 +1346,7 @@ impl Service {
         if self.rotate_unseal_nonce().is_err() {
             self.state = None;
             self.durable = None;
+            self.dynamic_secrets = None;
             self.barrier_key = None;
             return Response::error(503, "operating system randomness unavailable");
         }
@@ -1354,6 +1355,7 @@ impl Service {
 
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
         self.durable = None;
+        self.dynamic_secrets = None;
         self.state = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
@@ -1380,7 +1382,15 @@ impl Service {
                 ));
             }
         }
+        let dynamic_secrets = match self.dynamic_secret_config.as_ref() {
+            Some(config) => Some(
+                DynamicSecretRuntime::open(config, key)
+                    .map_err(|_| Response::error(503, "dynamic-secret runtime admission or recovery failed"))?,
+            ),
+            None => None,
+        };
         self.durable = Some(durable);
+        self.dynamic_secrets = dynamic_secrets;
         self.state = Some(state);
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
