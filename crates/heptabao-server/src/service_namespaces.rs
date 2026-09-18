@@ -35,7 +35,7 @@ fn valid_segment(segment: &str) -> bool {
         && segment != ".."
         && segment
             .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || b"_-. ".contains(&byte) && byte != b' ')
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.".contains(&byte))
 }
 
 fn canonical_path(value: &str) -> Result<String, Response> {
