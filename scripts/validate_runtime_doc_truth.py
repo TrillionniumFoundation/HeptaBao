@@ -28,23 +28,27 @@ def _one(pattern: str, text: str, error: str, errors: list[str]) -> str | None:
 
 
 def rust_without_comments(text: str) -> str:
-    """Remove Rust comments before lexical semantic checks.
-
-    This is intentionally small, not a Rust parser. It prevents a stale comment
-    or documentation example from satisfying a runtime marker while leaving
-    string literals intact for route/observable-value checks.
-    """
-    text = re.sub(r"/\\*.*?\\*/", "", text, flags=re.S)
+    """Remove Rust comments before lexical semantic checks."""
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
     return re.sub(r"(?m)//.*$", "", text)
 
 
-def has_replay_source_contract(source: str) -> dict[str, bool]:
+def replay_source_contract(source: str) -> dict[str, bool]:
     code = rust_without_comments(source)
     return {
-        "replay_epoch field": bool(re.search(r"(?m)^\\s*(?:pub(?:\\([^)]*\\))?\\s+)?replay_epoch\\s*:\\s*u64\\s*,", code)),
+        "replay_epoch field": bool(
+            re.search(
+                r"(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?replay_epoch\s*:\s*u64\s*,",
+                code,
+            )
+        ),
         "replay retirement route": '"sys/storage/raft/replay-retire"' in code,
-        "durable replay retirement call": bool(re.search(r"\\.retire_replay_epoch\\s*\\(\\s*\\)", code)),
-        "epoch-bound state batch": bool(re.search(r"\\bapply_batch_in_replay_epoch\\s*\\(", code)),
+        "durable replay retirement call": bool(
+            re.search(r"\.retire_replay_epoch\s*\(\s*\)", code)
+        ),
+        "epoch-bound state batch": bool(
+            re.search(r"\bapply_batch_in_replay_epoch\s*\(", code)
+        ),
         "raft-coordinated observable": '"raft-coordinated"' in code,
     }
 
@@ -54,7 +58,9 @@ def validate(root: Path = ROOT) -> list[str]:
     try:
         source = (root / 'crates/heptabao-server/src/service.rs').read_text()
         code = rust_without_comments(source)
-        matches = re.findall(r'(?m)^\s*const\s+CURRENT_STATE_SCHEMA\s*:\s*u32\s*=\s*(\d+)\s*;\s*        if len(matches) != 1:
+        matches = re.findall(
+            r'(?m)^\s*const\s+CURRENT_STATE_SCHEMA\s*:\s*u32\s*=\s*(\d+)\s*;\s*
+        if len(matches) != 1:
             return ['current Service schema constant is missing or ambiguous']
         schema = matches[0]
         contract = (root / FORMAT).read_text()
@@ -101,7 +107,8 @@ def validate(root: Path = ROOT) -> list[str]:
             errors,
         )
         operations_raw = _one(
-            r'(?m)^\s*const\s+MAX_OPERATIONS\s*:\s*usize\s*=\s*([\d_]+)\s*;\s*            'replay operation-identity bound is missing or ambiguous',
+            r'(?m)^\s*const\s+MAX_OPERATIONS\s*:\s*usize\s*=\s*([\d_]+)\s*;\s*
+            'replay operation-identity bound is missing or ambiguous',
             errors,
         )
         if state_mib is not None:
@@ -131,7 +138,7 @@ def validate(root: Path = ROOT) -> list[str]:
         if 'heptabao-state-chunks-v1' not in server_guide:
             errors.append(f'{SERVER}: missing current chunk-manifest storage format')
 
-        for contract, present in has_replay_source_contract(source).items():
+        for contract, present in replay_source_contract(source).items():
             if not present:
                 errors.append(f'current replay source missing required contract: {contract}')
         replay_doc_markers = (
@@ -162,7 +169,9 @@ def validate(root: Path = ROOT) -> list[str]:
             'sys/step-down',
             'replay_retirement_not_raft_coordinated',
             'leader_before.stop()',
-            'second_leader.stop()',
+            'one_voter_offline_before_multi_epoch_retirement',
+            'offline_voter_local_replay_authority_advanced_across_two_epochs',
+            'offline_leader.stop()',
         )
         for marker in replay_fixture_markers:
             if marker not in replay_fixture:
@@ -195,7 +204,9 @@ if __name__ == '__main__':
     if not problems:
         print('runtime-doc-truth: PASS (selected source drift guards only)')
     raise SystemExit(bool(problems))
-, code)
+,
+            code,
+        )
         if len(matches) != 1:
             return ['current Service schema constant is missing or ambiguous']
         schema = matches[0]
@@ -449,7 +460,9 @@ if __name__ == '__main__':
     if not problems:
         print('runtime-doc-truth: PASS (selected source drift guards only)')
     raise SystemExit(bool(problems))
-, code)
+,
+            code,
+        )
         if len(matches) != 1:
             return ['current Service schema constant is missing or ambiguous']
         schema = matches[0]
