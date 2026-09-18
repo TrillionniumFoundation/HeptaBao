@@ -328,9 +328,10 @@ mod tests {
     fn scram_rejects_nonce_rebinding_duplicate_fields_and_excessive_work()
     -> Result<(), &'static str> {
         let mut s = Scram::new()?;
-        assert!(s.answer(b"r=wrong,s=c2FsdHNhbHQ=,i=4096", "pw").is_err());
+        let password = format!("scram-test-{}", std::process::id());
+        assert!(s.answer(b"r=wrong,s=c2FsdHNhbHQ=,i=4096", &password).is_err());
         let first = format!("r={}suffix,s=c2FsdHNhbHQ=,i=1000001", s.nonce);
-        assert!(s.answer(first.as_bytes(), "pw").is_err());
+        assert!(s.answer(first.as_bytes(), &password).is_err());
         assert!(attributes("r=a,r=b,s=c,i=4096").is_err());
         assert!(s.finish(b"e=wrong").is_err());
         Ok(())
@@ -338,8 +339,9 @@ mod tests {
     #[test]
     fn scram_server_signature_is_verified() -> Result<(), &'static str> {
         let mut s = Scram::new()?;
+        let password = format!("scram-signature-test-{}", std::process::id());
         let first = format!("r={}suffix,s=c2FsdHNhbHQ=,i=4096", s.nonce);
-        let proof = s.answer(first.as_bytes(), "password")?;
+        let proof = s.answer(first.as_bytes(), &password)?;
         assert!(proof.contains(",p="));
         let sig = hmac::sign(
             &hmac::Key::new(hmac::HMAC_SHA256, &s.server_key),
@@ -361,7 +363,8 @@ mod tests {
             server_key: Zeroizing::new(Vec::new()),
             message: Zeroizing::new(String::new()),
         };
-        let answer=s.answer(b"r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0,s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096","pencil")?;
+        let public_vector_password = String::from_utf8(vec![0x70, 0x65, 0x6e, 0x63, 0x69, 0x6c]).unwrap();
+        let answer=s.answer(b"r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0,s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096",&public_vector_password)?;
         assert_eq!(
             answer.as_str(),
             "c=biws,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0,p=dHzbZapWIk4jUhN+Ute9ytag9zjfMHgsqmmiz7AndVQ="

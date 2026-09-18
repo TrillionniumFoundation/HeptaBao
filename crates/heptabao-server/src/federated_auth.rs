@@ -1265,6 +1265,8 @@ mod tests {
         )
         .unwrap();
         let verifier = JwtVerifier::new(policy, [key]).unwrap();
+        let nonce = format!("oidc-test-nonce-{}", std::process::id());
+        let other_nonce = format!("{nonce}-wrong");
         let sign = |claims: &Value| {
             let h = URL_SAFE_NO_PAD.encode(br#"{"alg":"ES256","kid":"p256","typ":"JWT"}"#);
             let payload = URL_SAFE_NO_PAD.encode(serde_json::to_vec(claims).unwrap());
@@ -1276,27 +1278,27 @@ mod tests {
             URL_SAFE_NO_PAD.encode(&digest::digest(&digest::SHA256, s.as_bytes()).as_ref()[..16])
         };
         let original = json!({"iss":"https://issuer.example:443","sub":"alice","aud":"client",
-            "iat":100,"exp":400,"nonce":"nonce","at_hash":short_hash("access"),"c_hash":short_hash("code")});
+            "iat":100,"exp":400,"nonce":nonce.clone(),"at_hash":short_hash("access"),"c_hash":short_hash("code")});
         let encoded = sign(&original);
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "nonce", "access", "code")
+                .verify_oidc(&encoded, 110, &nonce, "access", "code")
                 .is_ok()
         );
         assert!(verifier.verify(&encoded, 110).is_err()); // original JWT still requires jti
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "other", "access", "code")
+                .verify_oidc(&encoded, 110, &other_nonce, "access", "code")
                 .is_err()
         );
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "nonce", "changed", "code")
+                .verify_oidc(&encoded, 110, &nonce, "changed", "code")
                 .is_err()
         );
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "nonce", "access", "changed")
+                .verify_oidc(&encoded, 110, &nonce, "access", "changed")
                 .is_err()
         );
         for (field, value) in [
@@ -1311,7 +1313,7 @@ mod tests {
             bad[field] = value;
             assert!(
                 verifier
-                    .verify_oidc(&sign(&bad), 110, "nonce", "access", "code")
+                    .verify_oidc(&sign(&bad), 110, &nonce, "access", "code")
                     .is_err(),
                 "{field}"
             );
@@ -1321,7 +1323,7 @@ mod tests {
         multiple["azp"] = json!("client");
         assert!(
             verifier
-                .verify_oidc(&sign(&multiple), 110, "nonce", "access", "code")
+                .verify_oidc(&sign(&multiple), 110, &nonce, "access", "code")
                 .is_ok()
         );
     }
