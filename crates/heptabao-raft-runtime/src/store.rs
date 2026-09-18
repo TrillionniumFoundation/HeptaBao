@@ -452,6 +452,8 @@ fn persist_initialization_marker(
 struct PersistentLogState {
     #[serde(default)]
     journal_format: u16,
+    #[serde(default)]
+    journal_epoch: u64,
     last_purged_log_id: Option<LogIdOf<TypeConfig>>,
     committed: Option<LogIdOf<TypeConfig>>,
     vote: Option<VoteOf<TypeConfig>>,
@@ -471,13 +473,44 @@ fn log_journal_path(state_path: &Path) -> PathBuf {
     state_path.with_file_name("raft-log.journal")
 }
 
-fn initialize_log_journal(path: &Path) -> io::Result<()> {
-    atomic_write_raw(path, &LOG_JOURNAL_MAGIC)
+fn initialize_log_journal(path: &Path, epoch: u64) -> io::Result<()> {
+    if epoch == 0 {
+        return Err(invalid("raft log journal epoch must be nonzero"));
+    }
+    let mut header = Vec::with_capacity(LOG_JOURNAL_MAGIC.len() + 8);
+    header.extend_from_slice(&LOG_JOURNAL_MAGIC);
+    header.extend_from_slice(&epoch.to_le_bytes());
+    atomic_write_raw(path, &header)
 }
 
-fn append_log_journal(path: &Path, event: &LogJournalEvent) -> io::Result<()> {
+fn log_journal_epoch(path: &Path) -> io::Result<u64> {
     if !regular_file_status(path, "raft log delta journal")? {
         return Err(invalid("raft log delta journal is missing"));
+    }
+    let mut file = File::open(path)?;
+    let mut header = [0_u8; 16];
+    file.read_exact(&mut header)?;
+    if header[..8] != LOG_JOURNAL_MAGIC {
+        return Err(invalid("raft log delta journal magic mismatch"));
+    }
+    let epoch = u64::from_le_bytes(
+        header[8..16]
+            .try_into()
+            .map_err(|_| invalid("invalid raft log journal epoch"))?,
+    );
+    if epoch == 0 {
+        return Err(invalid("raft log journal epoch is zero"));
+    }
+    Ok(epoch)
+}
+
+fn append_log_journal(
+    path: &Path,
+    expected_epoch: u64,
+    event: &LogJournalEvent,
+) -> io::Result<()> {
+    if log_journal_epoch(path)? != expected_epoch {
+        return Err(invalid("raft log checkpoint/journal epoch mismatch"));
     }
     let payload = serde_json::to_vec(event).map_err(|error| invalid(error.to_string()))?;
     if payload.len() > 16 * 1024 * 1024 {
@@ -549,10 +582,24 @@ fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result
     }
     let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
     file.read_to_end(&mut bytes)?;
-    if bytes.len() < LOG_JOURNAL_MAGIC.len() || bytes[..8] != LOG_JOURNAL_MAGIC {
-        return Err(invalid("raft log delta journal magic mismatch"));
+    if bytes.len() < 16 || bytes[..8] != LOG_JOURNAL_MAGIC {
+        return Err(invalid("raft log delta journal header is truncated or invalid"));
     }
-    let mut offset = LOG_JOURNAL_MAGIC.len();
+    let journal_epoch = u64::from_le_bytes(
+        bytes[8..16]
+            .try_into()
+            .map_err(|_| invalid("invalid raft log journal epoch"))?,
+    );
+    if journal_epoch < state.journal_epoch {
+        // The checkpoint was durably replaced before the previous journal could
+        // be collapsed. The newer checkpoint already includes every old event.
+        initialize_log_journal(path, state.journal_epoch)?;
+        return state.validate();
+    }
+    if journal_epoch != state.journal_epoch {
+        return Err(invalid("raft log journal leads its checkpoint epoch"));
+    }
+    let mut offset = 16;
     let mut last_good = offset;
     while offset < bytes.len() {
         if bytes.len() - offset < 16 {
@@ -602,6 +649,11 @@ fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result
 
 impl PersistentLogState {
     fn validate(&self) -> io::Result<()> {
+        if self.journal_format > 1
+            || (self.journal_format == 1 && self.journal_epoch == 0)
+        {
+            return Err(invalid("unsupported or zero raft log journal epoch"));
+        }
         let mut previous = self.last_purged_log_id.as_ref().map(|log_id| log_id.index);
         for index in self.log.keys().copied() {
             if let Some(previous) = previous {
@@ -634,8 +686,9 @@ impl DurableLogStore {
         ensure_create_location_is_fresh(root, &state_path)?;
         let mut state = PersistentLogState::default();
         state.journal_format = 1;
+        state.journal_epoch = 1;
         write_json(&state_path, LOG_MAGIC, &state)?;
-        initialize_log_journal(&log_journal_path(&state_path))?;
+        initialize_log_journal(&log_journal_path(&state_path), state.journal_epoch)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
         Ok(Self {
             state_path,
@@ -663,13 +716,14 @@ impl DurableLogStore {
         state.validate()?;
         let journal_path = log_journal_path(&state_path);
         if state.journal_format == 0 {
+            state.journal_epoch = 1;
             if !regular_file_status(&journal_path, "legacy raft log delta journal")? {
-                initialize_log_journal(&journal_path)?;
+                initialize_log_journal(&journal_path, state.journal_epoch)?;
             }
             replay_log_journal(&journal_path, &mut state)?;
             state.journal_format = 1;
             write_json(&state_path, LOG_MAGIC, &state)?;
-            initialize_log_journal(&journal_path)?;
+            initialize_log_journal(&journal_path, state.journal_epoch)?;
         } else if state.journal_format == 1 {
             if !regular_file_status(&journal_path, "raft log delta journal")? {
                 return Err(invalid(
@@ -716,7 +770,8 @@ impl DurableLogStore {
         let mut state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
         state.validate()?;
         state.journal_format = 1;
-        initialize_log_journal(&log_journal_path(&state_path))?;
+        state.journal_epoch = 1;
+        initialize_log_journal(&log_journal_path(&state_path), state.journal_epoch)?;
         write_json(&state_path, LOG_MAGIC, &state)?;
         discard_stale_previous_after_validation(&state_path)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
@@ -785,7 +840,11 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
     async fn save_vote(&mut self, vote: &VoteOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
         let event = LogJournalEvent::Vote(*vote);
-        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
         apply_log_journal_event(&mut state, event)
     }
 
@@ -795,7 +854,11 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
     ) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
         let event = LogJournalEvent::Committed(committed);
-        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
         apply_log_journal_event(&mut state, event)
     }
 
@@ -854,7 +917,11 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
             return Ok(());
         }
         let event = LogJournalEvent::Append(serialized);
-        match append_log_journal(&log_journal_path(&self.state_path), &event) {
+        match append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        ) {
             Ok(()) => {
                 apply_log_journal_event(&mut state, event)?;
                 callback.io_completed(Ok(()));
@@ -880,7 +947,11 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         };
         let mut state = self.state.lock().await;
         let event = LogJournalEvent::Truncate { start };
-        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
         apply_log_journal_event(&mut state, event)
     }
 
@@ -898,10 +969,24 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
             return Err(invalid("purge log id exceeds locally retained log frontier"));
         }
         let event = LogJournalEvent::Purge { log_id };
-        append_log_journal(&log_journal_path(&self.state_path), &event)?;
-        apply_log_journal_event(&mut state, event)?;
-        self.persist(&state)?;
-        initialize_log_journal(&log_journal_path(&self.state_path))
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
+        let mut candidate = state.clone();
+        apply_log_journal_event(&mut candidate, event)?;
+        candidate.journal_epoch = candidate
+            .journal_epoch
+            .checked_add(1)
+            .ok_or_else(|| invalid("raft log journal epoch overflow"))?;
+        self.persist(&candidate)?;
+        initialize_log_journal(
+            &log_journal_path(&self.state_path),
+            candidate.journal_epoch,
+        )?;
+        *state = candidate;
+        Ok(())
     }
 
 }
