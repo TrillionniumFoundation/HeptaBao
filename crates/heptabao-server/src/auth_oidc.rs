@@ -168,13 +168,7 @@ impl OidcExchange {
             }
             let verified = config
                 .verifier()?
-                .verify_oidc(
-                    id_token,
-                    now,
-                    &self.session.nonce,
-                    access,
-                    &self.code,
-                )
+                .verify_oidc(id_token, now, &self.session.nonce, access, &self.code)
                 .map_err(|_| denied())?;
             if self
                 .role
@@ -617,7 +611,13 @@ impl AuthState {
         if !role.allowed_redirect_uris.contains(redirect_uri) {
             return Err(denied());
         }
-        if state.sessions.values().filter(|s| s.expires_at > now).count() >= MAX_SESSIONS {
+        if state
+            .sessions
+            .values()
+            .filter(|s| s.expires_at > now)
+            .count()
+            >= MAX_SESSIONS
+        {
             return Err(err(429, "OIDC session capacity reached"));
         }
         Ok(OidcBeginPlan {
@@ -648,10 +648,7 @@ impl AuthState {
         if current.config.as_ref() != Some(&plan.config)
             || current.roles.get(&plan.role_name) != Some(&plan.role)
         {
-            return Err(err(
-                409,
-                "OIDC configuration changed during discovery",
-            ));
+            return Err(err(409, "OIDC configuration changed during discovery"));
         }
         if plan.now < current.clock
             || current
@@ -808,7 +805,6 @@ impl AuthState {
         let observation = exchange.execute(namespace, now, started, outbound)?;
         self.finish_oidc_observation(namespace, mount, exchange, observation)
     }
-
 }
 
 #[cfg(test)]
