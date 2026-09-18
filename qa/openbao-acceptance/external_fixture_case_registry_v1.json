@@ -64,6 +64,19 @@
       ],
       "script": "qa/openbao-acceptance/ldap_bounded.py"
     },
+    "postgres_live": {
+      "case_ids": [
+        "native_pg_tls_scram_config",
+        "credential_really_logs_into_postgresql",
+        "slow_provider_does_not_block_unrelated_kv_write",
+        "renewed_credential_survives_service_restart",
+        "revoke_terminates_existing_database_session",
+        "revoke_really_prevents_pg_login",
+        "provider_outage_is_pending_not_success",
+        "restart_reconcile"
+      ],
+      "script": "qa/openbao-acceptance/postgres_live.py"
+    },
     "postgres_pipeline_simulated": {
       "case_ids": [
         "verified_scram_configuration",
