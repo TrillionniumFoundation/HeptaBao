@@ -11,8 +11,10 @@ use ring::{
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
-    collections::{BTreeMap, BTreeSet},
+    collections::{BTreeMap, BTreeSet, btree_map},
     num::NonZeroU32,
+    ops::{Deref, DerefMut},
+    sync::Arc,
 };
 use zeroize::{Zeroize, Zeroizing};
 
@@ -55,42 +57,113 @@ const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
 
+struct CowMap<K, V>(Arc<BTreeMap<K, V>>);
+
+impl<K, V> Clone for CowMap<K, V> {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl<K, V> Default for CowMap<K, V> {
+    fn default() -> Self {
+        Self(Arc::new(BTreeMap::new()))
+    }
+}
+
+impl<K, V> CowMap<K, V> {
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl<K, V> Deref for CowMap<K, V> {
+    type Target = BTreeMap<K, V>;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref()
+    }
+}
+
+impl<K, V> DerefMut for CowMap<K, V>
+where
+    K: Clone,
+    V: Clone,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl<K, V> Serialize for CowMap<K, V>
+where
+    BTreeMap<K, V>: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, K, V> Deserialize<'de> for CowMap<K, V>
+where
+    BTreeMap<K, V>: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        BTreeMap::<K, V>::deserialize(deserializer).map(|value| Self(Arc::new(value)))
+    }
+}
+
+impl<'a, K, V> IntoIterator for &'a CowMap<K, V> {
+    type Item = (&'a K, &'a V);
+    type IntoIter = btree_map::Iter<'a, K, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
     #[serde(default, skip_serializing_if = "is_zero")]
     wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
-    policies: BTreeMap<String, BTreeMap<String, Policy>>,
-    users: BTreeMap<String, BTreeMap<String, User>>,
-    roles: BTreeMap<String, BTreeMap<String, Role>>,
+    policies: CowMap<String, BTreeMap<String, Policy>>,
+    users: CowMap<String, BTreeMap<String, User>>,
+    roles: CowMap<String, BTreeMap<String, Role>>,
     // The original fixed mounts retain their exact persisted representation.
     // Custom mounts add a structural dimension; namespace strings are never
     // concatenated with mount names to manufacture storage keys.
     #[serde(default)]
-    mounted_users: BTreeMap<String, BTreeMap<String, BTreeMap<String, User>>>,
+    mounted_users: CowMap<String, BTreeMap<String, BTreeMap<String, User>>>,
     #[serde(default)]
-    mounted_roles: BTreeMap<String, BTreeMap<String, BTreeMap<String, Role>>>,
+    mounted_roles: CowMap<String, BTreeMap<String, BTreeMap<String, Role>>>,
     #[serde(default)]
-    auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
+    auth_mounts: CowMap<String, BTreeMap<String, AuthMount>>,
     #[serde(default)]
-    jwt_mounts: BTreeMap<String, BTreeMap<String, JwtMountState>>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    kubernetes_mounts: BTreeMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    oidc_mounts: BTreeMap<String, BTreeMap<String, oidc::OidcMount>>,
+    jwt_mounts: CowMap<String, BTreeMap<String, JwtMountState>>,
+    #[serde(default, skip_serializing_if = "CowMap::is_empty")]
+    kubernetes_mounts: CowMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
+    #[serde(default, skip_serializing_if = "CowMap::is_empty")]
+    oidc_mounts: CowMap<String, BTreeMap<String, oidc::OidcMount>>,
     /// Bounded LDAP directory profile. Password verification and optional group
     /// membership are observed from the enrolled directory; local user/group
     /// records retain the policy, TTL and MFA authority issued by this server.
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    #[serde(default, skip_serializing_if = "CowMap::is_empty")]
+    ldap_mounts: CowMap<String, BTreeMap<String, LdapMount>>,
+    #[serde(default, skip_serializing_if = "CowMap::is_empty")]
+    ldap_groups: CowMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
     /// Deployment-enrolled authentication plugins never choose token authority.
     /// This durable map binds a mount to one admitted plugin id and server-owned
     /// policy/TTL limits. The plugin returns only an authentication decision and
     /// a bounded external alias.
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    plugin_auth_mounts: BTreeMap<String, BTreeMap<String, PluginAuthMount>>,
+    #[serde(default, skip_serializing_if = "CowMap::is_empty")]
+    plugin_auth_mounts: CowMap<String, BTreeMap<String, PluginAuthMount>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -1050,18 +1123,18 @@ impl AuthState {
         let mut state = Self {
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
-            policies: BTreeMap::new(),
-            users: BTreeMap::new(),
-            roles: BTreeMap::new(),
-            mounted_users: BTreeMap::new(),
-            mounted_roles: BTreeMap::new(),
-            auth_mounts: BTreeMap::new(),
-            jwt_mounts: BTreeMap::new(),
-            kubernetes_mounts: BTreeMap::new(),
-            oidc_mounts: BTreeMap::new(),
-            ldap_mounts: BTreeMap::new(),
-            ldap_groups: BTreeMap::new(),
-            plugin_auth_mounts: BTreeMap::new(),
+            policies: CowMap::default(),
+            users: CowMap::default(),
+            roles: CowMap::default(),
+            mounted_users: CowMap::default(),
+            mounted_roles: CowMap::default(),
+            auth_mounts: CowMap::default(),
+            jwt_mounts: CowMap::default(),
+            kubernetes_mounts: CowMap::default(),
+            oidc_mounts: CowMap::default(),
+            ldap_mounts: CowMap::default(),
+            ldap_groups: CowMap::default(),
+            plugin_auth_mounts: CowMap::default(),
         };
         let token = Token {
             wrapping: None,

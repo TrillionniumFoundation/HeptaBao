@@ -1,6 +1,37 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+#[test]
+fn auth_top_level_maps_are_copy_on_write_without_changing_json_shape() {
+    let (state, _raw) = AuthState::bootstrap(100).unwrap();
+    let before = serde_json::to_vec(&state).unwrap();
+
+    let mut clone = state.clone();
+    let policies_before = Arc::clone(&clone.policies.0);
+    let plugin_before = Arc::clone(&clone.plugin_auth_mounts.0);
+    clone
+        .plugin_auth_mounts
+        .entry(String::new())
+        .or_default()
+        .insert(
+            "plugin/".into(),
+            PluginAuthMount {
+                plugin_id: "auth-plugin".into(),
+                policies: BTreeSet::from(["default".into()]),
+                token_ttl: 60,
+                token_max_ttl: 120,
+                token_num_uses: 1,
+            },
+        );
+
+    assert!(Arc::ptr_eq(&policies_before, &clone.policies.0));
+    assert!(!Arc::ptr_eq(&plugin_before, &clone.plugin_auth_mounts.0));
+    assert!(state.plugin_auth_mounts.is_empty());
+
+    let round_trip: AuthState = serde_json::from_slice(&before).unwrap();
+    assert_eq!(serde_json::to_vec(&round_trip).unwrap(), before);
+}
+
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();
