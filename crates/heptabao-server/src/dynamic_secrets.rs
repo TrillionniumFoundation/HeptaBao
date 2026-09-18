@@ -707,16 +707,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn derived_lease_identity_is_stable_and_operation_bound() -> Result<(), Box<dyn std::error::Error>> {
+    fn derived_lease_identity_is_stable_and_operation_bound(
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let subject = "auth_digest_with-UPPER-and_urlsafe_chars";
         let operation = Id::parse("request_one")?;
-        let first = derived_lease_id(&"a".repeat(64), "", &operation);
-        let second = derived_lease_id(&"a".repeat(64), "", &operation);
+        let first = derived_lease_id(subject, "", &operation);
+        let second = derived_lease_id(subject, "", &operation);
         assert_eq!(first, second);
         assert_ne!(
             first,
-            derived_lease_id(&"a".repeat(64), "", &Id::parse("request_two")?)
+            derived_lease_id(subject, "", &Id::parse("request_two")?)
+        );
+        assert_ne!(
+            first,
+            derived_lease_id(subject, "team/one", &operation)
         );
         Ok(())
+    }
+
+    #[test]
+    fn authenticated_digest_derives_bounded_plugin_actor_id() {
+        let subject = "T0kEn-DiGeSt_with-UPPER-and_urlsafe_chars";
+        let first = derived_actor_id(subject);
+        assert_eq!(first, derived_actor_id(subject));
+        assert_ne!(first, derived_actor_id("different-digest"));
+        assert!(first.as_str().starts_with("actor_"));
+        assert!(Id::parse(first.as_str().to_owned()).is_ok());
     }
 
     #[test]
