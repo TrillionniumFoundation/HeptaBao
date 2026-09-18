@@ -67,7 +67,11 @@ After independently provisioning the SQL contract, configure the database mount:
 ```text
 POST sys/mounts/database                         {"type":"database"}
 POST database/config/local                      connection configuration
+LIST database/config                             configured connection names
+DELETE database/config/local                     delete only when unreferenced
 POST database/roles/reader                      bounded role configuration
+LIST database/roles                              configured role names
+DELETE database/roles/reader                     stop future issuance for that role
 GET  database/creds/reader                       creates real provider intent
 POST sys/leases/lookup                          {"lease_id":"..."}
 POST sys/leases/renew                           {"lease_id":"...","increment":120}
@@ -87,6 +91,13 @@ Role configuration uses `db_name`, **`provider_role`**, `default_ttl` and `max_t
 arbitrary SQL or an OpenBao creation-statement template. HTTP-provided creation,
 rollback, rotation and revocation SQL are rejected. Consequently this API is a
 bounded provider profile, not a drop-in OpenBao database plugin.
+
+Role deletion removes only the issuance configuration: existing provider leases
+remain independently owned and must still be renewed, revoked or reconciled
+through their lease IDs. Connection deletion is stricter and fails while any role
+or retained lease still references the connection. Collection `LIST` operations
+are read-only projections of the persisted configuration names; manager passwords
+remain non-exportable.
 
 Config and role mutation plus system lease operations require `sudo` in addition
 to their operation capability. Issue requires read authority on the real creds
