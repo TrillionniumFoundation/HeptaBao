@@ -301,7 +301,11 @@ fn replay_epoch_transition_bypasses_full_ledger_and_restart_preserves_frontier()
             1
         );
         assert_eq!(
-            reopened.durable.as_ref().ok_or("missing durable")?.replay_epoch(),
+            reopened
+                .durable
+                .as_ref()
+                .ok_or("missing durable")?
+                .replay_epoch(),
             1
         );
         Ok(())
@@ -351,7 +355,10 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
             .map_err(|_| "HA catch-up persistence failed")?;
         let durable = service.durable.as_ref().ok_or("missing durable")?;
         assert_eq!(durable.replay_epoch(), 1);
-        assert_eq!(durable.retired_through_generation() + 1, durable.generation());
+        assert_eq!(
+            durable.retired_through_generation() + 1,
+            durable.generation()
+        );
         assert_eq!(durable.retained_request_count(), 1);
         Ok(())
     })();
@@ -395,7 +402,11 @@ fn failed_state_publication_after_epoch_retirement_fences_service()
         let response = service.persist_local(&bytes, "invalid request id");
         assert!(response.is_err());
         assert_eq!(
-            service.durable.as_ref().ok_or("missing durable")?.replay_epoch(),
+            service
+                .durable
+                .as_ref()
+                .ok_or("missing durable")?
+                .replay_epoch(),
             1
         );
         assert!(service.recovery_required);
