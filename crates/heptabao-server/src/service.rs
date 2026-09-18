@@ -1,6 +1,7 @@
 use crate::{
     auth::{AuthState, Principal},
     crypto::{self, AeadBarrier, SecretShare},
+    dynamic_secrets::{DynamicSecretConfig, DynamicSecretRuntime},
     engines::EngineState,
     ha::HaProcess,
 };
@@ -264,6 +265,8 @@ pub struct Service {
     barrier_key: Option<Zeroizing<[u8; 32]>>,
     rekey: Option<RekeyState>,
     recovery_required: bool,
+    dynamic_secret_config: Option<DynamicSecretConfig>,
+    dynamic_secrets: Option<DynamicSecretRuntime>,
     ha: Option<Arc<Mutex<HaProcess>>>,
     #[cfg(test)]
     state_capacity: usize,
@@ -301,6 +304,26 @@ impl Service {
         audit_config: AuditConfig,
     ) -> Result<Self, &'static str> {
         Self::new_inner(data_dir, audit_path, Some(ha), audit_config)
+    }
+
+    pub fn configure_dynamic_secrets(
+        &mut self,
+        config: DynamicSecretConfig,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("dynamic-secret runtime must be configured while sealed".into());
+        }
+        config.validate().map_err(str::to_owned)?;
+        if config.state_dir == self.data_dir
+            || config.state_dir.starts_with(&self.data_dir)
+            || self.data_dir.starts_with(&config.state_dir)
+        {
+            return Err(
+                "dynamic-secret durable state must be a separate non-overlapping directory".into(),
+            );
+        }
+        self.dynamic_secret_config = Some(config);
+        Ok(())
     }
 
     fn new_inner(
@@ -359,6 +382,8 @@ impl Service {
             barrier_key: None,
             rekey,
             recovery_required: false,
+            dynamic_secret_config: None,
+            dynamic_secrets: None,
             ha,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
