@@ -48,7 +48,9 @@ def declared_asset_contract(path: Path = ASSET_PLAN) -> list[dict]:
         document = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError, UnicodeError):
         raise BaoError("asset_plan_unavailable") from None
-    assets = document.get("assets") if isinstance(document, dict) else None
+    if not isinstance(document, dict):
+        raise BaoError("asset_plan_invalid")
+    assets = document.get("assets")
     if document.get("schema") != "heptabao.openbao-asset-migration.v1" or not isinstance(assets, list):
         raise BaoError("asset_plan_invalid")
     ids = [item.get("id") for item in assets if isinstance(item, dict)]
