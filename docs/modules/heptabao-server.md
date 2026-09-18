@@ -377,7 +377,7 @@ credential cleanup, private native-client output and actual test commands.
 No separate public Principal or authentication bypass is exposed. Online login
 wrapping is rejected before any issuer request or session consumption.
 
-The branch's current schema is 5; schema 1–4 cannot carry new method state.
+The branch's current schema is 6; schema 1–4 cannot carry online method state, and schema 5 cannot carry the durable PostgreSQL provider fence.
 Kubernetes tokens are nonrenewable and online review is per login, not continuous
 revocation of issued local tokens. OIDC sessions are at most 128 per mount and
 live for 300 seconds; client proof is independent of browser-visible state.

@@ -40,11 +40,11 @@ impl Service {
         #[cfg(test)]
         let state_limit = self.state_capacity;
 
-        // `DurableService::capacity().logical_payload_bytes` measures the bytes
-        // owned by the local durable store. With alternating chunk slots that
-        // includes the previous slot plus the current slot and manifest, so it
-        // can legitimately exceed the serialized application-state bound even
-        // while the current State itself is still admissible. The public
+        // `DurableService::capacity().logical_payload_bytes` measures all bytes
+        // currently owned by the local durable store. The V3 content-addressed
+        // state layout can retain reusable chunks plus the current manifest, so
+        // physical durable bytes can exceed the serialized application-state
+        // bound even while the current State remains admissible. The public
         // `state_*` fields are an application-state contract, not a physical
         // storage-amplification counter; derive them from the exact in-memory
         // State that would be passed to commit_state_bytes().
@@ -60,13 +60,15 @@ impl Service {
         }
 
         // The Service admits one bounded serialized logical application state.
-        // Local durability uses 512 KiB chunks plus an authenticated manifest,
-        // while HA still proposes the complete serialized state. This is not a
-        // per-secret quota and it is not a record-oriented scalability claim.
+        // Local durability uses the V3 content-defined, content-addressed chunk
+        // manifest while HA still proposes the complete serialized state. This
+        // is not a per-secret quota and it is not a record-oriented scale claim.
         Response::ok(json!({"data": {
-            "profile": "bounded-chunked-state-v1",
+            "profile": "bounded-content-defined-state-v3",
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
+            "state_storage_format": state_store::STATE_STORAGE_FORMAT,
+            "state_chunk_target_bytes": state_store::STATE_CHUNK_BYTES,
             "state_bytes": state_bytes,
             "state_limit_bytes": state_limit,
             "state_remaining_bytes": state_limit - state_bytes,
@@ -126,6 +128,9 @@ mod tests {
         assert_eq!(response.status, 200);
         let data = &response.body["data"];
         assert_eq!(data["state_limit_bytes"], MAX_STATE_BYTES);
+        assert_eq!(data["state_storage_format"], state_store::STATE_STORAGE_FORMAT);
+        assert_eq!(data["state_chunk_target_bytes"], state_store::STATE_CHUNK_BYTES);
+        assert_eq!(data["profile"], "bounded-content-defined-state-v3");
         assert_eq!(data["operation_limit"], MAX_OPERATIONS);
         assert_eq!(data["admission_reserved"], false);
         assert_eq!(data["compaction_reclaims_operation_identities"], false);
@@ -162,16 +167,16 @@ mod tests {
     }
 
     #[test]
-    fn capacity_reports_serialized_application_state_not_chunk_slot_bytes()
+    fn capacity_reports_serialized_application_state_not_physical_chunk_bytes()
     -> Result<(), Box<dyn std::error::Error>> {
         let root = Root::new();
         let mut service = root.service()?;
         let (_, token) = bootstrap(&mut service)?;
         service.state_capacity = 1024 * 1024;
 
-        // Three growing writes force both 512 KiB state slots to retain chunks.
-        // The physical durable payload is therefore larger than the currently
-        // serialized State even though the application state remains admissible.
+        // Growing writes exercise V3 chunk replacement/reuse. The physical
+        // durable payload can be larger than the currently serialized State even
+        // though the application state itself remains admissible.
         let value = "x".repeat(280 * 1024);
         for index in 0..3 {
             let response = call(
