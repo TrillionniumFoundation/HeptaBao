@@ -1136,9 +1136,7 @@ impl<B: Barrier> DurableService<B> {
                     MutationKind::Delete => None,
                 };
                 drop(candidate);
-                drop(candidate_ledger);
                 drop(snapshot_bytes);
-                drop(ledger_bytes);
                 self.compact()?;
                 return self.execute(
                     binding,
