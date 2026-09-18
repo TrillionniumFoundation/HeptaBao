@@ -17,10 +17,23 @@ class RuntimeDocumentationTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
-        paths = [module.FORMAT, module.ENGINE, module.SERVER, module.ARCH, module.ACCEPTANCE, module.CORPUS,
-                 'README.md', 'docs/CURRENT_DOCUMENTATION.md',
-                 'crates/heptabao-server/src/service.rs',
-                 'crates/heptabao-server/src/engines.rs']
+        paths = [
+            module.FORMAT,
+            module.ENGINE,
+            module.SERVER,
+            module.ARCH,
+            module.CAPACITY,
+            module.REPLAY,
+            module.REPLAY_HA,
+            module.ACCEPTANCE,
+            module.CORPUS,
+            module.SERVER_LIB,
+            module.STATE_STORE,
+            'README.md',
+            'docs/CURRENT_DOCUMENTATION.md',
+            'crates/heptabao-server/src/service.rs',
+            'crates/heptabao-server/src/engines.rs',
+        ]
         for path in paths:
             target = self.root / path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -58,6 +71,36 @@ class RuntimeDocumentationTests(unittest.TestCase):
     def test_missing_contract_fails_closed(self):
         (self.root / module.FORMAT).unlink()
         self.assertTrue(module.validate(self.root))
+
+    def test_commented_replay_epoch_field_cannot_fake_runtime_anchor(self):
+        path = self.root / 'crates/heptabao-server/src/service.rs'
+        source = path.read_text()
+        match = re.search(r'(?m)^(\s*)replay_epoch\s*:\s*u64\s*,', source)
+        self.assertIsNotNone(match)
+        source = (
+            source[:match.start()]
+            + match.group(1)
+            + '// replay_epoch: u64, stale documentation example only\n'
+            + match.group(1)
+            + 'replay_generation: u64,'
+            + source[match.end():]
+        )
+        path.write_text(source)
+        self.assertIn(
+            'current replay source missing semantic anchor: cluster replay_epoch field',
+            module.validate(self.root),
+        )
+
+    def test_commented_replay_retirement_call_cannot_fake_runtime_anchor(self):
+        path = self.root / 'crates/heptabao-server/src/service.rs'
+        source = path.read_text()
+        source = source.replace('retire_replay_epoch(', 'retire_replay_generation(', 1)
+        source += '\n// retire_replay_epoch(fake);\n'
+        path.write_text(source)
+        self.assertIn(
+            'current replay source missing semantic anchor: durable replay retirement call',
+            module.validate(self.root),
+        )
 
     def test_missing_navigation_is_rejected(self):
         self.change('docs/CURRENT_DOCUMENTATION.md', 'HEPTABAO_CURRENT_STATE_FORMAT.md', 'unrelated.md')
