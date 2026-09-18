@@ -238,6 +238,15 @@ impl AuthState {
                     .map(|suffix| (entry.kind, mount.clone(), suffix.to_owned()))
             })
     }
+    pub(crate) fn has_ldap_group_state(&self) -> bool {
+        self.ldap_groups
+            .values()
+            .any(|mounts| mounts.values().any(|groups| !groups.is_empty()))
+            || self.ldap_mounts.values().any(|mounts| {
+                mounts.values().any(|config| !config.group_dn.is_empty())
+            })
+    }
+
     pub(crate) fn has_online_auth_state(&self) -> bool {
         self.has_oidc_state()
             || self.kubernetes_mounts.values().any(|m| !m.is_empty())
@@ -265,6 +274,37 @@ impl AuthState {
                         return Err(denied());
                     }
                     role.validate()?;
+                }
+            }
+        }
+        for (namespace, mounts) in &self.ldap_mounts {
+            validate_namespace(namespace)?;
+            for (mount, config) in mounts {
+                if !self.online_mount_enabled(namespace, mount, "ldap")
+                    || config.url.is_empty()
+                    || config.user_dn_template.is_empty()
+                    || !valid_ldap_attribute_name(config.group_attr())
+                    || !valid_ldap_attribute_name(config.group_name_attr())
+                    || config.group_dn.len() > 1024
+                    || config.group_dn.chars().any(char::is_control)
+                {
+                    return Err(denied());
+                }
+            }
+        }
+        for (namespace, mounts) in &self.ldap_groups {
+            validate_namespace(namespace)?;
+            for (mount, groups) in mounts {
+                if !self.online_mount_enabled(namespace, mount, "ldap") || groups.len() > 1024 {
+                    return Err(denied());
+                }
+                for (name, policies) in groups {
+                    if !valid_name(name)
+                        || policies.len() > 128
+                        || policies.iter().any(|policy| !valid_name(policy) || policy == "root")
+                    {
+                        return Err(denied());
+                    }
                 }
             }
         }

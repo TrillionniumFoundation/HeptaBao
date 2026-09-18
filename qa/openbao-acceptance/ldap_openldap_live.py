@@ -21,7 +21,8 @@ class Directory:
         self.port=port();self.origin=f"ldaps://localhost:{self.port}"
         self.admin_dn="cn=admin,dc=example,dc=test";self.admin_password=secrets.token_urlsafe(30)
         self.user_password=secrets.token_urlsafe(30)
-        pw=root/"admin.pass";private(pw,self.admin_password+"\n")
+        pw=root/"admin.pass";private(pw,self.admin_password+"\n");self.password_file=pw
+        self.ldap_env={**os.environ,"LDAPTLS_CACERT":str(ca),"LDAPTLS_REQCERT":"demand"}
         conf=root/"slapd.conf";private(conf,f"""include /etc/ldap/schema/core.schema
 include /etc/ldap/schema/cosine.schema
 include /etc/ldap/schema/nis.schema
@@ -62,10 +63,20 @@ cn: Alice Example
 sn: Example
 uid: alice
 userPassword: {ssha(self.user_password)}
+
+dn: ou=groups,dc=example,dc=test
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=engineering,ou=groups,dc=example,dc=test
+objectClass: top
+objectClass: groupOfNames
+cn: engineering
+member: uid=alice,ou=people,dc=example,dc=test
 """)
-        env={**os.environ,"LDAPTLS_CACERT":str(ca),"LDAPTLS_REQCERT":"demand"}
         subprocess.run(["ldapadd","-x","-H",self.origin,"-D",self.admin_dn,"-y",str(pw),"-f",str(ldif)],
-            env=env,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15)
+            env=self.ldap_env,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15)
     def start(self):
         if self.proc is not None and self.proc.poll() is None:return
         log=open(self.root/"slapd.log","ab",buffering=0)
@@ -78,6 +89,16 @@ userPassword: {ssha(self.user_password)}
                 with socket.create_connection(("127.0.0.1",self.port),timeout=.2):return
             except OSError:time.sleep(.05)
         raise RuntimeError("slapd_timeout")
+    def replace_engineering_member(self,member_dn):
+        change=self.root/"group-change.ldif";private(change,f"""dn: cn=engineering,ou=groups,dc=example,dc=test
+changetype: modify
+replace: member
+member: {member_dn}
+""")
+        subprocess.run(["ldapmodify","-x","-H",self.origin,"-D",self.admin_dn,
+            "-y",str(self.password_file),"-f",str(change)],env=self.ldap_env,check=True,
+            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15)
+
     def stop(self):
         if self.proc is not None and self.proc.poll() is None:
             self.proc.terminate()
@@ -100,20 +121,38 @@ def main():
             ins.start();st,init=ins.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1});check("initialize",st==200)
             key=init["keys_base64"][0];ins.token=init["root_token"];check("unseal",ins.call("POST","sys/unseal",{"key":key})[0]==200)
             check("mount",ins.call("POST","sys/auth/ldap",{"type":"ldap"})[0]==204)
-            lc={"url":d.origin,"bind_dn":d.admin_dn,"user_dn_template":"uid={{username}},ou=people,dc=example,dc=test","starttls":False}
+            lc={"url":d.origin,"bind_dn":d.admin_dn,
+                "user_dn_template":"uid={{username}},ou=people,dc=example,dc=test","starttls":False,
+                "group_dn":"ou=groups,dc=example,dc=test","group_attr":"member","group_name_attr":"cn"}
             check("configure_real_openldap",ins.call("POST","auth/ldap/config",lc)[0]==204)
             check("local_policy_mapping",ins.call("PUT","auth/ldap/users/alice",{"password":"local-only-secret","policies":["default"]})[0]==204)
+            check("group_policy_exists",ins.call("PUT","sys/policies/acl/ldap-engineering",
+                {"policy":'path "sys/health" { capabilities = ["read"] }'})[0]==204)
+            check("group_policy_mapping",ins.call("PUT","auth/ldap/groups/engineering",
+                {"policies":["ldap-engineering"]})[0]==204)
             st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});tok=res.get("auth",{}).get("client_token")
-            check("real_openldap_bind_mints_token",st==200 and bool(tok));check("issued_token_usable",ins.call("GET","auth/token/lookup-self",token=tok)[0]==200)
+            check("real_openldap_bind_mints_token",st==200 and bool(tok))
+            st,lookup=ins.call("GET","auth/token/lookup-self",token=tok)
+            check("live_directory_group_grants_policy",st==200 and "ldap-engineering" in lookup.get("data",{}).get("policies",[]))
+            check("issued_token_usable",st==200)
             st,res=ins.call("POST","auth/ldap/login/alice",{"password":"local-only-secret"});check("wrong_directory_password_denied",st==403 and "auth" not in res)
             d.stop();st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});check("provider_outage_fails_closed",st==503 and "auth" not in res)
             d.start();st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});check("provider_restart_recovers",st==200 and bool(res.get("auth",{}).get("client_token")))
+            d.replace_engineering_member(d.admin_dn)
+            st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});tok_no_group=res.get("auth",{}).get("client_token")
+            st,lookup=ins.call("GET","auth/token/lookup-self",token=tok_no_group)
+            check("live_group_revocation_removes_policy_on_next_login",
+                st==200 and "ldap-engineering" not in lookup.get("data",{}).get("policies",[]))
+            d.replace_engineering_member("uid=alice,ou=people,dc=example,dc=test")
             ins.stop();ins.start();check("service_restart_unseal",ins.call("POST","sys/unseal",{"key":key})[0]==200)
-            st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});check("config_survives_restart",st==200)
+            st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});tok=res.get("auth",{}).get("client_token")
+            st,lookup=ins.call("GET","auth/token/lookup-self",token=tok)
+            check("group_mapping_survives_restart",st==200 and "ldap-engineering" in lookup.get("data",{}).get("policies",[]))
             check("remove_local_authority",ins.call("DELETE","auth/ldap/users/alice",{})[0]==204)
             st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});check("provider_success_cannot_bypass_local_revocation",st==403 and "auth" not in res)
             report={"schema":"heptabao.openldap-live.v1","status":"passed" if all(x["passed"] for x in checks) else "failed","checks":checks,
-                "actual_slapd_distribution":True,"tls_simple_bind":True,"search_and_group_mapping":False,"independent_qualification":False}
+                "actual_slapd_distribution":True,"tls_simple_bind":True,"search_and_group_mapping":True,
+                "live_group_revocation":True,"independent_qualification":False}
             private(a.output,json.dumps(report,indent=2)+"\n");return 0 if report["status"]=="passed" else 1
         finally:d.stop()
     finally:ins.stop();shutil.rmtree(root,ignore_errors=True)

@@ -32,6 +32,12 @@ impl State {
                 "database provider fencing requires schema 6",
             ));
         }
+        if self.schema < 7 && self.auth.has_ldap_group_state() {
+            return Err(Response::error(
+                503,
+                "LDAP group synchronization requires schema 7",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -52,7 +58,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

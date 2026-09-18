@@ -5,7 +5,7 @@ use rustls::{ClientConfig, ClientConnection, RootCertStore, StreamOwned};
 use serde::Deserialize;
 use serde_json::Value;
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     io::{self, Read, Write},
     net::{SocketAddr, TcpStream},
     sync::Arc,
@@ -198,14 +198,37 @@ impl Outbound {
         dn: &str,
         password: &str,
     ) -> Result<bool, &'static str> {
+        Ok(self
+            .ldap_bind_and_search_groups(url, dn, password, "", "member", "cn")?
+            .is_some())
+    }
+
+    /// Bind as the authenticating user and, on that same TLS session, optionally
+    /// perform one bounded subtree group-membership search. The search grammar is
+    /// fixed: equality on one configured attribute against the exact user DN,
+    /// returning only one configured group-name attribute. Arbitrary filters,
+    /// referrals, paging and automatic retries are deliberately excluded.
+    pub(crate) fn ldap_bind_and_search_groups(
+        &self,
+        url: &str,
+        dn: &str,
+        password: &str,
+        group_dn: &str,
+        group_attr: &str,
+        group_name_attr: &str,
+    ) -> Result<Option<BTreeSet<String>>, &'static str> {
         if dn.is_empty()
             || dn.len() > 1024
             || password.is_empty()
             || password.len() > 1024
             || dn.bytes().any(|byte| byte == 0 || byte < 0x20)
             || password.bytes().any(|byte| byte == 0)
+            || group_dn.len() > 1024
+            || group_dn.bytes().any(|byte| byte == 0 || byte < 0x20)
+            || !valid_ldap_attribute(group_attr)
+            || !valid_ldap_attribute(group_name_attr)
         {
-            return Err("invalid LDAP bind input");
+            return Err("invalid LDAP bind or group-search input");
         }
         let (endpoint, target) = self.endpoint(url, "ldaps")?;
         if target.path != "/" {
@@ -217,7 +240,23 @@ impl Outbound {
             .write_all(&request)
             .and_then(|()| stream.flush())
             .map_err(|_| "LDAP bind write failed")?;
-        read_ldap_bind_response(&mut stream)
+        if !read_ldap_bind_response(&mut stream)? {
+            return Ok(None);
+        }
+        if group_dn.is_empty() {
+            return Ok(Some(BTreeSet::new()));
+        }
+        let search = ldap_group_search_request(
+            group_dn.as_bytes(),
+            group_attr.as_bytes(),
+            dn.as_bytes(),
+            group_name_attr.as_bytes(),
+        )?;
+        stream
+            .write_all(&search)
+            .and_then(|()| stream.flush())
+            .map_err(|_| "LDAP group search write failed")?;
+        read_ldap_group_search_response(&mut stream, group_name_attr).map(Some)
     }
 
     pub fn get_json(&self, url: &str) -> Result<Value, &'static str> {
@@ -320,6 +359,167 @@ fn ldap_bind_request(dn: &[u8], password: &[u8]) -> Result<Zeroizing<Vec<u8>>, &
     message.extend_from_slice(&ber_value(0x02, &[0x01])?);
     message.extend_from_slice(&bind);
     Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+
+fn valid_ldap_attribute(value: &str) -> bool {
+    let mut bytes = value.bytes();
+    !value.is_empty()
+        && value.len() <= 64
+        && bytes.next().is_some_and(|byte| byte.is_ascii_alphabetic())
+        && bytes.all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
+}
+
+fn ldap_group_search_request(
+    group_dn: &[u8],
+    group_attr: &[u8],
+    user_dn: &[u8],
+    group_name_attr: &[u8],
+) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    if group_dn.is_empty() || group_dn.len() > 1024 || user_dn.is_empty() || user_dn.len() > 1024 {
+        return Err("LDAP group search input exceeds bound");
+    }
+    let mut filter = Vec::new();
+    filter.extend_from_slice(&ber_value(0x04, group_attr)?);
+    filter.extend_from_slice(&ber_value(0x04, user_dn)?);
+
+    let mut attributes = Vec::new();
+    attributes.extend_from_slice(&ber_value(0x04, group_name_attr)?);
+
+    let mut search = Vec::new();
+    search.extend_from_slice(&ber_value(0x04, group_dn)?);
+    search.extend_from_slice(&ber_value(0x0a, &[0x02])?);
+    search.extend_from_slice(&ber_value(0x0a, &[0x00])?);
+    search.extend_from_slice(&ber_value(0x02, &[0x00, 0x80])?);
+    search.extend_from_slice(&ber_value(0x02, &[0x03])?);
+    search.extend_from_slice(&ber_value(0x01, &[0x00])?);
+    search.extend_from_slice(&ber_value(0xa3, &filter)?);
+    search.extend_from_slice(&ber_value(0x30, &attributes)?);
+    let search = ber_value(0x63, &search)?;
+
+    let mut message = Vec::new();
+    message.extend_from_slice(&ber_value(0x02, &[0x02])?);
+    message.extend_from_slice(&search);
+    Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+fn read_ldap_message_body(
+    stream: &mut impl Read,
+    remaining: &mut usize,
+) -> Result<Vec<u8>, &'static str> {
+    let mut first = [0u8; 2];
+    stream
+        .read_exact(&mut first)
+        .map_err(|_| "truncated LDAP search response")?;
+    if first[0] != 0x30 {
+        return Err("invalid LDAP search response envelope");
+    }
+    let mut head = vec![first[0], first[1]];
+    if first[1] & 0x80 != 0 {
+        let count = usize::from(first[1] & 0x7f);
+        if count == 0 || count > 2 {
+            return Err("invalid LDAP search response length");
+        }
+        let mut more = [0u8; 2];
+        stream
+            .read_exact(&mut more[..count])
+            .map_err(|_| "truncated LDAP search response length")?;
+        head.extend_from_slice(&more[..count]);
+    }
+    let mut offset = 1usize;
+    let body_len = ber_take_length(&head, &mut offset)?;
+    if body_len == 0 || body_len > 64 * 1024 || body_len > *remaining {
+        return Err("LDAP search response exceeds bound");
+    }
+    *remaining -= body_len;
+    let mut body = vec![0u8; body_len];
+    stream
+        .read_exact(&mut body)
+        .map_err(|_| "truncated LDAP search response")?;
+    Ok(body)
+}
+
+fn read_ldap_group_search_response(
+    stream: &mut impl Read,
+    group_name_attr: &str,
+) -> Result<BTreeSet<String>, &'static str> {
+    let mut remaining = 128 * 1024usize;
+    let mut groups = BTreeSet::new();
+    for _ in 0..=128 {
+        let body = read_ldap_message_body(stream, &mut remaining)?;
+        let mut cursor = 0usize;
+        let message_id = ber_take(&body, &mut cursor, 0x02)?;
+        if message_id != [0x02] {
+            return Err("unexpected LDAP search message id");
+        }
+        let tag = *body.get(cursor).ok_or("missing LDAP search operation")?;
+        cursor += 1;
+        let length = ber_take_length(&body, &mut cursor)?;
+        let end = cursor
+            .checked_add(length)
+            .ok_or("LDAP search operation length overflow")?;
+        let operation = body
+            .get(cursor..end)
+            .ok_or("truncated LDAP search operation")?;
+        cursor = end;
+        if cursor != body.len() {
+            return Err("LDAP search controls or trailing bytes are not supported");
+        }
+
+        match tag {
+            0x64 => {
+                let mut inner = 0usize;
+                let _object_name = ber_take(operation, &mut inner, 0x04)?;
+                let attributes = ber_take(operation, &mut inner, 0x30)?;
+                if inner != operation.len() {
+                    return Err("invalid LDAP search entry");
+                }
+                let mut attribute_cursor = 0usize;
+                while attribute_cursor < attributes.len() {
+                    let attribute = ber_take(attributes, &mut attribute_cursor, 0x30)?;
+                    let mut part = 0usize;
+                    let name = ber_take(attribute, &mut part, 0x04)?;
+                    let values = ber_take(attribute, &mut part, 0x31)?;
+                    if part != attribute.len() {
+                        return Err("invalid LDAP search attribute");
+                    }
+                    let name = std::str::from_utf8(name)
+                        .map_err(|_| "LDAP search attribute name is not UTF-8")?;
+                    if name.eq_ignore_ascii_case(group_name_attr) {
+                        let mut value_cursor = 0usize;
+                        while value_cursor < values.len() {
+                            let value = ber_take(values, &mut value_cursor, 0x04)?;
+                            let value = std::str::from_utf8(value)
+                                .map_err(|_| "LDAP group name is not UTF-8")?;
+                            if value.is_empty()
+                                || value.len() > 256
+                                || value.chars().any(char::is_control)
+                                || groups.len() >= 128 && !groups.contains(value)
+                            {
+                                return Err("LDAP group result exceeds bound");
+                            }
+                            groups.insert(value.to_owned());
+                        }
+                    }
+                }
+            }
+            0x65 => {
+                let mut inner = 0usize;
+                let result = ber_take(operation, &mut inner, 0x0a)?;
+                if result != [0x00] {
+                    return Err("LDAP group search rejected by provider");
+                }
+                let _matched_dn = ber_take(operation, &mut inner, 0x04)?;
+                let _diagnostic = ber_take(operation, &mut inner, 0x04)?;
+                if inner != operation.len() {
+                    return Err("LDAP search referrals are not supported");
+                }
+                return Ok(groups);
+            }
+            _ => return Err("unsupported LDAP search response operation"),
+        }
+    }
+    Err("LDAP search entry count exceeds bound")
 }
 
 fn ber_take_length(bytes: &[u8], offset: &mut usize) -> Result<usize, &'static str> {
@@ -906,6 +1106,57 @@ mod tests {
             .concat(),
         )?;
         assert!(read_ldap_bind_response(&mut wrong_id.as_slice()).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn ldap_group_search_framing_and_results_are_bounded() -> Result<(), &'static str> {
+        let request = ldap_group_search_request(
+            b"ou=groups,dc=example,dc=test",
+            b"member",
+            b"uid=alice,ou=people,dc=example,dc=test",
+            b"cn",
+        )?;
+        assert!(request
+            .windows(b"ou=groups,dc=example,dc=test".len())
+            .any(|window| window == b"ou=groups,dc=example,dc=test"));
+        assert!(request
+            .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
+            .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test"));
+
+        let attribute = ber_value(
+            0x30,
+            &[
+                ber_value(0x04, b"cn")?,
+                ber_value(0x31, &ber_value(0x04, b"engineering")?)?,
+            ]
+            .concat(),
+        )?;
+        let entry = ber_value(
+            0x64,
+            &[
+                ber_value(0x04, b"cn=engineering,ou=groups,dc=example,dc=test")?,
+                ber_value(0x30, &attribute)?,
+            ]
+            .concat(),
+        )?;
+        let entry_message =
+            ber_value(0x30, &[ber_value(0x02, &[0x02])?, entry].concat())?;
+        let done = ber_value(
+            0x65,
+            &[
+                ber_value(0x0a, &[0])?,
+                ber_value(0x04, b"")?,
+                ber_value(0x04, b"")?,
+            ]
+            .concat(),
+        )?;
+        let done_message =
+            ber_value(0x30, &[ber_value(0x02, &[0x02])?, done].concat())?;
+        let bytes = [entry_message, done_message].concat();
+        let groups = read_ldap_group_search_response(&mut bytes.as_slice(), "cn")?;
+        assert_eq!(groups, BTreeSet::from(["engineering".to_owned()]));
+        assert!(ldap_group_search_request(b"", b"member", b"user", b"cn").is_err());
         Ok(())
     }
 

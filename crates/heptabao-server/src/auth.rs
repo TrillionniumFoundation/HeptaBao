@@ -78,11 +78,13 @@ pub struct AuthState {
     kubernetes_mounts: BTreeMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     oidc_mounts: BTreeMap<String, BTreeMap<String, oidc::OidcMount>>,
-    /// Bounded LDAP directory profile. Credentials are verified against the
-    /// mount's durable user records; an external LDAP connector is deliberately
-    /// not implied by this state and remains an external qualification gate.
+    /// Bounded LDAP directory profile. Password verification and optional group
+    /// membership are observed from the enrolled directory; local user/group
+    /// records retain the policy, TTL and MFA authority issued by this server.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -92,6 +94,29 @@ struct LdapMount {
     user_dn_template: String,
     #[serde(default)]
     starttls: bool,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_dn: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_attr: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_name_attr: String,
+}
+
+impl LdapMount {
+    fn group_attr(&self) -> &str {
+        if self.group_attr.is_empty() { "member" } else { &self.group_attr }
+    }
+    fn group_name_attr(&self) -> &str {
+        if self.group_name_attr.is_empty() { "cn" } else { &self.group_name_attr }
+    }
+}
+
+fn valid_ldap_attribute_name(value: &str) -> bool {
+    let mut bytes = value.bytes();
+    !value.is_empty()
+        && value.len() <= 64
+        && bytes.next().is_some_and(|byte| byte.is_ascii_alphabetic())
+        && bytes.all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
 }
 
 pub(crate) struct LdapLoginPlan {
@@ -106,17 +131,26 @@ pub(crate) struct LdapLoginPlan {
     started: std::time::Instant,
 }
 
-pub(crate) struct LdapLoginObservation;
+pub(crate) struct LdapLoginObservation {
+    groups: BTreeSet<String>,
+}
 
 impl LdapLoginPlan {
     pub(crate) fn execute(
         &self,
         outbound: &crate::outbound::Outbound,
     ) -> Result<LdapLoginObservation, AuthError> {
-        match outbound.ldap_simple_bind(&self.config.url, &self.dn, self.password.as_str()) {
-            Ok(true) => Ok(LdapLoginObservation),
-            Ok(false) => Err(denied()),
-            Err(_) => Err(err(503, "LDAP provider bind unavailable")),
+        match outbound.ldap_bind_and_search_groups(
+            &self.config.url,
+            &self.dn,
+            self.password.as_str(),
+            &self.config.group_dn,
+            self.config.group_attr(),
+            self.config.group_name_attr(),
+        ) {
+            Ok(Some(groups)) => Ok(LdapLoginObservation { groups }),
+            Ok(None) => Err(denied()),
+            Err(_) => Err(err(503, "LDAP provider bind or group search unavailable")),
         }
     }
 }
@@ -853,6 +887,7 @@ impl AuthState {
             kubernetes_mounts: BTreeMap::new(),
             oidc_mounts: BTreeMap::new(),
             ldap_mounts: BTreeMap::new(),
+            ldap_groups: BTreeMap::new(),
         };
         let token = Token {
             wrapping: None,
@@ -1169,6 +1204,24 @@ impl AuthState {
         }
     }
 
+    fn ldap_groups_at(
+        &self,
+        scope: AuthScope<'_>,
+    ) -> Option<&BTreeMap<String, BTreeSet<String>>> {
+        self.ldap_groups.get(scope.namespace)?.get(scope.mount)
+    }
+
+    fn ldap_groups_at_mut(
+        &mut self,
+        scope: AuthScope<'_>,
+    ) -> &mut BTreeMap<String, BTreeSet<String>> {
+        self.ldap_groups
+            .entry(scope.namespace.into())
+            .or_default()
+            .entry(scope.mount.into())
+            .or_default()
+    }
+
     fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
         if let Some(mounts) = self.oidc_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
@@ -1182,6 +1235,9 @@ impl AuthState {
             mounts.remove(scope.mount);
         }
         if let Some(mounts) = self.ldap_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.ldap_groups.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
         let revoke: Vec<String> = self
@@ -1382,6 +1438,16 @@ impl AuthState {
             .and_then(|mounts| mounts.remove(from))
         {
             self.ldap_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .ldap_groups
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.ldap_groups
                 .entry(namespace.into())
                 .or_default()
                 .insert(to.into(), value);
@@ -1662,6 +1728,9 @@ impl AuthState {
                 "userpass" | "ldap" if suffix == "users" || suffix.starts_with("users/") => {
                     self.user_route(principal, scope, method, path, body, now)
                 }
+                "ldap" if suffix == "groups" || suffix.starts_with("groups/") => {
+                    self.ldap_group_route(principal, scope, method, path, body, now)
+                }
                 "approle" if suffix == "login" => self.login_approle(scope, method, body, now),
                 "approle" if suffix == "tidy/secret-id" => {
                     self.tidy_secret_ids(principal, scope, method, path, body, now)
@@ -1718,13 +1787,17 @@ impl AuthState {
                     .and_then(|m| m.get(scope.mount))
                     .ok_or_else(|| err(404, "LDAP auth is not configured"))?;
                 Ok(response(
-                    json!({"url": config.url, "bind_dn": config.bind_dn, "user_dn_template": config.user_dn_template, "starttls": config.starttls}),
+                    json!({"url": config.url, "bind_dn": config.bind_dn,
+                        "user_dn_template": config.user_dn_template, "starttls": config.starttls,
+                        "group_dn": config.group_dn, "group_attr": config.group_attr(),
+                        "group_name_attr": config.group_name_attr()}),
                     false,
                 ))
             }
             "POST" | "PUT" => {
                 self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
-                reject_unknown(body, &["url", "bind_dn", "user_dn_template", "starttls"])?;
+                reject_unknown(body, &["url", "bind_dn", "user_dn_template", "starttls",
+                    "group_dn", "group_attr", "group_name_attr"])?;
                 let url = string_field(body, "url")?;
                 let authority = url
                     .strip_prefix("ldaps://")
@@ -1757,11 +1830,37 @@ impl AuthState {
                     ));
                 }
                 let starttls = boolean(body, "starttls", false)?;
+                let group_dn = body
+                    .get("group_dn")
+                    .map(|value| value.as_str().ok_or_else(|| bad("group_dn must be a string")))
+                    .transpose()?
+                    .unwrap_or("");
+                if group_dn.len() > 1024 || group_dn.chars().any(char::is_control) {
+                    return Err(bad("invalid LDAP group_dn"));
+                }
+                let group_attr = body
+                    .get("group_attr")
+                    .map(|value| value.as_str().ok_or_else(|| bad("group_attr must be a string")))
+                    .transpose()?
+                    .unwrap_or("member");
+                let group_name_attr = body
+                    .get("group_name_attr")
+                    .map(|value| value.as_str().ok_or_else(|| bad("group_name_attr must be a string")))
+                    .transpose()?
+                    .unwrap_or("cn");
+                if !valid_ldap_attribute_name(group_attr)
+                    || !valid_ldap_attribute_name(group_name_attr)
+                {
+                    return Err(bad("invalid LDAP group attribute name"));
+                }
                 let next = LdapMount {
                     url: url.into(),
                     bind_dn: bind_dn.into(),
                     user_dn_template: user_dn_template.into(),
                     starttls,
+                    group_dn: group_dn.into(),
+                    group_attr: if group_attr == "member" { String::new() } else { group_attr.into() },
+                    group_name_attr: if group_name_attr == "cn" { String::new() } else { group_name_attr.into() },
                 };
                 let changed = self
                     .ldap_mounts
@@ -1770,6 +1869,75 @@ impl AuthState {
                     .insert(scope.mount.into(), next.clone())
                     .as_ref()
                     != Some(&next);
+                Ok(empty(changed))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn ldap_group_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let prefix = format!("auth/{}/groups", scope.mount);
+        let name = path
+            .strip_prefix(&prefix)
+            .ok_or_else(|| bad("invalid LDAP group route"))?
+            .trim_start_matches('/');
+        let capability = route_capability(method, name.is_empty())?;
+        let actor = self.permission(principal, scope.namespace, path, capability, now)?;
+        if name.is_empty() {
+            if capability != "list" {
+                return Err(err(405, "method not allowed"));
+            }
+            reject_unknown(body, &[])?;
+            let keys = self
+                .ldap_groups_at(scope)
+                .map(|groups| groups.keys().cloned().collect::<Vec<_>>())
+                .unwrap_or_default();
+            return Ok(response(json!({"keys": keys}), false));
+        }
+        if !valid_name(name) {
+            return Err(bad("invalid LDAP group name"));
+        }
+        match capability {
+            "read" => {
+                reject_unknown(body, &[])?;
+                let mapped = self
+                    .ldap_groups_at(scope)
+                    .and_then(|groups| groups.get(name))
+                    .cloned()
+                    .ok_or_else(|| err(404, "LDAP group not found"))?;
+                Ok(response(json!({"policies": mapped, "token_policies": mapped}), false))
+            }
+            "delete" => {
+                reject_unknown(body, &[])?;
+                self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+                let removed = self.ldap_groups_at_mut(scope).remove(name);
+                if removed.is_some() { Ok(empty(true)) } else { Err(err(404, "LDAP group not found")) }
+            }
+            "update" => {
+                self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+                reject_unknown(body, &["policies", "token_policies"])?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let current = self
+                    .ldap_groups_at(scope)
+                    .and_then(|groups| groups.get(name))
+                    .cloned()
+                    .unwrap_or_default();
+                let field = if body.get("token_policies").is_some() { "token_policies" } else { "policies" };
+                let mapped = policies(body, field, &current, false)?;
+                self.validate_assignment(actor, &mapped)?;
+                let changed = self
+                    .ldap_groups_at_mut(scope)
+                    .insert(name.into(), mapped.clone())
+                    .as_ref()
+                    != Some(&mapped);
                 Ok(empty(changed))
             }
             _ => Err(err(405, "method not allowed")),
@@ -1851,7 +2019,7 @@ impl AuthState {
     pub(crate) fn finish_ldap_login(
         &mut self,
         plan: LdapLoginPlan,
-        _observation: LdapLoginObservation,
+        observation: LdapLoginObservation,
     ) -> Result<AuthResponse, AuthError> {
         let scope = AuthScope {
             namespace: &plan.namespace,
@@ -1898,9 +2066,17 @@ impl AuthState {
         };
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
+        let mut effective_policies = user.policies.clone();
+        if let Some(mappings) = self.ldap_groups_at(scope) {
+            for group in &observation.groups {
+                if let Some(mapped) = mappings.get(group) {
+                    effective_policies.extend(mapped.iter().cloned());
+                }
+            }
+        }
         let mut token = login_token(
             &plan.namespace,
-            user.policies.clone(),
+            effective_policies,
             token_ttl,
             token_max_ttl,
             user.token_num_uses,
