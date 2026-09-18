@@ -1112,43 +1112,38 @@ impl<B: Barrier> DurableService<B> {
             recovery_reference: recovery_reference.clone(),
             generation,
         };
-        let mut candidate = self.snapshot.clone();
-        candidate.generation = generation;
-        candidate.last_commit = Some(marker.clone());
-        let storage_key = binding.storage_key();
         let journal_mutation = match binding.kind {
             MutationKind::Put => {
                 let mut value = value.ok_or(ServiceError::InvalidSecret)?;
-                candidate.entries.insert(
-                    storage_key.clone(),
-                    Secret(std::mem::take(&mut *value)),
-                );
                 JournalMutation {
                     resource: binding.resource.clone(),
-                    value: candidate.entries.get(&storage_key).cloned(),
+                    value: Some(Secret(std::mem::take(&mut *value))),
                 }
             }
-            MutationKind::Delete => {
-                candidate.entries.remove(&storage_key);
-                JournalMutation {
-                    resource: binding.resource.clone(),
-                    value: None,
-                }
-            }
+            MutationKind::Delete => JournalMutation {
+                resource: binding.resource.clone(),
+                value: None,
+            },
         };
+        let mutations = vec![journal_mutation];
+        let candidate_plaintext_bytes = candidate_snapshot_plaintext_len(
+            &self.snapshot,
+            self.snapshot_plaintext_bytes,
+            &marker,
+            &mutations,
+        )?;
+        preflight_snapshot_capacity(
+            &self.barrier,
+            &self.snapshot,
+            candidate_plaintext_bytes,
+            &marker,
+            &mutations,
+        )?;
         let ledger_record = LedgerRecord {
             binding_digest,
             recovery_reference: recovery_reference.clone(),
             generation,
         };
-        // The snapshot remains the current durable application-state owner.
-        // Replay identity durability is journal-first: the terminal commit frame
-        // is sufficient to rebuild the in-memory ledger after restart, so normal
-        // mutations do not clone/seal/rewrite the complete retained ledger.
-        // Serialize the prospective full snapshot only as an exact checkpoint
-        // capacity preflight. Normal commits do not write it; the authenticated
-        // Apply frame below carries only the changed resource.
-        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
@@ -1159,15 +1154,15 @@ impl<B: Barrier> DurableService<B> {
             apply_sequence,
             &JournalEvent::Apply {
                 marker: marker.clone(),
-                mutations: vec![journal_mutation],
+                mutations: mutations.clone(),
             },
         )?;
         let commit = sealed_journal_record(
             &self.barrier,
             terminal_sequence,
-            &JournalEvent::Commit(marker),
+            &JournalEvent::Commit(marker.clone()),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES || apply.len() > MAX_FILE_BYTES {
+        if apply.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
@@ -1181,19 +1176,10 @@ impl<B: Barrier> DurableService<B> {
             if compact_before_entry {
                 // No intent has entered the journal. Only this rare capacity
                 // path needs another value copy; the normal put does not.
-                let retry_value = match binding.kind {
-                    MutationKind::Put => Some(Zeroizing::new(
-                        candidate
-                            .entries
-                            .get(&binding.storage_key())
-                            .ok_or(ServiceError::CorruptState)?
-                            .expose()
-                            .to_vec(),
-                    )),
-                    MutationKind::Delete => None,
-                };
-                drop(candidate);
-                drop(snapshot_bytes);
+                let retry_value = mutations
+                    .first()
+                    .and_then(|mutation| mutation.value.as_ref())
+                    .map(|value| Zeroizing::new(value.expose().to_vec()));
                 self.compact()?;
                 return self.execute(
                     binding,
@@ -1213,7 +1199,8 @@ impl<B: Barrier> DurableService<B> {
                 return Err(ServiceError::RecoveryRequired);
             }
             self.append_frame(&apply)?;
-            self.snapshot = candidate;
+            apply_journal_mutations(&mut self.snapshot, &marker, &mutations)?;
+            self.snapshot_plaintext_bytes = candidate_plaintext_bytes;
             // Historical failpoint name retained for API compatibility: this now
             // means the authenticated resource mutation was published, while the
             // full snapshot remains a checkpoint artifact.
