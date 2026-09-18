@@ -124,6 +124,73 @@ def run(binary, launcher_path, work_dir, oracle_port):
                                                 {"data": value, "options": {"cas": version - 1}}))
         stage = "source_snapshot"
         original = [migration.snapshot(source, source_mount, key) for key in keys]
+
+        # Exercise authority classes that must never be copied. An active source
+        # token owns cubbyhole state; a second token is explicitly revoked; and a
+        # response-wrapping token is minted from the selected source data. None of
+        # these identities may authenticate to the target, before or after cutover.
+        stage = "source_nontransferable_authority"
+        active_created = source.request("POST", "/v1/auth/token/create",
+                                        {"policies": ["default"], "ttl": "1h"})
+        check("source_active_token_created", active_created.status == 200)
+        source_active_token = active_created.body.get("auth", {}).get("client_token")
+        check("source_active_token_is_present", isinstance(source_active_token, str) and bool(source_active_token))
+        authority_marker = "source-cubbyhole-" + secrets.token_hex(16)
+        check(
+            "source_active_token_owns_cubbyhole_state",
+            source.request("POST", "/v1/cubbyhole/migration-authority",
+                           {"value": authority_marker}, token=source_active_token).status in (200, 204),
+        )
+        source_cubbyhole = source.request("GET", "/v1/cubbyhole/migration-authority",
+                                          token=source_active_token)
+        check(
+            "source_cubbyhole_readback",
+            source_cubbyhole.status == 200
+            and source_cubbyhole.body.get("data", {}).get("value") == authority_marker,
+        )
+
+        revoked_created = source.request("POST", "/v1/auth/token/create",
+                                         {"policies": ["default"], "ttl": "1h"})
+        check("source_revoked_token_created", revoked_created.status == 200)
+        source_revoked_token = revoked_created.body.get("auth", {}).get("client_token")
+        check("source_revoked_token_is_present", isinstance(source_revoked_token, str) and bool(source_revoked_token))
+        check(
+            "source_token_revoked_before_cutover",
+            source.request("POST", "/v1/auth/token/revoke",
+                           {"token": source_revoked_token}).status in (200, 204),
+        )
+        check(
+            "source_revoked_token_immediately_denied",
+            source.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+
+        wrapped = source.request(
+            "GET",
+            migration.api(source_mount, "data", keys[0]) + "?version=1",
+            wrap_ttl="600s",
+        )
+        source_wrap_token = wrapped.body.get("wrap_info", {}).get("token")
+        check(
+            "source_wrapping_token_created",
+            wrapped.status == 200 and isinstance(source_wrap_token, str) and bool(source_wrap_token),
+        )
+        check(
+            "source_active_token_never_admitted_by_target",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_active_token).status >= 400,
+        )
+        check(
+            "source_revoked_token_never_admitted_by_target",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        check(
+            "source_wrapping_authority_never_admitted_by_target",
+            target.request("POST", "/v1/sys/wrapping/unwrap", {},
+                           token=source_wrap_token).status >= 400,
+        )
+
         keys_file, checkpoint_file = work_dir / "keys.json", work_dir / "transfer-checkpoint.json"
         private_write(keys_file, keys)
         base = ["transfer", "--source-mount", source_mount, "--keys-file", str(keys_file), "--target-mount", "secret"]
@@ -218,6 +285,21 @@ def run(binary, launcher_path, work_dir, oracle_port):
         for record in original:
             migration.verify_target(target, "secret", record, len(record["versions"]))
         check("cutover_target_serves_verified_migrated_history", True)
+        check(
+            "cutover_target_still_rejects_source_active_token",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_active_token).status >= 400,
+        )
+        check(
+            "cutover_target_still_rejects_source_revoked_token",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        check(
+            "cutover_target_still_rejects_source_wrapping_token",
+            target.request("POST", "/v1/sys/wrapping/unwrap", {},
+                           token=source_wrap_token).status >= 400,
+        )
 
         stage = "rollback_target_fence"
         instance.stop()
@@ -229,6 +311,29 @@ def run(binary, launcher_path, work_dir, oracle_port):
                 "rollback_source_same_root_preserves_original_history",
                 migration.snapshot(source, source_mount, key) == record,
             )
+        restored_cubbyhole = source.request(
+            "GET", "/v1/cubbyhole/migration-authority", token=source_active_token
+        )
+        check(
+            "rollback_reactivates_source_authority_only_after_target_fence",
+            restored_cubbyhole.status == 200
+            and restored_cubbyhole.body.get("data", {}).get("value") == authority_marker,
+        )
+        check(
+            "rollback_does_not_resurrect_source_revoked_token",
+            source.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        unwrapped = source.request(
+            "POST", "/v1/sys/wrapping/unwrap", {}, token=source_wrap_token
+        )
+        check(
+            "rollback_source_wrapping_authority_restored_only_after_target_fence",
+            unwrapped.status == 200 and isinstance(unwrapped.body.get("data"), dict),
+        )
+        report["source_authority_reactivated_only_after_target_fence"] = True
+        report["revoked_source_authority_remained_revoked_after_rollback"] = True
+        report["source_ephemeral_authority_never_admitted_by_target"] = True
         report["bounded_process_cutover_rehearsed"] = True
         report["bounded_process_rollback_rehearsed"] = True
         report["writer_overlap_observed"] = False
