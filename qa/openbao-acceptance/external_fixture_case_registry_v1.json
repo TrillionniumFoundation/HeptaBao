@@ -113,6 +113,41 @@
         "ssh.unwrapped_otp_works"
       ],
       "script": "qa/openbao-acceptance/ssh_otp_live.py"
+    },
+    "agent_proxy_helper_live": {
+      "script": "qa/openbao-acceptance/agent_proxy_helper_live.py",
+      "case_ids": [
+        "agent.real_login_ready",
+        "agent.private_sink",
+        "agent.real_renewal",
+        "agent.graceful_stop_invalidates_sink",
+        "proxy.real_secret_read",
+        "proxy.rejects_supplied_root_token",
+        "proxy.uses_live_server_authorization",
+        "proxy.clean_shutdown_removes_only_owned_socket"
+      ]
+    },
+    "raft_membership_live": {
+      "script": "qa/openbao-acceptance/raft_membership_live.py",
+      "case_ids": [
+        "native_learner_join_acknowledged",
+        "snapshot_caught_up_learner_unseals",
+        "membership_persists_across_old_leader_restart",
+        "failover_after_membership_changes",
+        "continuous_stabilization_promotes_voter",
+        "dead_voter_removed_after_real_contact_threshold",
+        "minimum_three_voters_preserved",
+        "autopilot_policy_persists_across_restart"
+      ]
+    },
+    "live_migration_rehearsal": {
+      "script": "qa/openbao-acceptance/live_migration_rehearsal.py",
+      "case_ids": [
+        "history_and_metadata_readback",
+        "target_sigkill_preserves_all_versions",
+        "checkpoint_resume_without_duplicate_version",
+        "rollback_source_same_root_preserves_original_history"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"
