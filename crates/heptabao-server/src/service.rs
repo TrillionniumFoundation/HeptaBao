@@ -680,6 +680,7 @@ impl Service {
             }
             self.state = None;
             self.durable = None;
+            self.dynamic_secrets = None;
             self.barrier_key = None;
             self.unseal_shares.clear();
             let discard_rekey = self
@@ -700,6 +701,32 @@ impl Service {
                 status: 204,
                 body: Value::Null,
             };
+        }
+        if DynamicSecretRuntime::owns_path(path) {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if DynamicSecretRuntime::root_only(path) && !principal.is_root() {
+                return Response::error(403, "dynamic-secret reconciliation requires root authority");
+            }
+            let capability = DynamicSecretRuntime::required_capability(method, path);
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(principal, namespace, path, capability, now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(runtime) = self.dynamic_secrets.as_mut() else {
+                return Response::error(501, "dynamic-secret runtime is not configured");
+            };
+            return runtime.handle(
+                principal.subject_id(),
+                namespace,
+                method,
+                path,
+                body,
+                now,
+            );
         }
         let before = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
