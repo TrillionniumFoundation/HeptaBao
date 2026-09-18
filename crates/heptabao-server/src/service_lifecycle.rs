@@ -95,24 +95,48 @@ pub(crate) fn start_lifecycle_worker(
                 let Some(service) = service.upgrade() else {
                     break;
                 };
-                let Ok(mut writer) = service.try_lock() else {
-                    continue;
-                };
                 // Clock failure is not time zero and may not undo an observed expiry.
                 let Ok(now) = SystemTime::now().duration_since(UNIX_EPOCH) else {
                     continue;
                 };
-                // A failed provider cannot suppress independent local expiry.
-                if writer.maintain_raft_admin().is_err() {
-                    eprintln!("heptabao-lifecycle: autopilot transition pending");
-                }
-                if writer.maintain_database(now.as_secs()).is_err() {
+                let now = now.as_secs();
+                let pending_provider = {
+                    let Ok(mut writer) = service.try_lock() else {
+                        continue;
+                    };
+                    if writer.maintain_raft_admin().is_err() {
+                        eprintln!("heptabao-lifecycle: autopilot transition pending");
+                    }
+                    let pending = match writer.prepare_database_maintenance(now) {
+                        Ok(pending) => pending,
+                        Err(_) => {
+                            eprintln!("heptabao-lifecycle: provider reconciliation pending");
+                            None
+                        }
+                    };
+                    // Local expiry is deliberately completed before any remote
+                    // provider wait. A failed or slow provider cannot suppress it.
+                    if writer.maintain_lifetimes_at(now).is_err() {
+                        eprintln!("heptabao-lifecycle: maintenance unavailable");
+                    }
+                    pending
+                };
+                let Some(pending) = pending_provider else {
+                    continue;
+                };
+                // No Service writer is held while provider I/O/readback runs.
+                let provider_result = pending.execute();
+                let Ok(mut writer) = service.try_lock() else {
+                    // The durable intent remains authoritative; a later tick can
+                    // repeat the idempotent provider readback/finalization.
+                    eprintln!("heptabao-lifecycle: provider finalize deferred");
+                    continue;
+                };
+                if writer
+                    .finish_database_maintenance(pending, provider_result)
+                    .is_err()
+                {
                     eprintln!("heptabao-lifecycle: provider reconciliation pending");
-                }
-                if writer.maintain_lifetimes_at(now.as_secs()).is_err() {
-                    // Fixed text only. The Service recovery fence decides whether
-                    // another bounded tick may attempt a transient ReadIndex failure.
-                    eprintln!("heptabao-lifecycle: maintenance unavailable");
                 }
             }
         })
