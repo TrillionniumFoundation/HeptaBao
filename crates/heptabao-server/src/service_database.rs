@@ -109,6 +109,12 @@ pub(super) struct DatabaseMaintenance {
     plan: DatabaseEffectPlan,
 }
 
+pub(super) struct DatabaseBatchEffectPlan {
+    plans: Vec<DatabaseEffectPlan>,
+}
+
+pub(super) type DatabaseBatchEffectResult = Vec<Result<(), Response>>;
+
 pub(super) struct DatabaseConfigPlan {
     namespace: String,
     mount: String,
@@ -151,6 +157,21 @@ fn database_mount_digest(mount: Option<&DatabaseMount>) -> Result<[u8; 32], Resp
 impl DatabaseMaintenance {
     pub(super) fn execute(&self) -> Result<(), Response> {
         self.plan.execute()
+    }
+}
+
+impl DatabaseBatchEffectPlan {
+    pub(super) fn execute(&self) -> DatabaseBatchEffectResult {
+        let mut results = Vec::with_capacity(self.plans.len());
+        for plan in &self.plans {
+            let result = plan.execute();
+            let stop = result.is_err();
+            results.push(result);
+            if stop {
+                break;
+            }
+        }
+        results
     }
 }
 
@@ -1015,18 +1036,13 @@ impl Service {
         }
     }
 
-    fn defer_database_effect(
-        &mut self,
+    fn database_effect_plan(
+        &self,
         ns: &str,
         mount: &str,
         id: &str,
         now: u64,
-    ) -> Result<Response, Response> {
-        if self.pending_database_effect.is_some() {
-            return Err(failure(
-                "another database provider effect is already pending dispatch",
-            ));
-        }
+    ) -> Result<DatabaseEffectPlan, Response> {
         let state = self
             .state
             .as_ref()
@@ -1051,7 +1067,7 @@ impl Service {
             .get(&lease.db_name)
             .cloned()
             .ok_or_else(|| failure("provider configuration disappeared"))?;
-        self.pending_database_effect = Some(DatabaseEffectPlan {
+        Ok(DatabaseEffectPlan {
             namespace: ns.to_owned(),
             mount: mount.to_owned(),
             now,
@@ -1060,7 +1076,22 @@ impl Service {
             connection,
             fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
-        });
+        })
+    }
+
+    fn defer_database_effect(
+        &mut self,
+        ns: &str,
+        mount: &str,
+        id: &str,
+        now: u64,
+    ) -> Result<Response, Response> {
+        if self.pending_database_effect.is_some() {
+            return Err(failure(
+                "another database provider effect is already pending dispatch",
+            ));
+        }
+        self.pending_database_effect = Some(self.database_effect_plan(ns, mount, id, now)?);
         // This response never leaves the Service request wrapper: the wrapper
         // either executes the plan synchronously or hands it to the HTTP layer.
         Ok(Response::error(
@@ -1221,10 +1252,57 @@ impl Service {
             }
             return Ok(Response::ok(json!({"data":{"keys":keys}})));
         }
-        if path.starts_with("sys/leases/revoke-prefix/") {
-            return Err(Response::error(
-                501,
-                "database prefix revocation requires bounded batch receipts; no local-only acknowledgement",
+        if let Some(prefix) = path.strip_prefix("sys/leases/revoke-prefix/") {
+            if !matches!(*method, "POST" | "PUT") {
+                return Err(invalid("lease prefix revocation requires POST or PUT"));
+            }
+            fields(body, &["sync"])?;
+            if body.get("sync").is_some_and(|value| value != &json!(true)) {
+                return Err(invalid(
+                    "database prefix revocation is synchronous or remains explicitly pending",
+                ));
+            }
+            let boundary = format!("{}/", prefix.trim_end_matches('/'));
+            let mut matches = Vec::new();
+            if let Some(mounts) = state.database.mounts.get(*ns) {
+                for (mount_name, database_mount) in mounts {
+                    for lease in database_mount.leases.values() {
+                        if lease.id.starts_with(&boundary) {
+                            matches.push((mount_name.clone(), lease.id.clone()));
+                        }
+                    }
+                }
+            }
+            if matches.is_empty() {
+                return Ok(Response {
+                    status: 204,
+                    body: Value::Null,
+                });
+            }
+            const MAX_PREFIX_REVOKE_LEASES: usize = 64;
+            if matches.len() > MAX_PREFIX_REVOKE_LEASES {
+                return Err(Response::error(
+                    413,
+                    "database revoke-prefix selection exceeds the bounded synchronous batch",
+                ));
+            }
+            for (mount_name, id) in &matches {
+                Self::stage_revoke(&mut state, ns, mount_name, id)?;
+            }
+            self.publish_database(state)?;
+            let mut plans = Vec::with_capacity(matches.len());
+            for (mount_name, id) in matches {
+                plans.push(self.database_effect_plan(ns, &mount_name, &id, now)?);
+            }
+            if self.pending_database_batch_effect.is_some() {
+                return Err(failure(
+                    "another database provider batch is already pending dispatch",
+                ));
+            }
+            self.pending_database_batch_effect = Some(DatabaseBatchEffectPlan { plans });
+            return Ok(Response::error(
+                500,
+                "database provider batch was not dispatched",
             ));
         }
         if !matches!(*method, "POST" | "PUT") {
