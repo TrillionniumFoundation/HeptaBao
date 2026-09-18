@@ -161,6 +161,21 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
+      - name: Exercise multi-epoch replay retirement, snapshot catch-up and failover
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/replay_epoch_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --work-dir "$RUNNER_TEMP/heptabao-replay-epoch-ha"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise exact-base to candidate HA rolling upgrade
         if: ${{ (success() || failure()) && github.event_name == 'pull_request' }}
         shell: bash
