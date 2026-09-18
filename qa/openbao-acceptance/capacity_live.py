@@ -53,6 +53,74 @@ def process_rss_kib(pid: int | None) -> int | None:
     return None
 
 
+def process_write_bytes(pid: int | None) -> int | None:
+    if pid is None:
+        return None
+    path = Path('/proc') / str(pid) / 'io'
+    try:
+        for line in path.read_text().splitlines():
+            if line.startswith('write_bytes:'):
+                return int(line.split(':', 1)[1].strip())
+    except (OSError, ValueError):
+        return None
+    return None
+
+
+def percentile(values: list[float], quantile: float) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    index = max(0, min(len(ordered) - 1, int((len(ordered) * quantile + 0.999999) - 1)))
+    return ordered[index]
+
+
+def growth_curve(samples: list[dict], baseline_write_bytes: int | None) -> list[dict]:
+    points = []
+    previous_count = 0
+    previous_elapsed = 0.0
+    previous_write_bytes = baseline_write_bytes
+    for end in list(range(8, len(samples) + 1, 8)) + ([len(samples)] if len(samples) % 8 else []):
+        window = samples[previous_count:end]
+        end_sample = samples[end - 1]
+        elapsed = max(0.000001, end_sample['elapsed_seconds'] - previous_elapsed)
+        latencies = [sample['write_latency_ms'] for sample in window]
+        current_write_bytes = end_sample.get('process_write_bytes')
+        physical_delta = (
+            current_write_bytes - previous_write_bytes
+            if current_write_bytes is not None and previous_write_bytes is not None
+            else None
+        )
+        logical_bytes = len(window) * SATURATION_PAYLOAD_BYTES
+        points.append({
+            'accepted_writes': end,
+            'state_bytes': end_sample['state_bytes'],
+            'durable_data_bytes': end_sample['durable_data_bytes'],
+            'window_writes': len(window),
+            'throughput_writes_per_second': round(len(window) / elapsed, 3),
+            'latency_ms': {
+                'p50': round(percentile(latencies, 0.50), 3),
+                'p95': round(percentile(latencies, 0.95), 3),
+                'p99': round(percentile(latencies, 0.99), 3),
+                'max': round(max(latencies), 3),
+            },
+            'peak_rss_kib': max(
+                (sample['rss_kib'] for sample in window if sample['rss_kib'] is not None),
+                default=None,
+            ),
+            'process_write_bytes_delta': physical_delta,
+            'logical_payload_bytes': logical_bytes,
+            'physical_write_amplification': (
+                round(physical_delta / logical_bytes, 3)
+                if physical_delta is not None and logical_bytes
+                else None
+            ),
+        })
+        previous_count = end
+        previous_elapsed = end_sample['elapsed_seconds']
+        previous_write_bytes = current_write_bytes
+    return points
+
+
 def validate_observation(data: dict) -> None:
     names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
              'retained_operations', 'operation_limit', 'operations_remaining',
@@ -145,6 +213,10 @@ def main() -> int:
         previous = observe()
         latencies = []
         growth_samples = []
+        saturation_started = time.monotonic()
+        saturation_io_baseline = process_write_bytes(
+            instance.process.pid if instance.process else None
+        )
         accepted = 0
         crossed_legacy = False
         for number in range(MAX_SATURATION_WRITES):
@@ -168,6 +240,10 @@ def main() -> int:
                 'durable_data_bytes': disk_bytes,
                 'write_latency_ms': round(latencies[-1], 3),
                 'rss_kib': rss_kib,
+                'process_write_bytes': process_write_bytes(
+                    instance.process.pid if instance.process else None
+                ),
+                'elapsed_seconds': round(time.monotonic() - saturation_started, 6),
             })
             if accepted == 1 or accepted % 8 == 0:
                 progress('saturation_progress', accepted=accepted,
@@ -211,12 +287,16 @@ def main() -> int:
                       current_state_limit_bytes=CURRENT_STATE_LIMIT_BYTES,
                       saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
                       latency_ms={'min': min(latencies), 'max': max(latencies),
-                                  'mean': sum(latencies)/len(latencies)},
+                                  'mean': sum(latencies)/len(latencies),
+                                  'p50': percentile(latencies, 0.50),
+                                  'p95': percentile(latencies, 0.95),
+                                  'p99': percentile(latencies, 0.99)},
                       growth_samples=growth_samples,
+                      growth_curve=growth_curve(growth_samples, saturation_io_baseline),
                       peak_rss_kib=max((sample['rss_kib'] for sample in growth_samples
                                         if sample['rss_kib'] is not None), default=None),
                       durable_bytes_at_refusal=tree_bytes(instance.root / 'data'),
-                      scope='bounded_chunked_whole_state_refusal_with_growth_curve_not_scale_qualification')
+                      scope='bounded_chunked_whole_state_with_physical_write_amplification_throughput_tail_latency_and_rss_curves_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
