@@ -83,7 +83,7 @@ impl Serialize for CowNamespace {
     where
         S: serde::Serializer,
     {
-        self.0.serialize(serializer)
+        self.0.as_ref().serialize(serializer)
     }
 }
 
