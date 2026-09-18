@@ -221,7 +221,10 @@ impl<B: Barrier> DurableService<B> {
             .journal_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
-        let terminal_sequence = intent_sequence
+        let apply_sequence = intent_sequence
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?;
+        let terminal_sequence = apply_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
         let recovery_reference = recovery_reference(&binding_digest, generation, intent_sequence);
@@ -255,18 +258,35 @@ impl<B: Barrier> DurableService<B> {
             intent_sequence,
             &JournalEvent::Intent(marker.clone()),
         )?;
+        let mutations = request
+            .mutations
+            .iter()
+            .map(|(resource, value)| JournalMutation {
+                resource: resource.clone(),
+                value: value.clone(),
+            })
+            .collect::<Vec<_>>();
+        let apply = sealed_journal_record(
+            &self.barrier,
+            apply_sequence,
+            &JournalEvent::Apply {
+                marker: marker.clone(),
+                mutations,
+            },
+        )?;
         let commit = sealed_journal_record(
             &self.barrier,
             terminal_sequence,
             &JournalEvent::Commit(marker),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES {
+        if snapshot_bytes.len() > MAX_FILE_BYTES || apply.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
             || self
                 .journal_bytes
                 .checked_add(intent.len())
+                .and_then(|n| n.checked_add(apply.len()))
                 .and_then(|n| n.checked_add(commit.len()))
                 .is_none_or(|n| n > self.journal_limit)
         {
@@ -283,7 +303,7 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterIntent {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+            self.append_frame(&apply)?;
             self.snapshot = candidate;
             if failpoint == Failpoint::AfterSnapshotPublication {
                 return Err(ServiceError::RecoveryRequired);
