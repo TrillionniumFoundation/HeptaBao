@@ -656,9 +656,9 @@ Existing bounded profiles: `qa/openbao-acceptance/audit_http_live.py`.
 
 ### HB-SURFACE-AUDIT-SOCKET
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H12-WP07`, `H12-WP10`, `H12-WP11`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H12-WP07`, `H12-WP10`, `H12-WP11`.
 API families: `sys/audit/* (socket)`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/http.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -668,9 +668,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Bound backpressure, reconnect and shutdown while preserving audit-before-effect.
 
-**Remaining scope:** Blocking, reconnect, partial write and lifecycle behavior.
+**Remaining scope:** Deployment-owned bounded TCP socket delivery is executable alongside the mandatory authenticated file device, with API rebinding denied, write deadlines bounded and nonblocking failures counted. UDP/Unix modes, API-created devices, complete OpenBao formatting/options, multi-node collector qualification and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/audit_socket_live.py`.
 
 ### HB-SURFACE-AUDIT-SYSLOG
 
