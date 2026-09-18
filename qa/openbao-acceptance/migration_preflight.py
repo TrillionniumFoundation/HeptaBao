@@ -7,6 +7,7 @@ writer, copies secrets, changes a consumer pin, or authorizes a cutover.
 """
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import re
@@ -29,6 +30,38 @@ KNOWN_TYPES = {'kv', 'cubbyhole', 'identity', 'system', 'transit', 'pki', 'ssh',
                'database', 'totp', 'kubernetes', 'openldap', 'rabbitmq', 'token',
                'userpass', 'approle', 'jwt', 'oidc', 'ldap', 'cert', 'radius', 'kerberos'}
 MAX_CATALOG_ITEMS = 10000
+ROOT = Path(__file__).resolve().parents[2]
+ASSET_LEDGER = ROOT / 'planning/HEPTABAO_OPENBAO_ASSET_MIGRATION_V1.json'
+MOUNT_ASSET = {
+    'transit': 'transit_keys_ciphertexts',
+    'pki': 'pki_keys_roles_certs_revocation',
+    'ssh': 'ssh_roles_credentials',
+    'database': 'database_config_roles_leases',
+    'totp': 'other_secret_engines',
+    'openldap': 'other_secret_engines',
+    'rabbitmq': 'other_secret_engines',
+}
+
+
+def migration_dispositions() -> dict[str, str]:
+    try:
+        ledger = json.loads(ASSET_LEDGER.read_text(encoding='utf-8'))
+        rows = ledger.get('assets')
+        if not isinstance(rows, list):
+            raise ValueError
+        result = {
+            row['id']: row['disposition']
+            for row in rows
+            if isinstance(row, dict)
+            and isinstance(row.get('id'), str)
+            and isinstance(row.get('disposition'), str)
+        }
+        if len(result) != len(rows):
+            raise ValueError
+        return result
+    except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+        raise BaoError('asset_migration_ledger_invalid') from None
+
 
 
 def require_private_new_output(path: Path) -> None:
@@ -94,6 +127,7 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
         'target_binding': digest({'endpoint': target.address, 'namespace': target.namespace, **right}),
         'source_version': left['version'], 'target_version': right['version'],
         'source_catalogs': {}, 'target_capacity': {'status': 'unobserved'},
+        'observed_asset_dispositions': {},
         'planned_additional_bytes': planned_additional_bytes,
         'blockers': [], 'inventory_complete': False, 'source_writes_frozen': False,
         'atomic_cutover_proven': False, 'migration_authority': False,
@@ -128,10 +162,24 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
         report['target_capacity'] = {'status': 'unobserved', 'http_status': capacity_response.status}
         report['blockers'].append('target_capacity_unobserved')
     # Reading metadata does not establish a stable asset snapshot or a safe
-    # serialization-size bound. Partial runtime engines are not import adapters.
-    for label in ('transit', 'pki', 'ssh', 'database', 'totp', 'other'):
-        if report['source_catalogs']['mounts'].get('types', {}).get(label, 0):
-            report['blockers'].append('asset_adapter_not_qualified:' + label)
+    # serialization-size bound. Bind observed mount families to the closed-world
+    # asset ledger so preflight cannot contradict an implemented bounded adapter.
+    dispositions = migration_dispositions()
+    mount_types = report['source_catalogs']['mounts'].get('types', {})
+    for label, count in sorted(mount_types.items()):
+        if not count or label in {'system', 'cubbyhole', 'identity', 'kv', 'token'}:
+            continue
+        asset_id = MOUNT_ASSET.get(label, 'other_secret_engines')
+        disposition = dispositions.get(asset_id)
+        if disposition is None:
+            raise BaoError('asset_migration_ledger_missing_mount_class')
+        report['observed_asset_dispositions'][asset_id] = disposition
+        if disposition == 'BOUNDED_ADAPTER':
+            report['blockers'].append('bounded_adapter_not_full_instance_ready:' + asset_id)
+        else:
+            report['blockers'].append(
+                'asset_transfer_not_ready:' + asset_id + ':' + disposition
+            )
     report['blockers'].extend([
         'recursive_asset_inventory_and_version_history_missing',
         'capacity_estimate_not_serialized_admission_or_reservation',
@@ -170,7 +218,6 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if not args.allow_read:
         parser.error('explicit metadata read permission required')
-    import json
     try:
         output = Path(args.output).absolute()
         require_private_new_output(output)
