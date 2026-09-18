@@ -1063,6 +1063,32 @@ impl Service {
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
         }
+        if Self::plugin_catalog_handles(path) {
+            return self.plugin_catalog_route(&admitted, principal.as_ref(), &request);
+        }
+        if matches!(method, "POST" | "PUT")
+            && path.starts_with("sys/mounts/")
+            && body.get("type").and_then(Value::as_str) == Some("plugin")
+        {
+            let Some(plugin_principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(plugin_principal, namespace, path, "sudo", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(plugin_principal, namespace, path, "update", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            if let Err(error) = self.validate_plugin_mount_request(method, path, body) {
+                return error;
+            }
+        }
         if self.database_handles(&admitted, namespace, path, body) {
             return self.database_route(admitted, principal.as_ref(), &request);
         }
