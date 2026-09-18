@@ -218,6 +218,13 @@ class ReplayEpochCluster(Cluster):
         fourth_value = secrets.token_hex(16)
         self.write(current, "replay-laggard-offline-epoch-two", fourth_value)
         self.check("two_voter_quorum_commits_after_second_missed_epoch", True)
+        snapshot_status, _ = current.call(
+            "GET",
+            "sys/storage/raft/snapshot",
+            token=self.root_token,
+            timeout=15,
+        )
+        self.check("raft_snapshot_triggered_after_multiple_missed_epochs", snapshot_status == 200)
 
         self.restart(laggard)
         current = self.leader()
