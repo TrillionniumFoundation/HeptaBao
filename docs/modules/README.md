@@ -1,6 +1,6 @@
 # HeptaBao module documentation index
 
-Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Five packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
+Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Eight packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
 
 Current status: `V2.3 / 46 WORKSPACE PACKAGES`
 
