@@ -34,7 +34,10 @@ use crate::{
         decode_response as decode_forward_response, encode_request as encode_forward_request,
         encode_response as encode_forward_response, encode_wrapped_request, is_forward_request,
     },
-    ha_state::ClusterStateCodec,
+    ha_state::{
+        ClusterStateCodec, CommittedStateDescriptor, REPLICATED_STATE_CHUNK_BYTES,
+        ReplicatedChunkRef,
+    },
 };
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
@@ -615,15 +618,20 @@ impl HaProcess {
             .map_err(|error| error.to_string())
     }
 
-    /// Replicate one complete next application state. The caller supplies the
-    /// digest of the exact local state used to derive it. A leader refuses to
-    /// commit if Raft already contains a different current application digest.
+    /// Replicate the next authoritative application state with a manifest as
+    /// the sole publication point. Changed chunks are first staged into the
+    /// unreferenced side of a fixed dual-slot key; unchanged chunks are reused
+    /// only after authenticated readback. A leader loss during staging therefore
+    /// leaves the previous production manifest fully readable.
     pub fn commit_state(
         &self,
         operation_id: &str,
         expected_base_digest: [u8; 32],
         bytes: &[u8],
     ) -> Result<CommitReceipt, String> {
+        if bytes.is_empty() || bytes.len() > crate::MAX_APPLICATION_STATE_BYTES {
+            return Err("HA application state is empty or exceeds the shared bound".into());
+        }
         let node = self
             .node
             .as_ref()
@@ -648,9 +656,105 @@ impl HaProcess {
         {
             return Err("HA application base conflicts with latest committed state".into());
         }
+
+        let previous_manifest = match latest.as_ref() {
+            None => None,
+            Some(envelope) => match self
+                .codec
+                .open_committed_descriptor(
+                    envelope.operation_id(),
+                    envelope.digest(),
+                    envelope.sealed(),
+                )
+                .map_err(|error| error.to_string())?
+            {
+                CommittedStateDescriptor::Legacy(state) => {
+                    if sha256(&state) != envelope.digest() {
+                        return Err("legacy HA state digest readback failed".into());
+                    }
+                    None
+                }
+                CommittedStateDescriptor::Chunked(manifest) => Some(manifest),
+            },
+        };
+
+        let mut refs = Vec::with_capacity(bytes.len().div_ceil(REPLICATED_STATE_CHUNK_BYTES));
+        for (position, chunk) in bytes.chunks(REPLICATED_STATE_CHUNK_BYTES).enumerate() {
+            let index =
+                u16::try_from(position).map_err(|_| "HA application chunk index overflow")?;
+            let digest = sha256(chunk);
+            let chunk_bytes =
+                u32::try_from(chunk.len()).map_err(|_| "HA application chunk length overflow")?;
+            let previous = previous_manifest
+                .as_ref()
+                .and_then(|manifest| manifest.chunks.get(position))
+                .filter(|existing| existing.index == index);
+
+            let slot = if let Some(existing) = previous
+                && existing.digest == digest
+                && existing.bytes == chunk_bytes
+            {
+                let envelope = self
+                    .runtime
+                    .block_on(node.application_chunk_envelope(index, existing.slot))
+                    .map_err(|error| error.to_string())?
+                    .ok_or_else(|| "HA committed manifest references a missing chunk".to_owned())?;
+                if envelope.digest() != existing.digest {
+                    return Err("HA committed chunk digest metadata is inconsistent".into());
+                }
+                let opened = self
+                    .codec
+                    .open_chunk_parts(
+                        index,
+                        existing.slot,
+                        envelope.operation_id(),
+                        envelope.digest(),
+                        envelope.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                if opened.len() != usize::try_from(existing.bytes).unwrap_or(usize::MAX)
+                    || sha256(&opened) != existing.digest
+                {
+                    return Err("HA committed reusable chunk failed authenticated readback".into());
+                }
+                existing.slot
+            } else {
+                let slot = previous.map_or(0, |existing| 1 - existing.slot);
+                let chunk_operation = chunk_operation_id(operation_id, index, slot);
+                let proposal = self
+                    .codec
+                    .seal_chunk(chunk_operation.clone(), index, slot, chunk)
+                    .map_err(|error| error.to_string())?;
+                let envelope = ReplicatedEnvelope::new(
+                    proposal.operation_id().to_owned(),
+                    proposal.digest(),
+                    proposal.sealed().to_vec(),
+                )
+                .map_err(|error| error.to_string())?;
+                let serial = self
+                    .runtime
+                    .block_on(node.next_production_client_serial())
+                    .map_err(|error| error.to_string())?;
+                let receipt = self
+                    .runtime
+                    .block_on(node.replicate_application_chunk(index, slot, serial, &envelope))
+                    .map_err(|error| error.to_string())?;
+                if receipt.leader_id != local_id || receipt.envelope_digest != digest {
+                    return Err("HA chunk commit receipt did not bind the staged payload".into());
+                }
+                slot
+            };
+            refs.push(ReplicatedChunkRef {
+                index,
+                slot,
+                bytes: chunk_bytes,
+                digest,
+            });
+        }
+
         let proposal = self
             .codec
-            .seal(operation_id.to_owned(), expected_base_digest, bytes)
+            .seal_manifest(operation_id.to_owned(), expected_base_digest, bytes, refs)
             .map_err(|error| error.to_string())?;
         let envelope = ReplicatedEnvelope::new(
             proposal.operation_id().to_owned(),
@@ -667,14 +771,14 @@ impl HaProcess {
             .block_on(node.replicate(serial, &envelope))
             .map_err(|error| error.to_string())?;
         if receipt.leader_id != local_id || receipt.envelope_digest != proposal.digest() {
-            return Err("HA commit receipt did not bind the submitted application state".into());
+            return Err("HA commit receipt did not bind the submitted application manifest".into());
         }
         Ok(receipt)
     }
 
-    /// Return the newest complete application state after a linearizable ReadIndex.
-    /// The envelope is authenticated under the cluster replication key before
-    /// plaintext is returned to the local durable-store reconciliation path.
+    /// Return the newest complete application state after a linearizable
+    /// ReadIndex. HBSR1 whole-state envelopes remain readable for online
+    /// upgrade; HBSM2 manifests resolve only authenticated fixed-slot chunks.
     pub(crate) fn latest_committed_state(
         &self,
     ) -> Result<Option<CommittedApplicationState>, String> {
@@ -692,19 +796,70 @@ impl HaProcess {
         else {
             return Ok(None);
         };
-        let bytes = self
+        let descriptor = self
             .codec
-            .open_committed_parts(
+            .open_committed_descriptor(
                 envelope.operation_id(),
                 envelope.digest(),
                 envelope.sealed(),
             )
             .map_err(|error| error.to_string())?;
+        let bytes = match descriptor {
+            CommittedStateDescriptor::Legacy(bytes) => bytes,
+            CommittedStateDescriptor::Chunked(manifest) => {
+                if manifest.state_digest != envelope.digest() {
+                    return Err("HA manifest digest does not match production envelope".into());
+                }
+                let total = usize::try_from(manifest.total_bytes)
+                    .map_err(|_| "HA manifest total length overflow".to_owned())?;
+                let mut assembled = Zeroizing::new(Vec::with_capacity(total));
+                for chunk in &manifest.chunks {
+                    let staged = self
+                        .runtime
+                        .block_on(node.application_chunk_envelope(chunk.index, chunk.slot))
+                        .map_err(|error| error.to_string())?
+                        .ok_or_else(|| {
+                            "HA manifest references an unavailable committed chunk".to_owned()
+                        })?;
+                    if staged.digest() != chunk.digest {
+                        return Err("HA manifest/chunk digest binding mismatch".into());
+                    }
+                    let opened = self
+                        .codec
+                        .open_chunk_parts(
+                            chunk.index,
+                            chunk.slot,
+                            staged.operation_id(),
+                            staged.digest(),
+                            staged.sealed(),
+                        )
+                        .map_err(|error| error.to_string())?;
+                    if opened.len()
+                        != usize::try_from(chunk.bytes)
+                            .map_err(|_| "HA chunk length overflow".to_owned())?
+                    {
+                        return Err("HA committed chunk length mismatch".into());
+                    }
+                    assembled.extend_from_slice(&opened);
+                    if assembled.len() > total {
+                        return Err("HA committed chunk set exceeds manifest length".into());
+                    }
+                }
+                if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
+                    return Err("HA committed chunk set does not reconstruct manifest state".into());
+                }
+                assembled
+            }
+        };
+        if sha256(&bytes) != envelope.digest() {
+            return Err("HA committed application digest readback failed".into());
+        }
         Ok(Some(CommittedApplicationState {
             digest: envelope.digest(),
             bytes,
         }))
     }
+
 }
 
 impl Drop for HaProcess {
@@ -998,6 +1153,12 @@ fn map_remote_service_error(error: RemoteRaftError) -> heptabao_ha_service::HaEr
             heptabao_ha_service::HaError::Transport
         }
     }
+}
+
+fn chunk_operation_id(operation_id: &str, index: u16, slot: u8) -> String {
+    let suffix = format!(":c:{index:03}:{slot}");
+    let keep = operation_id.len().min(128_usize.saturating_sub(suffix.len()));
+    format!("{}{}", &operation_id[..keep], suffix)
 }
 
 fn decode_hex_32(value: &str) -> Result<[u8; 32], String> {
