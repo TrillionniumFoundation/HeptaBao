@@ -118,6 +118,7 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Exercise bounded state saturation and replay-preserving capacity recovery
+        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -127,6 +128,7 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Exercise real three-process HA with synthetic state
+        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -138,6 +140,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
       - name: Exercise real encrypted-link network partitions
+        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -150,6 +153,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
       - name: Exercise actual private-output client and OTP wrapping HA
+        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -219,6 +223,7 @@ jobs:
           # No secret-bearing service/issuer/client directories are uploaded.
 
       - name: Observe real migration catalogs and target capacity without cutover
+        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
