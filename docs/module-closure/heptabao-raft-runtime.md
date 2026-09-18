@@ -30,7 +30,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 ## Acceptance evidence
 
 - **Source/manifest evidence:** portable repository-relative source SHA-256 `b03a83c067fc60a5c7b39e865731d7dd0d68f35ace6f322cb28a9e47dc7cee24`; manifest SHA-256 `2f60db3259415fdf977e757a82741c6af2b8d5757d159d1ada347e28596d4087`.
-- **Named executable anchor:** `envelope_status_v2_round_trip_and_v1_compatibility` in `crates/heptabao-raft-runtime/src/lib.rs`.
+- **Named executable anchor:** `envelope_status_v3_round_trip_and_legacy_compatibility` in `crates/heptabao-raft-runtime/src/lib.rs`.
 - **Required command:** `cargo +1.98.0 test --locked -p heptabao-raft-runtime` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
