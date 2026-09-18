@@ -6,7 +6,10 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+heptabao-domain = { path = "../heptabao-domain" }
 heptabao-durable-service = { path = "../heptabao-durable-service" }
+heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
+heptabao-plugin-host = { path = "../heptabao-plugin-host" }
 heptabao-ha-service = { path = "../heptabao-ha-service" }
 heptabao-raft-runtime = { path = "../heptabao-raft-runtime" }
 serde = { version = "=1.0.229", features = ["derive"] }
