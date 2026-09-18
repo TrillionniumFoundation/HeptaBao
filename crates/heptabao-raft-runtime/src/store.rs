@@ -504,11 +504,7 @@ fn log_journal_epoch(path: &Path) -> io::Result<u64> {
     Ok(epoch)
 }
 
-fn append_log_journal(
-    path: &Path,
-    expected_epoch: u64,
-    event: &LogJournalEvent,
-) -> io::Result<()> {
+fn append_log_journal(path: &Path, expected_epoch: u64, event: &LogJournalEvent) -> io::Result<()> {
     if log_journal_epoch(path)? != expected_epoch {
         return Err(invalid("raft log checkpoint/journal epoch mismatch"));
     }
@@ -554,10 +550,7 @@ fn apply_log_journal_event(
             }
         }
         LogJournalEvent::Purge { log_id } => {
-            if state
-                .last_purged_log_id
-                .is_some_and(|last| last > log_id)
-            {
+            if state.last_purged_log_id.is_some_and(|last| last > log_id) {
                 return Err(invalid("purge log id regressed"));
             }
             let remove = state
@@ -583,7 +576,9 @@ fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result
     let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
     file.read_to_end(&mut bytes)?;
     if bytes.len() < 16 || bytes[..8] != LOG_JOURNAL_MAGIC {
-        return Err(invalid("raft log delta journal header is truncated or invalid"));
+        return Err(invalid(
+            "raft log delta journal header is truncated or invalid",
+        ));
     }
     let journal_epoch = u64::from_le_bytes(
         bytes[8..16]
@@ -649,9 +644,7 @@ fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result
 
 impl PersistentLogState {
     fn validate(&self) -> io::Result<()> {
-        if self.journal_format > 1
-            || (self.journal_format == 1 && self.journal_epoch == 0)
-        {
+        if self.journal_format > 1 || (self.journal_format == 1 && self.journal_epoch == 0) {
             return Err(invalid("unsupported or zero raft log journal epoch"));
         }
         let mut previous = self.last_purged_log_id.as_ref().map(|log_id| log_id.index);
@@ -957,16 +950,15 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
 
     async fn purge(&mut self, log_id: LogIdOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        if state
-            .last_purged_log_id
-            .is_some_and(|last| last > log_id)
-        {
+        if state.last_purged_log_id.is_some_and(|last| last > log_id) {
             return Err(invalid("purge log id regressed"));
         }
         if let Some(last) = state.log.keys().next_back().copied()
             && log_id.index > last
         {
-            return Err(invalid("purge log id exceeds locally retained log frontier"));
+            return Err(invalid(
+                "purge log id exceeds locally retained log frontier",
+            ));
         }
         let event = LogJournalEvent::Purge { log_id };
         append_log_journal(
@@ -981,14 +973,10 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
             .checked_add(1)
             .ok_or_else(|| invalid("raft log journal epoch overflow"))?;
         self.persist(&candidate)?;
-        initialize_log_journal(
-            &log_journal_path(&self.state_path),
-            candidate.journal_epoch,
-        )?;
+        initialize_log_journal(&log_journal_path(&self.state_path), candidate.journal_epoch)?;
         *state = candidate;
         Ok(())
     }
-
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -1061,10 +1049,8 @@ fn apply_state_entry(
             ClientResponse(previous)
         }
         EntryPayload::Membership(membership) => {
-            state.last_membership = StoredMembershipOf::<TypeConfig>::new(
-                Some(entry.log_id),
-                membership.clone(),
-            );
+            state.last_membership =
+                StoredMembershipOf::<TypeConfig>::new(Some(entry.log_id), membership.clone());
             ClientResponse(None)
         }
     }
@@ -1116,10 +1102,7 @@ fn apply_state_journal_event(
     }
 }
 
-fn replay_state_journal(
-    path: &Path,
-    bundle: &mut PersistentStateBundle,
-) -> io::Result<()> {
+fn replay_state_journal(path: &Path, bundle: &mut PersistentStateBundle) -> io::Result<()> {
     let mut file = File::open(path)?;
     let metadata = file.metadata()?;
     if metadata.len() > 256 * 1024 * 1024 {
@@ -1188,10 +1171,7 @@ impl PersistentStateBundle {
     }
 
     fn validate(&self) -> io::Result<()> {
-        if self.format_version != 1
-            || self.journal_format > 1
-            || self.generation == 0
-        {
+        if self.format_version != 1 || self.journal_format > 1 || self.generation == 0 {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
         if let Some(snapshot) = &self.current_snapshot {
@@ -1624,7 +1604,9 @@ mod tests {
         }
         DurableLogStore::open_existing(&log_root).expect("repair truncated log tail");
         assert_eq!(
-            fs::metadata(&log_journal).expect("log journal metadata").len(),
+            fs::metadata(&log_journal)
+                .expect("log journal metadata")
+                .len(),
             16
         );
 
@@ -1636,7 +1618,8 @@ mod tests {
                 .append(true)
                 .open(&state_journal)
                 .expect("open state journal");
-            file.write_all(b"HBRS").expect("append truncated state frame");
+            file.write_all(b"HBRS")
+                .expect("append truncated state frame");
             file.sync_all().expect("sync truncated state frame");
         }
         DurableStateMachine::open_existing(&state_root).expect("repair truncated state tail");
