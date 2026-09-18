@@ -62,7 +62,7 @@ Focused Rust source scenarios in `crates/heptabao-server/src/service_capacity_te
 - `ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widening_local_writes`;
 - `failed_state_publication_after_epoch_retirement_fences_service`.
 
-`qa/openbao-acceptance/replay_epoch_ha.py` extends the existing real three-process mTLS/Raft destructive harness. On private synthetic loopback state it performs a first retirement, kills the acknowledged leader with the harness' process-kill path, requires a former follower to become leader and commit in the new epoch, restarts the old leader, makes the restarted process authoritative again and commits, then performs a second retirement followed by another leader loss and mutation. The result binds the exact server binary digest and remains repository-controlled evidence.
+`qa/openbao-acceptance/replay_epoch_ha.py` extends the existing real three-process mTLS/Raft destructive harness. On private synthetic loopback state it performs repeated retirements and leadership changes, then deliberately keeps one voter offline across two consecutive committed epoch transitions. After rejoin, the fixture reduces the live set to a two-of-three quorum, transfers leadership to that formerly stale voter, verifies its local epoch and requires a real mutation in the latest epoch. The result binds the exact server binary digest and remains repository-controlled evidence.
 
 `.github/workflows/replay-epoch-ha.yml` runs that fixture against the pull request's immutable exact head with read-only repository permissions and no persisted checkout credentials. A source file or workflow being present is not a pass receipt; only the current exact-head run establishes the named observation.
 
