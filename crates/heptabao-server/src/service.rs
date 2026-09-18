@@ -17,9 +17,10 @@ use std::{
     collections::BTreeMap,
     fs::{self, File, OpenOptions},
     io::{self, Read, Write},
+    net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
-    time::{SystemTime, UNIX_EPOCH},
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
 
@@ -198,6 +199,27 @@ impl Response {
 pub(crate) enum WireRejection {
     RateLimited,
     ParseRejected,
+}
+
+fn default_audit_socket_timeout_ms() -> u64 {
+    2_000
+}
+
+#[derive(Clone, Copy, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuditSocketConfig {
+    pub address: SocketAddr,
+    #[serde(default = "default_audit_socket_timeout_ms")]
+    pub write_timeout_ms: u64,
+}
+
+impl AuditSocketConfig {
+    fn validate(self) -> Result<Self, String> {
+        if !(1..=10_000).contains(&self.write_timeout_ms) || self.address.ip().is_unspecified() {
+            return Err("invalid bounded audit socket configuration".into());
+        }
+        Ok(self)
+    }
 }
 
 impl WireRejection {
@@ -391,6 +413,8 @@ pub struct Service {
     audit_previous: [u8; 32],
     audit_failed: bool,
     audit_http_url: Option<String>,
+    audit_socket: Option<AuditSocketConfig>,
+    audit_socket_failures: u64,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
@@ -448,6 +472,21 @@ impl Service {
             }
         }
         self.audit_http_url = url;
+        Ok(())
+    }
+
+    /// Install an optional deployment-owned TCP audit device before unseal.
+    /// The mandatory local file device remains authoritative, so bounded socket
+    /// delivery failure is observable but cannot erase or block the local record.
+    pub fn install_audit_socket(
+        &mut self,
+        config: Option<AuditSocketConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit socket policy is immutable while unsealed".into());
+        }
+        self.audit_socket = config.map(AuditSocketConfig::validate).transpose()?;
+        self.audit_socket_failures = 0;
         Ok(())
     }
 
@@ -540,6 +579,8 @@ impl Service {
             audit_previous,
             audit_failed: false,
             audit_http_url: None,
+            audit_socket: None,
+            audit_socket_failures: 0,
             durable: None,
             state: None,
             state_digest: None,
@@ -3315,6 +3356,25 @@ impl Service {
                 })
             })
         };
+        let socket_device = || {
+            self.audit_socket.map(|config| {
+                json!({
+                    "type": "socket",
+                    "accessor": "audit_socket",
+                    "revision": 1,
+                    "description": "HeptaBao deployment-owned bounded TCP audit collector",
+                    "options": {
+                        "address": config.address.to_string(),
+                        "socket_type": "tcp",
+                        "write_timeout_ms": config.write_timeout_ms,
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                    "failed_writes": self.audit_socket_failures,
+                })
+            })
+        };
         let path = path.trim_end_matches('/');
         match (path, method) {
             ("sys/audit", "GET" | "LIST") => {
@@ -3323,11 +3383,18 @@ impl Service {
                 if let Some(http) = http_device() {
                     devices.insert("http/".into(), http);
                 }
+                if let Some(socket) = socket_device() {
+                    devices.insert("socket/".into(), socket);
+                }
                 Response::ok(json!({"data":devices}))
             }
             ("sys/audit/file", "GET") => Response::ok(json!({"data":device()})),
             ("sys/audit/http", "GET") => match http_device() {
                 Some(http) => Response::ok(json!({"data":http})),
+                None => Response::error(404, "audit device not found"),
+            },
+            ("sys/audit/socket", "GET") => match socket_device() {
+                Some(socket) => Response::ok(json!({"data":socket})),
                 None => Response::error(404, "audit device not found"),
             },
             ("sys/audit/file", "POST" | "PUT") => {
@@ -3413,9 +3480,14 @@ impl Service {
                 409,
                 "HTTP audit collector is fixed by trusted process configuration",
             ),
-            ("sys/audit", _) | ("sys/audit/file", _) | ("sys/audit/http", _) => {
-                Response::error(405, "unsupported sys/audit method")
-            }
+            ("sys/audit/socket", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "socket audit collector is fixed by trusted process configuration",
+            ),
+            ("sys/audit", _)
+            | ("sys/audit/file", _)
+            | ("sys/audit/http", _)
+            | ("sys/audit/socket", _) => Response::error(405, "unsupported sys/audit method"),
             _ => Response::error(404, "audit device not found"),
         }
     }
@@ -3521,11 +3593,24 @@ impl Service {
                 ));
             }
         }
+        if let Some(config) = self.audit_socket
+            && write_audit_socket(config, &bytes).is_err()
+        {
+            self.audit_socket_failures = self.audit_socket_failures.saturating_add(1);
+        }
         self.audit_sequence = sequence;
         self.audit_previous.copy_from_slice(tag.as_ref());
         Ok(())
     }
 }
+fn write_audit_socket(config: AuditSocketConfig, bytes: &[u8]) -> io::Result<()> {
+    let timeout = Duration::from_millis(config.write_timeout_ms);
+    let mut stream = TcpStream::connect_timeout(&config.address, timeout)?;
+    stream.set_write_timeout(Some(timeout))?;
+    stream.write_all(bytes)?;
+    stream.flush()
+}
+
 fn health_status(
     initialized: bool,
     sealed: bool,
