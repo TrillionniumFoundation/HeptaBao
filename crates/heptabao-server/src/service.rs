@@ -305,11 +305,13 @@ pub(crate) enum RequestExecution {
 
 enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
+    DatabaseConfig(database::DatabaseConfigPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
 }
 
 pub(crate) enum ExternalEffectResult {
     Database(Result<(), Response>),
+    DatabaseConfig(Result<(), Response>),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
 }
 
@@ -325,6 +327,9 @@ impl PendingExternalRequest {
     pub(crate) fn execute(&self) -> ExternalEffectResult {
         match &self.effect {
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
+            ExternalEffectPlan::DatabaseConfig(plan) => {
+                ExternalEffectResult::DatabaseConfig(plan.execute())
+            }
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
             }
@@ -353,6 +358,7 @@ pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     pending_database_effect: Option<database::DatabaseEffectPlan>,
+    pending_database_config_effect: Option<database::DatabaseConfigPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
@@ -486,6 +492,7 @@ impl Service {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             pending_database_effect: None,
+            pending_database_config_effect: None,
             pending_online_auth_effect: None,
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
@@ -674,6 +681,10 @@ impl Service {
             (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
                 self.finalize_database_effect(&plan, result)
             }
+            (
+                ExternalEffectPlan::DatabaseConfig(plan),
+                ExternalEffectResult::DatabaseConfig(result),
+            ) => self.finalize_database_config(plan, result),
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
             }
@@ -715,7 +726,10 @@ impl Service {
             allow_forward,
             wrap_ttl_seconds,
         } = request;
-        if self.pending_database_effect.is_some() || self.pending_online_auth_effect.is_some() {
+        if self.pending_database_effect.is_some()
+            || self.pending_database_config_effect.is_some()
+            || self.pending_online_auth_effect.is_some()
+        {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
                 503,
@@ -817,20 +831,23 @@ impl Service {
         });
         erase_json(&mut body);
         let database = self.pending_database_effect.take();
+        let database_config = self.pending_database_config_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
-        let effect = match (database, online_auth) {
-            (Some(plan), None) => Some(ExternalEffectPlan::Database(plan)),
-            (None, Some(plan)) => Some(ExternalEffectPlan::OnlineAuth(plan)),
-            (None, None) => None,
-            (Some(_), Some(_)) => {
-                self.recovery_required = true;
-                return RequestExecution::Complete(self.audit_completed_response(
-                    &fingerprint,
-                    now,
-                    Response::error(503, "multiple external effects staged for one request"),
-                ));
-            }
-        };
+        let staged = usize::from(database.is_some())
+            + usize::from(database_config.is_some())
+            + usize::from(online_auth.is_some());
+        if staged > 1 {
+            self.recovery_required = true;
+            return RequestExecution::Complete(self.audit_completed_response(
+                &fingerprint,
+                now,
+                Response::error(503, "multiple external effects staged for one request"),
+            ));
+        }
+        let effect = database
+            .map(ExternalEffectPlan::Database)
+            .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
+            .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth));
         if let Some(effect) = effect {
             return RequestExecution::External(PendingExternalRequest {
                 fingerprint,
