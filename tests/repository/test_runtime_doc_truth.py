@@ -72,33 +72,29 @@ class RuntimeDocumentationTests(unittest.TestCase):
         (self.root / module.FORMAT).unlink()
         self.assertTrue(module.validate(self.root))
 
-    def test_commented_replay_epoch_field_cannot_fake_runtime_anchor(self):
+    def test_commented_replay_route_cannot_fake_runtime_marker(self):
         path = self.root / 'crates/heptabao-server/src/service.rs'
         source = path.read_text()
-        match = re.search(r'(?m)^(\s*)replay_epoch\s*:\s*u64\s*,', source)
-        self.assertIsNotNone(match)
-        source = (
-            source[:match.start()]
-            + match.group(1)
-            + '// replay_epoch: u64, stale documentation example only\n'
-            + match.group(1)
-            + 'replay_generation: u64,'
-            + source[match.end():]
-        )
+        marker = 'sys/storage/raft/replay-retire'
+        self.assertIn(marker, source)
+        source = source.replace(marker, 'sys/storage/raft/replay-retire-disabled')
+        source += '\n// sys/storage/raft/replay-retire stale documentation example only\n'
         path.write_text(source)
         self.assertIn(
-            'current replay source missing semantic anchor: cluster replay_epoch field',
+            'current replay source missing stable protocol marker: root replay-retire route',
             module.validate(self.root),
         )
 
-    def test_commented_replay_retirement_call_cannot_fake_runtime_anchor(self):
+    def test_commented_raft_mode_cannot_fake_runtime_marker(self):
         path = self.root / 'crates/heptabao-server/src/service.rs'
         source = path.read_text()
-        source = source.replace('retire_replay_epoch(', 'retire_replay_generation(', 1)
-        source += '\n// retire_replay_epoch(fake);\n'
+        marker = 'raft-coordinated'
+        self.assertIn(marker, source)
+        source = source.replace(marker, 'raft-coordinated-disabled')
+        source += '\n// raft-coordinated stale documentation example only\n'
         path.write_text(source)
         self.assertIn(
-            'current replay source missing semantic anchor: durable replay retirement call',
+            'current replay source missing stable protocol marker: raft-coordinated capacity mode',
             module.validate(self.root),
         )
 
