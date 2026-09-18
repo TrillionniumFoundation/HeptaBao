@@ -558,7 +558,7 @@ impl EngineState {
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
                 Backend::Database
-                | Backend::Kubernetes
+                | Backend::Kubernetes(_)
                 | Backend::PluginSecret(_)
                 | Backend::Pki(_)
                 | Backend::Ssh(_) => None,
