@@ -2259,11 +2259,15 @@ fn snapshot_entry_len(
     resource: &str,
     value_bytes: usize,
 ) -> Result<usize, ServiceError> {
-    [4_usize + namespace.len(), 4 + resource.len(), 4 + value_bytes]
-        .into_iter()
-        .try_fold(0_usize, |total, length| {
-            total.checked_add(length).ok_or(ServiceError::CorruptState)
-        })
+    [
+        4_usize + namespace.len(),
+        4 + resource.len(),
+        4 + value_bytes,
+    ]
+    .into_iter()
+    .try_fold(0_usize, |total, length| {
+        total.checked_add(length).ok_or(ServiceError::CorruptState)
+    })
 }
 
 fn snapshot_plaintext_len(snapshot: &Snapshot) -> Result<usize, ServiceError> {
@@ -2335,10 +2339,7 @@ fn candidate_snapshot_plaintext_len(
     Ok(length)
 }
 
-fn snapshot_frame_len_bound<B: Barrier>(
-    barrier: &B,
-    plaintext_len: usize,
-) -> Option<usize> {
+fn snapshot_frame_len_bound<B: Barrier>(barrier: &B, plaintext_len: usize) -> Option<usize> {
     barrier
         .sealed_len_bound(plaintext_len)?
         .checked_add(SNAPSHOT_MAGIC.len() + 8 + 4 + 32)
@@ -2982,8 +2983,14 @@ mod tests {
     fn replay_retirement_publication_boundaries_fence_and_recover() -> Result<(), ServiceError> {
         let _serial = serial_test();
         for (label, failpoint) in [
-            ("retire-ledger-boundary", ReplayRetirementFailpoint::AfterLedgerPublication),
-            ("retire-journal-boundary", ReplayRetirementFailpoint::AfterJournalPublication),
+            (
+                "retire-ledger-boundary",
+                ReplayRetirementFailpoint::AfterLedgerPublication,
+            ),
+            (
+                "retire-journal-boundary",
+                ReplayRetirementFailpoint::AfterJournalPublication,
+            ),
         ] {
             let root = TestRoot::new(label)?;
             let barrier = TestBarrier::new();
@@ -2999,7 +3006,8 @@ mod tests {
             assert_eq!(service.replay_epoch(), 1);
             assert_eq!(service.retired_through_generation(), generation);
             assert!(matches!(
-                service.put_in_replay_epoch(1, put_request("must-fence-before-reopen", b"blocked")?),
+                service
+                    .put_in_replay_epoch(1, put_request("must-fence-before-reopen", b"blocked")?),
                 Err(ServiceError::RecoveryRequired)
             ));
             drop(service);
@@ -3008,10 +3016,8 @@ mod tests {
             assert!(!reopened.recovery_required());
             assert_eq!(reopened.replay_epoch(), 1);
             assert_eq!(reopened.retired_through_generation(), generation);
-            let outcome = reopened.put_in_replay_epoch(
-                1,
-                put_request("epoch-after-reopen", b"resumed")?,
-            )?;
+            let outcome =
+                reopened.put_in_replay_epoch(1, put_request("epoch-after-reopen", b"resumed")?)?;
             assert!(matches!(outcome, MutationOutcome::Committed { .. }));
             drop(reopened);
 
@@ -3500,20 +3506,16 @@ mod tests {
                 value: Some(Secret::new(b"new-value".to_vec())?),
             },
         ];
-        let projected = candidate_snapshot_plaintext_len(
-            &snapshot,
-            current_len,
-            &next_marker,
-            &mutations,
-        )?;
+        let projected =
+            candidate_snapshot_plaintext_len(&snapshot, current_len, &next_marker, &mutations)?;
         let mut exact = snapshot.clone();
         apply_journal_mutations(&mut exact, &next_marker, &mutations)?;
         assert_eq!(projected, snapshot_plaintext_len(&exact)?);
         assert_eq!(projected, encode_snapshot(&exact)?.len());
 
         let barrier = TestBarrier::new();
-        let bound = snapshot_frame_len_bound(&barrier, projected)
-            .ok_or(ServiceError::CorruptState)?;
+        let bound =
+            snapshot_frame_len_bound(&barrier, projected).ok_or(ServiceError::CorruptState)?;
         assert_eq!(bound, sealed_snapshot(&barrier, &exact)?.len());
         Ok(())
     }
