@@ -1,0 +1,78 @@
+name: HeptaBao ACL policy migration live
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy-migration-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  policy-migration:
+    name: policy migration / exact head / official OpenBao 2.6.2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+      HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+    steps:
+      - name: Checkout immutable exact head without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal
+
+      - name: Build exact candidate server
+        shell: bash
+        run: cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Acquire checksum-pinned official OpenBao 2.6.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Run policy migration unit and live evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python qa/openbao-acceptance/tests/test_policy_migration.py -v
+          reports="$RUNNER_TEMP/heptabao-policy-migration"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/policy_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/policy-migration.json"
+          python - "$reports/policy-migration.json" <<'PY'
+          import json, pathlib, sys
+          report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["status"] == "passed_scoped_policy_transfer"
+          assert report["official_openbao_version"] == "2.6.2"
+          assert report["full_asset_migration"] is False
+          assert report["source_cutover"] is False
+          assert report["cutover_authority"] is False
+          assert report["rollback_authority"] is False
+          assert report["independent_qualification"] is False
+          print(json.dumps(report, sort_keys=True, separators=(",", ":")))
+          PY
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
