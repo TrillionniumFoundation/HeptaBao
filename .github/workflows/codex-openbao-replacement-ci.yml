@@ -9,10 +9,10 @@ permissions:
   contents: read
 
 concurrency:
-  # Bind concurrency to the immutable source identity. A newer PR head must not
-  # cancel the terminal exact-head/prospective-merge evidence for an older head.
-  # Duplicate dispatches for the same immutable source may still collapse safely.
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  # During active development only the newest PR head is useful feedback. Once
+  # the candidate is frozen, that unchanged head and its prospective merge must
+  # reach terminal success before integration.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
