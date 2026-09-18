@@ -638,9 +638,9 @@ Existing bounded profiles: none bound yet; executable fixtures must be implement
 
 ### HB-SURFACE-AUDIT-HTTP
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H12-WP06`, `H12-WP10`, `H12-WP11`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H12-WP06`, `H12-WP10`, `H12-WP11`.
 API families: `sys/audit/* (http)`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`; `crates/heptabao-server/src/outbound.rs`; `crates/heptabao-server/src/http.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -650,9 +650,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Reconcile timeout/collector outage without unaudited effect or unbounded queue.
 
-**Remaining scope:** TLS, redirect, timeout, SSRF and blocked destination behavior.
+**Remaining scope:** Process-configured host-enrolled HTTPS delivery, local-file-first durability, redirect denial, bounded timeout, outage fail-closed and restart recovery are executable; dynamic sys/audit enrollment/options, batching/backpressure parity, official differential coverage and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/audit_http_live.py`.
 
 ### HB-SURFACE-AUDIT-SOCKET
 
