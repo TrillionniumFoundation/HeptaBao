@@ -298,6 +298,25 @@ struct RequestView<'a> {
     wrap_ttl_seconds: Option<u64>,
 }
 
+pub(crate) enum RequestExecution {
+    Complete(Response),
+    External(PendingExternalRequest),
+}
+
+pub(crate) struct PendingExternalRequest {
+    fingerprint: String,
+    now: u64,
+    database: database::DatabaseEffectPlan,
+}
+
+impl PendingExternalRequest {
+    /// Run only the bounded external side effect. The caller must not hold the
+    /// global Service writer while this method is executing.
+    pub(crate) fn execute(&self) -> Result<(), Response> {
+        self.database.execute()
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum RequestEffectClass {
     PureRead,
@@ -318,6 +337,7 @@ fn classify_request_effect(method: &str, before: &[u8], after: &[u8]) -> Request
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
+    pending_database_effect: Option<database::DatabaseEffectPlan>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
@@ -449,6 +469,7 @@ impl Service {
         Ok(Self {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
+            pending_database_effect: None,
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
@@ -567,6 +588,9 @@ impl Service {
     }
 
     pub(crate) fn handle_forwarded(&mut self, request: ServiceRequest<'_>) -> Response {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
         let ServiceRequest {
             method,
             path,
@@ -575,9 +599,6 @@ impl Service {
             body,
             wrap_ttl_seconds,
         } = request;
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |duration| duration.as_secs());
         self.handle_at_mode(RequestDispatch {
             method,
             path,
@@ -590,7 +611,96 @@ impl Service {
         })
     }
 
+    /// Start a network request while holding the Service writer. A database
+    /// provider effect may be returned as an owned external plan after its
+    /// intent has been durably committed.
+    pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+        } = request;
+        self.begin_at_mode(RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: true,
+            wrap_ttl_seconds,
+        })
+    }
+
+    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0, |duration| duration.as_secs());
+        let ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+        } = request;
+        self.begin_at_mode(RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now,
+            allow_forward: false,
+            wrap_ttl_seconds,
+        })
+    }
+
     fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {
+        match self.begin_at_mode(request) {
+            RequestExecution::Complete(response) => response,
+            RequestExecution::External(pending) => {
+                let provider_result = pending.execute();
+                self.finish_external_request(pending, provider_result)
+            }
+        }
+    }
+
+    pub(crate) fn finish_external_request(
+        &mut self,
+        pending: PendingExternalRequest,
+        provider_result: Result<(), Response>,
+    ) -> Response {
+        let response = self.finalize_database_effect(&pending.database, provider_result);
+        self.audit_completed_response(&pending.fingerprint, pending.now, response)
+    }
+
+    fn audit_completed_response(
+        &mut self,
+        fingerprint: &str,
+        now: u64,
+        response: Response,
+    ) -> Response {
+        if self
+            .audit_event("response", fingerprint, now, Some(response.status))
+            .is_err()
+        {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "response audit failed; outcome unknown; authoritative recovery required",
+            );
+        }
+        response
+    }
+
+    fn begin_at_mode(&mut self, request: RequestDispatch<'_>) -> RequestExecution {
         let RequestDispatch {
             method,
             path,
@@ -601,6 +711,13 @@ impl Service {
             allow_forward,
             wrap_ttl_seconds,
         } = request;
+        if self.pending_database_effect.is_some() {
+            erase_json(&mut body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "database provider dispatch state is unavailable",
+            ));
+        }
         let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
@@ -614,7 +731,10 @@ impl Service {
             .is_err()
         {
             erase_json(&mut body);
-            return Response::error(503, "audit unavailable before entry");
+            return RequestExecution::Complete(Response::error(
+                503,
+                "audit unavailable before entry",
+            ));
         }
         if let Some(ttl) = wrap_ttl_seconds {
             let validation = if ttl == 0 || ttl > 32 * 24 * 3600 {
@@ -649,9 +769,12 @@ impl Service {
                     .is_err()
                 {
                     self.recovery_required = true;
-                    return Response::error(503, "wrapping rejection audit unavailable");
+                    return RequestExecution::Complete(Response::error(
+                        503,
+                        "wrapping rejection audit unavailable",
+                    ));
                 }
-                return response;
+                return RequestExecution::Complete(response);
             }
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
@@ -671,9 +794,12 @@ impl Service {
                     .is_err()
             {
                 self.recovery_required = self.initialized();
-                return Response::error(503, "initialization response audit unavailable");
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "initialization response audit unavailable",
+                ));
             }
-            return response;
+            return RequestExecution::Complete(response);
         }
         let response = self.handle_inner(RequestView {
             method,
@@ -686,17 +812,14 @@ impl Service {
             wrap_ttl_seconds,
         });
         erase_json(&mut body);
-        if self
-            .audit_event("response", &fingerprint, now, Some(response.status))
-            .is_err()
-        {
-            self.recovery_required = true;
-            return Response::error(
-                503,
-                "response audit failed; outcome unknown; authoritative recovery required",
-            );
+        if let Some(database) = self.pending_database_effect.take() {
+            return RequestExecution::External(PendingExternalRequest {
+                fingerprint,
+                now,
+                database,
+            });
         }
-        response
+        RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response))
     }
 
     fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
