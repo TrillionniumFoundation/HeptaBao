@@ -391,7 +391,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           git diff --exit-code
 
-      - name: Rehearse bounded policy Identity and SSH role migration against the official source
+      - name: Rehearse bounded policy Identity auth-mount and SSH role migration against the official source
         if: ${{ success() || failure() }}
         shell: bash
         env:
@@ -405,17 +405,21 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/policy.json"
           timeout 300 python qa/openbao-acceptance/identity_migration_live.py \
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/identity.json"
+          timeout 300 python qa/openbao-acceptance/auth_mount_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/auth-mount.json"
           timeout 240 python qa/openbao-acceptance/ssh_role_migration_live.py \
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/ssh-role.json"
-          python - "$reports/policy.json" "$reports/identity.json" "$reports/ssh-role.json" <<'PY'
+          python - "$reports/policy.json" "$reports/identity.json" "$reports/auth-mount.json" "$reports/ssh-role.json" <<'PY'
           import json, pathlib, sys
           policy=json.loads(pathlib.Path(sys.argv[1]).read_text())
           identity=json.loads(pathlib.Path(sys.argv[2]).read_text())
-          ssh=json.loads(pathlib.Path(sys.argv[3]).read_text())
+          auth_mount=json.loads(pathlib.Path(sys.argv[3]).read_text())
+          ssh=json.loads(pathlib.Path(sys.argv[4]).read_text())
           assert policy["status"] == "passed_scoped_policy_transfer"
           assert identity["status"] == "passed_scoped_identity_recreation"
+          assert auth_mount["status"] == "passed_scoped_auth_mount_recreation"
           assert ssh["status"] == "passed_scoped_ssh_role_transfer"
-          for report in (policy, identity, ssh):
+          for report in (policy, identity, auth_mount, ssh):
               assert report["official_openbao_version"] == "2.6.2"
               assert report["full_asset_migration"] is False
               assert report["cutover_authority"] is False
@@ -425,6 +429,13 @@ jobs:
           assert identity["group_aliases_transferred"] is False
           assert identity["tokens_transferred"] is False
           assert identity["auth_credentials_transferred"] is False
+          assert auth_mount["consumer_reauthentication_required"] is True
+          assert auth_mount["consumer_reauthentication_rehearsed"] is True
+          assert auth_mount["accessor_transferred"] is False
+          assert auth_mount["principals_transferred"] is False
+          assert auth_mount["approle_secret_ids_transferred"] is False
+          assert auth_mount["tokens_transferred"] is False
+          assert auth_mount["identity_alias_bindings_transferred"] is False
           assert ssh["issued_credentials_transferred"] is False
           assert ssh["lease_state_transferred"] is False
           assert ssh["ca_authority_transferred"] is False
