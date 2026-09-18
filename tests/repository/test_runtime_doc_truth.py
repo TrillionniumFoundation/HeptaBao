@@ -17,7 +17,9 @@ class RuntimeDocumentationTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
-        paths = [module.FORMAT, module.ENGINE, module.SERVER, module.ARCH, module.ACCEPTANCE, module.CORPUS,
+        paths = [module.FORMAT, module.ENGINE, module.SERVER, module.ARCH,
+                 module.CAPACITY, module.REPLAY, module.REPLAY_HA,
+                 module.ACCEPTANCE, module.CORPUS, module.SERVER_LIB, module.STATE_STORE,
                  'README.md', 'docs/CURRENT_DOCUMENTATION.md',
                  'crates/heptabao-server/src/service.rs',
                  'crates/heptabao-server/src/engines.rs']
@@ -67,6 +69,30 @@ class RuntimeDocumentationTests(unittest.TestCase):
         with (self.root / module.ARCH).open('a') as stream:
             stream.write('\nThe wrapping increment originally introduced schema 3.\n')
         self.assertEqual(module.validate(self.root), [])
+
+    def test_replay_contract_does_not_accept_comment_only_marker(self):
+        path = self.root / 'crates/heptabao-server/src/service.rs'
+        text = path.read_text()
+        self.assertIn('durable.retire_replay_epoch()', text)
+        path.write_text(
+            text.replace(
+                'durable.retire_replay_epoch()',
+                '/* durable.retire_replay_epoch() */ durable.retire_replay_epoch_missing()',
+                1,
+            )
+        )
+        self.assertTrue(
+            any('durable replay retirement call' in p for p in module.validate(self.root))
+        )
+
+    def test_replay_contract_tolerates_whitespace_formatting(self):
+        path = self.root / 'crates/heptabao-server/src/service.rs'
+        text = path.read_text()
+        self.assertIn('replay_epoch: u64', text)
+        path.write_text(text.replace('replay_epoch: u64', 'replay_epoch : u64', 1))
+        self.assertFalse(
+            any('replay_epoch field' in p for p in module.validate(self.root))
+        )
 
     def test_replacement_map_cannot_drop_a_surface(self):
         path=self.root/module.ACCEPTANCE
