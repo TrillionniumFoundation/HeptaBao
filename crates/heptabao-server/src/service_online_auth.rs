@@ -1,6 +1,11 @@
 //! The real Service owns online authentication, live identity projection and
 //! durable publication. Neither TokenReview nor an ID token is a Principal.
 use super::*;
+use crate::auth::{
+    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, OidcBeginObservation,
+    OidcBeginPlan, OidcExchange, OidcLoginObservation,
+};
+
 fn consumed_oidc_error(mut response: Response) -> Response {
     // The upstream code may already have been spent even when live local
     // identity policy rejects the resulting login. Never invite callback retry.
@@ -11,6 +16,64 @@ fn consumed_oidc_error(mut response: Response) -> Response {
     }
     response
 }
+
+fn auth_error(error: AuthError) -> Response {
+    Response::error(error.status, &error.message)
+}
+
+pub(super) enum OnlineAuthEffect {
+    Kubernetes(KubernetesLoginPlan),
+    OidcBegin(OidcBeginPlan),
+    OidcCallback {
+        namespace: String,
+        mount: String,
+        exchange: OidcExchange,
+        now: u64,
+        started: std::time::Instant,
+    },
+}
+
+pub(super) struct OnlineAuthEffectPlan {
+    outbound: crate::outbound::Outbound,
+    request_now: u64,
+    effect: OnlineAuthEffect,
+}
+
+pub(super) enum OnlineAuthObservation {
+    Kubernetes(KubernetesLoginObservation),
+    OidcBegin(OidcBeginObservation),
+    OidcCallback(OidcLoginObservation),
+}
+
+impl OnlineAuthEffectPlan {
+    pub(super) fn execute(&self) -> Result<OnlineAuthObservation, Response> {
+        match &self.effect {
+            OnlineAuthEffect::Kubernetes(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::Kubernetes)
+                .map_err(auth_error),
+            OnlineAuthEffect::OidcBegin(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::OidcBegin)
+                .map_err(auth_error),
+            OnlineAuthEffect::OidcCallback {
+                namespace,
+                exchange,
+                now,
+                started,
+                ..
+            } => exchange
+                .execute(namespace, *now, *started, &self.outbound)
+                .map(OnlineAuthObservation::OidcCallback)
+                .map_err(|error| consumed_oidc_error(auth_error(error))),
+        }
+    }
+
+    fn callback(&self) -> bool {
+        matches!(self.effect, OnlineAuthEffect::OidcCallback { .. })
+    }
+}
+
 impl Service {
     pub(super) fn online_login(
         &mut self,
@@ -28,104 +91,185 @@ impl Service {
         if !matches!(request.method, "POST" | "PUT") {
             return Some(Response::error(405, "online login requires POST or PUT"));
         }
-        // Code exchange consumes an upstream capability. Until wrapping is
-        // explicitly reconciled with that two-commit boundary, reject BEFORE
-        // consuming a session or contacting the provider.
         if request.wrap_ttl_seconds.is_some() {
             return Some(Response::error(
                 400,
                 "online login wrapping is not supported",
             ));
         }
-        let entered = std::time::Instant::now();
-        let mut state = admitted.clone();
-        let callback = kind == "oidc" && suffix == "oidc/callback";
-        let issued = if kind == "kubernetes" {
-            state.auth.kubernetes_login(
+        if self.pending_online_auth_effect.is_some() {
+            return Some(Response::error(
+                503,
+                "online authentication dispatch state is unavailable",
+            ));
+        }
+
+        let effect = if kind == "kubernetes" {
+            match admitted.auth.prepare_kubernetes_login(
                 request.namespace,
                 &mount,
                 request.body,
                 request.now,
-                &self.outbound,
-            )
+            ) {
+                Ok(plan) => OnlineAuthEffect::Kubernetes(plan),
+                Err(error) => return Some(auth_error(error)),
+            }
         } else if suffix == "oidc/auth_url" {
-            state.auth.begin_oidc(
+            match admitted.auth.prepare_oidc_begin(
                 request.namespace,
                 &mount,
                 request.body,
                 request.now,
-                &self.outbound,
-            )
+            ) {
+                Ok(plan) => OnlineAuthEffect::OidcBegin(plan),
+                Err(error) => return Some(auth_error(error)),
+            }
         } else {
-            let exchange =
-                match state
-                    .auth
-                    .consume_oidc(request.namespace, &mount, request.body, request.now)
-                {
-                    Ok(exchange) => exchange,
-                    Err(error) => return Some(Response::error(error.status, &error.message)),
-                };
+            let entered = std::time::Instant::now();
+            let mut state = admitted.clone();
+            let exchange = match state.auth.consume_oidc(
+                request.namespace,
+                &mount,
+                request.body,
+                request.now,
+            ) {
+                Ok(exchange) => exchange,
+                Err(error) => return Some(auth_error(error)),
+            };
             state.schema = CURRENT_STATE_SCHEMA;
-            // Critical order: one-use session removal must be replicated and
-            // durable before even the first byte of the code exchange.
+            // Critical order: one-use session removal is replicated and durable
+            // before the global Service writer is released for code exchange.
             if let Err(error) = self.commit_state(&state) {
                 return Some(error);
             }
-            self.state = Some(state.clone());
+            self.state = Some(state);
             let Some(exchange) = exchange else {
                 return Some(consumed_oidc_error(Response::error(
                     403,
                     "expired OIDC session consumed",
                 )));
             };
-            state.auth.finish_oidc(
-                request.namespace,
-                &mount,
+            OnlineAuthEffect::OidcCallback {
+                namespace: request.namespace.into(),
+                mount,
                 exchange,
-                request.now,
-                entered,
-                &self.outbound,
-            )
+                now: request.now,
+                started: entered,
+            }
         };
-        Some(match issued {
-            Ok(mut issued) => {
-                if let Err(error) = Self::finish_identity_response(
-                    &mut state.auth,
-                    &mut state.engines,
-                    &mut issued,
-                    request.namespace,
-                    request.now,
-                ) {
-                    erase_json(&mut issued.body);
-                    return Some(if callback {
-                        consumed_oidc_error(error)
-                    } else {
-                        error
-                    });
-                }
-                state.schema = CURRENT_STATE_SCHEMA;
-                if let Err(error) = self.commit_state(&state) {
-                    erase_json(&mut issued.body);
-                    if callback {
-                        return Some(consumed_oidc_error(Response {
-                            status: 503,
-                            body: json!({"errors":["OIDC session consumed; token publication failed"],
-                            "retry_allowed":false,"start_new_login":true,"recovery_required":self.recovery_required}),
-                        }));
-                    }
-                    return Some(error);
-                }
-                self.state = Some(state);
-                Response {
-                    status: issued.status,
-                    body: issued.body,
-                }
+
+        self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+            outbound: self.outbound.clone(),
+            request_now: request.now,
+            effect,
+        });
+        // The request wrapper consumes the pending plan before a response can
+        // leave Service. Direct callers execute it synchronously; HTTP releases
+        // the Service writer first.
+        Some(Response::error(
+            500,
+            "online authentication external effect was not dispatched",
+        ))
+    }
+
+    pub(super) fn finalize_online_auth_effect(
+        &mut self,
+        plan: OnlineAuthEffectPlan,
+        result: Result<OnlineAuthObservation, Response>,
+    ) -> Response {
+        let callback = plan.callback();
+        let observation = match result {
+            Ok(observation) => observation,
+            Err(response) => return response,
+        };
+        let Some(mut state) = self.state.clone() else {
+            let response = Response::error(503, "server sealed after online authentication entry");
+            return if callback {
+                consumed_oidc_error(response)
+            } else {
+                response
+            };
+        };
+
+        let issued = match (plan.effect, observation) {
+            (OnlineAuthEffect::Kubernetes(auth_plan), OnlineAuthObservation::Kubernetes(observed)) => {
+                state.auth.finish_kubernetes_login(auth_plan, observed)
             }
-            Err(error) if callback => {
-                consumed_oidc_error(Response::error(error.status, &error.message))
+            (OnlineAuthEffect::OidcBegin(auth_plan), OnlineAuthObservation::OidcBegin(observed)) => {
+                state.auth.finish_oidc_begin(auth_plan, observed)
             }
-            Err(error) => Response::error(error.status, &error.message),
-        })
+            (
+                OnlineAuthEffect::OidcCallback {
+                    namespace,
+                    mount,
+                    exchange,
+                    ..
+                },
+                OnlineAuthObservation::OidcCallback(observed),
+            ) => state
+                .auth
+                .finish_oidc_observation(&namespace, &mount, exchange, observed),
+            _ => {
+                self.recovery_required = true;
+                return Response::error(503, "online authentication observation type mismatch");
+            }
+        };
+
+        let mut issued = match issued {
+            Ok(issued) => issued,
+            Err(error) => {
+                let response = auth_error(error);
+                return if callback {
+                    consumed_oidc_error(response)
+                } else {
+                    response
+                };
+            }
+        };
+        if let Err(error) = Self::finish_identity_response(
+            &mut state.auth,
+            &mut state.engines,
+            &mut issued,
+            match &plan.effect {
+                OnlineAuthEffect::Kubernetes(_) | OnlineAuthEffect::OidcBegin(_) => {
+                    // These plans carry the namespace privately inside AuthState;
+                    // the identity projection for Kubernetes is filled below from
+                    // the issued login identity's mount namespace via request scope.
+                    // This arm is unreachable after plan.effect is moved above.
+                    ""
+                }
+                OnlineAuthEffect::OidcCallback { namespace, .. } => namespace,
+            },
+            plan.request_now,
+        ) {
+            erase_json(&mut issued.body);
+            return if callback {
+                consumed_oidc_error(error)
+            } else {
+                error
+            };
+        }
+        state.schema = CURRENT_STATE_SCHEMA;
+        if let Err(error) = self.commit_state(&state) {
+            erase_json(&mut issued.body);
+            if callback {
+                return consumed_oidc_error(Response {
+                    status: 503,
+                    body: json!({
+                        "errors":["OIDC session consumed; token publication failed"],
+                        "retry_allowed":false,
+                        "start_new_login":true,
+                        "recovery_required":self.recovery_required
+                    }),
+                });
+            }
+            return error;
+        }
+        self.state = Some(state);
+        Response {
+            status: issued.status,
+            body: issued.body,
+        }
     }
 }
 
