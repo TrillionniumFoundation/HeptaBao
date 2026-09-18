@@ -162,7 +162,7 @@ impl Mount {
     }
 
     fn descriptor(&self) -> Value {
-        let (kind, options) = match self.backend {
+        let (kind, options) = match &self.backend {
             Backend::Database => ("database", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
