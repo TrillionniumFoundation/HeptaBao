@@ -11,5 +11,11 @@ class ModuleClosureTests(unittest.TestCase):
     def test_all_workspace_modules_have_source_bound_dossiers(self):
         self.assertEqual(0, MOD.main())
     def test_registry_is_exactly_workspace(self):
-        self.assertEqual(46, len(MOD.crates()))
+        workspace = set(MOD.crates())
+        registry = MOD.yaml.safe_load(
+            (ROOT / "planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml").read_text()
+        )
+        entries = {item["crate"] for item in registry.get("modules", [])}
+        self.assertEqual(workspace, entries)
+        self.assertGreater(len(workspace), 0)
 if __name__=='__main__': unittest.main()
