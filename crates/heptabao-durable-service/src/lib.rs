@@ -1460,6 +1460,7 @@ impl<B: Barrier> DurableService<B> {
         )?;
         self.unresolved = false;
         Ok(())
+    }
 }
 
 fn apply_journal_mutations(
