@@ -216,7 +216,8 @@ class Client:
             raise BaoError("invalid_token_input") from None
         return cls(address, ca, token, os.environ.get(prefix + "_NAMESPACE", ""))
 
-    def request(self, method: str, path: str, payload=None, *, token: str | None = None, wrap_ttl: str | None = None) -> Response:
+    def request(self, method: str, path: str, payload=None, *, token: str | None = None,
+                wrap_ttl: str | None = None, content_type: str = "application/json") -> Response:
         if method not in ("GET", "HEAD", "LIST", "POST", "PUT", "PATCH", "DELETE", "SCAN"):
             raise BaoError("invalid_request_method")
         if not path.startswith("/v1/") or len(path) > 8192 or any(ord(c) < 33 or ord(c) == 127 for c in path):
@@ -224,6 +225,8 @@ class Client:
         if token is not None and (not isinstance(token, str) or len(token) > 8192
                                   or any(ord(c) < 33 or ord(c) > 126 for c in token)):
             raise BaoError("invalid_token_input")
+        if content_type not in ("application/json", "application/merge-patch+json"):
+            raise BaoError("unsupported_content_type")
         headers = {"X-Vault-Token": self._token if token is None else token, "Accept": "application/json"}
         if wrap_ttl is not None:
             if (not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64
@@ -236,7 +239,7 @@ class Client:
         if raw is not None:
             if len(raw) > MAX_BODY:
                 raise BaoError("request_size_limit")
-            headers["Content-Type"] = "application/json"
+            headers["Content-Type"] = content_type
         request = urllib.request.Request(self.address + path, data=raw, headers=headers, method=method)
         try:
             try:
