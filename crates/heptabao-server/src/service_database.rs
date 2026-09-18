@@ -85,6 +85,140 @@ struct DatabaseLease {
     password: Option<PrivateString>,
     request_digest: String,
 }
+
+pub(super) struct DatabaseEffectPlan {
+    namespace: String,
+    mount: String,
+    now: u64,
+    outbound: crate::outbound::Outbound,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    connection: Connection,
+    lease: DatabaseLease,
+}
+
+impl DatabaseEffectPlan {
+    /// Execute only the remote provider side effect and readback. This value is
+    /// fully owned so callers may drop the global Service writer while the
+    /// bounded network operation is in flight.
+    pub(super) fn execute(&self) -> Result<(), Response> {
+        if let Some(ha) = &self.ha {
+            ha.lock()
+                .map_err(|_| failure("HA provider fence unavailable"))?
+                .ensure_linearizable()
+                .map_err(|_| failure("HA provider fence unavailable"))?;
+        }
+        let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
+        let seq = self.lease.seq.to_string();
+        let expires = self.lease.expires.to_string();
+        pg.scalar(
+            "SELECT heptabao_provider.apply($1,$2,$3::bigint,$4,$5::bigint,$6,$7,$8)::text",
+            &[
+                &self.lease.provider_id,
+                &self.lease.username,
+                &seq,
+                action(&self.lease),
+                &expires,
+                &self.lease.provider_role,
+                self.lease
+                    .password
+                    .as_ref()
+                    .map(|p| p.0.as_str())
+                    .unwrap_or(""),
+                &self.lease.request_digest,
+            ],
+        )
+        .map_err(|_| Response {
+            status: 503,
+            body: json!({
+                "errors":["provider outcome indeterminate; durable intent retained"],
+                "lease_id":self.lease.id,
+                "reconcile_required":true
+            }),
+        })?;
+        // A separate readback proves the committed provider state rather than
+        // treating a function return value as transaction completion.
+        let observed = pg
+            .scalar(
+                "SELECT heptabao_provider.observe($1)::text",
+                &[&self.lease.provider_id],
+            )
+            .map_err(|_| Response {
+                status: 503,
+                body: json!({
+                    "errors":["provider outcome indeterminate; durable intent retained"],
+                    "lease_id":self.lease.id,
+                    "reconcile_required":true
+                }),
+            })?;
+        let observed = crate::auth::parse_strict_json(observed.as_bytes()).map_err(|_| {
+            Response {
+                status: 503,
+                body: json!({
+                    "errors":["provider outcome indeterminate; durable intent retained"],
+                    "lease_id":self.lease.id,
+                    "reconcile_required":true
+                }),
+            }
+        })?;
+        let matched = observed.get("found") == Some(&json!(true))
+            && observed["lease_id"] == self.lease.provider_id
+            && observed["username"] == self.lease.username
+            && observed["seq"].as_u64() == Some(self.lease.seq)
+            && observed["request_digest"] == self.lease.request_digest
+            && observed["action"] == action(&self.lease)
+            && observed["expires"].as_u64() == Some(self.lease.expires);
+        let valid = if self.lease.phase == Phase::PendingRevoke {
+            observed.get("login") == Some(&json!(false))
+                && observed["active_sessions"].as_u64() == Some(0)
+        } else {
+            observed.get("controlled") == Some(&json!(true))
+                && observed.get("login") == Some(&json!(true))
+                && self.lease.expires > self.now
+        };
+        if !matched || !valid {
+            return Err(Response {
+                status: 503,
+                body: json!({
+                    "errors":["provider completion not established; pending intent retained"],
+                    "lease_id":self.lease.id,
+                    "reconcile_required":true
+                }),
+            });
+        }
+        Ok(())
+    }
+
+    fn success_response(&self) -> Result<Response, Response> {
+        match self.lease.phase {
+            Phase::PendingIssue => {
+                let password = self
+                    .lease
+                    .password
+                    .as_ref()
+                    .ok_or_else(|| failure("pending database issue lost secret material"))?;
+                Ok(Response::ok(json!({
+                    "lease_id":self.lease.id,
+                    "lease_duration":self.lease.expires.saturating_sub(self.now),
+                    "renewable":true,
+                    "data":{
+                        "username":self.lease.username,
+                        "password":password.0
+                    }
+                })))
+            }
+            Phase::PendingRenew => Ok(Response::ok(json!({
+                "lease_id":self.lease.id,
+                "lease_duration":self.lease.expires.saturating_sub(self.now),
+                "renewable":true
+            }))),
+            Phase::PendingRevoke => Ok(Response {
+                status: 204,
+                body: Value::Null,
+            }),
+            _ => Err(failure("database effect plan is not pending")),
+        }
+    }
+}
 impl DatabaseState {
     pub(super) fn is_empty(&self) -> bool {
         self.mounts.is_empty()
