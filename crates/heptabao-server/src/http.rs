@@ -350,7 +350,7 @@ fn execute_service_request(
             } else {
                 service.begin_request(request)
             };
-            let work = service.take_database_request_work();
+            let work = service.take_database_request_work_for(&response);
             (response, work)
         }
         Err(_) => return Response::error(503, "service state is unavailable"),
