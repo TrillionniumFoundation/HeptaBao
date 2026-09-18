@@ -35,8 +35,8 @@ use crate::{
         encode_response as encode_forward_response, encode_wrapped_request, is_forward_request,
     },
     ha_state::{
-        ClusterStateCodec, CommittedStateDescriptor, REPLICATED_STATE_CHUNK_BYTES,
-        ReplicatedChunkRef,
+        ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
+        REPLICATED_STATE_CHUNK_BYTES, ReplicatedChunkRef, ReplicatedStateManifest,
     },
 };
 
@@ -46,6 +46,9 @@ const RAFT_FRAME_RESPONSE: u8 = 2;
 const MAX_RAFT_FRAME_BYTES: usize = 896 * 1024;
 const MAX_TLS_FILE_BYTES: usize = 1024 * 1024;
 const REPLICATION_KEY_BYTES: usize = 32;
+const REPLICATED_CHUNK_MIN_BYTES: usize = 192 * 1024;
+const REPLICATED_CHUNK_WINDOW_BYTES: usize = 64;
+const REPLICATED_CHUNK_MASK: u64 = (1_u64 << 18) - 1;
 
 type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);
 pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send + Sync>;
@@ -619,10 +622,11 @@ impl HaProcess {
     }
 
     /// Replicate the next authoritative application state with a manifest as
-    /// the sole publication point. Changed chunks are first staged into the
-    /// unreferenced side of a fixed dual-slot key; unchanged chunks are reused
-    /// only after authenticated readback. A leader loss during staging therefore
-    /// leaves the previous production manifest fully readable.
+    /// the sole publication point. HBSM3 separates logical chunk order from the
+    /// bounded physical Raft chunk index so content-defined boundaries can reuse
+    /// authenticated chunks after insertions/deletions instead of shifting every
+    /// later fixed chunk. New chunks are staged into an unreferenced index/slot;
+    /// the production manifest remains the only publication point.
     pub fn commit_state(
         &self,
         operation_id: &str,
@@ -678,52 +682,46 @@ impl HaProcess {
             },
         };
 
-        let mut refs = Vec::with_capacity(bytes.len().div_ceil(REPLICATED_STATE_CHUNK_BYTES));
-        for (position, chunk) in bytes.chunks(REPLICATED_STATE_CHUNK_BYTES).enumerate() {
-            let index =
-                u16::try_from(position).map_err(|_| "HA application chunk index overflow")?;
-            let digest = sha256(chunk);
-            let chunk_bytes =
-                u32::try_from(chunk.len()).map_err(|_| "HA application chunk length overflow")?;
-            let previous = previous_manifest
-                .as_ref()
-                .and_then(|manifest| manifest.chunks.get(position))
-                .filter(|existing| existing.index == index);
-
-            let slot = if let Some(existing) = previous
-                && existing.digest == digest
-                && existing.bytes == chunk_bytes
-            {
-                let envelope = self
+        let plans = plan_replicated_chunks(bytes, previous_manifest.as_ref())?;
+        let mut refs = Vec::with_capacity(plans.len());
+        for plan in plans {
+            let reference = plan.reference.clone();
+            if plan.reused {
+                let staged = self
                     .runtime
-                    .block_on(node.application_chunk_envelope(index, existing.slot))
+                    .block_on(node.application_chunk_envelope(reference.index, reference.slot))
                     .map_err(|error| error.to_string())?
                     .ok_or_else(|| "HA committed manifest references a missing chunk".to_owned())?;
-                if envelope.digest() != existing.digest {
+                if staged.digest() != reference.digest {
                     return Err("HA committed chunk digest metadata is inconsistent".into());
                 }
                 let opened = self
                     .codec
                     .open_chunk_parts(
-                        index,
-                        existing.slot,
-                        envelope.operation_id(),
-                        envelope.digest(),
-                        envelope.sealed(),
+                        reference.index,
+                        reference.slot,
+                        staged.operation_id(),
+                        staged.digest(),
+                        staged.sealed(),
                     )
                     .map_err(|error| error.to_string())?;
-                if opened.len() != usize::try_from(existing.bytes).unwrap_or(usize::MAX)
-                    || sha256(&opened) != existing.digest
+                if opened.as_slice() != plan.bytes
+                    || opened.len() != usize::try_from(reference.bytes).unwrap_or(usize::MAX)
+                    || sha256(&opened) != reference.digest
                 {
                     return Err("HA committed reusable chunk failed authenticated readback".into());
                 }
-                existing.slot
             } else {
-                let slot = previous.map_or(0, |existing| 1 - existing.slot);
-                let chunk_operation = chunk_operation_id(operation_id, index, slot);
+                let chunk_operation =
+                    chunk_operation_id(operation_id, reference.index, reference.slot);
                 let proposal = self
                     .codec
-                    .seal_chunk(chunk_operation.clone(), index, slot, chunk)
+                    .seal_chunk(
+                        chunk_operation.clone(),
+                        reference.index,
+                        reference.slot,
+                        plan.bytes,
+                    )
                     .map_err(|error| error.to_string())?;
                 let envelope = ReplicatedEnvelope::new(
                     proposal.operation_id().to_owned(),
@@ -737,19 +735,18 @@ impl HaProcess {
                     .map_err(|error| error.to_string())?;
                 let receipt = self
                     .runtime
-                    .block_on(node.replicate_application_chunk(index, slot, serial, &envelope))
+                    .block_on(node.replicate_application_chunk(
+                        reference.index,
+                        reference.slot,
+                        serial,
+                        &envelope,
+                    ))
                     .map_err(|error| error.to_string())?;
-                if receipt.leader_id != local_id || receipt.envelope_digest != digest {
+                if receipt.leader_id != local_id || receipt.envelope_digest != reference.digest {
                     return Err("HA chunk commit receipt did not bind the staged payload".into());
                 }
-                slot
-            };
-            refs.push(ReplicatedChunkRef {
-                index,
-                slot,
-                bytes: chunk_bytes,
-                digest,
-            });
+            }
+            refs.push(reference);
         }
 
         let proposal = self
@@ -777,8 +774,9 @@ impl HaProcess {
     }
 
     /// Return the newest complete application state after a linearizable
-    /// ReadIndex. HBSR1 whole-state envelopes remain readable for online
-    /// upgrade; HBSM2 manifests resolve only authenticated fixed-slot chunks.
+    /// ReadIndex. HBSR1 whole-state envelopes and HBSM2 fixed-position manifests
+    /// remain readable for online upgrade; HBSM3 resolves ordered logical chunks
+    /// through authenticated position-independent physical index/slot references.
     pub(crate) fn latest_committed_state(
         &self,
     ) -> Result<Option<CommittedApplicationState>, String> {
@@ -1154,6 +1152,112 @@ fn map_remote_service_error(error: RemoteRaftError) -> heptabao_ha_service::HaEr
     }
 }
 
+struct ReplicatedChunkPlan<'a> {
+    bytes: &'a [u8],
+    reference: ReplicatedChunkRef,
+    reused: bool,
+}
+
+fn plan_replicated_chunks<'a>(
+    bytes: &'a [u8],
+    previous: Option<&ReplicatedStateManifest>,
+) -> Result<Vec<ReplicatedChunkPlan<'a>>, String> {
+    let chunks = replicated_content_defined_chunks(bytes);
+    if chunks.is_empty() || chunks.len() > MAX_REPLICATED_STATE_CHUNKS {
+        return Err("HA content-defined chunk count exceeds bounded physical index space".into());
+    }
+
+    let previous_chunks = previous.map(|manifest| manifest.chunks.as_slice()).unwrap_or(&[]);
+    let mut reserved = BTreeSet::new();
+    let mut matches = Vec::with_capacity(chunks.len());
+    for chunk in &chunks {
+        let digest = sha256(chunk);
+        let chunk_bytes =
+            u32::try_from(chunk.len()).map_err(|_| "HA application chunk length overflow")?;
+        let found = previous_chunks
+            .iter()
+            .find(|reference| {
+                !reserved.contains(&reference.index)
+                    && reference.digest == digest
+                    && reference.bytes == chunk_bytes
+            })
+            .cloned();
+        if let Some(reference) = found.as_ref() {
+            reserved.insert(reference.index);
+        }
+        matches.push(found);
+    }
+
+    let old_by_index = previous_chunks
+        .iter()
+        .map(|reference| (reference.index, reference))
+        .collect::<BTreeMap<_, _>>();
+    let mut used = reserved;
+    let mut plans = Vec::with_capacity(chunks.len());
+    for (chunk, matched) in chunks.into_iter().zip(matches) {
+        if let Some(reference) = matched {
+            plans.push(ReplicatedChunkPlan {
+                bytes: chunk,
+                reference,
+                reused: true,
+            });
+            continue;
+        }
+        let index = (0..MAX_REPLICATED_STATE_CHUNKS)
+            .map(|value| u16::try_from(value).map_err(|_| "HA physical chunk index overflow"))
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .find(|index| !used.contains(index))
+            .ok_or_else(|| "HA physical chunk index space exhausted".to_owned())?;
+        used.insert(index);
+        let slot = old_by_index.get(&index).map_or(0, |reference| 1 - reference.slot);
+        plans.push(ReplicatedChunkPlan {
+            bytes: chunk,
+            reference: ReplicatedChunkRef {
+                index,
+                slot,
+                bytes: u32::try_from(chunk.len())
+                    .map_err(|_| "HA application chunk length overflow")?,
+                digest: sha256(chunk),
+            },
+            reused: false,
+        });
+    }
+    Ok(plans)
+}
+
+fn replicated_content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
+    let mut chunks = Vec::new();
+    let mut start = 0_usize;
+    let mut rolling = 0_u64;
+    for (index, byte) in bytes.iter().copied().enumerate() {
+        rolling = rolling.rotate_left(1) ^ replicated_chunk_byte_hash(byte);
+        if index >= REPLICATED_CHUNK_WINDOW_BYTES {
+            rolling ^= replicated_chunk_byte_hash(bytes[index - REPLICATED_CHUNK_WINDOW_BYTES])
+                .rotate_left((REPLICATED_CHUNK_WINDOW_BYTES % u64::BITS as usize) as u32);
+        }
+        let length = index + 1 - start;
+        if length >= REPLICATED_CHUNK_MIN_BYTES
+            && ((rolling & REPLICATED_CHUNK_MASK) == 0
+                || length >= REPLICATED_STATE_CHUNK_BYTES)
+        {
+            chunks.push(&bytes[start..=index]);
+            start = index + 1;
+        }
+    }
+    if start < bytes.len() {
+        chunks.push(&bytes[start..]);
+    }
+    chunks
+}
+
+fn replicated_chunk_byte_hash(byte: u8) -> u64 {
+    let mut value = u64::from(byte).wrapping_add(0x9e37_79b9_7f4a_7c15);
+    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    value ^ (value >> 31)
+}
+
 fn chunk_operation_id(operation_id: &str, index: u16, slot: u8) -> String {
     let suffix = format!(":c:{index:03}:{slot}");
     let keep = operation_id
@@ -1252,6 +1356,70 @@ mod tests {
         assert!(stop.load(Ordering::Acquire));
         for _ in 0..4 {
             receiver.recv_timeout(Duration::from_secs(1))?;
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn position_independent_chunk_plan_reuses_tail_after_prefix_insertion()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut state = Vec::with_capacity(4 * 1024 * 1024);
+        let mut value = 0x1234_5678_9abc_def0_u64;
+        for _ in 0..state.capacity() {
+            value ^= value << 13;
+            value ^= value >> 7;
+            value ^= value << 17;
+            state.push((value >> 24) as u8);
+        }
+        let first = plan_replicated_chunks(&state, None)?;
+        assert!(first.len() >= 8);
+        let previous = ReplicatedStateManifest {
+            base_digest: [1; 32],
+            state_digest: sha256(&state),
+            total_bytes: u64::try_from(state.len())?,
+            chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+        };
+
+        let insertion = b"ha-prefix-insertion-".repeat(7);
+        let mut changed = Vec::with_capacity(state.len() + insertion.len());
+        changed.extend_from_slice(&state[..96 * 1024]);
+        changed.extend_from_slice(&insertion);
+        changed.extend_from_slice(&state[96 * 1024..]);
+        let second = plan_replicated_chunks(&changed, Some(&previous))?;
+        let reused = second.iter().filter(|plan| plan.reused).count();
+        assert!(
+            reused >= previous.chunks.len().saturating_sub(2),
+            "content-defined HA chunking should resynchronize and preserve most physical indices"
+        );
+        assert_eq!(
+            second.iter().map(|plan| plan.reference.index).collect::<BTreeSet<_>>().len(),
+            second.len()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn changed_chunk_uses_opposite_slot_without_overwriting_previous_manifest()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = vec![0x5a; 512 * 1024];
+        let first = plan_replicated_chunks(&state, None)?;
+        let previous = ReplicatedStateManifest {
+            base_digest: [2; 32],
+            state_digest: sha256(&state),
+            total_bytes: u64::try_from(state.len())?,
+            chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+        };
+        let mut changed = state.clone();
+        changed[0] ^= 1;
+        let next = plan_replicated_chunks(&changed, Some(&previous))?;
+        for plan in next.iter().filter(|plan| !plan.reused) {
+            if let Some(old) = previous
+                .chunks
+                .iter()
+                .find(|old| old.index == plan.reference.index)
+            {
+                assert_eq!(plan.reference.slot, 1 - old.slot);
+            }
         }
         Ok(())
     }
