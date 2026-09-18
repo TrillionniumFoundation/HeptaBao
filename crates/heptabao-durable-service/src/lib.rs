@@ -3305,6 +3305,66 @@ mod tests {
     }
 
     #[test]
+    fn delta_journal_replays_multiple_generations_before_checkpoint() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("delta-replay")?;
+        let barrier = TestBarrier::new();
+        let mut service = DurableService::create_new(&root.0, barrier.clone(), 64)?;
+        let snapshot_checkpoint = fs::read(snapshot_path(&root.0))?;
+        let ledger_checkpoint = fs::read(ledger_path(&root.0))?;
+
+        for number in 0..16 {
+            service.put(PutRequest::new(
+                "principal-a",
+                "root/team-a",
+                format!("delta-{number}"),
+                format!("secret/item-{number}"),
+                digest(7),
+                Secret::new(format!("value-{number}").into_bytes())?,
+            )?)?;
+        }
+        assert_eq!(service.generation(), 16);
+        assert_eq!(fs::read(snapshot_path(&root.0))?, snapshot_checkpoint);
+        assert_eq!(fs::read(ledger_path(&root.0))?, ledger_checkpoint);
+        drop(service);
+
+        let mut reopened = DurableService::reopen(&root.0, barrier.clone(), 64)?;
+        assert_eq!(reopened.generation(), 16);
+        assert_eq!(reopened.retained_request_count(), 16);
+        for number in 0..16 {
+            assert_eq!(
+                reopened
+                    .get("root/team-a", &format!("secret/item-{number}"))?
+                    .map(|value| value.expose().to_vec()),
+                Some(format!("value-{number}").into_bytes())
+            );
+        }
+        // Reopen materializes only the replay-ledger prefix; the full snapshot
+        // remains the old checkpoint until explicit compaction.
+        assert_eq!(fs::read(snapshot_path(&root.0))?, snapshot_checkpoint);
+        assert_ne!(fs::read(ledger_path(&root.0))?, ledger_checkpoint);
+
+        let journal_before = fs::metadata(journal_path(&root.0))?.len();
+        reopened.compact()?;
+        assert_ne!(fs::read(snapshot_path(&root.0))?, snapshot_checkpoint);
+        assert!(
+            fs::metadata(journal_path(&root.0))?.len() < journal_before,
+            "checkpoint must collapse the replayable delta history"
+        );
+        drop(reopened);
+
+        let reopened = DurableService::reopen(&root.0, barrier, 64)?;
+        assert_eq!(reopened.generation(), 16);
+        assert_eq!(
+            reopened
+                .get("root/team-a", "secret/item-15")?
+                .map(|value| value.expose().to_vec()),
+            Some(b"value-15".to_vec())
+        );
+        Ok(())
+    }
+
+    #[test]
     fn compaction_checkpoints_complete_ledger_and_allows_future_commits() -> Result<(), ServiceError>
     {
         let _serial = serial_test();
