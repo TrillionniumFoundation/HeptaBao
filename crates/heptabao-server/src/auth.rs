@@ -22,6 +22,9 @@ mod oidc;
 #[path = "auth_kubernetes.rs"]
 mod kubernetes;
 
+pub(crate) use kubernetes::{KubernetesLoginObservation, KubernetesLoginPlan};
+pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation};
+
 #[path = "auth_remote.rs"]
 mod remote;
 use remote::RemoteJwtSource;
