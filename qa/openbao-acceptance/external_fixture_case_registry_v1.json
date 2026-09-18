@@ -118,7 +118,16 @@
         "history_and_metadata_readback",
         "target_sigkill_preserves_all_versions",
         "checkpoint_resume_without_duplicate_version",
-        "rollback_source_same_root_preserves_original_history"
+        "rollback_source_same_root_preserves_original_history",
+        "cutover_source_process_fenced_before_target_acceptance",
+        "cutover_target_serves_verified_migrated_history",
+        "cutover_target_still_rejects_source_active_token",
+        "cutover_target_still_rejects_source_revoked_token",
+        "cutover_target_still_rejects_source_wrapping_token",
+        "rollback_target_process_fenced_before_source_reactivation",
+        "rollback_reactivates_source_authority_only_after_target_fence",
+        "rollback_does_not_resurrect_source_revoked_token",
+        "rollback_source_wrapping_authority_restored_only_after_target_fence"
       ]
     },
     "openapi_live": {

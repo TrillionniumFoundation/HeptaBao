@@ -2012,18 +2012,23 @@
       "positive": "Verify all assets, freeze source, apply final delta and switch one writer atomically",
       "hostile": "Reject simultaneous writers, incomplete inventory and operator-supplied unchecked success",
       "lifecycle": "Reconcile unknown switch as no-writer and rehearse fenced rollback without resurrection",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "qa/openbao-acceptance/live_migration_rehearsal.py"
+      ],
       "contract_sources": [
         "crates/heptabao-migration/src/lib.rs"
       ],
       "guides": [
+        "docs/migration/HEPTABAO_OPENBAO_MIGRATION.md",
         "docs/modules/heptabao-migration.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/live_migration_rehearsal.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Source and target writers never overlap; unknown authority means no writer."
+      "remaining_scope": "A bounded official-OpenBao-to-HeptaBao KV-v2 cutover rehearsal proves process-level single-writer fencing, target rejection of source bearer/wrapping authority, same-root source rollback after target stop, and no resurrection of a pre-cutover revoked token. Complete all-asset final-delta conversion, post-cutover target-write reconciliation, endpoint/DNS/LB switching, production source fencing and independent migration admission remain open."
     }
   ],
   "authority_effect": "NONE"

@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 38,
-    "defined_not_implemented_surface_count": 22,
-    "fixture_case_count": 170,
+    "implemented_surface_count": 39,
+    "defined_not_implemented_surface_count": 21,
+    "fixture_case_count": 179,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -762,9 +762,19 @@
       "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
       "category": "migration",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "live_migration_rehearsal.cutover_source_process_fenced_before_target_acceptance",
+        "live_migration_rehearsal.cutover_target_serves_verified_migrated_history",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_active_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_revoked_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_wrapping_token",
+        "live_migration_rehearsal.rollback_target_process_fenced_before_source_reactivation",
+        "live_migration_rehearsal.rollback_reactivates_source_authority_only_after_target_fence",
+        "live_migration_rehearsal.rollback_does_not_resurrect_source_revoked_token",
+        "live_migration_rehearsal.rollback_source_wrapping_authority_restored_only_after_target_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     }
   ],

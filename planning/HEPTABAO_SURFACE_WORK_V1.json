@@ -1678,18 +1678,30 @@
     {
       "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
       "category": "migration",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "qa/openbao-acceptance/live_migration_rehearsal.py",
       "technical_contract": {
         "api_or_protocol": "Source write-freeze, target activation and rollback controller",
-        "required_positive_and_hostile_behavior": "Every declared asset verified, source writer provably fenced, atomic cutover decision and target rollback fence",
-        "remaining_semantics_and_effect_checks": "Do not cut over on partial inventory or fabricate completion from dry-run; test real dual-writer prevention",
+        "required_positive_and_hostile_behavior": "The official OpenBao source process is fenced before target acceptance; target authority is fenced before same-root source rollback; source active, revoked and wrapping tokens never become target authority.",
+        "remaining_semantics_and_effect_checks": "The executable rehearsal covers bounded KV-v2 history plus source token/wrapping authority fencing. Complete asset inventory, post-cutover target mutations and reverse-delta handling, DNS/load-balancer switch, arbitrary production source fencing and independent migration admission remain open.",
         "crash_reopen": "Interrupt Source write-freeze before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-MIGRATION-CUTOVER, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "live_migration_rehearsal.cutover_source_process_fenced_before_target_acceptance",
+        "live_migration_rehearsal.cutover_target_serves_verified_migrated_history",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_active_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_revoked_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_wrapping_token",
+        "live_migration_rehearsal.rollback_target_process_fenced_before_source_reactivation",
+        "live_migration_rehearsal.rollback_reactivates_source_authority_only_after_target_fence",
+        "live_migration_rehearsal.rollback_does_not_resurrect_source_revoked_token",
+        "live_migration_rehearsal.rollback_source_wrapping_authority_restored_only_after_target_fence"
+      ],
+      "available_scoped_profiles": [
+        "kv-migration"
+      ],
       "whole_surface_admitted": false
     }
   ],

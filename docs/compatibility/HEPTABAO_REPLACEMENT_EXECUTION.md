@@ -1106,11 +1106,11 @@ Existing bounded profiles: none bound yet; executable fixtures must be implement
 
 ### HB-SURFACE-MIGRATION-CUTOVER
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H24-WP08`, `H24-WP09`, `H24-WP10`, `H24-WP11`, `H24-WP12`, `H24-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H24-WP08`, `H24-WP09`, `H24-WP10`, `H24-WP11`, `H24-WP12`, `H24-WP13`.
 API families: `shadow/freeze/final-delta/cutover/rollback`.
-Runtime source: none claimed.
+Runtime source: `qa/openbao-acceptance/live_migration_rehearsal.py`.
 Separate contracts: `crates/heptabao-migration/src/lib.rs`.
-Guides: `docs/modules/heptabao-migration.md`.
+Guides: `docs/migration/HEPTABAO_OPENBAO_MIGRATION.md`, `docs/modules/heptabao-migration.md`.
 
 **Positive:** Verify all assets, freeze source, apply final delta and switch one writer atomically.
 
@@ -1118,20 +1118,6 @@ Guides: `docs/modules/heptabao-migration.md`.
 
 **Lifecycle:** Reconcile unknown switch as no-writer and rehearse fenced rollback without resurrection.
 
-**Remaining scope:** Source and target writers never overlap; unknown authority means no writer.
+**Remaining scope:** A bounded official-OpenBao-to-HeptaBao KV-v2 cutover rehearsal proves process-level single-writer fencing, target rejection of source bearer/wrapping authority, same-root source rollback after target stop, and no resurrection of a pre-cutover revoked token. Complete all-asset final-delta conversion, post-cutover target-write reconciliation, endpoint/DNS/LB switching, production source fencing and independent migration admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
-
-## Hard-problem exits, without scope reduction
-
-Capacity: the current single-record state and permanent replay ledger remain bounded. The capacity endpoint and before-entry journal compaction do not eliminate those limits. A scalable storage increment must commit record deltas plus one authenticated manifest/frontier atomically, keep replay fences across ledger retirement, version the format, reject old-binary fallback, and measure large-state memory, I/O, latency and recovery costs. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`.
-
-Transit: retain current domain/AAD protections. An adapter must explicitly bind the source and destination domains, inventory every key/version/ciphertext, decrypt with authorized source ownership, re-encrypt under the destination, and verify readback. Similar `vault:vN:` text is not interoperability.
-
-Database: the fixed provider-role SQL profile is real but does not replace the OpenBao statement/static-role contract. Extend real providers with durable intent and provider-side idempotency/ownership; test DDL, rollback and session revocation on the actual database. A wire model is not that evidence.
-
-Snapshot: preserve original OpenBao bytes; do not mutate raft.db or reset revocation state. Require a separate typed, versioned conversion and exact source/target/seal binding. Native HeptaBao backups do not become OpenBao snapshots by sharing an endpoint.
-
-Migration and Hepta integration: run the inventory preflight before any planned copy, then the bounded copy/readback and source-freeze/single-writer cutover exits separately. Requalify the real Hepta consumer with both exact binaries before updating its external pin. Never advance the pin from repository CI alone.
-
-External security, isolated custody and physical multi-host/disk/power testing require authentic evidence. The existing external-admission verifier owns that decision; this execution map never issues approval.
+Existing bounded profiles: `qa/openbao-acceptance/live_migration_rehearsal.py`.
