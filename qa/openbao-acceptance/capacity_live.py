@@ -89,6 +89,30 @@ def main() -> int:
         validate_observation(data)
         return data
 
+    def process_metric(name):
+        if instance is None or instance.process is None:
+            return None
+        path = Path('/proc') / str(instance.process.pid)
+        try:
+            if name == 'rss_bytes':
+                for line in (path / 'status').read_text().splitlines():
+                    if line.startswith('VmRSS:'):
+                        return int(line.split()[1]) * 1024
+            if name == 'write_bytes':
+                for line in (path / 'io').read_text().splitlines():
+                    if line.startswith('write_bytes:'):
+                        return int(line.split(':', 1)[1].strip())
+        except (OSError, ValueError, IndexError):
+            return None
+        return None
+
+    def percentile(values, fraction):
+        if not values:
+            return None
+        ordered = sorted(values)
+        index = max(0, min(len(ordered) - 1, int((len(ordered) - 1) * fraction)))
+        return ordered[index]
+
     try:
         stage = 'initialize'
         progress('phase', stage=stage)
@@ -116,8 +140,11 @@ def main() -> int:
         payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
+        growth_samples = []
         accepted = 0
         crossed_legacy = False
+        saturation_started = time.monotonic()
+        previous_write_bytes = process_metric('write_bytes')
         for number in range(MAX_SATURATION_WRITES):
             start = time.monotonic()
             status, _ = instance.call('POST', 'secret/data/capacity-' + str(number), payload)
@@ -131,6 +158,25 @@ def main() -> int:
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            current_write_bytes = process_metric('write_bytes')
+            physical_write_delta = (
+                None if current_write_bytes is None or previous_write_bytes is None
+                else max(0, current_write_bytes - previous_write_bytes)
+            )
+            previous_write_bytes = current_write_bytes
+            growth_samples.append({
+                'accepted_writes': accepted,
+                'state_bytes': previous['state_bytes'],
+                'journal_bytes': previous['journal_bytes'],
+                'retained_operations': previous['retained_operations'],
+                'latency_ms': round(latencies[-1], 3),
+                'rss_bytes': process_metric('rss_bytes'),
+                'process_write_bytes_delta': physical_write_delta,
+                'write_amplification_vs_payload': (
+                    None if physical_write_delta is None
+                    else round(physical_write_delta / SATURATION_PAYLOAD_BYTES, 3)
+                ),
+            })
             if accepted == 1 or accepted % 8 == 0:
                 progress('saturation_progress', accepted=accepted,
                          state_bytes=previous['state_bytes'],
@@ -166,14 +212,29 @@ def main() -> int:
         check('capacity.reopen_exact', reopened == compacted)
         check('capacity.reopen_rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
         check('capacity.binary_unchanged', file_hash(binary) == report['binary_sha256'])
+        saturation_elapsed = max(time.monotonic() - saturation_started, 1e-9)
         report.update(status='passed', initial=initial, saturated=saturated, after_compaction=compacted,
                       accepted_writes=accepted,
                       legacy_state_limit_bytes=LEGACY_STATE_LIMIT_BYTES,
                       current_state_limit_bytes=CURRENT_STATE_LIMIT_BYTES,
                       saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
+                      growth_samples=growth_samples,
+                      throughput_writes_per_second=accepted / saturation_elapsed,
                       latency_ms={'min': min(latencies), 'max': max(latencies),
-                                  'mean': sum(latencies)/len(latencies)},
-                      scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
+                                  'mean': sum(latencies)/len(latencies),
+                                  'p50': percentile(latencies, 0.50),
+                                  'p95': percentile(latencies, 0.95),
+                                  'p99': percentile(latencies, 0.99)},
+                      peak_rss_bytes=max(
+                          (sample['rss_bytes'] for sample in growth_samples if sample['rss_bytes'] is not None),
+                          default=None,
+                      ),
+                      max_observed_write_amplification_vs_payload=max(
+                          (sample['write_amplification_vs_payload'] for sample in growth_samples
+                           if sample['write_amplification_vs_payload'] is not None),
+                          default=None,
+                      ),
+                      scope='bounded_chunked_whole_state_growth_curve_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
