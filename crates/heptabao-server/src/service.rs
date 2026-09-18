@@ -307,19 +307,12 @@ enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
     DatabaseConfig(database::DatabaseConfigPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
-    #[cfg(test)]
-    TestBlock {
-        entered: Arc<std::sync::Barrier>,
-        release: Arc<std::sync::Barrier>,
-    },
 }
 
 pub(crate) enum ExternalEffectResult {
     Database(Result<(), Response>),
     DatabaseConfig(Result<(), Response>),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
-    #[cfg(test)]
-    TestBlock,
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -340,24 +333,6 @@ impl PendingExternalRequest {
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
             }
-            #[cfg(test)]
-            ExternalEffectPlan::TestBlock { entered, release } => {
-                entered.wait();
-                release.wait();
-                ExternalEffectResult::TestBlock
-            }
-        }
-    }
-
-    #[cfg(test)]
-    pub(crate) fn blocking_test_plan(
-        entered: Arc<std::sync::Barrier>,
-        release: Arc<std::sync::Barrier>,
-    ) -> Self {
-        Self {
-            fingerprint: "synthetic-external-lock-test".into(),
-            now: 0,
-            effect: ExternalEffectPlan::TestBlock { entered, release },
         }
     }
 }
@@ -712,10 +687,6 @@ impl Service {
             ) => self.finalize_database_config(plan, result),
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
-            }
-            #[cfg(test)]
-            (ExternalEffectPlan::TestBlock { .. }, ExternalEffectResult::TestBlock) => {
-                Response::ok(json!({"data":{"test_external_effect":"completed"}}))
             }
             _ => {
                 self.recovery_required = true;
