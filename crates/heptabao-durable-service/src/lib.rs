@@ -1263,6 +1263,7 @@ impl<B: Barrier> DurableService<B> {
             self.retired_through_generation,
         )?;
         let mut pending: Option<CommitMarker> = None;
+        let mut pending_applied = false;
         let mut committed: BTreeMap<RequestKey, CommitMarker> = BTreeMap::new();
         let mut last_commit: Option<CommitMarker> = None;
         let mut committed_generation = 0_u64;
@@ -1272,7 +1273,12 @@ impl<B: Barrier> DurableService<B> {
         for (offset, event) in events.into_iter().enumerate() {
             match event {
                 JournalEvent::Checkpoint(checkpoint) => {
-                    if offset != 0 || saw_checkpoint || pending.is_some() || !committed.is_empty() {
+                    if offset != 0
+                        || saw_checkpoint
+                        || pending.is_some()
+                        || pending_applied
+                        || !committed.is_empty()
+                    {
                         return Err(ServiceError::CorruptState);
                     }
                     saw_checkpoint = true;
@@ -1299,6 +1305,7 @@ impl<B: Barrier> DurableService<B> {
                         .and_then(|value| value.checked_add(1))
                         .ok_or(ServiceError::GenerationOverflow)?;
                     if pending.is_some()
+                        || pending_applied
                         || committed.contains_key(&marker.key)
                         || marker.generation
                             != committed_generation
@@ -1316,17 +1323,33 @@ impl<B: Barrier> DurableService<B> {
                     }
                     pending = Some(marker);
                 }
+                JournalEvent::Apply { marker, mutations } => {
+                    if pending.as_ref() != Some(&marker) || pending_applied {
+                        return Err(ServiceError::CorruptState);
+                    }
+                    apply_journal_mutations(&mut self.snapshot, &marker, &mutations)?;
+                    pending_applied = true;
+                }
                 JournalEvent::Commit(marker) => {
                     if pending.as_ref() != Some(&marker) {
                         return Err(ServiceError::CorruptState);
                     }
+                    // Legacy journals have Intent -> full snapshot publication ->
+                    // Commit and therefore no Apply frame. Such a commit is valid
+                    // only when the authenticated checkpoint snapshot already
+                    // contains that generation. New journals use Apply as the
+                    // durable application-state publication.
+                    if !pending_applied && marker.generation > self.snapshot.generation {
+                        return Err(ServiceError::CorruptState);
+                    }
                     pending = None;
+                    pending_applied = false;
                     committed_generation = marker.generation;
                     last_commit = Some(marker.clone());
                     committed.insert(marker.key.clone(), marker);
                 }
                 JournalEvent::Abort(marker) => {
-                    if pending.as_ref() != Some(&marker) {
+                    if pending.as_ref() != Some(&marker) || pending_applied {
                         return Err(ServiceError::CorruptState);
                     }
                     pending = None;
@@ -1341,9 +1364,10 @@ impl<B: Barrier> DurableService<B> {
         if committed.len() as u64 != expected_active {
             return Err(ServiceError::CorruptState);
         }
-        // The snapshot must be precisely the journal's committed frontier, or
-        // the sole pending intent's publication. A valid older snapshot is a
-        // rollback, not a reason to acknowledge the newer ledger.
+        // Snapshot files are authenticated checkpoints and may lag the journal.
+        // apply_journal_mutations advances the in-memory snapshot for every
+        // committed delta after that checkpoint. A sole pending Apply is already
+        // a durable commit even when its trailing bookkeeping frame was lost.
         let published_pending = pending.as_ref().is_some_and(|marker| {
             self.snapshot.generation == marker.generation
                 && self.snapshot.last_commit.as_ref() == Some(marker)
@@ -1359,12 +1383,10 @@ impl<B: Barrier> DurableService<B> {
         {
             return Err(ServiceError::CorruptState);
         }
-        // A ledger is an authenticated complete prefix of commits. Header and
-        // records cannot independently drift forward, backwards or develop gaps.
-        // The persisted ledger is a checkpoint prefix.  Ordinary committed
+        // The persisted ledger is a checkpoint prefix. Ordinary committed
         // requests after that checkpoint live in the authenticated journal and
         // are rebuilt below, so the ledger may legitimately lag by many
-        // generations.  It may never lead the journal's committed frontier.
+        // generations. It may never lead the journal's committed frontier.
         if ledger_generation > committed_generation {
             return Err(ServiceError::CorruptState);
         }
@@ -1425,6 +1447,9 @@ impl<B: Barrier> DurableService<B> {
                 },
             );
         }
+        // Reopen materializes the rebuilt replay ledger as a fresh checkpoint
+        // prefix. The full application snapshot intentionally stays journal-
+        // backed until explicit compact/backup/retirement checkpointing.
         persist_ledger(
             &self.root,
             &self.barrier,
@@ -1435,7 +1460,63 @@ impl<B: Barrier> DurableService<B> {
         )?;
         self.unresolved = false;
         Ok(())
+}
+
+fn apply_journal_mutations(
+    snapshot: &mut Snapshot,
+    marker: &CommitMarker,
+    mutations: &[JournalMutation],
+) -> Result<(), ServiceError> {
+    validate_marker(marker)?;
+    if mutations.is_empty() || mutations.len() > 64 {
+        return Err(ServiceError::CorruptState);
     }
+    let mut resources = std::collections::BTreeSet::new();
+    for mutation in mutations {
+        validate_resource(&mutation.resource)?;
+        if !resources.insert(mutation.resource.as_str()) {
+            return Err(ServiceError::CorruptState);
+        }
+        if let Some(value) = &mutation.value
+            && (value.expose().is_empty() || value.expose().len() > MAX_SECRET_BYTES)
+        {
+            return Err(ServiceError::CorruptState);
+        }
+    }
+
+    if marker.generation < snapshot.generation {
+        // A newer authenticated checkpoint was published before the old journal
+        // could be replaced. The delta is already included in that checkpoint.
+        return Ok(());
+    }
+    if marker.generation == snapshot.generation {
+        if snapshot.last_commit.as_ref() != Some(marker) {
+            return Err(ServiceError::CorruptState);
+        }
+        return Ok(());
+    }
+    if snapshot
+        .generation
+        .checked_add(1)
+        .ok_or(ServiceError::GenerationOverflow)?
+        != marker.generation
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    for mutation in mutations {
+        let key = (marker.key.namespace.clone(), mutation.resource.clone());
+        match &mutation.value {
+            Some(value) => {
+                snapshot.entries.insert(key, value.clone());
+            }
+            None => {
+                snapshot.entries.remove(&key);
+            }
+        }
+    }
+    snapshot.generation = marker.generation;
+    snapshot.last_commit = Some(marker.clone());
+    Ok(())
 }
 
 fn validate_ledger_record(record: &LedgerRecord) -> Result<(), ServiceError> {
@@ -2239,6 +2320,32 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
             }
             bytes.extend_from_slice(&checkpoint.ledger_digest);
         }
+        JournalEvent::Apply { marker, mutations } => {
+            if mutations.is_empty() || mutations.len() > 64 {
+                return Err(ServiceError::CorruptState);
+            }
+            bytes.push(5);
+            encode_marker(&mut bytes, marker)?;
+            write_u32(
+                &mut bytes,
+                u32::try_from(mutations.len()).map_err(|_| ServiceError::CorruptState)?,
+            );
+            let mut resources = std::collections::BTreeSet::new();
+            for mutation in mutations {
+                validate_resource(&mutation.resource)?;
+                if !resources.insert(mutation.resource.as_str()) {
+                    return Err(ServiceError::CorruptState);
+                }
+                encode_string_checked(&mut bytes, &mutation.resource)?;
+                match &mutation.value {
+                    Some(value) => {
+                        bytes.push(1);
+                        write_bytes(&mut bytes, value.expose())?;
+                    }
+                    None => bytes.push(2),
+                }
+            }
+        }
     }
     Ok(bytes)
 }
@@ -2265,6 +2372,30 @@ fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
                 last_commit,
                 ledger_digest,
             })
+        }
+        5 => {
+            let marker = decode_marker(&mut cursor)?;
+            let count =
+                usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
+            if count == 0 || count > 64 {
+                return Err(ServiceError::CorruptState);
+            }
+            let mut resources = std::collections::BTreeSet::new();
+            let mut mutations = Vec::with_capacity(count);
+            for _ in 0..count {
+                let resource = cursor.read_string(MAX_STRING_BYTES)?;
+                validate_resource(&resource)?;
+                if !resources.insert(resource.clone()) {
+                    return Err(ServiceError::CorruptState);
+                }
+                let value = match cursor.read_u8()? {
+                    1 => Some(Secret::new(cursor.read_bytes(MAX_SECRET_BYTES)?.to_vec())?),
+                    2 => None,
+                    _ => return Err(ServiceError::CorruptState),
+                };
+                mutations.push(JournalMutation { resource, value });
+            }
+            JournalEvent::Apply { marker, mutations }
         }
         _ => return Err(ServiceError::CorruptState),
     };
