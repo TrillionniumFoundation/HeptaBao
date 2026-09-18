@@ -906,11 +906,14 @@ mod tests {
         let aad = codec.manifest_aad_with_magic(MANIFEST_MAGIC_V2, operation, base, digest)?;
         let nonce = [3_u8; NONCE_BYTES];
         let mut ciphertext = body;
-        codec.key.seal_in_place_append_tag(
-            aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(aad),
-            &mut ciphertext,
-        )?;
+        codec
+            .key
+            .seal_in_place_append_tag(
+                aead::Nonce::assume_unique_for_key(nonce),
+                aead::Aad::from(aad),
+                &mut ciphertext,
+            )
+            .map_err(|_| "cannot seal legacy HBSM2 test manifest")?;
         let mut sealed = Vec::new();
         sealed.extend_from_slice(MANIFEST_MAGIC_V2);
         sealed.extend_from_slice(&base);
