@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: agent-proxy-differential-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  group: agent-proxy-differential-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
