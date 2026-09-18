@@ -1544,6 +1544,66 @@ mod tests {
     }
 
     #[test]
+    fn retired_database_leases_do_not_create_a_lifetime_128_issue_ceiling()
+    -> Result<(), TestFailure> {
+        let (mut state, seed_id) = sample()?;
+        state
+            .mount_mut("", "database/")
+            .leases
+            .remove(&seed_id)
+            .ok_or_else(|| failure("seed lease missing"))?;
+
+        // The 128-entry bound is a simultaneous retained-lease bound, not a
+        // lifetime issuance bound. Provider retirement removes terminal rows
+        // while the monotonic provider fence survives and continues fencing any
+        // delayed effect from an older lease incarnation.
+        for index in 0..512_u64 {
+            let id = format!("database/creds/reader/{index:016x}");
+            let seq = state.next_provider_fence()?;
+            let mut lease = DatabaseLease {
+                id: id.clone(),
+                provider_id: provider_identity("cluster", "", &id)?,
+                username: format!("hbp_{:032x}", index + 1),
+                db_name: "local".into(),
+                provider_role: "app_reader".into(),
+                owner: base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
+                issued: 1000 + index,
+                expires: 1100 + index,
+                max_expires: 1200 + index,
+                last_renewal: None,
+                seq,
+                phase: Phase::PendingIssue,
+                password: Some(PrivateString("ab".repeat(32))),
+                request_digest: String::new(),
+            };
+            lease.request_digest = digest_lease(&lease)?;
+            state
+                .mount_mut("", "database/")
+                .leases
+                .insert(id.clone(), lease);
+            state.validate_scope("cluster")?;
+            state
+                .mount_mut("", "database/")
+                .leases
+                .remove(&id)
+                .ok_or_else(|| failure("retired lease missing"))?;
+        }
+
+        assert!(state
+            .mount("", "database/")
+            .is_some_and(|mount| mount.leases.is_empty()));
+        assert!(state.provider_fence >= 512);
+        state.validate_scope("cluster")?;
+
+        let raw = serde_json::to_vec(&state).map_err(|_| failure("serialize"))?;
+        let restored: DatabaseState =
+            serde_json::from_slice(&raw).map_err(|_| failure("deserialize"))?;
+        assert_eq!(restored.provider_fence, state.provider_fence);
+        restored.validate_scope("cluster")?;
+        Ok(())
+    }
+
+    #[test]
     fn provider_wire_and_ttl_bounds_do_not_accept_silent_fallbacks() {
         assert!(ttl(&json!({"ttl":"18446744073709551615h"}), "ttl", 1).is_err());
         assert!(ttl(&json!({"ttl":false}), "ttl", 1).is_err());
