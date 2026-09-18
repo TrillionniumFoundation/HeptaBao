@@ -662,10 +662,10 @@ impl Service {
             let cluster_identity = state.cluster_id.clone();
             if let Some(mount) = state.engines.database_mount(ns, path).map(str::to_owned) {
                 let relative = &path[mount.len()..];
-                let (kind, key) = relative
-                    .split_once('/')
-                    .ok_or_else(|| invalid("database resource path required"))?;
-                if !name(key) {
+                let (kind, key) = relative.split_once('/').unwrap_or((relative, ""));
+                let collection_list =
+                    *method == "LIST" && key.is_empty() && matches!(kind, "roles" | "config");
+                if !collection_list && !name(key) {
                     return Err(invalid("invalid database resource name"));
                 }
                 match (kind, *method) {
@@ -771,6 +771,39 @@ impl Service {
                             json!({"data":{"plugin_name":"postgresql-database-plugin","connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
                         ))
                     }
+                    ("config", "LIST") => {
+                        fields(body, &[])?;
+                        let keys = state
+                            .database
+                            .mount(ns, &mount)
+                            .map(|m| m.connections.keys().cloned().collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        Ok(Response::ok(json!({"data":{"keys":keys}})))
+                    }
+                    ("config", "DELETE") => {
+                        fields(body, &[])?;
+                        let database_mount = state
+                            .database
+                            .mount(ns, &mount)
+                            .ok_or_else(|| Response::error(404, "database mount not found"))?;
+                        if !database_mount.connections.contains_key(key) {
+                            return Err(Response::error(404, "database configuration not found"));
+                        }
+                        if database_mount.roles.values().any(|role| role.db_name == key)
+                            || database_mount.leases.values().any(|lease| lease.db_name == key)
+                        {
+                            return Err(Response::error(
+                                409,
+                                "database configuration is still referenced by a role or lease",
+                            ));
+                        }
+                        state.database.mount_mut(ns, &mount).connections.remove(key);
+                        self.publish_database(state)?;
+                        Ok(Response {
+                            status: 204,
+                            body: Value::Null,
+                        })
+                    }
                     ("roles", "POST" | "PUT") => {
                         fields(
                             body,
@@ -823,6 +856,27 @@ impl Service {
                             .and_then(|m| m.roles.get(key))
                             .ok_or_else(|| Response::error(404, "database role not found"))?;
                         Ok(Response::ok(json!({"data":role})))
+                    }
+                    ("roles", "LIST") => {
+                        fields(body, &[])?;
+                        let keys = state
+                            .database
+                            .mount(ns, &mount)
+                            .map(|m| m.roles.keys().cloned().collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        Ok(Response::ok(json!({"data":{"keys":keys}})))
+                    }
+                    ("roles", "DELETE") => {
+                        fields(body, &[])?;
+                        let removed = state.database.mount_mut(ns, &mount).roles.remove(key);
+                        if removed.is_none() {
+                            return Err(Response::error(404, "database role not found"));
+                        }
+                        self.publish_database(state)?;
+                        Ok(Response {
+                            status: 204,
+                            body: Value::Null,
+                        })
                     }
                     ("creds", "GET") => {
                         fields(body, &[])?;
