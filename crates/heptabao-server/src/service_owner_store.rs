@@ -570,10 +570,10 @@ mod tests {
         let manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
         let expected_auth = (0..manifest.chunk_count("auth")?)
             .map(|index| manifest.chunk_resource("auth", index))
-            .collect::<BTreeSet<_>>();
+            .collect::<Result<BTreeSet<_>, _>>()?;
         let expected_database = (0..manifest.chunk_count("database")?)
             .map(|index| manifest.chunk_resource("database", index))
-            .collect::<BTreeSet<_>>();
+            .collect::<Result<BTreeSet<_>, _>>()?;
 
         let second = OwnerWritePlan::new_with_reuse(
             logical,
