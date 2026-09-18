@@ -1,0 +1,40 @@
+name: Export fixed development inputs (not qualification)
+on:
+  push:
+    branches: [exec/heptabao-verified-inputs-20260918]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: dabddb4bcd330c82b6855a13e7094b4a8a3ca5ea
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export immutable source and official Linux compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = dabddb4bcd330c82b6855a13e7094b4a8a3ca5ea
+          test "$(git rev-parse HEAD^{tree})" = f8266a4a50f7df45fa65d6fa57ad8de2ac94e9c9
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          out="$RUNNER_TEMP/verified-inputs"
+          mkdir -m 700 "$out"
+          git bundle create "$out/source.bundle" HEAD
+          git bundle verify "$out/source.bundle"
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$out/source-binding.txt"
+          cd "$out"
+          rust_archive=rust-1.98.0-x86_64-unknown-linux-gnu.tar.xz
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://static.rust-lang.org/dist/$rust_archive" -o "$rust_archive"
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://static.rust-lang.org/dist/$rust_archive.sha256" -o "$rust_archive.sha256"
+          shasum -a 256 -c "$rust_archive.sha256"
+          shasum -a 256 source.bundle > source.bundle.sha256
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: verified-development-inputs
+          path: ${{ runner.temp }}/verified-inputs/
+          if-no-files-found: error
+          retention-days: 3
