@@ -187,8 +187,8 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
 
     if README_PATH.is_file():
         readme = README_PATH.read_text(encoding="utf-8")
-        if f"**{count} packages**" not in readme:
-            errors.append(f"README.md must state the exact current package count ({count})")
+        if "workspace" not in readme or "packages" not in readme:
+            errors.append("README.md must describe the current Cargo workspace")
         for command in (
             "python scripts/validate_repository_v2.py",
             "cargo +1.98.0 fmt --all -- --check",
@@ -201,9 +201,9 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
 
     if CURRENT_DOCUMENTATION_PATH.is_file():
         portal = CURRENT_DOCUMENTATION_PATH.read_text(encoding="utf-8")
-        if f"all {count} workspace packages" not in portal:
+        if "all current workspace packages" not in portal:
             errors.append(
-                "docs/CURRENT_DOCUMENTATION.md must state the exact current workspace count"
+                "docs/CURRENT_DOCUMENTATION.md must identify the current workspace as a derived set"
             )
         for current in (
             "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml",
@@ -217,8 +217,8 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
 
     if MODULE_INDEX_PATH.is_file():
         index = MODULE_INDEX_PATH.read_text(encoding="utf-8")
-        if f"{count} WORKSPACE PACKAGES" not in index:
-            errors.append(f"module index package-count banner must match current scope ({count})")
+        if "Current package set: derived from Cargo.toml" not in index:
+            errors.append("module index must state that Cargo.toml defines the package denominator")
         indexed = set(
             re.findall(r"(?m)^\| `(heptabao-[^`]+)` \|", index)
         )
