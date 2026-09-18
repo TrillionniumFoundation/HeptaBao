@@ -1017,6 +1017,7 @@ impl Service {
                                 "server sealed during provider verification",
                             ),
                             Some(mut state) => {
+                                state.database.clock = state.database.clock.max(now);
                                 let db = state.database.mount_mut(&namespace, &mount);
                                 if db.leases.values().any(|lease| lease.db_name == name) {
                                     Response::error(
