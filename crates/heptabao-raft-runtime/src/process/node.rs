@@ -267,7 +267,9 @@ impl ProcessRaftNode {
         ReplicatedEnvelope::decode_status(status)
             .map(Some)
             .map_err(|error| {
-                RemoteRaftError::Io(format!("invalid staged application chunk envelope: {error}"))
+                RemoteRaftError::Io(format!(
+                    "invalid staged application chunk envelope: {error}"
+                ))
             })
     }
 
@@ -279,12 +281,13 @@ impl ProcessRaftNode {
     }
 }
 
-
 fn application_chunk_client(index: u16, slot: u8) -> Result<String, RaftRuntimeError> {
     if index > MAX_APPLICATION_CHUNK_INDEX || slot > 1 {
         return Err(RaftRuntimeError::InvalidEnvelope);
     }
-    Ok(format!("{PRODUCTION_CHUNK_CLIENT_PREFIX}:{index:03}:{slot}"))
+    Ok(format!(
+        "{PRODUCTION_CHUNK_CLIENT_PREFIX}:{index:03}:{slot}"
+    ))
 }
 
 fn production_config() -> Result<Config, RemoteRaftError> {
