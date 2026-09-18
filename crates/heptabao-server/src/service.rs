@@ -326,6 +326,7 @@ pub struct Service {
     audit_sequence: u64,
     audit_previous: [u8; 32],
     audit_failed: bool,
+    audit_http_url: Option<String>,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     seal: Option<SealMetadata>,
@@ -351,6 +352,26 @@ impl Service {
             return Err("outbound policy is immutable while unsealed".into());
         }
         self.outbound = crate::outbound::Outbound::new(endpoints).map_err(str::to_owned)?;
+        Ok(())
+    }
+
+    /// Install an optional mandatory HTTPS audit collector before unseal.
+    /// The URL must already be inside the deployment-owned outbound allowlist.
+    /// Runtime API input can observe this device but cannot widen or replace it.
+    pub fn install_audit_http_endpoint(&mut self, url: Option<String>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit HTTP policy is immutable while unsealed".into());
+        }
+        if let Some(value) = url.as_deref() {
+            let (_, target) = self
+                .outbound
+                .endpoint(value, "https")
+                .map_err(str::to_owned)?;
+            if target.path == "/" {
+                return Err("audit HTTP endpoint requires an enrolled non-root path".into());
+            }
+        }
+        self.audit_http_url = url;
         Ok(())
     }
 
@@ -436,6 +457,7 @@ impl Service {
             audit_sequence,
             audit_previous,
             audit_failed: false,
+            audit_http_url: None,
             durable: None,
             state: None,
             seal,
@@ -2964,10 +2986,37 @@ impl Service {
                 "seal_wrap": false,
             })
         };
+        let http_device = || {
+            self.audit_http_url.as_ref().map(|url| {
+                json!({
+                    "type": "http",
+                    "accessor": "audit_http",
+                    "revision": 1,
+                    "description": "HeptaBao mandatory host-enrolled HTTPS audit collector",
+                    "options": {
+                        "address": url,
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                })
+            })
+        };
         let path = path.trim_end_matches('/');
         match (path, method) {
-            ("sys/audit", "GET" | "LIST") => Response::ok(json!({"data":{"file/":device()}})),
+            ("sys/audit", "GET" | "LIST") => {
+                let mut devices = serde_json::Map::new();
+                devices.insert("file/".into(), device());
+                if let Some(http) = http_device() {
+                    devices.insert("http/".into(), http);
+                }
+                Response::ok(json!({"data":devices}))
+            }
             ("sys/audit/file", "GET") => Response::ok(json!({"data":device()})),
+            ("sys/audit/http", "GET") => match http_device() {
+                Some(http) => Response::ok(json!({"data":http})),
+                None => Response::error(404, "audit device not found"),
+            },
             ("sys/audit/file", "POST" | "PUT") => {
                 let Some(object) = body.as_object() else {
                     return Response::error(400, "audit enable requires a JSON object");
@@ -3047,7 +3096,11 @@ impl Service {
                 400,
                 "the mandatory file audit device cannot be disabled while the service is running",
             ),
-            ("sys/audit", _) | ("sys/audit/file", _) => {
+            ("sys/audit/http", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "HTTP audit collector is fixed by trusted process configuration",
+            ),
+            ("sys/audit", _) | ("sys/audit/file", _) | ("sys/audit/http", _) => {
                 Response::error(405, "unsupported sys/audit method")
             }
             _ => Response::error(404, "audit device not found"),
@@ -3110,10 +3163,11 @@ impl Service {
         };
         let payload = serde_json::to_vec(&unsigned)?;
         let tag = hmac::sign(&self.audit_key, &payload);
-        let mut bytes = serde_json::to_vec(&AuditRecord {
+        let record = AuditRecord {
             event: unsigned,
             mac: STANDARD.encode(tag.as_ref()),
-        })?;
+        };
+        let mut bytes = serde_json::to_vec(&record)?;
         bytes.push(b'\n');
         // Preserve the existing test-only I/O budget injection. Production
         // capacity is per segment and rotates without skipping either audit event.
@@ -3144,6 +3198,15 @@ impl Service {
         {
             self.audit_failed = true;
             return Err(error);
+        }
+        if let Some(url) = self.audit_http_url.as_deref() {
+            let value = serde_json::to_value(&record)?;
+            if self.outbound.post_audit_json(url, &value).is_err() {
+                self.audit_failed = true;
+                return Err(std::io::Error::other(
+                    "mandatory HTTP audit collector unavailable",
+                ));
+            }
         }
         self.audit_sequence = sequence;
         self.audit_previous.copy_from_slice(tag.as_ref());
