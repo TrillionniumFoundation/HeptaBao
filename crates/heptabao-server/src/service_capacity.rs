@@ -200,8 +200,12 @@ mod tests {
         assert_eq!(response.status, 200);
         let data = &response.body["data"];
         let state_bytes = data["state_bytes"].as_u64().ok_or("state bytes missing")? as usize;
-        let state_limit = data["state_limit_bytes"].as_u64().ok_or("state limit missing")? as usize;
-        let remaining = data["state_remaining_bytes"].as_u64().ok_or("remaining missing")? as usize;
+        let state_limit = data["state_limit_bytes"]
+            .as_u64()
+            .ok_or("state limit missing")? as usize;
+        let remaining = data["state_remaining_bytes"]
+            .as_u64()
+            .ok_or("remaining missing")? as usize;
         assert_eq!(state_limit, service.state_capacity);
         assert!(state_bytes < state_limit);
         assert_eq!(remaining, state_limit - state_bytes);
