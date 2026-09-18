@@ -181,12 +181,67 @@ class ReplayEpochCluster(Cluster):
 
         self.restart(second_leader)
         final_leader = self.leader()
+
+        # Keep one voter offline across two consecutive committed retirements.
+        # On rejoin it must advance its local durable ledger through both missing
+        # epochs before it can become authoritative and accept a local mutation.
+        lagging = next(node for node in self.running() if node is not final_leader)
+        lagging.stop()
+        stable_peer = next(node for node in self.running() if node is not final_leader)
+        self.check("multi_epoch_catchup_voter_is_offline", len(self.running()) == 2)
+        third_epoch = self.retire_epoch(
+            final_leader,
+            second_epoch,
+            "third_replay_epoch_retirement_with_offline_voter_committed",
+        )
+        bridge_value = secrets.token_hex(16)
+        self.write(final_leader, "replay-between-missed-epochs", bridge_value)
+        fourth_epoch = self.retire_epoch(
+            final_leader,
+            third_epoch,
+            "fourth_replay_epoch_retirement_with_same_offline_voter_committed",
+        )
+        self.restart(lagging)
+        current = self.leader()
+        if current is not lagging:
+            stable_peer.stop()
+            self.check(
+                "multi_epoch_leadership_transfer_uses_two_of_three_live_voters",
+                len(self.running()) == 2,
+            )
+            status, _ = current.call(
+                "POST",
+                "sys/step-down",
+                {},
+                token=self.root_token,
+                timeout=15,
+            )
+            self.check("multi_epoch_lagging_voter_transfer_acknowledged", status == 204)
+            caught_up_leader = self.leader()
+            self.check("multi_epoch_lagging_voter_became_leader", caught_up_leader is lagging)
+        else:
+            caught_up_leader = lagging
+            stable_peer.stop()
+            self.check("multi_epoch_lagging_voter_became_leader", True)
+        caught_up_capacity = self.replay_capacity(caught_up_leader)
+        self.check(
+            "multi_epoch_lagging_voter_reached_latest_epoch",
+            caught_up_capacity["replay_epoch"] == fourth_epoch,
+        )
+        catchup_value = secrets.token_hex(16)
+        self.write(caught_up_leader, "replay-multi-epoch-catchup-write", catchup_value)
+        self.check("multi_epoch_caught_up_leader_commits_latest_epoch", True)
+        self.restart(stable_peer)
+        final_leader = self.leader()
+
         for node, path, value in (
             (final_leader, "replay-before-retirement", pre_value),
             (final_leader, "replay-after-retirement", post_value),
             (final_leader, "replay-former-follower-write", follower_value),
             (final_leader, "replay-restarted-leader-write", rejoin_value),
             (final_leader, "replay-second-failover-write", final_value),
+            (final_leader, "replay-between-missed-epochs", bridge_value),
+            (final_leader, "replay-multi-epoch-catchup-write", catchup_value),
         ):
             self.read(node, path, value)
         self.check("all_replay_lifecycle_acknowledgements_read_back_after_rejoin", True)
