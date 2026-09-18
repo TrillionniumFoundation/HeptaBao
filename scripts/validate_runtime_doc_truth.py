@@ -27,6 +27,65 @@ def _one(pattern: str, text: str, error: str, errors: list[str]) -> str | None:
     return matches[0]
 
 
+def _without_rust_comments(text: str) -> str:
+    """Remove Rust comments while preserving strings and source line structure.
+
+    These guards are deliberately lexical, but comments must never be able to
+    satisfy a runtime semantic anchor.  Keep quoted route/mode literals intact
+    because several anchors are intentionally string-valued protocol constants.
+    """
+    out: list[str] = []
+    i = 0
+    block_depth = 0
+    in_string = False
+    escaped = False
+    while i < len(text):
+        ch = text[i]
+        nxt = text[i + 1] if i + 1 < len(text) else ""
+        if block_depth:
+            if ch == "/" and nxt == "*":
+                block_depth += 1
+                out.extend((" ", " "))
+                i += 2
+                continue
+            if ch == "*" and nxt == "/":
+                block_depth -= 1
+                out.extend((" ", " "))
+                i += 2
+                continue
+            out.append("\n" if ch == "\n" else " ")
+            i += 1
+            continue
+        if in_string:
+            out.append(ch)
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            i += 1
+            continue
+        if ch == '"':
+            in_string = True
+            out.append(ch)
+            i += 1
+            continue
+        if ch == "/" and nxt == "/":
+            while i < len(text) and text[i] != "\n":
+                out.append(" ")
+                i += 1
+            continue
+        if ch == "/" and nxt == "*":
+            block_depth = 1
+            out.extend((" ", " "))
+            i += 2
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     try:
@@ -117,21 +176,22 @@ def validate(root: Path = ROOT) -> list[str]:
         if 'heptabao-state-chunks-v1' not in server_guide:
             errors.append(f'{SERVER}: missing current chunk-manifest storage format')
 
+        replay_code = _without_rust_comments(source)
         replay_source_checks = (
             (
                 'cluster replay_epoch field',
-                re.search(r'\breplay_epoch\s*:\s*u64\b', source) is not None,
+                re.search(r'\breplay_epoch\s*:\s*u64\b', replay_code) is not None,
             ),
-            ('root replay-retire route', 'sys/storage/raft/replay-retire' in source),
+            ('root replay-retire route', 'sys/storage/raft/replay-retire' in replay_code),
             (
                 'durable replay retirement call',
-                re.search(r'\bretire_replay_epoch\s*\(', source) is not None,
+                re.search(r'\bretire_replay_epoch\s*\(', replay_code) is not None,
             ),
             (
                 'epoch-scoped durable batch call',
-                re.search(r'\bapply_batch_in_replay_epoch\b', source) is not None,
+                re.search(r'\bapply_batch_in_replay_epoch\b', replay_code) is not None,
             ),
-            ('raft-coordinated capacity mode', 'raft-coordinated' in source),
+            ('raft-coordinated capacity mode', 'raft-coordinated' in replay_code),
         )
         for label, present in replay_source_checks:
             if not present:
