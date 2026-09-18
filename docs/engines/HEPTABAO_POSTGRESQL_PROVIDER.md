@@ -6,6 +6,24 @@ success is not SQL execution, a database login, external revocation or OpenBao
 PostgreSQL plugin compatibility. All production, migration and independent
 compatibility authority remains false.
 
+## Long-lived lease retirement invariant
+
+The persisted lease map is bounded by concurrently retained provider work, not by
+the lifetime number of credentials ever issued. A successful synchronous revoke
+must first observe the PostgreSQL-side disabled/session-drained result, publish a
+provider retirement tombstone bound to the global monotonic `provider_fence`,
+read that retirement back, and only then remove the local lease row. The fence
+survives row removal and restart, so delayed work from an older incarnation cannot
+become fresh merely because its detailed local lease row was retired.
+
+The repository regression
+`retired_database_leases_do_not_create_a_lifetime_128_issue_ceiling` exercises
+more than the historical 128-row bound while retaining a monotonically increasing
+provider fence. The 128-row validation bound therefore remains a simultaneous
+retained-work safety limit; it is not a 128-credential lifetime ceiling. Real
+PostgreSQL acceptance remains responsible for proving the corresponding remote
+retirement/readback behavior.
+
 ## Ownership and source
 
 `crates/heptabao-server/src/service_database.rs` owns encrypted connection,

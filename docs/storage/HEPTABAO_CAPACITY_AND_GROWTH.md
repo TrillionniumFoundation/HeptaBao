@@ -1,55 +1,31 @@
-# Current capacity, maintenance and growth boundary
+# Storage capacity and growth navigation
 
-This contract is subordinate to `HEPTABAO-PLAN-2026-09-07-V2.1`. It describes the currently implemented bounded storage behavior. It does not grant production authority or claim complete OpenBao replacement.
+This file is intentionally a navigation shim, not a second capacity specification.
 
-## Current authoritative state format
+The current authoritative capacity, replay-retirement, state-format and scalability
+contract is:
 
-The server no longer stores the entire application state as one 768 KiB durable value. The current source binds `MAX_STATE_BYTES` to `state_store::MAX_SERIALIZED_STATE_BYTES`, which is explicitly bounded at **16 MiB**. A state generation is split into **512 KiB** chunks and framed by the versioned discriminator `heptabao-state-chunks-v1`.
+- `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`
 
-`system/state` is either a legacy serialized `State` value or a small versioned manifest. Chunked writers alternate between two bounded slots. Every chunk for the next state plus the new manifest is submitted through one durable-service atomic batch, so one logical server-state publication consumes one replay identity and one durable generation rather than one identity per chunk. A reader admits only a complete manifest whose state schema, chunk count, byte length and SHA-256 binding all validate.
+That document is source-bound to the current V3 content-defined state store and
+must be updated with the implementation. Historical V1/V2 fixed-chunk and
+alternating-slot descriptions are retained only in source history and format
+compatibility tests; they are not current development instructions.
 
-This is still an aggregate application-state architecture: a point mutation may require serializing the complete logical `State`, and HA proposals still carry complete application-state bytes. Local chunked storage and HA replication now share the same 16 MiB admission constant, so a locally admissible state is not rejected merely by the old 768 KiB HA codec ceiling. The 16 MiB limit is still a hard admission bound rather than a scalability claim, and chunking does not turn the service into a record-oriented storage engine.
+## Current invariant summary
 
-## Legacy migration
+- local application state uses `heptabao-state-chunks-v3` content-addressed,
+  content-defined chunks;
+- the serialized logical application-state admission bound is 16 MiB;
+- ordinary compaction does not retire replay identities;
+- authenticated replay retirement advances the durable epoch/frontier and keeps
+  retired requests stale;
+- HA orders replay-epoch transitions through Raft before local publication;
+- PostgreSQL terminal revoke removes the local lease row only after provider
+  retirement/readback, while the global monotonic provider fence survives;
+- chunk reuse reduces physical rewrites but does not make the application state
+  record-oriented.
 
-On unseal, the service distinguishes a manifest from the historical raw `State` record. A valid legacy record is decoded and validated first, then rewritten into the current chunk/manifest layout through the same atomic batch primitive. The old state remains the authoritative readable value until the migration batch publishes its new generation. An indeterminate durable outcome returns a recovery reference and fails closed; capacity exhaustion and malformed state also fail closed. Manifest/schema disagreement, missing chunks and digest mismatch are never accepted as legacy fallback.
-
-Fresh initialization writes the current manifest/chunk format directly. Local state commits and HA catch-up also use the same state-batch publication path, avoiding a second persistence protocol.
-
-## Durable atomic batch boundary
-
-`DurableService::apply_batch` and `apply_batch_with_compaction` bind an ordered mutation set to one principal/namespace/request identity and one authorization digest. The binding includes each resource, operation kind and value digest. A successful batch advances one generation and records one replay identity; replaying the identical request returns the retained duplicate outcome, while changing the mutation set under the same identity is a binding conflict.
-
-The durable crash protocol remains intent -> candidate snapshot -> commit marker -> replay ledger publication. Because the full mutation set is applied to one candidate snapshot before publication, recovery observes the batch as one committed or unresolved logical operation rather than partially committed resources.
-
-## Capacity observation
-
-`GET /v1/sys/internal/storage/capacity` follows the audited service path, requires a root principal in the root namespace, and exposes metadata only. The response includes the explicit state bound, durable generation, logical payload/journal usage, retained request count and remaining replay slots. It does not expose tenant names, keys, operation IDs, tokens, password material or secret plaintext.
-
-The active replay ledger is bounded at **32,000** operation identities per epoch in the server profile. Preflight refuses a known-full active epoch before proposing a new HA state effect. Journal compaction by itself retains replay records. Authenticated replay retirement advances the epoch/frontier and clears detailed active records without permitting a retired request to become fresh. In HA, the next epoch is ordered through Raft and each node advances its local durable replay owner before publishing state for that committed epoch.
-
-## Checkpoint and recovery behavior
-
-Automatic journal checkpointing is permitted only after a proven pre-entry journal-capacity rejection and retries the same bound request once. Unknown outcomes, filesystem failures and replay-capacity exhaustion are never automatically retried. A failed maintenance publication can fence the durable owner, and the server mirrors that recovery requirement rather than serving cached state as healthy.
-
-No replay identity is retired merely because its journal frame was compacted. Retirement is a separate authenticated protocol: `sys/storage/raft/replay-retire` compacts, commits a new epoch plus retired-through generation frontier and checkpoints it. In HA, the application epoch is committed through consensus first; each node then advances its local replay ledger before publishing that committed state. A stale follower may traverse several already-committed epochs during authoritative catch-up, while ordinary local publication remains restricted to the current or next epoch. Restart, crash-window and backup/restore tests retain the authenticated frontier.
-
-## Remaining replay-lifetime qualification
-
-Cluster-coordinated replay retirement is implemented for the current same-version
-Raft state path, including repeated epoch transitions, leadership change and
-authoritative follower catch-up. The remaining hard problem is destructive and
-long-duration qualification: delayed old-epoch traffic must remain rejected across
-directed partition/heal, forced snapshot install, stale-node rejoin, disk and
-power faults, backup/restore and supported mixed-version upgrade boundaries.
-
-Acceptance must include more than 32,000 successful logical mutations across
-multiple retirement cycles, exact duplicate/conflict behavior inside the active
-window, deterministic rejection of retired identities, crash at each epoch
-publication boundary, leadership transfer during retirement, snapshot
-restore/rejoin and proof that no external-effect tombstone or state generation is
-incorrectly discarded.
-
-## Wider scalability boundary
-
-Even after replay retirement, full scalable storage still requires record ownership rather than repeated whole-state serialization, deterministic multi-record/Raft transaction ownership, authenticated streaming snapshots, migration/rollback fencing, and declared performance envelopes under real data sizes and failure campaigns. Native manifest/chunk support is not OpenBao snapshot-byte compatibility and does not itself establish production replacement authority.
+Do not add independent limits, format descriptions, completion claims or test
+status here. Add implementation details and evidence requirements to the
+operations capacity contract above, then bind them to executable source/tests.
