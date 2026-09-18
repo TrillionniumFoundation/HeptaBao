@@ -11,15 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: dabddb4bcd330c82b6855a13e7094b4a8a3ca5ea
+          ref: 59aded26640eeb039cdca5d197e1285a76321a89
           fetch-depth: 0
           persist-credentials: false
-      - name: Export immutable source and official Linux compiler
+      - name: Export immutable source and public test prerequisites without candidate execution
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = dabddb4bcd330c82b6855a13e7094b4a8a3ca5ea
-          test "$(git rev-parse HEAD^{tree})" = f8266a4a50f7df45fa65d6fa57ad8de2ac94e9c9
+          test "$(git rev-parse HEAD)" = 59aded26640eeb039cdca5d197e1285a76321a89
+          test "$(git rev-parse HEAD^{tree})" = 4dadf34a8414ee9222369ab8cce0975e65d2141f
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           out="$RUNNER_TEMP/verified-inputs"
           mkdir -m 700 "$out"
@@ -27,11 +27,30 @@ jobs:
           git bundle verify "$out/source.bundle"
           printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > "$out/source-binding.txt"
           cd "$out"
-          rust_archive=rust-1.98.0-x86_64-unknown-linux-gnu.tar.xz
-          curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://static.rust-lang.org/dist/$rust_archive" -o "$rust_archive"
-          curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://static.rust-lang.org/dist/$rust_archive.sha256" -o "$rust_archive.sha256"
-          shasum -a 256 -c "$rust_archive.sha256"
-          shasum -a 256 source.bundle > source.bundle.sha256
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 https://api.github.com/repos/openbao/openbao/releases/tags/v2.6.2 -o official-release.json
+          python3 - <<'PY'
+          import json, pathlib
+          r=json.loads(pathlib.Path('official-release.json').read_text())
+          assert r['tag_name']=='v2.6.2' and not r['draft'] and not r['prerelease']
+          a=[a for a in r['assets'] if a.get('digest')=='sha256:8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa']
+          assert len(a)==1 and 0<a[0]['size']<256*1024*1024
+          u=a[0]['browser_download_url']
+          assert u.startswith('https://github.com/openbao/openbao/releases/download/v2.6.2/')
+          pathlib.Path('official-url.txt').write_text(u)
+          PY
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --tlsv1.2 "$(cat official-url.txt)" -o official-openbao.tar.gz
+          printf '8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa  official-openbao.tar.gz\n' | shasum -a 256 -c -
+          python3 - <<'PY'
+          import tarfile,hashlib,pathlib
+          with tarfile.open('official-openbao.tar.gz','r:gz') as t:
+              matches=[m for m in t.getmembers() if m.name.removeprefix('./')=='bao']
+              assert len(matches)==1 and matches[0].isfile() and 0<matches[0].size<256*1024*1024
+              raw=t.extractfile(matches[0]).read(256*1024*1024+1)
+          assert hashlib.sha256(raw).hexdigest()=='8d18052337908a74f0d7dfacc8da7a1bff5f8a4ab6a2ad136fbf5ffeae243b00'
+          pathlib.Path('bao').write_bytes(raw)
+          PY
+          python3 -m pip download --disable-pip-version-check --no-deps --only-binary=:all: --platform manylinux2014_x86_64 --python-version 313 --dest wheels 'PyYAML==6.0.2' 'jsonschema==4.23.0'
+          shasum -a 256 source.bundle bao official-openbao.tar.gz wheels/* > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: verified-development-inputs
