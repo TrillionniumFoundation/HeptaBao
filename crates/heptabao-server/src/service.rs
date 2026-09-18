@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 7;
+const CURRENT_STATE_SCHEMA: u32 = 8;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -38,6 +38,8 @@ mod database;
 mod identity;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_kubernetes_secrets.rs"]
+mod kubernetes_secret;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_plugin.rs"]
@@ -469,6 +471,7 @@ enum ExternalEffectPlan {
     DatabaseBatch(database::DatabaseBatchEffectPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginRead(plugin::PluginReadPlan),
+    KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
 }
 
 pub(crate) enum ExternalEffectResult {
@@ -477,6 +480,7 @@ pub(crate) enum ExternalEffectResult {
     DatabaseBatch(database::DatabaseBatchEffectResult),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
+    KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -502,6 +506,9 @@ impl PendingExternalRequest {
             }
             ExternalEffectPlan::PluginRead(plan) => {
                 ExternalEffectResult::PluginRead(plan.execute())
+            }
+            ExternalEffectPlan::KubernetesToken(plan) => {
+                ExternalEffectResult::KubernetesToken(plan.execute())
             }
         }
     }
@@ -536,6 +543,7 @@ pub struct Service {
     pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
+    pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
@@ -720,6 +728,7 @@ impl Service {
             pending_database_batch_effect: None,
             pending_online_auth_effect: None,
             pending_plugin_read: None,
+            pending_kubernetes_token: None,
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
@@ -927,6 +936,10 @@ impl Service {
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
                 self.finalize_plugin_read(&plan, result)
             }
+            (
+                ExternalEffectPlan::KubernetesToken(plan),
+                ExternalEffectResult::KubernetesToken(result),
+            ) => self.finalize_kubernetes_token(&plan, result),
             _ => {
                 self.recovery_required = true;
                 Response::error(503, "external request observation type mismatch")
@@ -970,6 +983,7 @@ impl Service {
             || self.pending_database_batch_effect.is_some()
             || self.pending_online_auth_effect.is_some()
             || self.pending_plugin_read.is_some()
+            || self.pending_kubernetes_token.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -1076,11 +1090,13 @@ impl Service {
         let database_batch = self.pending_database_batch_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_read = self.pending_plugin_read.take();
+        let kubernetes_token = self.pending_kubernetes_token.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_batch.is_some())
             + usize::from(online_auth.is_some())
-            + usize::from(plugin_read.is_some());
+            + usize::from(plugin_read.is_some())
+            + usize::from(kubernetes_token.is_some());
         if staged > 1 {
             self.recovery_required = true;
             return RequestExecution::Complete(self.audit_completed_response(
@@ -1094,7 +1110,8 @@ impl Service {
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
             .or_else(|| database_batch.map(ExternalEffectPlan::DatabaseBatch))
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
-            .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead));
+            .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
+            .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken));
         if let Some(effect) = effect {
             return RequestExecution::External(PendingExternalRequest {
                 fingerprint,
@@ -1285,6 +1302,9 @@ impl Service {
         }
         if self.database_handles(&admitted, namespace, path, body) {
             return self.database_route(admitted, principal.as_ref(), &request);
+        }
+        if Self::kubernetes_secret_handles(&admitted, namespace, path) {
+            return self.kubernetes_secret_route(admitted, principal.as_ref(), &request);
         }
         if self.plugin_secret_handles(&admitted, namespace, path) {
             return self.plugin_secret_route(admitted, principal.as_ref(), &request);
