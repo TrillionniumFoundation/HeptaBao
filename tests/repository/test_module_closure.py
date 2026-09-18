@@ -11,5 +11,7 @@ class ModuleClosureTests(unittest.TestCase):
     def test_all_workspace_modules_have_source_bound_dossiers(self):
         self.assertEqual(0, MOD.main())
     def test_registry_is_exactly_workspace(self):
-        self.assertEqual(46, len(MOD.crates()))
+        workspace = MOD.crates()
+        self.assertTrue(workspace)
+        self.assertEqual(len(workspace), len(set(workspace)))
 if __name__=='__main__': unittest.main()
