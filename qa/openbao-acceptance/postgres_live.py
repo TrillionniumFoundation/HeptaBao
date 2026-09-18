@@ -8,6 +8,7 @@ Missing binaries are BLOCKED, exit 77; never fall back to the PG-wire model.
 """
 from __future__ import annotations
 import argparse
+import concurrent.futures
 from contextlib import contextmanager
 import hashlib
 import json
@@ -118,6 +119,47 @@ class Postgres:
     def login(self,user,password):
         p=self.sql('SELECT current_user',user,password)
         return p.returncode==0 and p.stdout.strip()==user
+    @contextmanager
+    def hold_provider_fence(self, provider_id):
+        if not re.fullmatch(r'hb1:[0-9a-f]{64}', provider_id):
+            raise RuntimeError('invalid_provider_id_for_lock_fixture')
+        with psql_environment(
+            self.root.parent,
+            port=self.port,
+            database='app',
+            user='hb_bootstrap',
+            password=self.password,
+            ca=self.ca,
+            application='hb-provider-lock-fixture',
+        ) as env:
+            process=subprocess.Popen(
+                [str(self.bin/'psql'),'-X','-qAt','-w','-v','ON_ERROR_STOP=1'],
+                stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,
+                env=env,text=True,
+            )
+            try:
+                process.stdin.write(
+                    "SELECT pg_advisory_lock(hashtextextended('hb_manager:' || '"
+                    +provider_id+"',0)); SELECT 'locked'; SELECT pg_sleep(30);\n"
+                )
+                process.stdin.close()
+                deadline=time.monotonic()+5
+                while time.monotonic()<deadline:
+                    line=process.stdout.readline()
+                    if line.strip()=='locked':
+                        break
+                    if process.poll() is not None:
+                        raise RuntimeError('provider_lock_fixture_exited')
+                else:
+                    raise RuntimeError('provider_lock_fixture_not_ready')
+                yield process
+            finally:
+                if process.poll() is None:
+                    process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill();process.wait(timeout=5)
     def install(self):
         q=self.sql("CREATE ROLE hb_manager LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '"+self.manager_password+"'; CREATE ROLE app_reader NOLOGIN; CREATE DATABASE app;",database='postgres')
         if q.returncode:raise RuntimeError('postgres_operator_bootstrap_failed')
@@ -145,7 +187,47 @@ def run(binary,bin_dir,root,checks):
         status,issued=instance.call('GET','database/creds/reader');check('issue',status==200)
         cred=issued['data'];identity=issued['lease_id'];check('credential_really_logs_into_postgresql',pg.login(cred['username'],cred['password']))
         check('wrong_password_really_denied',not pg.login(cred['username'],'wrong-synthetic-password'))
-        check('renew',instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120))[0]==200)
+        provider_id=pg.sql(
+            "SELECT lease_id FROM heptabao_provider.leases WHERE username='"+cred['username']+"'"
+        ).stdout.strip()
+        check('provider_fence_identity_observed',re.fullmatch(r'hb1:[0-9a-f]{64}',provider_id) is not None)
+        executor=concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        try:
+            with pg.hold_provider_fence(provider_id) as holder:
+                future=executor.submit(
+                    instance.call,'POST','sys/leases/renew',
+                    dict(lease_id=identity,increment=120)
+                )
+                deadline=time.monotonic()+3
+                waiting=False
+                while time.monotonic()<deadline:
+                    q=pg.sql(
+                        "SELECT count(*) FROM pg_stat_activity "
+                        "WHERE usename='hb_manager' AND wait_event_type='Lock' "
+                        "AND query LIKE 'SELECT heptabao_provider.apply%'"
+                    )
+                    waiting=q.returncode==0 and int(q.stdout.strip() or '0')>=1
+                    if waiting:break
+                    if future.done():break
+                    time.sleep(.02)
+                check('provider_call_really_waiting_on_postgres_fence',waiting and not future.done())
+                status,_=instance.call(
+                    'POST','secret/data/provider-isolation',
+                    {'data':{'value':'write-completed-during-provider-lock'}}
+                )
+                check('slow_provider_does_not_block_unrelated_kv_write',status==200)
+                status,read=instance.call('GET','secret/data/provider-isolation')
+                check(
+                    'unrelated_kv_read_completes_while_provider_still_blocked',
+                    status==200
+                    and read['data']['data']['value']=='write-completed-during-provider-lock'
+                    and holder.poll() is None
+                    and not future.done()
+                )
+            status,_=future.result(timeout=5)
+            check('renew_after_provider_fence_release',status==200)
+        finally:
+            executor.shutdown(wait=True,cancel_futures=True)
         instance.stop();instance.start();check('service_restart_unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
         check('renewed_credential_survives_service_restart',pg.login(cred['username'],cred['password']))
         with pg.active_session(cred['username'],cred['password']) as (session,application):
