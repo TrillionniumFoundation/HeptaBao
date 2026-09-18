@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 """Fail-closed validation for per-module design/semantics/evidence dossiers.
 
-The original v1 closure generator mixed absolute checkout paths into SHA-256
-bindings.  Those values are retained in the registry/dossiers only as legacy
-review metadata; they are not acceptance evidence because the same source tree
-produces different digests in a different checkout directory.
+The module registry is navigation metadata, not a second source-of-truth ledger.
+Current acceptance binds the immutable Git commit and each crate's src tree.
+The validator therefore derives workspace cardinality from Cargo.toml and does not
+require hand-maintained package counts, manifest hashes, or source digests to
+match a copied snapshot.
 
-Current acceptance binding is the exact Git commit plus the Git tree object for
-each crate's ``src`` directory.  Git tree identities are content/path based and
-independent of the runner checkout root.  Named executable anchors are resolved
-against the actual Rust source and the dossier must name the file that really
-contains the test.
+Named executable anchors are still resolved against the actual Rust source and
+the dossier must name the file that really contains the test. Security-sensitive
+authority claims remain fail-closed.
 """
 from __future__ import annotations
 
-import hashlib
 import re
 import subprocess
 import sys
@@ -32,7 +30,7 @@ REQUIRED = [
     "Known gaps and evolution",
 ]
 ANCHOR_LINE = re.compile(
-    r"\*\*Named executable anchor:\*\* `(?P<anchor>[^`]+)` in `(?P<path>[^`]+)`\."
+    r"\*\*Named executable anchor:\*\* \x60(?P<anchor>[^\x60]+)\x60 in \x60(?P<path>[^\x60]+)\x60\."
 )
 
 
@@ -60,22 +58,6 @@ def git_tree_oid(path: Path) -> str:
     return oid
 
 
-def stable_source_sha256(paths: list[Path]) -> str:
-    """Path-independent diagnostic digest using repository-relative paths."""
-    digest = hashlib.sha256()
-    for path in sorted(paths, key=lambda item: item.relative_to(ROOT).as_posix()):
-        relative = path.relative_to(ROOT).as_posix().encode()
-        digest.update(relative)
-        digest.update(b"\0")
-        digest.update(path.read_bytes())
-        digest.update(b"\0")
-    return digest.hexdigest()
-
-
-def manifest_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def crates() -> dict[str, Path]:
     manifest = tomllib.loads((ROOT / "Cargo.toml").read_text())
     out: dict[str, Path] = {}
@@ -87,6 +69,8 @@ def crates() -> dict[str, Path]:
             package_manifest = directory / "Cargo.toml"
             if package_manifest.is_file():
                 package = tomllib.loads(package_manifest.read_text())["package"]["name"]
+                if package in out:
+                    raise ValueError(f"duplicate workspace package {package}")
                 out[package] = directory
     return out
 
@@ -100,11 +84,11 @@ def main() -> int:
     errors: list[str] = []
     try:
         head = exact_head()
-    except RuntimeError as error:
-        print(f"module closure validation requires an exact Git checkout: {error}", file=sys.stderr)
+        workspace = crates()
+    except (RuntimeError, OSError, KeyError, TypeError, ValueError) as error:
+        print(f"module closure validation cannot bind the current workspace: {error}", file=sys.stderr)
         return 1
 
-    workspace = crates()
     registry_path = ROOT / "planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml"
     registry = yaml.safe_load(registry_path.read_text())
     entries = {item["crate"]: item for item in registry.get("modules", [])}
@@ -116,7 +100,7 @@ def main() -> int:
             f"extra={sorted(set(entries) - set(workspace))}"
         )
 
-    bindings: list[tuple[str, str, str]] = []
+    bindings: list[tuple[str, str]] = []
     for name, directory in sorted(workspace.items()):
         entry = entries.get(name)
         dossier = ROOT / entry["dossier"] if entry else ROOT / "missing"
@@ -147,16 +131,7 @@ def main() -> int:
         except RuntimeError as error:
             errors.append(f"{name}: cannot bind Git source tree: {error}")
             continue
-        stable_sha = stable_source_sha256(sources)
-        bindings.append((name, tree_oid, stable_sha))
-
-        # Manifest digests were content-only in v1 and therefore remain portable.
-        expected_manifest = entry.get("manifest_sha256") if entry else None
-        actual_manifest = manifest_sha256(directory / "Cargo.toml")
-        if expected_manifest and actual_manifest != expected_manifest:
-            errors.append(
-                f"{name}: manifest hash drift (registry {expected_manifest}, current {actual_manifest})"
-            )
+        bindings.append((name, tree_oid))
 
         anchor = entry.get("test_anchor") if entry else None
         if anchor:
@@ -194,18 +169,15 @@ def main() -> int:
         ):
             errors.append(f"{name}: forbidden claim/placeholder")
 
-    if len(entries) != 46:
-        errors.append(f"expected 46 modules, found {len(entries)}")
-
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
 
-    print(f"module closure validation: PASS ({len(entries)} modules)")
+    print(f"module closure validation: PASS ({len(workspace)} workspace modules)")
     print(f"exact head: {head}")
-    print("binding: exact-head Git src-tree oid + repository-relative SHA-256")
-    for name, tree_oid, stable_sha in bindings:
-        print(f"{name}\tgit-tree={tree_oid}\tstable-sha256={stable_sha}")
+    print("binding: exact-head Git src-tree oid; registry hashes/counts are non-authoritative metadata")
+    for name, tree_oid in bindings:
+        print(f"{name}\tgit-tree={tree_oid}")
     return 0
 
 
