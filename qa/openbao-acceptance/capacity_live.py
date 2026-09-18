@@ -25,6 +25,32 @@ SATURATION_PAYLOAD_BYTES = 224 * 1024
 MAX_SATURATION_WRITES = 96
 
 
+def process_rss_bytes(instance) -> int:
+    process = instance.process
+    if process is None:
+        raise ScenarioFailure('capacity.server_process_missing')
+    status = Path(f'/proc/{process.pid}/status')
+    for line in status.read_text().splitlines():
+        if line.startswith('VmRSS:'):
+            fields = line.split()
+            if len(fields) == 3 and fields[2] == 'kB' and fields[1].isdigit():
+                return int(fields[1]) * 1024
+    raise ScenarioFailure('capacity.rss_unavailable')
+
+
+def durable_disk_bytes(instance) -> int:
+    data_dir = instance.root / 'data'
+    return sum(path.stat().st_size for path in data_dir.rglob('*') if path.is_file())
+
+
+def percentile(values: list[float], quantile: float) -> float:
+    ordered = sorted(values)
+    if not ordered:
+        raise ScenarioFailure('capacity.empty_latency_series')
+    index = min(len(ordered) - 1, max(0, int((len(ordered) - 1) * quantile + 0.5)))
+    return ordered[index]
+
+
 def validate_observation(data: dict) -> None:
     names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
              'retained_operations', 'operation_limit', 'operations_remaining',
@@ -116,12 +142,17 @@ def main() -> int:
         payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
+        curve = []
         accepted = 0
         crossed_legacy = False
+        saturation_started = time.monotonic()
+        prior_disk_bytes = durable_disk_bytes(instance)
+        prior_state_bytes = previous['state_bytes']
         for number in range(MAX_SATURATION_WRITES):
             start = time.monotonic()
             status, _ = instance.call('POST', 'secret/data/capacity-' + str(number), payload)
-            latencies.append((time.monotonic() - start) * 1000)
+            write_ms = (time.monotonic() - start) * 1000
+            latencies.append(write_ms)
             if status == 507:
                 report['rejected_key_index'] = number
                 progress('saturation_refused', attempt=number, accepted=accepted,
@@ -131,15 +162,33 @@ def main() -> int:
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            disk_bytes = durable_disk_bytes(instance)
+            rss_bytes = process_rss_bytes(instance)
+            state_delta = max(1, previous['state_bytes'] - prior_state_bytes)
+            physical_delta = max(0, disk_bytes - prior_disk_bytes)
+            curve.append({
+                'accepted_writes': accepted,
+                'state_bytes': previous['state_bytes'],
+                'durable_disk_bytes': disk_bytes,
+                'journal_bytes': previous['journal_bytes'],
+                'rss_bytes': rss_bytes,
+                'write_latency_ms': round(write_ms, 3),
+                'physical_write_amplification': round(physical_delta / state_delta, 6),
+            })
+            prior_disk_bytes = disk_bytes
+            prior_state_bytes = previous['state_bytes']
             if accepted == 1 or accepted % 8 == 0:
                 progress('saturation_progress', accepted=accepted,
                          state_bytes=previous['state_bytes'],
                          state_remaining_bytes=previous['state_remaining_bytes'],
+                         durable_disk_bytes=disk_bytes,
+                         rss_bytes=rss_bytes,
                          journal_bytes=previous['journal_bytes'],
                          retained_operations=previous['retained_operations'],
                          last_write_ms=round(latencies[-1], 3))
             if previous['state_bytes'] > LEGACY_STATE_LIMIT_BYTES:
                 crossed_legacy = True
+        saturation_elapsed = time.monotonic() - saturation_started
         else:
             raise ScenarioFailure('capacity.did_not_reach_declared_bound')
 
@@ -171,8 +220,17 @@ def main() -> int:
                       legacy_state_limit_bytes=LEGACY_STATE_LIMIT_BYTES,
                       current_state_limit_bytes=CURRENT_STATE_LIMIT_BYTES,
                       saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
+                      throughput_writes_per_second=accepted/max(saturation_elapsed, 0.001),
                       latency_ms={'min': min(latencies), 'max': max(latencies),
-                                  'mean': sum(latencies)/len(latencies)},
+                                  'mean': sum(latencies)/len(latencies),
+                                  'p50': percentile(latencies, 0.50),
+                                  'p95': percentile(latencies, 0.95),
+                                  'p99': percentile(latencies, 0.99)},
+                      peak_rss_bytes=max(point['rss_bytes'] for point in curve),
+                      peak_durable_disk_bytes=max(point['durable_disk_bytes'] for point in curve),
+                      max_physical_write_amplification=max(
+                          point['physical_write_amplification'] for point in curve),
+                      growth_curve=curve,
                       scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
