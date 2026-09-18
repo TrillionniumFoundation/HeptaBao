@@ -115,6 +115,15 @@ cargo +1.98.0 doc --locked --workspace --no-deps
 
 A current exact-head and real prospective-main-merge run are required. Historical green checks and local output are not admission evidence.
 
+Development feedback is intentionally fail-fast: once source identity, formatting,
+repository truth, or an earlier mandatory runtime profile fails, the expensive
+downstream qualification profiles do not continue merely to collect unrelated
+diagnostics. The workflow-trust lane owns workflow/source trust checks; the current
+full replacement qualification owns the complete Rust fmt/test/Clippy/rustdoc gates
+for both exact head and prospective merge. `scripts/validate_delivery_gate_ownership.py`
+guards that separation so removing duplicate execution cannot silently remove a
+native product gate.
+
 ## Current scalability, cutover and release-candidate evidence
 
 The bounded whole-state runtime remains a scalability blocker rather than a

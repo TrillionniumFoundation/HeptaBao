@@ -77,22 +77,18 @@ jobs:
           python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
 
       - name: Test the complete locked Rust workspace
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
 
       - name: Check strict workspace Clippy
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
 
       - name: Build workspace documentation
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 doc --locked --workspace --no-deps
 
       - name: Build and exercise the real TLS service
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -102,7 +98,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
 
       - name: Exercise bounded server-integrated read-only secret plugin
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -111,7 +106,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-plugin-secret"
 
       - name: Exercise mandatory host-enrolled HTTPS audit delivery
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -120,7 +114,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-http-audit"
 
       - name: Exercise deployment-owned TCP socket audit delivery
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -131,7 +124,6 @@ jobs:
 
 
       - name: Exercise process-configured local Unix syslog audit delivery
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,7 +132,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-syslog-audit"
 
       - name: Exercise bounded state saturation and replay-preserving capacity recovery
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -150,7 +141,6 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Measure audited immutable KV reads over growing state
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -160,7 +150,6 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/reads.json"
 
       - name: Exercise real three-process HA with synthetic state
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -172,7 +161,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
       - name: Exercise real encrypted-link network partitions
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -185,7 +173,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
       - name: Exercise multi-epoch replay retirement, snapshot catch-up and failover
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -200,7 +187,7 @@ jobs:
           git diff --exit-code
 
       - name: Exercise exact-base to candidate HA rolling upgrade
-        if: ${{ (success() || failure()) && github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -223,7 +210,6 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Exercise actual private-output client and OTP wrapping HA
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -244,7 +230,6 @@ jobs:
             --output "$evidence/idle-ha.json"
 
       - name: Install the real PostgreSQL 17 prerequisite from signed packages
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -258,7 +243,6 @@ jobs:
           dpkg-query -W postgresql-17 postgresql-client-17
 
       - name: Exercise actual PostgreSQL SQL and active-session revocation
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -270,14 +254,12 @@ jobs:
           # failure here, never a successful skip or a protocol-model fallback.
 
       - name: Acquire the checksum-pinned official binary in the Oracle lane
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
       - name: Exercise online authentication and durable cross-node code consumption
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -296,7 +278,6 @@ jobs:
           # No secret-bearing service/issuer/client directories are uploaded.
 
       - name: Prove a slow provider does not serialize unrelated durable work
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -308,7 +289,6 @@ jobs:
           git diff --exit-code
 
       - name: Observe real migration catalogs and target capacity without cutover
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -321,7 +301,6 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/preflight.json"
 
       - name: Execute all bounded official-binary differential profiles
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -347,7 +326,6 @@ jobs:
           test "$failed" -eq 0
 
       - name: Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -361,7 +339,6 @@ jobs:
           # Missing official binaries (exit 77) remain a blocking failure.
 
       - name: Execute the fixed corpus against the official OpenBao binary
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -373,7 +350,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-fixed-corpus-comparison"
 
       - name: Rehearse the real bounded KV migration and lost acknowledgement
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -386,7 +362,6 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
 
       - name: Compare bounded OpenAPI runtime with official OpenBao
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -418,7 +393,6 @@ jobs:
           git diff --exit-code
 
       - name: Rehearse bounded policy Identity auth-mount and SSH role migration against the official source
-        if: ${{ success() || failure() }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -471,7 +445,6 @@ jobs:
           git diff --exit-code
 
       - name: Exercise committed membership snapshot catch-up and real cleanup grace
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -480,7 +453,6 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-raft-membership.json"
 
       - name: Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -499,7 +471,6 @@ jobs:
           # No kubeconfig, TokenRequest response, private key or cluster data is uploaded.
 
       - name: Confirm source remained immutable
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail

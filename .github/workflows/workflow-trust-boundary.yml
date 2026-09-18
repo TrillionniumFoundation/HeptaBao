@@ -109,16 +109,9 @@ jobs:
           fi
           python -m unittest discover -s tests/platform -p 'test_*.py' -v
           python -m unittest discover -s tests/oracle -p 'test_*.py' -v
-      - name: Install declared Rust toolchain
+      - name: Verify native gate ownership remains in full qualification
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Validate unchanged Rust workspace
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --locked --workspace --all-targets
-          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          python scripts/validate_delivery_gate_ownership.py
           git diff --exit-code
