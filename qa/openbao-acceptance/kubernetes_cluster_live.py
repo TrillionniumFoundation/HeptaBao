@@ -39,7 +39,7 @@ KIND_SHA256 = 'eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa'
 NODE_IMAGE = 'kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f'
 DOCKER_SOCKET = 'unix:///var/run/docker.sock'
 AUDIENCE = 'heptabao-real-kubernetes'
-EXPECTED_CHECKS = 34
+EXPECTED_CHECKS = 44
 
 
 class PrerequisiteMissing(Exception):
@@ -247,7 +247,10 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         check('actual_serviceaccount_uids_distinct', len({v['metadata']['uid'] for v in (reviewer,worker,other)}) == 3)
         cluster.post('/apis/rbac.authorization.k8s.io/v1/clusterroles',
             {'apiVersion':'rbac.authorization.k8s.io/v1','kind':'ClusterRole','metadata':{'name':'hb-review-only'},
-             'rules':[{'apiGroups':['authentication.k8s.io'],'resources':['tokenreviews'],'verbs':['create']}]})
+             'rules':[
+                 {'apiGroups':['authentication.k8s.io'],'resources':['tokenreviews'],'verbs':['create']},
+                 {'apiGroups':[''],'resources':['serviceaccounts/token'],'verbs':['create']}
+             ]})
         binding = {'apiVersion':'rbac.authorization.k8s.io/v1','kind':'ClusterRoleBinding',
                    'metadata':{'name':'hb-review-only'},
                    'roleRef':{'apiGroup':'rbac.authorization.k8s.io','kind':'ClusterRole','name':'hb-review-only'},
@@ -269,13 +272,40 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         cfg = json.loads(cfg_path.read_text())
         address = urllib.parse.urlsplit(cluster.origin).netloc
         cfg['outbound_endpoints'] = [{'origin':cluster.origin,'address':address,'server_name':'127.0.0.1',
-                                     'ca_pem':cluster.ca.decode(),'path_prefix':'/apis/authentication.k8s.io/v1/'}]
+                                     'ca_pem':cluster.ca.decode(),'path_prefix':'/'}]
         cfg_path.write_text(json.dumps(cfg));cfg_path.chmod(0o600)
         service.start()
         status, init = service.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
         check('candidate_initialized',status == 200)
         key = init['keys_base64'][0];service.token = init['root_token']
         check('candidate_unsealed',service.call('POST','sys/unseal',{'key':key})[0] == 200)
+        secrets_mount='platform-kubernetes-secrets'
+        check('real_kubernetes_secrets_mount',
+              service.call('POST','sys/mounts/'+secrets_mount,{'type':'kubernetes'})[0] == 204)
+        check('real_kubernetes_secrets_config',
+              service.call('POST',f'{secrets_mount}/config',
+                           {'kubernetes_host':cluster.origin,'service_account_token':reviewer_jwt})[0] == 204)
+        check('real_kubernetes_secrets_role',
+              service.call('POST',f'{secrets_mount}/roles/worker',
+                           {'allowed_kubernetes_namespaces':['hb-work'],
+                            'service_account_name':'worker',
+                            'token_default_ttl':600,'token_max_ttl':600,
+                            'token_default_audiences':[AUDIENCE]})[0] == 204)
+        status, secret_credential = service.call(
+            'POST',f'{secrets_mount}/creds/worker',
+            {'kubernetes_namespace':'hb-work','ttl':600,'audiences':[AUDIENCE]})
+        secret_token = secret_credential.get('data',{}).get('service_account_token')
+        check('real_kubernetes_tokenrequest_issues_secret',
+              status == 200 and isinstance(secret_token,str) and secret_token.count('.') == 2)
+        check('kubernetes_secret_lease_is_bounded_nonrenewable',
+              secret_credential.get('renewable') is False
+              and 0 < secret_credential.get('lease_duration',0) <= 720
+              and secret_credential.get('lease_id','').startswith(secrets_mount+'/creds/worker/'))
+        cluster.await_token_review(secret_token, True)
+        check('issued_kubernetes_secret_token_is_real', True)
+        status, secret_role_read = service.call('GET',f'{secrets_mount}/roles/worker')
+        check('kubernetes_secret_role_readback_redacts_manager',
+              status == 200 and reviewer_jwt not in json.dumps(secret_role_read))
         mount='platform/kubernetes'
         check('real_kubernetes_mount',service.call('POST','sys/auth/'+mount,{'type':'kubernetes'})[0] == 204)
         config={'kubernetes_host':cluster.origin,'token_reviewer_jwt':reviewer_jwt,'disable_local_ca_jwt':True}
@@ -299,15 +329,32 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         service.stop();service.start()
         check('restart_requires_unseal',service.call('GET','sys/seal-status')[1].get('sealed') is True)
         check('restart_unseal',service.call('POST','sys/unseal',{'key':key})[0] == 200)
+        status, secret_after_restart = service.call(
+            'POST',f'{secrets_mount}/creds/worker',{'kubernetes_namespace':'hb-work'})
+        restart_secret_token = secret_after_restart.get('data',{}).get('service_account_token')
+        check('kubernetes_secret_config_role_survive_restart',
+              status == 200 and isinstance(restart_secret_token,str))
+        cluster.await_token_review(restart_secret_token, True)
+        check('restart_issued_kubernetes_token_is_real', True)
         status, again=login(worker_jwt)
         check('real_review_after_restart_same_uid',status == 200 and again['auth']['entity_id'] == old_entity)
         check('delete_old_serviceaccount',cluster.call('DELETE','/api/v1/namespaces/hb-work/serviceaccounts/worker',{})[0] == 200)
         cluster.await_token_review(worker_jwt, False)
+        cluster.await_token_review(secret_token, False)
+        cluster.await_token_review(restart_secret_token, False)
+        check('deleted_serviceaccount_invalidates_secret_tokens', True)
         check('deleted_uid_token_denied',login(worker_jwt)[0] == 403)
         recreated=cluster.service_account('hb-work','worker')
         check('same_name_has_new_actual_uid',recreated['metadata']['uid'] != worker['metadata']['uid'])
         new_jwt=cluster.token('hb-work','worker',AUDIENCE)
         cluster.await_token_review(new_jwt, True)
+        status, new_secret = service.call(
+            'POST',f'{secrets_mount}/creds/worker',{'kubernetes_namespace':'hb-work'})
+        new_secret_token = new_secret.get('data',{}).get('service_account_token')
+        check('recreated_serviceaccount_gets_new_secret_token',
+              status == 200 and isinstance(new_secret_token,str)
+              and new_secret_token not in (secret_token,restart_secret_token))
+        cluster.await_token_review(new_secret_token, True)
         status, replacement=login(new_jwt)
         check('replacement_uid_has_distinct_identity',status == 200 and replacement['auth']['entity_id'] != old_entity)
         check('old_jwt_not_revived_by_recreation',login(worker_jwt)[0] == 403)
