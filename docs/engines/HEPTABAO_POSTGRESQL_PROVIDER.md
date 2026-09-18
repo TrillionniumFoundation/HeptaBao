@@ -76,6 +76,7 @@ GET  database/creds/reader                       creates real provider intent
 POST sys/leases/lookup                          {"lease_id":"..."}
 POST sys/leases/renew                           {"lease_id":"...","increment":120}
 POST sys/leases/revoke                          {"lease_id":"..."}
+POST sys/leases/revoke-prefix/database/creds/reader {}
 POST sys/leases/reconcile/<exact-lease-id>        {}
 LIST sys/leases/lookup/database/creds/reader
 ```
@@ -102,8 +103,13 @@ remain non-exportable.
 Config and role mutation plus system lease operations require `sudo` in addition
 to their operation capability. Issue requires read authority on the real creds
 path. A body lease ID conflicting with an authorized URL is rejected before any
-provider request. Database response wrapping, batch/prefix revoke and automatic
-unmount remain explicitly unsupported, not acknowledged as success. Connection
+provider request. Database response wrapping and automatic unmount remain
+explicitly unsupported, not acknowledged as success. Database prefix revoke is a
+bounded synchronous batch: the Service persists every selected `PendingRevoke`
+transition first, then performs provider effects outside the global writer and
+publishes only exact readback-confirmed retirements. A provider failure stops new
+external entries; attempted or not-yet-attempted leases remain pending for
+authoritative reconciliation rather than being blindly retried. Connection
 replacement is still fenced while active or unresolved lease records exist.
 Terminal revocations are not capacity-evicted: provider v2 first proves the
 external revoke, advances a cluster-bound monotonic fence, retires the generated
