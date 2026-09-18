@@ -1139,8 +1139,10 @@ impl DurableStateMachine {
         ensure_real_directory(root, "state-machine store root")?;
         let bundle_path = root.join("state-bundle.bin");
         ensure_create_location_is_fresh(root, &bundle_path)?;
-        let bundle = PersistentStateBundle::default();
+        let mut bundle = PersistentStateBundle::default();
+        bundle.journal_format = 1;
         write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
+        initialize_state_journal(&state_journal_path(&bundle_path))?;
         persist_initialization_marker(root, STATE_MACHINE_DOMAIN, "state-bundle.bin")?;
         Ok(Self {
             bundle_path,
@@ -1164,8 +1166,27 @@ impl DurableStateMachine {
                 "initialized state machine is missing its authoritative generation",
             ));
         }
-        let bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
+        let mut bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
         bundle.validate()?;
+        let journal_path = state_journal_path(&bundle_path);
+        if bundle.journal_format == 0 {
+            if !regular_file_status(&journal_path, "legacy state-machine delta journal")? {
+                initialize_state_journal(&journal_path)?;
+            }
+            replay_state_journal(&journal_path, &mut bundle)?;
+            bundle.journal_format = 1;
+            write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
+            initialize_state_journal(&journal_path)?;
+        } else if bundle.journal_format == 1 {
+            if !regular_file_status(&journal_path, "state-machine delta journal")? {
+                return Err(invalid(
+                    "initialized state-machine checkpoint requires its delta journal",
+                ));
+            }
+            replay_state_journal(&journal_path, &mut bundle)?;
+        } else {
+            return Err(invalid("unsupported state-machine journal format"));
+        }
         discard_stale_previous_after_validation(&bundle_path)?;
         Ok(Self {
             bundle_path,
@@ -1202,8 +1223,11 @@ impl DurableStateMachine {
                 "legacy state machine has no authoritative generation",
             ));
         }
-        let bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
+        let mut bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
         bundle.validate()?;
+        bundle.journal_format = 1;
+        initialize_state_journal(&state_journal_path(&bundle_path))?;
+        write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
         discard_stale_previous_after_validation(&bundle_path)?;
         persist_initialization_marker(root, STATE_MACHINE_DOMAIN, "state-bundle.bin")?;
         Ok(Self {
@@ -1256,10 +1280,15 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
             meta: meta.clone(),
             data: data.clone(),
         };
-        let mut candidate = bundle.clone();
-        candidate.generation = candidate.next_generation()?;
-        candidate.current_snapshot = Some(snapshot);
+        let candidate = PersistentStateBundle {
+            format_version: bundle.format_version,
+            journal_format: 1,
+            generation: bundle.next_generation()?,
+            state,
+            current_snapshot: Some(snapshot),
+        };
         self.persist_bundle(&candidate)?;
+        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
         *bundle = candidate;
         Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
             meta,
@@ -1289,29 +1318,16 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         while let Some((entry, responder)) = entries.try_next().await? {
             let response = {
                 let mut bundle = self.bundle.lock().await;
-                let mut candidate = bundle.clone();
-                candidate.generation = candidate.next_generation()?;
-                candidate.state.last_applied_log = Some(entry.log_id);
-                let response = match entry.payload {
-                    EntryPayload::Blank => ClientResponse(None),
-                    EntryPayload::Normal(ref data) => {
-                        let previous = candidate
-                            .state
-                            .client_status
-                            .insert(data.client.clone(), data.status.clone());
-                        ClientResponse(previous)
-                    }
-                    EntryPayload::Membership(ref membership) => {
-                        candidate.state.last_membership = StoredMembershipOf::<TypeConfig>::new(
-                            Some(entry.log_id),
-                            membership.clone(),
-                        );
-                        ClientResponse(None)
-                    }
+                let generation = bundle.next_generation()?;
+                let serialized =
+                    serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
+                let event = StateJournalEvent::Apply {
+                    generation,
+                    entry: serialized,
                 };
-                self.persist_bundle(&candidate)?;
-                *bundle = candidate;
-                response
+                append_state_journal(&state_journal_path(&self.bundle_path), &event)?;
+                apply_state_journal_event(&mut bundle, event)?
+                    .ok_or_else(|| invalid("fresh state-machine event was not applied"))?
             };
             if let Some(responder) = responder {
                 responder.send(response);
@@ -1351,11 +1367,15 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
             data,
         };
         let mut bundle = self.bundle.lock().await;
-        let mut candidate = bundle.clone();
-        candidate.generation = candidate.next_generation()?;
-        candidate.state = state;
-        candidate.current_snapshot = Some(persisted);
+        let candidate = PersistentStateBundle {
+            format_version: bundle.format_version,
+            journal_format: 1,
+            generation: bundle.next_generation()?,
+            state,
+            current_snapshot: Some(persisted),
+        };
         self.persist_bundle(&candidate)?;
+        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
         *bundle = candidate;
         Ok(())
     }
