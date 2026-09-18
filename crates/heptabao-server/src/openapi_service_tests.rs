@@ -78,7 +78,9 @@ fn openapi_entry_is_authenticated_revocation_aware_and_restart_stable()
         restricted.body["x-heptabao-policy-filtering"],
         "fail_closed_non_root_subset"
     );
-    let restricted_paths = restricted.body["paths"].as_object().ok_or("missing restricted paths")?;
+    let restricted_paths = restricted.body["paths"]
+        .as_object()
+        .ok_or("missing restricted paths")?;
     assert!(restricted_paths.contains_key("/sys/health"));
     assert!(restricted_paths.contains_key("/sys/internal/specs/openapi"));
     assert!(!restricted_paths.contains_key("/auth/token/create"));
