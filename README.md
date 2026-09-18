@@ -19,7 +19,7 @@ The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RES
 [SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
 [Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
 not only a contract. These remain bounded development profiles, not full OpenBao
-compatibility or production readiness. The wrapping increment introduced schema 3; current schema 5 also refuses unsafe old-binary fallback;
+compatibility or production readiness. The wrapping increment introduced schema 3; current schema 6 also refuses unsafe old-binary fallback;
 no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
 worker, full Agent/Proxy or independent acceptance is created by these additions.
 
@@ -28,17 +28,19 @@ adds a bounded AppRole auto-auth/renewal process, generation-checked private sin
 Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
 maintenance through the existing audited durable/Raft writer. These are scoped
 executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
-external-provider revocation. The current Service state is schema 5; see `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
+external-provider revocation. The current Service state is schema 6; see `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
 
 ## Current capacity and migration prerequisites
 
 The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
 expose the actual bounded-state/replay/journal headroom. The authoritative Service
-state is serialized as one logical image, split into 512 KiB immutable chunks plus
-a versioned manifest, and published through one durable atomic batch. Local state
-and HA replication share a **16 MiB serialized-state bound**. This removes the old
-768 KiB ceiling but does not make the store record-oriented: a point mutation can
-still clone, serialize and replicate the complete logical state. The active replay
+state is still serialized as one logical image, but current local storage uses
+content-addressed V3 content-defined chunks (384 KiB minimum, 512 KiB target,
+768 KiB maximum) plus one authenticated manifest publication point. HA uses its
+own bounded chunk framing after serializing the same complete logical image. Local
+state and HA replication share a **16 MiB serialized-state bound**. V3 improves
+chunk reuse after local insertions but does not make the store record-oriented: a
+point mutation can still clone and serialize the complete logical state. The active replay
 ledger remains bounded to 32,000 identities per epoch, and ordinary compaction does
 not evict identities. These are bounded mechanisms, not production-scale proof.
 [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md) observes
@@ -132,7 +134,7 @@ The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POST
 [Online Kubernetes / OIDC authentication](docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
 TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
 loopback callback CLI. The separate remote-JWT profile above remains a bearer
-verifier, not code flow. Current application writes use schema 5. The new profiles
+verifier, not code flow. Current application writes use schema 6. The new profiles
 retain root-controlled enrollment, live Identity, audit and durable/HA publication.
 They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
 independent acceptance or production authority.
