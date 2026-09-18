@@ -859,7 +859,6 @@ impl HaProcess {
             bytes,
         }))
     }
-
 }
 
 impl Drop for HaProcess {
@@ -1157,7 +1156,9 @@ fn map_remote_service_error(error: RemoteRaftError) -> heptabao_ha_service::HaEr
 
 fn chunk_operation_id(operation_id: &str, index: u16, slot: u8) -> String {
     let suffix = format!(":c:{index:03}:{slot}");
-    let keep = operation_id.len().min(128_usize.saturating_sub(suffix.len()));
+    let keep = operation_id
+        .len()
+        .min(128_usize.saturating_sub(suffix.len()));
     format!("{}{}", &operation_id[..keep], suffix)
 }
 
