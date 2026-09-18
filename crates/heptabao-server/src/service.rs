@@ -14,7 +14,7 @@ use ring::hmac;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     fs::{self, File, OpenOptions},
     io::{self, Read, Write},
     path::{Path, PathBuf},
@@ -318,6 +318,7 @@ fn classify_request_effect(method: &str, before: &[u8], after: &[u8]) -> Request
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
+    database_provider_inflight: BTreeSet<(String, String, String)>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
@@ -428,6 +429,7 @@ impl Service {
         Ok(Self {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
+            database_provider_inflight: BTreeSet::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
