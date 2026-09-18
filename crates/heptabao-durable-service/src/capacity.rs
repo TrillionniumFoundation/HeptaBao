@@ -243,6 +243,15 @@ impl<B: Barrier> DurableService<B> {
                 candidate.entries.remove(&storage_key);
             }
         }
+        let journal_mutations = request
+            .mutations
+            .iter()
+            .map(|(resource, value)| JournalMutation {
+                resource: resource.clone(),
+                value: value.clone(),
+            })
+            .collect::<Vec<_>>();
+        validate_journal_mutations(&journal_mutations)?;
         let mut candidate_ledger = self.ledger.clone();
         candidate_ledger.insert(
             key,
@@ -264,7 +273,10 @@ impl<B: Barrier> DurableService<B> {
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
-            &JournalEvent::Intent(marker.clone()),
+            &JournalEvent::MutationIntent {
+                marker: marker.clone(),
+                mutations: journal_mutations,
+            },
         )?;
         let commit = sealed_journal_record(
             &self.barrier,
@@ -294,16 +306,16 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterIntent {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
-            self.snapshot = candidate;
             if failpoint == Failpoint::AfterSnapshotPublication {
+                atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+                self.snapshot = candidate;
                 return Err(ServiceError::RecoveryRequired);
             }
             self.append_frame(&commit)?;
             if failpoint == Failpoint::AfterCommitJournal {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
+            self.snapshot = candidate;
             self.ledger = candidate_ledger;
             Ok(())
         })();

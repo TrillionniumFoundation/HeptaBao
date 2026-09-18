@@ -1423,14 +1423,21 @@ impl Service {
                 }
                 _ => ServiceError::CorruptState,
             })?;
-        if plan.required_mutations() > 64 {
-            return Err(ServiceError::RequestCapacityExhausted);
-        }
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {
-            mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
+            let unchanged = durable
+                .get("system", &chunk.resource)?
+                .is_some_and(|existing| existing.expose() == chunk.bytes.as_slice());
+            if !unchanged {
+                mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
+            }
         }
+        // The manifest is the publication point and always advances even when a
+        // chunk is identical to the same alternating slot two generations ago.
         mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
+        if mutations.len() > 64 {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
         let replay_epoch = durable.replay_epoch();
         if replay_epoch != target_replay_epoch {
             return Err(ServiceError::ReplayEpochMismatch);

@@ -424,11 +424,76 @@ struct Snapshot {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+struct JournalMutation {
+    resource: String,
+    value: Option<Secret>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct PendingJournalIntent {
+    marker: CommitMarker,
+    mutations: Option<Vec<JournalMutation>>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum JournalEvent {
     Intent(CommitMarker),
     Commit(CommitMarker),
     Abort(CommitMarker),
     Checkpoint(CheckpointMarker),
+    MutationIntent {
+        marker: CommitMarker,
+        mutations: Vec<JournalMutation>,
+    },
+}
+
+fn validate_journal_mutations(mutations: &[JournalMutation]) -> Result<(), ServiceError> {
+    if mutations.is_empty() || mutations.len() > 64 {
+        return Err(ServiceError::CorruptState);
+    }
+    let mut resources = std::collections::BTreeSet::new();
+    for mutation in mutations {
+        validate_resource(&mutation.resource)?;
+        if !resources.insert(mutation.resource.as_str()) {
+            return Err(ServiceError::CorruptState);
+        }
+        if mutation
+            .value
+            .as_ref()
+            .is_some_and(|value| value.expose().is_empty() || value.expose().len() > MAX_SECRET_BYTES)
+        {
+            return Err(ServiceError::CorruptState);
+        }
+    }
+    Ok(())
+}
+
+fn apply_journal_mutations(
+    snapshot: &mut Snapshot,
+    marker: &CommitMarker,
+    mutations: Vec<JournalMutation>,
+) -> Result<(), ServiceError> {
+    validate_marker(marker)?;
+    validate_journal_mutations(&mutations)?;
+    if marker.generation
+        != snapshot
+            .generation
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?
+    {
+        return Err(ServiceError::CorruptState);
+    }
+    for mutation in mutations {
+        let key = (marker.key.namespace.clone(), mutation.resource);
+        if let Some(value) = mutation.value {
+            snapshot.entries.insert(key, value);
+        } else {
+            snapshot.entries.remove(&key);
+        }
+    }
+    snapshot.generation = marker.generation;
+    snapshot.last_commit = Some(marker.clone());
+    Ok(())
 }
 
 pub struct DurableService<B: Barrier> {
@@ -854,12 +919,11 @@ impl<B: Barrier> DurableService<B> {
         self.put_with_policy(request, Failpoint::None, true)
     }
 
-    /// Replace the replay journal with one authenticated checkpoint for the
-    /// currently committed snapshot and complete request ledger.
+    /// Publish the current in-memory state as a complete authenticated checkpoint.
     ///
-    /// The snapshot and ledger remain unchanged. A failure after replacement
-    /// starts fences this live instance; reopening accepts either the old or
-    /// new complete journal and rejects mixed or unauthenticated state.
+    /// Normal mutations are durable in the authenticated journal and may leave
+    /// the snapshot and replay-ledger files behind the in-memory frontier.
+    /// Compaction publishes snapshot, ledger, then a matching journal checkpoint.
     pub fn compact(&mut self) -> Result<CompactionOutcome, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
@@ -868,6 +932,14 @@ impl<B: Barrier> DurableService<B> {
         validate_committed_state(
             &self.snapshot,
             self.snapshot.generation,
+            self.retired_through_generation,
+            &self.ledger,
+        )?;
+        let snapshot_bytes = sealed_snapshot(&self.barrier, &self.snapshot)?;
+        let ledger_bytes = sealed_ledger(
+            &self.barrier,
+            self.snapshot.generation,
+            self.replay_epoch,
             self.retired_through_generation,
             &self.ledger,
         )?;
@@ -880,11 +952,16 @@ impl<B: Barrier> DurableService<B> {
         let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + frame.len());
         journal.extend_from_slice(JOURNAL_MAGIC);
         journal.extend_from_slice(&frame);
-        if journal.len() > self.journal_limit {
+        if snapshot_bytes.len() > MAX_FILE_BYTES
+            || ledger_bytes.len() > MAX_FILE_BYTES
+            || journal.len() > self.journal_limit
+        {
             return Err(ServiceError::JournalCapacityExhausted);
         }
         let before = self.journal_bytes;
         self.unresolved = true;
+        atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+        atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
         atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
         self.journal_bytes = journal.len();
@@ -1053,6 +1130,23 @@ impl<B: Barrier> DurableService<B> {
                 candidate.entries.remove(&binding.storage_key());
             }
         }
+        let journal_mutations = match binding.kind {
+            MutationKind::Put => vec![JournalMutation {
+                resource: binding.resource.clone(),
+                value: Some(
+                    candidate
+                        .entries
+                        .get(&binding.storage_key())
+                        .ok_or(ServiceError::CorruptState)?
+                        .clone(),
+                ),
+            }],
+            MutationKind::Delete => vec![JournalMutation {
+                resource: binding.resource.clone(),
+                value: None,
+            }],
+        };
+        validate_journal_mutations(&journal_mutations)?;
         let mut candidate_ledger = self.ledger.clone();
         candidate_ledger.insert(
             binding.key.clone(),
@@ -1062,8 +1156,7 @@ impl<B: Barrier> DurableService<B> {
                 generation,
             },
         );
-        // Seal every payload and reserve BOTH journal records before durable
-        // entry. Capacity failure can therefore never strand an admitted intent.
+        // Pre-seal future checkpoint forms before durable journal entry.
         let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
         let ledger_bytes = sealed_ledger(
             &self.barrier,
@@ -1075,7 +1168,10 @@ impl<B: Barrier> DurableService<B> {
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
-            &JournalEvent::Intent(marker.clone()),
+            &JournalEvent::MutationIntent {
+                marker: marker.clone(),
+                mutations: journal_mutations,
+            },
         )?;
         let commit = sealed_journal_record(
             &self.barrier,
@@ -1128,16 +1224,16 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterIntent {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
-            self.snapshot = candidate;
             if failpoint == Failpoint::AfterSnapshotPublication {
+                atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+                self.snapshot = candidate;
                 return Err(ServiceError::RecoveryRequired);
             }
             self.append_frame(&commit)?;
             if failpoint == Failpoint::AfterCommitJournal {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
+            self.snapshot = candidate;
             self.ledger = candidate_ledger;
             Ok(())
         })();
@@ -1194,7 +1290,7 @@ impl<B: Barrier> DurableService<B> {
             ledger_generation,
             self.retired_through_generation,
         )?;
-        let mut pending: Option<CommitMarker> = None;
+        let mut pending: Option<PendingJournalIntent> = None;
         let mut committed: BTreeMap<RequestKey, CommitMarker> = BTreeMap::new();
         let mut last_commit: Option<CommitMarker> = None;
         let mut committed_generation = 0_u64;
@@ -1246,22 +1342,57 @@ impl<B: Barrier> DurableService<B> {
                     {
                         return Err(ServiceError::CorruptState);
                     }
-                    pending = Some(marker);
+                    pending = Some(PendingJournalIntent {
+                        marker,
+                        mutations: None,
+                    });
                 }
-                JournalEvent::Commit(marker) => {
-                    if pending.as_ref() != Some(&marker) {
+                JournalEvent::MutationIntent { marker, mutations } => {
+                    validate_marker(&marker)?;
+                    validate_journal_mutations(&mutations)?;
+                    let sequence = u64::try_from(offset)
+                        .ok()
+                        .and_then(|value| value.checked_add(1))
+                        .ok_or(ServiceError::GenerationOverflow)?;
+                    if pending.is_some()
+                        || committed.contains_key(&marker.key)
+                        || marker.generation
+                            != committed_generation
+                                .checked_add(1)
+                                .ok_or(ServiceError::GenerationOverflow)?
+                        || marker.recovery_reference
+                            != recovery_reference(
+                                &marker.binding_digest,
+                                marker.generation,
+                                sequence,
+                            )
+                        || !references.insert(marker.recovery_reference.clone())
+                    {
                         return Err(ServiceError::CorruptState);
                     }
-                    pending = None;
+                    pending = Some(PendingJournalIntent {
+                        marker,
+                        mutations: Some(mutations),
+                    });
+                }
+                JournalEvent::Commit(marker) => {
+                    let intent = pending.take().ok_or(ServiceError::CorruptState)?;
+                    if intent.marker != marker {
+                        return Err(ServiceError::CorruptState);
+                    }
+                    if marker.generation > self.snapshot.generation {
+                        let mutations = intent.mutations.ok_or(ServiceError::CorruptState)?;
+                        apply_journal_mutations(&mut self.snapshot, &marker, mutations)?;
+                    }
                     committed_generation = marker.generation;
                     last_commit = Some(marker.clone());
                     committed.insert(marker.key.clone(), marker);
                 }
                 JournalEvent::Abort(marker) => {
-                    if pending.as_ref() != Some(&marker) {
+                    let intent = pending.take().ok_or(ServiceError::CorruptState)?;
+                    if intent.marker != marker {
                         return Err(ServiceError::CorruptState);
                     }
-                    pending = None;
                     self.reconciliation
                         .insert(marker.recovery_reference, ReconciliationStatus::Aborted);
                 }
@@ -1273,12 +1404,9 @@ impl<B: Barrier> DurableService<B> {
         if committed.len() as u64 != expected_active {
             return Err(ServiceError::CorruptState);
         }
-        // The snapshot must be precisely the journal's committed frontier, or
-        // the sole pending intent's publication. A valid older snapshot is a
-        // rollback, not a reason to acknowledge the newer ledger.
-        let published_pending = pending.as_ref().is_some_and(|marker| {
-            self.snapshot.generation == marker.generation
-                && self.snapshot.last_commit.as_ref() == Some(marker)
+        let published_pending = pending.as_ref().is_some_and(|intent| {
+            self.snapshot.generation == intent.marker.generation
+                && self.snapshot.last_commit.as_ref() == Some(&intent.marker)
         });
         if !published_pending
             && (self.snapshot.generation != committed_generation
@@ -1291,11 +1419,7 @@ impl<B: Barrier> DurableService<B> {
         {
             return Err(ServiceError::CorruptState);
         }
-        // A ledger is an authenticated complete prefix of commits. Header and
-        // records cannot independently drift forward, backwards or develop gaps.
-        if ledger_generation > committed_generation
-            || ledger_generation.saturating_add(1) < committed_generation
-        {
+        if ledger_generation > committed_generation {
             return Err(ServiceError::CorruptState);
         }
         for (key, marker) in &committed {
@@ -1319,8 +1443,6 @@ impl<B: Barrier> DurableService<B> {
         if committed.len() + usize::from(published_pending) > self.max_retained_requests {
             return Err(ServiceError::RequestCapacityExhausted);
         }
-        // Only a physically incomplete tail is repairable. Fully framed bad
-        // checksums, sequence gaps and authentication failures fail closed.
         if incomplete_tail {
             let file = nofollow_options()
                 .write(true)
@@ -1328,7 +1450,8 @@ impl<B: Barrier> DurableService<B> {
             file.set_len(self.journal_bytes as u64)?;
             file.sync_all()?;
         }
-        if let Some(marker) = pending {
+        if let Some(intent) = pending {
+            let marker = intent.marker;
             if published_pending {
                 self.append_event(&JournalEvent::Commit(marker.clone()))?;
                 committed.insert(marker.key.clone(), marker);
@@ -1355,19 +1478,12 @@ impl<B: Barrier> DurableService<B> {
                 },
             );
         }
-        persist_ledger(
-            &self.root,
-            &self.barrier,
-            self.snapshot.generation,
-            self.replay_epoch,
-            self.retired_through_generation,
-            &self.ledger,
-        )?;
         self.unresolved = false;
         Ok(())
     }
 }
 
+fn validate_ledger_record(record: &LedgerRecord) -> Result<(), ServiceError> {
 fn validate_ledger_record(record: &LedgerRecord) -> Result<(), ServiceError> {
     if record.binding_digest == [0; 32]
         || record.generation == 0
@@ -2169,6 +2285,25 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
             }
             bytes.extend_from_slice(&checkpoint.ledger_digest);
         }
+        JournalEvent::MutationIntent { marker, mutations } => {
+            validate_journal_mutations(mutations)?;
+            bytes.push(5);
+            encode_marker(&mut bytes, marker)?;
+            write_u32(
+                &mut bytes,
+                u32::try_from(mutations.len()).map_err(|_| ServiceError::CorruptState)?,
+            );
+            for mutation in mutations {
+                encode_string_checked(&mut bytes, &mutation.resource)?;
+                match &mutation.value {
+                    Some(value) => {
+                        bytes.push(1);
+                        write_bytes(&mut bytes, value.expose())?;
+                    }
+                    None => bytes.push(0),
+                }
+            }
+        }
     }
     Ok(bytes)
 }
@@ -2195,6 +2330,30 @@ fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
                 last_commit,
                 ledger_digest,
             })
+        }
+        5 => {
+            let marker = decode_marker(&mut cursor)?;
+            let count =
+                usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
+            if count == 0 || count > 64 {
+                return Err(ServiceError::CorruptState);
+            }
+            let mut mutations = Vec::with_capacity(count);
+            for _ in 0..count {
+                let resource = cursor.read_string(MAX_STRING_BYTES)?;
+                validate_resource(&resource)?;
+                let value = match cursor.read_u8()? {
+                    0 => None,
+                    1 => Some(
+                        Secret::new(cursor.read_bytes(MAX_SECRET_BYTES)?.to_vec())
+                            .map_err(|_| ServiceError::CorruptState)?,
+                    ),
+                    _ => return Err(ServiceError::CorruptState),
+                };
+                mutations.push(JournalMutation { resource, value });
+            }
+            validate_journal_mutations(&mutations)?;
+            JournalEvent::MutationIntent { marker, mutations }
         }
         _ => return Err(ServiceError::CorruptState),
     };
@@ -2662,6 +2821,40 @@ mod tests {
     }
 
     #[test]
+    fn journal_deltas_replay_without_per_mutation_checkpoint_rewrite() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("journal-delta-replay")?;
+        let barrier = TestBarrier::new();
+        let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
+        let checkpoint_snapshot = fs::read(snapshot_path(&root.0))?;
+        let checkpoint_ledger = fs::read(ledger_path(&root.0))?;
+        service.put(put_request("delta-one", b"one")?)?;
+        service.put(put_request("delta-two", b"two")?)?;
+        assert_eq!(service.generation(), 2);
+        assert_eq!(fs::read(snapshot_path(&root.0))?, checkpoint_snapshot);
+        assert_eq!(fs::read(ledger_path(&root.0))?, checkpoint_ledger);
+        drop(service);
+
+        let mut reopened = DurableService::reopen(&root.0, barrier.clone(), 16)?;
+        assert_eq!(reopened.generation(), 2);
+        assert_eq!(
+            reopened
+                .get("root/team-a", "secret/application")?
+                .ok_or(ServiceError::CorruptState)?
+                .expose(),
+            b"two"
+        );
+        assert_eq!(fs::read(snapshot_path(&root.0))?, checkpoint_snapshot);
+        assert_eq!(fs::read(ledger_path(&root.0))?, checkpoint_ledger);
+        reopened.compact()?;
+        assert_ne!(fs::read(snapshot_path(&root.0))?, checkpoint_snapshot);
+        assert_ne!(fs::read(ledger_path(&root.0))?, checkpoint_ledger);
+        drop(reopened);
+        assert_eq!(DurableService::reopen(&root.0, barrier, 16)?.generation(), 2);
+        Ok(())
+    }
+
+    #[test]
     fn published_snapshot_is_reconciled_after_restart() -> Result<(), ServiceError> {
         let _serial = serial_test();
         let root = TestRoot::new("published")?;
@@ -2929,39 +3122,40 @@ mod tests {
     }
 
     #[test]
-    fn genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference()
-    -> Result<(), ServiceError> {
+    fn checkpoint_snapshot_and_ledger_io_faults_fence_and_recover() -> Result<(), ServiceError> {
         let _serial = serial_test();
-        for (blocked, expected) in [
-            ("state.tmp", ReconciliationStatus::Aborted),
-            (
-                "ledger.tmp",
-                ReconciliationStatus::Committed { generation: 1 },
-            ),
-        ] {
+        for blocked in ["state.tmp", "ledger.tmp"] {
             let root = TestRoot::new(blocked)?;
-            let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
-            fs::create_dir(root.0.join(blocked))?; // Actual EISDIR from the persistence open.
-            let reference = recovery_from_result(service.put(put_request("io-fault", b"secret")?))?;
+            let barrier = TestBarrier::new();
+            let request = put_request("checkpoint-io", b"secret")?;
+            let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
+            let recovery_reference = match service.put(request.clone())? {
+                MutationOutcome::Committed {
+                    recovery_reference, ..
+                } => recovery_reference,
+                MutationOutcome::Duplicate { .. } => return Err(ServiceError::CorruptState),
+            };
+            fs::create_dir(root.0.join(blocked))?;
+            assert!(service.compact().is_err());
             assert!(service.recovery_required());
-            assert!(matches!(
-                service.get("root/team-a", "secret/application"),
-                Err(ServiceError::RecoveryRequired)
-            ));
-            assert!(matches!(
-                service.put(put_request("next", b"next")?),
-                Err(ServiceError::RecoveryRequired)
-            ));
             drop(service);
             fs::remove_dir(root.0.join(blocked))?;
-            let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
-            assert_eq!(reopened.reconcile(&reference), expected);
-            reopened.put(put_request("next", b"next")?)?;
+            let mut reopened = DurableService::reopen(&root.0, barrier, 16)?;
+            assert_eq!(reopened.generation(), 1);
+            assert_eq!(
+                reopened.reconcile(&recovery_reference),
+                ReconciliationStatus::Committed { generation: 1 }
+            );
+            assert!(matches!(
+                reopened.put(request)?,
+                MutationOutcome::Duplicate { generation: 1, .. }
+            ));
         }
         Ok(())
     }
 
     #[test]
+    fn failed_append_does_not_consume_sequence_and_reopen_recovers()    #[test]
     fn failed_append_does_not_consume_sequence_and_reopen_recovers() -> Result<(), ServiceError> {
         let _serial = serial_test();
         let root = TestRoot::new("append-io")?;
@@ -2992,8 +3186,10 @@ mod tests {
         let root = TestRoot::new("snapshot-rollback")?;
         let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
         service.put(put_request("one", b"one")?)?;
+        service.compact()?;
         let old_snapshot = fs::read(snapshot_path(&root.0))?;
         service.put(put_request("two", b"two")?)?;
+        service.compact()?;
         let current_snapshot = fs::read(snapshot_path(&root.0))?;
         let mut ledger = service.ledger.clone();
         let record = ledger

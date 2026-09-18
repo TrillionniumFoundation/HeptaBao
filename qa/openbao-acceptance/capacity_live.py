@@ -43,6 +43,20 @@ def durable_disk_bytes(instance) -> int:
     return sum(path.stat().st_size for path in data_dir.rglob('*') if path.is_file())
 
 
+def process_write_bytes(instance) -> int:
+    process = instance.process
+    if process is None:
+        raise ScenarioFailure('capacity.server_process_missing')
+    io_path = Path(f'/proc/{process.pid}/io')
+    for line in io_path.read_text().splitlines():
+        if line.startswith('write_bytes:'):
+            _, value = line.split(':', 1)
+            value = value.strip()
+            if value.isdigit():
+                return int(value)
+    raise ScenarioFailure('capacity.write_bytes_unavailable')
+
+
 def percentile(values: list[float], quantile: float) -> float:
     ordered = sorted(values)
     if not ordered:
@@ -147,6 +161,8 @@ def main() -> int:
         crossed_legacy = False
         saturation_started = time.monotonic()
         prior_disk_bytes = durable_disk_bytes(instance)
+        prior_kernel_write_bytes = process_write_bytes(instance)
+        saturation_start_write_bytes = prior_kernel_write_bytes
         prior_state_bytes = previous['state_bytes']
         for number in range(MAX_SATURATION_WRITES):
             start = time.monotonic()
@@ -163,25 +179,32 @@ def main() -> int:
             accepted += 1
             previous = observe()
             disk_bytes = durable_disk_bytes(instance)
+            kernel_write_bytes = process_write_bytes(instance)
             rss_bytes = process_rss_bytes(instance)
             state_delta = max(1, previous['state_bytes'] - prior_state_bytes)
-            physical_delta = max(0, disk_bytes - prior_disk_bytes)
+            retained_disk_delta = max(0, disk_bytes - prior_disk_bytes)
+            physical_delta = max(0, kernel_write_bytes - prior_kernel_write_bytes)
             curve.append({
                 'accepted_writes': accepted,
                 'state_bytes': previous['state_bytes'],
                 'durable_disk_bytes': disk_bytes,
+                'retained_disk_growth_bytes': retained_disk_delta,
+                'kernel_write_bytes': kernel_write_bytes,
+                'kernel_write_delta_bytes': physical_delta,
                 'journal_bytes': previous['journal_bytes'],
                 'rss_bytes': rss_bytes,
                 'write_latency_ms': round(write_ms, 3),
                 'physical_write_amplification': round(physical_delta / state_delta, 6),
             })
             prior_disk_bytes = disk_bytes
+            prior_kernel_write_bytes = kernel_write_bytes
             prior_state_bytes = previous['state_bytes']
             if accepted == 1 or accepted % 8 == 0:
                 progress('saturation_progress', accepted=accepted,
                          state_bytes=previous['state_bytes'],
                          state_remaining_bytes=previous['state_remaining_bytes'],
                          durable_disk_bytes=disk_bytes,
+                         kernel_write_bytes=kernel_write_bytes,
                          rss_bytes=rss_bytes,
                          journal_bytes=previous['journal_bytes'],
                          retained_operations=previous['retained_operations'],
@@ -228,10 +251,12 @@ def main() -> int:
                                   'p99': percentile(latencies, 0.99)},
                       peak_rss_bytes=max(point['rss_bytes'] for point in curve),
                       peak_durable_disk_bytes=max(point['durable_disk_bytes'] for point in curve),
+                      kernel_write_bytes_during_saturation=max(
+                          0, prior_kernel_write_bytes - saturation_start_write_bytes),
                       max_physical_write_amplification=max(
                           point['physical_write_amplification'] for point in curve),
                       growth_curve=curve,
-                      scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
+                      scope='journal_delta_checkpointed_chunked_whole_state_not_record_level_or_ha_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
