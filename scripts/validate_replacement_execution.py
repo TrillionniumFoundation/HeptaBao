@@ -129,6 +129,9 @@ def validate(root: Path = ROOT, *, check_render: bool = True) -> list[str]:
             by_id = {v['surface_id']: v for v in corpus['surfaces']}
             if sid not in by_id or row['category'] != by_id[sid]['category']:
                 errors.append(sid + ': category differs from corpus')
+            if (by_id[sid].get('fixture_state') == 'IMPLEMENTED_SCOPED'
+                    and row['implementation'] == 'NOT_IMPLEMENTED'):
+                errors.append(sid + ': fixed corpus has scoped implementation but execution map says not implemented')
             for key in ('api_families', 'owner_work_packages', 'guides'):
                 values = row[key]
                 if not isinstance(values, list) or not values or any(not isinstance(v,str) or not v for v in values):

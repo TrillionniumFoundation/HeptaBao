@@ -296,11 +296,11 @@ Existing bounded profiles: `qa/openbao-acceptance/kubernetes_online.py`, `qa/ope
 
 ### HB-SURFACE-AUTH-LDAP
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H16-WP07`, `H16-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP07`, `H16-WP10`.
 API families: `auth/{mount}/config`; `auth/{mount}/users/*`; `auth/{mount}/groups/*`; `auth/{mount}/login/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/service_online_auth.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
 **Positive:** Bind/search real directory and map only authorized user/group policies.
 
@@ -308,9 +308,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Rotate bind password and reconcile live external-group membership changes.
 
-**Remaining scope:** Bind/search/group escaping, TLS and credential rotation.
+**Remaining scope:** Real LDAPS simple-bind, restart/outage failure, mount-local authority and actual OpenLDAP distribution execution are implemented. Directory search, group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/ldap_bounded.py`, `qa/openbao-acceptance/ldap_openldap_live.py`.
 
 ### HB-SURFACE-AUTH-RADIUS
 

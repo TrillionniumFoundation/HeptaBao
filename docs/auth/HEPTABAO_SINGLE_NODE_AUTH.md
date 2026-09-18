@@ -231,11 +231,11 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding on authentication methods, external-group login synchronization, batch tokens, LDAP, browser authorization-code OIDC login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, certificate/RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes and LDAP each have bounded runtime profiles described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
-`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes` or `oidc`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc` or bounded `ldap`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
 
 Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
 
@@ -410,6 +410,34 @@ all supported input fields, boundaries and executable tests. Those use distinct
 `kubernetes` and `oidc` mount types; the static/remote `jwt` sections retain their
 existing verifier scope and jti requirement. Complete JWT/OIDC alias/API parity,
 real Kubernetes control-plane qualification and full external MFA remain open.
+
+## Bounded external LDAP authentication
+
+A mount of type `ldap` has a real external authentication path. Root-controlled
+`auth/<mount>/config` binds an exact host-enrolled `ldaps://` origin and a
+bounded `user_dn_template` containing `{{username}}`. Login performs an LDAPv3
+simple bind over rustls with the deployment-pinned address, server name and CA.
+The outbound path performs no DNS discovery, redirect, referral, StartTLS upgrade,
+SASL fallback or automatic retry. Empty passwords, plaintext `ldap://` login,
+unenrolled origins and malformed DN/template inputs fail closed.
+
+The Service prepares the LDAP login under the authoritative writer, releases that
+writer for the bounded network bind, and reacquires it before token publication.
+A successful provider bind is therefore only authentication evidence: the
+mount-local durable user record still owns policies, token limits and optional
+TOTP state. Removing that local mapping prevents token issuance even if the
+directory continues to authenticate the password. Changing the mount/config while
+a bind is in flight is fenced before publication. The local password verifier in
+that mapping is deliberately not consulted for LDAP login.
+
+`qa/openbao-acceptance/ldap_bounded.py` exercises the production LDAPS framing
+against a strict TLS LDAP fixture. `qa/openbao-acceptance/ldap_openldap_live.py`
+launches the host-installed OpenLDAP `slapd`, seeds a synthetic inetOrgPerson,
+then verifies real TLS bind, wrong-password denial, provider outage/recovery,
+server restart and local-authority revocation. The current profile does **not**
+perform directory search or group lookup, rotate a bind-account credential,
+implement StartTLS/SASL/referrals, or establish full OpenBao LDAP API/error parity.
+Those remain product work rather than qualification paperwork.
 
 ## Auth mount revision, tune and remount boundary
 

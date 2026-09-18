@@ -282,6 +282,14 @@
       ],
       "prerequisites": [],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ldap_openldap_live": {
+      "script": "qa/openbao-acceptance/ldap_openldap_live.py",
+      "arguments": [
+        "--output",
+        "<private-new-output>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -673,8 +681,8 @@
       "runtime_source": "crates/heptabao-server/src/auth.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, users/*, groups/* and login/:name",
-        "required_positive_and_hostile_behavior": "Bounded LDAP mount configuration, durable directory fixture login, MFA/revocation and strict URL/template validation; external TLS bind/search remains qualification-gated",
-        "remaining_semantics_and_effect_checks": "Real external LDAP bind/search, escaped filters/DNs, nested groups and provider timeout/error precedence remain external",
+        "required_positive_and_hostile_behavior": "Host-enrolled LDAPS simple bind against a real external directory, actual OpenLDAP distribution execution, local policy/MFA mapping and strict URL/DN/template bounds.",
+        "remaining_semantics_and_effect_checks": "Directory search and group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao differential parity and multi-host provider faults remain open.",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-LDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -685,7 +693,8 @@
         "ldap_bounded.filter_injection_rejected"
       ],
       "available_scoped_profiles": [
-        "ldap_bounded"
+        "ldap_bounded",
+        "ldap_openldap_live"
       ],
       "whole_surface_admitted": false
     },

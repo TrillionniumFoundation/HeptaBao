@@ -592,16 +592,23 @@
       "positive": "Bind/search real directory and map only authorized user/group policies",
       "hostile": "Reject LDAP-filter injection, empty-password bind and invalid TLS identity",
       "lifecycle": "Rotate bind password and reconcile live external-group membership changes",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/service_online_auth.rs"
+      ],
       "contract_sources": [],
       "guides": [
-        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/ldap_bounded.py",
+        "qa/openbao-acceptance/ldap_openldap_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Bind/search/group escaping, TLS and credential rotation."
+      "remaining_scope": "Real LDAPS simple-bind, restart/outage failure, mount-local authority and actual OpenLDAP distribution execution are implemented. Directory search, group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
