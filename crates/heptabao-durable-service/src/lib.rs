@@ -431,11 +431,24 @@ struct Snapshot {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+struct JournalMutation {
+    resource: String,
+    value: Option<Secret>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum JournalEvent {
     Intent(CommitMarker),
     Commit(CommitMarker),
     Abort(CommitMarker),
     Checkpoint(CheckpointMarker),
+    /// Barrier-authenticated resource delta. Once this frame is fsynced the
+    /// application mutation is committed even if the following bookkeeping
+    /// Commit frame or process acknowledgement is lost.
+    Apply {
+        marker: CommitMarker,
+        mutations: Vec<JournalMutation>,
+    },
 }
 
 pub struct DurableService<B: Barrier> {
@@ -903,13 +916,13 @@ impl<B: Barrier> DurableService<B> {
         if journal.len() > self.journal_limit {
             return Err(ServiceError::JournalCapacityExhausted);
         }
-        // The replay ledger is checkpoint state, not a per-request write target.
-        // Ordinary commits are already authenticated in the append-only journal;
-        // publishing the current ledger here removes O(retained_requests) physical
-        // write amplification from every mutation.  The order is deliberate:
-        // if the process dies after the ledger replacement but before the journal
-        // checkpoint replacement, the old journal still contains every commit
-        // required to validate the newer ledger prefix.
+        // Snapshot and replay ledger are checkpoint state, not per-request
+        // write targets. Ordinary commits are already authenticated in the
+        // append-only journal. Publish both checkpoint payloads before replacing
+        // the journal: if the process dies between replacements, the old journal
+        // still contains every mutation/commit needed to validate either newer
+        // checkpoint prefix.
+        let snapshot_bytes = sealed_snapshot(&self.barrier, &self.snapshot)?;
         let ledger_bytes = sealed_ledger(
             &self.barrier,
             self.snapshot.generation,
@@ -917,11 +930,12 @@ impl<B: Barrier> DurableService<B> {
             self.retired_through_generation,
             &self.ledger,
         )?;
-        if ledger_bytes.len() > MAX_FILE_BYTES {
+        if snapshot_bytes.len() > MAX_FILE_BYTES || ledger_bytes.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         let before = self.journal_bytes;
         self.unresolved = true;
+        atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
         atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
         atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
@@ -1067,7 +1081,10 @@ impl<B: Barrier> DurableService<B> {
             .journal_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
-        let terminal_sequence = intent_sequence
+        let apply_sequence = intent_sequence
+            .checked_add(1)
+            .ok_or(ServiceError::GenerationOverflow)?;
+        let terminal_sequence = apply_sequence
             .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
         let recovery_reference = recovery_reference(&binding_digest, generation, intent_sequence);
@@ -1080,17 +1097,27 @@ impl<B: Barrier> DurableService<B> {
         let mut candidate = self.snapshot.clone();
         candidate.generation = generation;
         candidate.last_commit = Some(marker.clone());
-        match binding.kind {
+        let storage_key = binding.storage_key();
+        let journal_mutation = match binding.kind {
             MutationKind::Put => {
                 let mut value = value.ok_or(ServiceError::InvalidSecret)?;
-                candidate
-                    .entries
-                    .insert(binding.storage_key(), Secret(std::mem::take(&mut *value)));
+                candidate.entries.insert(
+                    storage_key.clone(),
+                    Secret(std::mem::take(&mut *value)),
+                );
+                JournalMutation {
+                    resource: binding.resource.clone(),
+                    value: candidate.entries.get(&storage_key).cloned(),
+                }
             }
             MutationKind::Delete => {
-                candidate.entries.remove(&binding.storage_key());
+                candidate.entries.remove(&storage_key);
+                JournalMutation {
+                    resource: binding.resource.clone(),
+                    value: None,
+                }
             }
-        }
+        };
         let ledger_record = LedgerRecord {
             binding_digest,
             recovery_reference: recovery_reference.clone(),
@@ -1100,24 +1127,36 @@ impl<B: Barrier> DurableService<B> {
         // Replay identity durability is journal-first: the terminal commit frame
         // is sufficient to rebuild the in-memory ledger after restart, so normal
         // mutations do not clone/seal/rewrite the complete retained ledger.
+        // Serialize the prospective full snapshot only as an exact checkpoint
+        // capacity preflight. Normal commits do not write it; the authenticated
+        // Apply frame below carries only the changed resource.
         let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
             &JournalEvent::Intent(marker.clone()),
         )?;
+        let apply = sealed_journal_record(
+            &self.barrier,
+            apply_sequence,
+            &JournalEvent::Apply {
+                marker: marker.clone(),
+                mutations: vec![journal_mutation],
+            },
+        )?;
         let commit = sealed_journal_record(
             &self.barrier,
             terminal_sequence,
             &JournalEvent::Commit(marker),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES {
+        if snapshot_bytes.len() > MAX_FILE_BYTES || apply.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
             || self
                 .journal_bytes
                 .checked_add(intent.len())
+                .and_then(|n| n.checked_add(apply.len()))
                 .and_then(|n| n.checked_add(commit.len()))
                 .is_none_or(|n| n > self.journal_limit)
         {
@@ -1155,8 +1194,11 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterIntent {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
+            self.append_frame(&apply)?;
             self.snapshot = candidate;
+            // Historical failpoint name retained for API compatibility: this now
+            // means the authenticated resource mutation was published, while the
+            // full snapshot remains a checkpoint artifact.
             if failpoint == Failpoint::AfterSnapshotPublication {
                 return Err(ServiceError::RecoveryRequired);
             }
