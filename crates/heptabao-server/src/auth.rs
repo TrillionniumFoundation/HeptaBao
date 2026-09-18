@@ -27,8 +27,8 @@ pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLog
 
 #[path = "auth_remote.rs"]
 mod remote;
-pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
 use remote::RemoteJwtSource;
+pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
 
 #[path = "auth_acl.rs"]
 mod acl;
@@ -1465,8 +1465,7 @@ impl AuthState {
                     }
                     let default_lease_ttl =
                         duration(body, "default_lease_ttl", entry.default_lease_ttl)?;
-                    let max_lease_ttl =
-                        duration(body, "max_lease_ttl", entry.max_lease_ttl)?;
+                    let max_lease_ttl = duration(body, "max_lease_ttl", entry.max_lease_ttl)?;
                     if default_lease_ttl > MAX_TTL
                         || max_lease_ttl > MAX_TTL
                         || default_lease_ttl > 0
@@ -2767,8 +2766,7 @@ impl AuthState {
         {
             return Err(bad("policies endpoint accepts only policy fields"));
         }
-        let (mount_default_ttl, mount_max_ttl) =
-            self.auth_mount_token_limits(scope, 0, 0)?;
+        let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
         let mut user = existing.clone().unwrap_or(User {
             salt: vec![],
             verifier: vec![],
@@ -3038,8 +3036,7 @@ impl AuthState {
                 return Err(bad("AppRole requires secret_id binding"));
             }
             reject_alias_pair(body, "policies", "token_policies")?;
-            let (mount_default_ttl, mount_max_ttl) =
-                self.auth_mount_token_limits(scope, 0, 0)?;
+            let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
             let mut role = existing.unwrap_or(Role {
                 role_id: random_id("role.")?,
                 policies: BTreeSet::from(["default".into()]),
