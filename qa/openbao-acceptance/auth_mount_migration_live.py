@@ -186,6 +186,9 @@ def run(binary, output):
                         "description": "migration AppRole boundary",
                         "default_lease_ttl": 120,
                         "max_lease_ttl": 300,
+                        "user_lockout_config": {
+                            "lockout_disable": True,
+                        },
                     },
                 ).status
                 == 204,
@@ -205,6 +208,12 @@ def run(binary, output):
                 "source_ttl_semantics",
                 source_tune.get("default_lease_ttl") == 120
                 and source_tune.get("max_lease_ttl") == 300,
+            )
+            source_lockout = source_tune.get("user_lockout_config")
+            check(
+                "source_user_lockout_explicitly_disabled",
+                isinstance(source_lockout, dict)
+                and source_lockout.get("lockout_disable") is True,
             )
 
             check(
@@ -312,7 +321,8 @@ def run(binary, output):
                 applied["status"]
                 == "recreated_configuration_reauthentication_required"
                 and applied["outcome"] == "copied_and_verified"
-                and applied["consumer_reauthentication_required"] is True,
+                and applied["consumer_reauthentication_required"] is True
+                and applied["source_user_lockout_disabled_required_when_applicable"] is True,
             )
             repeated = invoke(apply_args)
             check(
@@ -483,6 +493,7 @@ def run(binary, output):
                 "target_mount_incarnation_reallocated": True,
                 "consumer_reauthentication_required": True,
                 "consumer_reauthentication_rehearsed": True,
+                "source_user_lockout_explicitly_disabled": True,
                 "accessor_transferred": False,
                 "principals_transferred": False,
                 "approle_secret_ids_transferred": False,

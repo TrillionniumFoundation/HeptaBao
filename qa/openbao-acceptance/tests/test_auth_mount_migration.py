@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bao_http import BaoError, Response
-from migrate_auth_mount import Checkpoint, transfer
+from migrate_auth_mount import Checkpoint, read_source_record, transfer
 
 
 def record():
@@ -95,6 +95,47 @@ class FaultTarget:
                 self.fault = None
                 raise BaoError("transport_outcome_unknown")
             return Response(204, {})
+        return Response(404, {})
+
+
+class SourceFixture:
+    def __init__(self, lockout_disable):
+        self.lockout_disable = lockout_disable
+
+    def request(self, method, path, payload=None):
+        if method == "GET" and path == "/v1/sys/auth/migration-approle":
+            return Response(
+                200,
+                {
+                    "data": {
+                        "type": "approle",
+                        "description": "migration boundary",
+                        "local": False,
+                        "seal_wrap": False,
+                        "options": {},
+                        "accessor": "auth_source",
+                    }
+                },
+            )
+        if method == "GET" and path == "/v1/sys/auth/migration-approle/tune":
+            return Response(
+                200,
+                {
+                    "data": {
+                        "description": "migration boundary",
+                        "default_lease_ttl": 120,
+                        "max_lease_ttl": 300,
+                        "force_no_cache": False,
+                        "token_type": "default-service",
+                        "user_lockout_config": {
+                            "lockout_disable": self.lockout_disable,
+                            "lockout_threshold": "5",
+                            "lockout_duration": "15m",
+                            "lockout_counter_reset": "15m",
+                        },
+                    }
+                },
+            )
         return Response(404, {})
 
 
@@ -193,6 +234,16 @@ class AuthMountMigrationTests(unittest.TestCase):
             ):
                 transfer(target, record(), self.checkpoint(directory))
             self.assertEqual(target.create_writes, 0)
+
+    def test_source_lockout_must_be_explicitly_disabled(self):
+        with self.assertRaisesRegex(
+            BaoError, "lockout_must_be_explicitly_disabled"
+        ):
+            read_source_record(SourceFixture(False), "migration-approle")
+        accepted = read_source_record(
+            SourceFixture(True), "migration-approle"
+        )
+        self.assertTrue(accepted["source_user_lockout_disabled"])
 
     def test_checkpoint_binding_cannot_change(self):
         with tempfile.TemporaryDirectory() as directory:

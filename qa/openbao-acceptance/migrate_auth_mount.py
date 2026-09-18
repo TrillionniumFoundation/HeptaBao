@@ -41,6 +41,7 @@ SAFE_TUNE_FIELDS = {
     "force_no_cache",
     "max_lease_ttl",
     "token_type",
+    "user_lockout_config",
 }
 
 
@@ -104,6 +105,31 @@ def read_source_record(client, mount):
         if key not in SAFE_TUNE_FIELDS and not _default_value(value):
             raise BaoError("auth_mount_tune_requires_manual_reconciliation")
 
+    lockout = tune.get("user_lockout_config")
+    lockout_disabled = False
+    if kind in {"userpass", "approle", "ldap"}:
+        if (
+            not isinstance(lockout, dict)
+            or lockout.get("lockout_disable") is not True
+            or len(lockout) > 8
+            or any(not isinstance(key, str) for key in lockout)
+            or any(
+                not isinstance(value, (str, int, bool))
+                or isinstance(value, str)
+                and (
+                    len(value.encode("utf-8")) > 128
+                    or any(not char.isprintable() for char in value)
+                )
+                for value in lockout.values()
+            )
+        ):
+            raise BaoError(
+                "source_auth_mount_lockout_must_be_explicitly_disabled"
+            )
+        lockout_disabled = True
+    elif lockout is not None and not _default_value(lockout):
+        raise BaoError("auth_mount_lockout_config_not_applicable")
+
     description = _bounded_description(
         tune.get("description", descriptor.get("description", ""))
     )
@@ -122,6 +148,7 @@ def read_source_record(client, mount):
         "description": description,
         "default_lease_ttl": default_ttl,
         "max_lease_ttl": max_ttl,
+        "source_user_lockout_disabled": lockout_disabled,
     }
 
 
@@ -376,6 +403,7 @@ def main(argv=None):
         "tokens_transferred": False,
         "identity_alias_bindings_transferred": False,
         "consumer_reauthentication_required": True,
+        "source_user_lockout_disabled_required_when_applicable": True,
         "full_asset_migration": False,
         "source_cutover": False,
         "cutover_authority": False,

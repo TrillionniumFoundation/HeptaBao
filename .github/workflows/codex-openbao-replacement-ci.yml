@@ -431,6 +431,7 @@ jobs:
           assert identity["auth_credentials_transferred"] is False
           assert auth_mount["consumer_reauthentication_required"] is True
           assert auth_mount["consumer_reauthentication_rehearsed"] is True
+          assert auth_mount["source_user_lockout_explicitly_disabled"] is True
           assert auth_mount["accessor_transferred"] is False
           assert auth_mount["principals_transferred"] is False
           assert auth_mount["approle_secret_ids_transferred"] is False
