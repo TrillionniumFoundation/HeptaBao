@@ -104,10 +104,18 @@ struct LdapMount {
 
 impl LdapMount {
     fn group_attr(&self) -> &str {
-        if self.group_attr.is_empty() { "member" } else { &self.group_attr }
+        if self.group_attr.is_empty() {
+            "member"
+        } else {
+            &self.group_attr
+        }
     }
     fn group_name_attr(&self) -> &str {
-        if self.group_name_attr.is_empty() { "cn" } else { &self.group_name_attr }
+        if self.group_name_attr.is_empty() {
+            "cn"
+        } else {
+            &self.group_name_attr
+        }
     }
 }
 
@@ -1204,10 +1212,7 @@ impl AuthState {
         }
     }
 
-    fn ldap_groups_at(
-        &self,
-        scope: AuthScope<'_>,
-    ) -> Option<&BTreeMap<String, BTreeSet<String>>> {
+    fn ldap_groups_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, BTreeSet<String>>> {
         self.ldap_groups.get(scope.namespace)?.get(scope.mount)
     }
 
@@ -1796,8 +1801,18 @@ impl AuthState {
             }
             "POST" | "PUT" => {
                 self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
-                reject_unknown(body, &["url", "bind_dn", "user_dn_template", "starttls",
-                    "group_dn", "group_attr", "group_name_attr"])?;
+                reject_unknown(
+                    body,
+                    &[
+                        "url",
+                        "bind_dn",
+                        "user_dn_template",
+                        "starttls",
+                        "group_dn",
+                        "group_attr",
+                        "group_name_attr",
+                    ],
+                )?;
                 let url = string_field(body, "url")?;
                 let authority = url
                     .strip_prefix("ldaps://")
@@ -1832,7 +1847,11 @@ impl AuthState {
                 let starttls = boolean(body, "starttls", false)?;
                 let group_dn = body
                     .get("group_dn")
-                    .map(|value| value.as_str().ok_or_else(|| bad("group_dn must be a string")))
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_dn must be a string"))
+                    })
                     .transpose()?
                     .unwrap_or("");
                 if group_dn.len() > 1024 || group_dn.chars().any(char::is_control) {
@@ -1840,12 +1859,20 @@ impl AuthState {
                 }
                 let group_attr = body
                     .get("group_attr")
-                    .map(|value| value.as_str().ok_or_else(|| bad("group_attr must be a string")))
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_attr must be a string"))
+                    })
                     .transpose()?
                     .unwrap_or("member");
                 let group_name_attr = body
                     .get("group_name_attr")
-                    .map(|value| value.as_str().ok_or_else(|| bad("group_name_attr must be a string")))
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_name_attr must be a string"))
+                    })
                     .transpose()?
                     .unwrap_or("cn");
                 if !valid_ldap_attribute_name(group_attr)
@@ -1859,8 +1886,16 @@ impl AuthState {
                     user_dn_template: user_dn_template.into(),
                     starttls,
                     group_dn: group_dn.into(),
-                    group_attr: if group_attr == "member" { String::new() } else { group_attr.into() },
-                    group_name_attr: if group_name_attr == "cn" { String::new() } else { group_name_attr.into() },
+                    group_attr: if group_attr == "member" {
+                        String::new()
+                    } else {
+                        group_attr.into()
+                    },
+                    group_name_attr: if group_name_attr == "cn" {
+                        String::new()
+                    } else {
+                        group_name_attr.into()
+                    },
                 };
                 let changed = self
                     .ldap_mounts
@@ -1913,13 +1948,20 @@ impl AuthState {
                     .and_then(|groups| groups.get(name))
                     .cloned()
                     .ok_or_else(|| err(404, "LDAP group not found"))?;
-                Ok(response(json!({"policies": mapped, "token_policies": mapped}), false))
+                Ok(response(
+                    json!({"policies": mapped, "token_policies": mapped}),
+                    false,
+                ))
             }
             "delete" => {
                 reject_unknown(body, &[])?;
                 self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
                 let removed = self.ldap_groups_at_mut(scope).remove(name);
-                if removed.is_some() { Ok(empty(true)) } else { Err(err(404, "LDAP group not found")) }
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "LDAP group not found"))
+                }
             }
             "update" => {
                 self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
@@ -1930,7 +1972,11 @@ impl AuthState {
                     .and_then(|groups| groups.get(name))
                     .cloned()
                     .unwrap_or_default();
-                let field = if body.get("token_policies").is_some() { "token_policies" } else { "policies" };
+                let field = if body.get("token_policies").is_some() {
+                    "token_policies"
+                } else {
+                    "policies"
+                };
                 let mapped = policies(body, field, &current, false)?;
                 self.validate_assignment(actor, &mapped)?;
                 let changed = self
@@ -1984,10 +2030,7 @@ impl AuthState {
             ));
         }
         let dn = config.user_dn_template.replace("{{username}}", name);
-        if dn.is_empty()
-            || dn.len() > 1024
-            || dn.bytes().any(|byte| byte == 0 || byte < 0x20)
-        {
+        if dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20) {
             return Err(bad("LDAP user DN is outside bounds"));
         }
         let totp_code = body
