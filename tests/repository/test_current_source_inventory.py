@@ -1,4 +1,4 @@
-"""Current-source binding rejects drift without rewriting frozen history."""
+"""Current-source binding derives live facts without a generated-hash rewrite loop."""
 from __future__ import annotations
 
 import importlib.util
@@ -38,8 +38,9 @@ class CurrentSourceInventoryTests(unittest.TestCase):
     def test_current_repository_inventory_matches(self) -> None:
         self.assertEqual([], INV.validate())
         snapshot, details = INV.inventory()
-        self.assertEqual(len(details), snapshot["package_count"])
+        self.assertGreater(len(details), 0)
         self.assertIn("heptabao-ha-service", details)
+        self.assertEqual("runtime-generated-receipt-policy", snapshot["scope"])
         self.assertFalse(snapshot["qualification"])
         self.assertFalse(snapshot["compatibility_claim"])
 
@@ -52,16 +53,16 @@ class CurrentSourceInventoryTests(unittest.TestCase):
             self.assertEqual(["fn", "limit"], detail["public_lexical_declarations"][0][2:4])
             self.assertEqual("bounded", detail["discovered_test_functions"][0][2])
 
-    def test_source_guide_manifest_and_lock_drift_are_each_rejected(self) -> None:
+    def test_ordinary_source_changes_do_not_require_snapshot_regeneration(self) -> None:
         for path in ["crates/heptabao-probe/src/lib.rs", "docs/modules/heptabao-probe.md", "crates/heptabao-probe/Cargo.toml", "Cargo.lock"]:
             with self.subTest(path=path), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 self.fixture(root)
+                before = (root / INV.SNAPSHOT).read_bytes()
                 original = (root / path).read_text()
                 (root / path).write_text(original + "\n")
-                self.assertTrue(INV.validate(root))
-                self.save(root)
                 self.assertEqual([], INV.validate(root))
+                self.assertEqual(before, (root / INV.SNAPSHOT).read_bytes())
 
     def test_frozen_history_cannot_be_rebased_by_regeneration(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
