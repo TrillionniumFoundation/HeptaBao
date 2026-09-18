@@ -12,6 +12,7 @@
 //! ```
 mod auth;
 mod crypto;
+mod dynamic_secrets;
 pub mod engines;
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 pub mod federated_auth;
@@ -20,5 +21,6 @@ mod ha_forward;
 pub mod ha_state;
 pub mod http;
 mod service;
+pub use dynamic_secrets::DynamicSecretConfig;
 pub use service::AuditConfig;
 pub use service::{Response, Service};
