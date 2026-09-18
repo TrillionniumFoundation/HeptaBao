@@ -1187,6 +1187,43 @@ impl Service {
         plan.success_response().unwrap_or_else(|error| error)
     }
 
+    pub(super) fn finalize_database_batch_effect(
+        &mut self,
+        plan: &DatabaseBatchEffectPlan,
+        results: DatabaseBatchEffectResult,
+    ) -> Response {
+        if results.len() > plan.plans.len() {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "database prefix revocation result count exceeds the staged batch",
+            );
+        }
+        let attempted = results.len();
+        let mut first_error = None;
+        for (effect, result) in plan.plans.iter().zip(results.into_iter()) {
+            let response = self.finalize_database_effect(effect, result);
+            if response.status >= 300 && first_error.is_none() {
+                first_error = Some(response);
+            }
+        }
+        if attempted < plan.plans.len() && first_error.is_none() {
+            first_error = Some(Response {
+                status: 503,
+                body: json!({
+                    "errors":["database prefix revocation stopped after an indeterminate provider result"],
+                    "reconcile_required":true,
+                    "retry_allowed":false,
+                    "pending_count":plan.plans.len().saturating_sub(attempted)
+                }),
+            });
+        }
+        first_error.unwrap_or(Response {
+            status: 204,
+            body: Value::Null,
+        })
+    }
+
     fn stage_revoke(
         state: &mut State,
         ns: &str,
