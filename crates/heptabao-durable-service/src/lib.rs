@@ -468,6 +468,7 @@ pub struct DurableService<B: Barrier> {
     directory: ExclusiveDirectory,
     barrier: B,
     snapshot: Snapshot,
+    snapshot_plaintext_bytes: usize,
     ledger: BTreeMap<RequestKey, LedgerRecord>,
     replay_epoch: u64,
     retired_through_generation: u64,
@@ -531,6 +532,7 @@ impl<B: Barrier> DurableService<B> {
             entries: BTreeMap::new(),
             last_commit: None,
         };
+        let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let ledger = BTreeMap::new();
         persist_snapshot(&root, &barrier, &snapshot)?;
         initialize_journal(&root)?;
@@ -540,6 +542,7 @@ impl<B: Barrier> DurableService<B> {
             directory,
             barrier,
             snapshot,
+            snapshot_plaintext_bytes,
             ledger,
             replay_epoch: 0,
             retired_through_generation: 0,
@@ -562,6 +565,7 @@ impl<B: Barrier> DurableService<B> {
         let directory = acquire_writer_lock(&root)?;
         let root = directory.access_path().to_path_buf();
         let snapshot = load_snapshot(&root, &barrier)?;
+        let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let (journal_sequence, events, journal_bytes, incomplete_tail) =
             load_journal(&root, &barrier)?;
         let (ledger_generation, replay_epoch, retired_through_generation, ledger) =
@@ -571,6 +575,7 @@ impl<B: Barrier> DurableService<B> {
             directory,
             barrier,
             snapshot,
+            snapshot_plaintext_bytes,
             ledger,
             replay_epoch,
             retired_through_generation,
@@ -1031,6 +1036,7 @@ impl<B: Barrier> DurableService<B> {
             &restored.journal_bytes,
         )?;
         self.snapshot = restored.snapshot;
+        self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
         self.ledger = restored.ledger;
         self.replay_epoch = restored.replay_epoch;
         self.retired_through_generation = restored.retired_through_generation;
@@ -1470,6 +1476,7 @@ impl<B: Barrier> DurableService<B> {
             self.retired_through_generation,
             &self.ledger,
         )?;
+        self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
         self.unresolved = false;
         Ok(())
     }
@@ -2242,6 +2249,138 @@ fn read_bounded(path: &Path) -> Result<Vec<u8>, ServiceError> {
         return Err(ServiceError::CorruptState);
     }
     Ok(bytes)
+}
+
+fn encoded_marker_len(marker: &CommitMarker) -> Result<usize, ServiceError> {
+    validate_marker(marker)?;
+    [
+        4_usize + marker.key.principal.len(),
+        4 + marker.key.namespace.len(),
+        4 + marker.key.request_id.len(),
+        32,
+        4 + marker.recovery_reference.len(),
+        8,
+    ]
+    .into_iter()
+    .try_fold(0_usize, |total, length| {
+        total.checked_add(length).ok_or(ServiceError::CorruptState)
+    })
+}
+
+fn snapshot_entry_len(
+    namespace: &str,
+    resource: &str,
+    value_bytes: usize,
+) -> Result<usize, ServiceError> {
+    [4_usize + namespace.len(), 4 + resource.len(), 4 + value_bytes]
+        .into_iter()
+        .try_fold(0_usize, |total, length| {
+            total.checked_add(length).ok_or(ServiceError::CorruptState)
+        })
+}
+
+fn snapshot_plaintext_len(snapshot: &Snapshot) -> Result<usize, ServiceError> {
+    let mut length = 4_usize
+        .checked_add(8)
+        .and_then(|value| value.checked_add(1))
+        .and_then(|value| value.checked_add(4))
+        .ok_or(ServiceError::CorruptState)?;
+    if let Some(marker) = &snapshot.last_commit {
+        length = length
+            .checked_add(encoded_marker_len(marker)?)
+            .ok_or(ServiceError::CorruptState)?;
+    }
+    for ((namespace, resource), value) in &snapshot.entries {
+        length = length
+            .checked_add(snapshot_entry_len(
+                namespace,
+                resource,
+                value.expose().len(),
+            )?)
+            .ok_or(ServiceError::CorruptState)?;
+    }
+    Ok(length)
+}
+
+fn candidate_snapshot_plaintext_len(
+    snapshot: &Snapshot,
+    current_len: usize,
+    marker: &CommitMarker,
+    mutations: &[JournalMutation],
+) -> Result<usize, ServiceError> {
+    let old_marker = snapshot
+        .last_commit
+        .as_ref()
+        .map(encoded_marker_len)
+        .transpose()?
+        .unwrap_or(0);
+    let new_marker = encoded_marker_len(marker)?;
+    let mut length = current_len
+        .checked_sub(old_marker)
+        .and_then(|value| value.checked_add(new_marker))
+        .ok_or(ServiceError::CorruptState)?;
+    let mut resources = std::collections::BTreeSet::new();
+    for mutation in mutations {
+        validate_resource(&mutation.resource)?;
+        if !resources.insert(mutation.resource.as_str()) {
+            return Err(ServiceError::CorruptState);
+        }
+        let key = (marker.key.namespace.clone(), mutation.resource.clone());
+        if let Some(existing) = snapshot.entries.get(&key) {
+            length = length
+                .checked_sub(snapshot_entry_len(
+                    &marker.key.namespace,
+                    &mutation.resource,
+                    existing.expose().len(),
+                )?)
+                .ok_or(ServiceError::CorruptState)?;
+        }
+        if let Some(value) = &mutation.value {
+            length = length
+                .checked_add(snapshot_entry_len(
+                    &marker.key.namespace,
+                    &mutation.resource,
+                    value.expose().len(),
+                )?)
+                .ok_or(ServiceError::CorruptState)?;
+        }
+    }
+    Ok(length)
+}
+
+fn snapshot_frame_len_bound<B: Barrier>(
+    barrier: &B,
+    plaintext_len: usize,
+) -> Option<usize> {
+    barrier
+        .sealed_len_bound(plaintext_len)?
+        .checked_add(SNAPSHOT_MAGIC.len() + 8 + 4 + 32)
+}
+
+fn preflight_snapshot_capacity<B: Barrier>(
+    barrier: &B,
+    snapshot: &Snapshot,
+    plaintext_len: usize,
+    marker: &CommitMarker,
+    mutations: &[JournalMutation],
+) -> Result<(), ServiceError> {
+    if let Some(frame_len) = snapshot_frame_len_bound(barrier, plaintext_len) {
+        return if frame_len <= MAX_FILE_BYTES {
+            Ok(())
+        } else {
+            Err(ServiceError::RequestCapacityExhausted)
+        };
+    }
+
+    // Unknown provider expansion keeps the old exact fail-safe check. This is
+    // deliberately not the production AES-GCM path.
+    let mut candidate = snapshot.clone();
+    apply_journal_mutations(&mut candidate, marker, mutations)?;
+    if sealed_snapshot(barrier, &candidate)?.len() > MAX_FILE_BYTES {
+        Err(ServiceError::RequestCapacityExhausted)
+    } else {
+        Ok(())
+    }
 }
 
 fn encode_snapshot(snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
