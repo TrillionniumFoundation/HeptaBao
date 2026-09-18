@@ -346,8 +346,12 @@ enum RequestEffectClass {
     SideEffectingRead,
 }
 
-fn classify_request_effect(method: &str, before: &[u8], after: &[u8]) -> RequestEffectClass {
-    if before == after {
+fn classify_request_effect(
+    method: &str,
+    before_digest: [u8; 32],
+    after_digest: [u8; 32],
+) -> RequestEffectClass {
+    if before_digest == after_digest {
         RequestEffectClass::PureRead
     } else if matches!(method, "GET" | "HEAD" | "LIST" | "SCAN") {
         RequestEffectClass::SideEffectingRead
@@ -373,6 +377,7 @@ pub struct Service {
     audit_http_url: Option<String>,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
+    state_digest: Option<[u8; 32]>,
     seal: Option<SealMetadata>,
     unseal_shares: BTreeMap<u8, SecretShare>,
     unseal_nonce: String,
@@ -507,6 +512,7 @@ impl Service {
             audit_http_url: None,
             durable: None,
             state: None,
+            state_digest: None,
             seal,
             unseal_shares: BTreeMap::new(),
             unseal_nonce,
@@ -1125,9 +1131,9 @@ impl Service {
         if let Some(response) = self.online_login(&admitted, &request) {
             return response;
         }
-        let before = match serde_json::to_vec(&admitted) {
-            Ok(v) => Zeroizing::new(v),
-            Err(_) => return Response::error(500, "state serialization failed"),
+        let before_digest = match self.current_state_digest() {
+            Ok(value) => value,
+            Err(error) => return error,
         };
         let mut transaction = admitted.clone();
         if let Err(error) =
@@ -1225,7 +1231,8 @@ impl Service {
             Ok(v) => Zeroizing::new(v),
             Err(_) => return Response::error(500, "state serialization failed"),
         };
-        match classify_request_effect(method, &before, &serialized) {
+        let mut serialized_digest = crypto::digest(&serialized);
+        match classify_request_effect(method, before_digest, serialized_digest) {
             RequestEffectClass::PureRead => {}
             RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
                 if admitted.schema != CURRENT_STATE_SCHEMA {
@@ -1234,8 +1241,17 @@ impl Service {
                         Ok(value) => Zeroizing::new(value),
                         Err(_) => return Response::error(500, "state serialization failed"),
                     };
+                    serialized_digest = crypto::digest(&serialized);
                 }
-                if let Err(error) = self.commit_state_bytes(&serialized) {
+                if let Err(error) = admitted.validate_format() {
+                    return error;
+                }
+                if let Err(error) = self.commit_state_bytes(
+                    &serialized,
+                    admitted.schema,
+                    admitted.replay_epoch,
+                    serialized_digest,
+                ) {
                     return error;
                 }
                 self.state = Some(admitted);
@@ -1604,14 +1620,22 @@ impl Service {
     }
 
     fn commit_state(&mut self, state: &State) -> Result<(), Response> {
+        state.validate_format()?;
         let bytes = Zeroizing::new(
             serde_json::to_vec(state)
                 .map_err(|_| Response::error(500, "state serialization failed"))?,
         );
-        self.commit_state_bytes(&bytes)
+        let next_digest = crypto::digest(&bytes);
+        self.commit_state_bytes(&bytes, state.schema, state.replay_epoch, next_digest)
     }
 
-    fn commit_state_bytes(&mut self, bytes: &[u8]) -> Result<(), Response> {
+    fn commit_state_bytes(
+        &mut self,
+        bytes: &[u8],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        next_digest: [u8; 32],
+    ) -> Result<(), Response> {
         #[cfg(not(test))]
         let capacity = MAX_STATE_BYTES;
         #[cfg(test)]
@@ -1620,19 +1644,17 @@ impl Service {
             return Err(Response::error(507, "state capacity exhausted"));
         }
         let base_digest = self.current_state_digest()?;
-        self.persist(bytes, base_digest)
+        self.persist(bytes, base_digest, state_schema, target_replay_epoch)?;
+        self.state_digest = Some(next_digest);
+        Ok(())
     }
 
     fn current_state_digest(&self) -> Result<[u8; 32], Response> {
-        let state = self
-            .state
-            .as_ref()
-            .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let bytes = Zeroizing::new(
-            serde_json::to_vec(state)
-                .map_err(|_| Response::error(500, "state serialization failed"))?,
-        );
-        Ok(crypto::digest(&bytes))
+        if self.state.is_none() {
+            return Err(Response::error(503, "server is sealed"));
+        }
+        self.state_digest
+            .ok_or_else(|| Response::error(503, "server state digest is unavailable"))
     }
 
     fn initialized(&self) -> bool {
@@ -2167,6 +2189,7 @@ impl Service {
                 state.schema,
                 state.replay_epoch,
                 true,
+                false,
             ) {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
@@ -2196,6 +2219,7 @@ impl Service {
         }
         self.durable = Some(durable);
         self.state = Some(state);
+        self.state_digest = Some(crypto::digest(&bytes));
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
         let sync_as_leader = if let Some(ha) = self.ha.as_ref() {
@@ -2917,8 +2941,9 @@ impl Service {
             .durable
             .as_ref()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let (state, _, _) = Self::load_state_from_durable(durable)?;
+        let (state, bytes, _) = Self::load_state_from_durable(durable)?;
         self.state = Some(state);
+        self.state_digest = Some(crypto::digest(&bytes));
         self.recovery_required = false;
         Ok(())
     }
@@ -2938,19 +2963,22 @@ impl Service {
         .map_err(|_| Response::error(400, "seal shares do not match the active barrier"))
     }
 
-    fn persist(&mut self, bytes: &[u8], base_digest: [u8; 32]) -> Result<(), Response> {
-        let target: State = serde_json::from_slice(bytes)
-            .map_err(|_| Response::error(503, "server state schema is invalid before commit"))?;
-        target.validate_format()?;
+    fn persist(
+        &mut self,
+        bytes: &[u8],
+        base_digest: [u8; 32],
+        state_schema: u32,
+        target_replay_epoch: u64,
+    ) -> Result<(), Response> {
         let durable = self
             .durable
             .as_ref()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
         let current_epoch = durable.replay_epoch();
         let next_epoch = current_epoch.checked_add(1);
-        let epoch_transition = next_epoch == Some(target.replay_epoch);
-        if target.replay_epoch < current_epoch
-            || (target.replay_epoch != current_epoch && !epoch_transition)
+        let epoch_transition = next_epoch == Some(target_replay_epoch);
+        if target_replay_epoch < current_epoch
+            || (target_replay_epoch != current_epoch && !epoch_transition)
         {
             return Err(Response::error(503, "invalid replay epoch transition"));
         }
@@ -2979,7 +3007,7 @@ impl Service {
                 return Err(Response::error(503, &error));
             }
         }
-        match self.persist_local(bytes, &operation_id) {
+        match self.persist_local(bytes, &operation_id, state_schema, target_replay_epoch) {
             Ok(()) => Ok(()),
             Err(error) => {
                 if self.ha.is_some() {
@@ -2991,19 +3019,30 @@ impl Service {
         }
     }
 
-    fn persist_local(&mut self, bytes: &[u8], operation_id: &str) -> Result<(), Response> {
-        self.persist_local_with_epoch_policy(bytes, operation_id, false)
+    fn persist_local(
+        &mut self,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+    ) -> Result<(), Response> {
+        self.persist_local_with_epoch_policy(
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            false,
+        )
     }
 
     fn persist_local_with_epoch_policy(
         &mut self,
         bytes: &[u8],
         operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
         allow_epoch_catchup: bool,
     ) -> Result<(), Response> {
-        let state: State = serde_json::from_slice(bytes)
-            .map_err(|_| Response::error(503, "server state schema is invalid before commit"))?;
-        state.validate_format()?;
         let durable = self
             .durable
             .as_mut()
@@ -3013,8 +3052,8 @@ impl Service {
             durable,
             bytes,
             operation_id,
-            state.schema,
-            state.replay_epoch,
+            state_schema,
+            target_replay_epoch,
             true,
             allow_epoch_catchup,
         );
@@ -3023,8 +3062,8 @@ impl Service {
         // Fence the process even when the durable primitive is otherwise healthy;
         // restart normalization or HA catch-up is then the only admissible path.
         let epoch_advanced_without_state = result.is_err()
-            && state.replay_epoch > prior_replay_epoch
-            && durable.replay_epoch() == state.replay_epoch;
+            && target_replay_epoch > prior_replay_epoch
+            && durable.replay_epoch() == target_replay_epoch;
         if durable.recovery_required() || epoch_advanced_without_state {
             self.recovery_required = true;
         }
@@ -3083,13 +3122,18 @@ impl Service {
             ));
         }
         let operation_id = format!("hasync-{}", hex(&committed.digest));
-        if let Err(error) =
-            self.persist_local_with_epoch_policy(&committed.bytes, &operation_id, true)
-        {
+        if let Err(error) = self.persist_local_with_epoch_policy(
+            &committed.bytes,
+            &operation_id,
+            state.schema,
+            state.replay_epoch,
+            true,
+        ) {
             self.recovery_required = true;
             return Err(Self::ha_committed_local_failure(error));
         }
         self.state = Some(state);
+        self.state_digest = Some(committed.digest);
         self.recovery_required = false;
         Ok(())
     }
