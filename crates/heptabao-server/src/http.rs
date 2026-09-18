@@ -382,6 +382,34 @@ fn lock_until<'a, T>(
     }
 }
 
+fn execute_external_without_writer<T, P, R, E, F>(
+    state: &Arc<Mutex<T>>,
+    pending: P,
+    deadline: Instant,
+    execute: E,
+    finish: F,
+) -> Response
+where
+    E: FnOnce(&P) -> R,
+    F: FnOnce(&mut T, P, R) -> Response,
+{
+    // Deliberately execute before acquiring the state writer. This helper is the
+    // production boundary that prevents slow enrolled providers from monopolizing
+    // unrelated service state while their external effect/readback is in flight.
+    let result = execute(&pending);
+    match lock_until(state, deadline) {
+        Ok(mut writer) => finish(&mut writer, pending, result),
+        Err(LockWaitError::Busy) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service finalize deadline exceeded",
+        ),
+        Err(LockWaitError::Poisoned) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service state unavailable",
+        ),
+    }
+}
+
 fn execute_service_request(
     service: &Arc<Mutex<Service>>,
     request: ServiceRequest<'_>,
@@ -405,23 +433,13 @@ fn execute_service_request(
     };
     match execution {
         RequestExecution::Complete(response) => response,
-        RequestExecution::External(pending) => {
-            // The Service writer is deliberately out of scope here. A slow or
-            // failed enrolled provider cannot monopolize unrelated state reads
-            // or mutations while its bounded side effect/readback is running.
-            let provider_result = pending.execute();
-            match lock_until(service, deadline) {
-                Ok(mut writer) => writer.finish_external_request(pending, provider_result),
-                Err(LockWaitError::Busy) => Response::error(
-                    503,
-                    "provider result awaits durable reconciliation; service finalize deadline exceeded",
-                ),
-                Err(LockWaitError::Poisoned) => Response::error(
-                    503,
-                    "provider result awaits durable reconciliation; service state unavailable",
-                ),
-            }
-        }
+        RequestExecution::External(pending) => execute_external_without_writer(
+            service,
+            pending,
+            deadline,
+            |pending| pending.execute(),
+            |writer, pending, result| writer.finish_external_request(pending, result),
+        ),
     }
 }
 
@@ -997,6 +1015,43 @@ mod service_lock_deadline_tests {
             lock_until(&lock, Instant::now() + Duration::from_millis(5)).unwrap_err(),
             LockWaitError::Busy
         );
+    }
+
+    #[test]
+    fn external_effect_phase_does_not_hold_the_shared_state_writer() {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                Instant::now() + Duration::from_secs(2),
+                |_| {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    41_u64
+                },
+                |value, (), result| {
+                    *value = result + 1;
+                    Response::ok(json!({"data":{"completed":true}}))
+                },
+            )
+        });
+        entered.wait();
+        {
+            let guard = state
+                .try_lock()
+                .expect("external effect must run without holding shared state writer");
+            assert_eq!(*guard, 0);
+        }
+        release.wait();
+        let response = worker.join().expect("external effect worker");
+        assert_eq!(response.status, 200);
+        assert_eq!(*state.lock().expect("state after external effect"), 42);
     }
 
     #[test]
