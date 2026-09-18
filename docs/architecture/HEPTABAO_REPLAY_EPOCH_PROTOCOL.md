@@ -1,8 +1,8 @@
 # Replay epoch retirement and HA application protocol
 
-Status: current source contract for the `codex/full-remediation-20260916-r1`
-candidate lineage. It describes implementation behavior and does not grant
-OpenBao compatibility or production qualification.
+Status: current source contract. The exact Git commit/tree and executable tests
+bind the behavior; historical branch names are not authority. This document does
+not grant OpenBao compatibility or production qualification.
 
 ## Problem
 
