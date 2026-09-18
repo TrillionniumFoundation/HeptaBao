@@ -232,7 +232,15 @@ def main() -> int:
             report['status'], report['failure'] = 'failed', 'private_fixture_cleanup_failed'
         report['finished_at_unix'] = time.time()
         private_write(output, report, replace=False)
-    print(json.dumps({'status': report['status'], 'cases': len(report['cases']), 'failure': report.get('failure')}))
+    print(json.dumps({
+        'status': report['status'],
+        'cases': len(report['cases']),
+        'failure': report.get('failure'),
+        'accepted_writes': report.get('accepted_writes'),
+        'peak_rss_kib': report.get('peak_rss_kib'),
+        'durable_bytes_at_refusal': report.get('durable_bytes_at_refusal'),
+        'mean_write_latency_ms': report.get('latency_ms', {}).get('mean'),
+    }, sort_keys=True))
     return 0 if report['status'] == 'passed' else 1
 
 
