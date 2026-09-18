@@ -256,6 +256,11 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          # Hosted macOS images can also arrive with a partial/preinstalled 1.98
+          # toolchain whose cargo-clippy conflicts with rustup recovery. The
+          # runner is ephemeral; remove only the exact pinned toolchain before
+          # installing the complete component set, matching the ARM lane.
+          rustup toolchain uninstall 1.98.0-aarch64-apple-darwin || true
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           cargo +1.98.0 --version
           rustc +1.98.0 --version
