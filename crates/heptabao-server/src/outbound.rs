@@ -162,6 +162,32 @@ impl Outbound {
         }
         Ok((endpoint.clone(), target))
     }
+    /// Deliver one sanitized audit record to an exact host-enrolled HTTPS
+    /// collector. The collector cannot redirect, select another origin, extend
+    /// the absolute deadline, or cause an automatic retry.
+    pub(crate) fn post_audit_json(&self, url: &str, value: &Value) -> Result<(), &'static str> {
+        let body = Zeroizing::new(
+            serde_json::to_vec(value).map_err(|_| "invalid outbound audit JSON")?,
+        );
+        if body.len() > MAX_DOCUMENT {
+            return Err("outbound audit document exceeds bound");
+        }
+        let (endpoint, target) = self.endpoint(url, "https")?;
+        let mut stream = endpoint.tls(endpoint.connect()?)?;
+        let head = format!(
+            "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
+            target.path,
+            target.authority,
+            body.len()
+        );
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.write_all(&body))
+            .and_then(|()| stream.flush())
+            .map_err(|_| "outbound audit POST failed; no retry")?;
+        read_discard_response_status(&mut stream, &[200, 201, 202, 204])
+    }
+
     pub fn get_json(&self, url: &str) -> Result<Value, &'static str> {
         let (endpoint, target) = self.endpoint(url, "https")?;
         let mut stream = endpoint.tls(endpoint.connect()?)?;
@@ -253,6 +279,93 @@ fn line(stream: &mut impl Read, budget: &mut usize) -> Result<Vec<u8>, &'static 
         }
     }
 }
+fn read_discard_response_status(
+    stream: &mut impl Read,
+    accepted: &[u16],
+) -> Result<(), &'static str> {
+    let mut budget = 16 * 1024;
+    let status = line(stream, &mut budget)?;
+    let status = std::str::from_utf8(&status).map_err(|_| "invalid outbound HTTP status")?;
+    let mut parts = status.splitn(3, ' ');
+    let version = parts.next().unwrap_or("");
+    let code = parts.next().unwrap_or("");
+    let code = if matches!(version, "HTTP/1.1" | "HTTP/1.0")
+        && code.len() == 3
+        && code.bytes().all(|byte| byte.is_ascii_digit())
+        && parts.next().is_some()
+    {
+        code.parse::<u16>().map_err(|_| "invalid outbound HTTP status")?
+    } else {
+        return Err("outbound HTTP status rejected; redirects forbidden");
+    };
+    if !accepted.contains(&code) {
+        return Err("outbound HTTP status rejected; redirects forbidden");
+    }
+
+    let mut headers = BTreeMap::new();
+    loop {
+        let raw = line(stream, &mut budget)?;
+        if raw.is_empty() {
+            break;
+        }
+        let raw = std::str::from_utf8(&raw).map_err(|_| "invalid outbound HTTP header")?;
+        let (name, value) = raw.split_once(':').ok_or("invalid outbound HTTP header")?;
+        if name.is_empty()
+            || !name.bytes().all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+            || value.bytes().any(|byte| byte < 32 && byte != 9 || byte == 127)
+        {
+            return Err("invalid outbound HTTP header");
+        }
+        if headers
+            .insert(name.to_ascii_lowercase(), value.trim().to_owned())
+            .is_some()
+        {
+            return Err("duplicate outbound HTTP header");
+        }
+    }
+    if headers
+        .get("content-encoding")
+        .is_some_and(|value| value != "identity")
+    {
+        return Err("outbound response encoding rejected");
+    }
+
+    let mut body = Vec::new();
+    match (
+        headers.get("content-length"),
+        headers.get("transfer-encoding"),
+    ) {
+        (Some(_), Some(_)) => return Err("ambiguous outbound HTTP length"),
+        (Some(length), None) => {
+            if length.is_empty() || !length.bytes().all(|byte| byte.is_ascii_digit()) {
+                return Err("invalid outbound body length");
+            }
+            let length: usize = length.parse().map_err(|_| "invalid outbound body length")?;
+            if length > 16 * 1024 {
+                return Err("outbound audit response exceeds bound");
+            }
+            body.resize(length, 0);
+            stream
+                .read_exact(&mut body)
+                .map_err(|_| "truncated outbound audit response")?;
+        }
+        (None, None) => {
+            stream
+                .take(16 * 1024 + 1)
+                .read_to_end(&mut body)
+                .map_err(|_| "outbound audit response read failed")?;
+            if body.len() > 16 * 1024 {
+                return Err("outbound audit response exceeds bound");
+            }
+        }
+        _ => return Err("unsupported outbound audit transfer encoding"),
+    }
+    if code == 204 && !body.is_empty() {
+        return Err("204 audit response must not carry a body");
+    }
+    Ok(())
+}
+
 fn read_json_response(stream: &mut impl Read) -> Result<Value, &'static str> {
     read_json_response_status(stream, &[200])
 }
@@ -545,6 +658,26 @@ mod tests {
             assert!(read_json_response_status(&mut message.as_bytes(), &[200, 201]).is_err());
         }
     }
+    #[test]
+    fn audit_delivery_accepts_only_bounded_success_without_redirects() {
+        for (message, expected) in [
+            ("HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n\r\n", true),
+            ("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}", true),
+            ("HTTP/1.1 302 Found\r\nContent-Length: 0\r\n\r\n", false),
+            ("HTTP/1.1 204 No Content\r\nContent-Length: 1\r\n\r\nx", false),
+            ("HTTP/1.1 200 OK\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n", false),
+        ] {
+            assert_eq!(
+                read_discard_response_status(
+                    &mut message.as_bytes(),
+                    &[200, 201, 202, 204]
+                )
+                .is_ok(),
+                expected
+            );
+        }
+    }
+
     #[test]
     fn online_form_components_and_headers_cannot_inject_authority() {
         assert_eq!(form_component("safe-A_z.0~"), "safe-A_z.0~");
