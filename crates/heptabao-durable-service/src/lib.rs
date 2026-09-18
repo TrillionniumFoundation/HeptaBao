@@ -3447,6 +3447,78 @@ mod tests {
     }
 
     #[test]
+    fn snapshot_size_projection_matches_exact_encoding_for_changed_resources()
+    -> Result<(), ServiceError> {
+        let previous_marker = CommitMarker {
+            key: RequestKey {
+                principal: "principal-a".to_owned(),
+                namespace: "root/team-a".to_owned(),
+                request_id: "request-1".to_owned(),
+            },
+            binding_digest: [1; 32],
+            recovery_reference: "0123456789abcdef0123456789abcdef".to_owned(),
+            generation: 1,
+        };
+        let mut entries = BTreeMap::new();
+        entries.insert(
+            ("root/team-a".to_owned(), "secret/replace".to_owned()),
+            Secret::new(b"old-value".to_vec())?,
+        );
+        entries.insert(
+            ("root/team-a".to_owned(), "secret/delete".to_owned()),
+            Secret::new(b"remove-me".to_vec())?,
+        );
+        let snapshot = Snapshot {
+            generation: 1,
+            entries,
+            last_commit: Some(previous_marker),
+        };
+        let current_len = snapshot_plaintext_len(&snapshot)?;
+        assert_eq!(current_len, encode_snapshot(&snapshot)?.len());
+
+        let next_marker = CommitMarker {
+            key: RequestKey {
+                principal: "principal-a".to_owned(),
+                namespace: "root/team-a".to_owned(),
+                request_id: "request-2".to_owned(),
+            },
+            binding_digest: [2; 32],
+            recovery_reference: "abcdef0123456789abcdef0123456789".to_owned(),
+            generation: 2,
+        };
+        let mutations = vec![
+            JournalMutation {
+                resource: "secret/replace".to_owned(),
+                value: Some(Secret::new(b"a-longer-replacement-value".to_vec())?),
+            },
+            JournalMutation {
+                resource: "secret/delete".to_owned(),
+                value: None,
+            },
+            JournalMutation {
+                resource: "secret/new".to_owned(),
+                value: Some(Secret::new(b"new-value".to_vec())?),
+            },
+        ];
+        let projected = candidate_snapshot_plaintext_len(
+            &snapshot,
+            current_len,
+            &next_marker,
+            &mutations,
+        )?;
+        let mut exact = snapshot.clone();
+        apply_journal_mutations(&mut exact, &next_marker, &mutations)?;
+        assert_eq!(projected, snapshot_plaintext_len(&exact)?);
+        assert_eq!(projected, encode_snapshot(&exact)?.len());
+
+        let barrier = TestBarrier::new();
+        let bound = snapshot_frame_len_bound(&barrier, projected)
+            .ok_or(ServiceError::CorruptState)?;
+        assert_eq!(bound, sealed_snapshot(&barrier, &exact)?.len());
+        Ok(())
+    }
+
+    #[test]
     fn delta_journal_replays_multiple_generations_before_checkpoint() -> Result<(), ServiceError> {
         let _serial = serial_test();
         let root = TestRoot::new("delta-replay")?;
