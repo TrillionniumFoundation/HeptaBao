@@ -17,6 +17,9 @@ impl State {
         self.auth
             .validate_online_auth()
             .map_err(|_| Response::error(503, "invalid online authentication state"))?;
+        self.auth
+            .validate_plugin_auth_state()
+            .map_err(|_| Response::error(503, "invalid authentication plugin state"))?;
         if self.schema < 5 && self.auth.has_online_auth_state() {
             return Err(Response::error(
                 503,

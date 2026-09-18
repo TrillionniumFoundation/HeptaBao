@@ -1567,6 +1567,16 @@ impl AuthState {
                 .or_default()
                 .insert(to.into(), value);
         }
+        if let Some(value) = self
+            .plugin_auth_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.plugin_auth_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
         for token in self.tokens.values_mut() {
             if token.namespace == namespace && token.auth_mount.as_deref() == Some(from) {
                 token.auth_mount = Some(to.into());
@@ -1910,6 +1920,33 @@ impl AuthState {
         self.plugin_auth_mounts
             .values()
             .any(|mounts| !mounts.is_empty())
+    }
+
+    pub(crate) fn validate_plugin_auth_state(&self) -> Result<(), AuthError> {
+        for (namespace, mounts) in &self.plugin_auth_mounts {
+            validate_namespace(namespace)?;
+            let effective = self.effective_auth_mounts(namespace);
+            for (mount, config) in mounts {
+                if mount.is_empty()
+                    || mount.len() > 256
+                    || !mount.split('/').all(valid_name)
+                    || !effective
+                        .get(mount)
+                        .is_some_and(|entry| entry.kind == "plugin")
+                    || !valid_name(&config.plugin_id)
+                    || config.policies.contains("root")
+                    || config.policies.iter().any(|policy| !valid_name(policy))
+                    || config.token_ttl > MAX_TTL
+                    || config.token_max_ttl > MAX_TTL
+                    || config.token_ttl > 0
+                        && config.token_max_ttl > 0
+                        && config.token_ttl > config.token_max_ttl
+                {
+                    return Err(err(503, "invalid persisted authentication plugin state"));
+                }
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn prepare_plugin_auth_login(
