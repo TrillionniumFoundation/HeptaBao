@@ -43,72 +43,22 @@ class ExecutionTruthTests(unittest.TestCase):
         p.write_text(p.read_text().replace('pub fn put_with_compaction(', 'pub fn removed('))
         self.assertTrue(module.validate(self.root))
 
-    def test_service_writer_requires_epoch_aware_compaction(self):
+    def test_replay_epoch_source_layout_is_not_a_document_truth_gate(self):
         p=self.root/'crates/heptabao-server/src/service.rs'
-        p.write_text(p.read_text().replace(
-            'apply_batch_with_compaction_in_replay_epoch(',
-            'apply_batch_with_compaction(',
-            1,
-        ))
-        self.assertIn(
-            'atomic batch compaction is not bound to the current replay epoch in the real Service writer',
-            module.validate(self.root),
-        )
-
-    def test_service_writer_cannot_hardcode_retired_epoch(self):
-        p=self.root/'crates/heptabao-server/src/service.rs'
-        p.write_text(p.read_text().replace(
+        source=p.read_text()
+        # Harmless formatting/helper extraction must not turn documentation
+        # validation into a Rust parser. Compiled Service/HA profiles own this
+        # behavioral invariant.
+        source=source.replace(
             'let replay_epoch = durable.replay_epoch();',
-            'let replay_epoch = 0;',
+            'let replay_epoch = durable\n            .replay_epoch();',
             1,
-        ))
-        self.assertIn(
-            'atomic batch compaction is not bound to the current replay epoch in the real Service writer',
-            module.validate(self.root),
         )
+        p.write_text(source)
+        self.assertEqual(module.validate(self.root),[])
 
     def test_missing_document_rejected(self):
         (self.root/'README.md').unlink()
         self.assertTrue(module.validate(self.root))
 
-    def test_additional_epoch_validation_is_not_a_source_shape_failure(self):
-        p = self.root/'crates/heptabao-server/src/service.rs'
-        guard = """
-        // A safety check must not make the compaction drift guard fail.
-        if replay_epoch != target_replay_epoch {
-            return Err(ServiceError::ReplayEpochMismatch);
-        }
-"""
-        p.write_text(p.read_text().replace(
-            'let replay_epoch = durable.replay_epoch();',
-            'let replay_epoch = durable.replay_epoch();' + guard,
-            1,
-        ))
-        self.assertEqual(module.validate(self.root), [])
 
-    def test_epoch_binding_tolerates_rustfmt_line_breaks(self):
-        p = self.root/'crates/heptabao-server/src/service.rs'
-        p.write_text(p.read_text().replace(
-            'durable.apply_batch_with_compaction_in_replay_epoch(',
-            'durable\n            .apply_batch_with_compaction_in_replay_epoch(',
-            1,
-        ))
-        self.assertEqual(module.validate(self.root), [])
-
-    def test_unrelated_helper_cannot_supply_missing_writer_binding(self):
-        p = self.root/'crates/heptabao-server/src/service.rs'
-        source = p.read_text().replace(
-            'apply_batch_with_compaction_in_replay_epoch(',
-            'apply_batch_with_compaction(', 1,
-        )
-        source += """
-    fn unrelated_helper() {
-        let replay_epoch = durable.replay_epoch();
-        durable.apply_batch_with_compaction_in_replay_epoch(replay_epoch,);
-    }
-"""
-        p.write_text(source)
-        self.assertIn(
-            'atomic batch compaction is not bound to the current replay epoch in the real Service writer',
-            module.validate(self.root),
-        )
