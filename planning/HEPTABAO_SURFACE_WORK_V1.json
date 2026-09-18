@@ -290,6 +290,32 @@
         "<private-new-output>"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_secret": {
+      "script": "qa/openbao-acceptance/plugin_secret_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "linux_checksum_pinned_sandbox_wrapper"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "openapi": {
+      "script": "qa/openbao-acceptance/openapi_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "pinned_official_openbao_2_6_2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1225,18 +1251,26 @@
     {
       "surface_id": "HB-SURFACE-PLUGIN-SECRET",
       "category": "plugin_classes",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
       "technical_contract": {
         "api_or_protocol": "sys/plugins catalog and secret plugin mounts",
         "required_positive_and_hostile_behavior": "Versioned RPC, secret-safe IPC, resource limits, sandbox and lease ownership",
-        "remaining_semantics_and_effect_checks": "The server must actually load a qualified plugin; checksum verification alone is not sandbox qualification",
+        "remaining_semantics_and_effect_checks": "The server loads a checksum-bound read-only secret plugin through the admitted sandbox wrapper; write, issue, renew and revoke effects still require Service-owned durable external-effect reconciliation and qualified sandbox evidence.",
         "crash_reopen": "Interrupt sys/plugins catalog and secret plugin mounts before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-PLUGIN-SECRET, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "plugin_secret_live.read",
+        "plugin_secret_live.write_fenced",
+        "plugin_secret_live.unauthorized_no_entry",
+        "plugin_secret_live.restart_binding",
+        "plugin_secret_live.digest_fence"
+      ],
+      "available_scoped_profiles": [
+        "plugin_secret"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -1413,7 +1447,14 @@
         "isolation": "For HB-SURFACE-CLI-ROOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "client_live.client.write_version",
+        "client_live.client.read_value",
+        "client_live.client.list_key",
+        "client_live.client.capability_root",
+        "client_live.client.wrap_redacts",
+        "client_live.client.replay_error_no_data"
+      ],
       "available_scoped_profiles": [
         "client"
       ],
@@ -1470,18 +1511,26 @@
     {
       "surface_id": "HB-SURFACE-OPENAPI-UI",
       "category": "client_operator",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_openapi.rs",
       "technical_contract": {
         "api_or_protocol": "sys/internal/specs/openapi and browser UI targets",
         "required_positive_and_hostile_behavior": "Source-derived API schema, supported field enumeration, real browser login and accessible operation flows",
-        "remaining_semantics_and_effect_checks": "Do not document unsupported routes as implemented; run browser tests without persisting credentials",
+        "remaining_semantics_and_effect_checks": "The authenticated OpenAPI endpoint is executable and fails closed for non-root visibility; browser UI flows, CSRF/XSS controls and full policy-derived schema visibility remain unimplemented.",
         "crash_reopen": "Interrupt sys/internal/specs/openapi and browser UI targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-OPENAPI-UI, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "openapi_live.root_openapi_entries",
+        "openapi_live.candidate_has_only_standard_openapi_operation_keys",
+        "openapi_live.non_root_visibility_fails_closed",
+        "openapi_live.revoked_token_denied",
+        "openapi_live.openapi_restart_stable"
+      ],
+      "available_scoped_profiles": [
+        "openapi"
+      ],
       "whole_surface_admitted": false
     },
     {

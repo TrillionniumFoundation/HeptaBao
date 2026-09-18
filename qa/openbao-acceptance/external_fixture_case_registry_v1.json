@@ -159,6 +159,37 @@
         "provider_outage_fails_closed",
         "provider_success_cannot_bypass_local_revocation"
       ]
+    },
+    "plugin_secret_live": {
+      "script": "qa/openbao-acceptance/plugin_secret_live.py",
+      "case_ids": [
+        "read",
+        "write_fenced",
+        "unauthorized_no_entry",
+        "restart_binding",
+        "digest_fence"
+      ]
+    },
+    "client_live": {
+      "script": "qa/openbao-acceptance/client_live.py",
+      "case_ids": [
+        "client.write_version",
+        "client.read_value",
+        "client.list_key",
+        "client.capability_root",
+        "client.wrap_redacts",
+        "client.replay_error_no_data"
+      ]
+    },
+    "openapi_live": {
+      "script": "qa/openbao-acceptance/openapi_live.py",
+      "case_ids": [
+        "root_openapi_entries",
+        "candidate_has_only_standard_openapi_operation_keys",
+        "non_root_visibility_fails_closed",
+        "revoked_token_denied",
+        "openapi_restart_stable"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

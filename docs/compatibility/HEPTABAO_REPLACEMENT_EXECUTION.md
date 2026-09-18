@@ -746,11 +746,11 @@ Existing bounded profiles: none bound yet; executable fixtures must be implement
 
 ### HB-SURFACE-PLUGIN-SECRET
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP10`.
 API families: `sys/plugins/catalog/*`; `sys/mounts/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_plugin.rs`.
 Separate contracts: `crates/heptabao-plugin-host/src/lib.rs`.
-Guides: `docs/modules/heptabao-plugin-host.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/modules/heptabao-plugin-host.md`.
 
 **Positive:** Load real external secret plugin and bind lease/effect/rollback callbacks.
 
@@ -758,9 +758,9 @@ Guides: `docs/modules/heptabao-plugin-host.md`.
 
 **Lifecycle:** Reconcile process death after external effect and preserve lease ownership.
 
-**Remaining scope:** Lease/effect lifecycle and rollback callbacks.
+**Remaining scope:** Checksum-bound sandboxed read-only secret plugins are executable through the real Service. Write/issue/renew/revoke effects, dynamic lease ownership, OpenBao plugin RPC compatibility and independently qualified sandbox containment remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_secret_live.py`.
 
 ### HB-SURFACE-PLUGIN-DATABASE
 
@@ -962,9 +962,9 @@ Existing bounded profiles: `qa/openbao-acceptance/agent_proxy_helper_live.py`.
 
 ### HB-SURFACE-OPENAPI-UI
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H22-WP09`, `H22-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H22-WP09`, `H22-WP10`.
 API families: `sys/internal/specs/openapi`; `browser UI`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_openapi.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -974,9 +974,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Version browser/client state and invalidate authentication correctly after upgrade.
 
-**Remaining scope:** UI implementation language is not part of the Rust server claim.
+**Remaining scope:** A bounded authenticated OpenAPI 3.0.2 endpoint is executable and restart-stable. Exact policy-filtered schema parity and browser UI implementation, authentication flows, CSRF/XSS controls and accessibility remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/openapi_live.py`.
 
 ### HB-SURFACE-OPERATIONS
 

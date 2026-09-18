@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 34,
-    "defined_not_implemented_surface_count": 26,
-    "fixture_case_count": 146,
+    "implemented_surface_count": 37,
+    "defined_not_implemented_surface_count": 23,
+    "fixture_case_count": 162,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -522,9 +522,15 @@
       "surface_id": "HB-SURFACE-PLUGIN-SECRET",
       "category": "plugin_classes",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_secret_live.read",
+        "plugin_secret_live.write_fenced",
+        "plugin_secret_live.unauthorized_no_entry",
+        "plugin_secret_live.restart_binding",
+        "plugin_secret_live.digest_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -618,9 +624,16 @@
       "surface_id": "HB-SURFACE-CLI-ROOT",
       "category": "client_operator",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 6,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "client_live.client.write_version",
+        "client_live.client.read_value",
+        "client_live.client.list_key",
+        "client_live.client.capability_root",
+        "client_live.client.wrap_redacts",
+        "client_live.client.replay_error_no_data"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -655,9 +668,15 @@
       "surface_id": "HB-SURFACE-OPENAPI-UI",
       "category": "client_operator",
       "criticality": "COMPATIBILITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "openapi_live.root_openapi_entries",
+        "openapi_live.candidate_has_only_standard_openapi_operation_keys",
+        "openapi_live.non_root_visibility_fails_closed",
+        "openapi_live.revoked_token_denied",
+        "openapi_live.openapi_restart_stable"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

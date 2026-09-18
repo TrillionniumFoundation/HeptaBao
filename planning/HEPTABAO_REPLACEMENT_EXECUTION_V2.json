@@ -1380,18 +1380,23 @@
       "positive": "Load real external secret plugin and bind lease/effect/rollback callbacks",
       "hostile": "Reject secret output before durable commit and cross-mount capabilities",
       "lifecycle": "Reconcile process death after external effect and preserve lease ownership",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_plugin.rs"
+      ],
       "contract_sources": [
         "crates/heptabao-plugin-host/src/lib.rs"
       ],
       "guides": [
+        "docs/modules/heptabao-server.md",
         "docs/modules/heptabao-plugin-host.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/plugin_secret_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Lease/effect lifecycle and rollback callbacks."
+      "remaining_scope": "Checksum-bound sandboxed read-only secret plugins are executable through the real Service. Write/issue/renew/revoke effects, dynamic lease ownership, OpenBao plugin RPC compatibility and independently qualified sandbox containment remain open."
     },
     {
       "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
@@ -1743,16 +1748,20 @@
       "positive": "Generate supported API schema and provide browser flows reflecting actual handlers",
       "hostile": "Reject XSS/CSRF, schema privilege leakage and undocumented feature claims",
       "lifecycle": "Version browser/client state and invalidate authentication correctly after upgrade",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_openapi.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/openapi_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "UI implementation language is not part of the Rust server claim."
+      "remaining_scope": "A bounded authenticated OpenAPI 3.0.2 endpoint is executable and restart-stable. Exact policy-filtered schema parity and browser UI implementation, authentication flows, CSRF/XSS controls and accessibility remain open."
     },
     {
       "surface_id": "HB-SURFACE-OPERATIONS",
