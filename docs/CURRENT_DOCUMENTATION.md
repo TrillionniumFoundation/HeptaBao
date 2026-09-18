@@ -4,7 +4,7 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 46 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current entry point for all current workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 ## Canonical current truth
 
