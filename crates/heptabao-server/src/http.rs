@@ -209,17 +209,18 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
-                Ok(mut service) => service.handle_forwarded(crate::ServiceRequest {
+            let response = execute_service_request(
+                &service,
+                crate::ServiceRequest {
                     method: &request.method,
                     path: &request.path,
                     namespace: &request.namespace,
                     token: &request.token,
                     body: std::mem::take(&mut request.body),
                     wrap_ttl_seconds: request.wrap_ttl_seconds,
-                }),
-                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
-            };
+                },
+                true,
+            );
             request.token.zeroize();
             response
         });
@@ -299,8 +300,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let (response, head) = match parsed {
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
-                            Ok(mut service) => service.handle_request(crate::ServiceRequest {
+                        let response = execute_service_request(
+                            &service,
+                            crate::ServiceRequest {
                                 method: if is_head && request.wrap_ttl_seconds.is_none() {
                                     "GET"
                                 } else {
@@ -311,9 +313,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 token: &request.token,
                                 body: std::mem::take(&mut request.body.0),
                                 wrap_ttl_seconds: request.wrap_ttl_seconds,
-                            }),
-                            Err(_) => Response::error(503, "service state is unavailable"),
-                        };
+                            },
+                            false,
+                        );
                         (response, is_head)
                     }
                     Err(error) => (
@@ -336,6 +338,38 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     Ok(())
 }
 
+fn execute_service_request(
+    service: &Arc<Mutex<Service>>,
+    request: crate::ServiceRequest<'_>,
+    forwarded: bool,
+) -> Response {
+    let (response, work) = match service.lock() {
+        Ok(mut service) => {
+            let response = if forwarded {
+                service.begin_forwarded(request)
+            } else {
+                service.begin_request(request)
+            };
+            let work = service.take_database_request_work();
+            (response, work)
+        }
+        Err(_) => return Response::error(503, "service state is unavailable"),
+    };
+    let Some(work) = work else {
+        return response;
+    };
+
+    // Provider I/O runs after the global Service guard has been dropped.
+    // The durable intent/config verification fence was established above.
+    let result = work.execute();
+    match service.lock() {
+        Ok(mut service) => service.complete_database_request_work(work, result),
+        Err(_) => Response::error(
+            503,
+            "provider work completed but Service completion lock is unavailable; reconcile durable intent",
+        ),
+    }
+}
 fn audited_wire_rejection(
     service: &Arc<Mutex<Service>>,
     attempt_id: &[u8; 16],
