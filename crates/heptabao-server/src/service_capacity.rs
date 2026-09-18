@@ -128,8 +128,14 @@ mod tests {
         assert_eq!(response.status, 200);
         let data = &response.body["data"];
         assert_eq!(data["state_limit_bytes"], MAX_STATE_BYTES);
-        assert_eq!(data["state_storage_format"], state_store::STATE_STORAGE_FORMAT);
-        assert_eq!(data["state_chunk_target_bytes"], state_store::STATE_CHUNK_BYTES);
+        assert_eq!(
+            data["state_storage_format"],
+            state_store::STATE_STORAGE_FORMAT
+        );
+        assert_eq!(
+            data["state_chunk_target_bytes"],
+            state_store::STATE_CHUNK_BYTES
+        );
         assert_eq!(data["profile"], "bounded-content-defined-state-v3");
         assert_eq!(data["operation_limit"], MAX_OPERATIONS);
         assert_eq!(data["admission_reserved"], false);
