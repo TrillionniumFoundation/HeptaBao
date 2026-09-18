@@ -1503,7 +1503,7 @@ mod tests {
     };
     use std::collections::BTreeMap;
     use std::fs;
-    use std::io;
+    use std::io::{self, Write};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicU64, Ordering};
     use tokio::sync::Mutex;
@@ -1586,6 +1586,132 @@ mod tests {
         assert_eq!(recovered.generation, expected.generation);
         assert!(target.is_file());
         assert!(!previous.exists());
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn initialized_delta_journals_are_required() {
+        let log_root = root("missing-log-journal");
+        DurableLogStore::create(&log_root).expect("create log store");
+        fs::remove_file(log_root.join("raft-log.journal")).expect("remove log journal");
+        let error = DurableLogStore::open_existing(&log_root)
+            .expect_err("format-1 log checkpoint must require its journal");
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+
+        let state_root = root("missing-state-journal");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        fs::remove_file(state_root.join("state-machine.journal")).expect("remove state journal");
+        let error = DurableStateMachine::open_existing(&state_root)
+            .expect_err("format-1 state checkpoint must require its journal");
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn incomplete_delta_journal_tails_are_repaired_only_to_last_complete_frame() {
+        let log_root = root("log-tail-repair");
+        DurableLogStore::create(&log_root).expect("create log store");
+        let log_journal = log_root.join("raft-log.journal");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&log_journal)
+                .expect("open log journal");
+            file.write_all(b"HBR").expect("append truncated log frame");
+            file.sync_all().expect("sync truncated log frame");
+        }
+        DurableLogStore::open_existing(&log_root).expect("repair truncated log tail");
+        assert_eq!(
+            fs::metadata(&log_journal).expect("log journal metadata").len(),
+            16
+        );
+
+        let state_root = root("state-tail-repair");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        let state_journal = state_root.join("state-machine.journal");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&state_journal)
+                .expect("open state journal");
+            file.write_all(b"HBRS").expect("append truncated state frame");
+            file.sync_all().expect("sync truncated state frame");
+        }
+        DurableStateMachine::open_existing(&state_root).expect("repair truncated state tail");
+        assert_eq!(
+            fs::metadata(&state_journal)
+                .expect("state journal metadata")
+                .len(),
+            8
+        );
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn fully_framed_bad_delta_events_fail_closed() {
+        let log_root = root("log-bad-event");
+        DurableLogStore::create(&log_root).expect("create log store");
+        let log_frame =
+            super::encode_envelope(super::LOG_EVENT_MAGIC, b"not-json").expect("encode log frame");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(log_root.join("raft-log.journal"))
+                .expect("open log journal");
+            file.write_all(&log_frame).expect("append log frame");
+            file.sync_all().expect("sync log frame");
+        }
+        assert!(
+            DurableLogStore::open_existing(&log_root).is_err(),
+            "complete invalid log event must not be truncated as an incomplete tail"
+        );
+
+        let state_root = root("state-bad-event");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        let state_frame = super::encode_envelope(super::STATE_EVENT_MAGIC, b"not-json")
+            .expect("encode state frame");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(state_root.join("state-machine.journal"))
+                .expect("open state journal");
+            file.write_all(&state_frame).expect("append state frame");
+            file.sync_all().expect("sync state frame");
+        }
+        assert!(
+            DurableStateMachine::open_existing(&state_root).is_err(),
+            "complete invalid state event must fail closed"
+        );
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn newer_log_checkpoint_retires_stale_precheckpoint_journal() {
+        let root = root("log-stale-journal");
+        let store = DurableLogStore::create(&root).expect("create log store");
+        drop(store);
+
+        let state_path = root.join("raft-log.bin");
+        let mut state: PersistentLogState =
+            read_json(&state_path, LOG_MAGIC).expect("read log checkpoint");
+        assert_eq!(state.journal_epoch, 1);
+        state.journal_epoch = 2;
+        write_json(&state_path, LOG_MAGIC, &state).expect("publish newer checkpoint");
+
+        DurableLogStore::open_existing(&root)
+            .expect("newer checkpoint must retire stale old-epoch journal");
+        assert_eq!(
+            super::log_journal_epoch(&root.join("raft-log.journal"))
+                .expect("read repaired log journal epoch"),
+            2
+        );
+
         let _ = fs::remove_dir_all(root);
     }
 
