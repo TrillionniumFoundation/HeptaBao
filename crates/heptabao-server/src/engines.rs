@@ -15,6 +15,7 @@ mod identity;
 mod identity_projection;
 use identity_projection::IdentityProjection;
 mod kv;
+pub(crate) mod kubernetes;
 #[path = "engine_leases.rs"]
 mod leases;
 mod pki;
@@ -94,7 +95,7 @@ enum Backend {
     // Runtime provider state and effects belong to the audited Service writer.
     Database,
     /// External Kubernetes TokenRequest provider state is owned by Service.
-    Kubernetes,
+    Kubernetes(kubernetes::Kubernetes),
     /// Durable binding to a deployment-enrolled read-only secret plugin.
     PluginSecret(String),
     Kv1(BTreeMap<String, Value>),
@@ -166,7 +167,7 @@ impl Mount {
     fn descriptor(&self) -> Value {
         let (kind, options) = match &self.backend {
             Backend::Database => ("database", json!({})),
-            Backend::Kubernetes => ("kubernetes", json!({})),
+            Backend::Kubernetes(_) => ("kubernetes", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
@@ -382,7 +383,7 @@ impl EngineState {
             .iter()
             .filter(|(mount, _)| path.starts_with(mount.as_str()))
             .filter_map(|(mount, value)| {
-                matches!(value.backend, Backend::Kubernetes).then_some(mount.clone())
+                matches!(value.backend, Backend::Kubernetes(_)).then_some(mount.clone())
             })
             .max_by_key(String::len)
     }
@@ -391,8 +392,65 @@ impl EngineState {
         self.namespaces.values().any(|ns| {
             ns.mounts
                 .values()
-                .any(|mount| matches!(mount.backend, Backend::Kubernetes))
+                .any(|mount| matches!(mount.backend, Backend::Kubernetes(_)))
         })
+    }
+
+    pub(crate) fn kubernetes_dispatch(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<kubernetes::Dispatch>> {
+        let mount = self.kubernetes_mount(namespace, path);
+        let Some(mount_path) = mount else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount_path)
+            .ok_or_else(|| bad("invalid Kubernetes mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        engine
+            .dispatch(namespace, &mount_path, method, relative, body, now)
+            .map(Some)
+    }
+
+    pub(crate) fn kubernetes_finalize(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &kubernetes::TokenRequestPlan,
+        metadata: kubernetes::TokenMetadata,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes mount changed after provider entry"));
+        };
+        engine.finalize(plan, metadata)
+    }
+
+    pub(crate) fn validate_kubernetes_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Kubernetes(engine) = &mount.backend {
+                    engine.validate()?;
+                }
+            }
+        }
+        Ok(())
     }
 
     /// Atomically relocate one registered secret-engine mount inside the
@@ -625,7 +683,7 @@ impl EngineState {
                     "database operations require the audited external-effect dispatcher",
                 ));
             }
-            Backend::Kubernetes => {
+            Backend::Kubernetes(_) => {
                 return Err(error(
                     501,
                     "Kubernetes operations require the audited external-effect dispatcher",
@@ -896,7 +954,7 @@ fn handle_mounts(
                     "Kubernetes mount options are configured through the engine config endpoint",
                 ));
             }
-            Backend::Kubernetes
+            Backend::Kubernetes(_)
         }
         "plugin" => {
             if body
