@@ -1537,30 +1537,43 @@ impl Service {
             }
         }
         let current = durable.get("system", "state")?;
-        let slot = match current.as_ref() {
-            Some(record) => {
-                state_store::next_slot(record.expose()).map_err(|error| match error {
+        let previous_manifest = current
+            .as_ref()
+            .map(|record| state_store::decode_manifest(record.expose()))
+            .transpose()
+            .map_err(|_| ServiceError::CorruptState)?
+            .flatten();
+        let plan =
+            state_store::StateWritePlan::new(bytes, operation_id, state_schema, previous_manifest.as_ref())
+                .map_err(|error| match error {
                     state_store::StateStoreError::StateTooLarge => {
                         ServiceError::RequestCapacityExhausted
                     }
                     _ => ServiceError::CorruptState,
-                })?
-            }
-            None => 0,
-        };
-        let plan = state_store::StateWritePlan::new(bytes, operation_id, state_schema, slot)
-            .map_err(|error| match error {
-                state_store::StateStoreError::StateTooLarge => {
-                    ServiceError::RequestCapacityExhausted
-                }
-                _ => ServiceError::CorruptState,
-            })?;
-        if plan.required_mutations() > 64 {
+                })?;
+        if plan.required_mutations() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS {
             return Err(ServiceError::RequestCapacityExhausted);
         }
+
+        // Reused content-addressed chunks are part of the next manifest's trust
+        // boundary. Verify that they still exist and that their resource digest
+        // binds their bytes before omitting a physical rewrite.
+        for resource in &plan.required_existing {
+            let existing = durable
+                .get("system", resource)?
+                .ok_or(ServiceError::CorruptState)?;
+            state_store::validate_content_addressed_chunk(resource, existing.expose())
+                .map_err(|_| ServiceError::CorruptState)?;
+        }
+
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {
+            state_store::validate_content_addressed_chunk(&chunk.resource, &chunk.bytes)
+                .map_err(|_| ServiceError::CorruptState)?;
             mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
+        }
+        for resource in plan.deletes {
+            mutations.push((resource, None));
         }
         mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
         let replay_epoch = durable.replay_epoch();
