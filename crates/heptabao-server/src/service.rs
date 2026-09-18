@@ -4058,6 +4058,10 @@ mod pki_service_tests;
 #[path = "openapi_service_tests.rs"]
 mod openapi_service_tests;
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "auth_mount_ttl_tests.rs"]
+mod auth_mount_ttl_tests;
+
 #[cfg(test)]
 #[path = "service_state_store_integration_tests.rs"]
 mod state_store_integration_tests;

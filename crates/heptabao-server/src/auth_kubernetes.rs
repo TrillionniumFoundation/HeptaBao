@@ -577,6 +577,7 @@ impl AuthState {
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
+        let (ttl, _) = self.auth_mount_token_limits(scope, ttl, ttl)?;
         if policies.contains("root") || ttl == 0 || ttl > MAX_LOGIN_TTL {
             return Err(denied());
         }

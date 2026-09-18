@@ -337,6 +337,10 @@ struct AuthMount {
     revision: u64,
     kind: String,
     description: String,
+    #[serde(default)]
+    default_lease_ttl: u64,
+    #[serde(default)]
+    max_lease_ttl: u64,
 }
 
 #[derive(Clone, Copy)]
@@ -356,6 +360,8 @@ impl AuthMount {
             revision: 1,
             kind: kind.into(),
             description: description.into(),
+            default_lease_ttl: 0,
+            max_lease_ttl: 0,
         }
     }
 
@@ -369,8 +375,8 @@ impl AuthMount {
             "seal_wrap": false,
             "options": {},
             "config": {
-                "default_lease_ttl": 0,
-                "max_lease_ttl": 0,
+                "default_lease_ttl": self.default_lease_ttl,
+                "max_lease_ttl": self.max_lease_ttl,
                 "force_no_cache": false
             }
         })
@@ -1405,7 +1411,8 @@ impl AuthState {
         if tune {
             return match method {
                 "GET" => {
-                    self.permission(principal, namespace, &route, "read", now)?;
+                    let actor = self.permission(principal, namespace, &route, "read", now)?;
+                    self.authorize_request(actor, namespace, &route, "sudo", now)?;
                     reject_unknown(body, &[])?;
                     let entry = self
                         .effective_auth_mounts(namespace)
@@ -1413,15 +1420,30 @@ impl AuthState {
                         .cloned()
                         .ok_or_else(|| err(404, "auth mount not found"))?;
                     Ok(response(
-                        json!({"description":entry.description,"revision":entry.revision,
-                            "accessor":entry.accessor.as_deref().unwrap_or("")}),
+                        json!({
+                            "default_lease_ttl":entry.default_lease_ttl,
+                            "description":entry.description,
+                            "force_no_cache":false,
+                            "max_lease_ttl":entry.max_lease_ttl,
+                            "token_type":"default-service",
+                            "revision":entry.revision,
+                            "accessor":entry.accessor.as_deref().unwrap_or("")
+                        }),
                         false,
                     ))
                 }
                 "POST" | "PUT" => {
                     let actor = self.permission(principal, namespace, &route, "update", now)?;
                     self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                    reject_unknown(body, &["description", "cas_revision"])?;
+                    reject_unknown(
+                        body,
+                        &[
+                            "description",
+                            "default_lease_ttl",
+                            "max_lease_ttl",
+                            "cas_revision",
+                        ],
+                    )?;
                     let mut entries = self.effective_auth_mounts(namespace);
                     let mut entry = entries
                         .get(mount)
@@ -1440,6 +1462,26 @@ impl AuthState {
                             entry.description = description.into();
                             changed = true;
                         }
+                    }
+                    let default_lease_ttl =
+                        duration(body, "default_lease_ttl", entry.default_lease_ttl)?;
+                    let max_lease_ttl =
+                        duration(body, "max_lease_ttl", entry.max_lease_ttl)?;
+                    if default_lease_ttl > MAX_TTL
+                        || max_lease_ttl > MAX_TTL
+                        || default_lease_ttl > 0
+                            && max_lease_ttl > 0
+                            && default_lease_ttl > max_lease_ttl
+                    {
+                        return Err(bad("invalid auth mount TTL limits"));
+                    }
+                    if entry.default_lease_ttl != default_lease_ttl {
+                        entry.default_lease_ttl = default_lease_ttl;
+                        changed = true;
+                    }
+                    if entry.max_lease_ttl != max_lease_ttl {
+                        entry.max_lease_ttl = max_lease_ttl;
+                        changed = true;
                     }
                     if changed {
                         entry.revision = next_auth_revision(entry.revision)?;
@@ -1791,6 +1833,7 @@ impl AuthState {
             }
             let ttl = role.token_ttl.min(remaining).max(1);
             let max_ttl = role.token_max_ttl.min(remaining).max(ttl);
+            let (ttl, max_ttl) = self.auth_mount_token_limits(scope, ttl, max_ttl)?;
             let fingerprint = verified.replay_fingerprint();
             let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
             let identity = ExternalIdentity {
@@ -2724,13 +2767,15 @@ impl AuthState {
         {
             return Err(bad("policies endpoint accepts only policy fields"));
         }
+        let (mount_default_ttl, mount_max_ttl) =
+            self.auth_mount_token_limits(scope, 0, 0)?;
         let mut user = existing.clone().unwrap_or(User {
             salt: vec![],
             verifier: vec![],
             rounds: PASSWORD_ROUNDS,
             policies: BTreeSet::from(["default".into()]),
-            token_ttl: DEFAULT_TTL,
-            token_max_ttl: MAX_TTL,
+            token_ttl: mount_default_ttl,
+            token_max_ttl: mount_max_ttl,
             token_num_uses: 0,
             mfa: None,
         });
@@ -2793,6 +2838,40 @@ impl AuthState {
         user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
+    }
+
+    fn auth_mount_token_limits(
+        &self,
+        scope: AuthScope<'_>,
+        ttl: u64,
+        max_ttl: u64,
+    ) -> Result<(u64, u64), AuthError> {
+        let mount = self
+            .effective_auth_mounts(scope.namespace)
+            .get(scope.mount)
+            .cloned()
+            .ok_or_else(|| err(404, "auth mount not found"))?;
+        let mount_default = if mount.default_lease_ttl == 0 {
+            DEFAULT_TTL
+        } else {
+            mount.default_lease_ttl
+        };
+        let mount_max = if mount.max_lease_ttl == 0 {
+            MAX_TTL
+        } else {
+            mount.max_lease_ttl
+        };
+        if mount_default == 0 || mount_default > mount_max || mount_max > MAX_TTL {
+            return Err(bad("invalid persisted auth mount TTL limits"));
+        }
+        let mut effective_ttl = if ttl == 0 { mount_default } else { ttl };
+        let mut effective_max = if max_ttl == 0 { mount_max } else { max_ttl };
+        effective_max = effective_max.min(mount_max);
+        effective_ttl = effective_ttl.min(effective_max);
+        if effective_ttl == 0 || effective_ttl > effective_max {
+            return Err(bad("invalid effective auth token TTL limits"));
+        }
+        Ok((effective_ttl, effective_max))
     }
 
     fn validate_assignment(
@@ -2863,11 +2942,13 @@ impl AuthState {
                 None
             }
         };
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
         let mut token = login_token(
             namespace,
             user.policies.clone(),
-            user.token_ttl,
-            user.token_max_ttl,
+            token_ttl,
+            token_max_ttl,
             user.token_num_uses,
             format!("userpass-{name}"),
             now,
@@ -2957,11 +3038,13 @@ impl AuthState {
                 return Err(bad("AppRole requires secret_id binding"));
             }
             reject_alias_pair(body, "policies", "token_policies")?;
+            let (mount_default_ttl, mount_max_ttl) =
+                self.auth_mount_token_limits(scope, 0, 0)?;
             let mut role = existing.unwrap_or(Role {
                 role_id: random_id("role.")?,
                 policies: BTreeSet::from(["default".into()]),
-                token_ttl: DEFAULT_TTL,
-                token_max_ttl: MAX_TTL,
+                token_ttl: mount_default_ttl,
+                token_max_ttl: mount_max_ttl,
                 token_num_uses: 0,
                 secret_id_ttl: DEFAULT_TTL,
                 secret_id_num_uses: 1,
@@ -3128,11 +3211,13 @@ impl AuthState {
         if let Some(remaining) = &mut secret.uses_remaining {
             *remaining -= 1;
         }
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
         let mut token = login_token(
             namespace,
             role.policies.clone(),
-            role.token_ttl,
-            role.token_max_ttl,
+            token_ttl,
+            token_max_ttl,
             role.token_num_uses,
             format!("approle-{name}"),
             now,
