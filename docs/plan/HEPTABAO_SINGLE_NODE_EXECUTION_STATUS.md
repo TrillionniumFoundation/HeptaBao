@@ -36,7 +36,7 @@ The comparison uses the official OpenBao 2.6.2 Linux amd64 release, verified aga
 | Area | Remaining work |
 |---|---|
 | OpenBao API/auth | Full error precedence/envelopes and ACL dialect; full identity/OIDC/JWKS/PEM configuration, Kubernetes, LDAP, certificates, cloud auth and broader MFA. The bounded pinned-key JWT profile is implemented, not full OpenBao JWT compatibility |
-| Engines | PKI, SSH, database/cloud credentials, full Transit options and dynamic lease revoke/renew workflows |
+| Engines/providers | PKI, SSH, qualified real database/cloud provider plugins, general/OpenBao-compatible plugin and lease APIs, and full Transit options. The bounded configured HeptaBao dynamic issue/renew/revoke path is source-integrated but is not a provider-qualification claim |
 | HA | Independent destructive qualification, membership/enrollment, rolling upgrades and complete admin compatibility for the implemented per-process Raft/mTLS/ReadIndex path; unsupported admin operations remain explicit failures |
 | Migration | Only explicit KV v2 history supported by the migration tool; deleted/destroyed/pruned histories, auth/identity/leases/Transit keys and full cutover remain blocked |
 | Operations | Qualify implemented compaction/backup/restore, audit rotation and bounded rate limiting; complete upgrade/remote archival/rollback anchoring, operator reconciliation, KMS/HSM and destructive platform evidence |
