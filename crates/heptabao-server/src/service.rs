@@ -1336,10 +1336,15 @@ impl Service {
             return Err(ServiceError::ReplayEpochMismatch);
         }
         if target_replay_epoch > current_replay_epoch {
-            if current_replay_epoch.checked_add(1) != Some(target_replay_epoch) {
-                return Err(ServiceError::ReplayEpochMismatch);
+            // A node can legitimately be offline across several committed
+            // retirement generations. It processed no requests in the skipped
+            // epochs, so advancing its *local* empty/current replay authority one
+            // authenticated epoch at a time is safe. Each step is crash durable;
+            // restart observes the durable frontier and resumes toward the Raft
+            // state instead of requiring an operator to delete a ledger.
+            while durable.replay_epoch() < target_replay_epoch {
+                durable.retire_replay_epoch()?;
             }
-            durable.retire_replay_epoch()?;
         }
         let current = durable.get("system", "state")?;
         let slot = match current.as_ref() {
