@@ -11,7 +11,7 @@ use std::{
     net::{IpAddr, SocketAddr, TcpListener, TcpStream},
     path::PathBuf,
     sync::{
-        Arc, Mutex,
+        Arc, Mutex, MutexGuard, TryLockError,
         atomic::{AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
@@ -22,6 +22,23 @@ const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
+const SERVICE_LOCK_WAIT: Duration = Duration::from_millis(250);
+
+fn bounded_lock<T>(mutex: &Mutex<T>) -> Result<MutexGuard<'_, T>, ()> {
+    let deadline = Instant::now() + SERVICE_LOCK_WAIT;
+    loop {
+        match mutex.try_lock() {
+            Ok(guard) => return Ok(guard),
+            Err(TryLockError::Poisoned(_)) => return Err(()),
+            Err(TryLockError::WouldBlock) => {
+                if Instant::now() >= deadline {
+                    return Err(());
+                }
+                std::thread::sleep(Duration::from_millis(1));
+            }
+        }
+    }
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -199,8 +216,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
-    service
-        .lock()
+    bounded_lock(&service)
         .map_err(|_| "service lock unavailable")?
         .install_outbound_endpoints(config.outbound_endpoints)?;
     if let Some(ha) = forwarding_ha {
@@ -209,7 +225,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
+            let response = match bounded_lock(&service) {
                 Ok(mut service) => service.handle_forwarded(crate::ServiceRequest {
                     method: &request.method,
                     path: &request.path,
@@ -299,7 +315,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let (response, head) = match parsed {
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
+                        let response = match bounded_lock(&service) {
                             Ok(mut service) => service.handle_request(crate::ServiceRequest {
                                 method: if is_head && request.wrap_ttl_seconds.is_none() {
                                     "GET"
@@ -343,7 +359,7 @@ fn audited_wire_rejection(
     status: u16,
     message: &'static str,
 ) -> Response {
-    match service.lock() {
+    match bounded_lock(service) {
         Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
         Err(_) => Response::error(503, "service state is unavailable"),
     }
@@ -809,6 +825,19 @@ mod tests {
         assert!(RateLimiter::new(0, 1, 64).is_err());
         assert!(RateLimiter::new(10, 10, 63).is_err());
         assert!(RateLimiter::new(100_001, 100_001, 64).is_err());
+    }
+    #[test]
+    fn service_lock_contention_has_a_fixed_upper_bound() {
+        let lock = Arc::new(Mutex::new(()));
+        let held = lock.lock().expect("test lock");
+        let started = Instant::now();
+        assert!(bounded_lock(&lock).is_err());
+        assert!(
+            started.elapsed() < Duration::from_secs(1),
+            "service lock contention exceeded the bounded wait"
+        );
+        drop(held);
+        assert!(bounded_lock(&lock).is_ok());
     }
     #[test]
     fn rejects_smuggling_duplicate_headers_and_ambiguous_paths() {
