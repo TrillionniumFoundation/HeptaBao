@@ -151,6 +151,25 @@ impl DatabaseMaintenance {
     }
 }
 
+impl DatabaseRequestWork {
+    pub(crate) fn execute(&self) -> Result<Value, Response> {
+        match &self.kind {
+            DatabaseRequestKind::Lease { plan, .. } => plan.execute(),
+            DatabaseRequestKind::VerifyConnection {
+                connection, outbound, ..
+            } => {
+                let result = (|| -> Result<Value, &'static str> {
+                    let mut pg = connection.session(outbound)?;
+                    let current_user = pg.scalar("SELECT current_user::text", &[])?;
+                    let protocol = pg.scalar("SELECT heptabao_provider.protocol()", &[])?;
+                    Ok(json!({"current_user":current_user,"protocol":protocol}))
+                })();
+                result.map_err(|_| failure("PostgreSQL provider verification failed"))
+            }
+        }
+    }
+}
+
 impl Drop for PrivateString {
     fn drop(&mut self) {
         self.0.zeroize();
