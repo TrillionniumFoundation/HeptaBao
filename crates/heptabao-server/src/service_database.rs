@@ -760,17 +760,13 @@ impl Service {
                             last_renewal: None,
                             seq: 1,
                             phase: Phase::PendingIssue,
-                            password: Some(PrivateString(password.clone())),
+                            password: Some(PrivateString(password)),
                             request_digest: String::new(),
                         };
                         lease.request_digest = digest_lease(&lease)?;
                         m.leases.insert(id.clone(), lease);
-                        let secret = PrivateString(password);
                         self.publish_database(state)?;
-                        self.execute_database_effect(ns, &mount, &id, now)?;
-                        Ok(Response::ok(
-                            json!({"lease_id":id,"lease_duration":expires-now,"renewable":true,"data":{"username":username,"password":secret.0}}),
-                        ))
+                        self.defer_database_effect(ns, &mount, &id, now)
                     }
                     _ => Err(Response::error(
                         501,
@@ -790,30 +786,25 @@ impl Service {
         self.state = Some(state);
         Ok(())
     }
-    fn execute_database_effect(
+    fn defer_database_effect(
         &mut self,
         ns: &str,
         mount: &str,
         id: &str,
         now: u64,
-    ) -> Result<(), Response> {
-        // Final current-fence check immediately before adapter entry. PostgreSQL
-        // also enforces the persisted per-lease sequence against delayed peers.
-        if let Some(ha) = &self.ha {
-            ha.lock()
-                .map_err(|_| failure("HA provider fence unavailable"))?
-                .ensure_linearizable()
-                .map_err(|_| failure("HA provider fence unavailable"))?;
+    ) -> Result<Response, Response> {
+        if self.pending_database_effect.is_some() {
+            return Err(failure("another database provider effect is already pending dispatch"));
         }
         let state = self
             .state
             .as_ref()
             .ok_or_else(|| failure("server sealed"))?;
-        let m = state
+        let database_mount = state
             .database
             .mount(ns, mount)
             .ok_or_else(|| failure("database mount disappeared"))?;
-        let lease = m
+        let lease = database_mount
             .leases
             .get(id)
             .cloned()
@@ -824,81 +815,94 @@ impl Service {
         ) {
             return Err(invalid("database effect is not pending"));
         }
-        let connection = m
+        let connection = database_mount
             .connections
             .get(&lease.db_name)
             .cloned()
             .ok_or_else(|| failure("provider configuration disappeared"))?;
-        let result = (|| -> Result<Value, &'static str> {
-            let mut pg = connection.session(&self.outbound)?;
-            let seq = lease.seq.to_string();
-            let expires = lease.expires.to_string();
-            pg.scalar(
-                "SELECT heptabao_provider.apply($1,$2,$3::bigint,$4,$5::bigint,$6,$7,$8)::text",
-                &[
-                    &lease.provider_id,
-                    &lease.username,
-                    &seq,
-                    action(&lease),
-                    &expires,
-                    &lease.provider_role,
-                    lease.password.as_ref().map(|p| p.0.as_str()).unwrap_or(""),
-                    &lease.request_digest,
-                ],
-            )?;
-            // Separate post-commit readback; returning a function row alone does
-            // not prove transaction commit or that sessions have terminated.
-            let observed = pg.scalar(
-                "SELECT heptabao_provider.observe($1)::text",
-                &[&lease.provider_id],
-            )?;
-            crate::auth::parse_strict_json(observed.as_bytes())
-                .map_err(|_| "invalid provider observation")
-        })();
-        let observed=result.map_err(|_|Response{status:503,body:json!({"errors":["provider outcome indeterminate; durable intent retained"],"lease_id":id,"reconcile_required":true})})?;
-        let matched = observed.get("found") == Some(&json!(true))
-            && observed["lease_id"] == lease.provider_id
-            && observed["username"] == lease.username
-            && observed["seq"].as_u64() == Some(lease.seq)
-            && observed["request_digest"] == lease.request_digest
-            && observed["action"] == action(&lease)
-            && observed["expires"].as_u64() == Some(lease.expires);
-        let valid = if lease.phase == Phase::PendingRevoke {
-            observed.get("login") == Some(&json!(false))
-                && observed["active_sessions"].as_u64() == Some(0)
-        } else {
-            observed.get("controlled") == Some(&json!(true))
-                && observed.get("login") == Some(&json!(true))
-                && lease.expires > now
-        };
-        if !matched || !valid {
-            return Err(Response {
-                status: 503,
-                body: json!({"errors":["provider completion not established; pending intent retained"],"lease_id":id,"reconcile_required":true}),
-            });
+        self.pending_database_effect = Some(DatabaseEffectPlan {
+            namespace: ns.to_owned(),
+            mount: mount.to_owned(),
+            now,
+            outbound: self.outbound.clone(),
+            ha: self.ha.clone(),
+            connection,
+            lease,
+        });
+        // This response never leaves the Service request wrapper: the wrapper
+        // either executes the plan synchronously or hands it to the HTTP layer.
+        Ok(Response::error(
+            500,
+            "database provider effect was not dispatched",
+        ))
+    }
+
+    pub(super) fn finalize_database_effect(
+        &mut self,
+        plan: &DatabaseEffectPlan,
+        provider_result: Result<(), Response>,
+    ) -> Response {
+        if let Err(error) = provider_result {
+            return error;
         }
-        let mut next = self.state.clone().ok_or_else(|| failure("server sealed"))?;
-        let current = next
+        // Provider completion has been observed. Revalidate cluster authority
+        // after the unlocked I/O window before publishing local completion.
+        if let Some(ha) = &self.ha
+            && ha
+                .lock()
+                .map_err(|_| failure("HA provider finalize fence unavailable"))
+                .and_then(|ha| {
+                    ha.ensure_linearizable()
+                        .map_err(|_| failure("HA provider finalize fence unavailable"))
+                })
+                .is_err()
+        {
+            return post_provider_publication_failure(
+                failure("HA provider finalize fence unavailable"),
+                &plan.lease.id,
+            );
+        }
+        let Some(mut next) = self.state.clone() else {
+            return post_provider_publication_failure(
+                failure("server sealed after provider entry"),
+                &plan.lease.id,
+            );
+        };
+        let Some(current) = next
             .database
-            .mount_mut(ns, mount)
+            .mount_mut(&plan.namespace, &plan.mount)
             .leases
-            .get_mut(id)
-            .ok_or_else(|| failure("lease disappeared"))?;
-        if current.seq != lease.seq || current.request_digest != lease.request_digest {
-            return Err(failure("lease fence changed"));
+            .get_mut(&plan.lease.id)
+        else {
+            return post_provider_publication_failure(
+                failure("lease disappeared after provider entry"),
+                &plan.lease.id,
+            );
+        };
+        if current.seq != plan.lease.seq
+            || current.request_digest != plan.lease.request_digest
+            || current.phase != plan.lease.phase
+        {
+            return post_provider_publication_failure(
+                failure("lease fence changed after provider entry"),
+                &plan.lease.id,
+            );
         }
         current.password = None;
-        current.phase = if lease.phase == Phase::PendingRevoke {
+        current.phase = if plan.lease.phase == Phase::PendingRevoke {
             Phase::Revoked
         } else {
             Phase::Active
         };
-        if lease.phase == Phase::PendingRenew {
-            current.last_renewal = Some(now);
+        if plan.lease.phase == Phase::PendingRenew {
+            current.last_renewal = Some(plan.now);
         }
-        self.publish_database(next)
-            .map_err(|error| post_provider_publication_failure(error, id))
+        if let Err(error) = self.publish_database(next) {
+            return post_provider_publication_failure(error, &plan.lease.id);
+        }
+        plan.success_response().unwrap_or_else(|error| error)
     }
+
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let l = state
             .database
@@ -1062,10 +1066,7 @@ impl Service {
             current.phase = Phase::PendingRenew;
             current.request_digest = digest_lease(current)?;
             self.publish_database(state)?;
-            self.execute_database_effect(ns, &mount, id, now)?;
-            return Ok(Response::ok(
-                json!({"lease_id":id,"lease_duration":expiry-now,"renewable":true}),
-            ));
+            return self.defer_database_effect(ns, &mount, id, now);
         }
         if l.phase == Phase::Revoked {
             return Ok(Response {
@@ -1075,11 +1076,7 @@ impl Service {
         }
         Self::stage_revoke(&mut state, ns, &mount, id)?;
         self.publish_database(state)?;
-        self.execute_database_effect(ns, &mount, id, now)?;
-        Ok(Response {
-            status: 204,
-            body: Value::Null,
-        })
+        self.defer_database_effect(ns, &mount, id, now)
     }
     fn database_owner_active(state: &State, owner: &LeaseIssuer, ns: &str) -> bool {
         owner.entity_id.as_deref().is_none_or(|id| {
@@ -1143,20 +1140,30 @@ impl Service {
             .map_err(|_| "cannot stage provider revoke")?;
         self.publish_database(state)
             .map_err(|_| "provider intent not committed")?;
-        let result = self.execute_database_effect(&ns, &mount, &id, now);
+        self.defer_database_effect(&ns, &mount, &id, now)
+            .map_err(|_| "provider plan unavailable")?;
+        let plan = self
+            .pending_database_effect
+            .take()
+            .ok_or("provider plan unavailable")?;
+        let provider_result = plan.execute();
+        let response = self.finalize_database_effect(&plan, provider_result);
+        let completed = response.status < 300;
         if self
             .audit_event(
                 "provider-response",
                 &fingerprint,
                 now,
-                Some(if result.is_ok() { 204 } else { 503 }),
+                Some(if completed { 204 } else { 503 }),
             )
             .is_err()
         {
             self.recovery_required = true;
             return Err("provider result audit unavailable");
         }
-        result.map_err(|_| "provider remains indeterminate")?;
+        if !completed {
+            return Err("provider remains indeterminate");
+        }
         Ok(true)
     }
 }
