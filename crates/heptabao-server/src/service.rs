@@ -1135,7 +1135,13 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
-        let mut transaction = admitted.clone();
+        // Response wrapping is the only normal dispatch path that needs an
+        // in-memory rollback snapshot after the domain handler succeeds. Avoid
+        // cloning the complete State for every ordinary request: move the
+        // admitted candidate into dispatch and retain a rollback copy only when
+        // wrapping was explicitly requested.
+        let wrapping_rollback = wrap_ttl_seconds.map(|_| admitted.clone());
+        let mut transaction = admitted;
         if let Err(error) =
             transaction
                 .auth
@@ -1222,6 +1228,8 @@ impl Service {
                 // the earlier finite-use token admission deliberately stays consumed.
                 Err(error) => {
                     response = Response::error(error.status, &error.message);
+                    admitted = wrapping_rollback
+                        .expect("wrapping rollback exists when a wrapping TTL was requested");
                 }
             }
         } else {
