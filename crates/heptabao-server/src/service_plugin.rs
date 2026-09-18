@@ -2,8 +2,8 @@ use super::*;
 use heptabao_domain::{CanonicalPath, Id, SecretValue};
 use heptabao_plugin_contracts::{PluginDescriptor, PluginKind, PluginRegistry};
 use heptabao_plugin_host::{
-    CommandSandboxRunner, PluginHost, PluginHostError, PluginLimits, PluginManifest,
-    PluginOperation, SandboxBinding, SecretEnvironment,
+    CommandSandboxRunner, PluginHost, PluginHostError, PluginHostState, PluginLimits,
+    PluginManifest, PluginOperation, SandboxBinding, SecretEnvironment,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -161,6 +161,135 @@ fn failure(error: PluginHostError) -> Response {
 }
 
 impl Service {
+    pub(super) fn plugin_catalog_handles(path: &str) -> bool {
+        path == "sys/plugins/catalog/secret"
+            || path.starts_with("sys/plugins/catalog/secret/")
+    }
+
+    pub(super) fn validate_plugin_mount_request(
+        &self,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<(), Response> {
+        if !matches!(method, "POST" | "PUT")
+            || !path.starts_with("sys/mounts/")
+            || body.get("type").and_then(Value::as_str) != Some("plugin")
+        {
+            return Ok(());
+        }
+        let plugin_id = body
+            .get("config")
+            .and_then(Value::as_object)
+            .and_then(|config| config.get("plugin_id"))
+            .and_then(Value::as_str)
+            .ok_or_else(|| Response::error(400, "plugin mount requires config.plugin_id"))?;
+        if !self.plugins.contains_key(plugin_id) {
+            return Err(Response::error(
+                400,
+                "plugin mount references a plugin not admitted by this deployment",
+            ));
+        }
+        Ok(())
+    }
+
+    pub(super) fn plugin_catalog_route(
+        &self,
+        state: &State,
+        principal: Option<&Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        let RequestView {
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            wrap_ttl_seconds,
+            ..
+        } = request;
+        if !namespace.is_empty() {
+            return Response::error(403, "plugin catalog is root-namespace only");
+        }
+        let Some(principal) = principal else {
+            return Response::error(403, "missing client token");
+        };
+        let capability = if matches!(*method, "GET" | "HEAD") {
+            "read"
+        } else if matches!(*method, "LIST" | "SCAN") {
+            "list"
+        } else {
+            "update"
+        };
+        if let Err(error) = state
+            .auth
+            .authorize_sudo_request(principal, namespace, path, capability, *now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if wrap_ttl_seconds.is_some() {
+            return Response::error(501, "plugin catalog responses cannot be wrapped");
+        }
+        if body.as_object().is_none_or(|object| !object.is_empty()) {
+            return Response::error(400, "plugin catalog accepts an empty request body");
+        }
+        let suffix = path
+            .strip_prefix("sys/plugins/catalog/secret")
+            .unwrap_or_default();
+        if suffix.is_empty() {
+            if !matches!(*method, "GET" | "HEAD" | "LIST" | "SCAN") {
+                return Response::error(
+                    501,
+                    "runtime plugin catalog mutation is not implemented",
+                );
+            }
+            return Response::ok(json!({
+                "data": {
+                    "keys": self.plugins.keys().cloned().collect::<Vec<_>>()
+                }
+            }));
+        }
+        let Some(plugin_id) = suffix.strip_prefix('/').filter(|value| {
+            !value.is_empty() && !value.contains('/')
+        }) else {
+            return Response::error(404, "plugin catalog entry not found");
+        };
+        if !matches!(*method, "GET" | "HEAD") {
+            return Response::error(
+                501,
+                "runtime plugin catalog mutation is not implemented",
+            );
+        }
+        let Some(host) = self.plugins.get(plugin_id) else {
+            return Response::error(404, "plugin catalog entry not found");
+        };
+        let host = match host.lock() {
+            Ok(host) => host,
+            Err(_) => return Response::error(503, "plugin host lock unavailable"),
+        };
+        let manifest = host.manifest();
+        let descriptor = manifest.descriptor();
+        let host_state = match host.state() {
+            PluginHostState::Active => "active",
+            PluginHostState::ReconciliationRequired => "reconciliation_required",
+            PluginHostState::Revoked => "revoked",
+        };
+        let limits = manifest.limits();
+        Response::ok(json!({
+            "data": {
+                "name": plugin_id,
+                "type": "secret",
+                "sha256": hex(descriptor.checksum()),
+                "protocol_version": descriptor.protocol_version(),
+                "generation": descriptor.generation(),
+                "state": host_state,
+                "maximum_request_bytes": limits.maximum_request_bytes,
+                "maximum_response_bytes": limits.maximum_response_bytes,
+                "timeout_ms": limits.timeout_ms
+            }
+        }))
+    }
+
     pub(super) fn plugin_secret_handles(&self, state: &State, namespace: &str, path: &str) -> bool {
         state.engines.plugin_secret_mount(namespace, path).is_some()
     }
