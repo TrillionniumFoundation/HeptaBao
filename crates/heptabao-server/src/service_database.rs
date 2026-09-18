@@ -201,16 +201,15 @@ impl DatabaseEffectPlan {
                     "reconcile_required":true
                 }),
             })?;
-        let observed = crate::auth::parse_strict_json(observed.as_bytes()).map_err(|_| {
-            Response {
+        let observed =
+            crate::auth::parse_strict_json(observed.as_bytes()).map_err(|_| Response {
                 status: 503,
                 body: json!({
                     "errors":["provider outcome indeterminate; durable intent retained"],
                     "lease_id":self.lease.id,
                     "reconcile_required":true
                 }),
-            }
-        })?;
+            })?;
         let matched = observed.get("found") == Some(&json!(true))
             && observed["lease_id"] == self.lease.provider_id
             && observed["username"] == self.lease.username
@@ -839,12 +838,11 @@ impl Service {
         let Some(mut state) = self.state.clone() else {
             return failure("server sealed after database configuration validation");
         };
-        let current_digest = match database_mount_digest(
-            state.database.mount(&plan.namespace, &plan.mount),
-        ) {
-            Ok(digest) => digest,
-            Err(error) => return error,
-        };
+        let current_digest =
+            match database_mount_digest(state.database.mount(&plan.namespace, &plan.mount)) {
+                Ok(digest) => digest,
+                Err(error) => return error,
+            };
         if current_digest != plan.expected_mount_digest {
             return Response::error(
                 409,
@@ -854,12 +852,7 @@ impl Service {
         if state
             .database
             .mount(&plan.namespace, &plan.mount)
-            .is_some_and(|mount| {
-                mount
-                    .leases
-                    .values()
-                    .any(|lease| lease.db_name == plan.key)
-            })
+            .is_some_and(|mount| mount.leases.values().any(|lease| lease.db_name == plan.key))
         {
             return Response::error(
                 409,
@@ -889,7 +882,9 @@ impl Service {
         now: u64,
     ) -> Result<Response, Response> {
         if self.pending_database_effect.is_some() {
-            return Err(failure("another database provider effect is already pending dispatch"));
+            return Err(failure(
+                "another database provider effect is already pending dispatch",
+            ));
         }
         let state = self
             .state
@@ -1276,7 +1271,6 @@ impl Service {
         }
         Ok(true)
     }
-
 }
 
 #[cfg(test)]
