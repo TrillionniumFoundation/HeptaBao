@@ -1220,16 +1220,21 @@
       "positive": "Deliver framed audit events to declared socket modes",
       "hostile": "Reject unexpected peers and partial-frame acceptance",
       "lifecycle": "Bound backpressure, reconnect and shutdown while preserving audit-before-effect",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs",
+        "crates/heptabao-server/src/http.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/audit_socket_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Blocking, reconnect, partial write and lifecycle behavior."
+      "remaining_scope": "Deployment-owned bounded TCP socket delivery is executable alongside the mandatory authenticated file device, with API rebinding denied, write deadlines bounded and nonblocking failures counted. UDP/Unix modes, API-created devices, complete OpenBao formatting/options, multi-node collector qualification and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
