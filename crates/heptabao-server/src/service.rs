@@ -222,6 +222,74 @@ impl AuditSocketConfig {
     }
 }
 
+fn default_audit_syslog_facility() -> String {
+    "AUTH".into()
+}
+
+fn default_audit_syslog_tag() -> String {
+    "heptabao".into()
+}
+
+fn default_audit_syslog_socket_path() -> PathBuf {
+    PathBuf::from("/dev/log")
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuditSyslogConfig {
+    #[serde(default = "default_audit_syslog_facility")]
+    pub facility: String,
+    #[serde(default = "default_audit_syslog_tag")]
+    pub tag: String,
+    #[serde(default = "default_audit_syslog_socket_path")]
+    pub socket_path: PathBuf,
+}
+
+impl AuditSyslogConfig {
+    fn validate(mut self) -> Result<Self, String> {
+        self.facility.make_ascii_uppercase();
+        if syslog_facility_code(&self.facility).is_none()
+            || self.tag.is_empty()
+            || self.tag.len() > 64
+            || !self
+                .tag
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+            || !self.socket_path.is_absolute()
+        {
+            return Err("invalid bounded syslog audit configuration".into());
+        }
+        Ok(self)
+    }
+}
+
+fn syslog_facility_code(facility: &str) -> Option<u8> {
+    match facility {
+        "KERN" => Some(0),
+        "USER" => Some(1),
+        "MAIL" => Some(2),
+        "DAEMON" => Some(3),
+        "AUTH" => Some(4),
+        "SYSLOG" => Some(5),
+        "LPR" => Some(6),
+        "NEWS" => Some(7),
+        "UUCP" => Some(8),
+        "CRON" => Some(9),
+        "AUTHPRIV" => Some(10),
+        "FTP" => Some(11),
+        "LOCAL0" => Some(16),
+        "LOCAL1" => Some(17),
+        "LOCAL2" => Some(18),
+        "LOCAL3" => Some(19),
+        "LOCAL4" => Some(20),
+        "LOCAL5" => Some(21),
+        "LOCAL6" => Some(22),
+        "LOCAL7" => Some(23),
+        _ => None,
+    }
+}
+
+
 impl WireRejection {
     fn code(self) -> &'static [u8] {
         match self {
@@ -415,6 +483,8 @@ pub struct Service {
     audit_http_url: Option<String>,
     audit_socket: Option<AuditSocketConfig>,
     audit_socket_failures: u64,
+    audit_syslog: Option<AuditSyslogConfig>,
+    audit_syslog_failures: u64,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
@@ -487,6 +557,22 @@ impl Service {
         }
         self.audit_socket = config.map(AuditSocketConfig::validate).transpose()?;
         self.audit_socket_failures = 0;
+        Ok(())
+    }
+
+    /// Install an optional local Unix syslog audit device before unseal.
+    /// The destination defaults to the host's local /dev/log agent and is never
+    /// mutable through the HTTP API. The mandatory authenticated file sink stays
+    /// authoritative if the local syslog agent is unavailable.
+    pub fn install_audit_syslog(
+        &mut self,
+        config: Option<AuditSyslogConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("audit syslog policy is immutable while unsealed".into());
+        }
+        self.audit_syslog = config.map(AuditSyslogConfig::validate).transpose()?;
+        self.audit_syslog_failures = 0;
         Ok(())
     }
 
@@ -581,6 +667,8 @@ impl Service {
             audit_http_url: None,
             audit_socket: None,
             audit_socket_failures: 0,
+            audit_syslog: None,
+            audit_syslog_failures: 0,
             durable: None,
             state: None,
             state_digest: None,
@@ -3375,6 +3463,24 @@ impl Service {
                 })
             })
         };
+        let syslog_device = || {
+            self.audit_syslog.as_ref().map(|config| {
+                json!({
+                    "type": "syslog",
+                    "accessor": "audit_syslog",
+                    "revision": 1,
+                    "description": "HeptaBao deployment-owned local Unix syslog audit device",
+                    "options": {
+                        "facility": config.facility.as_str(),
+                        "tag": config.tag.as_str(),
+                    },
+                    "local": true,
+                    "log_raw": false,
+                    "seal_wrap": false,
+                    "failed_writes": self.audit_syslog_failures,
+                })
+            })
+        };
         let path = path.trim_end_matches('/');
         match (path, method) {
             ("sys/audit", "GET" | "LIST") => {
@@ -3386,6 +3492,9 @@ impl Service {
                 if let Some(socket) = socket_device() {
                     devices.insert("socket/".into(), socket);
                 }
+                if let Some(syslog) = syslog_device() {
+                    devices.insert("syslog/".into(), syslog);
+                }
                 Response::ok(json!({"data":devices}))
             }
             ("sys/audit/file", "GET") => Response::ok(json!({"data":device()})),
@@ -3395,6 +3504,10 @@ impl Service {
             },
             ("sys/audit/socket", "GET") => match socket_device() {
                 Some(socket) => Response::ok(json!({"data":socket})),
+                None => Response::error(404, "audit device not found"),
+            },
+            ("sys/audit/syslog", "GET") => match syslog_device() {
+                Some(syslog) => Response::ok(json!({"data":syslog})),
                 None => Response::error(404, "audit device not found"),
             },
             ("sys/audit/file", "POST" | "PUT") => {
@@ -3484,10 +3597,15 @@ impl Service {
                 409,
                 "socket audit collector is fixed by trusted process configuration",
             ),
+            ("sys/audit/syslog", "POST" | "PUT" | "DELETE") => Response::error(
+                409,
+                "syslog audit device is fixed by trusted process configuration",
+            ),
             ("sys/audit", _)
             | ("sys/audit/file", _)
             | ("sys/audit/http", _)
-            | ("sys/audit/socket", _) => Response::error(405, "unsupported sys/audit method"),
+            | ("sys/audit/socket", _)
+            | ("sys/audit/syslog", _) => Response::error(405, "unsupported sys/audit method"),
             _ => Response::error(404, "audit device not found"),
         }
     }
@@ -3598,6 +3716,11 @@ impl Service {
         {
             self.audit_socket_failures = self.audit_socket_failures.saturating_add(1);
         }
+        if let Some(config) = self.audit_syslog.as_ref()
+            && write_audit_syslog(config, &bytes).is_err()
+        {
+            self.audit_syslog_failures = self.audit_syslog_failures.saturating_add(1);
+        }
         self.audit_sequence = sequence;
         self.audit_previous.copy_from_slice(tag.as_ref());
         Ok(())
@@ -3609,6 +3732,44 @@ fn write_audit_socket(config: AuditSocketConfig, bytes: &[u8]) -> io::Result<()>
     stream.set_write_timeout(Some(timeout))?;
     stream.write_all(bytes)?;
     stream.flush()
+}
+
+#[cfg(unix)]
+fn write_audit_syslog(config: &AuditSyslogConfig, bytes: &[u8]) -> io::Result<()> {
+    use std::os::unix::net::UnixDatagram;
+
+    let facility = syslog_facility_code(&config.facility)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid syslog facility"))?;
+    let priority = facility
+        .checked_mul(8)
+        .and_then(|value| value.checked_add(6))
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid syslog priority"))?;
+    let mut frame = Vec::with_capacity(bytes.len().saturating_add(config.tag.len() + 16));
+    write!(&mut frame, "<{priority}>{}: ", config.tag)?;
+    frame.extend_from_slice(bytes);
+    if frame.len() > 64 * 1024 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "bounded syslog datagram exceeds 64 KiB",
+        ));
+    }
+    let socket = UnixDatagram::unbound()?;
+    socket.connect(&config.socket_path)?;
+    if socket.send(&frame)? != frame.len() {
+        return Err(io::Error::new(
+            io::ErrorKind::WriteZero,
+            "short syslog datagram write",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn write_audit_syslog(_config: &AuditSyslogConfig, _bytes: &[u8]) -> io::Result<()> {
+    Err(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "syslog audit is supported only on Unix",
+    ))
 }
 
 fn health_status(
