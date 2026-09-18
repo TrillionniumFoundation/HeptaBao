@@ -18,8 +18,6 @@ jobs:
     timeout-minutes: 30
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
-      HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
     steps:
       - name: Checkout immutable exact head without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -28,6 +26,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Bind runner-local Oracle paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'HB_ORACLE_BINARY=%s\n' "$RUNNER_TEMP/heptabao-official-oracle/bao" >> "$GITHUB_ENV"
+          printf 'HB_ORACLE_ARCHIVE=%s\n' "$RUNNER_TEMP/heptabao-official-oracle/oracle-official.tar.gz" >> "$GITHUB_ENV"
       - name: Verify exact source identity
         shell: bash
         run: |
