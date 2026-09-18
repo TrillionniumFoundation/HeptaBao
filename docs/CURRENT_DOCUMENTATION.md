@@ -37,7 +37,7 @@ The runnable server composes real TLS, private persistent authentication/ACL, bo
 
 ## Module documentation
 
-Current content binding is `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+Current source authority is the exact Git commit/tree exercised by CI. `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is a retained reproducible diagnostic snapshot, not a second source authority.
 Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
 source tables; those tables are historical, not current API inventories.
 
