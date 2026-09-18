@@ -151,6 +151,23 @@ def validate(root: Path = ROOT) -> list[str]:
             text = (root / "docs/architecture" / historical).read_text()
             if "Historical target architecture" not in text or "HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md" not in text:
                 errors.append(f"{historical}: target architecture needs current runtime navigation")
+
+        capacity_path = root / "docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md"
+        capacity = capacity_path.read_text()
+        stale_ha_claims = (
+            "HA mode deliberately rejects replay retirement",
+            "When HA is enabled the route returns 409",
+        )
+        for claim in stale_ha_claims:
+            if claim in capacity:
+                errors.append(f"capacity guide retains stale HA replay claim: {claim}")
+        for marker in (
+            "Raft-coordinated transition",
+            "missing multiple epochs",
+            "forced snapshot installation across epochs",
+        ):
+            if marker not in capacity:
+                errors.append(f"capacity guide lacks current HA replay lifecycle marker: {marker}")
     except (OSError, ValueError, KeyError, TypeError) as error:
         errors.append(f"current documentation semantics: {error}")
     return errors
