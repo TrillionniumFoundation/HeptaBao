@@ -483,10 +483,12 @@ impl Service {
             path,
             body,
             now,
+            token,
             wrap_ttl_seconds,
             ..
         } = request;
         let now = (*now).max(state.database.clock);
+        let fingerprint = self.request_fingerprint(method, path, ns, token);
         let execute = (|| -> Result<Response, Response> {
             let p = principal.ok_or_else(|| Response::error(403, "missing client token"))?;
             let capability = match *method {
@@ -596,35 +598,14 @@ impl Service {
                             password: PrivateString(password),
                             allowed_roles,
                         };
-                        let mut pg = connection.session(&self.outbound).map_err(failure)?;
-                        let response = pg
-                            .scalar("SELECT current_user::text", &[])
-                            .map_err(failure)?;
-                        if response != connection.username {
-                            return Err(failure("PostgreSQL manager identity mismatch"));
-                        }
-                        if pg
-                            .scalar("SELECT heptabao_provider.protocol()", &[])
-                            .map_err(failure)?
-                            != "heptabao-postgresql-provider-v1"
-                        {
-                            return Err(failure(
-                                "PostgreSQL provider contract is not installed or mismatched",
-                            ));
-                        }
-                        let m = state.database.mount_mut(ns, &mount);
-                        if m.connections.len() >= 16 && !m.connections.contains_key(key) {
-                            return Err(Response::error(
-                                507,
-                                "database connection capacity exhausted",
-                            ));
-                        }
-                        m.connections.insert(key.into(), connection);
-                        self.publish_database(state)?;
-                        Ok(Response {
-                            status: 204,
-                            body: Value::Null,
-                        })
+                        self.stage_database_connection_verification(
+                            ns,
+                            &mount,
+                            key,
+                            connection,
+                            fingerprint.clone(),
+                            now,
+                        )
                     }
                     ("config", "GET") => {
                         fields(body, &[])?;
@@ -758,10 +739,19 @@ impl Service {
                         m.leases.insert(id.clone(), lease);
                         let secret = PrivateString(password);
                         self.publish_database(state)?;
-                        self.execute_database_effect(ns, &mount, &id, now)?;
-                        Ok(Response::ok(
-                            json!({"lease_id":id,"lease_duration":expires-now,"renewable":true,"data":{"username":username,"password":secret.0}}),
-                        ))
+                        self.stage_database_effect_request(
+                            ns,
+                            &mount,
+                            &id,
+                            now,
+                            fingerprint.clone(),
+                            DatabaseRequestSuccess::Credentials {
+                                lease_id: id,
+                                lease_duration: expires - now,
+                                username,
+                                password: secret,
+                            },
+                        )
                     }
                     _ => Err(Response::error(
                         501,
@@ -1228,10 +1218,17 @@ impl Service {
             current.phase = Phase::PendingRenew;
             current.request_digest = digest_lease(current)?;
             self.publish_database(state)?;
-            self.execute_database_effect(ns, &mount, id, now)?;
-            return Ok(Response::ok(
-                json!({"lease_id":id,"lease_duration":expiry-now,"renewable":true}),
-            ));
+            return self.stage_database_effect_request(
+                ns,
+                &mount,
+                id,
+                now,
+                fingerprint.clone(),
+                DatabaseRequestSuccess::Renewed {
+                    lease_id: id.to_owned(),
+                    lease_duration: expiry - now,
+                },
+            );
         }
         if l.phase == Phase::Revoked {
             return Ok(Response {
@@ -1241,11 +1238,14 @@ impl Service {
         }
         Self::stage_revoke(&mut state, ns, &mount, id)?;
         self.publish_database(state)?;
-        self.execute_database_effect(ns, &mount, id, now)?;
-        Ok(Response {
-            status: 204,
-            body: Value::Null,
-        })
+        self.stage_database_effect_request(
+            ns,
+            &mount,
+            id,
+            now,
+            fingerprint.clone(),
+            DatabaseRequestSuccess::NoContent,
+        )
     }
     fn database_owner_active(state: &State, owner: &LeaseIssuer, ns: &str) -> bool {
         owner.entity_id.as_deref().is_none_or(|id| {
