@@ -39,7 +39,7 @@ KIND_SHA256 = 'eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa'
 NODE_IMAGE = 'kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f'
 DOCKER_SOCKET = 'unix:///var/run/docker.sock'
 AUDIENCE = 'heptabao-real-kubernetes'
-EXPECTED_CHECKS = 44
+EXPECTED_CHECKS = 45
 
 
 class PrerequisiteMissing(Exception):
