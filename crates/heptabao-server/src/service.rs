@@ -148,6 +148,71 @@ struct RekeyState {
     verification_provided: BTreeMap<u8, SecretShare>,
 }
 
+#[derive(Debug)]
+struct CowOwner<T>(Arc<T>);
+
+impl<T> Clone for CowOwner<T> {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl<T> From<T> for CowOwner<T> {
+    fn from(value: T) -> Self {
+        Self(Arc::new(value))
+    }
+}
+
+impl<T> Default for CowOwner<T>
+where
+    T: Default,
+{
+    fn default() -> Self {
+        Self::from(T::default())
+    }
+}
+
+impl<T> std::ops::Deref for CowOwner<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref()
+    }
+}
+
+impl<T> std::ops::DerefMut for CowOwner<T>
+where
+    T: Clone,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl<T> Serialize for CowOwner<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T> Deserialize<'de> for CowOwner<T>
+where
+    T: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        T::deserialize(deserializer).map(Self::from)
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -158,15 +223,15 @@ struct State {
     /// replay ledger before publishing state for the new epoch.
     #[serde(default, skip_serializing_if = "replay_epoch_is_zero")]
     replay_epoch: u64,
-    auth: AuthState,
-    engines: EngineState,
+    auth: CowOwner<AuthState>,
+    engines: CowOwner<EngineState>,
     #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
-    database: database::DatabaseState,
+    database: CowOwner<database::DatabaseState>,
     #[serde(
         default,
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
     )]
-    raft_admin: raft_admin::RaftAdminState,
+    raft_admin: CowOwner<raft_admin::RaftAdminState>,
 }
 
 fn replay_epoch_is_zero(value: &u64) -> bool {
@@ -1594,8 +1659,8 @@ impl Service {
                     return error;
                 }
                 if response.mutated {
-                    state.auth = auth;
-                    state.engines = engines;
+                    state.auth = auth.into();
+                    state.engines = engines.into();
                 }
                 return Response {
                     status: response.status,
@@ -2023,10 +2088,10 @@ impl Service {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
-            auth,
-            engines: EngineState::default(),
-            database: database::DatabaseState::default(),
-            raft_admin: raft_admin::RaftAdminState::default(),
+            auth: auth.into(),
+            engines: EngineState::default().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
         };
         let mut stage = match InitializationStage::create(&self.data_dir) {
             Ok(value) => value,
@@ -4405,6 +4470,32 @@ pub(crate) fn erase_json(value: &mut Value) {
         _ => {}
     }
     *value = Value::Null;
+}
+
+#[cfg(test)]
+mod cow_owner_tests {
+    use super::CowOwner;
+    use std::collections::BTreeMap;
+
+    #[test]
+    fn serialization_is_transparent_and_mutation_detaches() -> Result<(), Box<dyn std::error::Error>>
+    {
+        let plain = BTreeMap::from([("alpha".to_owned(), "one".to_owned())]);
+        let owner = CowOwner::from(plain.clone());
+        let encoded_owner = serde_json::to_vec(&owner)?;
+        let encoded_plain = serde_json::to_vec(&plain)?;
+        assert_eq!(encoded_owner, encoded_plain);
+
+        let mut fork = owner.clone();
+        fork.insert("beta".to_owned(), "two".to_owned());
+        assert_eq!(owner.len(), 1);
+        assert_eq!(fork.len(), 2);
+
+        let decoded: CowOwner<BTreeMap<String, String>> =
+            serde_json::from_slice(&encoded_owner)?;
+        assert_eq!(&*decoded, &plain);
+        Ok(())
+    }
 }
 
 #[cfg(test)]
