@@ -29,6 +29,35 @@ KNOWN_TYPES = {'kv', 'cubbyhole', 'identity', 'system', 'transit', 'pki', 'ssh',
                'database', 'totp', 'kubernetes', 'openldap', 'rabbitmq', 'token',
                'userpass', 'approle', 'jwt', 'oidc', 'ldap', 'cert', 'radius', 'kerberos'}
 MAX_CATALOG_ITEMS = 10000
+ASSET_PLAN = Path(__file__).resolve().parents[2] / "planning/HEPTABAO_OPENBAO_ASSET_MIGRATION_V1.json"
+EXPECTED_ASSET_IDS = {
+    "system_configuration", "policies_acl", "namespaces", "auth_mounts",
+    "identity_entities_aliases_groups", "tokens_and_revocation",
+    "kv_v2_data_history_metadata", "transit_keys_ciphertexts",
+    "pki_keys_roles_certs_revocation", "ssh_roles_credentials",
+    "database_config_roles_leases", "other_secret_engines",
+    "leases_and_revocation_state", "audit_configuration",
+    "storage_ha_metadata", "wrapping_cubbyhole_ephemeral",
+    "external_provider_configuration", "application_consumers",
+}
+
+
+def declared_asset_contract() -> list[dict]:
+    try:
+        document = private_json(ASSET_PLAN)
+    except (OSError, ValueError):
+        raise BaoError("asset_plan_unavailable") from None
+    assets = document.get("assets") if isinstance(document, dict) else None
+    if document.get("schema") != "heptabao.openbao-asset-migration.v1" or not isinstance(assets, list):
+        raise BaoError("asset_plan_invalid")
+    ids = [item.get("id") for item in assets if isinstance(item, dict)]
+    if len(ids) != len(assets) or len(ids) != len(set(ids)) or set(ids) != EXPECTED_ASSET_IDS:
+        raise BaoError("asset_plan_denominator_drift")
+    for item in assets:
+        if not isinstance(item.get("disposition"), str) or not isinstance(item.get("required_exit"), str):
+            raise BaoError("asset_plan_entry_invalid")
+    return assets
+
 
 
 def require_private_new_output(path: Path) -> None:
@@ -87,6 +116,7 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
         raise BaoError('same_endpoint_or_cluster_rejected')
     if left['version'] != '2.6.2' or not right['version'].startswith('HeptaBao-'):
         raise BaoError('migration_product_version_mismatch')
+    assets = declared_asset_contract()
     report = {
         'schema': 'heptabao.migration-preflight.v1',
         'status': 'blocked_full_instance_migration',
@@ -100,6 +130,12 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
         'independent_admission': False, 'hepta_consumer_requalified': False,
         'full_openbao_compatibility': False, 'read_methods_only': True,
         'read_requests_can_consume_token_uses_and_audit': True,
+        'declared_asset_denominator_verified': True,
+        'declared_asset_count': len(assets),
+        'declared_assets': [
+            {'id': item['id'], 'disposition': item['disposition']}
+            for item in assets
+        ],
     }
     for family, (method, path) in CATALOGS.items():
         observation = _catalog(source.request(method, path), family)
@@ -132,6 +168,11 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
     for label in ('transit', 'pki', 'ssh', 'database', 'totp', 'other'):
         if report['source_catalogs']['mounts'].get('types', {}).get(label, 0):
             report['blockers'].append('asset_adapter_not_qualified:' + label)
+    for item in assets:
+        if item['disposition'] in {
+            'NO_SAFE_TRANSFER_IMPLEMENTED', 'PREFLIGHT_ONLY', 'BOUNDED_ADAPTER'
+        }:
+            report['blockers'].append('asset_exit_open:' + item['id'])
     report['blockers'].extend([
         'recursive_asset_inventory_and_version_history_missing',
         'capacity_estimate_not_serialized_admission_or_reservation',
