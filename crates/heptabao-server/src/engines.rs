@@ -954,7 +954,7 @@ fn handle_mounts(
                     "Kubernetes mount options are configured through the engine config endpoint",
                 ));
             }
-            Backend::Kubernetes(_)
+            Backend::Kubernetes(kubernetes::Kubernetes::default())
         }
         "plugin" => {
             if body
