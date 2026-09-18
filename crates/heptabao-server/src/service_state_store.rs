@@ -140,6 +140,7 @@ impl StateManifest {
         self.slot
     }
 
+    #[cfg(test)]
     pub fn next_slot(&self) -> u8 {
         self.slot.map_or(0, |slot| (slot + 1) % STATE_SLOT_COUNT)
     }
@@ -285,6 +286,7 @@ pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<StateManifest>, Sta
     Ok(Some(manifest))
 }
 
+#[cfg(test)]
 pub(crate) fn next_slot(current_state_record: &[u8]) -> Result<u8, StateStoreError> {
     Ok(match decode_manifest(current_state_record)? {
         Some(manifest) => manifest.next_slot(),
