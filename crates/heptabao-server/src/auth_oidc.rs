@@ -69,6 +69,136 @@ pub(crate) struct OidcExchange {
     session: Session,
     code: Zeroizing<String>,
 }
+
+pub(crate) struct OidcBeginPlan {
+    namespace: String,
+    mount: String,
+    role_name: String,
+    redirect_uri: String,
+    client_proof_hash: String,
+    config: OidcConfig,
+    role: OidcRole,
+    now: u64,
+}
+
+pub(crate) struct OidcBeginObservation {
+    authorization_endpoint: String,
+    token_endpoint: String,
+    jwks_uri: String,
+}
+
+pub(crate) struct OidcLoginObservation {
+    subject: String,
+    ttl: u64,
+    now: u64,
+}
+
+impl OidcBeginPlan {
+    pub(crate) fn execute(&self, outbound: &Outbound) -> Result<OidcBeginObservation, AuthError> {
+        let (authorization_endpoint, token_endpoint, jwks_uri) = self.config.metadata(outbound)?;
+        Ok(OidcBeginObservation {
+            authorization_endpoint,
+            token_endpoint,
+            jwks_uri,
+        })
+    }
+}
+
+impl OidcExchange {
+    pub(crate) fn execute(
+        &self,
+        namespace: &str,
+        now: u64,
+        started: std::time::Instant,
+        outbound: &Outbound,
+    ) -> Result<OidcLoginObservation, AuthError> {
+        let mut token_response = outbound
+            .exchange_oidc(
+                &self.session.token_endpoint,
+                &self.config.oidc_client_id,
+                &self.config.oidc_client_secret,
+                &self.code,
+                &self.session.redirect,
+                &self.session.verifier,
+            )
+            .map_err(|_| {
+                err(
+                    503,
+                    "OIDC exchange failed; authorization session consumed; start a new login",
+                )
+            })?;
+        let result = (|| {
+            let id_token = token_response
+                .get("id_token")
+                .and_then(Value::as_str)
+                .ok_or_else(denied)?;
+            let access = token_response
+                .get("access_token")
+                .and_then(Value::as_str)
+                .filter(|s| bounded_string(s, 32 * 1024))
+                .ok_or_else(denied)?;
+            if !token_response
+                .get("token_type")
+                .and_then(Value::as_str)
+                .is_some_and(|s| s.eq_ignore_ascii_case("Bearer"))
+            {
+                return Err(denied());
+            }
+            let keys = outbound
+                .get_json(&self.session.jwks_uri)
+                .map_err(|_| err(503, "OIDC signing keys unavailable; session consumed"))?;
+            let config = JwtConfig {
+                remote: None,
+                jwt_supported_algs: Some(self.config.jwt_supported_algs.clone()),
+                issuer: self.config.oidc_discovery_url.clone(),
+                audiences: BTreeSet::from([self.config.oidc_client_id.clone()]),
+                required_namespace: None,
+                clock_skew_seconds: 30,
+                maximum_token_lifetime_seconds: 86400,
+                keys: parse_jwks(&keys)?,
+            };
+            let elapsed = started.elapsed();
+            let now = now.saturating_add(
+                elapsed
+                    .as_secs()
+                    .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+            );
+            if now >= self.session.expires_at {
+                return Err(denied());
+            }
+            let verified = config
+                .verifier()?
+                .verify_oidc(
+                    id_token,
+                    now,
+                    &self.session.nonce,
+                    access,
+                    &self.code,
+                )
+                .map_err(|_| denied())?;
+            if self
+                .role
+                .bound_subject
+                .as_ref()
+                .is_some_and(|v| v != &verified.subject)
+                || !self.role.bound_groups.is_subset(&verified.groups)
+                || verified.namespace.as_ref().is_some_and(|v| v != namespace)
+            {
+                return Err(denied());
+            }
+            Ok(OidcLoginObservation {
+                subject: verified.subject,
+                ttl: self
+                    .role
+                    .token_ttl
+                    .min(verified.expires_at.saturating_sub(now)),
+                now,
+            })
+        })();
+        crate::service::erase_json(&mut token_response);
+        result
+    }
+}
 fn bounded_string(value: &str, max: usize) -> bool {
     !value.is_empty() && value.len() <= max && !value.chars().any(char::is_control)
 }
@@ -456,14 +586,13 @@ impl AuthState {
         }
         Ok(())
     }
-    pub(crate) fn begin_oidc(
-        &mut self,
+    pub(crate) fn prepare_oidc_begin(
+        &self,
         namespace: &str,
         mount: &str,
         body: &Value,
         now: u64,
-        outbound: &Outbound,
-    ) -> Result<AuthResponse, AuthError> {
+    ) -> Result<OidcBeginPlan, AuthError> {
         reject_unknown(body, &["role", "redirect_uri", "client_nonce"])?;
         let role_name = string_field(body, "role")?;
         let redirect_uri = string_field(body, "redirect_uri")?;
@@ -488,46 +617,97 @@ impl AuthState {
         if !role.allowed_redirect_uris.contains(redirect_uri) {
             return Err(denied());
         }
-        if state
-            .sessions
-            .values()
-            .filter(|s| s.expires_at > now)
-            .count()
-            >= MAX_SESSIONS
-        {
+        if state.sessions.values().filter(|s| s.expires_at > now).count() >= MAX_SESSIONS {
             return Err(err(429, "OIDC session capacity reached"));
         }
-        let (authorization_endpoint, token_endpoint, jwks_uri) = config.metadata(outbound)?;
+        Ok(OidcBeginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            role_name: role_name.into(),
+            redirect_uri: redirect_uri.into(),
+            client_proof_hash: hash(client_nonce),
+            config,
+            role,
+            now,
+        })
+    }
+
+    pub(crate) fn finish_oidc_begin(
+        &mut self,
+        plan: OidcBeginPlan,
+        observation: OidcBeginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        if !self.online_mount_enabled(&plan.namespace, &plan.mount, "oidc") {
+            return Err(denied());
+        }
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        let current = self.oidc_at(scope).ok_or_else(denied)?;
+        if current.config.as_ref() != Some(&plan.config)
+            || current.roles.get(&plan.role_name) != Some(&plan.role)
+        {
+            return Err(err(
+                409,
+                "OIDC configuration changed during discovery",
+            ));
+        }
+        if plan.now < current.clock
+            || current
+                .sessions
+                .values()
+                .filter(|s| s.expires_at > plan.now)
+                .count()
+                >= MAX_SESSIONS
+        {
+            return Err(err(409, "OIDC session state changed during discovery"));
+        }
         let state_id = random_id("")?;
         let nonce = random_id("")?;
         let verifier = random_id("")?;
         let challenge = hash(&verifier);
         let auth_url = format!(
-            "{authorization_endpoint}?response_type=code&scope=openid&client_id={}&redirect_uri={}&state={}&nonce={}&code_challenge={}&code_challenge_method=S256",
-            form_component(&config.oidc_client_id),
-            form_component(redirect_uri),
+            "{}?response_type=code&scope=openid&client_id={}&redirect_uri={}&state={}&nonce={}&code_challenge={}&code_challenge_method=S256",
+            observation.authorization_endpoint,
+            form_component(&plan.config.oidc_client_id),
+            form_component(&plan.redirect_uri),
             form_component(&state_id),
             form_component(&nonce),
             challenge
         );
         let session = Session {
-            role: role_name.into(),
-            redirect: redirect_uri.into(),
-            client_proof_hash: hash(client_nonce),
+            role: plan.role_name,
+            redirect: plan.redirect_uri,
+            client_proof_hash: plan.client_proof_hash,
             nonce,
             verifier,
-            binding: binding(&config, &role)?,
-            created_at: now,
-            expires_at: checked_expiry(now, SESSION_TTL)?,
-            token_endpoint,
-            jwks_uri,
+            binding: binding(&plan.config, &plan.role)?,
+            created_at: plan.now,
+            expires_at: checked_expiry(plan.now, SESSION_TTL)?,
+            token_endpoint: observation.token_endpoint,
+            jwks_uri: observation.jwks_uri,
         };
         let state = self.oidc_mut(scope);
-        state.clock = now;
-        state.sessions.retain(|_, s| s.expires_at > now);
+        state.clock = plan.now;
+        state.sessions.retain(|_, s| s.expires_at > plan.now);
         state.sessions.insert(hash(&state_id), session);
         Ok(response(json!({"auth_url":auth_url}), true))
     }
+
+    pub(crate) fn begin_oidc(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        now: u64,
+        outbound: &Outbound,
+    ) -> Result<AuthResponse, AuthError> {
+        let plan = self.prepare_oidc_begin(namespace, mount, body, now)?;
+        let observation = plan.execute(outbound)?;
+        self.finish_oidc_begin(plan, observation)
+    }
+
     pub(crate) fn consume_oidc(
         &mut self,
         namespace: &str,
@@ -584,6 +764,38 @@ impl AuthState {
             code: Zeroizing::new(code.into()),
         }))
     }
+    pub(crate) fn finish_oidc_observation(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        exchange: OidcExchange,
+        observation: OidcLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        if !self.online_mount_enabled(namespace, mount, "oidc") {
+            return Err(denied());
+        }
+        let current = self
+            .oidc_at(AuthScope { namespace, mount })
+            .ok_or_else(denied)?;
+        if current.config.as_ref() != Some(&exchange.config)
+            || current.roles.get(&exchange.session.role) != Some(&exchange.role)
+            || binding(&exchange.config, &exchange.role)? != exchange.session.binding
+        {
+            return Err(err(
+                409,
+                "OIDC configuration changed after authorization session consumption",
+            ));
+        }
+        self.issue_online_token(
+            AuthScope { namespace, mount },
+            &observation.subject,
+            exchange.role.token_policies,
+            observation.ttl,
+            exchange.role.token_num_uses,
+            observation.now,
+        )
+    }
+
     pub(crate) fn finish_oidc(
         &mut self,
         namespace: &str,
@@ -593,98 +805,10 @@ impl AuthState {
         started: std::time::Instant,
         outbound: &Outbound,
     ) -> Result<AuthResponse, AuthError> {
-        // Include the durable session-consumption/HA commit in elapsed time;
-        // expiration must not be judged using only the later network duration.
-        let mut token_response = outbound
-            .exchange_oidc(
-                &exchange.session.token_endpoint,
-                &exchange.config.oidc_client_id,
-                &exchange.config.oidc_client_secret,
-                &exchange.code,
-                &exchange.session.redirect,
-                &exchange.session.verifier,
-            )
-            .map_err(|_| {
-                err(
-                    503,
-                    "OIDC exchange failed; authorization session consumed; start a new login",
-                )
-            })?;
-        let result = (|| {
-            let id_token = token_response
-                .get("id_token")
-                .and_then(Value::as_str)
-                .ok_or_else(denied)?;
-            let access = token_response
-                .get("access_token")
-                .and_then(Value::as_str)
-                .filter(|s| bounded_string(s, 32 * 1024))
-                .ok_or_else(denied)?;
-            if !token_response
-                .get("token_type")
-                .and_then(Value::as_str)
-                .is_some_and(|s| s.eq_ignore_ascii_case("Bearer"))
-            {
-                return Err(denied());
-            }
-            let keys = outbound
-                .get_json(&exchange.session.jwks_uri)
-                .map_err(|_| err(503, "OIDC signing keys unavailable; session consumed"))?;
-            let config = JwtConfig {
-                remote: None,
-                jwt_supported_algs: Some(exchange.config.jwt_supported_algs.clone()),
-                issuer: exchange.config.oidc_discovery_url.clone(),
-                audiences: BTreeSet::from([exchange.config.oidc_client_id.clone()]),
-                required_namespace: None,
-                clock_skew_seconds: 30,
-                maximum_token_lifetime_seconds: 86400,
-                keys: parse_jwks(&keys)?,
-            };
-            let elapsed = started.elapsed();
-            let now = now.saturating_add(
-                elapsed
-                    .as_secs()
-                    .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-            );
-            if now >= exchange.session.expires_at {
-                return Err(denied());
-            }
-            let verified = config
-                .verifier()?
-                .verify_oidc(
-                    id_token,
-                    now,
-                    &exchange.session.nonce,
-                    access,
-                    &exchange.code,
-                )
-                .map_err(|_| denied())?;
-            if exchange
-                .role
-                .bound_subject
-                .as_ref()
-                .is_some_and(|v| v != &verified.subject)
-                || !exchange.role.bound_groups.is_subset(&verified.groups)
-                || verified.namespace.as_ref().is_some_and(|v| v != namespace)
-            {
-                return Err(denied());
-            }
-            let ttl = exchange
-                .role
-                .token_ttl
-                .min(verified.expires_at.saturating_sub(now));
-            self.issue_online_token(
-                AuthScope { namespace, mount },
-                &verified.subject,
-                exchange.role.token_policies.clone(),
-                ttl,
-                exchange.role.token_num_uses,
-                now,
-            )
-        })();
-        crate::service::erase_json(&mut token_response);
-        result
+        let observation = exchange.execute(namespace, now, started, outbound)?;
+        self.finish_oidc_observation(namespace, mount, exchange, observation)
     }
+
 }
 
 #[cfg(test)]
