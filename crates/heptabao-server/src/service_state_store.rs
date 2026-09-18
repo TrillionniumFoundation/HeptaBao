@@ -367,11 +367,14 @@ mod tests {
     #[test]
     fn one_chunk_plan_round_trips() -> Result<(), Box<dyn std::error::Error>> {
         let state = br#"{"schema":5,"value":"small"}"#;
-        let plan = StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5, 0)?;
+        let plan =
+            StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5, None)?;
         assert_eq!(plan.required_mutations(), 2);
+        assert!(plan.required_existing.is_empty());
+        assert!(plan.deletes.is_empty());
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
-        assert_eq!(manifest.slot(), 0);
-        assert_eq!(manifest.next_slot(), 1);
+        assert_eq!(manifest.storage_format(), STATE_STORAGE_FORMAT);
+        assert_eq!(manifest.slot(), None);
         let chunks = plan
             .chunks
             .iter()
@@ -382,16 +385,48 @@ mod tests {
     }
 
     #[test]
-    fn alternating_slots_bound_persisted_resources() -> Result<(), Box<dyn std::error::Error>> {
+    fn content_addressed_plan_reuses_unchanged_chunks_and_deletes_replaced_chunks()
+    -> Result<(), Box<dyn std::error::Error>> {
         let state = vec![0x5a; STATE_CHUNK_BYTES + 17];
-        let first = StateWritePlan::new(&state, "op-1", 5, 0)?;
+        let first = StateWritePlan::new(&state, "op-1", 5, None)?;
         let first_manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
-        let second = StateWritePlan::new(&state, "op-2", 5, first_manifest.next_slot())?;
+        assert_eq!(first.chunks.len(), 2);
+        assert_eq!(first.required_mutations(), 3);
+
+        let mut changed = state.clone();
+        *changed.last_mut().ok_or("state unexpectedly empty")? = 0x6b;
+        let second = StateWritePlan::new(&changed, "op-2", 5, Some(&first_manifest))?;
         let second_manifest = decode_manifest(&second.manifest_bytes)?.ok_or("manifest missing")?;
-        assert_eq!(first_manifest.slot(), 0);
-        assert_eq!(second_manifest.slot(), 1);
-        assert_ne!(first.chunks[0].resource, second.chunks[0].resource);
-        assert_eq!(second_manifest.next_slot(), 0);
+        assert_eq!(second_manifest.storage_format(), STATE_STORAGE_FORMAT);
+        assert_eq!(second.chunks.len(), 1);
+        assert_eq!(second.required_existing.len(), 1);
+        assert_eq!(second.deletes.len(), 1);
+        assert_eq!(second.required_mutations(), 3);
+        assert_ne!(second.deletes[0], second.chunks[0].resource);
+        Ok(())
+    }
+
+    #[test]
+    fn v1_slot_manifest_remains_readable_for_online_upgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let revision = hex(&crypto::digest(b"legacy-revision"));
+        let state_digest = hex(&crypto::digest(b"legacy-state"));
+        let manifest = serde_json::json!({
+            "storage_format": STATE_STORAGE_FORMAT_V1,
+            "manifest_schema": 1,
+            "state_schema": 5,
+            "slot": 1,
+            "revision": revision,
+            "total_bytes": 17,
+            "chunk_bytes": STATE_CHUNK_BYTES,
+            "chunk_count": 1,
+            "sha256": state_digest
+        });
+        let bytes = serde_json::to_vec(&manifest)?;
+        let decoded = decode_manifest(&bytes)?.ok_or("manifest missing")?;
+        assert_eq!(decoded.slot(), Some(1));
+        assert_eq!(decoded.next_slot(), 0);
+        assert_eq!(decoded.chunk_resource(0)?, "state-chunks/1/0000");
         Ok(())
     }
 
@@ -406,7 +441,7 @@ mod tests {
     #[test]
     fn manifest_tampering_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
         let state = vec![7_u8; STATE_CHUNK_BYTES + 1];
-        let plan = StateWritePlan::new(&state, "op-2", 5, 1)?;
+        let plan = StateWritePlan::new(&state, "op-2", 5, None)?;
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
         let mut owned_chunks = plan
             .chunks
@@ -423,10 +458,23 @@ mod tests {
     }
 
     #[test]
+    fn content_addressed_chunk_name_binds_payload() -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = b"chunk";
+        let digest = hex(&crypto::digest(bytes));
+        let resource = digest_chunk_resource(&digest);
+        validate_content_addressed_chunk(&resource, bytes)?;
+        assert_eq!(
+            validate_content_addressed_chunk(&resource, b"tampered"),
+            Err(StateStoreError::DigestMismatch)
+        );
+        Ok(())
+    }
+
+    #[test]
     fn oversized_state_is_rejected_before_staging() {
         let state = vec![1_u8; MAX_SERIALIZED_STATE_BYTES + 1];
         assert_eq!(
-            StateWritePlan::new(&state, "op-3", 5, 0),
+            StateWritePlan::new(&state, "op-3", 5, None),
             Err(StateStoreError::StateTooLarge)
         );
     }
