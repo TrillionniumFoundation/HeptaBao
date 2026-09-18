@@ -235,29 +235,6 @@ impl<B: Barrier> DurableService<B> {
             generation,
         };
 
-        let mut candidate = self.snapshot.clone();
-        candidate.generation = generation;
-        candidate.last_commit = Some(marker.clone());
-        for (resource, value) in &request.mutations {
-            let storage_key = (request.namespace.clone(), resource.clone());
-            if let Some(secret) = value {
-                candidate.entries.insert(storage_key, secret.clone());
-            } else {
-                candidate.entries.remove(&storage_key);
-            }
-        }
-        let ledger_record = LedgerRecord {
-            binding_digest,
-            recovery_reference: recovery_reference.clone(),
-            generation,
-        };
-
-        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
-        let intent = sealed_journal_record(
-            &self.barrier,
-            intent_sequence,
-            &JournalEvent::Intent(marker.clone()),
-        )?;
         let mutations = request
             .mutations
             .iter()
@@ -266,20 +243,44 @@ impl<B: Barrier> DurableService<B> {
                 value: value.clone(),
             })
             .collect::<Vec<_>>();
+        let candidate_plaintext_bytes = candidate_snapshot_plaintext_len(
+            &self.snapshot,
+            self.snapshot_plaintext_bytes,
+            &marker,
+            &mutations,
+        )?;
+        preflight_snapshot_capacity(
+            &self.barrier,
+            &self.snapshot,
+            candidate_plaintext_bytes,
+            &marker,
+            &mutations,
+        )?;
+        let ledger_record = LedgerRecord {
+            binding_digest,
+            recovery_reference: recovery_reference.clone(),
+            generation,
+        };
+
+        let intent = sealed_journal_record(
+            &self.barrier,
+            intent_sequence,
+            &JournalEvent::Intent(marker.clone()),
+        )?;
         let apply = sealed_journal_record(
             &self.barrier,
             apply_sequence,
             &JournalEvent::Apply {
                 marker: marker.clone(),
-                mutations,
+                mutations: mutations.clone(),
             },
         )?;
         let commit = sealed_journal_record(
             &self.barrier,
             terminal_sequence,
-            &JournalEvent::Commit(marker),
+            &JournalEvent::Commit(marker.clone()),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES || apply.len() > MAX_FILE_BYTES {
+        if apply.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
@@ -304,7 +305,8 @@ impl<B: Barrier> DurableService<B> {
                 return Err(ServiceError::RecoveryRequired);
             }
             self.append_frame(&apply)?;
-            self.snapshot = candidate;
+            apply_journal_mutations(&mut self.snapshot, &marker, &mutations)?;
+            self.snapshot_plaintext_bytes = candidate_plaintext_bytes;
             if failpoint == Failpoint::AfterSnapshotPublication {
                 return Err(ServiceError::RecoveryRequired);
             }
