@@ -19,7 +19,7 @@ ARCHITECTURE = (
 )
 MATRIX = ROOT / "planning" / "HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml"
 REGISTER = ROOT / "planning" / "HEPTABAO_BLOCKER_REGISTER_V2_0.yaml"
-WORKFLOW = ROOT / ".github" / "workflows" / "v2-1-main-convergence.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "codex-openbao-replacement-ci.yml"
 
 
 class AuthorizedDurableRuntimeV21Tests(unittest.TestCase):
@@ -176,7 +176,8 @@ class AuthorizedDurableRuntimeV21Tests(unittest.TestCase):
 
     def test_main_targeted_workflow_runs_runtime_tests_read_only(self) -> None:
         workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("branches: [main]", workflow)
+        self.assertIn("pull_request:", workflow)
+        self.assertIn("prospective-merge", workflow)
         self.assertIn("contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
         self.assertNotIn("persist-credentials: true", workflow)
