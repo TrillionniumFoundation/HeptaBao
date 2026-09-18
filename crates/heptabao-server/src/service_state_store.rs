@@ -1,11 +1,12 @@
 //! Versioned chunk framing for the authoritative server state.
 //!
 //! `system/state` is either a legacy serialized State value or a small manifest.
-//! V1 writers alternated between two bounded slots. V2 uses content-addressed
-//! chunks: unchanged chunks are referenced by the next manifest without another
-//! durable write, replaced chunks are deleted in the same atomic batch, and the
-//! manifest remains the sole publication point. Readers admit legacy JSON, V1
-//! slot manifests, and V2 content-addressed manifests.
+//! V1 writers alternated between two bounded slots. V2 introduced fixed-size
+//! content-addressed chunks. V3 keeps content addressing but chooses deterministic
+//! content-defined boundaries so a small insertion can resynchronize and reuse
+//! later chunks instead of shifting every following fixed boundary. Replaced chunks
+//! are deleted in the same atomic batch and the manifest remains the sole publication
+//! point. Readers admit legacy JSON plus V1, V2 and V3 manifests.
 
 use crate::crypto;
 use serde::{Deserialize, Serialize};
@@ -21,9 +22,9 @@ const STATE_CHUNK_WINDOW_BYTES: usize = 64;
 const STATE_CHUNK_MASK: u64 = (1_u64 << 19) - 1;
 pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
 const MAX_FIXED_STATE_CHUNKS: usize =
-    (MAX_SERIALIZED_STATE_BYTES + STATE_CHUNK_BYTES - 1) / STATE_CHUNK_BYTES;
+    MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_BYTES);
 pub(crate) const MAX_STATE_CHUNKS: usize =
-    (MAX_SERIALIZED_STATE_BYTES + STATE_CHUNK_MIN_BYTES - 1) / STATE_CHUNK_MIN_BYTES;
+    MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_MIN_BYTES);
 const STATE_SLOT_COUNT: u8 = 2;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -56,7 +57,7 @@ pub(crate) struct StateWritePlan {
     /// New content-addressed chunks that do not already belong to the current
     /// manifest generation.
     pub chunks: Vec<StateChunk>,
-    /// Chunks referenced by the current V2 manifest and reused by the next one.
+    /// Content-addressed chunks referenced by the current manifest and reused by the next one.
     pub required_existing: Vec<String>,
     /// Previous-generation chunks no longer referenced by the next manifest.
     pub deletes: Vec<String>,
@@ -547,7 +548,7 @@ mod tests {
         let bytes = serde_json::to_vec(&manifest)?;
         let decoded = decode_manifest(&bytes)?.ok_or("manifest missing")?;
         assert_eq!(decoded.storage_format(), STATE_STORAGE_FORMAT_V2);
-        assert_eq!(assemble_state(&decoded, &[state.as_slice()])?, state);
+        assert_eq!(assemble_state(&decoded, &[&state[..]])?.as_slice(), &state[..]);
         Ok(())
     }
 
