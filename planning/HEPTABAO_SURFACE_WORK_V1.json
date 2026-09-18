@@ -271,6 +271,17 @@
         "<private-new-output>"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "audit-http": {
+      "script": "qa/openbao-acceptance/audit_http_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
