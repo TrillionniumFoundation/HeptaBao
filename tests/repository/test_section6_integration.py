@@ -59,7 +59,8 @@ class SectionSixIntegrationTests(unittest.TestCase):
         contract = (ROOT/'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
         self.assertIn('16 MiB', contract)
         self.assertIn('content-defined', contract)
-        self.assertIn('physical write amplification', contract.lower())
+        self.assertIn('capacity_live.py', contract)
+        self.assertIn('write-amplification curves', contract.lower())
         self.assertIn('recovery', contract.lower())
 
     def test_all_current_portals_link_the_increment_without_a_second_master(self):
