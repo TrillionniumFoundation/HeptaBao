@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 29,
-    "defined_not_implemented_surface_count": 31,
-    "fixture_case_count": 120,
+    "implemented_surface_count": 34,
+    "defined_not_implemented_surface_count": 26,
+    "fixture_case_count": 160,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -493,9 +493,18 @@
       "surface_id": "HB-SURFACE-STORAGE-RAFT",
       "category": "storage_backends",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_destructive.three_distinct_service_processes",
+        "ha_destructive.acknowledged_value_readable_through_all_nodes",
+        "ha_destructive.leader_snapshot_trigger",
+        "ha_destructive.offline_follower_rejoined_after_snapshot_trigger",
+        "ha_destructive.new_leader_after_sigkill",
+        "ha_destructive.quorum_loss_write_denied",
+        "ha_destructive.all_three_rejoined_after_quorum_recovery",
+        "raft_membership_live.membership_persists_across_old_leader_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -582,9 +591,18 @@
       "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
       "category": "cluster_ha",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "raft_membership_live.unsafe_minimum_rejected",
+        "raft_membership_live.persist_stabilization_policy",
+        "raft_membership_live.autopilot_candidate_initially_learner",
+        "raft_membership_live.continuous_stabilization_promotes_voter",
+        "raft_membership_live.health_derived_from_replication",
+        "raft_membership_live.dead_voter_retained_during_grace",
+        "raft_membership_live.dead_voter_removed_after_real_contact_threshold",
+        "raft_membership_live.autopilot_policy_persists_across_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -602,27 +620,54 @@
       "surface_id": "HB-SURFACE-CLI-ROOT",
       "category": "client_operator",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "client_live.client.write_version",
+        "client_live.client.read_value",
+        "client_live.client.list_key",
+        "client_live.client.capability_root",
+        "client_live.client.wrap_redacts",
+        "client_live.client.unwrap_exact",
+        "client_live.client.replay_error_no_data",
+        "client_live.client.delete_no_body"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AGENT",
       "category": "client_operator",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "agent_proxy_helper_live.agent.real_login_ready",
+        "agent_proxy_helper_live.agent.private_sink",
+        "agent_proxy_helper_live.agent.checkpoint_contains_no_secrets",
+        "agent_proxy_helper_live.agent.real_renewal",
+        "agent_proxy_helper_live.agent.graceful_stop_invalidates_sink",
+        "agent_proxy_helper_live.agent.real_post_login_crash",
+        "agent_proxy_helper_live.agent.crash_preserves_pending",
+        "agent_proxy_helper_live.agent.pending_restart_blocked"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-PROXY",
       "category": "client_operator",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "agent_proxy_helper_live.proxy.listener_ready",
+        "agent_proxy_helper_live.proxy.real_secret_read",
+        "agent_proxy_helper_live.proxy.rejects_non_allowlisted_route",
+        "agent_proxy_helper_live.proxy.rejects_supplied_root_token",
+        "agent_proxy_helper_live.proxy.rejects_namespace_override",
+        "agent_proxy_helper_live.proxy.rejects_wrapping_injection",
+        "agent_proxy_helper_live.proxy.uses_live_server_authorization",
+        "agent_proxy_helper_live.proxy.clean_shutdown_removes_only_owned_socket"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
