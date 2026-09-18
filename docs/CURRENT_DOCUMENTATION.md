@@ -37,7 +37,7 @@ The runnable server composes real TLS, private persistent authentication/ACL, bo
 
 ## Module documentation
 
-Current content binding is `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+Current content binding is the exact Git tree plus the live `scripts/current_source_inventory.py` walk; `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is only the receipt-policy marker.
 Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
 source tables; those tables are historical, not current API inventories.
 
