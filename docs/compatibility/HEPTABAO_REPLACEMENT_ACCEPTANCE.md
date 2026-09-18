@@ -69,8 +69,6 @@ bounded profiles above never silently reclassify the fixed denominator. Neither
 state means full behavior coverage, independent admission or production readiness.
 
 <!-- BEGIN CURRENT REPLACEMENT SURFACES -->
-| Surface ID | Category | Corpus fixture state | Declared case IDs |
-|---|---|---|---|
 | `HB-SURFACE-CORE-REQUEST-PIPELINE` | `core_system` | `IMPLEMENTED_SCOPED` | `core.unknown_route_denied` |
 | `HB-SURFACE-SYSTEM-BACKEND` | `core_system` | `IMPLEMENTED_SCOPED` | `system.init_status` |
 | `HB-SURFACE-MOUNT-REGISTRY` | `core_system` | `IMPLEMENTED_SCOPED` | `kv.mount`, `transit.mount` |
@@ -108,7 +106,7 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-AUDIT-SOCKET` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-SYSLOG` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-STORAGE-POSTGRESQL` | `storage_backends` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-STORAGE-RAFT` | `storage_backends` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-STORAGE-RAFT` | `storage_backends` | `IMPLEMENTED_SCOPED` | `raft_membership_live.native_learner_join_acknowledged`, `raft_membership_live.snapshot_caught_up_learner_unseals`, `raft_membership_live.membership_persists_across_old_leader_restart`, `raft_membership_live.failover_after_membership_changes` |
 | `HB-SURFACE-PLUGIN-AUTH` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PLUGIN-SECRET` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PLUGIN-DATABASE` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
@@ -117,18 +115,18 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-CLUSTER-FORWARDING` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_forwarding.standby_mutation_forwarding_and_context` |
 | `HB-SURFACE-CLUSTER-READ-STANDBY` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_read_standby.readindex_committed_state_and_partition_fence` |
 | `HB-SURFACE-CLUSTER-STEPDOWN` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_step_down.explicit_leadership_transfer_and_old_writer_fence` |
-| `HB-SURFACE-CLUSTER-AUTOPILOT` | `cluster_ha` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-CLUSTER-AUTOPILOT` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `raft_membership_live.continuous_stabilization_promotes_voter`, `raft_membership_live.dead_voter_removed_after_real_contact_threshold`, `raft_membership_live.minimum_three_voters_preserved`, `raft_membership_live.autopilot_policy_persists_across_restart` |
 | `HB-SURFACE-EDGE-HTTP-TLS` | `client_operator` | `IMPLEMENTED_SCOPED` | `edge_tls.health` |
 | `HB-SURFACE-CLI-ROOT` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-AGENT` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-PROXY` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AGENT` | `client_operator` | `IMPLEMENTED_SCOPED` | `agent_proxy_helper_live.agent.real_login_ready`, `agent_proxy_helper_live.agent.private_sink`, `agent_proxy_helper_live.agent.real_renewal`, `agent_proxy_helper_live.agent.graceful_stop_invalidates_sink` |
+| `HB-SURFACE-PROXY` | `client_operator` | `IMPLEMENTED_SCOPED` | `agent_proxy_helper_live.proxy.real_secret_read`, `agent_proxy_helper_live.proxy.rejects_supplied_root_token`, `agent_proxy_helper_live.proxy.uses_live_server_authorization`, `agent_proxy_helper_live.proxy.clean_shutdown_removes_only_owned_socket` |
 | `HB-SURFACE-OPENAPI-UI` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-OPERATIONS` | `client_operator` | `IMPLEMENTED_SCOPED` | `operations.seal_status` |
 | `HB-SURFACE-NAMESPACE-TREE` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-NAMESPACE-SEAL` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PROFILES-WORKFLOWS` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SELF-INIT` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-MIGRATION-LOGICAL` | `migration` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-MIGRATION-LOGICAL` | `migration` | `IMPLEMENTED_SCOPED` | `live_migration_rehearsal.history_and_metadata_readback`, `live_migration_rehearsal.target_sigkill_preserves_all_versions`, `live_migration_rehearsal.checkpoint_resume_without_duplicate_version`, `live_migration_rehearsal.rollback_source_same_root_preserves_original_history` |
 | `HB-SURFACE-MIGRATION-SNAPSHOT` | `migration` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-MIGRATION-CUTOVER` | `migration` | `DEFINED_NOT_IMPLEMENTED` | None |
 <!-- END CURRENT REPLACEMENT SURFACES -->
