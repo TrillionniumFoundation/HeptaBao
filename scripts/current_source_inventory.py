@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Content-bound current module inventory; frozen V1.4.7 evidence is not rewritten.
+"""Derive current module facts from the live Git tree; preserve frozen history.
 
 This is a lexical inventory, NOT a Rust visibility proof or a test-pass receipt.
-The compact committed snapshot binds the full reproducible details by SHA-256.
-An external CI receipt binds that snapshot to the actual commit and Git tree,
-which avoids embedding a self-referential commit ID inside the commit itself.
+The committed JSON is only a fail-closed receipt policy marker. Exact source bytes
+are bound by the Git commit/tree and execution receipt, so ordinary source edits
+do not require regenerating a second aggregate-hash truth file.
 """
 from __future__ import annotations
 
