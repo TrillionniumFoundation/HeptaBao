@@ -1,4 +1,4 @@
-name: Publish fixed source blobs only (not qualification)
+name: Export fixed prospective-merge source (read only, not qualification)
 on:
   push:
     branches: [exec/heptabao-verified-inputs-20260918]
@@ -8,82 +8,32 @@ jobs:
   export:
     runs-on: macos-15
     timeout-minutes: 15
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          path: transport
-          persist-credentials: false
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: 59aded26640eeb039cdca5d197e1285a76321a89
-          path: candidate
+          ref: 894b45639a96dfe5201a035089d5d96682a1f92a
           fetch-depth: 0
           persist-credentials: false
-      - name: Reconstruct fixed source, verify tree and publish blobs without executing candidate or moving refs
+      - name: Export fixed merge and head without running their code
         shell: bash
-        env:
-          BLOB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import base64, hashlib, json, lzma, os, pathlib, subprocess, urllib.request
-          root=pathlib.Path(os.environ['GITHUB_WORKSPACE'])
-          candidate=root/'candidate'
-          env=dict(os.environ,GIT_CONFIG_NOSYSTEM='1',GIT_CONFIG_GLOBAL='/dev/null')
-          def git(*args):
-              return subprocess.check_output(['git','-c','core.hooksPath=/dev/null',*args],cwd=candidate,env=env)
-          assert git('rev-parse','HEAD').decode().strip()=='59aded26640eeb039cdca5d197e1285a76321a89'
-          assert git('rev-parse','HEAD^{tree}').decode().strip()=='4dadf34a8414ee9222369ab8cce0975e65d2141f'
-          assert not git('status','--porcelain=v1','--untracked-files=all')
-          packed=b''.join((root/'transport'/'.exec'/f'section7-{i}.part').read_bytes() for i in range(6))
-          addon=(root/'transport'/'.exec'/'section7-addon.xz').read_bytes()
-          for data, size, checksum, raw_size, raw_checksum, expected_tree in (
-              (packed,33336,'64b2d7c1feebf320376b33e2e7aaf7f3183aacd98132184cfaa844e29e8e14ca',142104,'2637d5aad9f318bc3836778cd8fc81ddafca5fb7e72374a6daa2b3a484107b61','31c7979371fe903511080a82eee3bfc6249d76af'),
-              (addon,9988,'83cb13cf3527452ac488e4169279cd50b5178531c753b78f2099a9a17ab3d7d2',37299,'39a7a7df0f7ac8ac5fbde7e3cee98dbc44c8bf695841d37e0d302d6f60af06dc','1ab62ba7f88b74e1cf68aed36be556167bbcb778'),
-          ):
-              assert len(data)==size and hashlib.sha256(data).hexdigest()==checksum
-              dec=lzma.LZMADecompressor(memlimit=512*1024*1024)
-              patch=dec.decompress(data,max_length=200000)
-              assert dec.eof and not dec.unused_data
-              assert len(patch)==raw_size and hashlib.sha256(patch).hexdigest()==raw_checksum
-              subprocess.run(['git','-c','core.hooksPath=/dev/null','apply','--index','--unidiff-zero','--whitespace=error'],input=patch,cwd=candidate,env=env,check=True)
-              assert git('write-tree').decode().strip()==expected_tree
-          tree=git('write-tree').decode().strip()
-          paths=[p.decode() for p in git('diff','--cached','--name-only','-z').split(b'\0') if p]
-          assert len(paths)==72 and len(paths)==len(set(paths))
-          class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self,*args,**kwargs):
-                  raise RuntimeError('blob API redirect refused')
-          client=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
-          entries=[]
-          for path in paths:
-              assert not path.startswith('/') and all(x not in ('','.','..','.git','.exec') for x in path.split('/'))
-              assert not path.startswith('.github/') or path=='.github/workflows/codex-openbao-replacement-ci.yml'
-              row=git('ls-files','-s','--',path).decode().strip().split()
-              assert len(row)>=4 and row[0] in ('100644','100755') and row[2]=='0'
-              p=candidate/path
-              assert p.is_file() and not p.is_symlink()
-              raw=p.read_bytes(); assert len(raw)<2*1024*1024
-              raw.decode('utf-8')
-              expected=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-              assert row[1]==expected
-              payload=json.dumps({'encoding':'base64','content':base64.b64encode(raw).decode()}).encode()
-              req=urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs',data=payload,method='POST',headers={'Authorization':'Bearer '+os.environ['BLOB_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'})
-              with client.open(req,timeout=30) as response:
-                  assert response.status==201
-                  result=json.loads(response.read(16384))
-              assert result['sha']==expected
-              entries.append({'path':path,'mode':row[0],'type':'blob','sha':expected})
-          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'source-publication'
-          out.mkdir(mode=0o700)
-          (out/'manifest.json').write_text(json.dumps({'base':'59aded26640eeb039cdca5d197e1285a76321a89','base_tree':'4dadf34a8414ee9222369ab8cce0975e65d2141f','source_tree':tree,'entries':entries,'candidate_executed':False,'refs_modified':False,'qualification':False},sort_keys=True,indent=2)+'\n')
-          print('Verified and published',len(entries),'source blobs; tree',tree,'; no candidate execution or ref change')
-          PY
+          test "$(git rev-parse HEAD)" = 894b45639a96dfe5201a035089d5d96682a1f92a
+          test "$(git rev-parse HEAD^1)" = 55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18
+          test "$(git rev-parse HEAD^2)" = 03bc0c0fa719ef1d7804b9aa1c775dd7c5886047
+          test "$(git rev-parse HEAD^{tree})" = 1ab62ba7f88b74e1cf68aed36be556167bbcb778
+          test "$(git rev-parse HEAD^2^{tree})" = 1ab62ba7f88b74e1cf68aed36be556167bbcb778
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          out="$RUNNER_TEMP/exact-merge-source"
+          mkdir -m 700 "$out"
+          git bundle create "$out/source.bundle" HEAD
+          git bundle verify "$out/source.bundle"
+          printf 'merge=%s\nparents=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git show -s --format=%P HEAD)" "$(git rev-parse HEAD^{tree})" > "$out/source-binding.txt"
+          cd "$out"
+          shasum -a 256 source.bundle > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: source-publication-manifest
-          path: ${{ runner.temp }}/source-publication/manifest.json
+          name: exact-merge-source
+          path: ${{ runner.temp }}/exact-merge-source/
           if-no-files-found: error
           retention-days: 3
