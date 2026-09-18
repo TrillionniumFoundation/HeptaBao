@@ -355,7 +355,11 @@ impl EngineState {
             })
     }
 
-    pub(crate) fn plugin_secret_mount(&self, namespace: &str, path: &str) -> Option<(String, String)> {
+    pub(crate) fn plugin_secret_mount(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String)> {
         self.namespaces
             .get(namespace)?
             .mounts
@@ -472,7 +476,10 @@ impl EngineState {
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
-                Backend::Database | Backend::PluginSecret(_) | Backend::Pki(_) | Backend::Ssh(_) => None,
+                Backend::Database
+                | Backend::PluginSecret(_)
+                | Backend::Pki(_)
+                | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -595,7 +602,10 @@ impl EngineState {
                 ));
             }
             Backend::PluginSecret(_) => {
-                return Err(error(501, "plugin operations require the audited external-effect dispatcher"));
+                return Err(error(
+                    501,
+                    "plugin operations require the audited external-effect dispatcher",
+                ));
             }
             Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
             Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
@@ -615,7 +625,6 @@ impl EngineState {
         }
         Ok(Some(response))
     }
-
 }
 
 fn cubbyhole_descriptor() -> Value {
@@ -846,13 +855,19 @@ fn handle_mounts(
             Backend::Database
         }
         "plugin" => {
-            if body.get("options").is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty())) {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
                 return Err(bad("plugin mount options are not supported"));
             }
-            let config = body.get("config").ok_or_else(|| bad("plugin mount requires config.plugin_id"))?;
+            let config = body
+                .get("config")
+                .ok_or_else(|| bad("plugin mount requires config.plugin_id"))?;
             reject_unknown(config, &["plugin_id"])?;
             let plugin_id = string(config, "plugin_id")?;
-            heptabao_domain::Id::parse(plugin_id.to_owned()).map_err(|_| bad("invalid plugin identifier"))?;
+            heptabao_domain::Id::parse(plugin_id.to_owned())
+                .map_err(|_| bad("invalid plugin identifier"))?;
             Backend::PluginSecret(plugin_id.to_owned())
         }
         "transit" => {
