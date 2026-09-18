@@ -250,6 +250,16 @@ def run(binary,bin_dir,root,checks):
         check('revoke_really_prevents_pg_login',not pg.login(cred['username'],cred['password']))
         check('revoked_provider_ledger_retired',pg.sql("SELECT count(*) FROM heptabao_provider.leases WHERE lease_id='"+provider_id+"'").stdout.strip()=='0')
         check('revoked_postgres_role_retired',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname='"+cred['username']+"'").stdout.strip()=='0')
+        prefix_credentials=[]
+        for _ in range(2):
+            status,prefix_issue=instance.call('GET','database/creds/reader')
+            check('prefix_revoke_seed_'+str(len(prefix_credentials)),status==200)
+            prefix_credentials.append((prefix_issue['lease_id'],prefix_issue['data']))
+        status,_=instance.call('POST','sys/leases/revoke-prefix/database/creds/reader',{})
+        check('database_prefix_revoke',status==204)
+        for index,(lease_id,prefix_cred) in enumerate(prefix_credentials):
+            check('database_prefix_revoke_login_denied_'+str(index),not pg.login(prefix_cred['username'],prefix_cred['password']))
+            check('database_prefix_revoke_lookup_absent_'+str(index),instance.call('POST','sys/leases/lookup',{'lease_id':lease_id})[0]==400)
         for _ in range(132):
             status,churn=instance.call('GET','database/creds/churn')
             if status!=200:
