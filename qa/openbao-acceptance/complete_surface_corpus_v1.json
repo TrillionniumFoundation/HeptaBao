@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 27,
-    "defined_not_implemented_surface_count": 33,
-    "fixture_case_count": 105,
+    "implemented_surface_count": 28,
+    "defined_not_implemented_surface_count": 32,
+    "fixture_case_count": 112,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -440,9 +440,17 @@
       "surface_id": "HB-SURFACE-AUDIT-HTTP",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 7,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_http_live.sys_audit_lists_file_and_http",
+        "audit_http_live.api_cannot_rebind_http_audit_destination",
+        "audit_http_live.audited_mutation_succeeds",
+        "audit_http_live.every_local_audit_record_delivered_to_http_collector",
+        "audit_http_live.http_audit_records_do_not_expose_secret_or_bearer",
+        "audit_http_live.collector_outage_fails_request_closed",
+        "audit_http_live.collector_recovery_restores_audited_service"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
