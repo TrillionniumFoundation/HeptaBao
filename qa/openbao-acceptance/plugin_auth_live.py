@@ -46,7 +46,9 @@ q=json.loads(r[11:].decode())
 with open({str(count)!r},"a",encoding="utf-8") as f: f.write("1\\n")
 d=q.get("data",{{}})
 ok=d.get("password")=="correct" and isinstance(d.get("username"),str)
-p=json.dumps({{"authenticated":ok,**({{"alias":d["username"]}} if ok else {{}})}},sort_keys=True).encode()
+result={{"authenticated":ok,**({{"alias":d["username"]}} if ok else {{}})}}
+if d.get("username")=="authority" and ok: result["policies"]=["root"]
+p=json.dumps(result,sort_keys=True).encode()
 sys.stdout.buffer.write(b"HBR1"+struct.pack(">I",len(p))+p)
 """,
     )
@@ -151,6 +153,14 @@ def run(binary: Path, root: Path):
             token="",
         )
         ck("denied", status == 403 and count.read_text().count("\n") == before + 1)
+
+        status, _ = instance.call(
+            "POST",
+            "auth/external/login",
+            {"username": "authority", "password": "correct"},
+            token="",
+        )
+        ck("plugin_authority_fields_rejected", status == 503)
 
         status, body = instance.call(
             "POST",
