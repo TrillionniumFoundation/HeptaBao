@@ -58,7 +58,7 @@ jobs:
               assert not path.startswith('/') and all(x not in ('','.','..','.git','.exec') for x in path.split('/'))
               assert not path.startswith('.github/') or path=='.github/workflows/codex-openbao-replacement-ci.yml'
               row=git('ls-files','-s','--',path).decode().strip().split()
-              assert len(row)>=4 and row[0]=='100644' and row[2]=='0'
+              assert len(row)>=4 and row[0] in ('100644','100755') and row[2]=='0'
               p=candidate/path
               assert p.is_file() and not p.is_symlink()
               raw=p.read_bytes(); assert len(raw)<2*1024*1024
@@ -71,7 +71,7 @@ jobs:
                   assert response.status==201
                   result=json.loads(response.read(16384))
               assert result['sha']==expected
-              entries.append({'path':path,'mode':'100644','type':'blob','sha':expected})
+              entries.append({'path':path,'mode':row[0],'type':'blob','sha':expected})
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'source-publication'
           out.mkdir(mode=0o700)
           (out/'manifest.json').write_text(json.dumps({'base':'59aded26640eeb039cdca5d197e1285a76321a89','base_tree':'4dadf34a8414ee9222369ab8cce0975e65d2141f','source_tree':tree,'entries':entries,'candidate_executed':False,'refs_modified':False,'qualification':False},sort_keys=True,indent=2)+'\n')
