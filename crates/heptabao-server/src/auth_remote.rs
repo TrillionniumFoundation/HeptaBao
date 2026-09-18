@@ -11,6 +11,45 @@ pub(super) struct RemoteJwtSource {
     pub jwks_url: Option<String>,
     pub oidc_discovery_url: Option<String>,
 }
+
+pub(crate) struct RemoteJwtLoginPlan {
+    namespace: String,
+    mount: String,
+    method: String,
+    body: Zeroizing<Vec<u8>>,
+    config: JwtConfig,
+    now: u64,
+}
+
+pub(crate) struct RemoteJwtLoginObservation {
+    keys: BTreeMap<String, JwtKeyRecord>,
+}
+
+impl RemoteJwtLoginPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &Outbound,
+    ) -> Result<RemoteJwtLoginObservation, AuthError> {
+        let remote = self
+            .config
+            .remote
+            .as_ref()
+            .ok_or_else(|| bad("remote JWT source disappeared"))?;
+        Ok(RemoteJwtLoginObservation {
+            keys: remote.load(outbound, &self.config.issuer)?,
+        })
+    }
+}
+
+fn same_remote_binding(left: &JwtConfig, right: &JwtConfig) -> bool {
+    left.remote == right.remote
+        && left.jwt_supported_algs == right.jwt_supported_algs
+        && left.issuer == right.issuer
+        && left.audiences == right.audiences
+        && left.required_namespace == right.required_namespace
+        && left.clock_skew_seconds == right.clock_skew_seconds
+        && left.maximum_token_lifetime_seconds == right.maximum_token_lifetime_seconds
+}
 impl RemoteJwtSource {
     pub(super) fn parse(body: &Value) -> Result<Option<Self>, AuthError> {
         let jwks_url = optional(body, "jwks_url")?;
@@ -91,6 +130,90 @@ fn optional(body: &Value, name: &str) -> Result<Option<String>, AuthError> {
         .transpose()
 }
 impl AuthState {
+    pub(crate) fn prepare_remote_jwt_login(
+        &self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<RemoteJwtLoginPlan>, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Ok(None);
+        }
+        let Some(rest) = path.strip_prefix("auth/") else {
+            return Ok(None);
+        };
+        let Some((mount, route)) = rest.split_once('/') else {
+            return Ok(None);
+        };
+        if route != "login" {
+            return Ok(None);
+        }
+        let scope = AuthScope { namespace, mount };
+        let Some(config) = self.jwt_at(scope).and_then(|state| state.config.as_ref()).cloned()
+        else {
+            return Ok(None);
+        };
+        if config.remote.is_none() {
+            return Ok(None);
+        }
+        let body = Zeroizing::new(
+            serde_json::to_vec(body).map_err(|_| bad("JWT login request encoding failed"))?,
+        );
+        Ok(Some(RemoteJwtLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            method: method.into(),
+            body,
+            config,
+            now,
+        }))
+    }
+
+    pub(crate) fn finish_remote_jwt_login(
+        &mut self,
+        plan: RemoteJwtLoginPlan,
+        observation: RemoteJwtLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        let current = self
+            .jwt_at(scope)
+            .and_then(|state| state.config.as_ref())
+            .ok_or_else(|| bad("JWT configuration disappeared during refresh"))?;
+        if !same_remote_binding(current, &plan.config) {
+            return Err(err(409, "JWT configuration changed during remote key refresh"));
+        }
+        let current = self
+            .jwt_at_mut(scope)
+            .config
+            .as_mut()
+            .ok_or_else(|| bad("JWT configuration disappeared during refresh"))?;
+        current.keys = observation.keys;
+        let mut validation = current.clone();
+        if validation.audiences.is_empty() {
+            validation
+                .audiences
+                .insert("configuration-shape-only".into());
+        }
+        validation.verifier()?;
+        let body: Value = serde_json::from_slice(&plan.body)
+            .map_err(|_| bad("JWT login request decoding failed"))?;
+        let path = format!("auth/{}/login", plan.mount);
+        self.handle(
+            None,
+            &plan.namespace,
+            &plan.method,
+            &path,
+            &body,
+            plan.now,
+        )?
+        .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
+    }
+
     pub(crate) fn has_remote_jwt_state(&self) -> bool {
         self.jwt_mounts.values().any(|mounts| {
             mounts.values().any(|s| {
