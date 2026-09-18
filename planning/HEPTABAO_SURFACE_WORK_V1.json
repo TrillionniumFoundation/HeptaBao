@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "ab78eae1172eee165841b82eeb38f3d7e7c7fa95f70a8295b27dfce970be1488",
+  "corpus_sha256": "e9ddb47914e6c0bd6d4eb923bc9ad976ce793c35329c41e3c471ccd5a7f5097d",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -970,7 +970,16 @@
         "isolation": "For HB-SURFACE-DB-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "postgres_live.native_pg_tls_scram_config",
+        "postgres_live.credential_really_logs_into_postgresql",
+        "postgres_live.slow_provider_does_not_hold_global_service_lock",
+        "postgres_live.renewed_credential_survives_service_restart",
+        "postgres_live.revoke_terminates_existing_database_session",
+        "postgres_live.revoke_really_prevents_pg_login",
+        "postgres_live.provider_outage_is_pending_not_success",
+        "postgres_live.restart_reconcile"
+      ],
       "available_scoped_profiles": [
         "postgres"
       ],

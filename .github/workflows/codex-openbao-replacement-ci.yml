@@ -149,6 +149,27 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-replay-epoch-ha"
 
+      - name: Exercise exact-base to candidate HA rolling upgrade
+        if: ${{ (success() || failure()) && github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_BASE" =~ ^[0-9a-f]{40}$ ]]
+          base_dir="$RUNNER_TEMP/heptabao-upgrade-base"
+          base_target="$RUNNER_TEMP/heptabao-upgrade-base-target"
+          rm -rf "$base_dir" "$base_target"
+          git worktree add --detach "$base_dir" "$PR_BASE"
+          cleanup() { git worktree remove --force "$base_dir" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          CARGO_TARGET_DIR="$base_target" cargo +1.98.0 build --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
+          base_binary="$base_target/debug/heptabao-server"
+          candidate_binary="$PWD/target/debug/heptabao-server"
+          base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
+          candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
+          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py --base-binary "$base_binary" --base-sha256 "$base_digest" --candidate-binary "$candidate_binary" --candidate-sha256 "$candidate_digest" --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade"
+          cleanup
+          trap - EXIT
+
       - name: Exercise real encrypted-link network partitions
         shell: bash
         run: |
@@ -257,6 +278,35 @@ jobs:
           timeout 300 python qa/openbao-acceptance/policy_migration_live.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --output "$reports/policy.json"
+
+      - name: Rehearse bounded Identity auth-mount and SSH-role migration against official OpenBao
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-configuration-migration-reports"
+          mkdir -m 700 "$reports"
+          timeout 300 python qa/openbao-acceptance/identity_migration_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/identity.json"
+          timeout 300 python qa/openbao-acceptance/auth_mount_migration_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/auth-mount.json"
+          timeout 240 python qa/openbao-acceptance/ssh_role_migration_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ssh-role.json"
+          python - "$reports/identity.json" "$reports/auth-mount.json" "$reports/ssh-role.json" <<'PY'
+          import json, pathlib, sys
+          identity=json.loads(pathlib.Path(sys.argv[1]).read_text()); auth_mount=json.loads(pathlib.Path(sys.argv[2]).read_text()); ssh=json.loads(pathlib.Path(sys.argv[3]).read_text())
+          assert identity["status"]=="passed_scoped_identity_recreation"
+          assert auth_mount["status"]=="passed_scoped_auth_mount_recreation"
+          assert ssh["status"]=="passed_scoped_ssh_role_transfer"
+          for report in (identity,auth_mount,ssh):
+              assert report["official_openbao_version"]=="2.6.2"
+              assert report["full_asset_migration"] is False and report["cutover_authority"] is False and report["rollback_authority"] is False and report["independent_qualification"] is False
+          assert identity["aliases_transferred"] is False and identity["group_aliases_transferred"] is False and identity["tokens_transferred"] is False and identity["auth_credentials_transferred"] is False
+          assert auth_mount["consumer_reauthentication_required"] is True and auth_mount["consumer_reauthentication_rehearsed"] is True and auth_mount["source_user_lockout_explicitly_disabled"] is True
+          assert auth_mount["accessor_transferred"] is False and auth_mount["principals_transferred"] is False and auth_mount["approle_secret_ids_transferred"] is False and auth_mount["tokens_transferred"] is False and auth_mount["identity_alias_bindings_transferred"] is False
+          assert ssh["issued_credentials_transferred"] is False and ssh["lease_state_transferred"] is False and ssh["ca_authority_transferred"] is False
+          PY
+          git diff --exit-code
 
       - name: Exercise online authentication and durable cross-node code consumption
         if: ${{ success() || failure() }}
@@ -387,3 +437,24 @@ jobs:
           set -euo pipefail
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
+
+  qualification-verdict:
+    name: OpenBao replacement / exact-head-and-merge verdict
+    if: ${{ always() }}
+    needs: [qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject failed cancelled or skipped qualification matrix
+        shell: bash
+        env:
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          test "$QUALIFY_RESULT" = success
+          if test "$EVENT_NAME" = pull_request; then
+            test -n "${{ github.event.pull_request.head.sha }}"
+            test -n "${{ github.sha }}"
+          fi
+          printf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$EVENT_NAME"
