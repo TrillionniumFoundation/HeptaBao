@@ -110,12 +110,14 @@ def restart_oracle(oracle):
         stdout=oracle["log"], stderr=oracle["log"],
     )
     client = Client(oracle["address"], oracle["ca_file"], token, timeout=2)
+    observed_health = None
     for _ in range(100):
         if oracle["process"].poll() is not None:
             raise BaoError("official_oracle_exited_during_restart")
         try:
             response = client.request("GET", "/v1/sys/health")
             if response.status in (200, 429, 503):
+                observed_health = response.body
                 break
         except BaoError:
             pass
@@ -123,12 +125,14 @@ def restart_oracle(oracle):
     else:
         stop_oracle(oracle)
         raise BaoError("official_oracle_restart_timeout")
-    health = client.health()
-    if health.get("sealed") is True:
+    if not isinstance(observed_health, dict) or observed_health.get("initialized") is not True:
+        stop_oracle(oracle)
+        raise BaoError("official_oracle_restart_health_invalid")
+    if observed_health.get("sealed") is True:
         if client.request("POST", "/v1/sys/unseal", {"key": key}).status != 200:
             stop_oracle(oracle)
             raise BaoError("official_oracle_restart_unseal_failed")
-        health = client.health()
+    health = client.health()
     if health["version"] != VERSION:
         stop_oracle(oracle)
         raise BaoError("official_oracle_restart_version_mismatch")
