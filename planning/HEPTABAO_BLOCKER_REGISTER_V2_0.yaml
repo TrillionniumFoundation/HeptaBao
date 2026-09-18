@@ -115,11 +115,11 @@ repository_blockers:
   title: current CI must validate exact V2.1 head and real prospective main merge
   state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
-  - .github/workflows/v2-1-main-convergence.yml
-  - .github/workflows/v2-1-main-exact-and-merge.yml
+  - .github/workflows/codex-openbao-replacement-ci.yml
+  - .github/workflows/workflow-trust-boundary.yml
   closure_criteria:
-  - read-only exact-head lane executes all repository and Rust gates
-  - real prospective-main-merge lane validates ordered parents and complete gates
+  - current read-only replacement lane executes repository Rust runtime and provider gates on the exact head
+  - current prospective-main-merge lane validates ordered parents and the same replacement gate without inheriting historical success
   - current-head independent review follows terminal checks
 - id: HB-V2-REP-008
   class: REPOSITORY_CONTROLLED
