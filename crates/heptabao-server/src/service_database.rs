@@ -206,7 +206,12 @@ impl DatabaseEffectPlan {
             let retired = pg
                 .scalar(
                     "SELECT heptabao_provider.retired($1,$2,$3,$4::bigint)::text",
-                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                    &[
+                        &self.fence_id,
+                        &self.lease.provider_id,
+                        &self.lease.username,
+                        &seq,
+                    ],
                 )
                 .map_err(|_| indeterminate())?;
             if retired == "true" {
@@ -275,7 +280,12 @@ impl DatabaseEffectPlan {
             let retired = pg
                 .scalar(
                     "SELECT heptabao_provider.retire($1,$2,$3,$4::bigint)::text",
-                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                    &[
+                        &self.fence_id,
+                        &self.lease.provider_id,
+                        &self.lease.username,
+                        &seq,
+                    ],
                 )
                 .map_err(|_| indeterminate())?;
             if retired != "true" {
@@ -284,7 +294,12 @@ impl DatabaseEffectPlan {
             let readback = pg
                 .scalar(
                     "SELECT heptabao_provider.retired($1,$2,$3,$4::bigint)::text",
-                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                    &[
+                        &self.fence_id,
+                        &self.lease.provider_id,
+                        &self.lease.username,
+                        &seq,
+                    ],
                 )
                 .map_err(|_| indeterminate())?;
             if readback != "true" {
@@ -352,7 +367,9 @@ impl DatabaseState {
     }
     pub(super) fn validate(&self) -> Result<(), Response> {
         if self.mounts.len() > 64 || self.provider_fence > i64::MAX as u64 {
-            return Err(failure("database namespace or provider-fence capacity exceeded"));
+            return Err(failure(
+                "database namespace or provider-fence capacity exceeded",
+            ));
         }
         let retained_max = self
             .mounts
@@ -363,7 +380,9 @@ impl DatabaseState {
             .max()
             .unwrap_or(0);
         if self.provider_fence != 0 && self.provider_fence < retained_max {
-            return Err(failure("database provider fence regressed behind retained lease state"));
+            return Err(failure(
+                "database provider fence regressed behind retained lease state",
+            ));
         }
         for (ns, mounts) in &self.mounts {
             if !valid_namespace(ns) || mounts.len() > 64 {
@@ -810,8 +829,14 @@ impl Service {
                         if !database_mount.connections.contains_key(key) {
                             return Err(Response::error(404, "database configuration not found"));
                         }
-                        if database_mount.roles.values().any(|role| role.db_name == key)
-                            || database_mount.leases.values().any(|lease| lease.db_name == key)
+                        if database_mount
+                            .roles
+                            .values()
+                            .any(|role| role.db_name == key)
+                            || database_mount
+                                .leases
+                                .values()
+                                .any(|lease| lease.db_name == key)
                         {
                             return Err(Response::error(
                                 409,
@@ -967,7 +992,11 @@ impl Service {
                             request_digest: String::new(),
                         };
                         lease.request_digest = digest_lease(&lease)?;
-                        state.database.mount_mut(ns, &mount).leases.insert(id.clone(), lease);
+                        state
+                            .database
+                            .mount_mut(ns, &mount)
+                            .leases
+                            .insert(id.clone(), lease);
                         self.publish_database(state)?;
                         self.defer_database_effect(ns, &mount, &id, now)
                     }
@@ -1224,12 +1253,7 @@ impl Service {
         })
     }
 
-    fn stage_revoke(
-        state: &mut State,
-        ns: &str,
-        mount: &str,
-        id: &str,
-    ) -> Result<(), Response> {
+    fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let phase = state
             .database
             .mount(ns, mount)
@@ -1758,9 +1782,11 @@ mod tests {
                 .ok_or_else(|| failure("retired lease missing"))?;
         }
 
-        assert!(state
-            .mount("", "database/")
-            .is_some_and(|mount| mount.leases.is_empty()));
+        assert!(
+            state
+                .mount("", "database/")
+                .is_some_and(|mount| mount.leases.is_empty())
+        );
         assert!(state.provider_fence >= 512);
         state.validate_scope("cluster")?;
 
