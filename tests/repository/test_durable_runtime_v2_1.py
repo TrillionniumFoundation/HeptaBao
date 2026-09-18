@@ -156,7 +156,7 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         for regression in (
             "ambiguous_namespace_resource_pairs_are_isolated_across_restart_and_delete",
             "legacy_schema_is_rejected_without_rewriting_it",
-            "genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference",
+            "checkpoint_file_faults_do_not_reenter_request_commit_path_and_recover_fail_closed",
             "failed_append_does_not_consume_sequence_and_reopen_recovers",
             "authenticated_old_snapshot_and_contradictory_ledger_fail_closed",
             "journal_budget_reserves_terminal_record_before_entry",
