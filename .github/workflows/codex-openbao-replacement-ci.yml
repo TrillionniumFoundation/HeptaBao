@@ -427,3 +427,24 @@ jobs:
           set -euo pipefail
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
+
+  qualification-verdict:
+    name: OpenBao replacement / exact-head-and-merge verdict
+    if: ${{ always() }}
+    needs: [qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject failed cancelled or skipped qualification matrix
+        shell: bash
+        env:
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          test "$QUALIFY_RESULT" = success
+          if test "$EVENT_NAME" = pull_request; then
+            test -n "${{ github.event.pull_request.head.sha }}"
+            test -n "${{ github.sha }}"
+          fi
+          printf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$EVENT_NAME"
