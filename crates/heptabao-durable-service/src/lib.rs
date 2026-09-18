@@ -208,6 +208,8 @@ pub enum Failpoint {
     AfterIntent,
     AfterSnapshotPublication,
     AfterCommitJournal,
+    AfterReplayRetirementLedger,
+    AfterReplayRetirementJournal,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -759,6 +761,13 @@ impl<B: Barrier> DurableService<B> {
     /// historical rather than replay authority. Unknown outcomes must be
     /// reconciled before this maintenance operation is allowed.
     pub fn retire_replay_epoch(&mut self) -> Result<ReplayRetirementOutcome, ServiceError> {
+        self.retire_replay_epoch_with_failpoint(Failpoint::None)
+    }
+
+    fn retire_replay_epoch_with_failpoint(
+        &mut self,
+        failpoint: Failpoint,
+    ) -> Result<ReplayRetirementOutcome, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
@@ -791,9 +800,15 @@ impl<B: Barrier> DurableService<B> {
         self.ledger.clear();
         self.replay_epoch = current_epoch;
         self.retired_through_generation = retired_through_generation;
+        if failpoint == Failpoint::AfterReplayRetirementLedger {
+            return Err(ServiceError::RecoveryRequired);
+        }
         atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
         self.journal_bytes = journal.len();
+        if failpoint == Failpoint::AfterReplayRetirementJournal {
+            return Err(ServiceError::RecoveryRequired);
+        }
         self.reconciliation.clear();
         self.unresolved = false;
         Ok(ReplayRetirementOutcome {
@@ -2632,6 +2647,50 @@ mod tests {
             Err(other) => Err(other),
             Ok(_) => Err(ServiceError::CorruptState),
         }
+    }
+
+    #[test]
+    fn replay_retirement_publication_boundaries_fence_and_recover() -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        for (label, failpoint) in [
+            ("retire-ledger-boundary", Failpoint::AfterReplayRetirementLedger),
+            ("retire-journal-boundary", Failpoint::AfterReplayRetirementJournal),
+        ] {
+            let root = TestRoot::new(label)?;
+            let barrier = TestBarrier::new();
+            let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
+            service.put(put_request("epoch-before-1", b"one")?)?;
+            service.put(put_request("epoch-before-2", b"two")?)?;
+            let generation = service.snapshot.generation;
+            assert!(matches!(
+                service.retire_replay_epoch_with_failpoint(failpoint),
+                Err(ServiceError::RecoveryRequired)
+            ));
+            assert!(service.recovery_required());
+            assert_eq!(service.replay_epoch(), 1);
+            assert_eq!(service.retired_through_generation(), generation);
+            assert!(matches!(
+                service.put_in_replay_epoch(1, put_request("must-fence-before-reopen", b"blocked")?),
+                Err(ServiceError::RecoveryRequired)
+            ));
+            drop(service);
+
+            let mut reopened = DurableService::open(&root.0, barrier.clone(), 16)?;
+            assert!(!reopened.recovery_required());
+            assert_eq!(reopened.replay_epoch(), 1);
+            assert_eq!(reopened.retired_through_generation(), generation);
+            let outcome = reopened.put_in_replay_epoch(
+                1,
+                put_request("epoch-after-reopen", b"resumed")?,
+            )?;
+            assert!(matches!(outcome, MutationOutcome::Committed { .. }));
+            drop(reopened);
+
+            let reopened = DurableService::open(&root.0, barrier, 16)?;
+            assert_eq!(reopened.replay_epoch(), 1);
+            assert_eq!(reopened.snapshot.generation, generation + 1);
+        }
+        Ok(())
     }
 
     #[test]
