@@ -111,7 +111,11 @@ Current source anchors include:
   crash-window and backup/restore tests;
 - `crates/heptabao-server/src/service_capacity_tests.rs` for root-only retirement
   and continued state commits in the new epoch;
-- `qa/openbao-acceptance/capacity_live.py` for a real synthetic TLS process.
+- `qa/openbao-acceptance/capacity_live.py` for a real synthetic TLS process. The
+  current fixture records a per-write growth series with serialized state bytes,
+  journal bytes, request latency, process RSS and Linux process write bytes, plus
+  throughput and p50/p95/p99 latency. These observations expose whole-state growth
+  cost; they do not by themselves qualify production scale.
 
 Commands and source anchors are requirements, not inherited success receipts. The
 exact candidate and prospective merge must execute the native gate before they may
