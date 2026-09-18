@@ -332,6 +332,39 @@ jobs:
             --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
             --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
 
+      - name: Rehearse bounded policy and SSH role migration against the official source
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-configuration-migration-reports"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/policy_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/policy.json"
+          timeout 240 python qa/openbao-acceptance/ssh_role_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/ssh-role.json"
+          python - "$reports/policy.json" "$reports/ssh-role.json" <<'PY'
+          import json, pathlib, sys
+          policy=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          ssh=json.loads(pathlib.Path(sys.argv[2]).read_text())
+          assert policy["status"] == "passed_scoped_policy_transfer"
+          assert ssh["status"] == "passed_scoped_ssh_role_transfer"
+          for report in (policy, ssh):
+              assert report["official_openbao_version"] == "2.6.2"
+              assert report["full_asset_migration"] is False
+              assert report["cutover_authority"] is False
+              assert report["rollback_authority"] is False
+              assert report["independent_qualification"] is False
+          assert ssh["issued_credentials_transferred"] is False
+          assert ssh["lease_state_transferred"] is False
+          assert ssh["ca_authority_transferred"] is False
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise committed membership snapshot catch-up and real cleanup grace
         if: ${{ success() || failure() }}
         shell: bash
