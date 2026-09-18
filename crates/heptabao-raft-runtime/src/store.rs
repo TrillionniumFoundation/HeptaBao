@@ -635,7 +635,7 @@ fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result
         last_good = offset;
     }
     if last_good != bytes.len() {
-        let mut file = OpenOptions::new().write(true).open(path)?;
+        let file = OpenOptions::new().write(true).open(path)?;
         file.set_len(u64::try_from(last_good).map_err(|_| invalid("journal offset overflow"))?)?;
         file.sync_all()?;
     }
@@ -1154,7 +1154,7 @@ fn replay_state_journal(path: &Path, bundle: &mut PersistentStateBundle) -> io::
         last_good = offset;
     }
     if last_good != bytes.len() {
-        let mut file = OpenOptions::new().write(true).open(path)?;
+        let file = OpenOptions::new().write(true).open(path)?;
         file.set_len(
             u64::try_from(last_good).map_err(|_| invalid("state journal offset overflow"))?,
         )?;
