@@ -13,9 +13,17 @@ deterministic content-defined boundaries: chunks are at least **384 KiB**, targe
 **512 KiB**, and are capped at **768 KiB** except the final short chunk. New chunks,
 retired chunk references and the manifest publication point are committed through
 one durable atomic batch. The shared serialized-state admission bound is
-**16 MiB**, and HA replication uses that same bound with its own chunk framing. A
-point mutation can still clone/serialize the complete logical state, so this is
-bounded physical chunk reuse rather than record-oriented scalability.
+**16 MiB**, and HA replication uses that same bound. New HA publication writes
+`HBSM3`: deterministic content-defined chunks are staged under a bounded
+128-index/two-slot physical keyspace, while the manifest carries the logical chunk
+order independently of physical index. A prefix/middle insertion can therefore
+resynchronize and reuse authenticated later chunks without shifting every
+subsequent Raft chunk key. Historical whole-state `HBSR1` and fixed-position
+`HBSM2` manifests remain readable for online upgrade. The manifest is still the
+sole authoritative publication point, so interrupted staging cannot expose a
+partial logical state. A point mutation can still clone/serialize the complete
+logical state before local/HA publication, so this reduces physical write and
+replication amplification but is **not** record-oriented scalability.
 
 The active replay ledger admits at most **32,000 identities per epoch**. A
 root-authorized replay retirement operation creates a durable authenticated
