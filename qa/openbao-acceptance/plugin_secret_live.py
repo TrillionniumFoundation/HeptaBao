@@ -36,17 +36,21 @@ sys.stdout.buffer.write(b"HBR1"+struct.pack(">I",len(p))+p)
     p=instance.root/"server.json"; c=json.loads(p.read_text())
     c["plugin_secrets"]=[{"id":"readonly_fixture","command":str(plugin),"command_sha256":plugin_sha,"sandbox_provider_id":"fixture_sandbox","sandbox_command":str(wrapper),"sandbox_command_sha256":wrapper_sha,"sandbox_profile_id":"readonly_profile","maximum_request_bytes":262144,"maximum_response_bytes":262144,"timeout_ms":5000}]
     p.write_text(json.dumps(c)); p.chmod(0o600)
-    return plugin,count
+    return plugin,count,plugin_sha
 
 def run(binary: Path, root: Path):
     os.umask(0o077); root.mkdir(mode=0o700,parents=True,exist_ok=False)
-    i=smoke.Instance(binary,root/"server"); plugin,count=configure(i,root); passed=[]
+    i=smoke.Instance(binary,root/"server"); plugin,count,plugin_sha=configure(i,root); passed=[]
     def ck(n,x):
         if not x: raise RuntimeError(n)
         passed.append(n)
     try:
         i.start(); st,b=i.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1}); ck("init",st==200)
         i.token=b["root_token"]; key=b["keys_base64"][0]; ck("unseal",i.call("POST","sys/unseal",{"key":key})[0]==200)
+        st,b=i.call("LIST","sys/plugins/catalog/secret"); ck("catalog_list",st==200 and b.get("data",{}).get("keys")==["readonly_fixture"])
+        st,b=i.call("GET","sys/plugins/catalog/secret/readonly_fixture"); ck("catalog_read",st==200 and b.get("data",{}).get("name")=="readonly_fixture" and b["data"].get("type")=="secret" and b["data"].get("sha256")==plugin_sha and b["data"].get("state")=="active")
+        ck("unknown_plugin_mount_fenced",i.call("POST","sys/mounts/unadmitted",{"type":"plugin","config":{"plugin_id":"not_admitted"}})[0]==400)
+        ck("unknown_plugin_mount_absent",i.call("GET","sys/mounts/unadmitted")[0]==404)
         ck("mount",i.call("POST","sys/mounts/external",{"type":"plugin","config":{"plugin_id":"readonly_fixture"}})[0]==204)
         ck("policy",i.call("POST","sys/policies/acl/plugin-reader",{"policy":'path "external/*" { capabilities = ["read", "list"] }'})[0]==204)
         st,b=i.call("POST","auth/token/create",{"policies":["plugin-reader"],"ttl":"1h"}); ck("token",st==200); t=b["auth"]["client_token"]
