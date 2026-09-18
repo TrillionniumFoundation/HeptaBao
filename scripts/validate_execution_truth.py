@@ -58,17 +58,29 @@ def validate(root: Path = ROOT) -> list[str]:
         # authenticated replay epoch. Matching the legacy epoch-0 wrapper is not
         # sufficient after replay retirement because it would reject every write
         # following an epoch transition.
-        epoch_compaction_writer = re.compile(
-            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);\s*"
-            r"if\s+compact_before_entry\s*\{\s*"
-            r"durable\.apply_batch_with_compaction_in_replay_epoch\(\s*"
-            r"replay_epoch\s*,",
-            re.S,
-        )
-        if epoch_compaction_writer.search(service_source) is None:
-            problems.append(
-                'atomic batch compaction is not bound to the current replay epoch in the real Service writer'
+        writer_start = service_source.find("    fn persist_state_batch(")
+        writer_end = service_source.find("\n    fn ", writer_start + 1)
+        if writer_start < 0 or writer_end < 0:
+            problems.append("real Service state writer is missing or ambiguous")
+        else:
+            writer = re.sub(r"\\s+", " ", service_source[writer_start:writer_end])
+            ordered = (
+                "let replay_epoch = durable.replay_epoch();",
+                "if replay_epoch != target_replay_epoch {",
+                "return Err(ServiceError::ReplayEpochMismatch);",
+                "if compact_before_entry {",
+                "durable.apply_batch_with_compaction_in_replay_epoch(",
+                "replay_epoch,",
             )
+            position = 0
+            for marker in ordered:
+                found = writer.find(marker, position)
+                if found < 0:
+                    problems.append(
+                        "atomic batch compaction is not bound to the current replay epoch in the real Service writer"
+                    )
+                    break
+                position = found + len(marker)
         return problems
     except (OSError, ValueError, KeyError, TypeError, StopIteration, yaml.YAMLError) as exc:
         return ['execution truth inputs invalid: ' + type(exc).__name__]
