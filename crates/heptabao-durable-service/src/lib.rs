@@ -903,8 +903,26 @@ impl<B: Barrier> DurableService<B> {
         if journal.len() > self.journal_limit {
             return Err(ServiceError::JournalCapacityExhausted);
         }
+        // The replay ledger is checkpoint state, not a per-request write target.
+        // Ordinary commits are already authenticated in the append-only journal;
+        // publishing the current ledger here removes O(retained_requests) physical
+        // write amplification from every mutation.  The order is deliberate:
+        // if the process dies after the ledger replacement but before the journal
+        // checkpoint replacement, the old journal still contains every commit
+        // required to validate the newer ledger prefix.
+        let ledger_bytes = sealed_ledger(
+            &self.barrier,
+            self.snapshot.generation,
+            self.replay_epoch,
+            self.retired_through_generation,
+            &self.ledger,
+        )?;
+        if ledger_bytes.len() > MAX_FILE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
         let before = self.journal_bytes;
         self.unresolved = true;
+        atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
         atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
         self.journal_bytes = journal.len();
@@ -1073,25 +1091,16 @@ impl<B: Barrier> DurableService<B> {
                 candidate.entries.remove(&binding.storage_key());
             }
         }
-        let mut candidate_ledger = self.ledger.clone();
-        candidate_ledger.insert(
-            binding.key.clone(),
-            LedgerRecord {
-                binding_digest,
-                recovery_reference: recovery_reference.clone(),
-                generation,
-            },
-        );
-        // Seal every payload and reserve BOTH journal records before durable
-        // entry. Capacity failure can therefore never strand an admitted intent.
-        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
-        let ledger_bytes = sealed_ledger(
-            &self.barrier,
+        let ledger_record = LedgerRecord {
+            binding_digest,
+            recovery_reference: recovery_reference.clone(),
             generation,
-            self.replay_epoch,
-            self.retired_through_generation,
-            &candidate_ledger,
-        )?;
+        };
+        // The snapshot remains the current durable application-state owner.
+        // Replay identity durability is journal-first: the terminal commit frame
+        // is sufficient to rebuild the in-memory ledger after restart, so normal
+        // mutations do not clone/seal/rewrite the complete retained ledger.
+        let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
@@ -1102,7 +1111,7 @@ impl<B: Barrier> DurableService<B> {
             terminal_sequence,
             &JournalEvent::Commit(marker),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES || ledger_bytes.len() > MAX_FILE_BYTES {
+        if snapshot_bytes.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
@@ -1157,8 +1166,7 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterCommitJournal {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
-            self.ledger = candidate_ledger;
+            self.ledger.insert(binding.key.clone(), ledger_record);
             Ok(())
         })();
         if result.is_err() {
@@ -1313,9 +1321,11 @@ impl<B: Barrier> DurableService<B> {
         }
         // A ledger is an authenticated complete prefix of commits. Header and
         // records cannot independently drift forward, backwards or develop gaps.
-        if ledger_generation > committed_generation
-            || ledger_generation.saturating_add(1) < committed_generation
-        {
+        // The persisted ledger is a checkpoint prefix.  Ordinary committed
+        // requests after that checkpoint live in the authenticated journal and
+        // are rebuilt below, so the ledger may legitimately lag by many
+        // generations.  It may never lead the journal's committed frontier.
+        if ledger_generation > committed_generation {
             return Err(ServiceError::CorruptState);
         }
         for (key, marker) in &committed {
