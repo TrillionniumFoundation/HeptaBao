@@ -936,6 +936,37 @@ mod tests {
     }
 }
 
+
+#[cfg(test)]
+mod service_lock_deadline_tests {
+    use super::*;
+
+    #[test]
+    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer() {
+        let lock = Mutex::new(());
+        let _held = lock.lock().expect("test lock");
+        assert_eq!(
+            lock_until(&lock, Instant::now() + Duration::from_millis(5)).unwrap_err(),
+            LockWaitError::Busy
+        );
+    }
+
+    #[test]
+    fn poisoned_service_lock_fails_without_waiting_for_the_deadline() {
+        let lock = Arc::new(Mutex::new(()));
+        let worker = Arc::clone(&lock);
+        let _ = std::thread::spawn(move || {
+            let _held = worker.lock().expect("test lock");
+            panic!("poison test mutex");
+        })
+        .join();
+        assert_eq!(
+            lock_until(&lock, Instant::now() + Duration::from_secs(1)).unwrap_err(),
+            LockWaitError::Poisoned
+        );
+    }
+}
+
 #[cfg(test)]
 mod wrapping_header_tests {
     use super::*;
