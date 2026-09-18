@@ -161,6 +161,29 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
+      - name: Exercise exact-base to candidate HA rolling upgrade
+        if: ${{ (success() || failure()) && github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_BASE" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          base_dir="$RUNNER_TEMP/heptabao-upgrade-base"
+          base_target="$RUNNER_TEMP/heptabao-upgrade-base-target"
+          rm -rf "$base_dir" "$base_target"
+          git worktree add --detach "$base_dir" "$PR_BASE"
+          cleanup() { git worktree remove --force "$base_dir" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          CARGO_TARGET_DIR="$base_target" cargo +1.98.0 build             --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
+          base_binary="$base_target/debug/heptabao-server"
+          candidate_binary="$PWD/target/debug/heptabao-server"
+          base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
+          candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
+          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade"
+          cleanup
+          trap - EXIT
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
       - name: Exercise actual private-output client and OTP wrapping HA
         if: ${{ success() || failure() }}
         shell: bash
