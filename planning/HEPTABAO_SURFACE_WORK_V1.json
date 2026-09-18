@@ -1158,18 +1158,29 @@
     {
       "surface_id": "HB-SURFACE-AUDIT-SOCKET",
       "category": "audit_devices",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "sys/audit socket device",
         "required_positive_and_hostile_behavior": "Unix/TCP peer identity, bounded framing, partial writes and reconnect",
-        "remaining_semantics_and_effect_checks": "No blind acknowledgement after partial delivery; secret-field filtering identical to audit policy",
+        "remaining_semantics_and_effect_checks": "Deployment-owned TCP delivery is live beside the mandatory authenticated file sink. API rebinding is denied and bounded write failures are counted without erasing the local record; UDP/Unix modes, full OpenBao options/formatting and multi-node collector qualification remain open.",
         "crash_reopen": "Interrupt sys/audit socket device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUDIT-SOCKET, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "audit_socket_live.sys_audit_lists_file_and_socket",
+        "audit_socket_live.api_cannot_rebind_socket_destination",
+        "audit_socket_live.audited_mutation_succeeds",
+        "audit_socket_live.socket_tail_matches_local_before_fault",
+        "audit_socket_live.socket_records_do_not_expose_secret_or_bearer",
+        "audit_socket_live.bounded_socket_outage_uses_mandatory_file_device",
+        "audit_socket_live.socket_outage_is_observable",
+        "audit_socket_live.collector_receives_new_records_after_recovery"
+      ],
+      "available_scoped_profiles": [
+        "audit-socket"
+      ],
       "whole_surface_admitted": false
     },
     {
