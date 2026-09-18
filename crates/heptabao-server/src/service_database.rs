@@ -948,8 +948,13 @@ impl Service {
         Ok(Response { status: INTERNAL_PROVIDER_PENDING, body: Value::Null })
     }
 
-    pub(crate) fn take_database_request_work(&mut self) -> Option<DatabaseRequestWork> {
-        self.database_request_work.take()
+    pub(crate) fn take_database_request_work_for(
+        &mut self,
+        response: &Response,
+    ) -> Option<DatabaseRequestWork> {
+        (response.status == INTERNAL_PROVIDER_PENDING)
+            .then(|| self.database_request_work.take())
+            .flatten()
     }
 
     pub(crate) fn complete_database_request_work(
