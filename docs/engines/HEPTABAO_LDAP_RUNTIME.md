@@ -45,17 +45,30 @@ used by Kubernetes/OIDC, so a slow LDAP server does not hold the global Service
 writer. Configuration is rechecked after provider observation; a concurrent
 remount/reconfiguration prevents publication.
 
-## Explicit remaining scope
+## External group synchronization and remaining scope
 
-This is a real network/TLS LDAP simple-bind profile, but it is not full OpenBao
-LDAP parity. The current implementation does **not** provide service-account
-search, user/group search filters, nested-group expansion, referrals, StartTLS,
-SASL, external group-to-policy discovery, or an independently qualified OpenLDAP/
-Active Directory matrix. Those remain open under `HB-SURFACE-AUTH-LDAP`; this
-document grants no compatibility or production authority.
+The current profile now performs one bounded whole-subtree group search on the
+same verified LDAPS connection after the authenticating user's successful simple
+bind. Configuration supplies one `group_dn`, one exact member attribute and one
+group-name attribute. The request is BER encoded rather than assembled as an LDAP
+filter string, response bytes and entry count are bounded, and referrals or
+unexpected operations fail closed. Observed group names are joined only to
+administrator-owned `auth/:mount/groups/:name` policy mappings. Removing a live
+directory membership therefore removes that mapped policy from the next login;
+existing tokens retain their already-issued authority until their normal
+revocation/expiry lifecycle.
 
-Executable acceptance: `qa/openbao-acceptance/ldap_bounded.py`. The fixture
-runs a real TLS socket and LDAPv3 BindRequest/BindResponse exchange through the
-production outbound path, deliberately uses different local and external
-passwords, checks provider-side DN/password observation, restart and revocation,
-and keeps `actual_openldap_distribution=false` / `independent_qualification=false`.
+This remains narrower than full OpenBao LDAP parity. It does **not** provide a
+service-account search credential, arbitrary user/group filter templates,
+nested/recursive group expansion, referrals, StartTLS, SASL or an independently
+qualified Active Directory matrix. Those remain open under
+`HB-SURFACE-AUTH-LDAP`; this document grants no compatibility or production
+authority.
+
+Executable acceptance includes `qa/openbao-acceptance/ldap_bounded.py` and
+`qa/openbao-acceptance/ldap_openldap_live.py`. The latter launches a real
+OpenLDAP `slapd`, proves live group-to-policy projection, removes the directory
+membership and proves the next login loses that policy, then restores membership
+and verifies the mapping survives HeptaBao restart. Provider outage/recovery and
+local-authority deletion are exercised in the same profile. Independent
+qualification remains a separate exit.

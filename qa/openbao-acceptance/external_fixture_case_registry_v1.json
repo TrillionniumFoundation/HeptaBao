@@ -148,6 +148,17 @@
         "checkpoint_resume_without_duplicate_version",
         "rollback_source_same_root_preserves_original_history"
       ]
+    },
+    "ldap_openldap_live": {
+      "script": "qa/openbao-acceptance/ldap_openldap_live.py",
+      "case_ids": [
+        "real_openldap_bind_mints_token",
+        "live_directory_group_grants_policy",
+        "live_group_revocation_removes_policy_on_next_login",
+        "group_mapping_survives_restart",
+        "provider_outage_fails_closed",
+        "provider_success_cannot_bypass_local_revocation"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

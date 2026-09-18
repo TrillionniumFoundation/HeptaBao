@@ -15,7 +15,7 @@
   "coverage_summary": {
     "implemented_surface_count": 34,
     "defined_not_implemented_surface_count": 26,
-    "fixture_case_count": 140,
+    "fixture_case_count": 146,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -199,12 +199,18 @@
       "surface_id": "HB-SURFACE-AUTH-LDAP",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 3,
+      "minimum_observations": 9,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
         "ldap_bounded.config_roundtrip",
         "ldap_bounded.login_and_revocation",
-        "ldap_bounded.filter_injection_rejected"
+        "ldap_bounded.filter_injection_rejected",
+        "ldap_openldap_live.real_openldap_bind_mints_token",
+        "ldap_openldap_live.live_directory_group_grants_policy",
+        "ldap_openldap_live.live_group_revocation_removes_policy_on_next_login",
+        "ldap_openldap_live.group_mapping_survives_restart",
+        "ldap_openldap_live.provider_outage_fails_closed",
+        "ldap_openldap_live.provider_success_cannot_bypass_local_revocation"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
