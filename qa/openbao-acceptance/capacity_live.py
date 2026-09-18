@@ -25,6 +25,34 @@ SATURATION_PAYLOAD_BYTES = 224 * 1024
 MAX_SATURATION_WRITES = 96
 
 
+def tree_bytes(path: Path) -> int:
+    total = 0
+    if not path.exists():
+        return total
+    for entry in path.rglob('*'):
+        try:
+            if entry.is_file() and not entry.is_symlink():
+                total += entry.stat().st_size
+        except FileNotFoundError:
+            # Atomic publication may replace a generation between discovery/stat.
+            continue
+    return total
+
+
+def process_rss_kib(pid: int | None) -> int | None:
+    if pid is None:
+        return None
+    status = Path('/proc') / str(pid) / 'status'
+    try:
+        for line in status.read_text().splitlines():
+            if line.startswith('VmRSS:'):
+                fields = line.split()
+                return int(fields[1]) if len(fields) >= 2 else None
+    except (OSError, ValueError):
+        return None
+    return None
+
+
 def validate_observation(data: dict) -> None:
     names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
              'retained_operations', 'operation_limit', 'operations_remaining',
@@ -116,6 +144,7 @@ def main() -> int:
         payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
+        growth_samples = []
         accepted = 0
         crossed_legacy = False
         for number in range(MAX_SATURATION_WRITES):
@@ -131,12 +160,22 @@ def main() -> int:
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            rss_kib = process_rss_kib(instance.process.pid if instance.process else None)
+            disk_bytes = tree_bytes(instance.root / 'data')
+            growth_samples.append({
+                'accepted_writes': accepted,
+                'state_bytes': previous['state_bytes'],
+                'durable_data_bytes': disk_bytes,
+                'write_latency_ms': round(latencies[-1], 3),
+                'rss_kib': rss_kib,
+            })
             if accepted == 1 or accepted % 8 == 0:
                 progress('saturation_progress', accepted=accepted,
                          state_bytes=previous['state_bytes'],
                          state_remaining_bytes=previous['state_remaining_bytes'],
                          journal_bytes=previous['journal_bytes'],
                          retained_operations=previous['retained_operations'],
+                         durable_data_bytes=disk_bytes, rss_kib=rss_kib,
                          last_write_ms=round(latencies[-1], 3))
             if previous['state_bytes'] > LEGACY_STATE_LIMIT_BYTES:
                 crossed_legacy = True
@@ -173,7 +212,11 @@ def main() -> int:
                       saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
                       latency_ms={'min': min(latencies), 'max': max(latencies),
                                   'mean': sum(latencies)/len(latencies)},
-                      scope='bounded_chunked_whole_state_refusal_not_scale_qualification')
+                      growth_samples=growth_samples,
+                      peak_rss_kib=max((sample['rss_kib'] for sample in growth_samples
+                                        if sample['rss_kib'] is not None), default=None),
+                      durable_bytes_at_refusal=tree_bytes(instance.root / 'data'),
+                      scope='bounded_chunked_whole_state_refusal_with_growth_curve_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
