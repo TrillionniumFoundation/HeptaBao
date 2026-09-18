@@ -166,9 +166,8 @@ impl Outbound {
     /// collector. The collector cannot redirect, select another origin, extend
     /// the absolute deadline, or cause an automatic retry.
     pub(crate) fn post_audit_json(&self, url: &str, value: &Value) -> Result<(), &'static str> {
-        let body = Zeroizing::new(
-            serde_json::to_vec(value).map_err(|_| "invalid outbound audit JSON")?,
-        );
+        let body =
+            Zeroizing::new(serde_json::to_vec(value).map_err(|_| "invalid outbound audit JSON")?);
         if body.len() > MAX_DOCUMENT {
             return Err("outbound audit document exceeds bound");
         }
@@ -294,7 +293,8 @@ fn read_discard_response_status(
         && code.bytes().all(|byte| byte.is_ascii_digit())
         && parts.next().is_some()
     {
-        code.parse::<u16>().map_err(|_| "invalid outbound HTTP status")?
+        code.parse::<u16>()
+            .map_err(|_| "invalid outbound HTTP status")?
     } else {
         return Err("outbound HTTP status rejected; redirects forbidden");
     };
@@ -311,8 +311,12 @@ fn read_discard_response_status(
         let raw = std::str::from_utf8(&raw).map_err(|_| "invalid outbound HTTP header")?;
         let (name, value) = raw.split_once(':').ok_or("invalid outbound HTTP header")?;
         if name.is_empty()
-            || !name.bytes().all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
-            || value.bytes().any(|byte| byte < 32 && byte != 9 || byte == 127)
+            || !name
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+            || value
+                .bytes()
+                .any(|byte| byte < 32 && byte != 9 || byte == 127)
         {
             return Err("invalid outbound HTTP header");
         }
@@ -664,15 +668,18 @@ mod tests {
             ("HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n\r\n", true),
             ("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}", true),
             ("HTTP/1.1 302 Found\r\nContent-Length: 0\r\n\r\n", false),
-            ("HTTP/1.1 204 No Content\r\nContent-Length: 1\r\n\r\nx", false),
-            ("HTTP/1.1 200 OK\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n", false),
+            (
+                "HTTP/1.1 204 No Content\r\nContent-Length: 1\r\n\r\nx",
+                false,
+            ),
+            (
+                "HTTP/1.1 200 OK\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n",
+                false,
+            ),
         ] {
             assert_eq!(
-                read_discard_response_status(
-                    &mut message.as_bytes(),
-                    &[200, 201, 202, 204]
-                )
-                .is_ok(),
+                read_discard_response_status(&mut message.as_bytes(), &[200, 201, 202, 204])
+                    .is_ok(),
                 expected
             );
         }
