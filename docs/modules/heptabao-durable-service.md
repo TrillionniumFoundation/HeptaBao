@@ -109,7 +109,7 @@ Create-new requires an empty validated root; reopen requires all authoritative f
 Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
 
 - [`tests::put_restart_read_and_duplicate_are_durable`](../../crates/heptabao-durable-service/src/lib.rs) checks persisted value and duplicate suppression after reopen.
-- [`tests::genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference`](../../crates/heptabao-durable-service/src/lib.rs) checks actual EISDIR publication faults fence the writer and preserve committed/aborted readback.
+- [`tests::checkpoint_file_faults_do_not_reenter_request_commit_path_and_recover_fail_closed`](../../crates/heptabao-durable-service/src/lib.rs) checks checkpoint-file publication faults remain outside the ordinary delta-commit path and reopen fails closed when checkpoint publication is incomplete.
 - [`tests::journal_budget_reserves_terminal_record_before_entry`](../../crates/heptabao-durable-service/src/lib.rs) checks journal exhaustion rejects before any intent append.
 - [`tests::compaction_checkpoints_complete_ledger_and_allows_future_commits`](../../crates/heptabao-durable-service/src/lib.rs) checks checkpoint shrinkage retains old duplicate protection and accepts later commits/reopen.
 - [`tests::encrypted_backup_restores_exact_generation_and_requires_explicit_rollback`](../../crates/heptabao-durable-service/src/lib.rs) checks older restore refusal, explicit rollback, value and retained duplicate identity.
