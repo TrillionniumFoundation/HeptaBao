@@ -681,8 +681,8 @@
       "runtime_source": "crates/heptabao-server/src/auth.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, users/*, groups/* and login/:name",
-        "required_positive_and_hostile_behavior": "Host-enrolled LDAPS simple bind against a real external directory, actual OpenLDAP distribution execution, local policy/MFA mapping and strict URL/DN/template bounds.",
-        "remaining_semantics_and_effect_checks": "Directory search and group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao differential parity and multi-host provider faults remain open.",
+        "required_positive_and_hostile_behavior": "Host-enrolled LDAPS user bind, bounded live subtree group-membership search, local group-policy mapping, actual OpenLDAP distribution execution, local policy/MFA mapping and strict URL/DN/attribute bounds.",
+        "remaining_semantics_and_effect_checks": "Privileged bind-account search, nested-group expansion, arbitrary filters, StartTLS/SASL/referrals, full OpenBao differential parity and multi-host provider faults remain open.",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-LDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."

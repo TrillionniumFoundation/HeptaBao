@@ -308,7 +308,7 @@ Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
 **Lifecycle:** Rotate bind password and reconcile live external-group membership changes.
 
-**Remaining scope:** Real LDAPS simple-bind, restart/outage failure, mount-local authority and actual OpenLDAP distribution execution are implemented. Directory search, group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open.
+**Remaining scope:** Real LDAPS user bind, bounded live subtree group-membership search, local group-to-policy mapping, membership revocation on the next login, restart/outage behavior and actual OpenLDAP distribution execution are implemented. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/ldap_bounded.py`, `qa/openbao-acceptance/ldap_openldap_live.py`.
 

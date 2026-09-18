@@ -434,10 +434,20 @@ that mapping is deliberately not consulted for LDAP login.
 against a strict TLS LDAP fixture. `qa/openbao-acceptance/ldap_openldap_live.py`
 launches the host-installed OpenLDAP `slapd`, seeds a synthetic inetOrgPerson,
 then verifies real TLS bind, wrong-password denial, provider outage/recovery,
-server restart and local-authority revocation. The current profile does **not**
-perform directory search or group lookup, rotate a bind-account credential,
-implement StartTLS/SASL/referrals, or establish full OpenBao LDAP API/error parity.
-Those remain product work rather than qualification paperwork.
+server restart and local-authority revocation. When `group_dn` is configured, the same successfully authenticated user TLS
+session performs one bounded subtree search with an equality match on
+`group_attr` (default `member`) against the exact authenticated user DN and
+returns only `group_name_attr` (default `cn`). Local
+`auth/<mount>/groups/<name>` records map those observed directory group names to
+token policies. Membership is observed on every login, so removal from the
+directory removes those policies from the next token without waiting for a local
+cache expiry. Search is capped at 128 groups and rejects referrals, controls,
+arbitrary filter syntax and paging.
+
+The current profile still does **not** rotate/use a privileged bind-account
+credential for search, implement StartTLS/SASL/referrals, arbitrary LDAP filters,
+nested-group expansion, or establish full OpenBao LDAP API/error parity. Those
+remain product work rather than qualification paperwork.
 
 ## Auth mount revision, tune and remount boundary
 

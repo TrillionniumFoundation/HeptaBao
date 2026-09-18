@@ -608,7 +608,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real LDAPS simple-bind, restart/outage failure, mount-local authority and actual OpenLDAP distribution execution are implemented. Directory search, group-policy synchronization, bind-account credential rotation, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
+      "remaining_scope": "Real LDAPS user bind, bounded live subtree group-membership search, local group-to-policy mapping, membership revocation on the next login, restart/outage behavior and actual OpenLDAP distribution execution are implemented. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
