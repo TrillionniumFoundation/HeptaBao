@@ -149,9 +149,14 @@ def run(binary, launcher_path, work_dir, oracle_port):
         single_file = work_dir / "single-key.json"
         private_write(single_file, [keys[0]])
         resume_file = work_dir / "resume-checkpoint.json"
+        inventory_manifest = {"mount": source_mount,
+                              "objects": [{"key": original[0]["key"],
+                                           "source_digest": digest(original[0]["source_metadata"]),
+                                           "record_digest": digest(original[0])}]}
         binding = {"source_identity": {"endpoint": source.address, "namespace": source.namespace, "mount": source_mount,
                     "cluster_id": source_health["cluster_id"], "version": source_health["version"]},
-                   "keys_digest": digest([keys[0]]), "profile": migration.SCHEMA,
+                   "keys_digest": digest([keys[0]]), "inventory_digest": digest(inventory_manifest),
+                   "profile": migration.SCHEMA,
                    "target_identity": {"endpoint": target.address, "namespace": target.namespace, "mount": "resumed",
                                        "cluster_id": target_health["cluster_id"]}}
         loss = LoseOneAcknowledgement(target)
