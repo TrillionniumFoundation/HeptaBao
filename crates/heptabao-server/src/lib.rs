@@ -29,6 +29,7 @@ pub mod outbound;
 mod postgres_wire;
 mod service;
 pub use service::AuditConfig;
+pub use service::PluginSecretConfig;
 pub use service::ServiceRequest;
 pub use service::{Response, Service};
 

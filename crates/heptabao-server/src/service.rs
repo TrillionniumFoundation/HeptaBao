@@ -39,6 +39,9 @@ mod identity;
 mod lifecycle;
 #[path = "service_online_auth.rs"]
 mod online_auth;
+#[path = "service_plugin.rs"]
+mod plugin;
+pub use plugin::PluginSecretConfig;
 #[path = "service_openapi.rs"]
 mod openapi;
 #[path = "service_raft_admin.rs"]
@@ -309,12 +312,14 @@ enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
     DatabaseConfig(database::DatabaseConfigPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
+    PluginRead(plugin::PluginReadPlan),
 }
 
 pub(crate) enum ExternalEffectResult {
     Database(Result<(), Response>),
     DatabaseConfig(Result<(), Response>),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
+    PluginRead(Result<Value, Response>),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -335,6 +340,7 @@ impl PendingExternalRequest {
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
             }
+            ExternalEffectPlan::PluginRead(plan) => ExternalEffectResult::PluginRead(plan.execute()),
         }
     }
 }
@@ -366,6 +372,8 @@ pub struct Service {
     pending_database_effect: Option<database::DatabaseEffectPlan>,
     pending_database_config_effect: Option<database::DatabaseConfigPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
+    pending_plugin_read: Option<plugin::PluginReadPlan>,
+    plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
@@ -401,6 +409,12 @@ impl Service {
             return Err("outbound policy is immutable while unsealed".into());
         }
         self.outbound = crate::outbound::Outbound::new(endpoints).map_err(str::to_owned)?;
+        Ok(())
+    }
+
+    pub fn install_secret_plugins(&mut self, configs: Vec<PluginSecretConfig>) -> Result<(), String> {
+        if self.state.is_some() { return Err("plugin runtime configuration is immutable while unsealed".into()); }
+        self.plugins = plugin::admit_secret_plugins(configs)?;
         Ok(())
     }
 
@@ -501,6 +515,8 @@ impl Service {
             pending_database_effect: None,
             pending_database_config_effect: None,
             pending_online_auth_effect: None,
+            pending_plugin_read: None,
+            plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
@@ -696,6 +712,7 @@ impl Service {
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
             }
+            (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => self.finalize_plugin_read(&plan, result),
             _ => {
                 self.recovery_required = true;
                 Response::error(503, "external request observation type mismatch")
@@ -737,6 +754,7 @@ impl Service {
         if self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_online_auth_effect.is_some()
+            || self.pending_plugin_read.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -841,9 +859,11 @@ impl Service {
         let database = self.pending_database_effect.take();
         let database_config = self.pending_database_config_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
+        let plugin_read = self.pending_plugin_read.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
-            + usize::from(online_auth.is_some());
+            + usize::from(online_auth.is_some())
+            + usize::from(plugin_read.is_some());
         if staged > 1 {
             self.recovery_required = true;
             return RequestExecution::Complete(self.audit_completed_response(
@@ -855,7 +875,8 @@ impl Service {
         let effect = database
             .map(ExternalEffectPlan::Database)
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
-            .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth));
+            .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
+            .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead));
         if let Some(effect) = effect {
             return RequestExecution::External(PendingExternalRequest {
                 fingerprint,
@@ -1020,6 +1041,9 @@ impl Service {
         }
         if self.database_handles(&admitted, namespace, path, body) {
             return self.database_route(admitted, principal.as_ref(), &request);
+        }
+        if self.plugin_secret_handles(&admitted, namespace, path) {
+            return self.plugin_secret_route(admitted, principal.as_ref(), &request);
         }
         if path == "sys/leader" && method == "GET" {
             let Some(principal) = principal.as_ref() else {

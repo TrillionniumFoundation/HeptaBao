@@ -57,6 +57,8 @@ pub struct Config {
     /// through `outbound_endpoints`; API requests cannot replace it.
     #[serde(default)]
     pub audit_http_url: Option<String>,
+    #[serde(default)]
+    pub plugin_secrets: Vec<crate::PluginSecretConfig>,
 }
 fn default_lifecycle_interval() -> u64 {
     5
@@ -210,6 +212,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
         service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_secret_plugins(config.plugin_secrets)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
     }
     if let Some(ha) = forwarding_ha {

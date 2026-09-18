@@ -840,8 +840,11 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "futures",
+ "heptabao-domain",
  "heptabao-durable-service",
  "heptabao-ha-service",
+ "heptabao-plugin-contracts",
+ "heptabao-plugin-host",
  "heptabao-raft-runtime",
  "libc",
  "ring",

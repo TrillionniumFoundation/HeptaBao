@@ -9,6 +9,9 @@ publish = false
 heptabao-durable-service = { path = "../heptabao-durable-service" }
 heptabao-ha-service = { path = "../heptabao-ha-service" }
 heptabao-raft-runtime = { path = "../heptabao-raft-runtime" }
+heptabao-domain = { path = "../heptabao-domain" }
+heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
+heptabao-plugin-host = { path = "../heptabao-plugin-host" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 ring = "=0.17.14"
