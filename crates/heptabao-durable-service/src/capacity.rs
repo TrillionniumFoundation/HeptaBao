@@ -154,7 +154,7 @@ impl<B: Barrier> DurableService<B> {
         if request.authorization_digest == [0; 32] {
             return Err(ServiceError::InvalidAuthorizationDigest);
         }
-        if request.mutations.is_empty() || request.mutations.len() > 64 {
+        if request.mutations.is_empty() || request.mutations.len() > MAX_ATOMIC_MUTATIONS {
             return Err(ServiceError::InvalidResource);
         }
         let mut resources = std::collections::BTreeSet::new();
