@@ -93,6 +93,8 @@ struct Mount {
 enum Backend {
     // Runtime provider state and effects belong to the audited Service writer.
     Database,
+    /// External Kubernetes TokenRequest provider state is owned by Service.
+    Kubernetes,
     /// Durable binding to a deployment-enrolled read-only secret plugin.
     PluginSecret(String),
     Kv1(BTreeMap<String, Value>),
@@ -164,6 +166,7 @@ impl Mount {
     fn descriptor(&self) -> Value {
         let (kind, options) = match &self.backend {
             Backend::Database => ("database", json!({})),
+            Backend::Kubernetes => ("kubernetes", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
@@ -372,6 +375,26 @@ impl EngineState {
             .max_by_key(|(mount, _)| mount.len())
     }
 
+    pub(crate) fn kubernetes_mount(&self, namespace: &str, path: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| {
+                matches!(value.backend, Backend::Kubernetes).then_some(mount.clone())
+            })
+            .max_by_key(String::len)
+    }
+
+    pub(crate) fn has_kubernetes_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|mount| matches!(mount.backend, Backend::Kubernetes))
+        })
+    }
+
     /// Atomically relocate one registered secret-engine mount inside the
     /// caller's namespace. The backend moves as one value, so old route lookup
     /// cannot observe it after publication. A revision CAS fences stale
@@ -477,6 +500,7 @@ impl EngineState {
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
                 Backend::Database
+                | Backend::Kubernetes
                 | Backend::PluginSecret(_)
                 | Backend::Pki(_)
                 | Backend::Ssh(_) => None,
@@ -599,6 +623,12 @@ impl EngineState {
                 return Err(error(
                     501,
                     "database operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kubernetes => {
+                return Err(error(
+                    501,
+                    "Kubernetes operations require the audited external-effect dispatcher",
                 ));
             }
             Backend::PluginSecret(_) => {
@@ -853,6 +883,20 @@ fn handle_mounts(
                 return Err(bad("database mount options are not supported"));
             }
             Backend::Database
+        }
+        "kubernetes" => {
+            if body
+                .get("options")
+                .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+                || body
+                    .get("config")
+                    .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+            {
+                return Err(bad(
+                    "Kubernetes mount options are configured through the engine config endpoint",
+                ));
+            }
+            Backend::Kubernetes
         }
         "plugin" => {
             if body
