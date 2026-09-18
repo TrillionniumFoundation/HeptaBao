@@ -48,23 +48,27 @@
     },
     {
       "id": "auth_mounts",
-      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "disposition": "BOUNDED_ADAPTER",
       "source_owner": "auth mount registry and method configuration",
-      "adapter": null,
+      "adapter": "qa/openbao-acceptance/migrate_auth_mount.py",
       "evidence": [
-        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md",
+        "qa/openbao-acceptance/tests/test_auth_mount_migration.py",
+        "qa/openbao-acceptance/auth_mount_migration_live.py"
       ],
-      "required_exit": "Recreate every supported auth mount with accessor/incarnation-safe semantics and no credential resurrection."
+      "required_exit": "Expand bounded auth-mount recreation across every supported namespace/mount; preserve tune semantics while allocating new target accessors/incarnations, force consumer re-authentication, and prove source credentials/tokens cannot regain authority after cutover or rollback."
     },
     {
       "id": "identity_entities_aliases_groups",
-      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "disposition": "BOUNDED_ADAPTER",
       "source_owner": "identity graph",
-      "adapter": null,
+      "adapter": "qa/openbao-acceptance/migrate_identity.py",
       "evidence": [
-        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md"
+        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md",
+        "qa/openbao-acceptance/tests/test_identity_migration.py",
+        "qa/openbao-acceptance/identity_migration_live.py"
       ],
-      "required_exit": "Transfer entities, aliases, groups, merge lineage, disabled state, and mount bindings with cycle and namespace checks."
+      "required_exit": "Expand bounded entity/internal-group recreation across namespaces and explicitly resolve aliases, external groups, group aliases, merged lineage and authentication accessor bindings through re-authentication or reviewed reconstruction; prove no old identity authority is resurrected."
     },
     {
       "id": "tokens_and_revocation",
