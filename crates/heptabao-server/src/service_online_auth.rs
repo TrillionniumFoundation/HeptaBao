@@ -2,9 +2,9 @@
 //! durable publication. Neither TokenReview nor an ID token is a Principal.
 use super::*;
 use crate::auth::{
-    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation, LdapLoginPlan, OidcBeginObservation,
-    OidcBeginPlan, OidcExchange, OidcLoginObservation, RemoteJwtLoginObservation,
-    RemoteJwtLoginPlan,
+    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
+    LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
+    RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -266,10 +266,9 @@ impl Service {
                 OnlineAuthEffect::Kubernetes(auth_plan),
                 OnlineAuthObservation::Kubernetes(observed),
             ) => state.auth.finish_kubernetes_login(auth_plan, observed),
-            (
-                OnlineAuthEffect::Ldap(auth_plan),
-                OnlineAuthObservation::Ldap(observed),
-            ) => state.auth.finish_ldap_login(auth_plan, observed),
+            (OnlineAuthEffect::Ldap(auth_plan), OnlineAuthObservation::Ldap(observed)) => {
+                state.auth.finish_ldap_login(auth_plan, observed)
+            }
             (
                 OnlineAuthEffect::OidcBegin(auth_plan),
                 OnlineAuthObservation::OidcBegin(observed),
