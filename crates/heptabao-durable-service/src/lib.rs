@@ -62,6 +62,14 @@ impl std::error::Error for BarrierError {}
 pub trait Barrier {
     fn seal(&self, context: &[u8], plaintext: &[u8]) -> Result<Vec<u8>, BarrierError>;
     fn open(&self, context: &[u8], protected: &[u8]) -> Result<Vec<u8>, BarrierError>;
+
+    /// Return an upper bound for the protected payload length when one is known
+    /// without sealing the plaintext. Implementations must never under-report.
+    /// None preserves the generic fail-safe path, which performs an exact seal
+    /// during capacity preflight.
+    fn sealed_len_bound(&self, _plaintext_len: usize) -> Option<usize> {
+        None
+    }
 }
 
 #[derive(Clone, Eq, PartialEq)]
@@ -2778,6 +2786,10 @@ mod tests {
             protected.extend_from_slice(&self.tag(context, &ciphertext));
             protected.extend_from_slice(&ciphertext);
             Ok(protected)
+        }
+
+        fn sealed_len_bound(&self, plaintext_len: usize) -> Option<usize> {
+            plaintext_len.checked_add(32)
         }
 
         fn open(&self, context: &[u8], protected: &[u8]) -> Result<Vec<u8>, BarrierError> {
