@@ -1204,10 +1204,10 @@ fn plan_replicated_chunks<'a>(
             continue;
         }
         let index = (0..MAX_REPLICATED_STATE_CHUNKS)
-            .map(|value| u16::try_from(value).map_err(|_| "HA physical chunk index overflow"))
-            .collect::<Result<Vec<_>, _>>()?
-            .into_iter()
-            .find(|index| !used.contains(index))
+            .find_map(|value| {
+                let index = u16::try_from(value).ok()?;
+                (!used.contains(&index)).then_some(index)
+            })
             .ok_or_else(|| "HA physical chunk index space exhausted".to_owned())?;
         used.insert(index);
         let slot = old_by_index.get(&index).map_or(0, |reference| 1 - reference.slot);
@@ -1363,9 +1363,10 @@ mod tests {
     #[test]
     fn position_independent_chunk_plan_reuses_tail_after_prefix_insertion()
     -> Result<(), Box<dyn std::error::Error>> {
-        let mut state = Vec::with_capacity(4 * 1024 * 1024);
+        const STATE_BYTES: usize = 4 * 1024 * 1024;
+        let mut state = Vec::with_capacity(STATE_BYTES);
         let mut value = 0x1234_5678_9abc_def0_u64;
-        for _ in 0..state.capacity() {
+        for _ in 0..STATE_BYTES {
             value ^= value << 13;
             value ^= value >> 7;
             value ^= value << 17;
