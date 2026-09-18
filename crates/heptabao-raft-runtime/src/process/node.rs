@@ -292,7 +292,12 @@ fn production_config() -> Result<Config, RemoteRaftError> {
         heartbeat_interval: 200,
         election_timeout_min: 1_000,
         election_timeout_max: 2_000,
-        snapshot_policy: SnapshotPolicy::LogsSinceLast(3),
+        // A single logical state commit can stage dozens of bounded chunks plus
+        // one manifest. Snapshotting every three Raft entries would turn the
+        // periodic full checkpoint into the dominant write path and erase the
+        // delta-journal benefit. 128 keeps worst-case retained encoded chunk
+        // history bounded while amortizing full state-machine checkpoints.
+        snapshot_policy: SnapshotPolicy::LogsSinceLast(128),
         max_in_snapshot_log_to_keep: 0,
         enable_pre_vote: Some(true),
         ..Config::default()
