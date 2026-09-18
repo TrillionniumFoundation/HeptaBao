@@ -592,7 +592,7 @@ impl Service {
     }
 
     fn complete_inline_database_request(&mut self, response: Response) -> Response {
-        let Some(work) = self.take_database_request_work() else {
+        let Some(work) = self.take_database_request_work_for(&response) else {
             return response;
         };
         let result = work.execute();
