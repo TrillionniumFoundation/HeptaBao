@@ -2,7 +2,7 @@
 //! durable publication. Neither TokenReview nor an ID token is a Principal.
 use super::*;
 use crate::auth::{
-    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, OidcBeginObservation,
+    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation, LdapLoginPlan, OidcBeginObservation,
     OidcBeginPlan, OidcExchange, OidcLoginObservation, RemoteJwtLoginObservation,
     RemoteJwtLoginPlan,
 };
@@ -25,6 +25,7 @@ fn auth_error(error: AuthError) -> Response {
 pub(super) enum OnlineAuthEffect {
     RemoteJwt(RemoteJwtLoginPlan),
     Kubernetes(KubernetesLoginPlan),
+    Ldap(LdapLoginPlan),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
         namespace: String,
@@ -45,6 +46,7 @@ pub(super) struct OnlineAuthEffectPlan {
 pub(super) enum OnlineAuthObservation {
     RemoteJwt(RemoteJwtLoginObservation),
     Kubernetes(KubernetesLoginObservation),
+    Ldap(LdapLoginObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
 }
@@ -59,6 +61,10 @@ impl OnlineAuthEffectPlan {
             OnlineAuthEffect::Kubernetes(plan) => plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Kubernetes)
+                .map_err(auth_error),
+            OnlineAuthEffect::Ldap(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::Ldap)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcBegin(plan) => plan
                 .execute(&self.outbound)
@@ -126,6 +132,7 @@ impl Service {
             .auth
             .online_mount_route(request.namespace, request.path)?;
         let handled = kind == "kubernetes" && suffix == "login"
+            || kind == "ldap" && suffix.starts_with("login/")
             || kind == "oidc" && matches!(suffix.as_str(), "oidc/auth_url" | "oidc/callback");
         if !handled {
             return None;
@@ -154,6 +161,21 @@ impl Service {
                 request.now,
             ) {
                 Ok(plan) => OnlineAuthEffect::Kubernetes(plan),
+                Err(error) => return Some(auth_error(error)),
+            }
+        } else if kind == "ldap" {
+            let Some(name) = suffix.strip_prefix("login/") else {
+                return Some(Response::error(404, "unsupported LDAP login route"));
+            };
+            match admitted.auth.prepare_ldap_login(
+                request.namespace,
+                &mount,
+                name,
+                request.method,
+                request.body,
+                request.now,
+            ) {
+                Ok(plan) => OnlineAuthEffect::Ldap(plan),
                 Err(error) => return Some(auth_error(error)),
             }
         } else if suffix == "oidc/auth_url" {
@@ -244,6 +266,10 @@ impl Service {
                 OnlineAuthEffect::Kubernetes(auth_plan),
                 OnlineAuthObservation::Kubernetes(observed),
             ) => state.auth.finish_kubernetes_login(auth_plan, observed),
+            (
+                OnlineAuthEffect::Ldap(auth_plan),
+                OnlineAuthObservation::Ldap(observed),
+            ) => state.auth.finish_ldap_login(auth_plan, observed),
             (
                 OnlineAuthEffect::OidcBegin(auth_plan),
                 OnlineAuthObservation::OidcBegin(observed),
