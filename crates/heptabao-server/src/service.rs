@@ -1228,8 +1228,10 @@ impl Service {
                 // the earlier finite-use token admission deliberately stays consumed.
                 Err(error) => {
                     response = Response::error(error.status, &error.message);
-                    admitted = wrapping_rollback
-                        .expect("wrapping rollback exists when a wrapping TTL was requested");
+                    let Some(rollback) = wrapping_rollback else {
+                        return Response::error(500, "wrapping rollback state is unavailable");
+                    };
+                    admitted = rollback;
                 }
             }
         } else {
