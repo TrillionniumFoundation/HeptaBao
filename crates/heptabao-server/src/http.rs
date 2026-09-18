@@ -11,7 +11,7 @@ use std::{
     net::{IpAddr, SocketAddr, TcpListener, TcpStream},
     path::PathBuf,
     sync::{
-        Arc, Mutex,
+        Arc, Mutex, MutexGuard, TryLockError,
         atomic::{AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
@@ -209,7 +209,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
+            let response = match lock_until(&service, Instant::now() + Duration::from_secs(15)) {
                 Ok(mut service) => service.handle_forwarded(crate::ServiceRequest {
                     method: &request.method,
                     path: &request.path,
@@ -218,7 +218,12 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     body: std::mem::take(&mut request.body),
                     wrap_ttl_seconds: request.wrap_ttl_seconds,
                 }),
-                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
+                Err(LockWaitError::Busy) => {
+                    Response::error(503, "HA forward service lock deadline exceeded")
+                }
+                Err(LockWaitError::Poisoned) => {
+                    Response::error(503, "HA forward service lock is unavailable")
+                }
             };
             request.token.zeroize();
             response
@@ -291,6 +296,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         WireRejection::RateLimited,
                         429,
                         "request rate limit exceeded",
+                        Instant::now() + timeout,
                     );
                     let _ = write_response(&mut stream, response, false);
                     return;
@@ -299,7 +305,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let (response, head) = match parsed {
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
+                        let response = match lock_until(&service, Instant::now() + timeout) {
                             Ok(mut service) => service.handle_request(crate::ServiceRequest {
                                 method: if is_head && request.wrap_ttl_seconds.is_none() {
                                     "GET"
@@ -312,7 +318,12 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 body: std::mem::take(&mut request.body.0),
                                 wrap_ttl_seconds: request.wrap_ttl_seconds,
                             }),
-                            Err(_) => Response::error(503, "service state is unavailable"),
+                            Err(LockWaitError::Busy) => {
+                                Response::error(503, "service state lock deadline exceeded")
+                            }
+                            Err(LockWaitError::Poisoned) => {
+                                Response::error(503, "service state is unavailable")
+                            }
                         };
                         (response, is_head)
                     }
@@ -323,6 +334,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
+                            Instant::now() + timeout,
                         ),
                         false,
                     ),
@@ -336,16 +348,47 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum LockWaitError {
+    Busy,
+    Poisoned,
+}
+
+fn lock_until<'a, T>(
+    mutex: &'a Mutex<T>,
+    deadline: Instant,
+) -> Result<MutexGuard<'a, T>, LockWaitError> {
+    loop {
+        match mutex.try_lock() {
+            Ok(guard) => return Ok(guard),
+            Err(TryLockError::Poisoned(_)) => return Err(LockWaitError::Poisoned),
+            Err(TryLockError::WouldBlock) => {
+                let now = Instant::now();
+                if now >= deadline {
+                    return Err(LockWaitError::Busy);
+                }
+                std::thread::sleep(
+                    deadline
+                        .saturating_duration_since(now)
+                        .min(Duration::from_millis(2)),
+                );
+            }
+        }
+    }
+}
+
 fn audited_wire_rejection(
     service: &Arc<Mutex<Service>>,
     attempt_id: &[u8; 16],
     rejection: WireRejection,
     status: u16,
     message: &'static str,
+    deadline: Instant,
 ) -> Response {
-    match service.lock() {
+    match lock_until(service, deadline) {
         Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
-        Err(_) => Response::error(503, "service state is unavailable"),
+        Err(LockWaitError::Busy) => Response::error(503, "service state lock deadline exceeded"),
+        Err(LockWaitError::Poisoned) => Response::error(503, "service state is unavailable"),
     }
 }
 
