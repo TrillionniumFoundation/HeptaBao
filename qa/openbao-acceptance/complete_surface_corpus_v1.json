@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 28,
-    "defined_not_implemented_surface_count": 32,
-    "fixture_case_count": 112,
+    "implemented_surface_count": 29,
+    "defined_not_implemented_surface_count": 31,
+    "fixture_case_count": 120,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -380,9 +380,18 @@
       "surface_id": "HB-SURFACE-DB-POSTGRESQL",
       "category": "database_providers",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "postgres_live.native_pg_tls_scram_config",
+        "postgres_live.credential_really_logs_into_postgresql",
+        "postgres_live.slow_provider_does_not_block_unrelated_kv_write",
+        "postgres_live.renewed_credential_survives_service_restart",
+        "postgres_live.revoke_terminates_existing_database_session",
+        "postgres_live.revoke_really_prevents_pg_login",
+        "postgres_live.provider_outage_is_pending_not_success",
+        "postgres_live.restart_reconcile"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
