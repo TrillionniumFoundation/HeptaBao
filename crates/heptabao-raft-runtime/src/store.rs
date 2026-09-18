@@ -630,8 +630,10 @@ impl DurableLogStore {
         ensure_real_directory(root, "raft log store root")?;
         let state_path = root.join("raft-log.bin");
         ensure_create_location_is_fresh(root, &state_path)?;
-        let state = PersistentLogState::default();
+        let mut state = PersistentLogState::default();
+        state.journal_format = 1;
         write_json(&state_path, LOG_MAGIC, &state)?;
+        initialize_log_journal(&log_journal_path(&state_path))?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
         Ok(Self {
             state_path,
@@ -655,8 +657,27 @@ impl DurableLogStore {
                 "initialized raft log store is missing its authoritative generation",
             ));
         }
-        let state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
+        let mut state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
         state.validate()?;
+        let journal_path = log_journal_path(&state_path);
+        if state.journal_format == 0 {
+            if !regular_file_status(&journal_path, "legacy raft log delta journal")? {
+                initialize_log_journal(&journal_path)?;
+            }
+            replay_log_journal(&journal_path, &mut state)?;
+            state.journal_format = 1;
+            write_json(&state_path, LOG_MAGIC, &state)?;
+            initialize_log_journal(&journal_path)?;
+        } else if state.journal_format == 1 {
+            if !regular_file_status(&journal_path, "raft log delta journal")? {
+                return Err(invalid(
+                    "initialized raft log checkpoint requires its delta journal",
+                ));
+            }
+            replay_log_journal(&journal_path, &mut state)?;
+        } else {
+            return Err(invalid("unsupported raft log journal format"));
+        }
         discard_stale_previous_after_validation(&state_path)?;
         Ok(Self {
             state_path,
@@ -690,8 +711,11 @@ impl DurableLogStore {
                 "legacy raft log store has no authoritative generation",
             ));
         }
-        let state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
+        let mut state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
         state.validate()?;
+        state.journal_format = 1;
+        initialize_log_journal(&log_journal_path(&state_path))?;
+        write_json(&state_path, LOG_MAGIC, &state)?;
         discard_stale_previous_after_validation(&state_path)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
         Ok(Self {
@@ -758,11 +782,9 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
 
     async fn save_vote(&mut self, vote: &VoteOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        candidate.vote = Some(*vote);
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Vote(*vote);
+        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn save_committed(
@@ -770,11 +792,9 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         committed: Option<LogIdOf<TypeConfig>>,
     ) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        candidate.committed = committed;
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Committed(committed);
+        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn read_committed(&mut self) -> Result<Option<LogIdOf<TypeConfig>>, io::Error> {
@@ -791,26 +811,50 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         I::IntoIter: OptionalSend,
     {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
+        let mut serialized = Vec::new();
+        let mut last = state
+            .log
+            .keys()
+            .next_back()
+            .copied()
+            .or_else(|| state.last_purged_log_id.map(|value| value.index));
         for entry in entries {
             let index = entry.index();
-            let serialized =
+            let value =
                 serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
-            if let Some(existing) = candidate.log.get(&index) {
-                if existing != &serialized {
+            if let Some(existing) = state.log.get(&index) {
+                if existing != &value {
                     let error = invalid(format!(
                         "attempted to overwrite log index {index} without truncate"
                     ));
                     callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
                     return Err(error);
                 }
-            } else {
-                candidate.log.insert(index, serialized);
+                continue;
             }
+            if let Some(previous) = last {
+                let expected = previous
+                    .checked_add(1)
+                    .ok_or_else(|| invalid("log append index overflow"))?;
+                if index != expected {
+                    let error = invalid(format!(
+                        "log append would create a hole: expected {expected}, observed {index}"
+                    ));
+                    callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
+                    return Err(error);
+                }
+            }
+            last = Some(index);
+            serialized.push((index, value));
         }
-        match self.persist(&candidate) {
+        if serialized.is_empty() {
+            callback.io_completed(Ok(()));
+            return Ok(());
+        }
+        let event = LogJournalEvent::Append(serialized);
+        match append_log_journal(&log_journal_path(&self.state_path), &event) {
             Ok(()) => {
-                *state = candidate;
+                apply_log_journal_event(&mut state, event)?;
                 callback.io_completed(Ok(()));
                 Ok(())
             }
@@ -833,42 +877,31 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
             None => 0,
         };
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        let remove = candidate
-            .log
-            .range(start..)
-            .map(|(index, _)| *index)
-            .collect::<Vec<_>>();
-        for index in remove {
-            candidate.log.remove(&index);
-        }
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Truncate { start };
+        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn purge(&mut self, log_id: LogIdOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        if candidate
+        if state
             .last_purged_log_id
             .is_some_and(|last| last > log_id)
         {
             return Err(invalid("purge log id regressed"));
         }
-        let remove = candidate
-            .log
-            .range(..=log_id.index)
-            .map(|(index, _)| *index)
-            .collect::<Vec<_>>();
-        for index in remove {
-            candidate.log.remove(&index);
+        if let Some(last) = state.log.keys().next_back().copied()
+            && log_id.index > last
+        {
+            return Err(invalid("purge log id exceeds locally retained log frontier"));
         }
-        candidate.last_purged_log_id = Some(log_id);
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Purge { log_id };
+        append_log_journal(&log_journal_path(&self.state_path), &event)?;
+        apply_log_journal_event(&mut state, event)?;
+        self.persist(&state)?;
+        initialize_log_journal(&log_journal_path(&self.state_path))
     }
+
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
