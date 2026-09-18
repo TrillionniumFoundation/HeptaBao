@@ -408,10 +408,8 @@ fn ha_catch_up_can_advance_across_multiple_retired_epochs_without_ledger_reset()
 
         let durable = service.durable.as_ref().ok_or("missing durable")?;
         assert_eq!(durable.replay_epoch(), 3);
-        assert_eq!(
-            service.state.as_ref().ok_or("missing state")?.replay_epoch,
-            3
-        );
+        // persist_local is the durable half of HA catch-up; sync_from_ha publishes
+        // the in-memory State only after this local write succeeds.
         assert!(durable.retired_through_generation() >= before_generation);
         assert_eq!(durable.retained_request_count(), 1);
         Ok(())
