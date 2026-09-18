@@ -908,6 +908,163 @@ impl Service {
         let observed = plan.execute()?;
         self.complete_database_effect(&plan, observed)
     }
+
+    fn stage_database_effect_request(
+        &mut self,
+        ns: &str,
+        mount: &str,
+        id: &str,
+        now: u64,
+        fingerprint: String,
+        success: DatabaseRequestSuccess,
+    ) -> Result<Response, Response> {
+        if self.database_request_work.is_some() {
+            return Err(failure("another foreground provider request is awaiting execution"));
+        }
+        let plan = self.prepare_database_effect(ns, mount, id, now)?;
+        let key = plan.key();
+        if !self.database_provider_inflight.insert(key) {
+            return Err(Response {
+                status: 503,
+                body: json!({
+                    "errors":["provider effect is already in flight; reconcile before retry"],
+                    "lease_id":id,
+                    "reconcile_required":true,
+                    "retry_allowed":false
+                }),
+            });
+        }
+        self.database_request_work = Some(DatabaseRequestWork {
+            kind: DatabaseRequestKind::Lease { plan, success },
+            fingerprint,
+            now,
+        });
+        Ok(Response { status: INTERNAL_PROVIDER_PENDING, body: Value::Null })
+    }
+
+    fn stage_database_connection_verification(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        connection: Connection,
+        fingerprint: String,
+        now: u64,
+    ) -> Result<Response, Response> {
+        if self.database_request_work.is_some() {
+            return Err(failure("another foreground provider request is awaiting execution"));
+        }
+        let base_digest = self.current_state_digest()?;
+        self.database_request_work = Some(DatabaseRequestWork {
+            kind: DatabaseRequestKind::VerifyConnection {
+                base_digest,
+                namespace: namespace.to_owned(),
+                mount: mount.to_owned(),
+                name: name.to_owned(),
+                connection,
+                outbound: self.outbound.clone(),
+            },
+            fingerprint,
+            now,
+        });
+        Ok(Response { status: INTERNAL_PROVIDER_PENDING, body: Value::Null })
+    }
+
+    pub(crate) fn take_database_request_work(&mut self) -> Option<DatabaseRequestWork> {
+        self.database_request_work.take()
+    }
+
+    pub(crate) fn complete_database_request_work(
+        &mut self,
+        work: DatabaseRequestWork,
+        result: Result<Value, Response>,
+    ) -> Response {
+        let DatabaseRequestWork { kind, fingerprint, now } = work;
+        let response = match kind {
+            DatabaseRequestKind::Lease { plan, success } => {
+                let key = plan.key();
+                if !self.database_provider_inflight.remove(&key) {
+                    self.recovery_required = true;
+                    Response::error(503, "provider in-flight fence was lost")
+                } else {
+                    match result.and_then(|observed| self.complete_database_effect(&plan, observed)) {
+                        Ok(()) => match success {
+                            DatabaseRequestSuccess::Credentials {
+                                lease_id, lease_duration, username, password,
+                            } => Response::ok(json!({
+                                "lease_id":lease_id,
+                                "lease_duration":lease_duration,
+                                "renewable":true,
+                                "data":{"username":username,"password":password.0}
+                            })),
+                            DatabaseRequestSuccess::Renewed { lease_id, lease_duration } => {
+                                Response::ok(json!({
+                                    "lease_id":lease_id,
+                                    "lease_duration":lease_duration,
+                                    "renewable":true
+                                }))
+                            }
+                            DatabaseRequestSuccess::NoContent => Response {
+                                status: 204,
+                                body: Value::Null,
+                            },
+                        },
+                        Err(error) => error,
+                    }
+                }
+            }
+            DatabaseRequestKind::VerifyConnection {
+                base_digest, namespace, mount, name, connection, ..
+            } => match result {
+                Err(error) => error,
+                Ok(observed) => {
+                    let identity_matches = observed.get("current_user")
+                        == Some(&json!(connection.username.as_str()));
+                    let protocol_matches = observed.get("protocol")
+                        == Some(&json!("heptabao-postgresql-provider-v1"));
+                    if !identity_matches || !protocol_matches {
+                        failure("PostgreSQL provider identity or protocol mismatch")
+                    } else if self.current_state_digest().ok() != Some(base_digest) {
+                        Response {
+                            status: 409,
+                            body: json!({
+                                "errors":["server state changed during provider verification; configuration was not published"],
+                                "retry_allowed":true
+                            }),
+                        }
+                    } else {
+                        let mut state = match self.state.clone() {
+                            Some(state) => state,
+                            None => return Response::error(503, "server sealed during provider verification"),
+                        };
+                        let db = state.database.mount_mut(&namespace, &mount);
+                        if db.leases.values().any(|lease| lease.db_name == name) {
+                            Response::error(409, "provider identity is frozen while lease/tombstone records exist")
+                        } else if db.connections.len() >= 16 && !db.connections.contains_key(&name) {
+                            Response::error(507, "database connection capacity exhausted")
+                        } else {
+                            db.connections.insert(name, connection);
+                            match self.publish_database(state) {
+                                Ok(()) => Response { status: 204, body: Value::Null },
+                                Err(error) => error,
+                            }
+                        }
+                    }
+                }
+            },
+        };
+        if self
+            .audit_event("response", &fingerprint, now, Some(response.status))
+            .is_err()
+        {
+            self.recovery_required = true;
+            return Response::error(
+                503,
+                "provider response audit failed; outcome unknown; authoritative recovery required",
+            );
+        }
+        response
+    }
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let l = state
             .database
