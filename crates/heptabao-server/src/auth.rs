@@ -1884,7 +1884,7 @@ impl AuthState {
             Some(enrollment) => Some(verify_totp(
                 enrollment,
                 plan.totp_code
-                    .as_deref()
+                    .as_ref()
                     .map(|value| value.as_str())
                     .ok_or_else(denied)?,
                 now,
