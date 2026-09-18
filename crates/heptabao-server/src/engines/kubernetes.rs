@@ -185,7 +185,7 @@ fn valid_kubernetes_name(value: &str) -> bool {
         })
 }
 
-fn validate_audiences(values: Vec<String>) -> std::result::std::result::Result<Vec<String>, EngineError> {
+fn validate_audiences(values: Vec<String>) -> std::result::Result<Vec<String>, EngineError> {
     if values.len() > 16 {
         return Err(err(400, "too many Kubernetes token audiences"));
     }
@@ -203,7 +203,7 @@ fn validate_audiences(values: Vec<String>) -> std::result::std::result::Result<V
     Ok(values)
 }
 
-fn string_list(value: Option<&Value>, field: &str) -> std::result::std::result::Result<Vec<String>, EngineError> {
+fn string_list(value: Option<&Value>, field: &str) -> std::result::Result<Vec<String>, EngineError> {
     let Some(value) = value else {
         return Ok(Vec::new());
     };
@@ -282,7 +282,7 @@ fn duration(value: Option<&Value>, default: u64) -> std::result::Result<u64, Eng
     Ok(total)
 }
 
-fn config_digest(config: &Config) -> std::result::std::result::Result<String, EngineError> {
+fn config_digest(config: &Config) -> std::result::Result<String, EngineError> {
     let bytes = serde_json::to_vec(config)
         .map_err(|_| err(500, "Kubernetes provider configuration encoding failed"))?;
     Ok(hex(&crypto::digest(&bytes)))
@@ -295,7 +295,7 @@ fn request_digest(
     ttl: u64,
     audiences: &[String],
     config_digest: &str,
-) -> std::result::std::result::Result<String, EngineError> {
+) -> std::result::Result<String, EngineError> {
     let bytes = serde_json::to_vec(&json!({
         "role": role,
         "namespace": namespace,
