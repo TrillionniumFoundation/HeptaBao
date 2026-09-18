@@ -115,6 +115,28 @@ cargo +1.98.0 doc --locked --workspace --no-deps
 
 A current exact-head and real prospective-main-merge run are required. Historical green checks and local output are not admission evidence.
 
+## Current scalability, cutover and release-candidate evidence
+
+The bounded whole-state runtime remains a scalability blocker rather than a
+record-oriented storage claim. The current capacity live profile records logical
+state growth, durable bytes, write latency and Linux RSS so candidate changes can
+be compared with measured write amplification instead of only raising constants.
+HTTP and authenticated HA request workers also use a bounded deadline when
+waiting for the single Service writer; stateful execution is still serialized.
+
+The live OpenBao migration rehearsal now exercises a process-fenced cutover and
+rollback boundary: the official source process is stopped before target
+acceptance, and the target is stopped before the same source data root is
+restarted. This remains a bounded synthetic rehearsal and does not grant cutover
+or rollback authority for a production estate.
+
+The multi-platform repository workflow now builds the exact release candidate
+twice in isolated target roots, requires byte-identical server binaries, and
+generates/revalidates a deterministic SPDX 2.3 candidate SBOM bound to the exact
+Git SHA, Cargo.lock package denominator and binary SHA-256. These are
+repository-controlled release inputs, not a signature, independent attestation or
+release authority.
+
 ## Authority boundary
 
 ```text
