@@ -124,9 +124,13 @@ def growth_curve(samples: list[dict], baseline_write_bytes: int | None) -> list[
 def validate_observation(data: dict) -> None:
     names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
              'retained_operations', 'operation_limit', 'operations_remaining',
-             'journal_bytes', 'journal_limit_bytes')
+             'journal_bytes', 'journal_limit_bytes', 'state_chunk_target_bytes')
     if not isinstance(data, dict) or any(type(data.get(k)) is not int or data[k] < 0 for k in names):
         raise ScenarioFailure('capacity.invalid_observation')
+    if (data.get('profile') != 'bounded-content-defined-state-v3'
+            or data.get('state_storage_format') != 'heptabao-state-chunks-v3'
+            or data['state_chunk_target_bytes'] != 512 * 1024):
+        raise ScenarioFailure('capacity.storage_profile_drift')
     for used, limit, remaining in (
         ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes'),
         ('retained_operations', 'operation_limit', 'operations_remaining'),
@@ -185,6 +189,39 @@ def main() -> int:
         validate_observation(data)
         return data
 
+    recovery_samples = []
+
+    def restart_and_measure(label, expected, key):
+        state_bytes = expected['state_bytes']
+        durable_bytes = tree_bytes(instance.root / 'data')
+        started_recovery = time.monotonic()
+        instance.stop()
+        instance.start()
+        startup_ms = (time.monotonic() - started_recovery) * 1000
+        check(f'capacity.{label}.reopen_sealed',
+              instance.call('GET', 'sys/internal/capacity')[0] == 503)
+        unseal_started = time.monotonic()
+        check(f'capacity.{label}.reopen_unseal',
+              instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
+        reopened = observe()
+        unseal_and_load_ms = (time.monotonic() - unseal_started) * 1000
+        total_ms = (time.monotonic() - started_recovery) * 1000
+        check(f'capacity.{label}.reopen_exact', reopened == expected)
+        recovery_samples.append({
+            'label': label,
+            'state_bytes': state_bytes,
+            'durable_data_bytes': durable_bytes,
+            'startup_ms': round(startup_ms, 3),
+            'unseal_and_load_ms': round(unseal_and_load_ms, 3),
+            'total_recovery_ms': round(total_ms, 3),
+            'rss_after_recovery_kib': process_rss_kib(
+                instance.process.pid if instance.process else None
+            ),
+        })
+        progress('recovery_sample', label=label, state_bytes=state_bytes,
+                 durable_data_bytes=durable_bytes, total_recovery_ms=round(total_ms, 3))
+        return reopened
+
     try:
         stage = 'initialize'
         progress('phase', stage=stage)
@@ -205,6 +242,9 @@ def main() -> int:
         instance.token = 'synthetic-invalid-token'
         check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
         instance.token = original
+        stage = 'initial-recovery'
+        progress('phase', stage=stage, state_bytes=initial['state_bytes'])
+        initial = restart_and_measure('initial', initial, key)
 
         stage = 'saturation'
         progress('phase', stage=stage, state_limit_bytes=initial['state_limit_bytes'],
@@ -273,12 +313,7 @@ def main() -> int:
         check('capacity.compaction_not_state_growth', compacted['state_bytes'] == saturated['state_bytes'])
         stage = 'restart'
         progress('phase', stage=stage, generation=compacted['generation'])
-        instance.stop()
-        instance.start()
-        check('capacity.reopen_sealed', instance.call('GET', 'sys/internal/capacity')[0] == 503)
-        check('capacity.reopen_unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
-        reopened = observe()
-        check('capacity.reopen_exact', reopened == compacted)
+        reopened = restart_and_measure('near-capacity', compacted, key)
         check('capacity.reopen_rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
         check('capacity.binary_unchanged', file_hash(binary) == report['binary_sha256'])
         report.update(status='passed', initial=initial, saturated=saturated, after_compaction=compacted,
@@ -293,10 +328,11 @@ def main() -> int:
                                   'p99': percentile(latencies, 0.99)},
                       growth_samples=growth_samples,
                       growth_curve=growth_curve(growth_samples, saturation_io_baseline),
+                      recovery_curve=recovery_samples,
                       peak_rss_kib=max((sample['rss_kib'] for sample in growth_samples
                                         if sample['rss_kib'] is not None), default=None),
                       durable_bytes_at_refusal=tree_bytes(instance.root / 'data'),
-                      scope='bounded_chunked_whole_state_with_physical_write_amplification_throughput_tail_latency_and_rss_curves_not_scale_qualification')
+                      scope='bounded_content_defined_whole_state_with_physical_write_amplification_throughput_tail_latency_rss_and_recovery_curves_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__
@@ -320,6 +356,10 @@ def main() -> int:
         'peak_rss_kib': report.get('peak_rss_kib'),
         'durable_bytes_at_refusal': report.get('durable_bytes_at_refusal'),
         'mean_write_latency_ms': report.get('latency_ms', {}).get('mean'),
+        'max_recovery_ms': max(
+            (sample['total_recovery_ms'] for sample in report.get('recovery_curve', [])),
+            default=None,
+        ),
     }, sort_keys=True))
     return 0 if report['status'] == 'passed' else 1
 

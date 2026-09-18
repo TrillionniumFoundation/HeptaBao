@@ -33,6 +33,7 @@ bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 | Field | Meaning |
 |---|---|
 | `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | Current serialized logical application payload and 16 MiB hard bound. |
+| `state_storage_format`, `state_chunk_target_bytes` | Exact current local state framing identity (`heptabao-state-chunks-v3`) and 512 KiB target chunk size; these are diagnostics, not a compatibility promise. |
 | `retained_operations`, `operation_limit`, `operations_remaining` | Active-epoch local durable replay identities and remaining slots. |
 | `journal_bytes`, `journal_limit_bytes` | Current local replay journal and configured hard bound. |
 | `generation` | Durable committed local generation, not a cluster-wide capacity reservation. |
@@ -134,12 +135,17 @@ Before admission, exercise total datasets materially above the legacy ceiling,
 long write histories beyond one replay epoch, leader/follower catch-up,
 snapshot/backup/restore, disk-full/torn-write/fsync faults, stale-node rejoin,
 rolling restart and supported mixed-version behavior. The current
-`capacity_live.py` profile now records per-write logical-state bytes, durable
-data-directory bytes, write latency and Linux RSS observations and prints safe
-aggregate values into CI logs. Those measurements expose growth/write-amplification
-trends for the bounded whole-state implementation; they do not convert it into a
-record-oriented scale claim. Production admission still requires repeatable
-throughput and tail-latency curves on representative multi-host hardware. Do not
+`capacity_live.py` profile records per-write logical-state bytes, durable
+data-directory bytes, process write bytes, write latency and Linux RSS observations,
+and derives throughput, p50/p95/p99 latency and physical write-amplification curves.
+It also measures startup plus unseal/load recovery at both the small initial state
+and the near-capacity state, yielding a source-bound recovery-cost curve instead of
+one final restart anecdote. Those measurements expose growth/write-amplification,
+memory, latency, disk and recovery trends for the bounded whole-state implementation;
+they do not convert it into a record-oriented scale claim. Production admission
+still requires repeatable curves on representative multi-host hardware and larger
+datasets under a storage architecture that is not constrained by whole-state
+serialization. Do not
 raise constants and infer scalability from a small happy-path fixture.
 
 The same precedence applies after an observed external provider effect: final
