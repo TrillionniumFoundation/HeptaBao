@@ -49,6 +49,10 @@ pub struct Config {
     /// Deployment-owned egress allowlist; API configuration cannot widen it.
     #[serde(default)]
     pub outbound_endpoints: Vec<crate::outbound::EndpointConfig>,
+    /// Optional mandatory HTTPS audit collector. The URL must resolve only
+    /// through `outbound_endpoints`; API requests cannot replace it.
+    #[serde(default)]
+    pub audit_http_url: Option<String>,
 }
 fn default_lifecycle_interval() -> u64 {
     5
@@ -199,10 +203,13 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
-    service
-        .lock()
-        .map_err(|_| "service lock unavailable")?
-        .install_outbound_endpoints(config.outbound_endpoints)?;
+    {
+        let mut service = service
+            .lock()
+            .map_err(|_| "service lock unavailable")?;
+        service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_audit_http_endpoint(config.audit_http_url)?;
+    }
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
