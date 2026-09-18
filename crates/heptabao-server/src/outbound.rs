@@ -843,6 +843,73 @@ mod tests {
     }
 
     #[test]
+    fn ldap_simple_bind_framing_is_bounded_and_result_codes_are_exact() -> Result<(), &'static str> {
+        let request = ldap_bind_request(
+            b"uid=alice,ou=people,dc=example,dc=test",
+            b"synthetic-password",
+        )?;
+        assert_eq!(request.first().copied(), Some(0x30));
+        assert!(request.windows(3).any(|window| window == b"\x02\x01\x03"));
+        assert!(request
+            .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
+            .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test"));
+
+        let success = [
+            ber_value(0x02, &[0x01])?,
+            ber_value(
+                0x61,
+                &[
+                    ber_value(0x0a, &[0])?,
+                    ber_value(0x04, b"")?,
+                    ber_value(0x04, b"")?,
+                ]
+                .concat(),
+            )?,
+        ]
+        .concat();
+        let success = ber_value(0x30, &success)?;
+        assert_eq!(read_ldap_bind_response(&mut success.as_slice())?, true);
+
+        let denied = [
+            ber_value(0x02, &[0x01])?,
+            ber_value(
+                0x61,
+                &[
+                    ber_value(0x0a, &[49])?,
+                    ber_value(0x04, b"")?,
+                    ber_value(0x04, b"invalid credentials")?,
+                ]
+                .concat(),
+            )?,
+        ]
+        .concat();
+        let denied = ber_value(0x30, &denied)?;
+        assert_eq!(read_ldap_bind_response(&mut denied.as_slice())?, false);
+
+        let mut malformed = success.clone();
+        malformed.push(0);
+        assert!(read_ldap_bind_response(&mut malformed.as_slice()).is_ok());
+        let wrong_id = ber_value(
+            0x30,
+            &[
+                ber_value(0x02, &[0x02])?,
+                ber_value(
+                    0x61,
+                    &[
+                        ber_value(0x0a, &[0])?,
+                        ber_value(0x04, b"")?,
+                        ber_value(0x04, b"")?,
+                    ]
+                    .concat(),
+                )?,
+            ]
+            .concat(),
+        )?;
+        assert!(read_ldap_bind_response(&mut wrong_id.as_slice()).is_err());
+        Ok(())
+    }
+
+    #[test]
     fn online_form_components_and_headers_cannot_inject_authority() {
         assert_eq!(form_component("safe-A_z.0~"), "safe-A_z.0~");
         assert_eq!(
