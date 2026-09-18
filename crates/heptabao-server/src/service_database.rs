@@ -5,6 +5,45 @@ use super::*;
 use crate::{auth::LeaseIssuer, outbound::Target, postgres_wire::PgSession};
 use std::collections::BTreeSet;
 
+pub(super) const INTERNAL_PROVIDER_PENDING: u16 = 599;
+
+enum DatabaseRequestSuccess {
+    Credentials {
+        lease_id: String,
+        lease_duration: u64,
+        username: String,
+        password: PrivateString,
+    },
+    Renewed {
+        lease_id: String,
+        lease_duration: u64,
+    },
+    NoContent,
+}
+
+enum DatabaseRequestKind {
+    Lease {
+        plan: DatabaseEffectPlan,
+        success: DatabaseRequestSuccess,
+    },
+    VerifyConnection {
+        base_digest: [u8; 32],
+        namespace: String,
+        mount: String,
+        name: String,
+        connection: Connection,
+        outbound: crate::outbound::Outbound,
+    },
+}
+
+/// Immutable external work removed from Service before provider I/O.
+/// Durable lease intents are committed before lease work is exposed.
+pub(super) struct DatabaseRequestWork {
+    kind: DatabaseRequestKind,
+    fingerprint: String,
+    now: u64,
+}
+
 /// The provider has already been entered and its effect observed. No local
 /// persistence failure can now mean that issuance/renewal/revocation was absent.
 /// Keep the durable pending intent and expose only reconciliation metadata.
