@@ -201,43 +201,109 @@ class ReplayEpochCluster(Cluster):
             self.leader()
             self.check("third_voter_rejoined_after_epoch_leadership_transfer", True)
 
-        # Repeat retirement after leadership has changed and force another leader
-        # loss. This rejects a one-shot/single-leader implementation of epochs.
+        # Keep one voter fully offline across *two* committed retirements.  The
+        # remaining two voters retain quorum.  When the offline process rejoins,
+        # its local durable replay authority must advance through both skipped
+        # epochs without deleting its ledger or requiring operator intervention.
         second_leader = self.leader()
+        offline = next(node for node in self.running() if node is not second_leader)
+        offline.stop()
+        self.check("one_voter_offline_before_multi_epoch_retirement", len(self.running()) == 2)
+
         second_epoch = self.retire_epoch(
             second_leader,
             target_epoch,
-            "second_replay_epoch_retirement_after_leader_change_committed_by_raft",
+            "second_replay_epoch_retirement_with_offline_voter_committed_by_raft",
         )
-        second_capacity = self.replay_capacity(second_leader)
-        self.check(
-            "second_retirement_converged_on_active_leader",
-            second_capacity["replay_epoch"] == second_epoch,
-        )
-        self.wait_voters_at_leader_frontier(
+        between_value = secrets.token_hex(16)
+        self.write(second_leader, "replay-between-offline-retirements", between_value)
+        third_epoch = self.retire_epoch(
             second_leader,
-            "all_voters_caught_up_after_second_retirement",
+            second_epoch,
+            "third_replay_epoch_retirement_with_same_voter_offline_committed_by_raft",
         )
-        second_leader.stop()
+        third_capacity = self.replay_capacity(second_leader)
+        self.check(
+            "two_retirements_completed_while_voter_offline",
+            third_capacity["replay_epoch"] == third_epoch,
+        )
+
+        self.restart(offline)
+        caught_up_leader = self.leader()
+        self.wait_voters_at_leader_frontier(
+            caught_up_leader,
+            "offline_voter_caught_up_after_skipping_two_replay_epochs",
+        )
+
+        # Force the previously offline process to become the serving leader so
+        # the capacity observation/write cannot be satisfied by standby forwarding.
+        if caught_up_leader is not offline:
+            spectator = next(
+                node
+                for node in self.running()
+                if node is not caught_up_leader and node is not offline
+            )
+            spectator.stop()
+            self.check(
+                "multi_epoch_leadership_transfer_keeps_two_of_three_voters",
+                len(self.running()) == 2,
+            )
+            status, _ = caught_up_leader.call(
+                "POST",
+                "sys/step-down",
+                {},
+                token=self.root_token,
+                timeout=15,
+            )
+            self.check("multi_epoch_catchup_step_down_acknowledged", status == 204)
+            offline_leader = self.leader()
+            self.check(
+                "previously_offline_voter_became_authoritative",
+                offline_leader is offline,
+            )
+        else:
+            spectator = None
+            offline_leader = offline
+            self.check("previously_offline_voter_became_authoritative", True)
+
+        offline_capacity = self.replay_capacity(offline_leader)
+        self.check(
+            "offline_voter_local_replay_authority_advanced_across_two_epochs",
+            offline_capacity["replay_epoch"] == third_epoch,
+        )
+        offline_value = secrets.token_hex(16)
+        self.write(offline_leader, "replay-multi-epoch-offline-write", offline_value)
+        self.check("multi_epoch_catchup_node_commits_after_becoming_leader", True)
+
+        if spectator is not None:
+            self.restart(spectator)
+            self.leader()
+            self.check("spectator_rejoined_after_multi_epoch_transfer", True)
+
+        # Kill the caught-up authoritative node and require another former
+        # follower to serve at the same latest epoch.
+        offline_leader.stop()
         final_leader = self.leader()
-        self.check("second_epoch_survives_second_leader_sigkill", final_leader is not second_leader)
+        self.check("latest_epoch_survives_caught_up_leader_sigkill", final_leader is not offline_leader)
         final_capacity = self.replay_capacity(final_leader)
         self.check(
-            "second_former_follower_became_leader_with_latest_epoch",
-            final_capacity["replay_epoch"] == second_epoch,
+            "former_follower_serves_latest_multi_epoch_frontier",
+            final_capacity["replay_epoch"] == third_epoch,
         )
         final_value = secrets.token_hex(16)
-        self.write(final_leader, "replay-second-failover-write", final_value)
-        self.check("second_failover_mutation_commits_in_latest_epoch", True)
+        self.write(final_leader, "replay-final-failover-write", final_value)
+        self.check("final_failover_mutation_commits_in_latest_epoch", True)
 
-        self.restart(second_leader)
+        self.restart(offline_leader)
         final_leader = self.leader()
         for node, path, value in (
             (final_leader, "replay-before-retirement", pre_value),
             (final_leader, "replay-after-retirement", post_value),
             (final_leader, "replay-former-follower-write", follower_value),
             (final_leader, "replay-restarted-leader-write", rejoin_value),
-            (final_leader, "replay-second-failover-write", final_value),
+            (final_leader, "replay-between-offline-retirements", between_value),
+            (final_leader, "replay-multi-epoch-offline-write", offline_value),
+            (final_leader, "replay-final-failover-write", final_value),
         ):
             self.read(node, path, value)
         self.check("all_replay_lifecycle_acknowledgements_read_back_after_rejoin", True)
