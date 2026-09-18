@@ -361,7 +361,6 @@ fn ldap_bind_request(dn: &[u8], password: &[u8]) -> Result<Zeroizing<Vec<u8>>, &
     Ok(Zeroizing::new(ber_value(0x30, &message)?))
 }
 
-
 fn valid_ldap_attribute(value: &str) -> bool {
     let mut bytes = value.bytes();
     !value.is_empty()
@@ -556,7 +555,9 @@ fn ber_take<'a>(
     }
     *offset += 1;
     let length = ber_take_length(bytes, offset)?;
-    let end = (*offset).checked_add(length).ok_or("LDAP BER length overflow")?;
+    let end = (*offset)
+        .checked_add(length)
+        .ok_or("LDAP BER length overflow")?;
     let value = bytes.get(*offset..end).ok_or("truncated LDAP BER value")?;
     *offset = end;
     Ok(value)
@@ -1043,16 +1044,19 @@ mod tests {
     }
 
     #[test]
-    fn ldap_simple_bind_framing_is_bounded_and_result_codes_are_exact() -> Result<(), &'static str> {
+    fn ldap_simple_bind_framing_is_bounded_and_result_codes_are_exact() -> Result<(), &'static str>
+    {
         let request = ldap_bind_request(
             b"uid=alice,ou=people,dc=example,dc=test",
             b"synthetic-password",
         )?;
         assert_eq!(request.first().copied(), Some(0x30));
         assert!(request.windows(3).any(|window| window == b"\x02\x01\x03"));
-        assert!(request
-            .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
-            .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test"));
+        assert!(
+            request
+                .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
+                .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test")
+        );
 
         let success = [
             ber_value(0x02, &[0x01])?,
@@ -1117,12 +1121,16 @@ mod tests {
             b"uid=alice,ou=people,dc=example,dc=test",
             b"cn",
         )?;
-        assert!(request
-            .windows(b"ou=groups,dc=example,dc=test".len())
-            .any(|window| window == b"ou=groups,dc=example,dc=test"));
-        assert!(request
-            .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
-            .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test"));
+        assert!(
+            request
+                .windows(b"ou=groups,dc=example,dc=test".len())
+                .any(|window| window == b"ou=groups,dc=example,dc=test")
+        );
+        assert!(
+            request
+                .windows(b"uid=alice,ou=people,dc=example,dc=test".len())
+                .any(|window| window == b"uid=alice,ou=people,dc=example,dc=test")
+        );
 
         let attribute = ber_value(
             0x30,
@@ -1140,8 +1148,7 @@ mod tests {
             ]
             .concat(),
         )?;
-        let entry_message =
-            ber_value(0x30, &[ber_value(0x02, &[0x02])?, entry].concat())?;
+        let entry_message = ber_value(0x30, &[ber_value(0x02, &[0x02])?, entry].concat())?;
         let done = ber_value(
             0x65,
             &[
@@ -1151,8 +1158,7 @@ mod tests {
             ]
             .concat(),
         )?;
-        let done_message =
-            ber_value(0x30, &[ber_value(0x02, &[0x02])?, done].concat())?;
+        let done_message = ber_value(0x30, &[ber_value(0x02, &[0x02])?, done].concat())?;
         let bytes = [entry_message, done_message].concat();
         let groups = read_ldap_group_search_response(&mut bytes.as_slice(), "cn")?;
         assert_eq!(groups, BTreeSet::from(["engineering".to_owned()]));
