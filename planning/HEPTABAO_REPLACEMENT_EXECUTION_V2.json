@@ -1179,16 +1179,22 @@
       "positive": "Deliver actual authenticated audit requests to a host-enrolled HTTPS collector",
       "hostile": "Reject redirects, unapproved destinations and invalid TLS",
       "lifecycle": "Reconcile timeout/collector outage without unaudited effect or unbounded queue",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/http.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/audit_http_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "TLS, redirect, timeout, SSRF and blocked destination behavior."
+      "remaining_scope": "Process-configured host-enrolled HTTPS delivery, local-file-first durability, redirect denial, bounded timeout, outage fail-closed and restart recovery are executable; dynamic sys/audit enrollment/options, batching/backpressure parity, official differential coverage and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-SOCKET",
