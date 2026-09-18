@@ -367,6 +367,60 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
 }
 
 #[test]
+fn ha_catch_up_can_advance_across_multiple_retired_epochs_without_ledger_reset()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = std::env::temp_dir().join(format!(
+        "heptabao-replay-ha-multiepoch-{}-{}",
+        std::process::id(),
+        hex(&crypto::random::<16>()?)
+    ));
+    private_directory(&root)?;
+    let result = (|| -> Result<(), Box<dyn std::error::Error>> {
+        let mut service = Service::new(root.join("data"), &root.join("audit.jsonl"))?;
+        let init = service.handle_at(
+            "POST",
+            "sys/init",
+            "",
+            "",
+            json!({"secret_shares": 1, "secret_threshold": 1}),
+            100,
+        );
+        let key = init.body["keys_base64"][0].as_str().ok_or("missing key")?;
+        assert_eq!(
+            service
+                .handle_at("POST", "sys/unseal", "", "", json!({"key": key}), 100)
+                .status,
+            200
+        );
+        let before_generation = service
+            .durable
+            .as_ref()
+            .ok_or("missing durable")?
+            .generation();
+        let mut committed = service.state.clone().ok_or("missing state")?;
+        committed.schema = CURRENT_STATE_SCHEMA;
+        committed.replay_epoch = 3;
+        let bytes = serde_json::to_vec(&committed)?;
+
+        service
+            .persist_local(&bytes, "hasync-multi-epoch-catch-up")
+            .map_err(|_| "multi-epoch HA catch-up persistence failed")?;
+
+        let durable = service.durable.as_ref().ok_or("missing durable")?;
+        assert_eq!(durable.replay_epoch(), 3);
+        assert_eq!(
+            service.state.as_ref().ok_or("missing state")?.replay_epoch,
+            3
+        );
+        assert!(durable.retired_through_generation() >= before_generation);
+        assert_eq!(durable.retained_request_count(), 1);
+        Ok(())
+    })();
+    let _ = fs::remove_dir_all(&root);
+    result
+}
+
+#[test]
 fn failed_state_publication_after_epoch_retirement_fences_service()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = std::env::temp_dir().join(format!(
