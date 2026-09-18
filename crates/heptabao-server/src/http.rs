@@ -61,6 +61,9 @@ pub struct Config {
     /// authenticated file sink remains enabled even if this collector fails.
     #[serde(default)]
     pub audit_socket: Option<crate::AuditSocketConfig>,
+    /// Optional deployment-owned local Unix syslog audit device.
+    #[serde(default)]
+    pub audit_syslog: Option<crate::AuditSyslogConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
 }
@@ -219,6 +222,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         service.install_secret_plugins(config.plugin_secrets)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;
+        service.install_audit_syslog(config.audit_syslog)?;
     }
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
