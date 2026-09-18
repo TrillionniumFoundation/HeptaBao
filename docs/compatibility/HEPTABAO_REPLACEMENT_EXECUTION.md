@@ -632,15 +632,15 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Lifecycle:** Exercise rotation, partial writes, disk full and retained chain verification.
 
-**Remaining scope:** Permissions, rotation, disk-full and partial-line behavior.
+**Remaining scope:** Real sys/audit list/read/idempotent file enable and fail-closed disable are now exercised against the pinned OpenBao 2.6.2 oracle. Permission/rotation/disk-full/partial-line crash behavior, dynamic option parity and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/audit_file_live.py`.
 
 ### HB-SURFACE-AUDIT-HTTP
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H12-WP06`, `H12-WP10`, `H12-WP11`.
 API families: `sys/audit/* (http)`.
-Runtime source: `crates/heptabao-server/src/service.rs`; `crates/heptabao-server/src/outbound.rs`; `crates/heptabao-server/src/http.rs`.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/http.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
