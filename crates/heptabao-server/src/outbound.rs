@@ -99,6 +99,8 @@ impl Outbound {
         for config in configs {
             let scheme = if config.origin.starts_with("postgresql://") {
                 "postgresql"
+            } else if config.origin.starts_with("ldaps://") {
+                "ldaps"
             } else {
                 "https"
             };
@@ -187,6 +189,37 @@ impl Outbound {
         read_discard_response_status(&mut stream, &[200, 201, 202, 204])
     }
 
+    /// Perform one LDAPv3 simple bind over an exactly enrolled LDAPS endpoint.
+    /// This is intentionally narrower than a general LDAP client: no DNS,
+    /// StartTLS upgrade, referrals, search, SASL, redirect, or automatic retry.
+    pub(crate) fn ldap_simple_bind(
+        &self,
+        url: &str,
+        dn: &str,
+        password: &str,
+    ) -> Result<bool, &'static str> {
+        if dn.is_empty()
+            || dn.len() > 1024
+            || password.is_empty()
+            || password.len() > 1024
+            || dn.bytes().any(|byte| byte == 0 || byte < 0x20)
+            || password.bytes().any(|byte| byte == 0)
+        {
+            return Err("invalid LDAP bind input");
+        }
+        let (endpoint, target) = self.endpoint(url, "ldaps")?;
+        if target.path != "/" {
+            return Err("LDAP bind target must be an enrolled origin");
+        }
+        let mut stream = endpoint.tls(endpoint.connect()?)?;
+        let request = ldap_bind_request(dn.as_bytes(), password.as_bytes())?;
+        stream
+            .write_all(&request)
+            .and_then(|()| stream.flush())
+            .map_err(|_| "LDAP bind write failed")?;
+        read_ldap_bind_response(&mut stream)
+    }
+
     pub fn get_json(&self, url: &str) -> Result<Value, &'static str> {
         let (endpoint, target) = self.endpoint(url, "https")?;
         let mut stream = endpoint.tls(endpoint.connect()?)?;
@@ -257,6 +290,130 @@ impl Write for DeadlineSocket {
         self.stream.flush()
     }
 }
+fn ber_length(bytes: &mut Vec<u8>, length: usize) -> Result<(), &'static str> {
+    if length < 128 {
+        bytes.push(u8::try_from(length).map_err(|_| "LDAP BER length overflow")?);
+    } else if length <= u16::MAX as usize {
+        bytes.push(0x82);
+        bytes.extend_from_slice(&(length as u16).to_be_bytes());
+    } else {
+        return Err("LDAP BER value exceeds bound");
+    }
+    Ok(())
+}
+
+fn ber_value(tag: u8, value: &[u8]) -> Result<Vec<u8>, &'static str> {
+    let mut encoded = Vec::with_capacity(value.len().saturating_add(4));
+    encoded.push(tag);
+    ber_length(&mut encoded, value.len())?;
+    encoded.extend_from_slice(value);
+    Ok(encoded)
+}
+
+fn ldap_bind_request(dn: &[u8], password: &[u8]) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    let mut bind = Vec::new();
+    bind.extend_from_slice(&ber_value(0x02, &[0x03])?);
+    bind.extend_from_slice(&ber_value(0x04, dn)?);
+    bind.extend_from_slice(&ber_value(0x80, password)?);
+    let bind = ber_value(0x60, &bind)?;
+    let mut message = Vec::new();
+    message.extend_from_slice(&ber_value(0x02, &[0x01])?);
+    message.extend_from_slice(&bind);
+    Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+fn ber_take_length(bytes: &[u8], offset: &mut usize) -> Result<usize, &'static str> {
+    let first = *bytes.get(*offset).ok_or("truncated LDAP BER length")?;
+    *offset += 1;
+    if first & 0x80 == 0 {
+        return Ok(first as usize);
+    }
+    let count = usize::from(first & 0x7f);
+    if count == 0 || count > 2 || *offset + count > bytes.len() {
+        return Err("invalid LDAP BER length");
+    }
+    let mut length = 0usize;
+    for _ in 0..count {
+        length = length
+            .checked_mul(256)
+            .and_then(|value| value.checked_add(bytes[*offset] as usize))
+            .ok_or("LDAP BER length overflow")?;
+        *offset += 1;
+    }
+    if length < 128 {
+        return Err("non-canonical LDAP BER length");
+    }
+    Ok(length)
+}
+
+fn ber_take<'a>(
+    bytes: &'a [u8],
+    offset: &mut usize,
+    expected_tag: u8,
+) -> Result<&'a [u8], &'static str> {
+    if bytes.get(*offset).copied() != Some(expected_tag) {
+        return Err("unexpected LDAP BER tag");
+    }
+    *offset += 1;
+    let length = ber_take_length(bytes, offset)?;
+    let end = offset.checked_add(length).ok_or("LDAP BER length overflow")?;
+    let value = bytes.get(*offset..end).ok_or("truncated LDAP BER value")?;
+    *offset = end;
+    Ok(value)
+}
+
+fn read_ldap_bind_response(stream: &mut impl Read) -> Result<bool, &'static str> {
+    let mut prefix = [0u8; 4];
+    stream
+        .read_exact(&mut prefix[..2])
+        .map_err(|_| "truncated LDAP bind response")?;
+    if prefix[0] != 0x30 {
+        return Err("invalid LDAP response envelope");
+    }
+    let mut head = vec![prefix[0], prefix[1]];
+    if prefix[1] & 0x80 != 0 {
+        let count = usize::from(prefix[1] & 0x7f);
+        if count == 0 || count > 2 {
+            return Err("invalid LDAP response length");
+        }
+        stream
+            .read_exact(&mut prefix[..count])
+            .map_err(|_| "truncated LDAP response length")?;
+        head.extend_from_slice(&prefix[..count]);
+    }
+    let mut offset = 1usize;
+    let body_len = ber_take_length(&head, &mut offset)?;
+    if body_len == 0 || body_len > 4096 {
+        return Err("LDAP bind response exceeds bound");
+    }
+    let mut body = vec![0u8; body_len];
+    stream
+        .read_exact(&mut body)
+        .map_err(|_| "truncated LDAP bind response")?;
+
+    let mut cursor = 0usize;
+    let message_id = ber_take(&body, &mut cursor, 0x02)?;
+    if message_id != [0x01] {
+        return Err("unexpected LDAP message id");
+    }
+    let bind = ber_take(&body, &mut cursor, 0x61)?;
+    if cursor != body.len() {
+        return Err("trailing LDAP response bytes");
+    }
+    let mut inner = 0usize;
+    let result = ber_take(bind, &mut inner, 0x0a)?;
+    if result.len() != 1 {
+        return Err("invalid LDAP result code");
+    }
+    let _matched_dn = ber_take(bind, &mut inner, 0x04)?;
+    let _diagnostic = ber_take(bind, &mut inner, 0x04)?;
+    match result[0] {
+        0 => Ok(true),
+        49 => Ok(false),
+        _ => Err("LDAP bind rejected by provider"),
+    }
+}
+
 fn line(stream: &mut impl Read, budget: &mut usize) -> Result<Vec<u8>, &'static str> {
     let mut bytes = Vec::new();
     loop {
