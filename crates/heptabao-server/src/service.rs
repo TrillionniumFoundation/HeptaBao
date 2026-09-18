@@ -163,7 +163,6 @@ struct State {
     raft_admin: raft_admin::RaftAdminState,
 }
 
-
 fn replay_epoch_is_zero(value: &u64) -> bool {
     *value == 0
 }
@@ -1615,16 +1614,14 @@ impl Service {
             Err(error) => return (Response::error(503, error), false),
         };
         let operation_id = hex(&operation_id);
-        if let Err(error) =
-            Self::persist_state_batch(
-                &mut durable,
-                &bytes,
-                &operation_id,
-                state.schema,
-                state.replay_epoch,
-                false,
-            )
-        {
+        if let Err(error) = Self::persist_state_batch(
+            &mut durable,
+            &bytes,
+            &operation_id,
+            state.schema,
+            state.replay_epoch,
+            false,
+        ) {
             return (
                 Response::error(
                     if matches!(
@@ -1957,8 +1954,7 @@ impl Service {
                 state.schema,
                 state.replay_epoch,
                 true,
-            )
-            {
+            ) {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
@@ -1978,7 +1974,10 @@ impl Service {
                     ));
                 }
                 Err(_) => {
-                    return Err(Response::error(503, "state-format metadata migration failed closed"));
+                    return Err(Response::error(
+                        503,
+                        "state-format metadata migration failed closed",
+                    ));
                 }
             }
         }
@@ -2747,12 +2746,14 @@ impl Service {
         // authenticated escape from a full detailed ledger, so it is allowed to
         // replicate before local retirement and then publishes under the new epoch.
         if !epoch_transition {
-            durable.preflight_new_identity().map_err(|error| match error {
-                ServiceError::RequestCapacityExhausted => {
-                    Response::error(507, "retained operation capacity exhausted")
-                }
-                _ => Response::error(503, "durable capacity preflight unavailable"),
-            })?;
+            durable
+                .preflight_new_identity()
+                .map_err(|error| match error {
+                    ServiceError::RequestCapacityExhausted => {
+                        Response::error(507, "retained operation capacity exhausted")
+                    }
+                    _ => Response::error(503, "durable capacity preflight unavailable"),
+                })?;
         }
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
