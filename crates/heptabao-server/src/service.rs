@@ -311,6 +311,7 @@ pub(crate) enum RequestExecution {
 enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
     DatabaseConfig(database::DatabaseConfigPlan),
+    DatabaseBatch(database::DatabaseBatchEffectPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginRead(plugin::PluginReadPlan),
 }
@@ -318,6 +319,7 @@ enum ExternalEffectPlan {
 pub(crate) enum ExternalEffectResult {
     Database(Result<(), Response>),
     DatabaseConfig(Result<(), Response>),
+    DatabaseBatch(database::DatabaseBatchEffectResult),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
 }
@@ -336,6 +338,9 @@ impl PendingExternalRequest {
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
+            }
+            ExternalEffectPlan::DatabaseBatch(plan) => {
+                ExternalEffectResult::DatabaseBatch(plan.execute())
             }
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
@@ -371,6 +376,7 @@ pub struct Service {
     database_cursor: Option<(String, String, String)>,
     pending_database_effect: Option<database::DatabaseEffectPlan>,
     pending_database_config_effect: Option<database::DatabaseConfigPlan>,
+    pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
@@ -514,6 +520,7 @@ impl Service {
             database_cursor: None,
             pending_database_effect: None,
             pending_database_config_effect: None,
+            pending_database_batch_effect: None,
             pending_online_auth_effect: None,
             pending_plugin_read: None,
             plugins: BTreeMap::new(),
@@ -709,6 +716,10 @@ impl Service {
                 ExternalEffectPlan::DatabaseConfig(plan),
                 ExternalEffectResult::DatabaseConfig(result),
             ) => self.finalize_database_config(plan, result),
+            (
+                ExternalEffectPlan::DatabaseBatch(plan),
+                ExternalEffectResult::DatabaseBatch(result),
+            ) => self.finalize_database_batch_effect(&plan, result),
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
             }
@@ -753,6 +764,7 @@ impl Service {
         } = request;
         if self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
+            || self.pending_database_batch_effect.is_some()
             || self.pending_online_auth_effect.is_some()
             || self.pending_plugin_read.is_some()
         {
@@ -858,10 +870,12 @@ impl Service {
         erase_json(&mut body);
         let database = self.pending_database_effect.take();
         let database_config = self.pending_database_config_effect.take();
+        let database_batch = self.pending_database_batch_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_read = self.pending_plugin_read.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
+            + usize::from(database_batch.is_some())
             + usize::from(online_auth.is_some())
             + usize::from(plugin_read.is_some());
         if staged > 1 {
@@ -875,6 +889,7 @@ impl Service {
         let effect = database
             .map(ExternalEffectPlan::Database)
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
+            .or_else(|| database_batch.map(ExternalEffectPlan::DatabaseBatch))
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead));
         if let Some(effect) = effect {
