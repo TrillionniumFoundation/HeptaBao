@@ -98,13 +98,13 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-SECRET-KUBERNETES` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SECRET-OPENLDAP` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-SECRET-RABBITMQ` | `secret_engines` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-DB-POSTGRESQL` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-DB-POSTGRESQL` | `database_providers` | `IMPLEMENTED_SCOPED` | `postgres_live.native_pg_tls_scram_config`, `postgres_live.credential_really_logs_into_postgresql`, `postgres_live.slow_provider_does_not_block_unrelated_kv_write`, `postgres_live.renewed_credential_survives_service_restart`, `postgres_live.revoke_terminates_existing_database_session`, `postgres_live.revoke_really_prevents_pg_login`, `postgres_live.provider_outage_is_pending_not_success`, `postgres_live.restart_reconcile` |
 | `HB-SURFACE-DB-MYSQL` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-DB-CASSANDRA` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-DB-INFLUXDB` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-DB-VALKEY` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-FILE` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_file_live.list`, `audit_file_live.path_present`, `audit_file_live.read_binding`, `audit_file_live.enable_idempotent`, `audit_file_live.disable_rejected` |
-| `HB-SURFACE-AUDIT-HTTP` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AUDIT-HTTP` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_http_live.sys_audit_lists_file_and_http`, `audit_http_live.api_cannot_rebind_http_audit_destination`, `audit_http_live.audited_mutation_succeeds`, `audit_http_live.every_local_audit_record_delivered_to_http_collector`, `audit_http_live.http_audit_records_do_not_expose_secret_or_bearer`, `audit_http_live.collector_outage_fails_request_closed`, `audit_http_live.collector_recovery_restores_audited_service` |
 | `HB-SURFACE-AUDIT-SOCKET` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-SYSLOG` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-STORAGE-POSTGRESQL` | `storage_backends` | `DEFINED_NOT_IMPLEMENTED` | None |
