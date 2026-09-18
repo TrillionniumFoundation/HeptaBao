@@ -151,7 +151,10 @@ impl AuthState {
             return Ok(None);
         }
         let scope = AuthScope { namespace, mount };
-        let Some(config) = self.jwt_at(scope).and_then(|state| state.config.as_ref()).cloned()
+        let Some(config) = self
+            .jwt_at(scope)
+            .and_then(|state| state.config.as_ref())
+            .cloned()
         else {
             return Ok(None);
         };
@@ -185,7 +188,10 @@ impl AuthState {
             .and_then(|state| state.config.as_ref())
             .ok_or_else(|| bad("JWT configuration disappeared during refresh"))?;
         if !same_remote_binding(current, &plan.config) {
-            return Err(err(409, "JWT configuration changed during remote key refresh"));
+            return Err(err(
+                409,
+                "JWT configuration changed during remote key refresh",
+            ));
         }
         let current = self
             .jwt_at_mut(scope)
@@ -203,15 +209,8 @@ impl AuthState {
         let body: Value = serde_json::from_slice(&plan.body)
             .map_err(|_| bad("JWT login request decoding failed"))?;
         let path = format!("auth/{}/login", plan.mount);
-        self.handle(
-            None,
-            &plan.namespace,
-            &plan.method,
-            &path,
-            &body,
-            plan.now,
-        )?
-        .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
+        self.handle(None, &plan.namespace, &plan.method, &path, &body, plan.now)?
+            .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
     }
 
     pub(crate) fn has_remote_jwt_state(&self) -> bool {
