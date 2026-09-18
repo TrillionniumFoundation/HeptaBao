@@ -130,6 +130,52 @@ def snapshot(client, mount, key):
                                 "max_versions": max(current, maximum), "delete_version_after": "0s"}}
 
 
+def selected_inventory_digest(mount, records):
+    manifest = {
+        "mount": mount,
+        "objects": [
+            {
+                "key": record["key"],
+                "source_digest": digest(record["source_metadata"]),
+                "record_digest": digest(record),
+            }
+            for record in records
+        ],
+    }
+    return digest(manifest)
+
+
+def source_binding_identity(client, health, mount):
+    return {
+        "endpoint": client.address,
+        "namespace": client.namespace,
+        "mount": mount,
+        "cluster_id": health["cluster_id"],
+        "version": health["version"],
+    }
+
+
+def target_binding_identity(client, health, mount):
+    return {
+        "endpoint": client.address,
+        "namespace": client.namespace,
+        "mount": mount,
+        "cluster_id": health["cluster_id"],
+    }
+
+
+def checkpoint_binding(source_identity, keys, inventory_digest, target_identity=None):
+    binding = {
+        "source_identity": source_identity,
+        "keys_digest": digest(keys),
+        "inventory_digest": inventory_digest,
+        "profile": SCHEMA,
+    }
+    if target_identity is not None:
+        binding["target_identity"] = target_identity
+    return binding
+
+
 def snapshot_inventory(client, mount, keys):
     """Read a bounded, selected inventory with a before/after consistency fence.
 
@@ -144,11 +190,7 @@ def snapshot_inventory(client, mount, keys):
     after = {key: read_metadata(client, mount, key) for key in keys}
     if before != after:
         raise BaoError("source_inventory_changed_during_snapshot")
-    manifest = {"mount": mount,
-                "objects": [{"key": record["key"],
-                             "source_digest": digest(record["source_metadata"]),
-                             "record_digest": digest(record)} for record in records]}
-    return records, digest(manifest)
+    return records, selected_inventory_digest(mount, records)
 
 
 def validate_export_record(record):
@@ -321,8 +363,7 @@ def main(argv=None):
             source = Client.from_env(args.source_prefix)
             source_health = source.health()
             verify_mount(source, args.source_mount)
-            source_identity = {"endpoint": source.address, "namespace": source.namespace, "mount": args.source_mount,
-                               "cluster_id": source_health["cluster_id"], "version": source_health["version"]}
+            source_identity = source_binding_identity(source, source_health, args.source_mount)
         else:
             if not args.export_file:
                 raise BaoError("private_export_file_required")
@@ -379,11 +420,17 @@ def main(argv=None):
                                              "record_digest": digest(record)} for record in records]}
             if inventory_digest != digest(expected_manifest):
                 raise BaoError("export_inventory_digest_mismatch")
-        binding = {"source_identity": source_identity, "keys_digest": digest(keys),
-                   "inventory_digest": inventory_digest, "profile": SCHEMA}
-        if target:
-            binding["target_identity"] = {"endpoint": target.address, "namespace": target.namespace,
-                                          "mount": args.target_mount, "cluster_id": target_health["cluster_id"]}
+        target_identity = (
+            target_binding_identity(target, target_health, args.target_mount)
+            if target
+            else None
+        )
+        binding = checkpoint_binding(
+            source_identity,
+            keys,
+            inventory_digest,
+            target_identity,
+        )
         checkpoint = lock = None
         exported = []
         try:
