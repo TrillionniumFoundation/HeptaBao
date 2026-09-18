@@ -3175,58 +3175,55 @@ mod tests {
     }
 
     #[test]
-    fn snapshot_io_fault_and_checkpoint_ledger_fault_recover_fail_closed()
+    fn checkpoint_file_faults_do_not_reenter_request_commit_path_and_recover_fail_closed()
     -> Result<(), ServiceError> {
         let _serial = serial_test();
+        for blocked in ["state.tmp", "ledger.tmp"] {
+            let root = TestRoot::new(blocked)?;
+            let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+            let snapshot_before = fs::read(snapshot_path(&root.0))?;
+            let ledger_before = fs::read(ledger_path(&root.0))?;
+            fs::create_dir(root.0.join(blocked))?;
 
-        // Snapshot publication is still on the request commit path. A genuine
-        // filesystem failure after the intent therefore produces an unknown
-        // outcome that reopens as aborted when no snapshot publication occurred.
-        let root = TestRoot::new("state.tmp")?;
-        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
-        fs::create_dir(root.0.join("state.tmp"))?;
-        let reference = recovery_from_result(service.put(put_request("io-fault", b"secret")?))?;
-        assert!(service.recovery_required());
-        drop(service);
-        fs::remove_dir(root.0.join("state.tmp"))?;
-        let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
-        assert_eq!(reopened.reconcile(&reference), ReconciliationStatus::Aborted);
-        reopened.put(put_request("next", b"next")?)?;
-        drop(reopened);
+            // Ordinary durability is intent -> authenticated delta -> commit.
+            // Neither whole checkpoint file is on this request path.
+            let reference = match service.put(put_request("journal-durable", b"secret")?)? {
+                MutationOutcome::Committed {
+                    generation: 1,
+                    recovery_reference,
+                } => recovery_reference,
+                _ => return Err(ServiceError::CorruptState),
+            };
+            assert_eq!(fs::read(snapshot_path(&root.0))?, snapshot_before);
+            assert_eq!(fs::read(ledger_path(&root.0))?, ledger_before);
+            assert!(!service.recovery_required());
 
-        // Replay-ledger publication is now checkpoint-only. Blocking ledger.tmp
-        // must not poison an ordinary committed request. The same real EISDIR
-        // fault must fence compact(), and reopening must rebuild the lagging
-        // ledger from the authenticated journal before accepting new work.
-        let root = TestRoot::new("ledger.tmp")?;
-        let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
-        let ledger_before = fs::read(ledger_path(&root.0))?;
-        fs::create_dir(root.0.join("ledger.tmp"))?;
-        let outcome = service.put(put_request("journal-durable", b"secret")?)?;
-        let reference = match outcome {
-            MutationOutcome::Committed {
-                generation: 1,
-                recovery_reference,
-            } => recovery_reference,
-            _ => return Err(ServiceError::CorruptState),
-        };
-        assert_eq!(fs::read(ledger_path(&root.0))?, ledger_before);
-        assert!(service.compact().is_err());
-        assert!(service.recovery_required());
-        drop(service);
-        fs::remove_dir(root.0.join("ledger.tmp"))?;
-        let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
-        assert_eq!(
-            reopened.reconcile(&reference),
-            ReconciliationStatus::Committed { generation: 1 }
-        );
-        assert_eq!(
-            reopened
-                .get("root/team-a", "secret/application")?
-                .map(|secret| secret.expose().to_vec()),
-            Some(b"secret".to_vec())
-        );
-        reopened.put(put_request("after-ledger-rebuild", b"live")?)?;
+            // Checkpoint publication still fails closed on a real filesystem
+            // error. Depending on the blocked file, state.hbs may already be the
+            // newer authenticated checkpoint, but the old journal remains enough
+            // to reconstruct the exact committed frontier.
+            assert!(service.compact().is_err());
+            assert!(service.recovery_required());
+            assert!(matches!(
+                service.get("root/team-a", "secret/application"),
+                Err(ServiceError::RecoveryRequired)
+            ));
+            drop(service);
+            fs::remove_dir(root.0.join(blocked))?;
+
+            let mut reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+            assert_eq!(
+                reopened.reconcile(&reference),
+                ReconciliationStatus::Committed { generation: 1 }
+            );
+            assert_eq!(
+                reopened
+                    .get("root/team-a", "secret/application")?
+                    .map(|secret| secret.expose().to_vec()),
+                Some(b"secret".to_vec())
+            );
+            reopened.put(put_request("after-checkpoint-fault", b"live")?)?;
+        }
         Ok(())
     }
 
