@@ -87,7 +87,14 @@ class MigrationPreflightTests(unittest.TestCase):
         self.assertFalse(report['inventory_complete'])
         self.assertFalse(report['migration_authority'])
         self.assertFalse(report['hepta_consumer_requalified'])
-        self.assertIn('asset_adapter_not_qualified:transit', report['blockers'])
+        self.assertEqual(
+            report['observed_asset_dispositions'].get('transit_keys_ciphertexts'),
+            'BOUNDED_ADAPTER',
+        )
+        self.assertIn(
+            'bounded_adapter_not_full_instance_ready:transit_keys_ciphertexts',
+            report['blockers'],
+        )
         self.assertNotIn('top-secret-mount', json.dumps(report))
         self.assertTrue(all(m in ('GET', 'LIST') and b is None for m, p, b in self.source.calls+self.target.calls))
 
@@ -120,7 +127,22 @@ class MigrationPreflightTests(unittest.TestCase):
         report = preflight.collect(self.source, self.target)
         self.assertEqual(report['source_catalogs']['mounts']['types'], {'other':1})
         self.assertNotIn('private-customer', json.dumps(report))
-        self.assertIn('asset_adapter_not_qualified:other', report['blockers'])
+        self.assertEqual(
+            report['observed_asset_dispositions'].get('other_secret_engines'),
+            'NO_SAFE_TRANSFER_IMPLEMENTED',
+        )
+        self.assertIn(
+            'asset_transfer_not_ready:other_secret_engines:NO_SAFE_TRANSFER_IMPLEMENTED',
+            report['blockers'],
+        )
+
+    def test_asset_ledger_is_fail_closed_not_a_second_invented_status(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = Path(tmp) / 'assets.json'
+            ledger.write_text('{"assets": []}')
+            with patch.object(preflight, 'ASSET_LEDGER', ledger):
+                with self.assertRaises(BaoError):
+                    preflight.collect(self.source, self.target)
 
     def test_missing_or_malformed_target_capacity(self):
         self.target.overrides['/v1/sys/internal/capacity'] = Response(403, {})
