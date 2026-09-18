@@ -102,6 +102,45 @@ pub(super) struct DatabaseMaintenance {
     plan: DatabaseEffectPlan,
 }
 
+pub(super) struct DatabaseConfigPlan {
+    namespace: String,
+    mount: String,
+    key: String,
+    connection: Connection,
+    expected_mount_digest: [u8; 32],
+    outbound: crate::outbound::Outbound,
+    now: u64,
+}
+
+impl DatabaseConfigPlan {
+    pub(super) fn execute(&self) -> Result<(), Response> {
+        let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
+        let response = pg
+            .scalar("SELECT current_user::text", &[])
+            .map_err(failure)?;
+        if response != self.connection.username {
+            return Err(failure("PostgreSQL manager identity mismatch"));
+        }
+        if pg
+            .scalar("SELECT heptabao_provider.protocol()", &[])
+            .map_err(failure)?
+            != "heptabao-postgresql-provider-v1"
+        {
+            return Err(failure(
+                "PostgreSQL provider contract is not installed or mismatched",
+            ));
+        }
+        Ok(())
+    }
+}
+
+fn database_mount_digest(mount: Option<&DatabaseMount>) -> Result<[u8; 32], Response> {
+    let bytes = Zeroizing::new(
+        serde_json::to_vec(&mount).map_err(|_| failure("database mount fence encoding failed"))?,
+    );
+    Ok(crypto::digest(&bytes))
+}
+
 impl DatabaseMaintenance {
     pub(super) fn execute(&self) -> Result<(), Response> {
         self.plan.execute()
@@ -617,35 +656,26 @@ impl Service {
                             password: PrivateString(password),
                             allowed_roles,
                         };
-                        let mut pg = connection.session(&self.outbound).map_err(failure)?;
-                        let response = pg
-                            .scalar("SELECT current_user::text", &[])
-                            .map_err(failure)?;
-                        if response != connection.username {
-                            return Err(failure("PostgreSQL manager identity mismatch"));
-                        }
-                        if pg
-                            .scalar("SELECT heptabao_provider.protocol()", &[])
-                            .map_err(failure)?
-                            != "heptabao-postgresql-provider-v1"
-                        {
+                        let expected_mount_digest =
+                            database_mount_digest(state.database.mount(ns, &mount))?;
+                        if self.pending_database_config_effect.is_some() {
                             return Err(failure(
-                                "PostgreSQL provider contract is not installed or mismatched",
+                                "database configuration validation is already pending",
                             ));
                         }
-                        let m = state.database.mount_mut(ns, &mount);
-                        if m.connections.len() >= 16 && !m.connections.contains_key(key) {
-                            return Err(Response::error(
-                                507,
-                                "database connection capacity exhausted",
-                            ));
-                        }
-                        m.connections.insert(key.into(), connection);
-                        self.publish_database(state)?;
-                        Ok(Response {
-                            status: 204,
-                            body: Value::Null,
-                        })
+                        self.pending_database_config_effect = Some(DatabaseConfigPlan {
+                            namespace: (*ns).into(),
+                            mount,
+                            key: key.into(),
+                            connection,
+                            expected_mount_digest,
+                            outbound: self.outbound.clone(),
+                            now,
+                        });
+                        Ok(Response::error(
+                            500,
+                            "database configuration validation was not dispatched",
+                        ))
                     }
                     ("config", "GET") => {
                         fields(body, &[])?;
@@ -798,6 +828,59 @@ impl Service {
         self.state = Some(state);
         Ok(())
     }
+    pub(super) fn finalize_database_config(
+        &mut self,
+        plan: DatabaseConfigPlan,
+        validation: Result<(), Response>,
+    ) -> Response {
+        if let Err(error) = validation {
+            return error;
+        }
+        let Some(mut state) = self.state.clone() else {
+            return failure("server sealed after database configuration validation");
+        };
+        let current_digest = match database_mount_digest(
+            state.database.mount(&plan.namespace, &plan.mount),
+        ) {
+            Ok(digest) => digest,
+            Err(error) => return error,
+        };
+        if current_digest != plan.expected_mount_digest {
+            return Response::error(
+                409,
+                "database mount changed during provider configuration validation",
+            );
+        }
+        if state
+            .database
+            .mount(&plan.namespace, &plan.mount)
+            .is_some_and(|mount| {
+                mount
+                    .leases
+                    .values()
+                    .any(|lease| lease.db_name == plan.key)
+            })
+        {
+            return Response::error(
+                409,
+                "provider identity is frozen while lease/tombstone records exist",
+            );
+        }
+        state.database.clock = state.database.clock.max(plan.now);
+        let mount = state.database.mount_mut(&plan.namespace, &plan.mount);
+        if mount.connections.len() >= 16 && !mount.connections.contains_key(&plan.key) {
+            return Response::error(507, "database connection capacity exhausted");
+        }
+        mount.connections.insert(plan.key, plan.connection);
+        match self.publish_database(state) {
+            Ok(()) => Response {
+                status: 204,
+                body: Value::Null,
+            },
+            Err(error) => error,
+        }
+    }
+
     fn defer_database_effect(
         &mut self,
         ns: &str,
