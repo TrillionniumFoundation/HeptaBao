@@ -41,7 +41,7 @@ impl Service {
         let state_limit = self.state_capacity;
 
         // `DurableService::capacity().logical_payload_bytes` measures all bytes
-        // currently owned by the local durable store. The V3 content-addressed
+        // currently owned by the local durable store. The V4 owner-addressed
         // state layout can retain reusable chunks plus the current manifest, so
         // physical durable bytes can exceed the serialized application-state
         // bound even while the current State remains admissible. The public
@@ -60,15 +60,15 @@ impl Service {
         }
 
         // The Service admits one bounded serialized logical application state.
-        // Local durability uses the V3 content-defined, content-addressed chunk
+        // Local durability uses the V4 owner-scoped, content-defined chunk
         // manifest while HA still proposes the complete serialized state. This
         // is not a per-secret quota and it is not a record-oriented scale claim.
         Response::ok(json!({"data": {
-            "profile": "bounded-content-defined-state-v3",
+            "profile": "bounded-owner-state-v4",
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
-            "state_storage_format": state_store::STATE_STORAGE_FORMAT,
-            "state_chunk_target_bytes": state_store::STATE_CHUNK_BYTES,
+            "state_storage_format": owner_store::STATE_STORAGE_FORMAT,
+            "state_chunk_target_bytes": owner_store::STATE_CHUNK_BYTES,
             "kv_read_only_dispatches": self.kv_read_only_dispatches,
             "state_bytes": state_bytes,
             "state_limit_bytes": state_limit,

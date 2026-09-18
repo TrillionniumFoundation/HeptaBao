@@ -51,6 +51,8 @@ pub use plugin::PluginSecretConfig;
 mod openapi;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
+#[path = "service_owner_store.rs"]
+mod owner_store;
 #[path = "service_state_store.rs"]
 mod state_store;
 pub(crate) use lifecycle::start_lifecycle_worker;
@@ -1579,6 +1581,7 @@ impl Service {
                     return error;
                 }
                 if let Err(error) = self.commit_state_bytes(
+                    &admitted,
                     &serialized,
                     admitted.schema,
                     admitted.replay_epoch,
@@ -1851,6 +1854,32 @@ impl Service {
         }
     }
 
+    fn load_owner_bytes(
+        durable: &DurableService<AeadBarrier>,
+        manifest: &owner_store::OwnerStateManifest,
+        owner: &str,
+    ) -> Result<Zeroizing<Vec<u8>>, Response> {
+        let count = manifest
+            .chunk_count(owner)
+            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+        let mut values = Vec::with_capacity(count);
+        for index in 0..count {
+            let resource = manifest
+                .chunk_resource(owner, index)
+                .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+            let chunk = durable
+                .get("system", &resource)
+                .map_err(|_| Response::error(503, "owner-state chunk is unavailable"))?
+                .ok_or_else(|| Response::error(503, "owner-state chunk is absent"))?;
+            values.push(chunk);
+        }
+        let refs = values.iter().map(Secret::expose).collect::<Vec<_>>();
+        let bytes = manifest
+            .assemble_owner(owner, &refs)
+            .map_err(|_| Response::error(503, "owner-state chunk set is invalid"))?;
+        Ok(Zeroizing::new(bytes))
+    }
+
     fn load_state_from_durable(
         durable: &DurableService<AeadBarrier>,
     ) -> Result<(State, Zeroizing<Vec<u8>>, bool), Response> {
@@ -1858,44 +1887,81 @@ impl Service {
             .get("system", "state")
             .map_err(|_| Response::error(503, "server state is unavailable"))?
             .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
-        let manifest = state_store::decode_manifest(record.expose())
-            .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
-        let (mut bytes, mut needs_rewrite) = if let Some(manifest) = manifest.as_ref() {
-            let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
-            for index in 0..manifest.chunk_count() {
-                let resource = manifest
-                    .chunk_resource(index)
-                    .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
-                let chunk = durable
-                    .get("system", &resource)
-                    .map_err(|_| Response::error(503, "server state chunk is unavailable"))?
-                    .ok_or_else(|| Response::error(503, "server state chunk is absent"))?;
-                chunk_values.push(chunk);
-            }
-            let chunk_refs = chunk_values.iter().map(Secret::expose).collect::<Vec<_>>();
-            let assembled = state_store::assemble_state(manifest, &chunk_refs)
-                .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
-            (Zeroizing::new(assembled), false)
+
+        let owner_manifest = owner_store::decode_manifest(record.expose())
+            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
+        let (mut state, mut bytes, mut needs_rewrite) = if let Some(manifest) = owner_manifest {
+            let namespaces = Self::load_owner_bytes(durable, &manifest, "namespaces")?;
+            let auth = Self::load_owner_bytes(durable, &manifest, "auth")?;
+            let engines = Self::load_owner_bytes(durable, &manifest, "engines")?;
+            let database = Self::load_owner_bytes(durable, &manifest, "database")?;
+            let raft_admin = Self::load_owner_bytes(durable, &manifest, "raft_admin")?;
+            let state = State {
+                schema: manifest.state_schema(),
+                cluster_id: manifest.cluster_id().to_owned(),
+                replay_epoch: manifest.replay_epoch(),
+                namespaces: serde_json::from_slice(&namespaces)
+                    .map_err(|_| Response::error(503, "namespace owner state is invalid"))?,
+                auth: serde_json::from_slice(&auth)
+                    .map_err(|_| Response::error(503, "auth owner state is invalid"))?,
+                engines: serde_json::from_slice(&engines)
+                    .map_err(|_| Response::error(503, "engine owner state is invalid"))?,
+                database: serde_json::from_slice(&database)
+                    .map_err(|_| Response::error(503, "database owner state is invalid"))?,
+                raft_admin: serde_json::from_slice(&raft_admin)
+                    .map_err(|_| Response::error(503, "raft-admin owner state is invalid"))?,
+            };
+            state.validate_format()?;
+            let bytes = Zeroizing::new(
+                serde_json::to_vec(&state)
+                    .map_err(|_| Response::error(500, "state serialization failed"))?,
+            );
+            manifest
+                .verify_logical(&bytes)
+                .map_err(|_| Response::error(503, "owner-state logical digest is invalid"))?;
+            (state, bytes, false)
         } else {
-            if record.expose().len() > MAX_STATE_BYTES {
+            let manifest = state_store::decode_manifest(record.expose())
+                .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+            let (bytes, needs_rewrite) = if let Some(manifest) = manifest.as_ref() {
+                let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
+                for index in 0..manifest.chunk_count() {
+                    let resource = manifest
+                        .chunk_resource(index)
+                        .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
+                    let chunk = durable
+                        .get("system", &resource)
+                        .map_err(|_| Response::error(503, "server state chunk is unavailable"))?
+                        .ok_or_else(|| Response::error(503, "server state chunk is absent"))?;
+                    chunk_values.push(chunk);
+                }
+                let chunk_refs = chunk_values.iter().map(Secret::expose).collect::<Vec<_>>();
+                let assembled = state_store::assemble_state(manifest, &chunk_refs)
+                    .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
+                (Zeroizing::new(assembled), false)
+            } else {
+                if record.expose().len() > MAX_STATE_BYTES {
+                    return Err(Response::error(
+                        507,
+                        "legacy server state exceeds migration bound",
+                    ));
+                }
+                (Zeroizing::new(record.expose().to_vec()), true)
+            };
+            let state: State = serde_json::from_slice(&bytes)
+                .map_err(|_| Response::error(503, "server state schema is invalid"))?;
+            state.validate_format()?;
+            if let Some(manifest) = manifest
+                && manifest.state_schema() != state.schema
+            {
                 return Err(Response::error(
-                    507,
-                    "legacy server state exceeds migration bound",
+                    503,
+                    "server state manifest schema binding is inconsistent",
                 ));
             }
-            (Zeroizing::new(record.expose().to_vec()), true)
+            (state, bytes, needs_rewrite)
         };
-        let mut state: State = serde_json::from_slice(&bytes)
-            .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-        state.validate_format()?;
-        if let Some(manifest) = manifest
-            && manifest.state_schema() != state.schema
-        {
-            return Err(Response::error(
-                503,
-                "server state manifest schema binding is inconsistent",
-            ));
-        }
+
         let durable_epoch = durable.replay_epoch();
         if state.replay_epoch > durable_epoch {
             return Err(Response::error(
@@ -1903,9 +1969,6 @@ impl Service {
                 "server state replay epoch is ahead of durable replay authority",
             ));
         }
-        // Older single-node builds could retire the durable replay ledger without
-        // recording the epoch in application state. Normalize that one-way legacy
-        // condition and rewrite it before the state may join an HA cluster.
         let mut logical_rewrite = false;
         if state.replay_epoch < durable_epoch {
             state.replay_epoch = durable_epoch;
@@ -1926,8 +1989,9 @@ impl Service {
         Ok((state, bytes, needs_rewrite))
     }
 
-    fn persist_state_batch(
+    fn persist_owner_state_batch(
         durable: &mut DurableService<AeadBarrier>,
+        state: &State,
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
@@ -1952,41 +2016,83 @@ impl Service {
                 durable.retire_replay_epoch()?;
             }
         }
+
         let current = durable.get("system", "state")?;
-        let previous_manifest = current
+        let previous_owner = current
             .as_ref()
-            .map(|record| state_store::decode_manifest(record.expose()))
+            .map(|record| owner_store::decode_manifest(record.expose()))
             .transpose()
             .map_err(|_| ServiceError::CorruptState)?
             .flatten();
-        let plan = state_store::StateWritePlan::new(
+        let legacy_deletes = if previous_owner.is_none() {
+            current
+                .as_ref()
+                .map(|record| state_store::decode_manifest(record.expose()))
+                .transpose()
+                .map_err(|_| ServiceError::CorruptState)?
+                .flatten()
+                .map(|manifest| manifest.unique_chunk_resources())
+                .transpose()
+                .map_err(|_| ServiceError::CorruptState)?
+                .unwrap_or_default()
+                .into_iter()
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
+
+        let owners = vec![
+            (
+                "namespaces",
+                serde_json::to_vec(&state.namespaces).map_err(|_| ServiceError::CorruptState)?,
+            ),
+            (
+                "auth",
+                serde_json::to_vec(&state.auth).map_err(|_| ServiceError::CorruptState)?,
+            ),
+            (
+                "engines",
+                serde_json::to_vec(&state.engines).map_err(|_| ServiceError::CorruptState)?,
+            ),
+            (
+                "database",
+                serde_json::to_vec(&state.database).map_err(|_| ServiceError::CorruptState)?,
+            ),
+            (
+                "raft_admin",
+                serde_json::to_vec(&state.raft_admin).map_err(|_| ServiceError::CorruptState)?,
+            ),
+        ];
+        let plan = owner_store::OwnerWritePlan::new(
             bytes,
             operation_id,
             state_schema,
-            previous_manifest.as_ref(),
+            &state.cluster_id,
+            target_replay_epoch,
+            owners,
+            previous_owner.as_ref(),
+            legacy_deletes,
         )
         .map_err(|error| match error {
-            state_store::StateStoreError::StateTooLarge => ServiceError::RequestCapacityExhausted,
+            owner_store::OwnerStoreError::StateTooLarge => {
+                ServiceError::RequestCapacityExhausted
+            }
             _ => ServiceError::CorruptState,
         })?;
         if plan.required_mutations() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS {
             return Err(ServiceError::RequestCapacityExhausted);
         }
-
-        // Reused content-addressed chunks are part of the next manifest's trust
-        // boundary. Verify that they still exist and that their resource digest
-        // binds their bytes before omitting a physical rewrite.
         for resource in &plan.required_existing {
             let existing = durable
                 .get("system", resource)?
                 .ok_or(ServiceError::CorruptState)?;
-            state_store::validate_content_addressed_chunk(resource, existing.expose())
+            owner_store::validate_content_addressed_chunk(resource, existing.expose())
                 .map_err(|_| ServiceError::CorruptState)?;
         }
 
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {
-            state_store::validate_content_addressed_chunk(&chunk.resource, &chunk.bytes)
+            owner_store::validate_content_addressed_chunk(&chunk.resource, &chunk.bytes)
                 .map_err(|_| ServiceError::CorruptState)?;
             mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
         }
@@ -1994,6 +2100,7 @@ impl Service {
             mutations.push((resource, None));
         }
         mutations.push(("state".to_owned(), Some(Secret::new(plan.manifest_bytes)?)));
+
         let replay_epoch = durable.replay_epoch();
         if replay_epoch != target_replay_epoch {
             return Err(ServiceError::ReplayEpochMismatch);
@@ -2026,11 +2133,12 @@ impl Service {
                 .map_err(|_| Response::error(500, "state serialization failed"))?,
         );
         let next_digest = crypto::digest(&bytes);
-        self.commit_state_bytes(&bytes, state.schema, state.replay_epoch, next_digest)
+        self.commit_state_bytes(state, &bytes, state.schema, state.replay_epoch, next_digest)
     }
 
     fn commit_state_bytes(
         &mut self,
+        state: &State,
         bytes: &[u8],
         state_schema: u32,
         target_replay_epoch: u64,
@@ -2044,7 +2152,7 @@ impl Service {
             return Err(Response::error(507, "state capacity exhausted"));
         }
         let base_digest = self.current_state_digest()?;
-        self.persist(bytes, base_digest, state_schema, target_replay_epoch)?;
+        self.persist(state, bytes, base_digest, state_schema, target_replay_epoch)?;
         self.state_digest = Some(next_digest);
         Ok(())
     }
@@ -2249,8 +2357,9 @@ impl Service {
             Err(error) => return (Response::error(503, error), false),
         };
         let operation_id = hex(&operation_id);
-        if let Err(error) = Self::persist_state_batch(
+        if let Err(error) = Self::persist_owner_state_batch(
             &mut durable,
+            &state,
             &bytes,
             &operation_id,
             state.schema,
@@ -2583,8 +2692,9 @@ impl Service {
                 "state-format-{}",
                 hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
             );
-            match Self::persist_state_batch(
+            match Self::persist_owner_state_batch(
                 &mut durable,
+                &state,
                 &bytes,
                 &operation_id,
                 state.schema,
@@ -3366,6 +3476,7 @@ impl Service {
 
     fn persist(
         &mut self,
+        state: &State,
         bytes: &[u8],
         base_digest: [u8; 32],
         state_schema: u32,
@@ -3408,7 +3519,7 @@ impl Service {
                 return Err(Response::error(503, &error));
             }
         }
-        match self.persist_local(bytes, &operation_id, state_schema, target_replay_epoch) {
+        match self.persist_local(state, bytes, &operation_id, state_schema, target_replay_epoch) {
             Ok(()) => Ok(()),
             Err(error) => {
                 if self.ha.is_some() {
@@ -3422,12 +3533,14 @@ impl Service {
 
     fn persist_local(
         &mut self,
+        state: &State,
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
         target_replay_epoch: u64,
     ) -> Result<(), Response> {
         self.persist_local_with_epoch_policy(
+            state,
             bytes,
             operation_id,
             state_schema,
@@ -3438,6 +3551,7 @@ impl Service {
 
     fn persist_local_with_epoch_policy(
         &mut self,
+        state: &State,
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
@@ -3449,8 +3563,9 @@ impl Service {
             .as_mut()
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
         let prior_replay_epoch = durable.replay_epoch();
-        let result = Self::persist_state_batch(
+        let result = Self::persist_owner_state_batch(
             durable,
+            state,
             bytes,
             operation_id,
             state_schema,
@@ -3524,6 +3639,7 @@ impl Service {
         }
         let operation_id = format!("hasync-{}", hex(&committed.digest));
         if let Err(error) = self.persist_local_with_epoch_policy(
+            &state,
             &committed.bytes,
             &operation_id,
             state.schema,

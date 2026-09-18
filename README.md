@@ -35,12 +35,13 @@ external-provider revocation. The current Service state discriminator is defined
 The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
 expose the actual bounded-state/replay/journal headroom. The authoritative Service
 state is still serialized as one logical image, but current local storage uses
-content-addressed V3 content-defined chunks (384 KiB minimum, 512 KiB target,
-768 KiB maximum) plus one authenticated manifest publication point. HA uses its
+owner-scoped V4 content-defined chunks (384 KiB minimum, 512 KiB target,
+768 KiB maximum) plus one authenticated owner manifest publication point. HA uses its
 own bounded chunk framing after serializing the same complete logical image. Local
-state and HA replication share a **16 MiB serialized-state bound**. V3 improves
-chunk reuse after local insertions but does not make the store record-oriented: a
-point mutation can still clone and serialize the complete logical state. The active replay
+state and HA replication share a **16 MiB serialized-state bound**. V4 gives Auth, Engines, Database, Raft-admin and Namespace independent local
+content-addressed ownership and atomically publishes only changed owner chunks. The
+HA compatibility path still serializes the complete logical State for its digest and
+replication manifest, so end-to-end write cost is not yet fully record-oriented. The active replay
 ledger remains bounded to 32,000 identities per epoch, and ordinary compaction does
 not evict identities. These are bounded mechanisms, not production-scale proof.
 [Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md) observes

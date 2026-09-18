@@ -8,8 +8,8 @@ and unresolved scalability exit, not a new plan or a production-capacity claim.
 The running Service owns one logical serialized `State` containing Auth, Identity,
 KV, Transit, PKI, SSH, wrappers, local leases, PostgreSQL intents and Raft-admin
 state. The durable representation is no longer one 768 KiB value. Current local
-storage uses the `heptabao-state-chunks-v3` content-addressed manifest and
-deterministic content-defined boundaries: chunks are at least **384 KiB**, target
+storage uses the `heptabao-state-owners-v4` owner-scoped content-addressed manifest
+and deterministic content-defined boundaries: chunks are at least **384 KiB**, target
 **512 KiB**, and are capped at **768 KiB** except the final short chunk. New chunks,
 retired chunk references and the manifest publication point are committed through
 one durable atomic batch. The shared serialized-state admission bound is
@@ -41,7 +41,7 @@ bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 | Field | Meaning |
 |---|---|
 | `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | Current serialized logical application payload and 16 MiB hard bound. |
-| `state_storage_format`, `state_chunk_target_bytes` | Exact current local state framing identity (`heptabao-state-chunks-v3`) and 512 KiB target chunk size; these are diagnostics, not a compatibility promise. |
+| `state_storage_format`, `state_chunk_target_bytes` | Exact current local state framing identity (`heptabao-state-owners-v4`) and 512 KiB target chunk size; these are diagnostics, not a compatibility promise. |
 | `retained_operations`, `operation_limit`, `operations_remaining` | Active-epoch local durable replay identities and remaining slots. |
 | `journal_bytes`, `journal_limit_bytes` | Current local replay journal and configured hard bound. |
 | `generation` | Durable committed local generation, not a cluster-wide capacity reservation. |
@@ -58,12 +58,11 @@ This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
 `system/state` may contain either a historical serialized `State` record, a V1
 alternating-slot manifest, a V2 fixed content-addressed manifest, or the current
-V3 content-defined manifest. A V3 writer hashes each chosen chunk, reuses existing
-content-addressed chunks when their digest is still referenced, creates only new
-chunks, deletes replaced previous-generation chunk resources and publishes the new
-manifest in the same `DurableService::apply_batch` binding. The manifest is the
-sole logical publication point, so one state transition consumes one replay
-identity and one durable generation. A reader accepts only a complete manifest
+V3 content-defined manifest. A V4 writer serializes each authoritative owner independently, hashes each chosen
+owner chunk, reuses unchanged owner resources, deletes replaced previous-generation
+resources and publishes the new owner manifest in the same
+`DurableService::apply_batch` binding. The owner manifest is the sole local publication point, so one logical state
+transition still consumes one replay identity and one durable generation. A reader accepts only a complete manifest
 whose version-specific chunk shape, state schema, total length and SHA-256 binding
 verify.
 
@@ -132,9 +131,10 @@ be used as admission evidence.
 
 ## Scalable-storage and HA lifecycle exits still required
 
-Chunking removes the obsolete single-value 768 KiB ceiling but does not remove
-whole-state serialization or whole-state Raft proposals. Production-scale closure
-still requires record ownership or another demonstrated architecture whose write
+Owner-scoped local persistence removes whole-state local physical rewrites, while
+HA still uses complete logical serialization and whole-state logical proposals.
+Production-scale closure still requires extending record ownership through the HA
+state-machine boundary or another demonstrated architecture whose write
 amplification, peak memory, snapshot streaming and recovery cost remain bounded as
 the dataset grows. The implemented HA replay-epoch protocol still requires the
 fault, snapshot, upgrade and multi-host qualification cases listed below.

@@ -197,7 +197,7 @@ fn replay_retirement_is_root_only_and_state_commits_continue_in_new_epoch()
             1
         );
 
-        // This mutation exercises Service::persist_state_batch. If it accidentally
+        // This mutation exercises Service::persist_owner_state_batch. If it accidentally
         // rebinds to legacy epoch zero, the request fails before durable entry.
         let write = service.handle_at(
             "POST",
@@ -407,6 +407,7 @@ fn ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widen
         assert!(
             service
                 .persist_local(
+                    &committed,
                     &bytes,
                     "local-epoch-skip",
                     committed.schema,
@@ -429,6 +430,7 @@ fn ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widen
         // already-committed application state.
         service
             .persist_local_with_epoch_policy(
+                &committed,
                 &bytes,
                 "hasync-multi-epoch",
                 committed.schema,
@@ -483,6 +485,7 @@ fn failed_state_publication_after_epoch_retirement_fences_service()
         // The invalid request identity is rejected only after the durable epoch
         // retirement has published. The wrapper must therefore fence the process.
         let response = service.persist_local(
+            &target,
             &bytes,
             "invalid request id",
             target.schema,
