@@ -1543,14 +1543,16 @@ impl Service {
             .transpose()
             .map_err(|_| ServiceError::CorruptState)?
             .flatten();
-        let plan =
-            state_store::StateWritePlan::new(bytes, operation_id, state_schema, previous_manifest.as_ref())
-                .map_err(|error| match error {
-                    state_store::StateStoreError::StateTooLarge => {
-                        ServiceError::RequestCapacityExhausted
-                    }
-                    _ => ServiceError::CorruptState,
-                })?;
+        let plan = state_store::StateWritePlan::new(
+            bytes,
+            operation_id,
+            state_schema,
+            previous_manifest.as_ref(),
+        )
+        .map_err(|error| match error {
+            state_store::StateStoreError::StateTooLarge => ServiceError::RequestCapacityExhausted,
+            _ => ServiceError::CorruptState,
+        })?;
         if plan.required_mutations() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS {
             return Err(ServiceError::RequestCapacityExhausted);
         }
