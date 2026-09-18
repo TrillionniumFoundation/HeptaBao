@@ -38,7 +38,7 @@ enum DatabaseRequestKind {
 
 /// Immutable external work removed from Service before provider I/O.
 /// Durable lease intents are committed before lease work is exposed.
-pub(super) struct DatabaseRequestWork {
+pub(crate) struct DatabaseRequestWork {
     kind: DatabaseRequestKind,
     fingerprint: String,
     now: u64,
@@ -887,18 +887,6 @@ impl Service {
             .map_err(|error| post_provider_publication_failure(error, &plan.id))
     }
 
-    fn execute_database_effect(
-        &mut self,
-        ns: &str,
-        mount: &str,
-        id: &str,
-        now: u64,
-    ) -> Result<(), Response> {
-        let plan = self.prepare_database_effect(ns, mount, id, now)?;
-        let observed = plan.execute()?;
-        self.complete_database_effect(&plan, observed)
-    }
-
     fn stage_database_effect_request(
         &mut self,
         ns: &str,
@@ -1023,20 +1011,35 @@ impl Service {
                             }),
                         }
                     } else {
-                        let mut state = match self.state.clone() {
-                            Some(state) => state,
-                            None => return Response::error(503, "server sealed during provider verification"),
-                        };
-                        let db = state.database.mount_mut(&namespace, &mount);
-                        if db.leases.values().any(|lease| lease.db_name == name) {
-                            Response::error(409, "provider identity is frozen while lease/tombstone records exist")
-                        } else if db.connections.len() >= 16 && !db.connections.contains_key(&name) {
-                            Response::error(507, "database connection capacity exhausted")
-                        } else {
-                            db.connections.insert(name, connection);
-                            match self.publish_database(state) {
-                                Ok(()) => Response { status: 204, body: Value::Null },
-                                Err(error) => error,
+                        match self.state.clone() {
+                            None => Response::error(
+                                503,
+                                "server sealed during provider verification",
+                            ),
+                            Some(mut state) => {
+                                let db = state.database.mount_mut(&namespace, &mount);
+                                if db.leases.values().any(|lease| lease.db_name == name) {
+                                    Response::error(
+                                        409,
+                                        "provider identity is frozen while lease/tombstone records exist",
+                                    )
+                                } else if db.connections.len() >= 16
+                                    && !db.connections.contains_key(&name)
+                                {
+                                    Response::error(
+                                        507,
+                                        "database connection capacity exhausted",
+                                    )
+                                } else {
+                                    db.connections.insert(name, connection);
+                                    match self.publish_database(state) {
+                                        Ok(()) => Response {
+                                            status: 204,
+                                            body: Value::Null,
+                                        },
+                                        Err(error) => error,
+                                    }
+                                }
                             }
                         }
                     }
@@ -1088,8 +1091,10 @@ impl Service {
             path,
             method,
             body,
+            token,
             ..
         } = request;
+        let fingerprint = self.request_fingerprint(method, path, ns, token);
         if let Some(prefix) = path.strip_prefix("sys/leases/lookup/") {
             if *method != "LIST" {
                 return Err(invalid("lease enumeration requires LIST"));
