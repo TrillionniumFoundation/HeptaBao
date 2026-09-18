@@ -239,7 +239,7 @@ struct State {
         default,
         skip_serializing_if = "namespaces::NamespaceRegistry::is_empty"
     )]
-    namespaces: namespaces::NamespaceRegistry,
+    namespaces: CowOwner<namespaces::NamespaceRegistry>,
     auth: CowOwner<AuthState>,
     engines: CowOwner<EngineState>,
     #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
@@ -253,6 +253,7 @@ struct State {
 
 #[derive(Clone, Copy, Default)]
 struct OwnerReuseHint {
+    namespaces: bool,
     auth: bool,
     engines: bool,
     database: bool,
@@ -265,6 +266,7 @@ impl OwnerReuseHint {
             return Self::default();
         };
         Self {
+            namespaces: next.namespaces.ptr_eq(&previous.namespaces),
             auth: next.auth.ptr_eq(&previous.auth),
             engines: next.engines.ptr_eq(&previous.engines),
             database: next.database.ptr_eq(&previous.database),
@@ -1958,7 +1960,8 @@ impl Service {
                 schema: manifest.state_schema(),
                 cluster_id: manifest.cluster_id().to_owned(),
                 replay_epoch: manifest.replay_epoch(),
-                namespaces: serde_json::from_slice(&namespaces)
+                namespaces: serde_json::from_slice::<namespaces::NamespaceRegistry>(&namespaces)
+                    .map(CowOwner::from)
                     .map_err(|_| Response::error(503, "namespace owner state is invalid"))?,
                 auth: serde_json::from_slice(&auth)
                     .map_err(|_| Response::error(503, "auth owner state is invalid"))?,
@@ -2100,17 +2103,22 @@ impl Service {
             Vec::new()
         };
 
-        // Namespace state is not yet Arc-backed, so it is serialized on every
-        // logical mutation. V4 copy-on-write owners can carry their authenticated
-        // descriptor/chunks forward directly when the request did not mutate them.
+        // V4 copy-on-write owners carry their authenticated descriptor/chunks
+        // forward directly when the request did not mutate them. This removes a
+        // second full-owner serialization/hash/chunk pass after the logical State
+        // has already been serialized for the cluster digest.
         let may_reuse = previous_owner.is_some();
         let owners = vec![
             (
                 "namespaces",
-                Some(
-                    serde_json::to_vec(&state.namespaces)
-                        .map_err(|_| ServiceError::CorruptState)?,
-                ),
+                if may_reuse && reuse.namespaces {
+                    None
+                } else {
+                    Some(
+                        serde_json::to_vec(&state.namespaces)
+                            .map_err(|_| ServiceError::CorruptState)?,
+                    )
+                },
             ),
             (
                 "auth",
@@ -2398,7 +2406,7 @@ impl Service {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
-            namespaces: namespaces::NamespaceRegistry::default(),
+            namespaces: namespaces::NamespaceRegistry::default().into(),
             auth: auth.into(),
             engines: EngineState::default().into(),
             database: database::DatabaseState::default().into(),
