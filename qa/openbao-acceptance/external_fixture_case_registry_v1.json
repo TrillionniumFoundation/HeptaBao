@@ -212,6 +212,36 @@
         "ssh.unwrapped_otp_works"
       ],
       "script": "qa/openbao-acceptance/ssh_otp_live.py"
+    },
+    "kubernetes_cluster_live": {
+      "script": "qa/openbao-acceptance/kubernetes_cluster_live.py",
+      "case_ids": [
+        "real_kubernetes_secrets_mount",
+        "real_kubernetes_secrets_config",
+        "real_kubernetes_secrets_role",
+        "real_kubernetes_tokenrequest_issues_secret",
+        "kubernetes_secret_lease_is_bounded_nonrenewable",
+        "issued_kubernetes_secret_token_is_real",
+        "kubernetes_secret_role_readback_redacts_manager",
+        "kubernetes_secret_config_role_survive_restart",
+        "deleted_serviceaccount_invalidates_secret_tokens",
+        "recreated_serviceaccount_gets_new_secret_token"
+      ]
+    },
+    "audit_syslog_live": {
+      "script": "qa/openbao-acceptance/audit_syslog_live.py",
+      "case_ids": [
+        "sys_audit_lists_file_and_syslog",
+        "syslog_device_reports_facility_and_tag_only",
+        "api_cannot_rebind_syslog_device",
+        "audited_mutation_succeeds",
+        "syslog_tail_matches_local_authenticated_audit",
+        "syslog_records_do_not_expose_secret_or_bearer",
+        "syslog_outage_uses_mandatory_file_device",
+        "syslog_outage_is_observable",
+        "collector_recovery_preserves_service",
+        "mandatory_file_audit_continues_through_syslog_fault"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

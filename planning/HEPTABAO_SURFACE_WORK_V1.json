@@ -330,6 +330,20 @@
         "new synthetic local TCP audit collector"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "audit-syslog": {
+      "script": "qa/openbao-acceptance/audit_syslog_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_new_work_dir}"
+      ],
+      "prerequisites": [
+        "actual candidate binary",
+        "new synthetic local Unix datagram syslog collector"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -975,18 +989,31 @@
     {
       "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
       "category": "secret_engines",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/kubernetes.rs",
       "technical_contract": {
         "api_or_protocol": "kubernetes/config, roles/* and creds/*",
         "required_positive_and_hostile_behavior": "Real service-account token creation, namespace/RBAC binding, expiry and deletion",
-        "remaining_semantics_and_effect_checks": "Persist an intent before Kubernetes effect; lease expiry must verify token invalidation where promised",
+        "remaining_semantics_and_effect_checks": "The real TokenRequest path uses a pre-existing service account, durable pre-entry intent and post-provider JWT claim readback. Generated ServiceAccount lifecycle, broader role fields, provider-side revocation semantics and full OpenBao error/field parity remain open.",
         "crash_reopen": "Interrupt kubernetes/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-KUBERNETES, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "kubernetes_cluster_live.real_kubernetes_secrets_mount",
+        "kubernetes_cluster_live.real_kubernetes_secrets_config",
+        "kubernetes_cluster_live.real_kubernetes_secrets_role",
+        "kubernetes_cluster_live.real_kubernetes_tokenrequest_issues_secret",
+        "kubernetes_cluster_live.kubernetes_secret_lease_is_bounded_nonrenewable",
+        "kubernetes_cluster_live.issued_kubernetes_secret_token_is_real",
+        "kubernetes_cluster_live.kubernetes_secret_role_readback_redacts_manager",
+        "kubernetes_cluster_live.kubernetes_secret_config_role_survive_restart",
+        "kubernetes_cluster_live.deleted_serviceaccount_invalidates_secret_tokens",
+        "kubernetes_cluster_live.recreated_serviceaccount_gets_new_secret_token"
+      ],
+      "available_scoped_profiles": [
+        "actual_kubernetes"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -1200,18 +1227,31 @@
     {
       "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
       "category": "audit_devices",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "sys/audit syslog device",
         "required_positive_and_hostile_behavior": "Facility/priority, structured message encoding, availability and truncation",
-        "remaining_semantics_and_effect_checks": "No newline injection or silent loss of mandatory fields; qualified local syslog collection required",
+        "remaining_semantics_and_effect_checks": "The deployment-owned local Unix datagram profile emits bounded facility/tag framing beside the mandatory authenticated file sink and records delivery failures. Dynamic API enrollment, network syslog transports, complete OpenBao formatting/options and multi-host collector qualification remain open.",
         "crash_reopen": "Interrupt sys/audit syslog device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUDIT-SYSLOG, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "audit_syslog_live.sys_audit_lists_file_and_syslog",
+        "audit_syslog_live.syslog_device_reports_facility_and_tag_only",
+        "audit_syslog_live.api_cannot_rebind_syslog_device",
+        "audit_syslog_live.audited_mutation_succeeds",
+        "audit_syslog_live.syslog_tail_matches_local_authenticated_audit",
+        "audit_syslog_live.syslog_records_do_not_expose_secret_or_bearer",
+        "audit_syslog_live.syslog_outage_uses_mandatory_file_device",
+        "audit_syslog_live.syslog_outage_is_observable",
+        "audit_syslog_live.collector_recovery_preserves_service",
+        "audit_syslog_live.mandatory_file_audit_continues_through_syslog_fault"
+      ],
+      "available_scoped_profiles": [
+        "audit-syslog"
+      ],
       "whole_surface_admitted": false
     },
     {

@@ -476,11 +476,11 @@ Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`.
 
 ### HB-SURFACE-SECRET-KUBERNETES
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP10`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP10`, `H19-WP13`.
 API families: `{mount}/config`; `{mount}/roles/*`; `{mount}/creds/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/engines/kubernetes.rs`, `crates/heptabao-server/src/service_kubernetes_secrets.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Positive:** Create actual service-account/token credentials through constrained Kubernetes API.
 
@@ -488,9 +488,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Revoke actual API resources after issuer expiry and reconcile lost creation reply.
 
-**Remaining scope:** Dynamic service-account/token credentials and revocation.
+**Remaining scope:** A real TokenRequest against the pinned disposable Kubernetes cluster is implemented with durable pre-entry intent, exact namespace/service-account/audience binding, response claim readback, restart persistence and fail-closed unknown outcome. Generated ServiceAccount lifecycle, broader OpenBao role/config fields, provider-side revocation promises, HA/multi-host provider faults and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/kubernetes_cluster_live.py`.
 
 ### HB-SURFACE-SECRET-OPENLDAP
 
@@ -674,11 +674,11 @@ Existing bounded profiles: `qa/openbao-acceptance/audit_socket_live.py`.
 
 ### HB-SURFACE-AUDIT-SYSLOG
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H12-WP08`, `H12-WP10`, `H12-WP11`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H12-WP08`, `H12-WP10`, `H12-WP11`.
 API families: `sys/audit/* (syslog)`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/http.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Positive:** Deliver real facility/tag events through documented local/network modes.
 
@@ -686,9 +686,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Handle collector outage and rotation with explicit admission policy.
 
-**Remaining scope:** Facility/tag/network/local delivery and outage behavior.
+**Remaining scope:** A process-configured local Unix datagram syslog sink is implemented with bounded facility/tag framing, API rebinding denial, mandatory authenticated-file-first durability, observable delivery failure and recovery. Dynamic sys/audit enrollment, network transports, full OpenBao formatting/options, rotation semantics and multi-host collector qualification remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/audit_syslog_live.py`.
 
 ### HB-SURFACE-STORAGE-POSTGRESQL
 

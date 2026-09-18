@@ -937,16 +937,22 @@
       "positive": "Create actual service-account/token credentials through constrained Kubernetes API",
       "hostile": "Reject service-account/namespace/role escalation and untrusted API server",
       "lifecycle": "Revoke actual API resources after issuer expiry and reconcile lost creation reply",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/kubernetes.rs",
+        "crates/heptabao-server/src/service_kubernetes_secrets.rs"
+      ],
       "contract_sources": [],
       "guides": [
+        "docs/modules/heptabao-server.md",
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/kubernetes_cluster_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Dynamic service-account/token credentials and revocation."
+      "remaining_scope": "A real TokenRequest against the pinned disposable Kubernetes cluster is implemented with durable pre-entry intent, exact namespace/service-account/audience binding, response claim readback, restart persistence and fail-closed unknown outcome. Generated ServiceAccount lifecycle, broader OpenBao role/config fields, provider-side revocation promises, HA/multi-host provider faults and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
@@ -1251,16 +1257,22 @@
       "positive": "Deliver real facility/tag events through documented local/network modes",
       "hostile": "Reject illegal facility, log injection and undeclared transport",
       "lifecycle": "Handle collector outage and rotation with explicit admission policy",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs",
+        "crates/heptabao-server/src/http.rs"
+      ],
       "contract_sources": [],
       "guides": [
+        "docs/modules/heptabao-server.md",
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/audit_syslog_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Facility/tag/network/local delivery and outage behavior."
+      "remaining_scope": "A process-configured local Unix datagram syslog sink is implemented with bounded facility/tag framing, API rebinding denial, mandatory authenticated-file-first durability, observable delivery failure and recovery. Dynamic sys/audit enrollment, network transports, full OpenBao formatting/options, rotation semantics and multi-host collector qualification remain open."
     },
     {
       "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
