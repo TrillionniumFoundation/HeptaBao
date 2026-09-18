@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bao_http import BaoError, Response, digest
-from migrate_kv2 import Checkpoint, active_history, transfer_record
+from migrate_kv2 import Checkpoint, active_history, checkpoint_binding, digest, transfer_record
 
 
 def fixture_record():
@@ -79,6 +79,34 @@ class ResumeTests(unittest.TestCase):
                 transfer_record(target, "secret", fixture_record(), Checkpoint(path, {"target": "b"}))
             self.assertEqual(target.writes, 1)
             self.assertEqual(target.values, [])
+
+    def test_checkpoint_binding_is_shared_and_stable(self):
+        class Target:
+            address = "https://127.0.0.1:18200"
+            namespace = ""
+
+        source_identity = {
+            "endpoint": "https://127.0.0.1:18201",
+            "namespace": "",
+            "mount": "secret",
+            "cluster_id": "source-cluster",
+            "version": "2.6.2",
+        }
+        keys = ["a"]
+        inventory_digest = digest({"mount": "secret", "objects": []})
+        binding = checkpoint_binding(
+            source_identity,
+            keys,
+            inventory_digest,
+            Target(),
+            "resumed",
+            {"cluster_id": "target-cluster"},
+        )
+        self.assertEqual(binding["source_identity"], source_identity)
+        self.assertEqual(binding["keys_digest"], digest(keys))
+        self.assertEqual(binding["inventory_digest"], inventory_digest)
+        self.assertEqual(binding["target_identity"]["mount"], "resumed")
+        self.assertEqual(binding["target_identity"]["cluster_id"], "target-cluster")
 
     def test_checkpoint_cannot_be_rebound_to_a_new_target(self):
         with tempfile.TemporaryDirectory() as directory:
