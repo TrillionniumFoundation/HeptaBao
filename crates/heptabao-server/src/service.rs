@@ -39,6 +39,8 @@ mod identity;
 mod lifecycle;
 #[path = "service_online_auth.rs"]
 mod online_auth;
+#[path = "service_openapi.rs"]
+mod openapi;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 #[path = "service_state_store.rs"]
@@ -1377,6 +1379,15 @@ impl Service {
         let Some(principal) = principal else {
             return Response::error(403, "missing client token");
         };
+        if path == "sys/internal/specs/openapi" {
+            if let Err(error) = state
+                .auth
+                .authorize_request(principal, namespace, path, "read", now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            return openapi::handle(method, body, principal.is_root());
+        }
         if path == "sys/leader" && method == "GET" {
             return Response::error(500, "leader route escaped service HA boundary");
         }
@@ -4042,6 +4053,10 @@ mod ssh_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "pki_service_tests.rs"]
 mod pki_service_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "openapi_service_tests.rs"]
+mod openapi_service_tests;
 
 #[cfg(test)]
 #[path = "service_state_store_integration_tests.rs"]

@@ -359,6 +359,38 @@ jobs:
             --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
             --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
 
+      - name: Compare bounded OpenAPI runtime with official OpenBao
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-openapi-live"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/openapi_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/openapi.json"
+          python - "$reports/openapi.json" <<'PY'
+          import json, pathlib, sys
+          report=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["status"] == "passed_scoped_openapi_runtime"
+          assert report["official_openbao_version"] == "2.6.2"
+          assert report["openapi_version"] == "3.0.2"
+          assert report["runtime_entry_implemented"] is True
+          assert report["root_schema_restart_stable"] is True
+          assert report["non_root_overadvertising_prevented"] is True
+          assert report["exact_policy_filtered_schema_implemented"] is False
+          assert report["browser_ui_implemented"] is False
+          assert report["full_openbao_compatibility"] is False
+          assert report["production_authority"] is False
+          assert report["independent_qualification"] is False
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Rehearse bounded policy Identity and SSH role migration against the official source
         if: ${{ success() || failure() }}
         shell: bash
