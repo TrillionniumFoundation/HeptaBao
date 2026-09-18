@@ -232,12 +232,13 @@ impl OwnerStateManifest {
                 .get(index)
                 .and_then(|size| usize::try_from(*size).ok())
                 .ok_or(OwnerStoreError::InvalidChunk)?;
+            let expected_digest = descriptor
+                .chunks
+                .get(index)
+                .ok_or(OwnerStoreError::InvalidChunk)?;
+            let observed_digest = hex(&crypto::digest(chunk));
             if chunk.len() != expected_size
-                || hex(&crypto::digest(chunk))
-                    != *descriptor
-                        .chunks
-                        .get(index)
-                        .ok_or(OwnerStoreError::InvalidChunk)?
+                || observed_digest.as_str() != expected_digest.as_str()
             {
                 return Err(OwnerStoreError::DigestMismatch);
             }

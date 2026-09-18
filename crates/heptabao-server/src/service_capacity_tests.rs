@@ -352,6 +352,7 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
         assert!(before > 0);
         service
             .persist_local(
+                &committed,
                 &bytes,
                 "hasync-epoch-transition",
                 committed.schema,
