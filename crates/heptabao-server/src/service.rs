@@ -1262,15 +1262,19 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        let mut principal =
-            if token.is_empty() || path == "sys/wrapping/lookup" || public_otp_verify {
-                None
-            } else {
-                match admitted.auth.authenticate(token, now) {
-                    Ok(principal) => Some(principal),
-                    Err(error) => return Response::error(error.status, &error.message),
-                }
-            };
+        let public_login = admitted.auth.is_public_login(namespace, method, path);
+        let mut principal = if token.is_empty()
+            || path == "sys/wrapping/lookup"
+            || public_otp_verify
+            || public_login
+        {
+            None
+        } else {
+            match admitted.auth.authenticate(token, now) {
+                Ok(principal) => Some(principal),
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = CURRENT_STATE_SCHEMA;
             if let Err(error) = self.commit_state(&admitted) {
@@ -1283,7 +1287,10 @@ impl Service {
         {
             return error;
         }
-        if path == "sys/audit" || path.starts_with("sys/audit/") {
+        if path == "sys/audit"
+            || path.starts_with("sys/audit/")
+            || path == "sys/internal/audit/file"
+        {
             let Some(principal) = principal.as_ref() else {
                 return Response::error(403, "missing client token");
             };
@@ -3557,11 +3564,11 @@ impl Service {
         }))
     }
 
-    /// Manage the mandatory local file audit device through the OpenBao
-    /// `sys/audit` surface. The service keeps one authenticated file sink for
-    /// every request; changing or disabling it at runtime would bypass the
-    /// admission audit invariant, so this route exposes an idempotent enable
-    /// and read/list operations while rejecting unsafe device changes.
+    /// Inspect deployment-owned audit devices. The standard file-device route
+    /// follows the pinned OpenBao declarative-device profile: list the device,
+    /// reject duplicate enable and disable, and refuse a per-device GET. The
+    /// explicit internal file route retains HeptaBao's read/idempotent binding
+    /// extension without claiming that extension is an upstream endpoint.
     fn audit_route(
         &self,
         principal: &Principal,
@@ -3661,7 +3668,10 @@ impl Service {
                 }
                 Response::ok(json!({"data":devices}))
             }
-            ("sys/audit/file", "GET") => Response::ok(json!({"data":device()})),
+            ("sys/internal/audit/file", "GET") => Response::ok(json!({"data":device()})),
+            ("sys/audit/file", "POST" | "PUT") => {
+                Response::error(400, "audit device is already configured by the deployment")
+            }
             ("sys/audit/http", "GET") => match http_device() {
                 Some(http) => Response::ok(json!({"data":http})),
                 None => Response::error(404, "audit device not found"),
@@ -3674,7 +3684,7 @@ impl Service {
                 Some(syslog) => Response::ok(json!({"data":syslog})),
                 None => Response::error(404, "audit device not found"),
             },
-            ("sys/audit/file", "POST" | "PUT") => {
+            ("sys/internal/audit/file", "POST" | "PUT") => {
                 let Some(object) = body.as_object() else {
                     return Response::error(400, "audit enable requires a JSON object");
                 };
@@ -3749,7 +3759,7 @@ impl Service {
                     body: Value::Null,
                 }
             }
-            ("sys/audit/file", "DELETE") => Response::error(
+            ("sys/audit/file" | "sys/internal/audit/file", "DELETE") => Response::error(
                 400,
                 "the mandatory file audit device cannot be disabled while the service is running",
             ),
@@ -3767,6 +3777,7 @@ impl Service {
             ),
             ("sys/audit", _)
             | ("sys/audit/file", _)
+            | ("sys/internal/audit/file", _)
             | ("sys/audit/http", _)
             | ("sys/audit/socket", _)
             | ("sys/audit/syslog", _) => Response::error(405, "unsupported sys/audit method"),

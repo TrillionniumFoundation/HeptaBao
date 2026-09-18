@@ -459,3 +459,29 @@ the moved mount retains the existing credential/token revocation behavior; recre
 path issues a different accessor and revision 1. `sys/remount` cannot cross auth/secret
 classes or namespaces. These are repository-local runtime guarantees, not full external
 provider or OpenBao compatibility admission.
+
+## Public mounted login and unrelated bearer headers
+
+Exact mounted POST/PUT login paths authenticate their explicit password,
+SecretID or verified external assertion rather than an unrelated bearer header.
+A stale bearer does not block valid login; a separate finite-use bearer is not
+consumed by that login. Namespace, enabled mount kind, method and complete path
+shape select this exception. A root bearer does not make a wrong password or
+SecretID succeed, and token-management/protected routes still reject invalid
+bearers. The same audited durable issuance, MFA and provider checks remain.
+The public-login regressions include nested mounts, restart, finite-use
+non-consumption, wrong-namespace and protected-route denial.
+
+
+## Bounded authentication mount migration input contract
+
+`qa/openbao-acceptance/migrate_auth_mount.py` is a separate metadata/re-enrollment
+adapter, not a credential transfer. For lockout-capable source methods, live
+OpenBao 2.6.2 tune readback uses flat `user_lockout_disable` and
+`user_lockout_{threshold,duration,counter_reset_duration}` fields, unlike the
+request's nested `user_lockout_config`. The importer requires explicit disabled
+lockout for this limited profile and typed bounded counters; nested caller-shaped
+configuration is not accepted as proof. Source credentials, accessors and token
+authority are not transferred. Consumers must authenticate against deliberately
+provisioned destination credentials after migration. The real fixture verifies
+mount TTL, old-credential refusal, new login, restart and idempotent resume.

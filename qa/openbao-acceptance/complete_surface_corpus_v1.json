@@ -446,7 +446,7 @@
         "audit_file_live.list",
         "audit_file_live.path_present",
         "audit_file_live.read_binding",
-        "audit_file_live.enable_idempotent",
+        "audit_file_live.duplicate_enable_rejected",
         "audit_file_live.disable_rejected"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"

@@ -54,7 +54,9 @@ and re-authenticate/reissue after the target becomes authoritative.
 ## Executable evidence
 
 - `qa/openbao-acceptance/tests/test_ssh_role_migration.py` tests supported-field
-  normalization, unsafe source semantics, checkpoint rebinding and record digests.
+  normalization, unsafe source semantics, checkpoint rebinding, record digests,
+  and actual CLI endpoint identity argument order. Shared endpoint or cluster
+  identity is rejected before inventory access.
 - `qa/openbao-acceptance/ssh_role_migration_live.py` launches the checksum-pinned
   official OpenBao 2.6.2 binary and a real HeptaBao process, creates synthetic OTP
   roles, performs dry-run/apply/repeat/restart flows, verifies exact target/source

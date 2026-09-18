@@ -1704,6 +1704,31 @@ impl AuthState {
         }
     }
 
+    /// Login credentials, not an unrelated bearer header, authenticate these
+    /// exact mounted endpoints. Never classify a route by an arbitrary `/login`
+    /// suffix: mount kind, namespace, operation and suffix all bind this decision.
+    pub(super) fn is_public_login(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "POST" | "PUT") {
+            return false;
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return false;
+        };
+        self.effective_auth_mounts(namespace)
+            .iter()
+            .any(|(mount, entry)| {
+                let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else {
+                    return false;
+                };
+                match entry.kind.as_str() {
+                    "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
+                    "approle" | "jwt" | "kubernetes" => suffix == "login",
+                    "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
+                    _ => false,
+                }
+            })
+    }
+
     /// Returns None only for routes owned by another service subsystem.
     pub(super) fn handle(
         &mut self,

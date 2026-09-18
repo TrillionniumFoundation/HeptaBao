@@ -1644,14 +1644,52 @@ fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std
         .as_str()
         .ok_or("missing configured audit path")?;
 
-    let read = call(&mut service, "GET", "sys/audit/file", &token, json!({}));
+    // The standard declarative route does not expose HeptaBao's extension.
+    assert_eq!(
+        call(&mut service, "GET", "sys/audit/file", &token, json!({})).status,
+        405
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/audit/file",
+            &token,
+            json!({"type":"file","options":{"file_path":configured_path}})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(&mut service, "DELETE", "sys/audit/file", &token, json!({})).status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/audit/file",
+            "invalid",
+            json!({})
+        )
+        .status,
+        403
+    );
+
+    let read = call(
+        &mut service,
+        "GET",
+        "sys/internal/audit/file",
+        &token,
+        json!({}),
+    );
     assert_eq!(read.status, 200);
     assert_eq!(read.body["data"]["options"]["file_path"], configured_path);
 
     let enable = call(
         &mut service,
         "PUT",
-        "sys/audit/file",
+        "sys/internal/audit/file",
         &token,
         json!({"type":"file","options":{"file_path":configured_path}}),
     );
@@ -1660,20 +1698,27 @@ fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std
     let wrong_path = call(
         &mut service,
         "PUT",
-        "sys/audit/file",
+        "sys/internal/audit/file",
         &token,
         json!({"type":"file","options":{"file_path":"/tmp/other-audit.jsonl"}}),
     );
     assert_eq!(wrong_path.status, 409);
     assert_eq!(
-        call(&mut service, "DELETE", "sys/audit/file", &token, json!({})).status,
+        call(
+            &mut service,
+            "DELETE",
+            "sys/internal/audit/file",
+            &token,
+            json!({})
+        )
+        .status,
         400
     );
     assert_eq!(
         call(
             &mut service,
             "PUT",
-            "sys/audit/file",
+            "sys/internal/audit/file",
             &token,
             json!({"type":"http"}),
         )
@@ -1921,13 +1966,19 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
         call(&mut service, "GET", "archive/data/app", &token, json!({})).body["data"]["data"]["value"],
         "persisted"
     );
-    let audit = call(&mut service, "GET", "sys/audit/file", &token, json!({}));
+    let audit = call(
+        &mut service,
+        "GET",
+        "sys/internal/audit/file",
+        &token,
+        json!({}),
+    );
     assert_eq!(audit.body["data"]["revision"], 1);
     assert_eq!(
         call(
             &mut service,
             "POST",
-            "sys/audit/file",
+            "sys/internal/audit/file",
             &token,
             json!({"type":"file","cas_revision":2})
         )
@@ -1938,7 +1989,7 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
         call(
             &mut service,
             "POST",
-            "sys/audit/file",
+            "sys/internal/audit/file",
             &token,
             json!({"type":"file","cas_revision":1})
         )
@@ -2121,5 +2172,225 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
     let auth_recreated = call(&mut service, "GET", "sys/auth/moved", &token, json!({}));
     assert_eq!(auth_recreated.body["data"]["revision"], 1);
     assert_ne!(auth_recreated.body["data"]["accessor"], auth_accessor);
+    Ok(())
+}
+
+#[test]
+fn public_approle_login_ignores_unrelated_bearer_without_bypassing_credentials()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team/role",
+            &token,
+            json!({"type":"approle"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team/role/tune",
+            &token,
+            json!({"default_lease_ttl":120,"max_lease_ttl":300})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/role/reader",
+            &token,
+            json!({"token_policies":["default"],"secret_id_num_uses":0})
+        )
+        .status,
+        204
+    );
+    let role = call(
+        &mut service,
+        "GET",
+        "auth/team/role/role/reader/role-id",
+        &token,
+        json!({}),
+    );
+    let secret = call(
+        &mut service,
+        "POST",
+        "auth/team/role/role/reader/secret-id",
+        &token,
+        json!({}),
+    );
+    let credentials = json!({"role_id":role.body["data"]["role_id"],
+        "secret_id":secret.body["data"]["secret_id"]});
+    let login = call(
+        &mut service,
+        "POST",
+        "auth/team/role/login",
+        "expired-source-token",
+        credentials.clone(),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["lease_duration"], 120);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/login",
+            &token,
+            json!({"role_id":role.body["data"]["role_id"],"secret_id":"incorrect"})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/team/role/role/reader/role-id",
+            "expired-source-token",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/login",
+            "expired-source-token",
+            credentials.clone()
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/team/role/login",
+                "other",
+                "expired-source-token",
+                credentials.clone(),
+                100
+            )
+            .status,
+        403
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/login",
+            "expired-source-token",
+            credentials
+        )
+        .status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn public_userpass_login_does_not_spend_a_separate_finite_bearer()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/reader",
+            &token,
+            json!({"password":"synthetic-password","token_policies":["default"]})
+        )
+        .status,
+        204
+    );
+    let separate = limited_token(
+        &mut service,
+        &token,
+        "path \"secret/*\" { capabilities = [\"read\"] }",
+    )?;
+    let data = json!({"password":"synthetic-password"});
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            "invalid-old-token",
+            data.clone()
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            &separate,
+            data
+        )
+        .status,
+        200
+    );
+    let observed = call(
+        &mut service,
+        "POST",
+        "auth/token/lookup",
+        &token,
+        json!({"token":separate}),
+    );
+    assert_eq!(observed.status, 200);
+    assert_eq!(observed.body["data"]["num_uses"], 1);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            &token,
+            json!({"password":"incorrect"})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/userpass/users/reader",
+            "invalid-old-token",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "secret/login",
+            "invalid-old-token",
+            json!({})
+        )
+        .status,
+        403
+    );
     Ok(())
 }

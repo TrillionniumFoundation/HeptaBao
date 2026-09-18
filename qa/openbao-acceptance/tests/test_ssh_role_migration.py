@@ -3,6 +3,11 @@ import importlib.util
 import sys
 import tempfile
 import unittest
+import contextlib
+import io
+import json
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
@@ -29,6 +34,30 @@ class SshRoleMigrationTests(unittest.TestCase):
             root=Path(d); root.chmod(0o700); cp=root/"checkpoint.json"
             m.Checkpoint(cp, {"source":"a","target":"b"})
             with self.assertRaises(Exception): m.Checkpoint(cp, {"source":"a","target":"c"})
+
+    def test_cli_checks_actual_endpoint_identity_before_inventory(self):
+        for address, cluster, expected in (
+            ("https://target.example:8200", "target", 0),
+            ("https://source.example:8200", "target", 2),
+            ("https://target.example:8200", "source", 2),
+        ):
+            source = SimpleNamespace(address="https://source.example:8200", namespace="",
+                health=lambda: {"version":"2.6.2", "cluster_id":"source"})
+            target = SimpleNamespace(address=address, namespace="",
+                health=lambda: {"version":"HeptaBao", "cluster_id":cluster})
+            output = io.StringIO()
+            with self.subTest(address=address, cluster=cluster), \
+                    patch.object(m.Client, "from_env", side_effect=[source, target]), \
+                    patch.object(m, "snapshot_inventory", return_value=([], "empty")) as inventory, \
+                    contextlib.redirect_stdout(output):
+                self.assertEqual(m.main([]), expected)
+            result = json.loads(output.getvalue())
+            if expected:
+                self.assertEqual(result["reason"], "same_endpoint_or_cluster_rejected")
+                inventory.assert_not_called()
+            else:
+                self.assertEqual(result["status"], "dry_run_complete")
+                inventory.assert_called_once_with(source, "ssh")
 
     def test_record_digest_and_name_are_bound(self):
         role={"key_type":"otp","default_user":"deploy","allowed_users":"","cidr_list":"127.0.0.0/8","exclude_cidr_list":"","port":22}

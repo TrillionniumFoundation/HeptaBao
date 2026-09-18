@@ -144,7 +144,9 @@ def restart_oracle(oracle):
     return oracle
 
 
-def start_oracle(port):
+def start_oracle(port, *, audit_file=False):
+    if type(audit_file) is not bool:
+        raise BaoError("official_oracle_invalid_audit_profile")
     if type(port) is not int or not 1024 <= port <= 65534:
         raise BaoError("official_oracle_invalid_loopback_port")
     binary = verify_inputs()
@@ -156,7 +158,7 @@ def start_oracle(port):
               "artifact_sha256": ARTIFACT_SHA256, "binary_sha256": BINARY_SHA256}
     try:
         certificates(root)
-        private_text(root / "server.json", json.dumps({
+        config = {
             "disable_mlock": True, "ui": False,
             "api_addr": oracle["address"], "cluster_addr": f"https://127.0.0.1:{port + 1}",
             "storage": {"file": {"path": str(root / "data")}},
@@ -164,7 +166,15 @@ def start_oracle(port):
                                     "tls_cert_file": str(root / "tls.crt"),
                                     "tls_key_file": str(root / "tls.key"),
                                     "tls_min_version": "tls12"}}],
-        }))
+        }
+        if audit_file:
+            # Fixed synthetic deployment configuration; no arbitrary caller path,
+            # API-enrollment opt-in, or raw secret logging is introduced.
+            config["audit"] = [{"file": {"file": {
+                "description": "Synthetic declarative file audit device",
+                "options": {"file_path": str(root / "audit.jsonl"), "mode": "0600"},
+            }}}]
+        private_text(root / "server.json", json.dumps(config))
         oracle["log"] = open(root / "server.log", "ab")
         # Configuration contains no credential. Never use -dev or a token argument.
         oracle["process"] = subprocess.Popen(

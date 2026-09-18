@@ -41,7 +41,10 @@ SAFE_TUNE_FIELDS = {
     "force_no_cache",
     "max_lease_ttl",
     "token_type",
-    "user_lockout_config",
+    "user_lockout_disable",
+    "user_lockout_threshold",
+    "user_lockout_duration",
+    "user_lockout_counter_reset_duration",
 }
 
 
@@ -105,29 +108,24 @@ def read_source_record(client, mount):
         if key not in SAFE_TUNE_FIELDS and not _default_value(value):
             raise BaoError("auth_mount_tune_requires_manual_reconciliation")
 
-    lockout = tune.get("user_lockout_config")
+    # The pinned OpenBao 2.6.2 live GET /sys/auth/:mount/tune response is
+    # flat, unlike its user_lockout_config request object. Do not mistake a
+    # caller-shaped nested object for proof that source lockout is disabled.
     lockout_disabled = False
+    lockout_fields = (
+        "user_lockout_threshold", "user_lockout_duration",
+        "user_lockout_counter_reset_duration",
+    )
     if kind in {"userpass", "approle", "ldap"}:
-        if (
-            not isinstance(lockout, dict)
-            or lockout.get("lockout_disable") is not True
-            or len(lockout) > 8
-            or any(not isinstance(key, str) for key in lockout)
-            or any(
-                not isinstance(value, (str, int, bool))
-                or isinstance(value, str)
-                and (
-                    len(value.encode("utf-8")) > 128
-                    or any(not char.isprintable() for char in value)
-                )
-                for value in lockout.values()
-            )
-        ):
-            raise BaoError(
-                "source_auth_mount_lockout_must_be_explicitly_disabled"
-            )
+        if tune.get("user_lockout_disable") is not True:
+            raise BaoError("source_auth_mount_lockout_must_be_explicitly_disabled")
+        for field in lockout_fields:
+            value = tune.get(field, 0)
+            if type(value) is not int or value < 0 or value > 2**63 - 1:
+                raise BaoError("invalid_source_auth_mount_lockout_counter")
         lockout_disabled = True
-    elif lockout is not None and not _default_value(lockout):
+    elif any(not _default_value(tune.get(field)) for field in
+             ("user_lockout_disable", *lockout_fields)):
         raise BaoError("auth_mount_lockout_config_not_applicable")
 
     description = _bounded_description(

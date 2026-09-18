@@ -176,6 +176,9 @@ def main(*, scenario_runner=run_scenarios, profile="core-isolation",
               "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
               "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
               "started_at_unix": time.time(), "cases": {}, "scope": scope}
+    if profile == "audit-file-management":
+        result["audit_api_profile"] = "deployment_owned_file_v2"
+        result["supersedes_candidate_only_idempotent_enable_profile"] = True
     try:
         instance.start()
         status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -188,7 +191,8 @@ def main(*, scenario_runner=run_scenarios, profile="core-isolation",
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
-        oracle = start_oracle(port)
+        oracle = (start_oracle(port, audit_file=True)
+                  if profile == "audit-file-management" else start_oracle(port))
         reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"], 8192).decode().strip())
         # Same ordered requests run independently; no protected operation proxies.
         # Preserve both sides even if one rejects early. Equality of two empty

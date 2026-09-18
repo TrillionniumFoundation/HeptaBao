@@ -127,7 +127,7 @@ def main(argv=None):
         sm,tm=canonical_mount(a.source_mount),canonical_mount(a.target_mount); source,target=Client.from_env(a.source_prefix),Client.from_env(a.target_prefix)
         sh,th=source.health(),target.health()
         if sh["version"]!="2.6.2": raise BaoError("unsupported_source_version")
-        distinct_endpoints(source,target,sh,th); records,inv=snapshot_inventory(source,sm); result["objects_checked"]=len(records)
+        distinct_endpoints(source,sh,target,th); records,inv=snapshot_inventory(source,sm); result["objects_checked"]=len(records)
         binding={"profile":SCHEMA,"source_identity":{"cluster_id":sh["cluster_id"],"version":sh["version"],"namespace":source.namespace,"mount":sm},"target_identity":{"cluster_id":th["cluster_id"],"version":th["version"],"namespace":target.namespace,"mount":tm},"inventory_digest":inv}
         checkpoint=None
         if a.apply:

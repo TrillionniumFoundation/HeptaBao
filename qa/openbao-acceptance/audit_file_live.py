@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Exercise the bounded ``sys/audit`` file-device management profile.
 
-The profile proves the real API binding to the process-owned authenticated
-file sink. HTTP, socket and syslog devices remain unsupported and are not
-represented as compatibility claims.
+Both real processes have a deployment-configured file device. Standard per-device
+GET and duplicate enable must match the exact upstream refusals; list/readback
+must preserve the configured device. HeptaBao's separate internal idempotent
+binding extension is not presented as OpenBao behavior. Other audit device
+profiles remain separate, and this profile grants no compatibility authority.
 """
 from __future__ import annotations
 
@@ -37,15 +39,15 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
         raise ScenarioFailure("audit_file.path_present")
     results.append({"case": "audit_file.path_present", "passed": True})
 
-    detail = check("audit_file.read", call("GET", "sys/audit/file"), 200)
-    if detail.get("data", {}).get("options", {}).get("file_path") != file_path:
+    check("audit_file.detail_read_rejected", call("GET", "sys/audit/file"), 405)
+    check("audit_file.duplicate_enable_rejected", call(
+        "PUT", "sys/audit/file", {"type": "file", "options": {"file_path": file_path}}
+    ), 400)
+    check("audit_file.disable_rejected", call("DELETE", "sys/audit/file"), 400)
+    after = check("audit_file.readback", call("GET", "sys/audit"), 200)
+    if after.get("data", {}).get("file/", {}) != device:
         raise ScenarioFailure("audit_file.read_binding")
     results.append({"case": "audit_file.read_binding", "passed": True})
-
-    check("audit_file.enable_idempotent", call(
-        "PUT", "sys/audit/file", {"type": "file", "options": {"file_path": file_path}}
-    ), 204)
-    check("audit_file.disable_rejected", call("DELETE", "sys/audit/file"), 400)
     return results
 
 
@@ -53,7 +55,7 @@ def main() -> int:
     return core_isolation.main(
         scenario_runner=run_scenarios,
         profile="audit-file-management",
-        scope="sys_audit_list_read_idempotent_enable_and_fail_closed_disable",
+        scope="deployment_configured_file_list_exact_api_refusals_and_unchanged_readback",
         runner_path=Path(__file__),
     )
 

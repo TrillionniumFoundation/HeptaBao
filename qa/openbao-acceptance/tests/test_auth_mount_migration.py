@@ -127,12 +127,10 @@ class SourceFixture:
                         "max_lease_ttl": 300,
                         "force_no_cache": False,
                         "token_type": "default-service",
-                        "user_lockout_config": {
-                            "lockout_disable": self.lockout_disable,
-                            "lockout_threshold": "5",
-                            "lockout_duration": "15m",
-                            "lockout_counter_reset": "15m",
-                        },
+                        "user_lockout_disable": self.lockout_disable,
+                        "user_lockout_threshold": 5,
+                        "user_lockout_duration": 900,
+                        "user_lockout_counter_reset_duration": 900,
                     }
                 },
             )
@@ -244,6 +242,30 @@ class AuthMountMigrationTests(unittest.TestCase):
             SourceFixture(True), "migration-approle"
         )
         self.assertTrue(accepted["source_user_lockout_disabled"])
+
+    def test_lockout_readback_is_flat_strict_and_cannot_be_spoofed(self):
+        class ChangedSource(SourceFixture):
+            def __init__(self, changes):
+                super().__init__(True)
+                self.changes = changes
+
+            def request(self, method, path, payload=None):
+                response = super().request(method, path, payload)
+                if path.endswith("/tune"):
+                    response.body["data"].update(self.changes)
+                return response
+
+        for changes in (
+            {"user_lockout_disable": "true"},
+            {"user_lockout_disable": 1},
+            {"user_lockout_disable": None},
+            {"user_lockout_threshold": -1},
+            {"user_lockout_duration": True},
+            {"user_lockout_counter_reset_duration": "0"},
+            {"user_lockout_config": {"lockout_disable": True}},
+        ):
+            with self.subTest(changes=changes), self.assertRaises(BaoError):
+                read_source_record(ChangedSource(changes), "migration-approle")
 
     def test_checkpoint_binding_cannot_change(self):
         with tempfile.TemporaryDirectory() as directory:

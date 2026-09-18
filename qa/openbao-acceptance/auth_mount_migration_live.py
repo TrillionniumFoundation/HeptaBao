@@ -209,11 +209,9 @@ def run(binary, output):
                 source_tune.get("default_lease_ttl") == 120
                 and source_tune.get("max_lease_ttl") == 300,
             )
-            source_lockout = source_tune.get("user_lockout_config")
             check(
                 "source_user_lockout_explicitly_disabled",
-                isinstance(source_lockout, dict)
-                and source_lockout.get("lockout_disable") is True,
+                source_tune.get("user_lockout_disable") is True,
             )
 
             check(
