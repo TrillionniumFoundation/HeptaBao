@@ -66,15 +66,24 @@ impl ReplicatedStateProposal {
         digest: [u8; 32],
         sealed: Vec<u8>,
     ) -> Result<Self, ReplicatedStateError> {
-        if operation_id.is_empty()
-            || operation_id.len() > MAX_OPERATION_ID_BYTES
-            || !operation_id.bytes().all(|byte| {
-                byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':')
-            })
-            || digest == [0; 32]
-            || sealed.len() < HEADER_BYTES + TAG_BYTES
-            || sealed.len() > HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES
-        {
+        validate_operation_id(&operation_id)?;
+        let valid_sealed_size = if sealed.starts_with(MAGIC) {
+            (HEADER_BYTES + TAG_BYTES..=HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES)
+                .contains(&sealed.len())
+        } else if sealed.starts_with(MANIFEST_MAGIC) {
+            let max_manifest_body =
+                10 + MAX_REPLICATED_STATE_CHUNKS * (2 + 1 + 4 + DIGEST_BYTES);
+            (MANIFEST_HEADER_BYTES + TAG_BYTES
+                ..=MANIFEST_HEADER_BYTES + max_manifest_body + TAG_BYTES)
+                .contains(&sealed.len())
+        } else if sealed.starts_with(CHUNK_MAGIC) {
+            (CHUNK_HEADER_BYTES + 1 + TAG_BYTES
+                ..=CHUNK_HEADER_BYTES + REPLICATED_STATE_CHUNK_BYTES + TAG_BYTES)
+                .contains(&sealed.len())
+        } else {
+            false
+        };
+        if digest == [0; 32] || !valid_sealed_size {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         Ok(Self {
