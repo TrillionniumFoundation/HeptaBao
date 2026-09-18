@@ -46,6 +46,7 @@ impl EngineState {
             state.mounts.values().any(|mount| match &mount.backend {
                 Backend::Ssh(engine) => !engine.leases.is_empty(),
                 Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
+                Backend::Kubernetes(engine) => engine.has_unresolved(),
                 _ => false,
             })
         })
@@ -56,7 +57,12 @@ impl EngineState {
                 state
                     .mounts
                     .values()
-                    .any(|mount| matches!(mount.backend, Backend::Ssh(_) | Backend::Pki(_)))
+                    .any(|mount| {
+                        matches!(
+                            mount.backend,
+                            Backend::Ssh(_) | Backend::Pki(_) | Backend::Kubernetes(_)
+                        )
+                    })
             })
     }
     pub(crate) fn validate_lease_state(&self) -> Result<()> {
@@ -65,6 +71,7 @@ impl EngineState {
                 match &mount.backend {
                     Backend::Ssh(engine) => engine.validate(name, self.lease_clock)?,
                     Backend::Pki(engine) => engine.validate(name, self.lease_clock)?,
+                    Backend::Kubernetes(engine) => engine.validate()?,
                     _ => {}
                 }
             }
