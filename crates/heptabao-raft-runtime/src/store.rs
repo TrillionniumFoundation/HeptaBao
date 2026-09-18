@@ -23,6 +23,8 @@ const LOG_MAGIC: [u8; 8] = *b"HBRLOG01";
 const LOG_JOURNAL_MAGIC: [u8; 8] = *b"HBRLJ001";
 const LOG_EVENT_MAGIC: [u8; 8] = *b"HBRLE001";
 const STATE_BUNDLE_MAGIC: [u8; 8] = *b"HBRSB001";
+const STATE_JOURNAL_MAGIC: [u8; 8] = *b"HBRSJ001";
+const STATE_EVENT_MAGIC: [u8; 8] = *b"HBRSE001";
 const INITIALIZATION_MAGIC: [u8; 8] = *b"HBRINI01";
 const INITIALIZATION_MARKER_FILE: &str = "initialized.bin";
 const LOG_DOMAIN: &str = "raft-log";
@@ -913,6 +915,8 @@ struct PersistentSnapshot {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct PersistentStateBundle {
     format_version: u16,
+    #[serde(default)]
+    journal_format: u16,
     generation: u64,
     state: MemStoreStateMachine,
     current_snapshot: Option<PersistentSnapshot>,
@@ -922,11 +926,173 @@ impl Default for PersistentStateBundle {
     fn default() -> Self {
         Self {
             format_version: 1,
+            journal_format: 0,
             generation: 1,
             state: MemStoreStateMachine::default(),
             current_snapshot: None,
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+enum StateJournalEvent {
+    Apply { generation: u64, entry: String },
+}
+
+fn state_journal_path(bundle_path: &Path) -> PathBuf {
+    bundle_path.with_file_name("state-machine.journal")
+}
+
+fn initialize_state_journal(path: &Path) -> io::Result<()> {
+    atomic_write_raw(path, &STATE_JOURNAL_MAGIC)
+}
+
+fn append_state_journal(path: &Path, event: &StateJournalEvent) -> io::Result<()> {
+    if !regular_file_status(path, "raft state-machine delta journal")? {
+        return Err(invalid("raft state-machine delta journal is missing"));
+    }
+    let payload = serde_json::to_vec(event).map_err(|error| invalid(error.to_string()))?;
+    if payload.len() > 16 * 1024 * 1024 {
+        return Err(invalid("raft state-machine delta event exceeds 16 MiB"));
+    }
+    let frame = encode_envelope(STATE_EVENT_MAGIC, &payload)?;
+    let mut file = OpenOptions::new().append(true).open(path)?;
+    file.write_all(&frame)?;
+    file.flush()?;
+    file.sync_all()
+}
+
+fn apply_state_entry(
+    state: &mut MemStoreStateMachine,
+    entry: &EntryOf<TypeConfig>,
+) -> ClientResponse {
+    state.last_applied_log = Some(entry.log_id);
+    match &entry.payload {
+        EntryPayload::Blank => ClientResponse(None),
+        EntryPayload::Normal(data) => {
+            let previous = state
+                .client_status
+                .insert(data.client.clone(), data.status.clone());
+            ClientResponse(previous)
+        }
+        EntryPayload::Membership(membership) => {
+            state.last_membership = StoredMembershipOf::<TypeConfig>::new(
+                Some(entry.log_id),
+                membership.clone(),
+            );
+            ClientResponse(None)
+        }
+    }
+}
+
+fn apply_state_journal_event(
+    bundle: &mut PersistentStateBundle,
+    event: StateJournalEvent,
+) -> io::Result<Option<ClientResponse>> {
+    match event {
+        StateJournalEvent::Apply { generation, entry } => {
+            let entry: EntryOf<TypeConfig> =
+                serde_json::from_str(&entry).map_err(|error| invalid(error.to_string()))?;
+            if generation <= bundle.generation {
+                let checkpoint_index = bundle
+                    .state
+                    .last_applied_log
+                    .map(|log_id| log_id.index)
+                    .ok_or_else(|| invalid("checkpoint generation covers no applied log"))?;
+                if entry.log_id.index > checkpoint_index {
+                    return Err(invalid(
+                        "checkpoint generation claims an unapplied state-machine event",
+                    ));
+                }
+                return Ok(None);
+            }
+            let expected_generation = bundle.next_generation()?;
+            if generation != expected_generation {
+                return Err(invalid(format!(
+                    "state-machine journal generation gap: expected {expected_generation}, observed {generation}"
+                )));
+            }
+            if let Some(previous) = bundle.state.last_applied_log {
+                let expected_index = previous
+                    .index
+                    .checked_add(1)
+                    .ok_or_else(|| invalid("state-machine log index overflow"))?;
+                if entry.log_id.index != expected_index {
+                    return Err(invalid(format!(
+                        "state-machine journal log gap: expected {expected_index}, observed {}",
+                        entry.log_id.index
+                    )));
+                }
+            }
+            let response = apply_state_entry(&mut bundle.state, &entry);
+            bundle.generation = generation;
+            Ok(Some(response))
+        }
+    }
+}
+
+fn replay_state_journal(
+    path: &Path,
+    bundle: &mut PersistentStateBundle,
+) -> io::Result<()> {
+    let mut file = File::open(path)?;
+    let metadata = file.metadata()?;
+    if metadata.len() > 256 * 1024 * 1024 {
+        return Err(invalid("raft state-machine delta journal exceeds 256 MiB"));
+    }
+    let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
+    file.read_to_end(&mut bytes)?;
+    if bytes.len() < STATE_JOURNAL_MAGIC.len() || bytes[..8] != STATE_JOURNAL_MAGIC {
+        return Err(invalid("raft state-machine delta journal magic mismatch"));
+    }
+    let mut offset = STATE_JOURNAL_MAGIC.len();
+    let mut last_good = offset;
+    while offset < bytes.len() {
+        if bytes.len() - offset < 16 {
+            break;
+        }
+        if bytes[offset..offset + 8] != STATE_EVENT_MAGIC {
+            return Err(invalid("raft state-machine delta event magic mismatch"));
+        }
+        let length = usize::try_from(u64::from_le_bytes(
+            bytes[offset + 8..offset + 16]
+                .try_into()
+                .map_err(|_| invalid("invalid state-machine event length"))?,
+        ))
+        .map_err(|_| invalid("state-machine event length overflow"))?;
+        if length > 16 * 1024 * 1024 {
+            return Err(invalid("raft state-machine delta event exceeds 16 MiB"));
+        }
+        let frame_len = 16_usize
+            .checked_add(length)
+            .and_then(|value| value.checked_add(4))
+            .ok_or_else(|| invalid("state-machine event size overflow"))?;
+        if bytes.len() - offset < frame_len {
+            break;
+        }
+        let payload = &bytes[offset + 16..offset + 16 + length];
+        let stored_crc = u32::from_le_bytes(
+            bytes[offset + 16 + length..offset + frame_len]
+                .try_into()
+                .map_err(|_| invalid("invalid state-machine event checksum"))?,
+        );
+        if crc32(payload) != stored_crc {
+            return Err(invalid("raft state-machine delta event checksum mismatch"));
+        }
+        let event: StateJournalEvent =
+            serde_json::from_slice(payload).map_err(|error| invalid(error.to_string()))?;
+        let _ = apply_state_journal_event(bundle, event)?;
+        offset += frame_len;
+        last_good = offset;
+    }
+    if last_good != bytes.len() {
+        let mut file = OpenOptions::new().write(true).open(path)?;
+        file.set_len(
+            u64::try_from(last_good).map_err(|_| invalid("state journal offset overflow"))?,
+        )?;
+        file.sync_all()?;
+    }
+    bundle.validate()
 }
 
 impl PersistentStateBundle {
@@ -937,7 +1103,10 @@ impl PersistentStateBundle {
     }
 
     fn validate(&self) -> io::Result<()> {
-        if self.format_version != 1 || self.generation == 0 {
+        if self.format_version != 1
+            || self.journal_format > 1
+            || self.generation == 0
+        {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
         if let Some(snapshot) = &self.current_snapshot {
