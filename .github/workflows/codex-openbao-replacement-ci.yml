@@ -270,6 +270,39 @@ jobs:
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
+      - name: Compare operational Agent and Proxy behavior with official OpenBao
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          candidate="$RUNNER_TEMP/heptabao-runtime-profile-evidence/agent-proxy-helper.json"
+          test -s "$candidate"
+          reports="$RUNNER_TEMP/heptabao-agent-proxy-differential"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --oracle \
+            --output "$reports/oracle.json"
+          python qa/openbao-acceptance/compare_operational_reports.py \
+            --candidate "$candidate" \
+            --oracle "$reports/oracle.json" \
+            --output "$reports/comparison.json"
+          python - "$reports/comparison.json" <<'PY'
+          import json, pathlib, sys
+          report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["matched"] is True
+          assert report["common_observations"] >= 49
+          assert report["full_openbao_compatibility"] is False
+          assert report["independent_qualification"] is False
+          assert report["production_authority"] is False
+          print(json.dumps(report, sort_keys=True, separators=(",", ":")))
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise online authentication and durable cross-node code consumption
         shell: bash
         env:
