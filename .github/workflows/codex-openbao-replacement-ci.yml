@@ -137,6 +137,18 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
+      - name: Exercise repeated replay-epoch retirement across real leader failover
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/replay_epoch_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --work-dir "$RUNNER_TEMP/heptabao-replay-epoch-ha"
+
       - name: Exercise real encrypted-link network partitions
         shell: bash
         run: |
@@ -200,6 +212,51 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Differentially exercise Agent and Proxy against official OpenBao 2.6.2
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-agent-proxy-differential"
+          mkdir -m 700 "$reports"
+          binary="$PWD/target/debug/heptabao-server"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" --output "$reports/candidate.json"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" --oracle --output "$reports/oracle.json"
+          python qa/openbao-acceptance/compare_operational_reports.py \
+            --candidate "$reports/candidate.json" \
+            --oracle "$reports/oracle.json" \
+            --output "$reports/comparison.json"
+          python - "$reports/comparison.json" <<'PY'
+          import json, pathlib, sys
+          report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["matched"] is True
+          assert report["common_observations"] >= 49
+          assert report["full_openbao_compatibility"] is False
+          assert report["independent_qualification"] is False
+          assert report["production_authority"] is False
+          PY
+
+      - name: Rehearse bounded ACL policy migration from official OpenBao 2.6.2
+        if: ${{ success() || failure() }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-policy-migration"
+          mkdir -m 700 "$reports"
+          timeout 300 python qa/openbao-acceptance/policy_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/policy.json"
 
       - name: Exercise online authentication and durable cross-node code consumption
         if: ${{ success() || failure() }}
