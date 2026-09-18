@@ -92,7 +92,7 @@ The read-only V2.1 workflows validate the immutable exact PR head and the real p
 
 ## Documentation
 
-Current source facts: `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+Current source facts are derived from the exact Git tree by `scripts/current_source_inventory.py`; `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is only the fail-closed receipt-policy marker.
 See `docs/modules/CURRENT_SOURCE_BINDING.md` for reproducible current API/test
 projections and the separation from frozen V1.4.7 evidence.
 
