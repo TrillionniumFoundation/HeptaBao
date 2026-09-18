@@ -58,21 +58,14 @@ def validate(root: Path = ROOT) -> list[str]:
         # authenticated replay epoch. Matching the legacy epoch-0 wrapper is not
         # sufficient after replay retirement because it would reject every write
         # following an epoch transition.
-        epoch_read = re.search(
-            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);",
-            service_source,
-        )
-        target_guard = re.search(
-            r"if\s+replay_epoch\s*!=\s*target_replay_epoch\s*\{",
-            service_source,
-        )
-        epoch_compaction_call = re.search(
+        epoch_compaction_writer = re.compile(
+            r"let\s+replay_epoch\s*=\s*durable\.replay_epoch\(\);\s*"
+            r"if\s+compact_before_entry\s*\{\s*"
             r"durable\.apply_batch_with_compaction_in_replay_epoch\(\s*"
             r"replay_epoch\s*,",
-            service_source,
             re.S,
         )
-        if epoch_read is None or target_guard is None or epoch_compaction_call is None:
+        if epoch_compaction_writer.search(service_source) is None:
             problems.append(
                 'atomic batch compaction is not bound to the current replay epoch in the real Service writer'
             )
