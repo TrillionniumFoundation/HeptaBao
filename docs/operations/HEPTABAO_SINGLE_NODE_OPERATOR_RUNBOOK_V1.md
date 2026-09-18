@@ -29,7 +29,9 @@ Illustrative configuration with synthetic paths (supply real certificate files a
   "rate_limit_per_second": 200,
   "rate_limit_burst": 400,
   "rate_limit_entries": 4096,
-  "audit": {"segment_bytes": 33554432, "retained_segments": 8}
+  "audit": {"segment_bytes": 33554432, "retained_segments": 8},
+  "outbound_endpoints": [],
+  "audit_http_url": null
 }
 ```
 
@@ -80,7 +82,7 @@ rollback-protection provider. Consult the detailed Identity and server guides.
 |---|---|---|
 | HTTP headers / normal body | 16 KiB / 256 KiB | Send one canonical JSON request per connection; chunked/pipelined requests are rejected |
 | Snapshot request / response body | 32 MiB / 32 MiB | Snapshot-specific JSON/base64 transfer still has the smaller decoded limit below |
-| Serialized Service state | 768 KiB | Remove obsolete data/credentials using authenticated APIs; compaction alone cannot shrink live secrets |
+| Serialized logical Service state | 16 MiB, published as 512 KiB immutable chunks plus one manifest | This removes the legacy 768 KiB single-value ceiling but not whole-state serialization/write amplification; use capacity preflight and measured growth curves rather than raising the bound |
 | Retained durable operation identities | 32,000 | Compact the journal when needed; compaction retains replay identities and does not reset this limit |
 | Durable journal | 64 MiB | Root `POST /v1/sys/storage/raft/compact` with `{}`; inspect returned generation and before/after byte counts |
 | Decoded backup transfer | 20 MiB | Export fails with 507 above the limit; keep size headroom before a restore drill |
@@ -88,6 +90,32 @@ rollback-protection provider. Consult the detailed Identity and server guides.
 | Retained sealed audit segments | 1–64, default 8, plus active segment | Archive sealed segments externally before retention removes older records |
 
 Capacity or filesystem failure is not permission to continue unrecorded requests. New durable writes can fail before entry with 507; an unavailable audit path can block reads, health and denied attempts as well. A finite-use token may already have consumed its admitted use before a subsequent ACL or state-capacity rejection. Alert externally on byte/inode headroom and failed operations; there is no integrated metrics exporter or background retention daemon for general token/lease models.
+
+## Optional mandatory HTTPS audit collector
+
+A deployment may pair the mandatory authenticated file audit with one fixed HTTPS
+collector by adding an `outbound_endpoints` entry and `audit_http_url` to
+`server.json` **before unseal**. The audit URL must resolve through that exact
+host-enrolled origin/address/server-name/CA/path-prefix tuple. Do not expose a
+generic Internet origin or a root `/` path. Runtime `sys/audit/http` requests may
+inspect the device but cannot replace, redirect or disable it.
+
+Each admitted audit record is serialized once, appended and `fsync`ed to the local
+authenticated JSONL chain, then delivered exactly once to the configured collector
+with a three-second absolute egress deadline. Redirects, unenrolled destinations,
+invalid TLS, malformed responses, oversized responses and collector errors fail
+closed; no automatic retry is performed because the collector may already have
+accepted the record. The process fences further audit admission after such a
+failure.
+
+A remote delivery failure therefore creates an intentional reconciliation case:
+the local authenticated chain can contain a record that the remote collector did
+not receive. Preserve the local chain and treat any remote sequence gap as an
+incident. Restart only after restoring the same trusted collector configuration
+or making an explicit operator decision to run without that optional device.
+Restart does not silently replay the missing remote record. This profile provides
+a bounded synchronous HTTPS device, not complete dynamic OpenBao audit-device
+configuration/batching/backpressure compatibility.
 
 ## Authenticated audit rotation and retention
 
