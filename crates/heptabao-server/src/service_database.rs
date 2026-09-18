@@ -96,6 +96,18 @@ pub(super) struct DatabaseEffectPlan {
     lease: DatabaseLease,
 }
 
+pub(super) struct DatabaseMaintenance {
+    fingerprint: String,
+    now: u64,
+    plan: DatabaseEffectPlan,
+}
+
+impl DatabaseMaintenance {
+    pub(super) fn execute(&self) -> Result<(), Response> {
+        self.plan.execute()
+    }
+}
+
 impl DatabaseEffectPlan {
     /// Execute only the remote provider side effect and readback. This value is
     /// fully owned so callers may drop the global Service writer while the
@@ -1086,16 +1098,20 @@ impl Service {
                 .is_ok_and(|p| !p.disabled)
         })
     }
-    /// A tick attempts at most one provider operation; it never drops a pending
-    /// record, retries issuance, or labels a failed revoke as completed.
-    pub(super) fn maintain_database(&mut self, now: u64) -> Result<bool, &'static str> {
+    /// Stage at most one provider reconciliation while holding the Service
+    /// writer. The returned plan owns everything required for remote I/O so the
+    /// lifecycle worker can release the writer before provider entry.
+    pub(super) fn prepare_database_maintenance(
+        &mut self,
+        now: u64,
+    ) -> Result<Option<DatabaseMaintenance>, &'static str> {
         if self.state.is_none() || self.recovery_required || self.audit_failed {
-            return Ok(false);
+            return Ok(None);
         }
         if let Some(ha) = &self.ha {
             let ha = ha.lock().map_err(|_| "provider HA lock unavailable")?;
             if !ha.is_leader().map_err(|_| "provider leader unavailable")? {
-                return Ok(false);
+                return Ok(None);
             }
             drop(ha);
             self.sync_from_ha()
@@ -1130,7 +1146,7 @@ impl Service {
             self.database_cursor = selected.clone();
         }
         let Some((ns, mount, id)) = selected else {
-            return Ok(false);
+            return Ok(None);
         };
         let fingerprint = self.request_fingerprint("INTERNAL", "database/reconcile", &ns, "");
         self.audit_event("provider-request", &fingerprint, now, None)
@@ -1146,14 +1162,25 @@ impl Service {
             .pending_database_effect
             .take()
             .ok_or("provider plan unavailable")?;
-        let provider_result = plan.execute();
-        let response = self.finalize_database_effect(&plan, provider_result);
+        Ok(Some(DatabaseMaintenance {
+            fingerprint,
+            now,
+            plan,
+        }))
+    }
+
+    pub(super) fn finish_database_maintenance(
+        &mut self,
+        pending: DatabaseMaintenance,
+        provider_result: Result<(), Response>,
+    ) -> Result<bool, &'static str> {
+        let response = self.finalize_database_effect(&pending.plan, provider_result);
         let completed = response.status < 300;
         if self
             .audit_event(
                 "provider-response",
-                &fingerprint,
-                now,
+                &pending.fingerprint,
+                pending.now,
                 Some(if completed { 204 } else { 503 }),
             )
             .is_err()
@@ -1166,6 +1193,7 @@ impl Service {
         }
         Ok(true)
     }
+
 }
 
 #[cfg(test)]
