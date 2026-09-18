@@ -40,6 +40,53 @@ class ReplayEpochCluster(Cluster):
             raise FixtureError("replay_retirement_not_raft_coordinated")
         return data
 
+    def wait_voters_at_leader_frontier(self, leader: Node, scenario: str) -> None:
+        deadline = time.monotonic() + 30
+        while time.monotonic() < deadline:
+            try:
+                status, body = leader.call(
+                    "GET",
+                    "sys/storage/raft/autopilot/state",
+                    token=self.root_token,
+                    timeout=5,
+                )
+            except (OSError, urllib.error.URLError, TimeoutError):
+                time.sleep(0.1)
+                continue
+            data = body.get("data") if isinstance(body, dict) else None
+            if status != 200 or not isinstance(data, dict):
+                time.sleep(0.1)
+                continue
+            voters = data.get("voters")
+            servers = data.get("servers")
+            if not isinstance(voters, list) or not isinstance(servers, dict) or len(voters) < 2:
+                time.sleep(0.1)
+                continue
+            leader_rows = [
+                row for row in servers.values()
+                if isinstance(row, dict) and row.get("status") == "leader"
+            ]
+            if len(leader_rows) != 1 or type(leader_rows[0].get("last_index")) is not int:
+                time.sleep(0.1)
+                continue
+            frontier = leader_rows[0]["last_index"]
+            caught_up = True
+            for voter in voters:
+                row = servers.get(str(voter))
+                if (
+                    not isinstance(row, dict)
+                    or row.get("healthy") is not True
+                    or type(row.get("last_index")) is not int
+                    or row["last_index"] < frontier
+                ):
+                    caught_up = False
+                    break
+            if caught_up:
+                self.check(scenario, True)
+                return
+            time.sleep(0.1)
+        raise FixtureError("voters_not_caught_up_to_leader_frontier")
+
     def retire_epoch(self, leader: Node, expected_previous: int, scenario: str) -> int:
         status, body = leader.call(
             "POST",
@@ -166,6 +213,10 @@ class ReplayEpochCluster(Cluster):
         self.check(
             "second_retirement_converged_on_active_leader",
             second_capacity["replay_epoch"] == second_epoch,
+        )
+        self.wait_voters_at_leader_frontier(
+            second_leader,
+            "all_voters_caught_up_after_second_retirement",
         )
         second_leader.stop()
         final_leader = self.leader()
