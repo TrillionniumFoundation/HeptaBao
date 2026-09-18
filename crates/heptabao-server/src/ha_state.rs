@@ -38,7 +38,6 @@ pub struct ReplicatedStateProposal {
     sealed: Vec<u8>,
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ReplicatedChunkRef {
     pub index: u16,
@@ -71,8 +70,7 @@ impl ReplicatedStateProposal {
             (HEADER_BYTES + TAG_BYTES..=HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES)
                 .contains(&sealed.len())
         } else if sealed.starts_with(MANIFEST_MAGIC) {
-            let max_manifest_body =
-                10 + MAX_REPLICATED_STATE_CHUNKS * (2 + 1 + 4 + DIGEST_BYTES);
+            let max_manifest_body = 10 + MAX_REPLICATED_STATE_CHUNKS * (2 + 1 + 4 + DIGEST_BYTES);
             (MANIFEST_HEADER_BYTES + TAG_BYTES
                 ..=MANIFEST_HEADER_BYTES + max_manifest_body + TAG_BYTES)
                 .contains(&sealed.len())
@@ -369,9 +367,7 @@ impl ClusterStateCodec {
                 .open_committed_parts(operation_id, digest, sealed)
                 .map(CommittedStateDescriptor::Legacy);
         }
-        if sealed.len() < MANIFEST_HEADER_BYTES + TAG_BYTES
-            || !sealed.starts_with(MANIFEST_MAGIC)
-        {
+        if sealed.len() < MANIFEST_HEADER_BYTES + TAG_BYTES || !sealed.starts_with(MANIFEST_MAGIC) {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         validate_operation_id(operation_id)?;
@@ -572,9 +568,9 @@ impl fmt::Debug for ClusterStateCodec {
 fn validate_operation_id(operation_id: &str) -> Result<(), ReplicatedStateError> {
     if operation_id.is_empty()
         || operation_id.len() > MAX_OPERATION_ID_BYTES
-        || !operation_id.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':')
-        })
+        || !operation_id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
     {
         return Err(ReplicatedStateError::InvalidEnvelope);
     }
@@ -596,10 +592,7 @@ fn validate_manifest_parts(
     }
     let mut observed = 0_usize;
     for (position, chunk) in chunks.iter().enumerate() {
-        if usize::from(chunk.index) != position
-            || chunk.slot > 1
-            || chunk.digest == [0; 32]
-        {
+        if usize::from(chunk.index) != position || chunk.slot > 1 || chunk.digest == [0; 32] {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         let bytes = usize::try_from(chunk.bytes).map_err(|_| ReplicatedStateError::InvalidState)?;
