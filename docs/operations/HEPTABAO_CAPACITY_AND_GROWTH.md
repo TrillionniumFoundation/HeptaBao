@@ -14,12 +14,15 @@ The shared serialized-state admission bound is **16 MiB**, and HA replication us
 that same bound. A point mutation can still serialize and replicate the complete
 logical state, so this is bounded chunking rather than record-oriented scalability.
 
-The active replay ledger admits at most **32,000 identities per epoch**. In
-single-node mode a root-authorized replay retirement operation creates a durable
-authenticated generation frontier, advances the replay epoch, checkpoints the
-journal and allows new identities without making retired requests fresh again.
-HA mode deliberately rejects replay retirement until a coordinated cluster epoch
-transition is implemented and qualified. Each underlying durable file/journal is
+The active replay ledger admits at most **32,000 identities per epoch**. A
+root-authorized replay retirement operation creates a durable authenticated
+generation frontier, advances the replay epoch, checkpoints the journal and
+allows new identities without making retired requests fresh again. In HA, the
+leader first orders the next epoch through Raft; each voter advances its local
+durable replay owner before publishing application state for that committed epoch.
+A follower that was offline across several already-committed retirements advances
+through each missing local epoch during authoritative catch-up; ordinary local
+writes remain unable to skip epochs. Each underlying durable file/journal is
 bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 
 `GET /v1/sys/internal/capacity` accepts an empty request object and reports:
@@ -83,12 +86,15 @@ retired-through generation, checkpoints that state, and returns the previous and
 current epoch plus retired counts. Restart, crash-window and encrypted
 backup/restore tests verify that requests from the retired epoch remain rejected.
 
-When HA is enabled the route returns 409. Retiring one node's active set without a
-quorum-ordered epoch transition could permit replicas to disagree about whether a
-stale request is a duplicate, so HA retirement remains a replacement blocker.
-The required cluster protocol must order the epoch/frontier through consensus,
-apply it on every voter before old identities are discarded, survive leader loss,
-snapshot install and stale-node rejoin, and reject delayed old-epoch traffic.
+When HA is enabled the route performs a quorum-ordered transition: the leader
+commits the next epoch as authoritative Raft application state, and local durable
+replay owners retire before that epoch is published on each node. Normal requests
+cannot manufacture an epoch jump. Authoritative catch-up may advance a stale node
+through multiple already-committed epochs, one local retirement at a time, so a
+node that missed several transitions can rejoin without weakening the replay
+frontier. Repository-controlled tests exercise repeated retirement and leadership
+change; snapshot-install, directed-partition, disk/power-fault, mixed-version and
+multi-host qualification remain separate exits.
 
 ## Executable evidence
 
@@ -114,7 +120,8 @@ Chunking removes the obsolete single-value 768 KiB ceiling but does not remove
 whole-state serialization or whole-state Raft proposals. Production-scale closure
 still requires record ownership or another demonstrated architecture whose write
 amplification, peak memory, snapshot streaming and recovery cost remain bounded as
-the dataset grows. It also requires the coordinated HA replay-epoch protocol above.
+the dataset grows. The implemented HA replay-epoch protocol still requires the
+fault, snapshot, upgrade and multi-host qualification cases listed below.
 
 Before admission, exercise total datasets materially above the legacy ceiling,
 long write histories beyond one replay epoch, leader/follower catch-up,
