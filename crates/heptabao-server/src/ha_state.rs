@@ -882,6 +882,95 @@ mod tests {
     }
 
     #[test]
+    fn legacy_hbsm2_manifest_remains_readable_for_online_upgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let codec = ClusterStateCodec::new("cluster-hbsm2", [17; 32])?;
+        let base = [6; 32];
+        let state = vec![0x41; REPLICATED_STATE_CHUNK_BYTES + 31];
+        let refs = state
+            .chunks(REPLICATED_STATE_CHUNK_BYTES)
+            .enumerate()
+            .map(|(position, chunk)| {
+                Ok::<_, Box<dyn std::error::Error>>(ReplicatedChunkRef {
+                    index: u16::try_from(position)?,
+                    slot: u8::try_from(position % 2)?,
+                    bytes: u32::try_from(chunk.len())?,
+                    digest: sha256(chunk),
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        validate_manifest_parts_v2(u64::try_from(state.len())?, &refs)?;
+        let body = encode_manifest_body(u64::try_from(state.len())?, &refs)?;
+        let digest = sha256(&state);
+        let operation = "legacy-hbsm2";
+        let aad = codec.manifest_aad_with_magic(MANIFEST_MAGIC_V2, operation, base, digest)?;
+        let nonce = [3_u8; NONCE_BYTES];
+        let mut ciphertext = body;
+        codec.key.seal_in_place_append_tag(
+            aead::Nonce::assume_unique_for_key(nonce),
+            aead::Aad::from(aad),
+            &mut ciphertext,
+        )?;
+        let mut sealed = Vec::new();
+        sealed.extend_from_slice(MANIFEST_MAGIC_V2);
+        sealed.extend_from_slice(&base);
+        sealed.extend_from_slice(&nonce);
+        sealed.extend_from_slice(&ciphertext);
+        let proposal = ReplicatedStateProposal::new(operation.to_owned(), digest, sealed)?;
+        let descriptor = codec.open_committed_descriptor(
+            proposal.operation_id(),
+            proposal.digest(),
+            proposal.sealed(),
+        )?;
+        match descriptor {
+            CommittedStateDescriptor::Chunked(manifest) => {
+                assert_eq!(manifest.base_digest, base);
+                assert_eq!(manifest.state_digest, digest);
+                assert_eq!(manifest.chunks, refs);
+            }
+            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM2 manifest".into()),
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn hbsm3_manifest_allows_logical_order_independent_of_physical_index()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let codec = ClusterStateCodec::new("cluster-hbsm3", [19; 32])?;
+        let base = [8; 32];
+        let first = vec![0x31; 97];
+        let second = vec![0x52; 113];
+        let mut state = first.clone();
+        state.extend_from_slice(&second);
+        let refs = vec![
+            ReplicatedChunkRef {
+                index: 17,
+                slot: 1,
+                bytes: u32::try_from(first.len())?,
+                digest: sha256(&first),
+            },
+            ReplicatedChunkRef {
+                index: 3,
+                slot: 0,
+                bytes: u32::try_from(second.len())?,
+                digest: sha256(&second),
+            },
+        ];
+        let proposal = codec.seal_manifest("hbsm3-index-order", base, &state, refs.clone())?;
+        assert!(proposal.sealed().starts_with(MANIFEST_MAGIC));
+        let descriptor = codec.open_committed_descriptor(
+            proposal.operation_id(),
+            proposal.digest(),
+            proposal.sealed(),
+        )?;
+        match descriptor {
+            CommittedStateDescriptor::Chunked(manifest) => assert_eq!(manifest.chunks, refs),
+            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM3 manifest".into()),
+        }
+        Ok(())
+    }
+
+    #[test]
     fn proposal_round_trip_is_base_fenced_and_authenticated()
     -> Result<(), Box<dyn std::error::Error>> {
         let codec = ClusterStateCodec::new("cluster-a", [9; 32])?;
