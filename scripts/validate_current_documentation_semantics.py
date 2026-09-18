@@ -133,8 +133,11 @@ def validate(root: Path = ROOT) -> list[str]:
                 errors.append(f"runtime map test anchor drift for {name}: {source}::{test}")
             if len(responsibility.strip()) < 20:
                 errors.append(f"runtime map lacks role/route boundary for {name}")
-        if f"**{len(packages)} workspace packages**" not in mapping or f"**{len(closure)}**" not in mapping:
-            errors.append("runtime map package/runtime count narrative drift")
+        # Exact membership and runtime closure are validated structurally above.
+        # Do not require prose to repeat today's numeric crate counts: that turns
+        # ordinary package evolution into documentation/validator ceremony.
+        if "workspace package" not in mapping or "runtime closure" not in mapping:
+            errors.append("runtime map must explain workspace membership and runtime closure")
 
         auth_path = "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
         auth = (root / auth_path).read_text()
