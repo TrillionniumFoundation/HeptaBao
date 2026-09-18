@@ -83,8 +83,7 @@ A package change updates source, tests, guide, capability matrix and blocker evi
 
 ## Current source facts and preserved history
 
-All current workspace packages are bound by
-`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` and the read-only V2 validator.
+All current workspace packages are derived from `Cargo.toml` and checked by the live source inventory plus the read-only V2 validator; `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` carries only receipt policy.
 See `docs/modules/CURRENT_SOURCE_BINDING.md` for details, regeneration and the
 commit/tree receipt boundary. The V1.4.7 inventory and generated guide blocks
 are preserved historical snapshots, not current source authority; their older
