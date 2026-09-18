@@ -136,6 +136,10 @@ pub(crate) struct TokenMetadata {
     pub audiences: Vec<String>,
 }
 
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
 fn err(status: u16, message: &str) -> EngineError {
     EngineError {
         status,
@@ -181,7 +185,7 @@ fn valid_kubernetes_name(value: &str) -> bool {
         })
 }
 
-fn validate_audiences(values: Vec<String>) -> Result<Vec<String>, EngineError> {
+fn validate_audiences(values: Vec<String>) -> std::result::std::result::Result<Vec<String>, EngineError> {
     if values.len() > 16 {
         return Err(err(400, "too many Kubernetes token audiences"));
     }
@@ -199,7 +203,7 @@ fn validate_audiences(values: Vec<String>) -> Result<Vec<String>, EngineError> {
     Ok(values)
 }
 
-fn string_list(value: Option<&Value>, field: &str) -> Result<Vec<String>, EngineError> {
+fn string_list(value: Option<&Value>, field: &str) -> std::result::std::result::Result<Vec<String>, EngineError> {
     let Some(value) = value else {
         return Ok(Vec::new());
     };
@@ -226,7 +230,7 @@ fn string_list(value: Option<&Value>, field: &str) -> Result<Vec<String>, Engine
         .collect()
 }
 
-fn duration(value: Option<&Value>, default: u64) -> Result<u64, EngineError> {
+fn duration(value: Option<&Value>, default: u64) -> std::result::Result<u64, EngineError> {
     let Some(value) = value else {
         return Ok(default);
     };
@@ -278,10 +282,10 @@ fn duration(value: Option<&Value>, default: u64) -> Result<u64, EngineError> {
     Ok(total)
 }
 
-fn config_digest(config: &Config) -> Result<String, EngineError> {
+fn config_digest(config: &Config) -> std::result::std::result::Result<String, EngineError> {
     let bytes = serde_json::to_vec(config)
         .map_err(|_| err(500, "Kubernetes provider configuration encoding failed"))?;
-    Ok(super::hex(&crypto::digest(&bytes)))
+    Ok(hex(&crypto::digest(&bytes)))
 }
 
 fn request_digest(
@@ -291,7 +295,7 @@ fn request_digest(
     ttl: u64,
     audiences: &[String],
     config_digest: &str,
-) -> Result<String, EngineError> {
+) -> std::result::std::result::Result<String, EngineError> {
     let bytes = serde_json::to_vec(&json!({
         "role": role,
         "namespace": namespace,
@@ -301,7 +305,7 @@ fn request_digest(
         "config_digest": config_digest,
     }))
     .map_err(|_| err(500, "Kubernetes token request encoding failed"))?;
-    Ok(super::hex(&crypto::digest(&bytes)))
+    Ok(hex(&crypto::digest(&bytes)))
 }
 
 impl Kubernetes {
@@ -309,7 +313,7 @@ impl Kubernetes {
         !self.pending.is_empty() || !self.leases.is_empty()
     }
 
-    pub(crate) fn validate(&self) -> Result<(), EngineError> {
+    pub(crate) fn validate(&self) -> std::result::Result<(), EngineError> {
         if self.roles.len() > MAX_ROLES
             || self.pending.len() > MAX_PENDING
             || self.leases.len() > MAX_LEASES
@@ -392,7 +396,7 @@ impl Kubernetes {
         relative: &str,
         body: &Value,
         now: u64,
-    ) -> Result<Dispatch, EngineError> {
+    ) -> std::result::Result<Dispatch, EngineError> {
         let mut mutated = self.reconcile(now);
         let body_object = body
             .as_object()
@@ -657,7 +661,7 @@ impl Kubernetes {
                 &audiences,
                 &config_digest,
             )?;
-            let entropy = super::hex(
+            let entropy = hex(
                 &crypto::random::<16>()
                     .map_err(|_| err(503, "operating system randomness unavailable"))?,
             );
@@ -702,7 +706,7 @@ impl Kubernetes {
         &mut self,
         plan: &TokenRequestPlan,
         metadata: TokenMetadata,
-    ) -> Result<EngineResponse, EngineError> {
+    ) -> std::result::Result<EngineResponse, EngineError> {
         let pending = self
             .pending
             .get(&plan.lease_id)
