@@ -51,11 +51,16 @@ class SectionSixIntegrationTests(unittest.TestCase):
         self.assertIn('pub fn apply_batch_in_replay_epoch(', durable)
         self.assertIn('pub fn apply_batch_with_compaction_in_replay_epoch(', durable)
 
-        contract = (ROOT/'docs/storage/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
+        navigation = (ROOT/'docs/storage/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
+        self.assertIn('docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md', navigation)
+        self.assertIn('16 MiB', navigation)
+        self.assertIn('content-defined', navigation)
+        self.assertIn('replay', navigation.lower())
+        contract = (ROOT/'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
         self.assertIn('16 MiB', contract)
-        self.assertIn('512 KiB', contract)
-        self.assertIn('32,000', contract)
-        self.assertIn('replay', contract.lower())
+        self.assertIn('content-defined', contract)
+        self.assertIn('physical write amplification', contract.lower())
+        self.assertIn('recovery', contract.lower())
 
     def test_all_current_portals_link_the_increment_without_a_second_master(self):
         for name in ['README.md', 'docs/CURRENT_DOCUMENTATION.md']:
