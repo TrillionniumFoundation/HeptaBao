@@ -1,6 +1,6 @@
 # Current runnable architecture and state ownership
 
-Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 46-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the five runtime packages from the 41 separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
+Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 46-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the eight runtime packages from the 38 separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
 
 ## Actual workspace dependency graph
 
@@ -11,6 +11,12 @@ flowchart TD
     Server["heptabao-server"] --> Durable["heptabao-durable-service"]
     Server --> Transport["heptabao-ha-service"]
     Server --> Raft["heptabao-raft-runtime"]
+    Server --> PluginHost["heptabao-plugin-host"]
+    Server --> PluginContracts["heptabao-plugin-contracts"]
+    Server --> Domain["heptabao-domain"]
+    PluginHost --> PluginContracts
+    PluginHost --> Domain
+    PluginHost --> Durable
     Durable --> Guard["heptabao-filesystem-guard"]
 ```
 
@@ -28,6 +34,8 @@ flowchart TD
     Tx --> Storage["durable-service: encrypted state"]
     Tx --> Audit["service audit: authenticated records"]
     Tx --> HA["ha.rs, ha_forward.rs, ha_state.rs"]
+    Tx --> Dynamic["dynamic_secrets.rs: issue/renew/revoke/readback"]
+    Dynamic --> Plugin["plugin-host: durable intent + provider process"]
 ```
 
 TLS parsing is followed by service admission. The service serializes mutable state, obtains and consumes a request-scoped private `Principal`, and rechecks authorization with the live `now`. Neither `AuthState` nor `Principal` is exported. Public Rust callers enter `Service::handle` or `handle_at`; only deterministic tests or a trusted embedding should supply the latter's clock. A normal request owns its JSON body; secret-bearing request/response data is cleared on the relevant drop paths with documented best-effort limits.
@@ -43,9 +51,10 @@ Audit is part of admission and response publication: a request record is persist
 | Init/seal/rekey state | `service.rs` seal metadata and optional client-secret initialization recovery object; `crypto.rs` Shamir/key wrapping; barrier activation authenticates durable state | `sys/init`, root `sys/init/ack`, `sys/unseal`, `sys/seal`, `sys/rekey/*`; `service_tests.rs` |
 | Durable request ledger, journal and snapshot | `durable-service`; exclusive `filesystem-guard` owner | Service persistence, `sys/internal/recovery/*`, compaction/backup routes; durable-service tests |
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
+| Dynamic credential lease state and pending provider invocation | `dynamic_secrets.rs` composes `DurableDynamicSecretBroker`; separate encrypted single-active state directory, checksum-pinned plugin/sandbox | `sys/dynamic-secrets/issue`, lease/operation/pending lookup, root reconciliation, `sys/leases/renew`, `sys/leases/revoke`; plugin-host/server tests |
 | HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding and `sys/storage/raft/*`; HA and raft-runtime tests |
 
-The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `plugin-host`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. In particular the server does not yet integrate a general plugin backend, dynamic-secret lease subsystem, KMS auto-unseal provider or remote rollback anchor merely because corresponding crates exist.
+The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. `plugin-host`, `plugin-contracts` and `domain` are now runtime dependencies only for the configured dynamic-secret path. Their other separately tested data models must not be substituted into unrelated current storage, API or security claims. The server integrates one explicitly configured dynamic-secret plugin/lease subsystem, but still does not expose a general OpenBao plugin catalog/backend, a qualified database/cloud provider, KMS auto-unseal provider or remote rollback anchor. Dynamic-secret startup is rejected when HA is configured until a shared strongly consistent lease backend exists.
 
 ## Historical and target diagrams
 
