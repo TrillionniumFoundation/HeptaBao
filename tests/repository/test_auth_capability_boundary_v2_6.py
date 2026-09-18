@@ -62,7 +62,9 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             text,
             r"Self::dispatch\(\s*&mut transaction,\s*principal\.as_ref\(\)",
         )
-        self.assertIn("letmuttransaction=admitted.clone();", compact)
+        self.assertIn("letmuttransaction=admitted;", compact)
+        self.assertIn("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());", compact)
+        self.assertEqual(1, compact.count("admitted.clone()"))
         self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
         self.assertGreaterEqual(compact.count(".authorize_request("), 3)
         self.assertIn(",now)", compact)
