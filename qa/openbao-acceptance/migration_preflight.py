@@ -7,6 +7,7 @@ writer, copies secrets, changes a consumer pin, or authorizes a cutover.
 """
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import re
@@ -42,10 +43,10 @@ EXPECTED_ASSET_IDS = {
 }
 
 
-def declared_asset_contract() -> list[dict]:
+def declared_asset_contract(path: Path = ASSET_PLAN) -> list[dict]:
     try:
-        document = private_json(ASSET_PLAN)
-    except (OSError, ValueError):
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError):
         raise BaoError("asset_plan_unavailable") from None
     assets = document.get("assets") if isinstance(document, dict) else None
     if document.get("schema") != "heptabao.openbao-asset-migration.v1" or not isinstance(assets, list):
