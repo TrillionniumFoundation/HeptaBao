@@ -50,7 +50,7 @@ A partial retirement/publication failure sets the Service recovery fence. The ca
 
 Replay retirement does not make the current state layout horizontally scalable.
 The serialized logical application state is bounded to **16 MiB**. Local durability
-uses the current `heptabao-state-chunks-v3` content-addressed, content-defined
+uses the current `heptabao-state-owners-v4` owner-scoped, content-addressed
 manifest; **512 KiB** is the target chunk size, with 384 KiB minimum and 768 KiB
 maximum boundaries for non-final chunks. HA uses separate bounded replicated
 chunk framing after serializing the same complete logical state. These mechanisms

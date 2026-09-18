@@ -1008,9 +1008,9 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Hostile:** Reject traversal, sibling access and delegated cross-namespace policy escalation.
 
-**Lifecycle:** Delete/recreate and restore without binding old namespace identity to a new incarnation.
+**Lifecycle:** Disable/delete/recreate and restore without binding old tokens or leases to a new namespace.
 
-**Remaining scope:** Ordinary create/read/list/nested metadata merge-patch, restart persistence and delete/recreate incarnation fencing are executable. Per-namespace sealing, delegated child administration, complete owner-by-owner isolation, migration and independent admission remain open.
+**Remaining scope:** Ordinary hierarchy, metadata merge patch, restart persistence and delete/recreate incarnation fencing are executable; per-namespace seal, delegated administration, complete owner isolation, migration and independent admission remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/namespace_tree_live.py`.
 
@@ -1124,7 +1124,7 @@ Existing bounded profiles: `qa/openbao-acceptance/live_migration_rehearsal.py`.
 
 ## Hard-problem exits, without scope reduction
 
-Capacity: the current single-record state and permanent replay ledger remain bounded. The capacity endpoint and before-entry journal compaction do not eliminate those limits. A scalable storage increment must commit record deltas plus one authenticated manifest/frontier atomically, keep replay fences across ledger retirement, version the format, reject old-binary fallback, and measure large-state memory, I/O, latency and recovery costs. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`.
+Capacity: local persistence now publishes independently serialized authoritative owners under one authenticated V4 manifest, while the active replay ledger and HA logical-state path remain bounded. The capacity endpoint and before-entry journal compaction do not eliminate those remaining limits. The next scalable-storage exit is to carry owner/record deltas through the HA state-machine boundary, keep replay fences across ledger retirement, reject unsafe old-binary fallback, and measure large-state memory, I/O, latency and recovery costs. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`.
 
 Transit: retain current domain/AAD protections. An adapter must explicitly bind the source and destination domains, inventory every key/version/ciphertext, decrypt with authorized source ownership, re-encrypt under the destination, and verify readback. Similar `vault:vN:` text is not interoperability.
 

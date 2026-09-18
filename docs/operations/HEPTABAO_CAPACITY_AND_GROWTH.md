@@ -58,7 +58,7 @@ This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
 `system/state` may contain either a historical serialized `State` record, a V1
 alternating-slot manifest, a V2 fixed content-addressed manifest, or the current
-V3 content-defined manifest. A V4 writer serializes each authoritative owner independently, hashes each chosen
+V1–V3 whole-state manifests remain readable for one-way promotion. A V4 writer serializes each authoritative owner independently, hashes each chosen
 owner chunk, reuses unchanged owner resources, deletes replaced previous-generation
 resources and publishes the new owner manifest in the same
 `DurableService::apply_batch` binding. The owner manifest is the sole local publication point, so one logical state

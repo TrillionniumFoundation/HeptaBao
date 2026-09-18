@@ -72,10 +72,10 @@ def render(matrix: dict) -> str:
         ])
     lines.extend([
         '## Hard-problem exits, without scope reduction', '',
-        'Capacity: the current single-record state and permanent replay ledger remain bounded. '
-        'The capacity endpoint and before-entry journal compaction do not eliminate those limits. '
-        'A scalable storage increment must commit record deltas plus one authenticated manifest/frontier atomically, '
-        'keep replay fences across ledger retirement, version the format, reject old-binary fallback, and '
+        'Capacity: local persistence now publishes independently serialized authoritative owners under one authenticated V4 manifest, while the active replay ledger and HA logical-state path remain bounded. '
+        'The capacity endpoint and before-entry journal compaction do not eliminate those remaining limits. '
+        'The next scalable-storage exit is to carry owner/record deltas through the HA state-machine boundary, '
+        'keep replay fences across ledger retirement, reject unsafe old-binary fallback, and '
         'measure large-state memory, I/O, latency and recovery costs. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`.', '',
         'Transit: retain current domain/AAD protections. An adapter must explicitly bind the source and destination '
         'domains, inventory every key/version/ciphertext, decrypt with authorized source ownership, re-encrypt under '

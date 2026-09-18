@@ -16,7 +16,7 @@ REPLAY_HA = 'qa/openbao-acceptance/replay_epoch_ha.py'
 ACCEPTANCE = 'docs/compatibility/HEPTABAO_REPLACEMENT_ACCEPTANCE.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
 SERVER_LIB = 'crates/heptabao-server/src/lib.rs'
-STATE_STORE = 'crates/heptabao-server/src/service_state_store.rs'
+STATE_STORE = 'crates/heptabao-server/src/service_owner_store.rs'
 
 
 def _one(pattern: str, text: str, error: str, errors: list[str]) -> str | None:
