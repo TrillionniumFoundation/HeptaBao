@@ -264,6 +264,7 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-online-authentication"
           python -c 'import os,sys; os.mkdir(sys.argv[1],0o700); os.chmod(sys.argv[1],0o700)' "$reports"
           timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
+          timeout 180 python qa/openbao-acceptance/ldap_bounded.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.
