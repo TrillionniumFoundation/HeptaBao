@@ -293,7 +293,7 @@ impl Write for DeadlineSocket {
 fn ber_length(bytes: &mut Vec<u8>, length: usize) -> Result<(), &'static str> {
     if length < 128 {
         bytes.push(u8::try_from(length).map_err(|_| "LDAP BER length overflow")?);
-    } else if length <= u16::MAX as usize {
+    } else if length <= usize::from(u16::MAX) {
         bytes.push(0x82);
         bytes.extend_from_slice(&(length as u16).to_be_bytes());
     } else {
@@ -356,7 +356,7 @@ fn ber_take<'a>(
     }
     *offset += 1;
     let length = ber_take_length(bytes, offset)?;
-    let end = offset.checked_add(length).ok_or("LDAP BER length overflow")?;
+    let end = (*offset).checked_add(length).ok_or("LDAP BER length overflow")?;
     let value = bytes.get(*offset..end).ok_or("truncated LDAP BER value")?;
     *offset = end;
     Ok(value)
