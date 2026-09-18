@@ -949,6 +949,34 @@ impl AuthState {
         Ok(token)
     }
 
+    /// Authenticate a token without taking mutable state when no finite-use
+    /// counter must be consumed. None means the caller must use the durable
+    /// mutable admission path so last-use cleanup and use consumption cannot be
+    /// skipped by an optimization.
+    pub(super) fn authenticate_without_consuming(
+        &self,
+        raw: &str,
+        now: u64,
+    ) -> Result<Option<Principal>, AuthError> {
+        if raw.len() > 256 || !raw.starts_with("hvs.") {
+            return Err(denied());
+        }
+        let id = hash(raw);
+        self.active_token(&id, now, true)?;
+        let token = self.tokens.get(&id).ok_or_else(denied)?;
+        if token.uses_remaining.is_some() {
+            return Ok(None);
+        }
+        Ok(Some(Principal {
+            identity_policies: BTreeSet::new(),
+            identity_checked: false,
+            digest: id,
+            token: token.clone(),
+            #[cfg(test)]
+            request_time: now,
+        }))
+    }
+
     pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
