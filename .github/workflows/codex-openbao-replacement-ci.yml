@@ -334,7 +334,7 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-official-profile-reports"
           mkdir -m 700 "$reports"
           failed=0
-          for profile in core_isolation identity_live response_wrapping pki_live ssh_otp_live audit_file_live remote_jwks_compare; do
+          for profile in core_isolation identity_live response_wrapping pki_live ssh_otp_live audit_file_live namespace_tree_live remote_jwks_compare; do
             if timeout 240 python "qa/openbao-acceptance/$profile.py" \
                 --binary "$binary" --output "$reports/$profile.json"; then
               printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
