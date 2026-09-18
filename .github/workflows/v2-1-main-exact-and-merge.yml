@@ -204,3 +204,32 @@ jobs:
           path: ${{ runner.temp }}/heptabao-v2.1-prospective-main-merge-receipt.json
           if-no-files-found: error
           retention-days: 30
+
+  candidate-verdict:
+    name: Current candidate exact-head + prospective-main verdict
+    if: ${{ always() }}
+    needs: [exact-head, prospective-main-merge]
+    runs-on: ubuntu-24.04
+    permissions: {}
+    env:
+      EXACT_RESULT: ${{ needs.exact-head.result }}
+      PROSPECTIVE_RESULT: ${{ needs.prospective-main-merge.result }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Reject skipped, cancelled, stale or failed candidate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXACT_RESULT" = success
+          test "$PROSPECTIVE_RESULT" = success
+          {
+            echo "### HeptaBao current-candidate verdict"
+            echo
+            echo "- exact head: \`$HEAD_SHA\` — **$EXACT_RESULT**"
+            echo "- prospective merge base: \`$BASE_SHA\` — **$PROSPECTIVE_RESULT**"
+            echo
+            echo "This verdict is valid only for the pull-request head above; skipped, cancelled or historical runs are not admission evidence."
+          } >> "$GITHUB_STEP_SUMMARY"
