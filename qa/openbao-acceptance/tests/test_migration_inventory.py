@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bao_http import BaoError, Response, digest
-from migrate_kv2 import snapshot_inventory
+from migrate_kv2 import checkpoint_binding, selected_inventory_digest, snapshot_inventory
 
 
 def metadata(version=1):
@@ -49,6 +49,39 @@ class InventoryTests(unittest.TestCase):
             {"key": record["key"], "source_digest": digest(record["source_metadata"]),
              "record_digest": digest(record)} for record in records]}
         self.assertEqual(inventory_digest, digest(manifest))
+
+    def test_checkpoint_binding_reuses_the_exact_inventory_digest(self):
+        source = Source()
+        records, inventory_digest = snapshot_inventory(source, "secret", ["one", "two"])
+        self.assertEqual(inventory_digest, selected_inventory_digest("secret", records))
+        source_identity = {
+            "endpoint": "https://source.example",
+            "namespace": "",
+            "mount": "secret",
+            "cluster_id": "source-cluster",
+            "version": "2.6.2",
+        }
+        target_identity = {
+            "endpoint": "https://target.example",
+            "namespace": "",
+            "mount": "secret",
+            "cluster_id": "target-cluster",
+        }
+        self.assertEqual(
+            checkpoint_binding(
+                source_identity,
+                ["one", "two"],
+                inventory_digest,
+                target_identity,
+            ),
+            {
+                "source_identity": source_identity,
+                "keys_digest": digest(["one", "two"]),
+                "inventory_digest": inventory_digest,
+                "profile": "heptabao.kv2-migration.v1",
+                "target_identity": target_identity,
+            },
+        )
 
     def test_inventory_rejects_source_change_during_read(self):
         with self.assertRaisesRegex(BaoError, "source_inventory_changed_during_snapshot"):
