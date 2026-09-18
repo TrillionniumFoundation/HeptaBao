@@ -242,6 +242,31 @@
         "collector_recovery_preserves_service",
         "mandatory_file_audit_continues_through_syslog_fault"
       ]
+    },
+    "namespace_tree_live": {
+      "script": "qa/openbao-acceptance/namespace_tree_live.py",
+      "case_ids": [
+        "namespace.create_parent",
+        "namespace.read_parent",
+        "namespace.parent_shape",
+        "namespace.list_root",
+        "namespace.list_parent_metadata",
+        "namespace.create_child",
+        "namespace.read_child",
+        "namespace.child_shape",
+        "namespace.list_direct_children_only",
+        "namespace.child_not_flattened_into_root_list",
+        "namespace.patch_child",
+        "namespace.read_patched_child",
+        "namespace.merge_patch_semantics",
+        "namespace.delete_child",
+        "namespace.child_absent",
+        "namespace.delete_parent",
+        "namespace.recreate_parent",
+        "namespace.read_recreated_parent",
+        "namespace.recreate_changes_identity",
+        "namespace.cleanup_parent"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

@@ -1000,7 +1000,7 @@ Existing bounded profiles: `qa/openbao-acceptance/capacity_live.py`.
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H14-WP01`, `H14-WP02`, `H14-WP03`, `H14-WP04`, `H14-WP05`, `H14-WP06`.
 API families: `sys/namespaces/*`; `X-Vault-Namespace`.
-Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/engines.rs`.
+Runtime source: `crates/heptabao-server/src/service_namespaces.rs`.
 Separate contracts: none claimed.
 Guides: `docs/modules/heptabao-server.md`.
 
@@ -1008,11 +1008,11 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Hostile:** Reject traversal, sibling access and delegated cross-namespace policy escalation.
 
-**Lifecycle:** Disable/delete/recreate and restore without binding old tokens or leases to a new namespace.
+**Lifecycle:** Delete/recreate and restore without binding old namespace identity to a new incarnation.
 
-**Remaining scope:** Storage, policy, identity, token, lease, audit and plugin context isolation.
+**Remaining scope:** Ordinary create/read/list/nested metadata merge-patch, restart persistence and delete/recreate incarnation fencing are executable. Per-namespace sealing, delegated child administration, complete owner-by-owner isolation, migration and independent admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`.
+Existing bounded profiles: `qa/openbao-acceptance/namespace_tree_live.py`.
 
 ### HB-SURFACE-NAMESPACE-SEAL
 

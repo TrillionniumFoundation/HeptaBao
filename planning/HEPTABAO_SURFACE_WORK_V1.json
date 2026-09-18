@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "ab78eae1172eee165841b82eeb38f3d7e7c7fa95f70a8295b27dfce970be1488",
+  "corpus_sha256": "d3299be21d561d0ade13f360ad22aeff6877a1508c407b6b6cc810097d036bb4",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -342,6 +342,19 @@
       "prerequisites": [
         "actual candidate binary",
         "new synthetic local Unix datagram syslog collector"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "namespace-tree": {
+      "script": "qa/openbao-acceptance/namespace_tree_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "pinned_official_openbao_2_6_2"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
@@ -1623,17 +1636,40 @@
       "surface_id": "HB-SURFACE-NAMESPACE-TREE",
       "category": "namespace_workflow",
       "implementation_status": "runtime_partial",
-      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "runtime_source": "crates/heptabao-server/src/service_namespaces.rs",
       "technical_contract": {
         "api_or_protocol": "Namespace lifecycle and parent/child policy administration targets",
         "required_positive_and_hostile_behavior": "Create/delete/list hierarchy, isolation, root/child privileges and recursive ownership",
-        "remaining_semantics_and_effect_checks": "Header namespace separation alone is not tree administration or parent-authority semantics",
+        "remaining_semantics_and_effect_checks": "Ordinary create/read/list/nested metadata patch/delete-recreate identity is durable and executable; per-namespace sealing, delegated child administration, full owner-by-owner isolation and migration remain open.",
         "crash_reopen": "Interrupt Namespace lifecycle and parent/child policy administration targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-NAMESPACE-TREE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "namespace_tree_live.namespace.create_parent",
+        "namespace_tree_live.namespace.read_parent",
+        "namespace_tree_live.namespace.parent_shape",
+        "namespace_tree_live.namespace.list_root",
+        "namespace_tree_live.namespace.list_parent_metadata",
+        "namespace_tree_live.namespace.create_child",
+        "namespace_tree_live.namespace.read_child",
+        "namespace_tree_live.namespace.child_shape",
+        "namespace_tree_live.namespace.list_direct_children_only",
+        "namespace_tree_live.namespace.child_not_flattened_into_root_list",
+        "namespace_tree_live.namespace.patch_child",
+        "namespace_tree_live.namespace.read_patched_child",
+        "namespace_tree_live.namespace.merge_patch_semantics",
+        "namespace_tree_live.namespace.delete_child",
+        "namespace_tree_live.namespace.child_absent",
+        "namespace_tree_live.namespace.delete_parent",
+        "namespace_tree_live.namespace.recreate_parent",
+        "namespace_tree_live.namespace.read_recreated_parent",
+        "namespace_tree_live.namespace.recreate_changes_identity",
+        "namespace_tree_live.namespace.cleanup_parent"
+      ],
+      "available_scoped_profiles": [
+        "namespace-tree"
+      ],
       "whole_surface_admitted": false
     },
     {

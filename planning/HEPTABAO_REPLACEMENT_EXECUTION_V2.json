@@ -1844,19 +1844,18 @@
       "lifecycle": "Disable/delete/recreate and restore without binding old tokens or leases to a new namespace",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
-        "crates/heptabao-server/src/auth.rs",
-        "crates/heptabao-server/src/engines.rs"
+        "crates/heptabao-server/src/service_namespaces.rs"
       ],
       "contract_sources": [],
       "guides": [
         "docs/modules/heptabao-server.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/core_isolation.py"
+        "qa/openbao-acceptance/namespace_tree_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Storage, policy, identity, token, lease, audit and plugin context isolation."
+      "remaining_scope": "Ordinary hierarchy, metadata merge patch, restart persistence and delete/recreate incarnation fencing are executable; per-namespace seal, delegated administration, complete owner isolation, migration and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
