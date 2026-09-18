@@ -20,6 +20,8 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
 const LOG_MAGIC: [u8; 8] = *b"HBRLOG01";
+const LOG_JOURNAL_MAGIC: [u8; 8] = *b"HBRLJ001";
+const LOG_EVENT_MAGIC: [u8; 8] = *b"HBRLE001";
 const STATE_BUNDLE_MAGIC: [u8; 8] = *b"HBRSB001";
 const INITIALIZATION_MAGIC: [u8; 8] = *b"HBRINI01";
 const INITIALIZATION_MARKER_FILE: &str = "initialized.bin";
@@ -306,6 +308,60 @@ fn atomic_write(path: &Path, magic: [u8; 8], payload: &[u8]) -> io::Result<()> {
     result
 }
 
+fn atomic_write_raw(path: &Path, bytes: &[u8]) -> io::Result<()> {
+    let parent = path
+        .parent()
+        .ok_or_else(|| invalid(format!("{} has no parent directory", path.display())))?;
+    require_real_directory(parent, "durable raw write parent directory")?;
+    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    let file_name = path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| invalid("durable raw file name is not valid UTF-8"))?;
+    let temporary = parent.join(format!(
+        ".{file_name}.{}.{}.tmp",
+        std::process::id(),
+        sequence
+    ));
+    let current_exists = regular_file_status(path, "durable raw current generation")?;
+    let result = (|| -> io::Result<()> {
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(&temporary)?;
+        file.write_all(bytes)?;
+        file.flush()?;
+        file.sync_all()?;
+        drop(file);
+        #[cfg(windows)]
+        if current_exists {
+            let previous = parent.join(format!(
+                ".{file_name}.{}.{}.previous",
+                std::process::id(),
+                sequence
+            ));
+            fs::rename(path, &previous)?;
+            if let Err(error) = fs::rename(&temporary, path) {
+                let _ = fs::rename(&previous, path);
+                return Err(error);
+            }
+            let _ = fs::remove_file(previous);
+        } else {
+            fs::rename(&temporary, path)?;
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = current_exists;
+            fs::rename(&temporary, path)?;
+        }
+        sync_parent(path)
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
 fn read_json<T>(path: &Path, magic: [u8; 8]) -> io::Result<T>
 where
     T: for<'de> Deserialize<'de>,
@@ -392,10 +448,154 @@ fn persist_initialization_marker(
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 struct PersistentLogState {
+    #[serde(default)]
+    journal_format: u16,
     last_purged_log_id: Option<LogIdOf<TypeConfig>>,
     committed: Option<LogIdOf<TypeConfig>>,
     vote: Option<VoteOf<TypeConfig>>,
     log: BTreeMap<u64, String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+enum LogJournalEvent {
+    Vote(VoteOf<TypeConfig>),
+    Committed(Option<LogIdOf<TypeConfig>>),
+    Append(Vec<(u64, String)>),
+    Truncate { start: u64 },
+    Purge { log_id: LogIdOf<TypeConfig> },
+}
+
+fn log_journal_path(state_path: &Path) -> PathBuf {
+    state_path.with_file_name("raft-log.journal")
+}
+
+fn initialize_log_journal(path: &Path) -> io::Result<()> {
+    atomic_write_raw(path, &LOG_JOURNAL_MAGIC)
+}
+
+fn append_log_journal(path: &Path, event: &LogJournalEvent) -> io::Result<()> {
+    if !regular_file_status(path, "raft log delta journal")? {
+        return Err(invalid("raft log delta journal is missing"));
+    }
+    let payload = serde_json::to_vec(event).map_err(|error| invalid(error.to_string()))?;
+    if payload.len() > 16 * 1024 * 1024 {
+        return Err(invalid("raft log delta event exceeds 16 MiB"));
+    }
+    let frame = encode_envelope(LOG_EVENT_MAGIC, &payload)?;
+    let mut file = OpenOptions::new().append(true).open(path)?;
+    file.write_all(&frame)?;
+    file.flush()?;
+    file.sync_all()
+}
+
+fn apply_log_journal_event(
+    state: &mut PersistentLogState,
+    event: LogJournalEvent,
+) -> io::Result<()> {
+    match event {
+        LogJournalEvent::Vote(vote) => state.vote = Some(vote),
+        LogJournalEvent::Committed(committed) => state.committed = committed,
+        LogJournalEvent::Append(entries) => {
+            for (index, serialized) in entries {
+                if let Some(existing) = state.log.get(&index) {
+                    if existing != &serialized {
+                        return Err(invalid(format!(
+                            "journal attempts conflicting overwrite at log index {index}"
+                        )));
+                    }
+                } else {
+                    state.log.insert(index, serialized);
+                }
+            }
+        }
+        LogJournalEvent::Truncate { start } => {
+            let remove = state
+                .log
+                .range(start..)
+                .map(|(index, _)| *index)
+                .collect::<Vec<_>>();
+            for index in remove {
+                state.log.remove(&index);
+            }
+        }
+        LogJournalEvent::Purge { log_id } => {
+            if state
+                .last_purged_log_id
+                .is_some_and(|last| last > log_id)
+            {
+                return Err(invalid("purge log id regressed"));
+            }
+            let remove = state
+                .log
+                .range(..=log_id.index)
+                .map(|(index, _)| *index)
+                .collect::<Vec<_>>();
+            for index in remove {
+                state.log.remove(&index);
+            }
+            state.last_purged_log_id = Some(log_id);
+        }
+    }
+    Ok(())
+}
+
+fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result<()> {
+    let mut file = File::open(path)?;
+    let metadata = file.metadata()?;
+    if metadata.len() > 256 * 1024 * 1024 {
+        return Err(invalid("raft log delta journal exceeds 256 MiB"));
+    }
+    let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
+    file.read_to_end(&mut bytes)?;
+    if bytes.len() < LOG_JOURNAL_MAGIC.len() || bytes[..8] != LOG_JOURNAL_MAGIC {
+        return Err(invalid("raft log delta journal magic mismatch"));
+    }
+    let mut offset = LOG_JOURNAL_MAGIC.len();
+    let mut last_good = offset;
+    while offset < bytes.len() {
+        if bytes.len() - offset < 16 {
+            break;
+        }
+        if bytes[offset..offset + 8] != LOG_EVENT_MAGIC {
+            return Err(invalid("raft log delta event magic mismatch"));
+        }
+        let length = usize::try_from(u64::from_le_bytes(
+            bytes[offset + 8..offset + 16]
+                .try_into()
+                .map_err(|_| invalid("invalid raft log event length"))?,
+        ))
+        .map_err(|_| invalid("raft log event length overflow"))?;
+        if length > 16 * 1024 * 1024 {
+            return Err(invalid("raft log delta event exceeds 16 MiB"));
+        }
+        let frame_len = 16_usize
+            .checked_add(length)
+            .and_then(|value| value.checked_add(4))
+            .ok_or_else(|| invalid("raft log event size overflow"))?;
+        if bytes.len() - offset < frame_len {
+            break;
+        }
+        let payload = &bytes[offset + 16..offset + 16 + length];
+        let stored_crc = u32::from_le_bytes(
+            bytes[offset + 16 + length..offset + frame_len]
+                .try_into()
+                .map_err(|_| invalid("invalid raft log event checksum"))?,
+        );
+        if crc32(payload) != stored_crc {
+            return Err(invalid("raft log delta event checksum mismatch"));
+        }
+        let event: LogJournalEvent =
+            serde_json::from_slice(payload).map_err(|error| invalid(error.to_string()))?;
+        apply_log_journal_event(state, event)?;
+        offset += frame_len;
+        last_good = offset;
+    }
+    if last_good != bytes.len() {
+        let mut file = OpenOptions::new().write(true).open(path)?;
+        file.set_len(u64::try_from(last_good).map_err(|_| invalid("journal offset overflow"))?)?;
+        file.sync_all()?;
+    }
+    state.validate()
 }
 
 impl PersistentLogState {
