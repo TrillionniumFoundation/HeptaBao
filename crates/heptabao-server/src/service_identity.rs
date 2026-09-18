@@ -26,6 +26,12 @@ impl State {
         if self.schema < 5 && self.replay_epoch != 0 {
             return Err(Response::error(503, "replay epoch state requires schema 5"));
         }
+        if self.schema < 6 && self.database.has_provider_fence() {
+            return Err(Response::error(
+                503,
+                "database provider fencing requires schema 6",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -46,7 +52,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

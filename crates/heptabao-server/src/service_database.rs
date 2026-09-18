@@ -26,6 +26,12 @@ fn post_provider_publication_failure(error: Response, id: &str) -> Response {
 pub(super) struct DatabaseState {
     mounts: BTreeMap<String, BTreeMap<String, DatabaseMount>>,
     clock: u64,
+    #[serde(default, skip_serializing_if = "provider_fence_is_zero")]
+    provider_fence: u64,
+}
+
+fn provider_fence_is_zero(value: &u64) -> bool {
+    *value == 0
 }
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -93,6 +99,7 @@ pub(super) struct DatabaseEffectPlan {
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     connection: Connection,
+    fence_id: String,
     lease: DatabaseLease,
 }
 
@@ -124,7 +131,7 @@ impl DatabaseConfigPlan {
         if pg
             .scalar("SELECT heptabao_provider.protocol()", &[])
             .map_err(failure)?
-            != "heptabao-postgresql-provider-v1"
+            != "heptabao-postgresql-provider-v2"
         {
             return Err(failure(
                 "PostgreSQL provider contract is not installed or mismatched",
@@ -161,9 +168,35 @@ impl DatabaseEffectPlan {
         let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
         let seq = self.lease.seq.to_string();
         let expires = self.lease.expires.to_string();
+        let indeterminate = || Response {
+            status: 503,
+            body: json!({
+                "errors":["provider outcome indeterminate; durable intent retained"],
+                "lease_id":self.lease.id,
+                "reconcile_required":true
+            }),
+        };
+
+        // A revoke may already have reached the terminal retirement boundary
+        // before the caller lost its response or local publication. Exact
+        // provider readback makes that state safely resumable without recreating
+        // either the ledger row or the generated PostgreSQL role.
+        if self.lease.phase == Phase::PendingRevoke {
+            let retired = pg
+                .scalar(
+                    "SELECT heptabao_provider.retired($1,$2,$3,$4::bigint)::text",
+                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                )
+                .map_err(|_| indeterminate())?;
+            if retired == "true" {
+                return Ok(());
+            }
+        }
+
         pg.scalar(
-            "SELECT heptabao_provider.apply($1,$2,$3::bigint,$4,$5::bigint,$6,$7,$8)::text",
+            "SELECT heptabao_provider.apply($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9)::text",
             &[
+                &self.fence_id,
                 &self.lease.provider_id,
                 &self.lease.username,
                 &seq,
@@ -178,14 +211,8 @@ impl DatabaseEffectPlan {
                 &self.lease.request_digest,
             ],
         )
-        .map_err(|_| Response {
-            status: 503,
-            body: json!({
-                "errors":["provider outcome indeterminate; durable intent retained"],
-                "lease_id":self.lease.id,
-                "reconcile_required":true
-            }),
-        })?;
+        .map_err(|_| indeterminate())?;
+
         // A separate readback proves the committed provider state rather than
         // treating a function return value as transaction completion.
         let observed = pg
@@ -193,24 +220,11 @@ impl DatabaseEffectPlan {
                 "SELECT heptabao_provider.observe($1)::text",
                 &[&self.lease.provider_id],
             )
-            .map_err(|_| Response {
-                status: 503,
-                body: json!({
-                    "errors":["provider outcome indeterminate; durable intent retained"],
-                    "lease_id":self.lease.id,
-                    "reconcile_required":true
-                }),
-            })?;
+            .map_err(|_| indeterminate())?;
         let observed =
-            crate::auth::parse_strict_json(observed.as_bytes()).map_err(|_| Response {
-                status: 503,
-                body: json!({
-                    "errors":["provider outcome indeterminate; durable intent retained"],
-                    "lease_id":self.lease.id,
-                    "reconcile_required":true
-                }),
-            })?;
+            crate::auth::parse_strict_json(observed.as_bytes()).map_err(|_| indeterminate())?;
         let matched = observed.get("found") == Some(&json!(true))
+            && observed["fence_id"] == self.fence_id
             && observed["lease_id"] == self.lease.provider_id
             && observed["username"] == self.lease.username
             && observed["seq"].as_u64() == Some(self.lease.seq)
@@ -234,6 +248,27 @@ impl DatabaseEffectPlan {
                     "reconcile_required":true
                 }),
             });
+        }
+
+        if self.lease.phase == Phase::PendingRevoke {
+            let retired = pg
+                .scalar(
+                    "SELECT heptabao_provider.retire($1,$2,$3,$4::bigint)::text",
+                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                )
+                .map_err(|_| indeterminate())?;
+            if retired != "true" {
+                return Err(indeterminate());
+            }
+            let readback = pg
+                .scalar(
+                    "SELECT heptabao_provider.retired($1,$2,$3,$4::bigint)::text",
+                    &[&self.fence_id, &self.lease.provider_id, &self.lease.username, &seq],
+                )
+                .map_err(|_| indeterminate())?;
+            if readback != "true" {
+                return Err(indeterminate());
+            }
         }
         Ok(())
     }
@@ -271,11 +306,43 @@ impl DatabaseEffectPlan {
 }
 impl DatabaseState {
     pub(super) fn is_empty(&self) -> bool {
-        self.mounts.is_empty()
+        self.mounts.is_empty() && self.provider_fence == 0
+    }
+    pub(super) fn has_provider_fence(&self) -> bool {
+        self.provider_fence != 0
+    }
+    fn next_provider_fence(&mut self) -> Result<u64, Response> {
+        let retained_max = self
+            .mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.leases.values())
+            .map(|lease| lease.seq)
+            .max()
+            .unwrap_or(0);
+        let next = self
+            .provider_fence
+            .max(retained_max)
+            .checked_add(1)
+            .filter(|value| *value <= i64::MAX as u64)
+            .ok_or_else(|| failure("database provider fence exhausted"))?;
+        self.provider_fence = next;
+        Ok(next)
     }
     pub(super) fn validate(&self) -> Result<(), Response> {
-        if self.mounts.len() > 64 {
-            return Err(failure("database namespace capacity exceeded"));
+        if self.mounts.len() > 64 || self.provider_fence > i64::MAX as u64 {
+            return Err(failure("database namespace or provider-fence capacity exceeded"));
+        }
+        let retained_max = self
+            .mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.leases.values())
+            .map(|lease| lease.seq)
+            .max()
+            .unwrap_or(0);
+        if self.provider_fence != 0 && self.provider_fence < retained_max {
+            return Err(failure("database provider fence regressed behind retained lease state"));
         }
         for (ns, mounts) in &self.mounts {
             if !valid_namespace(ns) || mounts.len() > 64 {
@@ -394,6 +461,12 @@ impl DatabaseState {
             .iter()
             .find_map(|(name, m)| m.leases.contains_key(id).then(|| name.clone()))
     }
+    fn mount_for_lease_prefix(&self, ns: &str, id: &str) -> Option<String> {
+        self.mounts.get(ns)?.keys().find_map(|mount| {
+            id.starts_with(&format!("{mount}creds/"))
+                .then(|| mount.clone())
+        })
+    }
 }
 impl Connection {
     fn session(&self, outbound: &crate::outbound::Outbound) -> Result<PgSession, &'static str> {
@@ -471,6 +544,12 @@ fn provider_identity(cluster: &str, namespace: &str, id: &str) -> Result<String,
         .map_err(|_| failure("provider scope binding failed"))?;
     Ok(format!("hb1:{}", hex(&crypto::digest(&binding))))
 }
+
+fn provider_fence_identity(cluster: &str) -> Result<String, Response> {
+    let binding = serde_json::to_vec(&("heptabao.postgresql.fence.v2", cluster))
+        .map_err(|_| failure("provider fence binding failed"))?;
+    Ok(format!("hbf1:{}", hex(&crypto::digest(&binding))))
+}
 fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
     let bytes = Zeroizing::new(
         serde_json::to_vec(&(
@@ -513,7 +592,10 @@ impl Service {
                 .or_else(|| path.strip_prefix("sys/leases/revoke/"))
                 .or_else(|| path.strip_prefix("sys/leases/renew/"))
                 .or_else(|| path.strip_prefix("sys/leases/reconcile/"));
-            if id.is_some_and(|id| state.database.locate(ns, id).is_some()) {
+            if id.is_some_and(|id| {
+                state.database.locate(ns, id).is_some()
+                    || state.database.mount_for_lease_prefix(ns, id).is_some()
+            }) {
                 return true;
             }
             // Prefix/list operations may cover multiple engine classes: handled
@@ -748,19 +830,23 @@ impl Service {
                             .auth
                             .lease_issuer(p, ns, now)
                             .map_err(|e| Response::error(e.status, &e.message))?;
-                        let m = state.database.mount_mut(ns, &mount);
-                        let role = m
-                            .roles
-                            .get(key)
+                        let role = state
+                            .database
+                            .mount(ns, &mount)
+                            .and_then(|m| m.roles.get(key))
                             .cloned()
                             .ok_or_else(|| Response::error(404, "database role not found"))?;
-                        if m.leases.len() >= 128 {
+                        let database_mount = state
+                            .database
+                            .mount(ns, &mount)
+                            .ok_or_else(|| Response::error(404, "database mount not found"))?;
+                        if database_mount.leases.len() >= 128 {
                             return Err(Response::error(
                                 507,
-                                "database lease ledger capacity exhausted; no tombstone eviction",
+                                "database active or unresolved lease capacity exhausted",
                             ));
                         }
-                        if !m
+                        if !database_mount
                             .connections
                             .get(&role.db_name)
                             .is_some_and(|c| c.allowed_roles.contains(key))
@@ -788,6 +874,7 @@ impl Service {
                         if expires <= now {
                             return Err(Response::error(403, "issuer expired"));
                         }
+                        let provider_fence = state.database.next_provider_fence()?;
                         let mut lease = DatabaseLease {
                             id: id.clone(),
                             provider_id,
@@ -799,13 +886,13 @@ impl Service {
                             expires,
                             max_expires,
                             last_renewal: None,
-                            seq: 1,
+                            seq: provider_fence,
                             phase: Phase::PendingIssue,
                             password: Some(PrivateString(password)),
                             request_digest: String::new(),
                         };
                         lease.request_digest = digest_lease(&lease)?;
-                        m.leases.insert(id.clone(), lease);
+                        state.database.mount_mut(ns, &mount).leases.insert(id.clone(), lease);
                         self.publish_database(state)?;
                         self.defer_database_effect(ns, &mount, &id, now)
                     }
@@ -917,6 +1004,7 @@ impl Service {
             outbound: self.outbound.clone(),
             ha: self.ha.clone(),
             connection,
+            fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
         });
         // This response never leaves the Service request wrapper: the wrapper
@@ -960,9 +1048,9 @@ impl Service {
         };
         let Some(current) = next
             .database
-            .mount_mut(&plan.namespace, &plan.mount)
-            .leases
-            .get_mut(&plan.lease.id)
+            .mount(&plan.namespace, &plan.mount)
+            .and_then(|mount| mount.leases.get(&plan.lease.id))
+            .cloned()
         else {
             return post_provider_publication_failure(
                 failure("lease disappeared after provider entry"),
@@ -978,14 +1066,35 @@ impl Service {
                 &plan.lease.id,
             );
         }
-        current.password = None;
-        current.phase = if plan.lease.phase == Phase::PendingRevoke {
-            Phase::Revoked
+        if plan.lease.phase == Phase::PendingRevoke {
+            let removed = next
+                .database
+                .mount_mut(&plan.namespace, &plan.mount)
+                .leases
+                .remove(&plan.lease.id);
+            if removed.is_none() {
+                return post_provider_publication_failure(
+                    failure("lease retirement disappeared before publication"),
+                    &plan.lease.id,
+                );
+            }
         } else {
-            Phase::Active
-        };
-        if plan.lease.phase == Phase::PendingRenew {
-            current.last_renewal = Some(plan.now);
+            let Some(current) = next
+                .database
+                .mount_mut(&plan.namespace, &plan.mount)
+                .leases
+                .get_mut(&plan.lease.id)
+            else {
+                return post_provider_publication_failure(
+                    failure("lease disappeared before terminal publication"),
+                    &plan.lease.id,
+                );
+            };
+            current.password = None;
+            current.phase = Phase::Active;
+            if plan.lease.phase == Phase::PendingRenew {
+                current.last_renewal = Some(plan.now);
+            }
         }
         if let Err(error) = self.publish_database(next) {
             return post_provider_publication_failure(error, &plan.lease.id);
@@ -993,21 +1102,29 @@ impl Service {
         plan.success_response().unwrap_or_else(|error| error)
     }
 
-    fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
+    fn stage_revoke(
+        state: &mut State,
+        ns: &str,
+        mount: &str,
+        id: &str,
+    ) -> Result<(), Response> {
+        let phase = state
+            .database
+            .mount(ns, mount)
+            .and_then(|database_mount| database_mount.leases.get(id))
+            .map(|lease| lease.phase.clone())
+            .ok_or_else(|| invalid("lease not found"))?;
+        if phase == Phase::PendingRevoke {
+            return Ok(());
+        }
+        let provider_fence = state.database.next_provider_fence()?;
         let l = state
             .database
             .mount_mut(ns, mount)
             .leases
             .get_mut(id)
             .ok_or_else(|| invalid("lease not found"))?;
-        if matches!(l.phase, Phase::PendingRevoke | Phase::Revoked) {
-            return Ok(());
-        }
-        l.seq = l
-            .seq
-            .checked_add(1)
-            .filter(|n| *n <= i64::MAX as u64)
-            .ok_or_else(|| failure("provider fence exhausted"))?;
+        l.seq = provider_fence;
         l.phase = Phase::PendingRevoke;
         l.password = None;
         l.expires = 0;
@@ -1099,10 +1216,18 @@ impl Service {
         let id = path_id
             .or(body_id)
             .ok_or_else(|| invalid("lease_id required"))?;
-        let mount = state
-            .database
-            .locate(ns, id)
-            .ok_or_else(|| invalid("lease not found"))?;
+        let mount = match state.database.locate(ns, id) {
+            Some(mount) => mount,
+            None if operation == "revoke"
+                && state.database.mount_for_lease_prefix(ns, id).is_some() =>
+            {
+                return Ok(Response {
+                    status: 204,
+                    body: Value::Null,
+                });
+            }
+            None => return Err(invalid("lease not found")),
+        };
         let l = state
             .database
             .mount(ns, &mount)
@@ -1141,17 +1266,14 @@ impl Service {
             if expiry <= l.expires {
                 return Err(invalid("renewal must advance expiry within maximum TTL"));
             }
+            let provider_fence = state.database.next_provider_fence()?;
             let current = state
                 .database
                 .mount_mut(ns, &mount)
                 .leases
                 .get_mut(id)
                 .ok_or_else(|| invalid("lease not found"))?;
-            current.seq = current
-                .seq
-                .checked_add(1)
-                .filter(|n| *n <= i64::MAX as u64)
-                .ok_or_else(|| failure("lease sequence exhausted"))?;
+            current.seq = provider_fence;
             current.expires = expiry;
             current.phase = Phase::PendingRenew;
             current.request_digest = digest_lease(current)?;
@@ -1205,8 +1327,9 @@ impl Service {
                     let live = owner
                         .as_ref()
                         .is_some_and(|o| Self::database_owner_active(&state, o, ns));
-                    if !matches!(l.phase, Phase::Revoked | Phase::Quarantined)
-                        && (l.phase != Phase::Active || l.expires <= now || !live)
+                    if l.phase == Phase::Revoked
+                        || (!matches!(l.phase, Phase::Quarantined)
+                            && (l.phase != Phase::Active || l.expires <= now || !live))
                     {
                         candidates.push((ns.clone(), mount.clone(), id.clone()));
                     }
@@ -1402,6 +1525,24 @@ mod tests {
         s.validate_scope("cluster")?;
         Ok(())
     }
+    #[test]
+    fn provider_fence_is_global_monotonic_and_survives_legacy_lease_sequences()
+    -> Result<(), TestFailure> {
+        let (mut state, id) = sample()?;
+        assert_eq!(state.provider_fence, 0);
+        assert_eq!(state.next_provider_fence()?, 2);
+        assert_eq!(state.next_provider_fence()?, 3);
+        state
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or_else(|| failure("missing"))?
+            .seq = 9;
+        assert_eq!(state.next_provider_fence()?, 10);
+        state.validate_scope("cluster")?;
+        Ok(())
+    }
+
     #[test]
     fn provider_wire_and_ttl_bounds_do_not_accept_silent_fallbacks() {
         assert!(ttl(&json!({"ttl":"18446744073709551615h"}), "ttl", 1).is_err());

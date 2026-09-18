@@ -138,6 +138,8 @@ class PgWireFixture:
         self.origin = f"postgresql://localhost:{self.port}"
         self.stop = threading.Event()
         self.rows: dict[str, dict] = {}
+        self.retired_rows: dict[str, dict] = {}
+        self.fences: dict[str, int] = {}
         self.lock = threading.Lock()
         self.events: list[tuple[str, str, int]] = []
         self.mode = "normal"
@@ -242,7 +244,11 @@ class PgWireFixture:
                     if "current_user" in query:
                         result = self.manager
                     elif "protocol()" in query:
-                        result = "heptabao-postgresql-provider-v1"
+                        result = "heptabao-postgresql-provider-v2"
+                    elif "provider.retired(" in query:
+                        result = "true" if self.retired(params) else "false"
+                    elif "provider.retire(" in query:
+                        result = "true" if self.retire(params) else "false"
                     elif "provider.apply(" in query:
                         result = self.apply(params)
                         if self.mode == "drop_after_apply":
@@ -269,33 +275,69 @@ class PgWireFixture:
                 frame(stream, b"C", b"SELECT 1\0")
                 frame(stream, b"Z", b"I")
 
+    def retired(self, params):
+        if len(params) != 4:
+            raise ValueError("invalid_retired_arity")
+        fence, identity, user, seq = params
+        seq = int(seq)
+        return (
+            self.fences.get(fence, 0) >= seq
+            and identity not in self.rows
+            and all(row["username"] != user for row in self.rows.values())
+        )
+
+    def retire(self, params):
+        if len(params) != 4:
+            raise ValueError("invalid_retire_arity")
+        fence, identity, user, seq = params
+        seq = int(seq)
+        if self.fences.get(fence, 0) < seq:
+            return False
+        row = self.rows.get(identity)
+        if row is None:
+            return self.retired(params)
+        if (
+            row["fence_id"] != fence
+            or row["username"] != user
+            or row["seq"] != seq
+            or row["action"] != "revoke"
+            or row["login"] is not False
+            or row["active_sessions"] != 0
+        ):
+            return False
+        self.retired_rows[identity] = dict(row)
+        del self.rows[identity]
+        return True
+
     def apply(self, params):
-        if len(params) != 8:
+        if len(params) != 9:
             raise ValueError("invalid_apply_arity")
-        identity, user, seq, action, expires, group, password, digest = params
+        fence, identity, user, seq, action, expires, group, password, digest = params
         seq, expires = int(seq), int(expires)
         payload_digest = hashlib.sha256(json.dumps(params, separators=(",", ":")).encode()).hexdigest()
         self.events.append((identity, action, seq))
         old = self.rows.get(identity)
+        floor = self.fences.get(fence, 0)
         if old:
-            if old["username"] != user or seq < old["seq"]:
+            if old["fence_id"] != fence or old["username"] != user or seq < old["seq"]:
                 return "ERROR"
             if seq == old["seq"]:
-                return old if digest == old["request_digest"] and payload_digest == old["test_payload_digest"] else "ERROR"
+                return old if floor == seq and digest == old["request_digest"] and payload_digest == old["test_payload_digest"] else "ERROR"
             if old["action"] == "revoke" and action != "revoke":
                 return "ERROR"
-            if action != "revoke" and seq != old["seq"] + 1:
-                return "ERROR"
-        if action == "issue" and (old or seq != 1 or len(password) != 64):
+        if seq <= floor:
+            return "ERROR"
+        if action == "issue" and (old or len(password) != 64):
             return "ERROR"
         if action == "renew" and (not old or password or expires <= old["expires"]):
             return "ERROR"
         if action not in {"issue", "renew", "revoke"} or group != "app_reader":
             return "ERROR"
-        row = {"found": True, "lease_id": identity, "username": user, "seq": seq,
+        row = {"found": True, "fence_id": fence, "lease_id": identity, "username": user, "seq": seq,
                "action": action, "expires": expires, "request_digest": digest,
                "login": action != "revoke", "controlled": True, "active_sessions": 0,
                "test_password": password if action == "issue" else (old or {}).get("test_password", ""),
                "test_payload_digest": payload_digest}
         self.rows[identity] = row
+        self.fences[fence] = seq
         return row

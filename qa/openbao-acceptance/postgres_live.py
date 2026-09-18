@@ -181,9 +181,9 @@ def run(binary,bin_dir,root,checks):
         instance.start();status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1});check('initialize',status==200)
         instance.token=init['root_token'];key=init['keys_base64'][0];check('unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
         check('mount',instance.call('POST','sys/mounts/database',{'type':'database'})[0]==204)
-        config=dict(plugin_name='postgresql-database-plugin',connection_url=pg.origin+'/app',username='hb_manager',password=pg.manager_password,allowed_roles=['reader','short'])
+        config=dict(plugin_name='postgresql-database-plugin',connection_url=pg.origin+'/app',username='hb_manager',password=pg.manager_password,allowed_roles=['reader','short','churn'])
         check('native_pg_tls_scram_config',instance.call('POST','database/config/local',config)[0]==204)
-        for role,ttl in [('reader',30),('short',2)]:check('role_'+role,instance.call('POST','database/roles/'+role,dict(db_name='local',provider_role='app_reader',default_ttl=ttl,max_ttl=300))[0]==204)
+        for role,ttl in [('reader',30),('short',2),('churn',300)]:check('role_'+role,instance.call('POST','database/roles/'+role,dict(db_name='local',provider_role='app_reader',default_ttl=ttl,max_ttl=300))[0]==204)
         status,issued=instance.call('GET','database/creds/reader');check('issue',status==200)
         cred=issued['data'];identity=issued['lease_id'];check('credential_really_logs_into_postgresql',pg.login(cred['username'],cred['password']))
         check('wrong_password_really_denied',not pg.login(cred['username'],'wrong-synthetic-password'))
@@ -239,6 +239,20 @@ def run(binary,bin_dir,root,checks):
             remaining=pg.sql("SELECT count(*) FROM pg_stat_activity WHERE application_name='"+application+"'")
             check('revoked_database_session_absent',remaining.returncode==0 and remaining.stdout.strip()=='0')
         check('revoke_really_prevents_pg_login',not pg.login(cred['username'],cred['password']))
+        check('revoked_provider_ledger_retired',pg.sql("SELECT count(*) FROM heptabao_provider.leases WHERE lease_id='"+provider_id+"'").stdout.strip()=='0')
+        check('revoked_postgres_role_retired',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname='"+cred['username']+"'").stdout.strip()=='0')
+        for _ in range(132):
+            status,churn=instance.call('GET','database/creds/churn')
+            if status!=200:
+                raise RuntimeError('provider_retirement_churn_issue')
+            status,_=instance.call('POST','sys/leases/revoke',dict(lease_id=churn['lease_id']))
+            if status!=204:
+                raise RuntimeError('provider_retirement_churn_revoke')
+        check('lease_retirement_survives_more_than_old_128_lifetime_limit',True)
+        check('provider_ledger_compacts_after_churn',pg.sql("SELECT count(*) FROM heptabao_provider.leases").stdout.strip()=='0')
+        check('provider_generated_roles_compact_after_churn',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'").stdout.strip()=='0')
+        fence=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences")
+        check('provider_global_fence_is_compact_and_monotonic',fence.returncode==0 and fence.stdout.strip().split('|')[0]=='1' and int(fence.stdout.strip().split('|')[2])>128)
         check('provider_manager_cannot_bypass_ledger',pg.sql('DELETE FROM heptabao_provider.leases','hb_manager',pg.manager_password).returncode!=0)
         status,issued=instance.call('GET','database/creds/reader');check('outage_seed',status==200);cred=issued['data'];identity=issued['lease_id']
         pg.stop();status,body=instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120));check('provider_outage_is_pending_not_success',status==503 and body.get('reconcile_required') is True)
@@ -255,7 +269,7 @@ def run(binary,bin_dir,root,checks):
             time.sleep(.1)
         check('worker_really_disabled_pg_role_not_only_ttl',disabled)
         check('idle_expiry_provider_login_denied',not pg.login(cred['username'],cred['password']))
-        check('stored_provider_contract_version',pg.sql('SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password).stdout.strip()=='heptabao-postgresql-provider-v1')
+        check('stored_provider_contract_version',pg.sql('SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password).stdout.strip()=='heptabao-postgresql-provider-v2')
     finally:
         instance.stop()
         if pg is not None:pg.stop()

@@ -32,7 +32,9 @@ def run(binary,root,checks):
         if condition is not True:raise RuntimeError(name)
     def call(method,path,body=None,**kwargs):return instance.call(method,path,body,**kwargs)
     def row(username):return next(v for v in provider.rows.values() if v['username']==username)
-    def phase(identity):return call('POST','sys/leases/lookup',{'lease_id':identity})[1].get('data',{}).get('phase')
+    def phase(identity):
+        status,body=call('POST','sys/leases/lookup',{'lease_id':identity})
+        return 'Retired' if status in (400,404) else body.get('data',{}).get('phase')
     def reconcile(identity):return call('POST','sys/leases/reconcile/'+identity,{})
     params={'plugin_name':'postgresql-database-plugin','connection_url':provider.origin+'/app','username':provider.manager,'password':provider.password,'allowed_roles':['reader','short']}
     try:
@@ -66,7 +68,7 @@ def run(binary,root,checks):
         check('renewed_lease_survives_restart',phase(identity)=='Active')
         check('authorized_path_not_redirected_by_body',call('POST','sys/leases/revoke/'+identity,{'lease_id':identity+'other'})[0]==400)
         check('precise_revoke',call('POST','sys/leases/revoke',{'lease_id':identity})[0]==204)
-        check('model_disabled_before_completion',row(username)['login'] is False and phase(identity)=='Revoked')
+        check('model_retired_before_completion',initial['lease_id'] not in provider.rows and phase(identity)=='Retired')
         check('revoke_idempotent',call('POST','sys/leases/revoke',{'lease_id':identity})[0]==204)
         check('renew_revoked_rejected',call('POST','sys/leases/renew',{'lease_id':identity})[0]==400)
         # TLS disappears before provider execution, AFTER service intent exists.
@@ -77,16 +79,16 @@ def run(binary,root,checks):
         instance.stop();instance.start();check('pending_restart_unseal',call('POST','sys/unseal',{'key':key})[0]==200)
         check('pending_restart_is_not_reissued',phase(pending_id)=='PendingIssue')
         provider.mode='normal'
-        check('missing_provider_issue_reconciles_to_tombstone',reconcile(pending_id)[0]==204 and phase(pending_id)=='Revoked')
+        check('missing_provider_issue_reconciles_to_retirement',reconcile(pending_id)[0]==204 and phase(pending_id)=='Retired')
         # Provider has applied, response disappears. No plaintext escapes; cancel
         # by a higher sequence instead of replaying issue or guessing absence.
         provider.mode='drop_after_apply';status,pending=call('GET','database/creds/reader');pending_id=pending.get('lease_id','')
         check('lost_post_apply_response_no_secret',status==503 and 'data' not in pending and phase(pending_id)=='PendingIssue')
         user=provider.rows[provider.events[-1][0]]['username']
         check('lost_response_model_effect_exists',row(user)['login'] is True)
-        check('reconcile_external_effect_before_success',reconcile(pending_id)[0]==204 and row(user)['login'] is False)
-        old=row(user)
-        check('model_tombstone_rejects_delayed_issue',provider.apply([old['lease_id'],user,'1','issue',str(int(time.time())+60),'app_reader','ab'*32,'ab'*32])=='ERROR')
+        old=dict(row(user))
+        check('reconcile_external_effect_before_success',reconcile(pending_id)[0]==204 and old['lease_id'] not in provider.rows and phase(pending_id)=='Retired')
+        check('model_global_fence_rejects_delayed_issue',provider.apply([old['fence_id'],old['lease_id'],user,str(old['seq']),'issue',str(int(time.time())+60),'app_reader','ab'*32,'ab'*32])=='ERROR')
         provider.mode='wrong_observation';status,pending=call('GET','database/creds/reader');pending_id=pending.get('lease_id','')
         check('mismatched_readback_not_success',status==503 and phase(pending_id)=='PendingIssue')
         check('mismatched_readback_reconciles',reconcile(pending_id)[0]==204)
@@ -95,16 +97,16 @@ def run(binary,root,checks):
         provider.mode='drop_after_apply';status,response=call('POST','sys/leases/renew',{'lease_id':identity,'increment':'120s'})
         check('uncertain_renewal_durable',status==503 and phase(identity)=='PendingRenew')
         provider.mode='before_entry';check('unavailable_revoke_never_reports_completed',reconcile(identity)[0]==503 and phase(identity)=='PendingRevoke')
-        provider.mode='normal';check('uncertain_renewal_revoked_with_sequence_skip',reconcile(identity)[0]==204 and row(username)['login'] is False)
+        provider.mode='normal';check('uncertain_renewal_retired_with_sequence_skip',reconcile(identity)[0]==204 and all(v['username']!=username for v in provider.rows.values()) and phase(identity)=='Retired')
         check('short_role',call('POST','database/roles/short',{'db_name':'local','provider_role':'app_reader','default_ttl':'2s','max_ttl':'10s'})[0]==204)
         instance.stop();config['lifecycle_interval_seconds']=1;config_path.write_text(json.dumps(config));config_path.chmod(0o600)
         instance.start();check('worker_unseal',call('POST','sys/unseal',{'key':key})[0]==200)
         status,issued=call('GET','database/creds/short');check('expiry_seed',status==200)
         username=issued['data']['username'];identity=issued['lease_id'];deadline=time.monotonic()+10
         # No API request triggers expiration; inspect only the external model.
-        while row(username)['login'] and time.monotonic()<deadline:time.sleep(.1)
-        check('idle_worker_revoke_model_without_client_requests',row(username)['login'] is False)
-        check('idle_worker_terminal_lease',phase(identity)=='Revoked')
+        while any(v['username']==username for v in provider.rows.values()) and time.monotonic()<deadline:time.sleep(.1)
+        check('idle_worker_retires_model_without_client_requests',all(v['username']!=username for v in provider.rows.values()))
+        check('idle_worker_terminal_lease_retired',phase(identity)=='Retired')
         check('provider_protocol_fixture_clean',provider.server_errors==[])
         forbidden=[provider.password,password]
         check('audit_does_not_expose_credentials',all(v.encode() not in (instance.root/'audit.jsonl').read_bytes() for v in forbidden))
