@@ -12,10 +12,18 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 const STATE_STORAGE_FORMAT_V1: &str = "heptabao-state-chunks-v1";
-pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-chunks-v2";
+const STATE_STORAGE_FORMAT_V2: &str = "heptabao-state-chunks-v2";
+pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-chunks-v3";
 pub(crate) const STATE_CHUNK_BYTES: usize = 512 * 1024;
+const STATE_CHUNK_MIN_BYTES: usize = 384 * 1024;
+const STATE_CHUNK_MAX_BYTES: usize = 768 * 1024;
+const STATE_CHUNK_WINDOW_BYTES: usize = 64;
+const STATE_CHUNK_MASK: u64 = (1_u64 << 19) - 1;
 pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
-pub(crate) const MAX_STATE_CHUNKS: usize = MAX_SERIALIZED_STATE_BYTES / STATE_CHUNK_BYTES;
+const MAX_FIXED_STATE_CHUNKS: usize =
+    (MAX_SERIALIZED_STATE_BYTES + STATE_CHUNK_BYTES - 1) / STATE_CHUNK_BYTES;
+pub(crate) const MAX_STATE_CHUNKS: usize =
+    (MAX_SERIALIZED_STATE_BYTES + STATE_CHUNK_MIN_BYTES - 1) / STATE_CHUNK_MIN_BYTES;
 const STATE_SLOT_COUNT: u8 = 2;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -32,6 +40,8 @@ pub(crate) struct StateManifest {
     chunk_count: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     chunks: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    chunk_sizes: Vec<u32>,
     sha256: String,
 }
 
@@ -93,8 +103,6 @@ impl StateManifest {
             || total_bytes > MAX_SERIALIZED_STATE_BYTES
             || chunk_bytes != STATE_CHUNK_BYTES
             || chunk_count == 0
-            || chunk_count > MAX_STATE_CHUNKS
-            || chunk_count != total_bytes.div_ceil(STATE_CHUNK_BYTES)
             || !is_lower_hex(&self.revision, 64)
             || !is_lower_hex(&self.sha256, 64)
         {
@@ -103,16 +111,51 @@ impl StateManifest {
         match self.storage_format.as_str() {
             STATE_STORAGE_FORMAT_V1 => {
                 if self.manifest_schema != 1
+                    || chunk_count > MAX_FIXED_STATE_CHUNKS
+                    || chunk_count != total_bytes.div_ceil(STATE_CHUNK_BYTES)
                     || self.slot.is_none_or(|slot| slot >= STATE_SLOT_COUNT)
                     || !self.chunks.is_empty()
+                    || !self.chunk_sizes.is_empty()
+                {
+                    return Err(StateStoreError::InvalidManifest);
+                }
+            }
+            STATE_STORAGE_FORMAT_V2 => {
+                if self.manifest_schema != 2
+                    || chunk_count > MAX_FIXED_STATE_CHUNKS
+                    || chunk_count != total_bytes.div_ceil(STATE_CHUNK_BYTES)
+                    || self.slot.is_some()
+                    || self.chunks.len() != chunk_count
+                    || !self.chunk_sizes.is_empty()
+                    || self.chunks.iter().any(|digest| !is_lower_hex(digest, 64))
                 {
                     return Err(StateStoreError::InvalidManifest);
                 }
             }
             STATE_STORAGE_FORMAT => {
-                if self.manifest_schema != 2
+                let total_from_chunks = self.chunk_sizes.iter().try_fold(
+                    0_usize,
+                    |total, size| {
+                        usize::try_from(*size)
+                            .ok()
+                            .and_then(|size| total.checked_add(size))
+                    },
+                );
+                let invalid_size = self.chunk_sizes.iter().enumerate().any(|(index, size)| {
+                    let Ok(size) = usize::try_from(*size) else {
+                        return true;
+                    };
+                    size == 0
+                        || size > STATE_CHUNK_MAX_BYTES
+                        || (index + 1 != chunk_count && size < STATE_CHUNK_MIN_BYTES)
+                });
+                if self.manifest_schema != 3
+                    || chunk_count > MAX_STATE_CHUNKS
                     || self.slot.is_some()
                     || self.chunks.len() != chunk_count
+                    || self.chunk_sizes.len() != chunk_count
+                    || total_from_chunks != Some(total_bytes)
+                    || invalid_size
                     || self.chunks.iter().any(|digest| !is_lower_hex(digest, 64))
                 {
                     return Err(StateStoreError::InvalidManifest);
@@ -155,7 +198,7 @@ impl StateManifest {
                 self.slot.ok_or(StateStoreError::InvalidManifest)?,
                 index,
             )),
-            STATE_STORAGE_FORMAT => Ok(digest_chunk_resource(
+            STATE_STORAGE_FORMAT_V2 | STATE_STORAGE_FORMAT => Ok(digest_chunk_resource(
                 self.chunks
                     .get(index)
                     .ok_or(StateStoreError::InvalidChunk)?,
@@ -206,13 +249,18 @@ impl StateWritePlan {
             .map(StateManifest::unique_chunk_resources)
             .transpose()?
             .unwrap_or_default();
-        let mut chunk_digests = Vec::with_capacity(bytes.len().div_ceil(STATE_CHUNK_BYTES));
+        let chunk_slices = content_defined_chunks(bytes);
+        let mut chunk_digests = Vec::with_capacity(chunk_slices.len());
+        let mut chunk_sizes = Vec::with_capacity(chunk_slices.len());
         let mut chunks = std::collections::BTreeMap::<String, Vec<u8>>::new();
         let mut required_existing = std::collections::BTreeSet::new();
-        for chunk in bytes.chunks(STATE_CHUNK_BYTES) {
+        for chunk in chunk_slices {
             let digest = hex(&crypto::digest(chunk));
             let resource = digest_chunk_resource(&digest);
             chunk_digests.push(digest);
+            chunk_sizes.push(
+                u32::try_from(chunk.len()).map_err(|_| StateStoreError::InvalidChunk)?,
+            );
             if previous_resources.contains(&resource) {
                 required_existing.insert(resource);
             } else {
@@ -230,7 +278,7 @@ impl StateWritePlan {
 
         let manifest = StateManifest {
             storage_format: STATE_STORAGE_FORMAT.to_owned(),
-            manifest_schema: 2,
+            manifest_schema: 3,
             state_schema,
             slot: None,
             revision,
@@ -240,6 +288,7 @@ impl StateWritePlan {
             chunk_count: u32::try_from(chunk_digests.len())
                 .map_err(|_| StateStoreError::InvalidManifest)?,
             chunks: chunk_digests,
+            chunk_sizes,
             sha256: hex(&crypto::digest(bytes)),
         };
         manifest.validate()?;
@@ -304,11 +353,21 @@ pub(crate) fn assemble_state(
         usize::try_from(manifest.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
     let mut state = Vec::with_capacity(total);
     for (index, chunk) in chunks.iter().enumerate() {
-        let last = index + 1 == chunks.len();
-        if chunk.is_empty()
-            || (!last && chunk.len() != STATE_CHUNK_BYTES)
-            || chunk.len() > STATE_CHUNK_BYTES
-        {
+        let valid_length = match manifest.storage_format.as_str() {
+            STATE_STORAGE_FORMAT_V1 | STATE_STORAGE_FORMAT_V2 => {
+                let last = index + 1 == chunks.len();
+                !chunk.is_empty()
+                    && (last || chunk.len() == STATE_CHUNK_BYTES)
+                    && chunk.len() <= STATE_CHUNK_BYTES
+            }
+            STATE_STORAGE_FORMAT => manifest
+                .chunk_sizes
+                .get(index)
+                .and_then(|size| usize::try_from(*size).ok())
+                == Some(chunk.len()),
+            _ => false,
+        };
+        if !valid_length {
             return Err(StateStoreError::InvalidChunk);
         }
         state.extend_from_slice(chunk);
@@ -320,6 +379,37 @@ pub(crate) fn assemble_state(
         return Err(StateStoreError::DigestMismatch);
     }
     Ok(state)
+}
+
+fn content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
+    let mut chunks = Vec::new();
+    let mut start = 0_usize;
+    let mut rolling = 0_u64;
+    for (index, byte) in bytes.iter().copied().enumerate() {
+        rolling = rolling.rotate_left(1) ^ chunk_byte_hash(byte);
+        if index >= STATE_CHUNK_WINDOW_BYTES {
+            rolling ^= chunk_byte_hash(bytes[index - STATE_CHUNK_WINDOW_BYTES])
+                .rotate_left((STATE_CHUNK_WINDOW_BYTES % u64::BITS as usize) as u32);
+        }
+        let length = index + 1 - start;
+        if length >= STATE_CHUNK_MIN_BYTES
+            && ((rolling & STATE_CHUNK_MASK) == 0 || length >= STATE_CHUNK_MAX_BYTES)
+        {
+            chunks.push(&bytes[start..=index]);
+            start = index + 1;
+        }
+    }
+    if start < bytes.len() {
+        chunks.push(&bytes[start..]);
+    }
+    chunks
+}
+
+fn chunk_byte_hash(byte: u8) -> u64 {
+    let mut value = u64::from(byte).wrapping_add(0x9e37_79b9_7f4a_7c15);
+    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    value ^ (value >> 31)
 }
 
 fn slot_chunk_resource(slot: u8, index: usize) -> String {
@@ -386,7 +476,7 @@ mod tests {
     #[test]
     fn content_addressed_plan_reuses_unchanged_chunks_and_deletes_replaced_chunks()
     -> Result<(), Box<dyn std::error::Error>> {
-        let state = vec![0x5a; STATE_CHUNK_BYTES + 17];
+        let state = vec![0x5a; STATE_CHUNK_MAX_BYTES + 17];
         let first = StateWritePlan::new(&state, "op-1", 5, None)?;
         let first_manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
         assert_eq!(first.chunks.len(), 2);
@@ -402,6 +492,62 @@ mod tests {
         assert_eq!(second.deletes.len(), 1);
         assert_eq!(second.required_mutations(), 3);
         assert_ne!(second.deletes[0], second.chunks[0].resource);
+        Ok(())
+    }
+
+    #[test]
+    fn content_defined_chunking_resynchronizes_after_prefix_insertion()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut state = Vec::with_capacity(4 * 1024 * 1024);
+        let mut value = 0x1234_5678_9abc_def0_u64;
+        for _ in 0..state.capacity() {
+            value ^= value << 13;
+            value ^= value >> 7;
+            value ^= value << 17;
+            state.push((value >> 24) as u8);
+        }
+        let first = StateWritePlan::new(&state, "cdc-before", 5, None)?;
+        let first_manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
+        assert!(first_manifest.chunk_count() >= 6);
+
+        let insertion = b"prefix-insertion-".repeat(7);
+        let mut changed = Vec::with_capacity(state.len() + insertion.len());
+        changed.extend_from_slice(&state[..128 * 1024]);
+        changed.extend_from_slice(&insertion);
+        changed.extend_from_slice(&state[128 * 1024..]);
+        let second = StateWritePlan::new(
+            &changed,
+            "cdc-after",
+            5,
+            Some(&first_manifest),
+        )?;
+        assert!(
+            second.required_existing.len() >= first_manifest.chunk_count().saturating_sub(1),
+            "a small prefix insertion should resynchronize and reuse later content-addressed chunks"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn v2_content_addressed_manifest_remains_readable_for_online_upgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = b"legacy-v2-state";
+        let digest = hex(&crypto::digest(state));
+        let manifest = serde_json::json!({
+            "storage_format": STATE_STORAGE_FORMAT_V2,
+            "manifest_schema": 2,
+            "state_schema": 5,
+            "revision": hex(&crypto::digest(b"legacy-v2-revision")),
+            "total_bytes": state.len(),
+            "chunk_bytes": STATE_CHUNK_BYTES,
+            "chunk_count": 1,
+            "chunks": [digest],
+            "sha256": hex(&crypto::digest(state))
+        });
+        let bytes = serde_json::to_vec(&manifest)?;
+        let decoded = decode_manifest(&bytes)?.ok_or("manifest missing")?;
+        assert_eq!(decoded.storage_format(), STATE_STORAGE_FORMAT_V2);
+        assert_eq!(assemble_state(&decoded, &[state.as_slice()])?, state);
         Ok(())
     }
 
@@ -439,7 +585,7 @@ mod tests {
 
     #[test]
     fn manifest_tampering_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
-        let state = vec![7_u8; STATE_CHUNK_BYTES + 1];
+        let state = vec![7_u8; STATE_CHUNK_MAX_BYTES + 1];
         let plan = StateWritePlan::new(&state, "op-2", 5, None)?;
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
         let mut owned_chunks = plan
