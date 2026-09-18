@@ -269,6 +269,18 @@ jobs:
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.
           # No secret-bearing service/issuer/client directories are uploaded.
 
+      - name: Prove a slow provider does not serialize unrelated durable work
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          timeout 90 python qa/openbao-acceptance/provider_concurrency_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$RUNNER_TEMP/heptabao-provider-concurrency.json"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Observe real migration catalogs and target capacity without cutover
         if: ${{ success() || failure() }}
         shell: bash

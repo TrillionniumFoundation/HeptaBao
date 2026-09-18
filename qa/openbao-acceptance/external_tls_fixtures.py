@@ -51,12 +51,23 @@ class JsonIssuer:
         self.documents: dict[str, object] = {}
         self.calls: list[str] = []
         self.mode = "normal"
+        self.block_path: str | None = None
+        self.block_entered = threading.Event()
+        self.block_release = threading.Event()
         class Handler(BaseHTTPRequestHandler):
             protocol_version = "HTTP/1.1"
             def log_message(self, *_):
                 pass
             def do_GET(self):
                 owner.calls.append(self.path)
+                if owner.block_path == self.path:
+                    owner.block_path = None
+                    owner.block_entered.set()
+                    if not owner.block_release.wait(timeout=8):
+                        self.send_response(503)
+                        self.send_header("Content-Length", "0")
+                        self.end_headers()
+                        return
                 if owner.mode == "redirect":
                     self.send_response(302)
                     self.send_header("Location", "https://untrusted.invalid:443/keys")
@@ -92,7 +103,18 @@ class JsonIssuer:
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
 
+    def block_next(self, path: str) -> None:
+        if not isinstance(path, str) or not path.startswith("/") or self.block_path is not None:
+            raise ValueError("invalid_fixture_block_path")
+        self.block_entered.clear()
+        self.block_release.clear()
+        self.block_path = path
+
+    def release_block(self) -> None:
+        self.block_release.set()
+
     def close(self):
+        self.release_block()
         self.server.shutdown()
         self.server.server_close()
         self.thread.join(timeout=5)
