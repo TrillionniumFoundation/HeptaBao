@@ -31,7 +31,11 @@ def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     try:
         source = (root / 'crates/heptabao-server/src/service.rs').read_text()
-        matches = re.findall(r'^const CURRENT_STATE_SCHEMA: u32 = (\d+);$', source, re.M)
+        matches = re.findall(
+            r'\bconst\s+CURRENT_STATE_SCHEMA\s*:\s*u32\s*=\s*(\d+)\s*;',
+            source,
+            re.M,
+        )
         if len(matches) != 1:
             return ['current Service schema constant is missing or ambiguous']
         schema = matches[0]
@@ -66,20 +70,22 @@ def validate(root: Path = ROOT) -> list[str]:
         replay_fixture = (root / REPLAY_HA).read_text()
         server_lib = (root / SERVER_LIB).read_text()
         state_store = (root / STATE_STORE).read_text()
+        # Bind semantic constants without coupling CI to visibility, indentation
+        # or rustfmt line layout. Exact Git bytes remain the source authority.
         state_mib = _one(
-            r'^pub\(crate\) const MAX_APPLICATION_STATE_BYTES: usize = (\d+) \* 1024 \* 1024;$',
+            r'\bMAX_APPLICATION_STATE_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*\*\s*1024\s*;',
             server_lib,
             'shared application-state bound is missing or ambiguous',
             errors,
         )
         chunk_kib = _one(
-            r'^pub\(crate\) const STATE_CHUNK_BYTES: usize = (\d+) \* 1024;$',
+            r'\bSTATE_CHUNK_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
             state_store,
             'state chunk bound is missing or ambiguous',
             errors,
         )
         operations_raw = _one(
-            r'^const MAX_OPERATIONS: usize = ([\d_]+);$',
+            r'\bMAX_OPERATIONS\s*:\s*usize\s*=\s*([\d_]+)\s*;',
             source,
             'replay operation-identity bound is missing or ambiguous',
             errors,
@@ -111,16 +117,25 @@ def validate(root: Path = ROOT) -> list[str]:
         if 'heptabao-state-chunks-v1' not in server_guide:
             errors.append(f'{SERVER}: missing current chunk-manifest storage format')
 
-        replay_source_markers = (
-            'replay_epoch: u64',
-            'sys/storage/raft/replay-retire',
-            'durable.retire_replay_epoch()',
-            'apply_batch_in_replay_epoch',
-            '"raft-coordinated"',
+        replay_source_checks = (
+            (
+                'cluster replay_epoch field',
+                re.search(r'\breplay_epoch\s*:\s*u64\b', source) is not None,
+            ),
+            ('root replay-retire route', 'sys/storage/raft/replay-retire' in source),
+            (
+                'durable replay retirement call',
+                re.search(r'\bretire_replay_epoch\s*\(', source) is not None,
+            ),
+            (
+                'epoch-scoped durable batch call',
+                re.search(r'\bapply_batch_in_replay_epoch\b', source) is not None,
+            ),
+            ('raft-coordinated capacity mode', 'raft-coordinated' in source),
         )
-        for marker in replay_source_markers:
-            if marker not in source:
-                errors.append(f'current replay source missing required marker: {marker}')
+        for label, present in replay_source_checks:
+            if not present:
+                errors.append(f'current replay source missing semantic anchor: {label}')
         replay_doc_markers = (
             'replay_epoch',
             'sys/storage/raft/replay-retire',
