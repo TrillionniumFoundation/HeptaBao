@@ -1,1 +1,1 @@
-{"compatibility_claim":false,"inventory_sha256":"82ead3fea7d360a277a522a2133a4c823010b6828adcdeb9e9a04cf496482a77","package_count":46,"production_authority":false,"qualification":false,"release_authority":false,"schema":"heptabao.current-source-inventory.v3","scope":"source-and-document-binding-only"}
+{"schema":"heptabao.current-source-inventory.v4","scope":"runtime-generated-receipt-policy","qualification":false,"compatibility_claim":false,"production_authority":false,"release_authority":false}
