@@ -319,6 +319,7 @@ pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     database_provider_inflight: BTreeSet<(String, String, String)>,
+    database_request_work: Option<database::DatabaseRequestWork>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
@@ -430,6 +431,7 @@ impl Service {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             database_provider_inflight: BTreeSet::new(),
+            database_request_work: None,
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
@@ -519,13 +521,27 @@ impl Service {
     }
 
     pub fn handle_request(&mut self, request: ServiceRequest<'_>) -> Response {
+        let response = self.begin_request(request);
+        self.complete_inline_database_request(response)
+    }
+
+    pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> Response {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_or(0, |d| d.as_secs());
-        self.handle_request_at(request, now)
+        self.begin_request_at(request, now)
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        let response = self.begin_request_at(request, now);
+        self.complete_inline_database_request(response)
+    }
+
+    pub(crate) fn begin_request_at(
+        &mut self,
+        request: ServiceRequest<'_>,
+        now: u64,
+    ) -> Response {
         let ServiceRequest {
             method,
             path,
@@ -547,6 +563,11 @@ impl Service {
     }
 
     pub(crate) fn handle_forwarded(&mut self, request: ServiceRequest<'_>) -> Response {
+        let response = self.begin_forwarded(request);
+        self.complete_inline_database_request(response)
+    }
+
+    pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> Response {
         let ServiceRequest {
             method,
             path,
@@ -568,6 +589,14 @@ impl Service {
             allow_forward: false,
             wrap_ttl_seconds,
         })
+    }
+
+    fn complete_inline_database_request(&mut self, response: Response) -> Response {
+        let Some(work) = self.take_database_request_work() else {
+            return response;
+        };
+        let result = work.execute();
+        self.complete_database_request_work(work, result)
     }
 
     fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {
@@ -666,6 +695,13 @@ impl Service {
             wrap_ttl_seconds,
         });
         erase_json(&mut body);
+        if response.status == database::INTERNAL_PROVIDER_PENDING {
+            if self.database_request_work.is_none() {
+                self.recovery_required = true;
+                return Response::error(503, "provider request work was lost before execution");
+            }
+            return response;
+        }
         if self
             .audit_event("response", &fingerprint, now, Some(response.status))
             .is_err()
