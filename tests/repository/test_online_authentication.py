@@ -9,9 +9,14 @@ class OnlineAuthenticationTests(unittest.TestCase):
     def test_callback_consumption_commit_precedes_code_exchange(self):
         text=(SERVER/'service_online_auth.rs').read_text().split('#[cfg(test)]')[0]
         consume=text.index('.consume_oidc(');commit=text.index('self.commit_state(&state)',consume)
-        publish=text.index('self.state = Some(state.clone())',commit)
-        exchange=text.index('.finish_oidc(',publish)
-        self.assertLess(consume,commit);self.assertLess(commit,publish);self.assertLess(publish,exchange)
+        publish=text.index('self.state = Some(state)',commit)
+        plan=text.index('OnlineAuthEffect::OidcCallback {',publish)
+        self.assertLess(consume,commit);self.assertLess(commit,publish);self.assertLess(publish,plan)
+        # The code exchange is deliberately split out of the Service writer:
+        # callback consumption is durable before the external plan can execute.
+        execute=text.index('impl OnlineAuthEffectPlan')
+        exchange=text.index('.execute(namespace, *now, *started, &self.outbound)',execute)
+        self.assertLess(execute,exchange)
         self.assertLess(text.index('wrap_ttl_seconds.is_some()'),consume)
         self.assertIn('retry_allowed',text)
     def test_runtime_intercept_follows_existing_admitted_request(self):
