@@ -126,9 +126,14 @@ fault, snapshot, upgrade and multi-host qualification cases listed below.
 Before admission, exercise total datasets materially above the legacy ceiling,
 long write histories beyond one replay epoch, leader/follower catch-up,
 snapshot/backup/restore, disk-full/torn-write/fsync faults, stale-node rejoin,
-rolling restart and supported mixed-version behavior. Record peak memory, bytes
-written per mutation, throughput and tail latency versus total stored bytes. Do
-not raise constants and infer scalability from a small happy-path fixture.
+rolling restart and supported mixed-version behavior. The current
+`capacity_live.py` profile now records per-write logical-state bytes, durable
+data-directory bytes, write latency and Linux RSS observations and prints safe
+aggregate values into CI logs. Those measurements expose growth/write-amplification
+trends for the bounded whole-state implementation; they do not convert it into a
+record-oriented scale claim. Production admission still requires repeatable
+throughput and tail-latency curves on representative multi-host hardware. Do not
+raise constants and infer scalability from a small happy-path fixture.
 
 The same precedence applies after an observed external provider effect: final
 local publication failure preserves pending reconciliation state and returns
