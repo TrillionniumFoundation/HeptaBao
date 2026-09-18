@@ -242,9 +242,10 @@ impl AuthState {
         self.ldap_groups
             .values()
             .any(|mounts| mounts.values().any(|groups| !groups.is_empty()))
-            || self.ldap_mounts.values().any(|mounts| {
-                mounts.values().any(|config| !config.group_dn.is_empty())
-            })
+            || self
+                .ldap_mounts
+                .values()
+                .any(|mounts| mounts.values().any(|config| !config.group_dn.is_empty()))
     }
 
     pub(crate) fn has_online_auth_state(&self) -> bool {
@@ -301,7 +302,9 @@ impl AuthState {
                 for (name, policies) in groups {
                     if !valid_name(name)
                         || policies.len() > 128
-                        || policies.iter().any(|policy| !valid_name(policy) || policy == "root")
+                        || policies
+                            .iter()
+                            .any(|policy| !valid_name(policy) || policy == "root")
                     {
                         return Err(denied());
                     }
