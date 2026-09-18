@@ -38,6 +38,15 @@ impl State {
                 "LDAP group synchronization requires schema 7",
             ));
         }
+        if self.schema < 8 && self.engines.has_kubernetes_mount() {
+            return Err(Response::error(
+                503,
+                "Kubernetes TokenRequest secrets state requires schema 8",
+            ));
+        }
+        self.engines
+            .validate_kubernetes_state()
+            .map_err(|error| Response::error(503, &error.message))?;
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -58,7 +67,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
