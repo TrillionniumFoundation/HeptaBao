@@ -291,10 +291,7 @@ impl DynamicSecretRuntime {
                 }),
             };
         }
-        let owner = match Id::parse(subject.to_owned()) {
-            Ok(value) => value,
-            Err(_) => return Response::error(500, "authenticated subject cannot bind lease owner"),
-        };
+        let owner = derived_actor_id(subject);
         let context = match mutation_context(subject, namespace, method, path, &operation_id, body) {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
@@ -529,6 +526,20 @@ fn parse_digest(value: &str) -> Result<[u8; 32], &'static str> {
     Ok(result)
 }
 
+fn derived_actor_id(subject: &str) -> Id {
+    let mut bytes = Vec::with_capacity(32 + subject.len());
+    bytes.extend_from_slice(b"heptabao.dynamic-actor.v1\0");
+    bytes.extend_from_slice(subject.as_bytes());
+    let value = digest(&SHA256, &bytes);
+    let suffix = value
+        .as_ref()
+        .iter()
+        .take(16)
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    Id::parse(format!("actor_{suffix}")).expect("derived actor id is bounded ASCII")
+}
+
 fn derived_lease_id(subject: &str, namespace: &str, operation_id: &Id, scope: &CanonicalPath) -> Id {
     let mut bytes = Zeroizing::new(Vec::new());
     bytes.extend_from_slice(b"heptabao.dynamic-lease-id.v1\0");
@@ -557,7 +568,7 @@ fn mutation_context(
     operation_id: &Id,
     body: &Value,
 ) -> Result<PluginMutationContext, &'static str> {
-    let principal = Id::parse(subject.to_owned()).map_err(|_| "invalid authenticated subject")?;
+    let principal = derived_actor_id(subject);
     let encoded = serde_json::to_vec(&(
         "heptabao.dynamic-authorized-operation.v1",
         subject,
