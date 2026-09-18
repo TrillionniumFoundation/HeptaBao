@@ -16,7 +16,8 @@ use std::fmt;
 use zeroize::{Zeroize, Zeroizing};
 
 const MAGIC: &[u8; 5] = b"HBSR1";
-const MANIFEST_MAGIC: &[u8; 5] = b"HBSM2";
+const MANIFEST_MAGIC_V2: &[u8; 5] = b"HBSM2";
+const MANIFEST_MAGIC: &[u8; 5] = b"HBSM3";
 const CHUNK_MAGIC: &[u8; 5] = b"HBSC2";
 const NONCE_BYTES: usize = 12;
 const DIGEST_BYTES: usize = 32;
@@ -25,8 +26,9 @@ const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
 pub(crate) const REPLICATED_STATE_CHUNK_BYTES: usize = 384 * 1024;
-pub(crate) const MAX_REPLICATED_STATE_CHUNKS: usize =
+const MAX_V2_REPLICATED_STATE_CHUNKS: usize =
     MAX_STATE_BYTES.div_ceil(REPLICATED_STATE_CHUNK_BYTES);
+pub(crate) const MAX_REPLICATED_STATE_CHUNKS: usize = 128;
 const HEADER_BYTES: usize = MAGIC.len() + DIGEST_BYTES + NONCE_BYTES;
 const MANIFEST_HEADER_BYTES: usize = MANIFEST_MAGIC.len() + DIGEST_BYTES + NONCE_BYTES;
 const CHUNK_HEADER_BYTES: usize = CHUNK_MAGIC.len() + NONCE_BYTES;
@@ -69,7 +71,7 @@ impl ReplicatedStateProposal {
         let valid_sealed_size = if sealed.starts_with(MAGIC) {
             (HEADER_BYTES + TAG_BYTES..=HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES)
                 .contains(&sealed.len())
-        } else if sealed.starts_with(MANIFEST_MAGIC) {
+        } else if sealed.starts_with(MANIFEST_MAGIC) || sealed.starts_with(MANIFEST_MAGIC_V2) {
             let max_manifest_body = 10 + MAX_REPLICATED_STATE_CHUNKS * (2 + 1 + 4 + DIGEST_BYTES);
             (MANIFEST_HEADER_BYTES + TAG_BYTES
                 ..=MANIFEST_HEADER_BYTES + max_manifest_body + TAG_BYTES)
@@ -367,11 +369,18 @@ impl ClusterStateCodec {
                 .open_committed_parts(operation_id, digest, sealed)
                 .map(CommittedStateDescriptor::Legacy);
         }
-        if sealed.len() < MANIFEST_HEADER_BYTES + TAG_BYTES || !sealed.starts_with(MANIFEST_MAGIC) {
+        if sealed.len() < MANIFEST_HEADER_BYTES + TAG_BYTES {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
+        let manifest_magic = if sealed.starts_with(MANIFEST_MAGIC) {
+            MANIFEST_MAGIC
+        } else if sealed.starts_with(MANIFEST_MAGIC_V2) {
+            MANIFEST_MAGIC_V2
+        } else {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        };
         validate_operation_id(operation_id)?;
-        let base_offset = MANIFEST_MAGIC.len();
+        let base_offset = manifest_magic.len();
         let nonce_offset = base_offset + DIGEST_BYTES;
         let payload_offset = nonce_offset + NONCE_BYTES;
         let base_digest: [u8; DIGEST_BYTES] = sealed[base_offset..nonce_offset]
@@ -380,7 +389,8 @@ impl ClusterStateCodec {
         let nonce: [u8; NONCE_BYTES] = sealed[nonce_offset..payload_offset]
             .try_into()
             .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
-        let aad = self.manifest_aad(operation_id, base_digest, digest)?;
+        let aad =
+            self.manifest_aad_with_magic(manifest_magic, operation_id, base_digest, digest)?;
         let mut ciphertext = Zeroizing::new(sealed[payload_offset..].to_vec());
         let plaintext = self
             .key
@@ -391,7 +401,11 @@ impl ClusterStateCodec {
             )
             .map_err(|_| ReplicatedStateError::AuthenticationFailed)?;
         let (total_bytes, chunks) = decode_manifest_body(plaintext)?;
-        validate_manifest_parts(total_bytes, &chunks)?;
+        if manifest_magic == MANIFEST_MAGIC_V2 {
+            validate_manifest_parts_v2(total_bytes, &chunks)?;
+        } else {
+            validate_manifest_parts(total_bytes, &chunks)?;
+        }
         Ok(CommittedStateDescriptor::Chunked(ReplicatedStateManifest {
             base_digest,
             state_digest: digest,
@@ -505,20 +519,33 @@ impl ClusterStateCodec {
         base_digest: [u8; 32],
         next_digest: [u8; 32],
     ) -> Result<Vec<u8>, ReplicatedStateError> {
+        self.manifest_aad_with_magic(MANIFEST_MAGIC, operation_id, base_digest, next_digest)
+    }
+
+    fn manifest_aad_with_magic(
+        &self,
+        magic: &[u8; 5],
+        operation_id: &str,
+        base_digest: [u8; 32],
+        next_digest: [u8; 32],
+    ) -> Result<Vec<u8>, ReplicatedStateError> {
         validate_operation_id(operation_id)?;
+        if magic != MANIFEST_MAGIC && magic != MANIFEST_MAGIC_V2 {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
         let cluster_len = u16::try_from(self.cluster_id.len())
             .map_err(|_| ReplicatedStateError::InvalidCluster)?;
         let operation_len =
             u16::try_from(operation_id.len()).map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
         let mut aad = Vec::with_capacity(
-            MANIFEST_MAGIC.len()
+            magic.len()
                 + 2
                 + self.cluster_id.len()
                 + 2
                 + operation_id.len()
                 + DIGEST_BYTES * 2,
         );
-        aad.extend_from_slice(MANIFEST_MAGIC);
+        aad.extend_from_slice(magic);
         aad.extend_from_slice(&cluster_len.to_be_bytes());
         aad.extend_from_slice(self.cluster_id.as_bytes());
         aad.extend_from_slice(&operation_len.to_be_bytes());
@@ -586,6 +613,42 @@ fn validate_manifest_parts(
         || total > MAX_STATE_BYTES
         || chunks.is_empty()
         || chunks.len() > MAX_REPLICATED_STATE_CHUNKS
+    {
+        return Err(ReplicatedStateError::InvalidState);
+    }
+    let mut observed = 0_usize;
+    let mut indexes = std::collections::BTreeSet::new();
+    for chunk in chunks {
+        if usize::from(chunk.index) >= MAX_REPLICATED_STATE_CHUNKS
+            || !indexes.insert(chunk.index)
+            || chunk.slot > 1
+            || chunk.digest == [0; 32]
+        {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        let bytes = usize::try_from(chunk.bytes).map_err(|_| ReplicatedStateError::InvalidState)?;
+        if bytes == 0 || bytes > REPLICATED_STATE_CHUNK_BYTES {
+            return Err(ReplicatedStateError::InvalidState);
+        }
+        observed = observed
+            .checked_add(bytes)
+            .ok_or(ReplicatedStateError::InvalidState)?;
+    }
+    if observed != total {
+        return Err(ReplicatedStateError::InvalidState);
+    }
+    Ok(())
+}
+
+fn validate_manifest_parts_v2(
+    total_bytes: u64,
+    chunks: &[ReplicatedChunkRef],
+) -> Result<(), ReplicatedStateError> {
+    let total = usize::try_from(total_bytes).map_err(|_| ReplicatedStateError::InvalidState)?;
+    if total == 0
+        || total > MAX_STATE_BYTES
+        || chunks.is_empty()
+        || chunks.len() > MAX_V2_REPLICATED_STATE_CHUNKS
         || chunks.len() != total.div_ceil(REPLICATED_STATE_CHUNK_BYTES)
     {
         return Err(ReplicatedStateError::InvalidState);
