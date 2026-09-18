@@ -14,7 +14,7 @@ ARCHITECTURE = (
 PLAN = ROOT / "docs" / "plan" / "HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md"
 MATRIX = ROOT / "planning" / "HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml"
 REGISTER = ROOT / "planning" / "HEPTABAO_BLOCKER_REGISTER_V2_0.yaml"
-WORKFLOW = ROOT / ".github" / "workflows" / "v2-1-main-convergence.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "codex-openbao-replacement-ci.yml"
 
 
 def function_body(source: str, function: str) -> str:
@@ -175,7 +175,8 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
         self.assertNotIn("persist-credentials: true", workflow)
-        self.assertIn("branches: [main]", workflow)
+        self.assertIn("pull_request:", workflow)
+        self.assertIn("prospective-merge", workflow)
         self.assertIn("cargo +1.98.0 test --locked --workspace --all-targets", workflow)
         self.assertIn("cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings", workflow)
 
