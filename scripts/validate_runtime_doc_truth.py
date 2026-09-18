@@ -140,7 +140,25 @@ def validate(root: Path = ROOT) -> list[str]:
         chunk_kib = _one(
             r'\bSTATE_CHUNK_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
             state_store,
-            'state chunk bound is missing or ambiguous',
+            'state chunk target is missing or ambiguous',
+            errors,
+        )
+        chunk_min_kib = _one(
+            r'\bSTATE_CHUNK_MIN_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
+            state_store,
+            'state chunk minimum is missing or ambiguous',
+            errors,
+        )
+        chunk_max_kib = _one(
+            r'\bSTATE_CHUNK_MAX_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
+            state_store,
+            'state chunk maximum is missing or ambiguous',
+            errors,
+        )
+        storage_format = _one(
+            r'\bSTATE_STORAGE_FORMAT\s*:\s*&str\s*=\s*"([^"]+)"\s*;',
+            state_store,
+            'current state storage format is missing or ambiguous',
             errors,
         )
         operations_raw = _one(
@@ -159,6 +177,17 @@ def validate(root: Path = ROOT) -> list[str]:
                 errors.append('current capacity documentation differs from STATE_CHUNK_BYTES')
             if f'**{chunk_kib} KiB**' not in replay_guide:
                 errors.append('replay protocol differs from STATE_CHUNK_BYTES')
+        if chunk_min_kib is not None and f'**{chunk_min_kib} KiB**' not in capacity_guide:
+            errors.append('capacity documentation differs from STATE_CHUNK_MIN_BYTES')
+        if chunk_max_kib is not None and f'**{chunk_max_kib} KiB**' not in capacity_guide:
+            errors.append('capacity documentation differs from STATE_CHUNK_MAX_BYTES')
+        if storage_format is not None:
+            if storage_format not in server_guide:
+                errors.append(f'{SERVER}: missing current chunk-manifest storage format')
+            if storage_format not in capacity_guide:
+                errors.append(f'{CAPACITY}: missing current chunk-manifest storage format')
+            if storage_format not in replay_guide:
+                errors.append(f'{REPLAY}: missing current chunk-manifest storage format')
         if operations_raw is not None:
             operations = int(operations_raw.replace('_', ''))
             formatted = f'{operations:,}'
@@ -173,9 +202,6 @@ def validate(root: Path = ROOT) -> list[str]:
         for claim in stale_server_claims:
             if claim in server_guide:
                 errors.append(f'{SERVER}: stale current storage/schema claim')
-        if 'heptabao-state-chunks-v1' not in server_guide:
-            errors.append(f'{SERVER}: missing current chunk-manifest storage format')
-
         # Rust source text is not a behavioral proof.  In particular, regexes
         # over field declarations/call layout produced false drift alarms after
         # harmless refactors.  Replay semantics are exercised by compiled native
@@ -193,7 +219,6 @@ def validate(root: Path = ROOT) -> list[str]:
             'replay_epoch',
             'sys/storage/raft/replay-retire',
             'raft-coordinated',
-            'heptabao-state-chunks-v1',
             'qa/openbao-acceptance/replay_epoch_ha.py',
         )
         for marker in replay_doc_markers:

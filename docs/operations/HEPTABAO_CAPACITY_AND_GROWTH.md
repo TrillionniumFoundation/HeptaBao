@@ -7,12 +7,15 @@ and unresolved scalability exit, not a new plan or a production-capacity claim.
 
 The running Service owns one logical serialized `State` containing Auth, Identity,
 KV, Transit, PKI, SSH, wrappers, local leases, PostgreSQL intents and Raft-admin
-state. The durable representation is no longer one 768 KiB value: a state
-publication is split into **512 KiB** immutable chunks plus a versioned
-`heptabao-state-chunks-v1` manifest and is committed by one durable atomic batch.
-The shared serialized-state admission bound is **16 MiB**, and HA replication uses
-that same bound. A point mutation can still serialize and replicate the complete
-logical state, so this is bounded chunking rather than record-oriented scalability.
+state. The durable representation is no longer one 768 KiB value. Current local
+storage uses the `heptabao-state-chunks-v3` content-addressed manifest and
+deterministic content-defined boundaries: chunks are at least **384 KiB**, target
+**512 KiB**, and are capped at **768 KiB** except the final short chunk. New chunks,
+retired chunk references and the manifest publication point are committed through
+one durable atomic batch. The shared serialized-state admission bound is
+**16 MiB**, and HA replication uses that same bound with its own chunk framing. A
+point mutation can still clone/serialize the complete logical state, so this is
+bounded physical chunk reuse rather than record-oriented scalability.
 
 The active replay ledger admits at most **32,000 identities per epoch**. A
 root-authorized replay retirement operation creates a durable authenticated
@@ -44,18 +47,22 @@ This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
 ## State publication and legacy migration
 
-`system/state` may contain either the historical serialized `State` record or the
-current manifest. A writer alternates between two bounded chunk slots. All chunks
-for the next state and the new manifest are submitted through one
-`DurableService::apply_batch` binding, so one logical state publication consumes
-one replay identity and one durable generation. A reader accepts only a complete
-manifest whose state schema, chunk count, total length and SHA-256 binding verify.
+`system/state` may contain either a historical serialized `State` record, a V1
+alternating-slot manifest, a V2 fixed content-addressed manifest, or the current
+V3 content-defined manifest. A V3 writer hashes each chosen chunk, reuses existing
+content-addressed chunks when their digest is still referenced, creates only new
+chunks, deletes replaced previous-generation chunk resources and publishes the new
+manifest in the same `DurableService::apply_batch` binding. The manifest is the
+sole logical publication point, so one state transition consumes one replay
+identity and one durable generation. A reader accepts only a complete manifest
+whose version-specific chunk shape, state schema, total length and SHA-256 binding
+verify.
 
-On unseal, a valid legacy state is decoded before conversion and is rewritten
-through the same atomic batch protocol. Malformed manifests, missing chunks,
-digest mismatches or indeterminate publication outcomes never fall back to an
-older representation by guesswork. Fresh initialization and HA catch-up use the
-same state publication path.
+On unseal, a valid legacy state or older manifest is decoded before the next
+mutation promotes it through the current atomic publication path. Malformed
+manifests, missing chunks, digest mismatches or indeterminate publication outcomes
+never fall back to an older representation by guesswork. Fresh initialization and
+HA catch-up use the same state publication path.
 
 ## Before-entry capacity handling
 

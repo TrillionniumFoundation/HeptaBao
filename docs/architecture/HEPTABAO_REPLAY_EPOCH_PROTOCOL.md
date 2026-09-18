@@ -48,7 +48,15 @@ A partial retirement/publication failure sets the Service recovery fence. The ca
 
 ## Storage and capacity interaction
 
-Replay retirement does not make the current state layout horizontally scalable. The serialized logical application state is bounded to **16 MiB**. Local durability splits it into immutable **512 KiB** chunks plus the authenticated alternating-slot `heptabao-state-chunks-v1` manifest, while HA still serializes and proposes the complete logical state. Record-oriented state ownership and bounded write amplification remain separate replacement-admission work.
+Replay retirement does not make the current state layout horizontally scalable.
+The serialized logical application state is bounded to **16 MiB**. Local durability
+uses the current `heptabao-state-chunks-v3` content-addressed, content-defined
+manifest; **512 KiB** is the target chunk size, with 384 KiB minimum and 768 KiB
+maximum boundaries for non-final chunks. HA uses separate bounded replicated
+chunk framing after serializing the same complete logical state. These mechanisms
+reduce physical rewrite/transport granularity but do not provide record-oriented
+state ownership or bounded logical serialization cost; those remain separate
+replacement-admission work.
 
 The retained root-only `GET sys/internal/storage/capacity` view exposes `replay_epoch`, `retired_through_generation`, and `replay_retirement`. In HA the latter is `raft-coordinated`. `GET sys/internal/capacity` reports the newer logical application-state capacity contract. Neither route reserves capacity or grants replacement authority.
 
