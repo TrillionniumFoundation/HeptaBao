@@ -178,6 +178,12 @@ where
     }
 }
 
+impl<T> CowOwner<T> {
+    fn ptr_eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
 impl<T> std::ops::Deref for CowOwner<T> {
     type Target = T;
 
@@ -243,6 +249,28 @@ struct State {
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
     )]
     raft_admin: CowOwner<raft_admin::RaftAdminState>,
+}
+
+#[derive(Clone, Copy, Default)]
+struct OwnerReuseHint {
+    auth: bool,
+    engines: bool,
+    database: bool,
+    raft_admin: bool,
+}
+
+impl OwnerReuseHint {
+    fn between(previous: Option<&State>, next: &State) -> Self {
+        let Some(previous) = previous else {
+            return Self::default();
+        };
+        Self {
+            auth: next.auth.ptr_eq(&previous.auth),
+            engines: next.engines.ptr_eq(&previous.engines),
+            database: next.database.ptr_eq(&previous.database),
+            raft_admin: next.raft_admin.ptr_eq(&previous.raft_admin),
+        }
+    }
 }
 
 fn replay_epoch_is_zero(value: &u64) -> bool {
@@ -2028,6 +2056,7 @@ impl Service {
         target_replay_epoch: u64,
         compact_before_entry: bool,
         allow_epoch_catchup: bool,
+        reuse: OwnerReuseHint,
     ) -> Result<MutationOutcome, ServiceError> {
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
@@ -2071,29 +2100,52 @@ impl Service {
             Vec::new()
         };
 
+        // Namespace state is not yet Arc-backed, so it is serialized on every
+        // logical mutation. V4 copy-on-write owners can carry their authenticated
+        // descriptor/chunks forward directly when the request did not mutate them.
+        let may_reuse = previous_owner.is_some();
         let owners = vec![
             (
                 "namespaces",
-                serde_json::to_vec(&state.namespaces).map_err(|_| ServiceError::CorruptState)?,
+                Some(
+                    serde_json::to_vec(&state.namespaces)
+                        .map_err(|_| ServiceError::CorruptState)?,
+                ),
             ),
             (
                 "auth",
-                serde_json::to_vec(&state.auth).map_err(|_| ServiceError::CorruptState)?,
+                if may_reuse && reuse.auth {
+                    None
+                } else {
+                    Some(serde_json::to_vec(&state.auth).map_err(|_| ServiceError::CorruptState)?)
+                },
             ),
             (
                 "engines",
-                serde_json::to_vec(&state.engines).map_err(|_| ServiceError::CorruptState)?,
+                if may_reuse && reuse.engines {
+                    None
+                } else {
+                    Some(serde_json::to_vec(&state.engines).map_err(|_| ServiceError::CorruptState)?)
+                },
             ),
             (
                 "database",
-                serde_json::to_vec(&state.database).map_err(|_| ServiceError::CorruptState)?,
+                if may_reuse && reuse.database {
+                    None
+                } else {
+                    Some(serde_json::to_vec(&state.database).map_err(|_| ServiceError::CorruptState)?)
+                },
             ),
             (
                 "raft_admin",
-                serde_json::to_vec(&state.raft_admin).map_err(|_| ServiceError::CorruptState)?,
+                if may_reuse && reuse.raft_admin {
+                    None
+                } else {
+                    Some(serde_json::to_vec(&state.raft_admin).map_err(|_| ServiceError::CorruptState)?)
+                },
             ),
         ];
-        let plan = owner_store::OwnerWritePlan::new(
+        let plan = owner_store::OwnerWritePlan::new_with_reuse(
             bytes,
             operation_id,
             state_schema,
@@ -2394,6 +2446,7 @@ impl Service {
             state.replay_epoch,
             false,
             false,
+            OwnerReuseHint::default(),
         ) {
             return (
                 Response::error(
@@ -2729,6 +2782,7 @@ impl Service {
                 state.replay_epoch,
                 true,
                 false,
+                OwnerReuseHint::default(),
             ) {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
@@ -3592,6 +3646,7 @@ impl Service {
         target_replay_epoch: u64,
         allow_epoch_catchup: bool,
     ) -> Result<(), Response> {
+        let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
         let durable = self
             .durable
             .as_mut()
@@ -3606,6 +3661,7 @@ impl Service {
             target_replay_epoch,
             true,
             allow_epoch_catchup,
+            reuse,
         );
         // If retirement itself published but the following state batch failed,
         // application state and replay authority no longer have the same epoch.

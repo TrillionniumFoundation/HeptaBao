@@ -265,6 +265,32 @@ impl OwnerWritePlan {
         previous: Option<&OwnerStateManifest>,
         legacy_deletes: Vec<String>,
     ) -> Result<Self, OwnerStoreError> {
+        Self::new_with_reuse(
+            logical_bytes,
+            operation_id,
+            state_schema,
+            cluster_id,
+            replay_epoch,
+            owners
+                .into_iter()
+                .map(|(name, bytes)| (name, Some(bytes)))
+                .collect(),
+            previous,
+            legacy_deletes,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new_with_reuse(
+        logical_bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        cluster_id: &str,
+        replay_epoch: u64,
+        owners: Vec<(&'static str, Option<Vec<u8>>)>,
+        previous: Option<&OwnerStateManifest>,
+        legacy_deletes: Vec<String>,
+    ) -> Result<Self, OwnerStoreError> {
         if logical_bytes.is_empty() {
             return Err(OwnerStoreError::EmptyState);
         }
@@ -283,10 +309,9 @@ impl OwnerWritePlan {
             || cluster_id.is_empty()
             || cluster_id.len() > 256
             || owners.len() != OWNER_NAMES.len()
-            || owners
-                .iter()
-                .zip(OWNER_NAMES)
-                .any(|((name, bytes), expected)| *name != expected || bytes.is_empty())
+            || owners.iter().zip(OWNER_NAMES).any(|((name, bytes), expected)| {
+                *name != expected || bytes.as_ref().is_some_and(Vec::is_empty)
+            })
         {
             return Err(OwnerStoreError::InvalidOwner);
         }
@@ -305,6 +330,25 @@ impl OwnerWritePlan {
         let mut owner_total = 0_usize;
 
         for (name, bytes) in owners {
+            let Some(bytes) = bytes else {
+                let descriptor = previous
+                    .ok_or(OwnerStoreError::InvalidOwner)?
+                    .owner(name)?
+                    .clone();
+                let descriptor_total = usize::try_from(descriptor.total_bytes)
+                    .map_err(|_| OwnerStoreError::StateTooLarge)?;
+                owner_total = owner_total
+                    .checked_add(descriptor_total)
+                    .ok_or(OwnerStoreError::StateTooLarge)?;
+                for digest in &descriptor.chunks {
+                    let resource = owner_chunk_resource(name, digest)?;
+                    next_resources.insert(resource.clone());
+                    required_existing.insert(resource);
+                }
+                descriptors.push(descriptor);
+                continue;
+            };
+
             owner_total = owner_total
                 .checked_add(bytes.len())
                 .ok_or(OwnerStoreError::StateTooLarge)?;
@@ -506,6 +550,53 @@ mod tests {
         manifest.verify_logical(logical)?;
         assert_eq!(manifest.storage_format(), STATE_STORAGE_FORMAT);
         assert!(manifest.chunk_count("engines")? >= 2);
+        Ok(())
+    }
+
+    #[test]
+    fn explicit_owner_reuse_carries_previous_descriptor_without_new_chunks()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let first = OwnerWritePlan::new(
+            logical,
+            "owner-op-1",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 900 * 1024]),
+            None,
+            Vec::new(),
+        )?;
+        let manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
+        let expected_auth = (0..manifest.chunk_count("auth")?)
+            .map(|index| manifest.chunk_resource("auth", index))
+            .collect::<BTreeSet<_>>();
+        let expected_database = (0..manifest.chunk_count("database")?)
+            .map(|index| manifest.chunk_resource("database", index))
+            .collect::<BTreeSet<_>>();
+
+        let second = OwnerWritePlan::new_with_reuse(
+            logical,
+            "owner-op-2",
+            9,
+            "cluster",
+            0,
+            vec![
+                ("namespaces", Some(br#"{"next_incarnation":2}"#.to_vec())),
+                ("auth", None),
+                ("engines", Some(vec![b'f'; 900 * 1024])),
+                ("database", None),
+                ("raft_admin", Some(br#"{"policy":null}"#.to_vec())),
+            ],
+            Some(&manifest),
+            Vec::new(),
+        )?;
+        let reused = second.required_existing.iter().cloned().collect::<BTreeSet<_>>();
+        assert!(expected_auth.is_subset(&reused));
+        assert!(expected_database.is_subset(&reused));
+        assert!(second.chunks.iter().all(|chunk| {
+            !expected_auth.contains(&chunk.resource) && !expected_database.contains(&chunk.resource)
+        }));
         Ok(())
     }
 
