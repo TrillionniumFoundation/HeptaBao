@@ -1,12 +1,13 @@
 # Current module source binding
 
-The active plan remains `HEPTABAO-PLAN-2026-09-07-V2.1`. Current source facts for
-all workspace packages are bound by
-`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`, checked through
+The active plan remains `HEPTABAO-PLAN-2026-09-07-V2.1`. Current source facts are
+derived directly from the exact Git tree by
 `python scripts/current_source_inventory.py --check` and the ordinary V2
 repository validator. A package's guide, manifest, full Rust source paths/bytes,
-lexical declarations, discovered tests and path dependencies participate in this
-binding. The expanded workspace and the guide set must match exactly.
+lexical declarations, discovered tests and path dependencies participate in the
+live walk. The expanded workspace and guide set must match exactly. The small
+`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` file is now only a fail-closed
+receipt policy marker; it is not a second content-hash authority.
 
 ## Historical and current evidence
 
@@ -25,25 +26,20 @@ python scripts/current_source_inventory.py --details
 
 The detailed output includes file paths and digests, declaration names and
 source lines, discovered test names/attribute lines, and dependency scopes.
-Each package's compact committed entry binds these complete details by digest.
+The exact-head Git commit/tree and CI receipt bind these generated details; no
+committed aggregate digest needs to be refreshed after an ordinary source edit.
 `pub const fn` is classified as a function and parameterized `tokio::test`
 attributes are recognized. Lexical discovery is not Rust type/visibility
 analysis, branch coverage, test execution, or semantic API compatibility.
 
 ## Change procedure
 
-Update the implementing source, its module-specific narrative and tests in one
-candidate. Recompute only the V2 snapshot with
-`python scripts/current_source_inventory.py --write`. Review the source/guide
-changes and generated digest delta together, then run the read-only check and
-complete repository/security/Rust gates. A generated digest alone does not
-prove the narrative's correctness or an executable test pass.
-
-The snapshot binds source inputs by content rather than embedding its own Git
-commit ID, which would be self-referential. CI must separately record the actual
-commit, tree, snapshot digest, binary digest, commands, exit statuses and test
-results. Exact-head and prospective-main-merge receipts are separate. Any
-candidate movement invalidates the old current-head qualification claim.
+Update implementing source, module-specific narrative and tests in one candidate,
+then run the live inventory walk and complete repository/security/Rust gates.
+Do not rewrite a committed digest merely because source bytes changed. CI records
+the actual commit, tree, generated live inventory digest/details, binary digest,
+commands, exit statuses and test results. Exact-head and prospective-main-merge
+receipts are separate; candidate movement invalidates old execution receipts.
 
 ## Present product boundary
 
@@ -59,6 +55,6 @@ fault campaigns and independent admission remain separate requirements.
 
 ## Semantic drift guards
 
-All 46 guides include current API/ownership narrative and concrete source test names outside the frozen tables. `docs/modules/CURRENT_RUNTIME_MAP.md` maps every crate to actual server integration and a named executable scenario. `scripts/validate_current_documentation_semantics.py`, also called by the ordinary V2 validator, removes historical blocks before checking current API substance, checks named tests against Rust source, derives the server closure from normal Cargo path dependencies, and compares marked critical API declaration excerpts (including private `authorize_request` with its live `now`) against current source. The markers identify actual reviewable declarations, not an API-stability promise.
+All current workspace guides include current API/ownership narrative and concrete source test names outside the frozen tables. `docs/modules/CURRENT_RUNTIME_MAP.md` maps every crate to actual server integration and a named executable scenario. `scripts/validate_current_documentation_semantics.py`, also called by the ordinary V2 validator, removes historical blocks before checking current API substance, checks named tests against Rust source, derives the server closure from normal Cargo path dependencies, and compares marked critical API declaration excerpts (including private `authorize_request` with its live `now`) against current source. The markers identify actual reviewable declarations, not an API-stability promise.
 
 When a signature, selected test or runtime dependency changes, revise its human semantics and map before refreshing the inventory. A digest refresh alone cannot close these checks. The validator detects these specific drift classes; it does not prove every sentence is correct, every parameter is documented, or any integration test passed.
