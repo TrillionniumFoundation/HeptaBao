@@ -183,6 +183,24 @@ Archive separate receipts from a real OpenBao2.6.2 source and the actual candida
 target, including source freeze evidence, target identity, dry-run/apply results,
 restart rehearsal, independent value verification and operational rollback review.
 
+## Process-fenced cutover and rollback rehearsal
+
+The current live rehearsal now adds a deployment-level writer-fencing phase after
+the selected KV histories have been copied and read back. It terminates the real
+official OpenBao source process first and verifies that the source is no longer
+reachable before accepting the running HeptaBao target as the cutover endpoint.
+For the rollback half, it stops the HeptaBao target process before restarting the
+**same** private OpenBao file-storage root, unseals that restarted source and
+verifies the original selected histories again. The fixture therefore has no
+interval in which both source and target processes are live writers.
+
+This is stronger than the migration CLI's assertion flags, but it remains a
+bounded synthetic process rehearsal. It does not freeze an arbitrary production
+OpenBao deployment, migrate post-cutover writes back to the source, switch a real
+load balancer/DNS endpoint, or grant cutover/rollback authority. A production
+rollback after target-side mutations requires an explicit data-forward/reconcile
+policy and RPO decision; the fixture deliberately does not pretend otherwise.
+
 ## Recorded live rehearsal
 
 `qa/openbao-acceptance/evidence/live-migration-20260908.json` records a completed
@@ -215,7 +233,8 @@ to the exact binary digests above, with production authority and full-format
 migration false.
 
 To reproduce against a new binary, supply an independently verified launcher
-implementing `start_oracle(port)`/`stop_oracle(handle)` and a fresh private work
+implementing `start_oracle(port)`, `stop_oracle(handle)` and
+`restart_oracle(handle)` for the same private source root, plus a fresh private work
 directory. The launcher and binary are operator-approved executable inputs:
 
 ```sh
