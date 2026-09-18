@@ -6,6 +6,7 @@ on:
       - codex/openbao-replacement-full-closure-20260908
       - codex/openbao-2-6-production-replacement-closure-20260911-r1
       - codex/openbao-2.6-production-gap-closure-20260911
+      - codex/full-replacement-closure-20260917-r2
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
