@@ -18,6 +18,7 @@ mod process;
 #[allow(clippy::expect_used)]
 mod store;
 
+use base64::{Engine as _, engine::general_purpose::STANDARD_NO_PAD};
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
@@ -34,6 +35,7 @@ const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;
 const ENVELOPE_V1_PREFIX: &str = "hbr1:";
 const ENVELOPE_V2_PREFIX: &str = "hbr2:";
+const ENVELOPE_V3_PREFIX: &str = "hbr3:";
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct ReplicatedEnvelope {
@@ -83,6 +85,40 @@ impl ReplicatedEnvelope {
     /// operation identifier because V1 used `:` as both a legal identifier byte
     /// and a field delimiter. V1 remains readable only when it is unambiguous.
     pub fn decode_status(encoded: &str) -> Result<Self, RaftRuntimeError> {
+        if let Some(rest) = encoded.strip_prefix(ENVELOPE_V3_PREFIX) {
+            let (length, rest) = rest
+                .split_once(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            if length.is_empty() || !length.bytes().all(|byte| byte.is_ascii_digit()) {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            let operation_len = length
+                .parse::<usize>()
+                .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
+            if operation_len == 0
+                || operation_len > MAX_OPERATION_ID_BYTES
+                || rest.len() <= operation_len
+                || !rest.is_char_boundary(operation_len)
+            {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            let (operation_id, suffix) = rest.split_at(operation_len);
+            let suffix = suffix
+                .strip_prefix(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            let (digest, sealed) = suffix
+                .split_once(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            let digest = decode_hex_array::<32>(digest)?;
+            let sealed_bytes = STANDARD_NO_PAD
+                .decode(sealed)
+                .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
+            if STANDARD_NO_PAD.encode(&sealed_bytes) != sealed {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            return Self::new(operation_id.to_owned(), digest, sealed_bytes);
+        }
+
         if let Some(rest) = encoded.strip_prefix(ENVELOPE_V2_PREFIX) {
             let (length, rest) = rest
                 .split_once(':')
@@ -136,22 +172,23 @@ impl ReplicatedEnvelope {
 
     fn encoded_status(&self) -> String {
         let operation_len = self.operation_id.len().to_string();
+        let sealed = STANDARD_NO_PAD.encode(&self.sealed);
         let mut encoded = String::with_capacity(
-            ENVELOPE_V2_PREFIX.len()
+            ENVELOPE_V3_PREFIX.len()
                 + operation_len.len()
                 + 2
                 + self.operation_id.len()
                 + self.digest.len() * 2
-                + self.sealed.len() * 2,
+                + sealed.len(),
         );
-        encoded.push_str(ENVELOPE_V2_PREFIX);
+        encoded.push_str(ENVELOPE_V3_PREFIX);
         encoded.push_str(&operation_len);
         encoded.push(':');
         encoded.push_str(&self.operation_id);
         encoded.push(':');
         append_hex(&mut encoded, &self.digest);
         encoded.push(':');
-        append_hex(&mut encoded, &self.sealed);
+        encoded.push_str(&sealed);
         encoded
     }
 }
@@ -367,15 +404,26 @@ mod tests {
     }
 
     #[test]
-    fn envelope_status_v2_round_trip_and_v1_compatibility() -> Result<(), RaftRuntimeError> {
+    fn envelope_status_v3_round_trip_and_legacy_compatibility() -> Result<(), RaftRuntimeError> {
         let envelope = ReplicatedEnvelope::new(
             "node:operation-1",
             [7; 32],
             b"HBA1-synthetic-sealed-envelope".to_vec(),
         )?;
         let encoded = envelope.encoded_status();
-        assert!(encoded.starts_with("hbr2:"));
+        assert!(encoded.starts_with("hbr3:"));
         assert_eq!(ReplicatedEnvelope::decode_status(&encoded)?, envelope);
+
+        let v2 = format!(
+            "hbr2:{}:operation-1:{}:{}",
+            "operation-1".len(),
+            "07".repeat(32),
+            "aa".repeat(16)
+        );
+        let decoded = ReplicatedEnvelope::decode_status(&v2)?;
+        assert_eq!(decoded.operation_id(), "operation-1");
+        assert_eq!(decoded.digest(), [7; 32]);
+        assert_eq!(decoded.sealed(), &[0xaa; 16]);
 
         let v1 = format!("hbr1:operation-1:{}:{}", "07".repeat(32), "aa".repeat(16));
         let decoded = ReplicatedEnvelope::decode_status(&v1)?;
@@ -383,16 +431,18 @@ mod tests {
         assert_eq!(decoded.digest(), [7; 32]);
         assert_eq!(decoded.sealed(), &[0xaa; 16]);
         assert!(ReplicatedEnvelope::decode_status("hbr1:ambiguous:id:00:aa").is_err());
+        assert!(ReplicatedEnvelope::decode_status("hbr3:11:operation-1:07:***").is_err());
         Ok(())
     }
 
     #[test]
     fn malformed_unicode_status_is_rejected_without_panicking() {
         for encoded in [
+            "hbr3:1:é:x:y",
+            "hbr3:2:€:x:y",
+            "hbr3:3:😀:x:y",
+            "hbr3:2:é:x:y",
             "hbr2:1:é:x:y",
-            "hbr2:2:€:x:y",
-            "hbr2:3:😀:x:y",
-            "hbr2:2:é:x:y",
             "hbr1:é:00:aa",
         ] {
             assert!(matches!(
