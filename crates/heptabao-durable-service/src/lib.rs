@@ -38,6 +38,10 @@ const BACKUP_VERSION: u16 = 1;
 const MAX_BACKUP_BYTES: usize = MAX_FILE_BYTES * 2 + 2 * 1024 * 1024;
 const MAX_STRING_BYTES: usize = 4 * 1024;
 const MAX_SECRET_BYTES: usize = 1024 * 1024;
+/// Maximum resources changed by one authenticated generation. The server's
+/// 16 MiB V2 state rewrite can need 32 new chunks + 32 obsolete chunk deletes
+/// + one manifest mutation during a no-reuse transition.
+pub const MAX_ATOMIC_MUTATIONS: usize = 96;
 const MAX_RECORDS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -1469,7 +1473,7 @@ fn apply_journal_mutations(
     mutations: &[JournalMutation],
 ) -> Result<(), ServiceError> {
     validate_marker(marker)?;
-    if mutations.is_empty() || mutations.len() > 64 {
+    if mutations.is_empty() || mutations.len() > MAX_ATOMIC_MUTATIONS {
         return Err(ServiceError::CorruptState);
     }
     let mut resources = std::collections::BTreeSet::new();
@@ -2322,7 +2326,7 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
             bytes.extend_from_slice(&checkpoint.ledger_digest);
         }
         JournalEvent::Apply { marker, mutations } => {
-            if mutations.is_empty() || mutations.len() > 64 {
+            if mutations.is_empty() || mutations.len() > MAX_ATOMIC_MUTATIONS {
                 return Err(ServiceError::CorruptState);
             }
             bytes.push(5);
@@ -2378,7 +2382,7 @@ fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
             let marker = decode_marker(&mut cursor)?;
             let count =
                 usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
-            if count == 0 || count > 64 {
+            if count == 0 || count > MAX_ATOMIC_MUTATIONS {
                 return Err(ServiceError::CorruptState);
             }
             let mut resources = std::collections::BTreeSet::new();
