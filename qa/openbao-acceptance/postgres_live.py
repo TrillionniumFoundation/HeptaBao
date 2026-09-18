@@ -101,6 +101,45 @@ class Postgres:
                 if process.poll() is None:
                     process.kill()
                 process.wait(timeout=5)
+    @contextmanager
+    def provider_ledger_lock(self):
+        application='hb-provider-lock-'+secrets.token_hex(12)
+        with psql_environment(self.root.parent, port=self.port, database='app',
+                              user='hb_bootstrap', password=self.password, ca=self.ca,
+                              application=application) as env:
+            env['PGOPTIONS']='-c statement_timeout=15000'
+            process=subprocess.Popen(
+                [str(self.bin/'psql'),'-X','-qAt','-w','-v','ON_ERROR_STOP=1'],
+                stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+                env=env,text=True)
+            try:
+                process.stdin.write(
+                    'BEGIN; LOCK TABLE heptabao_provider.leases IN ACCESS EXCLUSIVE MODE; '
+                    'SELECT pg_sleep(8); COMMIT;\n'
+                )
+                process.stdin.close()
+                deadline=time.monotonic()+5
+                while time.monotonic()<deadline:
+                    result=self.sql(
+                        "SELECT count(*) FROM pg_locks l "
+                        "JOIN pg_class c ON c.oid=l.relation "
+                        "JOIN pg_namespace n ON n.oid=c.relnamespace "
+                        "WHERE n.nspname='heptabao_provider' AND c.relname='leases' "
+                        "AND l.mode='AccessExclusiveLock' AND l.granted"
+                    )
+                    if result.returncode==0 and int(result.stdout.strip() or '0')>=1:
+                        break
+                    if process.poll() is not None:
+                        raise RuntimeError('provider_lock_failed')
+                    time.sleep(.05)
+                else:
+                    raise RuntimeError('provider_lock_not_observed')
+                yield
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=5)
+
     def start(self):
         if self.process is not None:raise RuntimeError('postgres_already_started')
         self.log=(self.root/'postgres.log').open('ab');(self.root/'postgres.log').chmod(0o600)
@@ -165,13 +204,30 @@ def run(binary,bin_dir,root,checks):
         status,_=instance.call('POST','sys/leases/reconcile/'+identity,{})
         check('restart_reconcile',status==204);check('reconciled_role_denied',not pg.login(cred['username'],cred['password']))
         status,issued=instance.call('GET','database/creds/short');check('idle_expiry_seed',status==200);cred=issued['data']
+        with pg.provider_ledger_lock():
+            deadline=time.monotonic()+8
+            provider_waiting=False
+            while time.monotonic()<deadline:
+                q=pg.sql(
+                    "SELECT count(*) FROM pg_stat_activity "
+                    "WHERE usename='hb_manager' AND wait_event_type='Lock'"
+                )
+                provider_waiting=q.returncode==0 and int(q.stdout.strip() or '0')>=1
+                if provider_waiting:break
+                time.sleep(.05)
+            check('slow_provider_wait_observed',provider_waiting)
+            started=time.monotonic()
+            capacity_status,_=instance.call('GET','sys/internal/capacity')
+            unrelated_ms=(time.monotonic()-started)*1000
+            check('slow_provider_does_not_hold_global_service_lock',
+                  capacity_status==200 and unrelated_ms<750)
         deadline=time.monotonic()+15
         while True:
             q=pg.sql("SELECT NOT rolcanlogin FROM pg_roles WHERE rolname='"+cred['username']+"'")
             disabled=q.returncode==0 and q.stdout.strip()=='t'
             if disabled or time.monotonic()>=deadline:break
             time.sleep(.1)
-        check('worker_really_disabled_pg_role_not_only_ttl',disabled)
+        check('worker_retries_and_disables_pg_role_after_lock_release',disabled)
         check('idle_expiry_provider_login_denied',not pg.login(cred['username'],cred['password']))
         check('stored_provider_contract_version',pg.sql('SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password).stdout.strip()=='heptabao-postgresql-provider-v1')
     finally:
