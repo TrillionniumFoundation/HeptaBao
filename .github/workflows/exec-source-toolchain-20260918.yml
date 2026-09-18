@@ -21,7 +21,7 @@ jobs:
           path: candidate
           fetch-depth: 0
           persist-credentials: false
-      - name: Reconstruct checksum-bound source and publish blobs without executing it or moving refs
+      - name: Reconstruct fixed source, verify tree and publish blobs without executing candidate or moving refs
         shell: bash
         env:
           BLOB_TOKEN: ${{ github.token }}
@@ -37,18 +37,22 @@ jobs:
           assert git('rev-parse','HEAD').decode().strip()=='59aded26640eeb039cdca5d197e1285a76321a89'
           assert git('rev-parse','HEAD^{tree}').decode().strip()=='4dadf34a8414ee9222369ab8cce0975e65d2141f'
           assert not git('status','--porcelain=v1','--untracked-files=all')
-          parts=[(root/'transport'/'.exec'/f'section7-{i}.part').read_bytes() for i in range(6)]
-          packed=b''.join(parts)
-          assert len(packed)==33336 and hashlib.sha256(packed).hexdigest()=='64b2d7c1feebf320376b33e2e7aaf7f3183aacd98132184cfaa844e29e8e14ca'
-          dec=lzma.LZMADecompressor(memlimit=512*1024*1024)
-          patch=dec.decompress(packed,max_length=200000)
-          assert dec.eof and not dec.unused_data
-          assert len(patch)==142104 and hashlib.sha256(patch).hexdigest()=='2637d5aad9f318bc3836778cd8fc81ddafca5fb7e72374a6daa2b3a484107b61'
-          subprocess.run(['git','-c','core.hooksPath=/dev/null','apply','--index','--unidiff-zero','--whitespace=error'],input=patch,cwd=candidate,env=env,check=True)
+          packed=b''.join((root/'transport'/'.exec'/f'section7-{i}.part').read_bytes() for i in range(6))
+          addon=(root/'transport'/'.exec'/'section7-addon.xz').read_bytes()
+          for data, size, checksum, raw_size, raw_checksum, expected_tree in (
+              (packed,33336,'64b2d7c1feebf320376b33e2e7aaf7f3183aacd98132184cfaa844e29e8e14ca',142104,'2637d5aad9f318bc3836778cd8fc81ddafca5fb7e72374a6daa2b3a484107b61','31c7979371fe903511080a82eee3bfc6249d76af'),
+              (addon,9988,'83cb13cf3527452ac488e4169279cd50b5178531c753b78f2099a9a17ab3d7d2',37299,'39a7a7df0f7ac8ac5fbde7e3cee98dbc44c8bf695841d37e0d302d6f60af06dc','1ab62ba7f88b74e1cf68aed36be556167bbcb778'),
+          ):
+              assert len(data)==size and hashlib.sha256(data).hexdigest()==checksum
+              dec=lzma.LZMADecompressor(memlimit=512*1024*1024)
+              patch=dec.decompress(data,max_length=200000)
+              assert dec.eof and not dec.unused_data
+              assert len(patch)==raw_size and hashlib.sha256(patch).hexdigest()==raw_checksum
+              subprocess.run(['git','-c','core.hooksPath=/dev/null','apply','--index','--unidiff-zero','--whitespace=error'],input=patch,cwd=candidate,env=env,check=True)
+              assert git('write-tree').decode().strip()==expected_tree
           tree=git('write-tree').decode().strip()
-          assert tree=='31c7979371fe903511080a82eee3bfc6249d76af'
           paths=[p.decode() for p in git('diff','--cached','--name-only','-z').split(b'\0') if p]
-          assert len(paths)==58 and len(paths)==len(set(paths))
+          assert len(paths)==72 and len(paths)==len(set(paths))
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,*args,**kwargs):
                   raise RuntimeError('blob API redirect refused')
