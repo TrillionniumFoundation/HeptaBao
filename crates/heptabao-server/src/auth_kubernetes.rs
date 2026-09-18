@@ -36,6 +36,52 @@ struct KubernetesRole {
     token_num_uses: u64,
 }
 
+pub(crate) struct KubernetesLoginPlan {
+    namespace: String,
+    mount: String,
+    role_name: String,
+    presented: Zeroizing<String>,
+    config: KubernetesConfig,
+    role: KubernetesRole,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct KubernetesLoginObservation {
+    service_account_namespace: String,
+    service_account_name: String,
+    service_account_uid: String,
+}
+
+impl KubernetesLoginPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &Outbound,
+    ) -> Result<KubernetesLoginObservation, AuthError> {
+        let mut request = json!({
+            "apiVersion":"authentication.k8s.io/v1",
+            "kind":"TokenReview",
+            "spec":{"token":self.presented.as_str(),"audiences":[self.role.audience.clone()]}
+        });
+        let result = outbound.post_json_bearer(
+            &format!("{}{TOKEN_REVIEW_PATH}", self.config.kubernetes_host),
+            &self.config.token_reviewer_jwt,
+            &request,
+        );
+        crate::service::erase_json(&mut request);
+        let mut reviewed =
+            result.map_err(|_| err(503, "Kubernetes TokenReview unavailable or untrusted"))?;
+        let identity = self.role.bind_review(&reviewed);
+        crate::service::erase_json(&mut reviewed);
+        let (service_account_namespace, service_account_name, service_account_uid) = identity?;
+        Ok(KubernetesLoginObservation {
+            service_account_namespace,
+            service_account_name,
+            service_account_uid,
+        })
+    }
+}
+
 fn dns_name(value: &str, namespace: bool) -> bool {
     !value.is_empty()
         && value.len() <= if namespace { 63 } else { 253 }
@@ -419,14 +465,13 @@ impl AuthState {
             _ => Err(err(405, "method not allowed")),
         }
     }
-    pub(crate) fn kubernetes_login(
-        &mut self,
+    pub(crate) fn prepare_kubernetes_login(
+        &self,
         namespace: &str,
         mount: &str,
         body: &Value,
         now: u64,
-        outbound: &Outbound,
-    ) -> Result<AuthResponse, AuthError> {
+    ) -> Result<KubernetesLoginPlan, AuthError> {
         validate_namespace(namespace)?;
         if !self.online_mount_enabled(namespace, mount, "kubernetes") {
             return Err(denied());
@@ -447,39 +492,81 @@ impl AuthState {
         let config = state
             .config
             .as_ref()
+            .cloned()
             .ok_or_else(|| err(503, "Kubernetes auth is not configured"))?;
-        let mut request = json!({"apiVersion":"authentication.k8s.io/v1","kind":"TokenReview",
-            "spec":{"token":presented,"audiences":[role.audience]}});
-        let started = std::time::Instant::now();
-        let result = outbound.post_json_bearer(
-            &format!("{}{TOKEN_REVIEW_PATH}", config.kubernetes_host),
-            &config.token_reviewer_jwt,
-            &request,
-        );
-        crate::service::erase_json(&mut request);
-        let mut reviewed =
-            result.map_err(|_| err(503, "Kubernetes TokenReview unavailable or untrusted"))?;
-        let identity = role.bind_review(&reviewed);
-        crate::service::erase_json(&mut reviewed);
-        let (sa_namespace, sa_name, uid) = identity?;
-        let elapsed = started.elapsed();
-        let now = now.saturating_add(
+        Ok(KubernetesLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            role_name: role_name.into(),
+            presented: Zeroizing::new(presented.into()),
+            config,
+            role,
+            now,
+            started: std::time::Instant::now(),
+        })
+    }
+
+    pub(crate) fn finish_kubernetes_login(
+        &mut self,
+        plan: KubernetesLoginPlan,
+        observation: KubernetesLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        if !self.online_mount_enabled(&plan.namespace, &plan.mount, "kubernetes") {
+            return Err(denied());
+        }
+        let state = self
+            .kubernetes_at(AuthScope {
+                namespace: &plan.namespace,
+                mount: &plan.mount,
+            })
+            .ok_or_else(denied)?;
+        if state.config.as_ref() != Some(&plan.config)
+            || state.roles.get(&plan.role_name) != Some(&plan.role)
+        {
+            return Err(err(
+                409,
+                "Kubernetes auth configuration changed during TokenReview",
+            ));
+        }
+        let elapsed = plan.started.elapsed();
+        let now = plan.now.saturating_add(
             elapsed
                 .as_secs()
                 .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
         );
         let mut issued = self.issue_online_token(
-            AuthScope { namespace, mount },
-            &uid,
-            role.token_policies,
-            role.token_ttl,
-            role.token_num_uses,
+            AuthScope {
+                namespace: &plan.namespace,
+                mount: &plan.mount,
+            },
+            &observation.service_account_uid,
+            plan.role.token_policies,
+            plan.role.token_ttl,
+            plan.role.token_num_uses,
             now,
         )?;
-        issued.body["auth"]["metadata"] = json!({"service_account_namespace":sa_namespace,"service_account_name":sa_name,
-            "service_account_uid":uid,"role":role_name});
+        issued.body["auth"]["metadata"] = json!({
+            "service_account_namespace":observation.service_account_namespace,
+            "service_account_name":observation.service_account_name,
+            "service_account_uid":observation.service_account_uid,
+            "role":plan.role_name
+        });
         Ok(issued)
     }
+
+    pub(crate) fn kubernetes_login(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        now: u64,
+        outbound: &Outbound,
+    ) -> Result<AuthResponse, AuthError> {
+        let plan = self.prepare_kubernetes_login(namespace, mount, body, now)?;
+        let observation = plan.execute(outbound)?;
+        self.finish_kubernetes_login(plan, observation)
+    }
+
     pub(super) fn issue_online_token(
         &mut self,
         scope: AuthScope<'_>,
