@@ -6,7 +6,7 @@ Do not use this source to protect real secrets. Do not place live credentials, u
 
 ## Current repository state
 
-The current workspace contains **46 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace package set is derived from `Cargo.toml` and cross-checked against `Cargo.lock`, the capability matrix and module index. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
@@ -56,7 +56,7 @@ retains all original 60 surfaces and their work packages without issuing passes.
 
 Historical V1.x and V2.0 artifacts remain exact-source evidence but are not current state authority.
 
-Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **46 / 46** existing crates. This candidate remains not production-deployable.
+Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation is closed over the package set derived from `Cargo.toml`; package membership is validated structurally rather than by a duplicated prose count. This candidate remains not production-deployable.
 
 ## Mandatory path
 
