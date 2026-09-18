@@ -10,6 +10,18 @@
       ],
       "script": "qa/openbao-acceptance/audit_file_live.py"
     },
+    "audit_http_live": {
+      "case_ids": [
+        "sys_audit_lists_file_and_http",
+        "api_cannot_rebind_http_audit_destination",
+        "audited_mutation_succeeds",
+        "every_local_audit_record_delivered_to_http_collector",
+        "http_audit_records_do_not_expose_secret_or_bearer",
+        "collector_outage_fails_request_closed",
+        "collector_recovery_restores_audited_service"
+      ],
+      "script": "qa/openbao-acceptance/audit_http_live.py"
+    },
     "ha_forwarding": {
       "case_ids": [
         "standby_mutation_forwarding_and_context"
