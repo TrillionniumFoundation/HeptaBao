@@ -41,8 +41,9 @@ shares, TLS private keys and plaintext migration exports must not be uploaded.
 | PKI | `pki_live.py` | Selected internal-root/role/issue/revoke behavior, not complete CA/ACME/OCSP operations. |
 | JWT remote keys | `remote_jwks_compare.py` | Real HTTPS and RSA/P-256/Ed25519 key behavior; not browser OIDC code flow or identical cache semantics. |
 | Real PostgreSQL | `postgres_live.py` | Actual PostgreSQL 17 SQL, login, renewal, NOLOGIN revocation, termination of an existing session, restart reconciliation and idle expiry. Never substitute a wire model. |
+| HTTP audit | `audit_http_live.py` | Real host-enrolled TLS collector, local-file-first delivery, redirect denial, outage fail-closed and restart recovery; dynamic OpenBao audit-device option parity remains open. |
 | Raft administration | `raft_membership_live.py --dead-cleanup` | Five real same-host processes, committed membership, persisted-snapshot catch-up and observed cleanup grace; not five physical hosts. |
-| Bounded migration | `live_migration_rehearsal.py` | Real TLS KV history transfer, lost-acknowledgement reconciliation, restart, dry-run and idempotency; not full-instance cutover. |
+| Bounded migration | `live_migration_rehearsal.py` | Real TLS KV history transfer, lost-acknowledgement reconciliation, restart, process-fenced source→target cutover and target→same-source-root rollback rehearsal; not full-instance or post-cutover-write migration. |
 
 All named Python profiles live under `qa/openbao-acceptance/`. Oracle input
 acquisition uses `scripts/prepare_openbao_oracle.py`, the existing release/archive/
