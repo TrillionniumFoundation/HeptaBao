@@ -29,6 +29,7 @@ const ISSUE_PATH: &str = "sys/dynamic-secrets/issue";
 const PENDING_PATH: &str = "sys/dynamic-secrets/pending";
 const RECONCILE_PATH: &str = "sys/dynamic-secrets/reconcile";
 const LOOKUP_PREFIX: &str = "sys/dynamic-secrets/leases/";
+const OPERATION_LOOKUP_PREFIX: &str = "sys/dynamic-secrets/operations/";
 const RENEW_PATH: &str = "sys/leases/renew";
 const REVOKE_PATH: &str = "sys/leases/revoke";
 
@@ -176,6 +177,7 @@ impl DynamicSecretRuntime {
     pub(crate) fn owns_path(path: &str) -> bool {
         matches!(path, ISSUE_PATH | PENDING_PATH | RECONCILE_PATH | RENEW_PATH | REVOKE_PATH)
             || path.starts_with(LOOKUP_PREFIX)
+            || path.starts_with(OPERATION_LOOKUP_PREFIX)
     }
 
     pub(crate) fn root_only(path: &str) -> bool {
@@ -183,7 +185,11 @@ impl DynamicSecretRuntime {
     }
 
     pub(crate) fn required_capability(method: &str, path: &str) -> &'static str {
-        if method == "GET" && (path == PENDING_PATH || path.starts_with(LOOKUP_PREFIX)) {
+        if method == "GET"
+            && (path == PENDING_PATH
+                || path.starts_with(LOOKUP_PREFIX)
+                || path.starts_with(OPERATION_LOOKUP_PREFIX))
+        {
             "read"
         } else {
             "update"
@@ -242,6 +248,25 @@ impl DynamicSecretRuntime {
                 Err(error) => self.error(error, Some(&lease_id)),
             };
         }
+        if let Some(raw_id) = path.strip_prefix(OPERATION_LOOKUP_PREFIX) {
+            if method != "GET" {
+                return Response::error(405, "operation lease lookup requires GET");
+            }
+            let operation_id = match Id::parse(raw_id.to_owned()) {
+                Ok(value) => value,
+                Err(_) => return Response::error(400, "invalid operation id"),
+            };
+            let lease_id = derived_lease_id(subject, namespace, &operation_id);
+            return match self.broker.view(&lease_id, Tick::new(now)) {
+                Ok(view) => Response::ok(json!({
+                    "data": {
+                        "operation_id": operation_id.as_str(),
+                        "lease": lease_json(&view),
+                    }
+                })),
+                Err(error) => self.error(error, Some(&lease_id)),
+            };
+        }
         Response::error(404, "unsupported dynamic-secret path")
     }
 
@@ -281,7 +306,7 @@ impl DynamicSecretRuntime {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
-        let lease_id = derived_lease_id(subject, namespace, &operation_id, &scope);
+        let lease_id = derived_lease_id(subject, namespace, &operation_id);
         if let Ok(view) = self.broker.view(&lease_id, Tick::new(now)) {
             return Response {
                 status: 409,
@@ -540,7 +565,7 @@ fn derived_actor_id(subject: &str) -> Id {
     Id::parse(format!("actor_{suffix}")).expect("derived actor id is bounded ASCII")
 }
 
-fn derived_lease_id(subject: &str, namespace: &str, operation_id: &Id, scope: &CanonicalPath) -> Id {
+fn derived_lease_id(subject: &str, namespace: &str, operation_id: &Id) -> Id {
     let mut bytes = Zeroizing::new(Vec::new());
     bytes.extend_from_slice(b"heptabao.dynamic-lease-id.v1\0");
     bytes.extend_from_slice(subject.as_bytes());
@@ -548,8 +573,6 @@ fn derived_lease_id(subject: &str, namespace: &str, operation_id: &Id, scope: &C
     bytes.extend_from_slice(namespace.as_bytes());
     bytes.push(0);
     bytes.extend_from_slice(operation_id.as_str().as_bytes());
-    bytes.push(0);
-    bytes.extend_from_slice(scope.as_str().as_bytes());
     let digest = digest(&SHA256, &bytes);
     let suffix = digest
         .as_ref()
@@ -686,13 +709,12 @@ mod tests {
     #[test]
     fn derived_lease_identity_is_stable_and_operation_bound() -> Result<(), Box<dyn std::error::Error>> {
         let operation = Id::parse("request_one")?;
-        let scope = CanonicalPath::parse("/database/creds/app")?;
-        let first = derived_lease_id(&"a".repeat(64), "", &operation, &scope);
-        let second = derived_lease_id(&"a".repeat(64), "", &operation, &scope);
+        let first = derived_lease_id(&"a".repeat(64), "", &operation);
+        let second = derived_lease_id(&"a".repeat(64), "", &operation);
         assert_eq!(first, second);
         assert_ne!(
             first,
-            derived_lease_id(&"a".repeat(64), "", &Id::parse("request_two")?, &scope)
+            derived_lease_id(&"a".repeat(64), "", &Id::parse("request_two")?)
         );
         Ok(())
     }
