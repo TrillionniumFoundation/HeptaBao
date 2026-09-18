@@ -554,6 +554,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
         replay_epoch: 0,
+        namespaces: namespaces::NamespaceRegistry::default(),
         auth: auth.into(),
         engines: EngineState::default().into(),
         database: database::DatabaseState::default().into(),
