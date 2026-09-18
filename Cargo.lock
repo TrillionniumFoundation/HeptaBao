@@ -785,6 +785,7 @@ dependencies = [
 name = "heptabao-raft-runtime"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "futures",
  "openraft",
  "openraft-macros",
