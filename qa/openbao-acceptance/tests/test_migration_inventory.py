@@ -78,7 +78,7 @@ class InventoryTests(unittest.TestCase):
                 "source_identity": source_identity,
                 "keys_digest": digest(["one", "two"]),
                 "inventory_digest": inventory_digest,
-                "profile": "heptabao.kv2-migration.v1",
+                "profile": "heptabao.kv2-readable-history.v1",
                 "target_identity": target_identity,
             },
         )
