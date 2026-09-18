@@ -1429,7 +1429,7 @@
       "technical_contract": {
         "api_or_protocol": "Health, seal, recovery, capacity, compaction and backup operations",
         "required_positive_and_hostile_behavior": "Root-only metadata, bounded storage refusal, fail-closed audit and repeatable recovery",
-        "remaining_semantics_and_effect_checks": "768 KiB state and 32000 retained requests remain limits; production SLO/retention needs real capacity work",
+        "remaining_semantics_and_effect_checks": "16 MiB whole logical state and 32000 retained operation identities per replay epoch remain explicit bounds; local 512 KiB chunk publication is not record-oriented scaling, and production SLO/retention still needs the measured growth and multi-host qualification evidence",
         "crash_reopen": "Interrupt Health before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-OPERATIONS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
