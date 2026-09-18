@@ -243,24 +243,13 @@ impl<B: Barrier> DurableService<B> {
                 candidate.entries.remove(&storage_key);
             }
         }
-        let mut candidate_ledger = self.ledger.clone();
-        candidate_ledger.insert(
-            key,
-            LedgerRecord {
-                binding_digest,
-                recovery_reference: recovery_reference.clone(),
-                generation,
-            },
-        );
+        let ledger_record = LedgerRecord {
+            binding_digest,
+            recovery_reference: recovery_reference.clone(),
+            generation,
+        };
 
         let snapshot_bytes = sealed_snapshot(&self.barrier, &candidate)?;
-        let ledger_bytes = sealed_ledger(
-            &self.barrier,
-            generation,
-            self.replay_epoch,
-            self.retired_through_generation,
-            &candidate_ledger,
-        )?;
         let intent = sealed_journal_record(
             &self.barrier,
             intent_sequence,
@@ -271,7 +260,7 @@ impl<B: Barrier> DurableService<B> {
             terminal_sequence,
             &JournalEvent::Commit(marker),
         )?;
-        if snapshot_bytes.len() > MAX_FILE_BYTES || ledger_bytes.len() > MAX_FILE_BYTES {
+        if snapshot_bytes.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         if terminal_sequence > MAX_RECORDS as u64
@@ -303,8 +292,7 @@ impl<B: Barrier> DurableService<B> {
             if failpoint == Failpoint::AfterCommitJournal {
                 return Err(ServiceError::RecoveryRequired);
             }
-            atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
-            self.ledger = candidate_ledger;
+            self.ledger.insert(key, ledger_record);
             Ok(())
         })();
         // Ensure caller-owned plaintext is released promptly on both success
