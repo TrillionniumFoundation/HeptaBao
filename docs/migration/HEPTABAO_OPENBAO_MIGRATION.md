@@ -77,9 +77,10 @@ python qa/openbao-acceptance/migrate_kv2.py transfer \
 
 This is a dry-run: it reads and validates source histories and reports target
 presence counts without mutating either endpoint or creating a checkpoint.
-Existing target keys are reported, not certified resumable during dry-run. Apply
+Existing target keys are reported, not certified resumable during dry-run. Normal transfer/import apply
 refuses an existing target key unless the exact private checkpoint establishes
-that this transfer created it.
+that this transfer created it. The separate explicit prefix-append admission below
+never silently changes this default.
 
 ## Apply and restart-safe checkpoint behavior
 
@@ -196,10 +197,11 @@ interval in which both source and target processes are live writers.
 
 This is stronger than the migration CLI's assertion flags, but it remains a
 bounded synthetic process rehearsal. It does not freeze an arbitrary production
-OpenBao deployment, migrate post-cutover writes back to the source, switch a real
-load balancer/DNS endpoint, or grant cutover/rollback authority. A production
-rollback after target-side mutations requires an explicit data-forward/reconcile
-policy and RPO decision; the fixture deliberately does not pretend otherwise.
+OpenBao deployment, switch a real load balancer/DNS endpoint, or grant cutover/rollback authority. The
+current extension described below repatriates only verified append-only KV history
+on already-migrated keys. New keys, deleted/destroyed/pruned versions, changed
+metadata, other engines and external effects still require separate adapters and
+an explicit data-forward/reconcile policy and RPO decision.
 
 ## Recorded live rehearsal
 
@@ -273,3 +275,47 @@ bound into the checkpoint and private export. This closes a local mixed-read or
 replay ambiguity for the selected allowlist. It remains an application-level
 fence and does not provide a global OpenBao snapshot, Raft barrier-key
 compatibility, or atomic multi-object cutover.
+
+## Explicit prefix-append import for post-cutover KV writes
+
+`import --append-verified-prefix` is a distinct, opt-in destination admission for
+an existing KV object. It requires an immutable private export, a separate bound
+checkpoint, `--apply` and `--target-exclusive` before any write. The mode is not
+available for live `transfer` or `export`, and its checkpoint binding cannot be
+reused as the default new-object transfer binding. A dry-run performs only reads
+and does not allocate a checkpoint.
+
+For each explicitly selected existing key, every original value/version ordinal
+must be an exact prefix of the exported history. Selected metadata must match,
+auto-deletion must be disabled, and the destination must explicitly retain the
+complete imported history. A divergent prefix, destination-ahead history, missing
+object, changed metadata, deletion/destruction/pruning or insufficient retention
+is rejected. Existing values and metadata are never overwritten or fabricated.
+Only after readback and unchanged-metadata verification is the admitted prefix
+saved in the checkpoint. Missing suffix versions then use the existing durable
+intent → CAS append → exact history readback → checkpoint path. A lost response
+cannot reseed the prefix or permit blind retry; absent uncertain writes still
+require authoritative reconciliation. Repeating a completed import is read-only.
+
+The live rehearsal now makes actual new target versions after the official source
+process has stopped, exports that bounded synthetic history, then stops the
+target before restarting the same official source root. It executes the actual
+prefix-append CLI, discards one acknowledgement only after a real source append
+has committed, restarts the source and verifies resume without duplicate versions.
+Original source revocation, Cubbyhole and wrapping isolation checks remain.
+
+This is bounded data-forward recovery, not all-asset or atomic rollback. The
+export is plaintext and remains explicit/private; Python memory erasure is not
+promised. The operator must fence application writers and control routing until
+readback completes. The tool neither stops real deployments nor proves those
+external controls from an assertion flag. A newer export requires a new reviewed
+checkpoint context; modifying an uncertain checkpoint is never a recovery step.
+
+```sh
+python qa/openbao-acceptance/migrate_kv2.py import \
+  --target-prefix HB_ROLLBACK --target-mount secret \
+  --export-file /secure/migration/post-cutover.json \
+  --append-verified-prefix
+# After actual writer fencing and review, repeat with:
+# --apply --target-exclusive --checkpoint /secure/migration/rollback-append.json
+```

@@ -6,7 +6,7 @@ Status: current implementation contract for the V2.1 candidate. This document is
 
 HeptaBao retains exact durable request identities so a lost response cannot turn a retry into a second state effect. The active detailed replay ledger is bounded to **32,000** operation identities. Ordinary compaction does not evict those identities. Capacity exhaustion therefore needs an explicit authenticated lifecycle transition rather than silent LRU-style forgetting.
 
-`crates/heptabao-server/src/service.rs` owns a cluster-visible `replay_epoch: u64` inside current `State` schema 5. `heptabao-durable-service` owns each node's local detailed replay ledger and its local epoch. The two values have different jobs:
+`crates/heptabao-server/src/service.rs` owns a cluster-visible `replay_epoch: u64` inside `State` (introduced in schema 5; the current discriminator is defined in `HEPTABAO_CURRENT_STATE_FORMAT.md`). `heptabao-durable-service` owns each node's local detailed replay ledger and its local epoch. The two values have different jobs:
 
 - application-state `replay_epoch` is the replicated cluster ordering point;
 - the durable-service epoch fences the node-local operation-identity namespace;

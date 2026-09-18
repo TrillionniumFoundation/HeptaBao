@@ -351,7 +351,12 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
             .retained_request_count();
         assert!(before > 0);
         service
-            .persist_local(&bytes, "hasync-epoch-transition")
+            .persist_local(
+                &bytes,
+                "hasync-epoch-transition",
+                committed.schema,
+                committed.replay_epoch,
+            )
             .map_err(|_| "HA catch-up persistence failed")?;
         let durable = service.durable.as_ref().ok_or("missing durable")?;
         assert_eq!(durable.replay_epoch(), 1);
@@ -399,7 +404,16 @@ fn ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widen
 
         // An ordinary local publication must not acquire the authority to skip
         // replay epochs merely because the serialized state asks for it.
-        assert!(service.persist_local(&bytes, "local-epoch-skip").is_err());
+        assert!(
+            service
+                .persist_local(
+                    &bytes,
+                    "local-epoch-skip",
+                    committed.schema,
+                    committed.replay_epoch
+                )
+                .is_err()
+        );
         assert_eq!(
             service
                 .durable
@@ -414,7 +428,13 @@ fn ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widen
         // ledger monotonically through every missing epoch before publishing the
         // already-committed application state.
         service
-            .persist_local_with_epoch_policy(&bytes, "hasync-multi-epoch", true)
+            .persist_local_with_epoch_policy(
+                &bytes,
+                "hasync-multi-epoch",
+                committed.schema,
+                committed.replay_epoch,
+                true,
+            )
             .map_err(|_| "multi-epoch HA catch-up persistence failed")?;
         let durable = service.durable.as_ref().ok_or("missing durable")?;
         assert_eq!(durable.replay_epoch(), 3);
@@ -462,7 +482,12 @@ fn failed_state_publication_after_epoch_retirement_fences_service()
 
         // The invalid request identity is rejected only after the durable epoch
         // retirement has published. The wrapper must therefore fence the process.
-        let response = service.persist_local(&bytes, "invalid request id");
+        let response = service.persist_local(
+            &bytes,
+            "invalid request id",
+            target.schema,
+            target.replay_epoch,
+        );
         assert!(response.is_err());
         assert_eq!(
             service

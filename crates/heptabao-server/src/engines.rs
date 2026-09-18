@@ -14,8 +14,8 @@ mod identity;
 #[path = "engine_identity.rs"]
 mod identity_projection;
 use identity_projection::IdentityProjection;
-mod kv;
 pub(crate) mod kubernetes;
+mod kv;
 #[path = "engine_leases.rs"]
 mod leases;
 mod pki;
@@ -451,6 +451,59 @@ impl EngineState {
             }
         }
         Ok(())
+    }
+
+    pub(crate) fn is_immutable_kv_read(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "GET" | "LIST" | "SCAN") {
+            return false;
+        }
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .find(|(mount, _)| path.starts_with(mount.as_str()))
+            })
+            .is_some_and(|(_, mount)| matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)))
+    }
+
+    /// Requires live Service authorization. The immutable receiver makes this
+    /// path unable to allocate a namespace, consume a token or modify an engine.
+    pub(crate) fn handle_immutable_kv_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let (mount_path, mount) = state
+            .mounts
+            .iter()
+            .find(|(mount, _)| path.starts_with(mount.as_str()))
+            .ok_or_else(not_found)?;
+        let params = SecretJson(if body.is_null() {
+            json!({})
+        } else {
+            body.clone()
+        });
+        if !params.is_object() {
+            return Err(bad("request body must be an object"));
+        }
+        let method =
+            if method == "GET" && params.get("list").is_some_and(|v| v == "true" || v == true) {
+                "LIST"
+            } else {
+                method
+            };
+        let relative = &path[mount_path.len()..];
+        match &mount.backend {
+            Backend::Kv1(entries) => kv::read_v1(entries, method, relative, &params),
+            Backend::Kv2(engine) => engine.handle_read(method, relative, &params, now),
+            _ => Err(unsupported()),
+        }
     }
 
     /// Atomically relocate one registered secret-engine mount inside the

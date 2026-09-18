@@ -7,7 +7,8 @@ from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-import capacity_legacy_live as capacity_live
+import capacity_live
+import kv_read_scaling_live
 import transit_migration_live
 from bao_http import BaoError
 
@@ -24,7 +25,7 @@ class SectionSixProfileGuards(unittest.TestCase):
 
     def test_public_output_parent_blocks_before_service_allocation(self):
         self.root.chmod(0o755)
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with self.subTest(module=module.__name__), patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):
                     module.main(self.arguments())
@@ -32,7 +33,7 @@ class SectionSixProfileGuards(unittest.TestCase):
 
     def test_setgid_parent_not_silently_accepted(self):
         self.root.chmod(0o2700)
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):
                     module.main(self.arguments())
@@ -42,7 +43,7 @@ class SectionSixProfileGuards(unittest.TestCase):
         target = self.root / 'result.json'
         target.write_text('partial receipt')
         target.chmod(0o600)
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):
                     module.main(self.arguments())
@@ -51,7 +52,7 @@ class SectionSixProfileGuards(unittest.TestCase):
 
     def test_dangling_result_symlink_blocks_before_service_allocation(self):
         (self.root / 'result.json').symlink_to(self.root / 'missing')
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):
                     module.main(self.arguments())
@@ -61,7 +62,7 @@ class SectionSixProfileGuards(unittest.TestCase):
         directory = self.root / 'actual'
         directory.mkdir(mode=0o700)
         (self.root / 'redirect').symlink_to(directory, target_is_directory=True)
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):
                     module.main(self.arguments('redirect/result.json'))
@@ -74,7 +75,7 @@ class SectionSixProfileGuards(unittest.TestCase):
         self.assertFalse((self.root / 'result.json').exists())
 
     def test_failure_is_propagated_not_converted_to_a_success_receipt(self):
-        for module in (capacity_live, transit_migration_live):
+        for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run', side_effect=BaoError('fixture fault')):
                 with self.assertRaises(BaoError):
                     module.main(self.arguments())

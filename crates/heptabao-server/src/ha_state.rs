@@ -538,12 +538,7 @@ impl ClusterStateCodec {
         let operation_len =
             u16::try_from(operation_id.len()).map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
         let mut aad = Vec::with_capacity(
-            magic.len()
-                + 2
-                + self.cluster_id.len()
-                + 2
-                + operation_id.len()
-                + DIGEST_BYTES * 2,
+            magic.len() + 2 + self.cluster_id.len() + 2 + operation_id.len() + DIGEST_BYTES * 2,
         );
         aad.extend_from_slice(magic);
         aad.extend_from_slice(&cluster_len.to_be_bytes());

@@ -1,4 +1,4 @@
-use super::state_store::{self, STATE_CHUNK_BYTES};
+use super::state_store::{self, STATE_STORAGE_FORMAT};
 use super::tests::{Root, bootstrap, call};
 use super::*;
 
@@ -47,7 +47,7 @@ fn state_larger_than_legacy_limit_round_trips_through_manifest_chunks_and_restar
             .get("system", &resource)?
             .ok_or("manifest referenced a missing chunk")?;
         if index + 1 < manifest.chunk_count() {
-            assert_eq!(chunk.expose().len(), STATE_CHUNK_BYTES);
+            assert!((384 * 1024..=768 * 1024).contains(&chunk.expose().len()));
         }
     }
 
@@ -107,7 +107,8 @@ fn legacy_raw_state_is_eagerly_migrated_to_manifest_in_one_generation()
     assert_eq!(durable.generation(), raw_generation + 1);
     assert_eq!(durable.retained_request_count(), 3);
     let manifest = current_manifest(&service)?;
-    assert_eq!(manifest.slot(), 0);
+    assert_eq!(manifest.storage_format(), STATE_STORAGE_FORMAT);
+    assert_eq!(manifest.slot(), None);
     let health = call(&mut service, "GET", "sys/health", "", json!({}));
     assert_eq!(health.status, 200);
     let lookup = call(
@@ -165,12 +166,18 @@ fn tampered_or_missing_manifest_chunk_fails_unseal_closed() -> Result<(), Box<dy
 }
 
 #[test]
-fn state_commits_alternate_slots_and_survive_restart() -> Result<(), Box<dyn std::error::Error>> {
+fn content_addressed_state_commits_retire_replaced_chunks_and_survive_restart()
+-> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (key, token) = bootstrap(&mut service)?;
-    assert_eq!(current_manifest(&service)?.slot(), 0);
+    assert_eq!(
+        current_manifest(&service)?.storage_format(),
+        STATE_STORAGE_FORMAT
+    );
+    assert_eq!(current_manifest(&service)?.slot(), None);
 
+    let original_chunks = current_manifest(&service)?.unique_chunk_resources()?;
     let first = call(
         &mut service,
         "PUT",
@@ -179,8 +186,14 @@ fn state_commits_alternate_slots_and_survive_restart() -> Result<(), Box<dyn std
         json!({"data":{"value":"one"}}),
     );
     assert_eq!(first.status, 200, "{}", first.body);
-    assert_eq!(current_manifest(&service)?.slot(), 1);
+    assert_eq!(
+        current_manifest(&service)?.storage_format(),
+        STATE_STORAGE_FORMAT
+    );
+    assert_eq!(current_manifest(&service)?.slot(), None);
 
+    let first_chunks = current_manifest(&service)?.unique_chunk_resources()?;
+    assert_ne!(original_chunks, first_chunks);
     let second = call(
         &mut service,
         "PUT",
@@ -189,11 +202,30 @@ fn state_commits_alternate_slots_and_survive_restart() -> Result<(), Box<dyn std
         json!({"data":{"value":"two"}}),
     );
     assert_eq!(second.status, 200, "{}", second.body);
-    assert_eq!(current_manifest(&service)?.slot(), 0);
+    assert_eq!(
+        current_manifest(&service)?.storage_format(),
+        STATE_STORAGE_FORMAT
+    );
+    assert_eq!(current_manifest(&service)?.slot(), None);
     let durable = service
         .durable
         .as_ref()
         .ok_or("durable store unavailable")?;
+    let final_chunks = current_manifest(&service)?.unique_chunk_resources()?;
+    for old in original_chunks.union(&first_chunks) {
+        if !final_chunks.contains(old) {
+            assert!(
+                durable.get("system", old)?.is_none(),
+                "retired chunk remains reachable"
+            );
+        }
+    }
+    for current in &final_chunks {
+        assert!(
+            durable.get("system", current)?.is_some(),
+            "published chunk missing"
+        );
+    }
     assert_eq!(durable.generation(), 3);
     assert_eq!(durable.retained_request_count(), 3);
     drop(service);

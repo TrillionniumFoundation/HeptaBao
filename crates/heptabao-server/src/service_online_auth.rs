@@ -43,7 +43,7 @@ pub(super) struct OnlineAuthEffectPlan {
     effect: OnlineAuthEffect,
 }
 
-pub(super) enum OnlineAuthObservation {
+pub(crate) enum OnlineAuthObservation {
     RemoteJwt(RemoteJwtLoginObservation),
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
@@ -348,7 +348,7 @@ mod tests {
         let (key, _) = bootstrap(&mut service)?;
         let (auth, _, callback) = AuthState::oidc_test_fixture();
         let mut state = service.state.as_ref().ok_or("missing state")?.clone();
-        state.auth = auth;
+        state.auth = auth.into();
         state.validate_format().map_err(|_| "invalid test state")?;
         service
             .commit_state(&state)
@@ -532,7 +532,7 @@ mod tests {
         state.schema = CURRENT_STATE_SCHEMA + 1;
         assert!(state.validate_format().is_err());
         let (auth, _) = AuthState::bootstrap(100)?;
-        state.auth = auth;
+        state.auth = auth.into();
         state.schema = 4;
         assert!(state.validate_format().is_ok());
         let encoded = serde_json::to_string(&state)?;

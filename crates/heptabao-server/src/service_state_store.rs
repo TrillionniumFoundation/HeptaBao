@@ -584,11 +584,20 @@ mod tests {
         let state = vec![7_u8; STATE_CHUNK_MAX_BYTES + 1];
         let plan = StateWritePlan::new(&state, "op-2", 5, None)?;
         let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("manifest missing")?;
-        let mut owned_chunks = plan
-            .chunks
-            .iter()
-            .map(|chunk| chunk.bytes.clone())
-            .collect::<Vec<_>>();
+        // Physical writes are sorted by content address, not logical order.
+        // Reassemble through the manifest before introducing a payload fault.
+        let mut owned_chunks = (0..manifest.chunk_count())
+            .map(|index| {
+                let resource = manifest.chunk_resource(index)?;
+                plan.chunks
+                    .iter()
+                    .find(|chunk| chunk.resource == resource)
+                    .map(|chunk| chunk.bytes.clone())
+                    .ok_or(StateStoreError::InvalidChunk)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let good = owned_chunks.iter().map(Vec::as_slice).collect::<Vec<_>>();
+        assert_eq!(assemble_state(&manifest, &good)?.as_slice(), state);
         owned_chunks[1][0] ^= 1;
         let chunks = owned_chunks.iter().map(Vec::as_slice).collect::<Vec<_>>();
         assert_eq!(

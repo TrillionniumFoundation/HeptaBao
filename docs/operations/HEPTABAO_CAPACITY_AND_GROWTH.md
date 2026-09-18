@@ -159,3 +159,27 @@ raise constants and infer scalability from a small happy-path fixture.
 The same precedence applies after an observed external provider effect: final
 local publication failure preserves pending reconciliation state and returns
 reconcile-only 503, not a new-attempt capacity rejection.
+
+## Immutable KV read cost and runtime counter
+
+Eligible unlimited-token KV GET/LIST/SCAN operations borrow shared authoritative
+state and use `engines/kv.rs` immutable handlers. They do not clone the EngineState,
+serialize the complete State, advance a generation or allocate replay identities.
+Ordered KV listing seeks from the cursor and skips emitted shallow subtrees.
+Live token/parent/Identity/namespace/ACL checks, ReadIndex and both audits remain;
+finite-use tokens, wrapping and local lease reconciliation use the transactional
+path. Empty lifecycle work is detected before owner cloning.
+
+`kv_read_only_dispatches` in the root-only capacity response is a saturating
+process-local count of immutable-branch requests, including authorization denials,
+not a successful-read counter. It resets on restart and is deliberately excluded from
+durable-state equality; it is not a compatibility counter or a persisted promise.
+The real TLS profile `qa/openbao-acceptance/kv_read_scaling_live.py` verifies
+unchanged generation, replay and journal bytes plus both audit records per read
+while growing state through three declared points. It reports read latency and
+RSS, and repeats a read after SIGKILL/reopen. `--baseline` measures the same workload
+without claiming the new dispatch path. Timing is descriptive and sample counts
+are explicit; this single-host development fixture cannot grant production scale.
+
+Owner-level `CowOwner` sharing and immutable reads do not remove whole-state write
+serialization, state admission bounds, or the remaining long-horizon HA/fault exits.

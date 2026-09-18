@@ -615,19 +615,6 @@ impl AuthState {
         Ok(issued)
     }
 
-    pub(crate) fn kubernetes_login(
-        &mut self,
-        namespace: &str,
-        mount: &str,
-        body: &Value,
-        now: u64,
-        outbound: &Outbound,
-    ) -> Result<AuthResponse, AuthError> {
-        let plan = self.prepare_kubernetes_login(namespace, mount, body, now)?;
-        let observation = plan.execute(outbound)?;
-        self.finish_kubernetes_login(plan, observation)
-    }
-
     pub(super) fn issue_online_token(
         &mut self,
         scope: AuthScope<'_>,

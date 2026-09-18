@@ -949,11 +949,9 @@ impl AuthState {
         Ok(token)
     }
 
-    /// Authenticate a token without taking mutable state when no finite-use
-    /// counter must be consumed. None means the caller must use the durable
-    /// mutable admission path so last-use cleanup and use consumption cannot be
-    /// skipped by an optimization.
-    pub(super) fn authenticate_without_consuming(
+    /// A read-only capability is available only for an unlimited ordinary token.
+    /// Finite-use and wrapping tokens must enter the durable admission path.
+    pub(super) fn authenticate_read_only(
         &self,
         raw: &str,
         now: u64,
@@ -962,19 +960,22 @@ impl AuthState {
             return Err(denied());
         }
         let id = hash(raw);
-        self.active_token(&id, now, true)?;
-        let token = self.tokens.get(&id).ok_or_else(denied)?;
-        if token.uses_remaining.is_some() {
+        let token = self.active_token(&id, now, true)?;
+        if token.uses_remaining.is_some() || token.wrapping.is_some() {
             return Ok(None);
         }
-        Ok(Some(Principal {
+        Ok(Some(Self::request_principal(id, token.clone(), now)))
+    }
+
+    fn request_principal(id: String, token: Token, _now: u64) -> Principal {
+        Principal {
             identity_policies: BTreeSet::new(),
             identity_checked: false,
             digest: id,
-            token: token.clone(),
+            token,
             #[cfg(test)]
-            request_time: now,
-        }))
+            request_time: _now,
+        }
     }
 
     pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
@@ -995,14 +996,7 @@ impl AuthState {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
             token.wrapping = None;
         }
-        Ok(Principal {
-            identity_policies: BTreeSet::new(),
-            identity_checked: false,
-            digest: id,
-            token: request_token,
-            #[cfg(test)]
-            request_time: now,
-        })
+        Ok(Self::request_principal(id, request_token, now))
     }
 
     fn check_principal<'a>(

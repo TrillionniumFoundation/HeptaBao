@@ -53,26 +53,26 @@ class ExternalProfileTests(unittest.TestCase):
         self.assertEqual(rows,[{"case":"direct.mount","passed":False}])
         self.assertNotIn("private-response-sentinel",json.dumps(rows))
     def model(self):
-        provider=object.__new__(PgWireFixture);provider.rows={};provider.events=[]
+        provider=object.__new__(PgWireFixture);provider.rows={};provider.events=[];provider.fences={};provider.retired_rows={}
         return provider
     def params(self):
-        return ["hb1:"+"a"*64,"hbp_"+"b"*32,"1","issue","4000000000","app_reader","c"*64,"d"*64]
+        return ["hbf1:"+"e"*64,"hb1:"+"a"*64,"hbp_"+"b"*32,"1","issue","4000000000","app_reader","c"*64,"d"*64]
     def test_model_same_sequence_requires_the_entire_payload(self):
         m=self.model();p=self.params();first=m.apply(p);self.assertIsInstance(first,dict)
         self.assertEqual(m.apply(p),first)
-        for offset,value in [(4,"4000000001"),(6,"f"*64),(3,"renew")]:
+        for offset,value in [(5,"4000000001"),(7,"f"*64),(4,"renew")]:
             changed=list(p);changed[offset]=value
             self.assertEqual(m.apply(changed),"ERROR")
-        self.assertEqual(m.rows[p[0]],first)
+        self.assertEqual(m.rows[p[1]],first)
     def test_model_tombstone_rejects_delayed_issue_and_renew(self):
         m=self.model();p=self.params();m.apply(p)
-        revoke=list(p);revoke[2:5]=["3","revoke","0"];revoke[6]="";revoke[7]="e"*64
+        revoke=list(p);revoke[3:6]=["3","revoke","0"];revoke[7]="";revoke[8]="e"*64
         result=m.apply(revoke);self.assertIs(result["login"],False)
         self.assertEqual(m.apply(p),"ERROR")
-        renew=list(p);renew[2:5]=["4","renew","4000000001"];renew[6]=""
+        renew=list(p);renew[3:6]=["4","renew","4000000001"];renew[7]=""
         self.assertEqual(m.apply(renew),"ERROR")
     def test_model_missing_issue_can_be_cancelled_without_credentials(self):
-        m=self.model();p=self.params();p[2:5]=["2","revoke","0"];p[6]=""
+        m=self.model();p=self.params();p[3:6]=["2","revoke","0"];p[7]=""
         result=m.apply(p);self.assertIs(result["login"],False);self.assertEqual(result["test_password"],"")
 
 if __name__ == "__main__": unittest.main()

@@ -57,7 +57,7 @@
           },
           {
             "path": "crates/heptabao-server/src/service_tests.rs",
-            "name": "unknown_commit_releases_no_secret_and_recovers_written_value"
+            "name": "unknown_journal_write_releases_no_secret_and_preserves_last_committed_state"
           },
           {
             "path": "crates/heptabao-server/src/service_tests.rs",

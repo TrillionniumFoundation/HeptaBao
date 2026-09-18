@@ -61,6 +61,10 @@ jobs:
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
 
+      - name: Check formatting without changing source
+        shell: bash
+        run: cargo +1.98.0 fmt --all -- --check
+
       - name: Validate current repository truth and acceptance fixtures
         shell: bash
         run: |
@@ -76,11 +80,6 @@ jobs:
         if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
-
-      - name: Check formatting without changing source
-        if: ${{ success() || failure() }}
-        shell: bash
-        run: cargo +1.98.0 fmt --all -- --check
 
       - name: Check strict workspace Clippy
         if: ${{ success() || failure() }}
@@ -149,6 +148,16 @@ jobs:
           mkdir -m 700 "$reports"
           timeout 180 python qa/openbao-acceptance/capacity_live.py \
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
+
+      - name: Measure audited immutable KV reads over growing state
+        if: ${{ success() || failure() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-read-scaling-evidence"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/kv_read_scaling_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/reads.json"
 
       - name: Exercise real three-process HA with synthetic state
         if: ${{ success() || failure() }}
@@ -508,12 +517,13 @@ jobs:
         shell: bash
         env:
           QUALIFY_RESULT: ${{ needs.qualify.result }}
-          EVENT_NAME: ${{ github.event_name }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_SOURCE: ${{ github.sha }}
         run: |
           set -euo pipefail
           test "$QUALIFY_RESULT" = success
-          if test "$EVENT_NAME" = pull_request; then
-            test -n "${{ github.event.pull_request.head.sha }}"
-            test -n "${{ github.sha }}"
+          if test "$GITHUB_EVENT_NAME" = pull_request; then
+            [[ "$PR_HEAD" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$EXPECTED_SOURCE" =~ ^[0-9a-f]{40}$ ]]
           fi
-          printf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$EVENT_NAME"
+          printf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$GITHUB_EVENT_NAME"

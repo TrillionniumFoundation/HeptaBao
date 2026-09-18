@@ -147,7 +147,7 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
             validate_observation(capacity)
         except ScenarioFailure:
             raise BaoError('target_capacity_invalid') from None
-        if capacity.get('profile') != 'bounded-chunked-state-v1' or capacity.get('scope') != 'serving-leader-local':
+        if capacity.get('profile') != 'bounded-content-defined-state-v3' or capacity.get('scope') != 'serving-leader-local':
             raise BaoError('target_capacity_profile_unknown')
         fields = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
                   'retained_operations', 'operation_limit', 'operations_remaining',

@@ -103,12 +103,12 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-DB-VALKEY` | `database_providers` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-AUDIT-FILE` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_file_live.list`, `audit_file_live.path_present`, `audit_file_live.read_binding`, `audit_file_live.enable_idempotent`, `audit_file_live.disable_rejected` |
 | `HB-SURFACE-AUDIT-HTTP` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_http_live.sys_audit_lists_file_and_http`, `audit_http_live.api_cannot_rebind_http_audit_destination`, `audit_http_live.audited_mutation_succeeds`, `audit_http_live.every_local_audit_record_delivered_to_http_collector`, `audit_http_live.http_audit_records_do_not_expose_secret_or_bearer`, `audit_http_live.collector_outage_fails_request_closed`, `audit_http_live.collector_recovery_restores_audited_service` |
-| `HB-SURFACE-AUDIT-SOCKET` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-AUDIT-SOCKET` | `audit_devices` | `IMPLEMENTED_SCOPED` | `audit_socket_live.sys_audit_lists_file_and_socket`, `audit_socket_live.api_cannot_rebind_socket_destination`, `audit_socket_live.audited_mutation_succeeds`, `audit_socket_live.socket_tail_matches_local_before_fault`, `audit_socket_live.socket_records_do_not_expose_secret_or_bearer`, `audit_socket_live.bounded_socket_outage_uses_mandatory_file_device`, `audit_socket_live.socket_outage_is_observable`, `audit_socket_live.collector_receives_new_records_after_recovery` |
 | `HB-SURFACE-AUDIT-SYSLOG` | `audit_devices` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-STORAGE-POSTGRESQL` | `storage_backends` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-STORAGE-RAFT` | `storage_backends` | `IMPLEMENTED_SCOPED` | `raft_membership_live.native_learner_join_acknowledged`, `raft_membership_live.snapshot_caught_up_learner_unseals`, `raft_membership_live.membership_persists_across_old_leader_restart`, `raft_membership_live.failover_after_membership_changes` |
 | `HB-SURFACE-PLUGIN-AUTH` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-PLUGIN-SECRET` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-PLUGIN-SECRET` | `plugin_classes` | `IMPLEMENTED_SCOPED` | `plugin_secret_live.read`, `plugin_secret_live.write_fenced`, `plugin_secret_live.unauthorized_no_entry`, `plugin_secret_live.restart_binding`, `plugin_secret_live.digest_fence` |
 | `HB-SURFACE-PLUGIN-DATABASE` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-PLUGIN-KMS` | `plugin_classes` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-CLUSTER-MTLS` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_mtls.peer_identity_and_cluster_authentication` |
@@ -117,10 +117,10 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-CLUSTER-STEPDOWN` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `ha_step_down.explicit_leadership_transfer_and_old_writer_fence` |
 | `HB-SURFACE-CLUSTER-AUTOPILOT` | `cluster_ha` | `IMPLEMENTED_SCOPED` | `raft_membership_live.continuous_stabilization_promotes_voter`, `raft_membership_live.dead_voter_removed_after_real_contact_threshold`, `raft_membership_live.minimum_three_voters_preserved`, `raft_membership_live.autopilot_policy_persists_across_restart` |
 | `HB-SURFACE-EDGE-HTTP-TLS` | `client_operator` | `IMPLEMENTED_SCOPED` | `edge_tls.health` |
-| `HB-SURFACE-CLI-ROOT` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-CLI-ROOT` | `client_operator` | `IMPLEMENTED_SCOPED` | `client_live.client.write_version`, `client_live.client.read_value`, `client_live.client.list_key`, `client_live.client.capability_root`, `client_live.client.wrap_redacts`, `client_live.client.replay_error_no_data` |
 | `HB-SURFACE-AGENT` | `client_operator` | `IMPLEMENTED_SCOPED` | `agent_proxy_helper_live.agent.real_login_ready`, `agent_proxy_helper_live.agent.private_sink`, `agent_proxy_helper_live.agent.real_renewal`, `agent_proxy_helper_live.agent.graceful_stop_invalidates_sink` |
 | `HB-SURFACE-PROXY` | `client_operator` | `IMPLEMENTED_SCOPED` | `agent_proxy_helper_live.proxy.real_secret_read`, `agent_proxy_helper_live.proxy.rejects_supplied_root_token`, `agent_proxy_helper_live.proxy.uses_live_server_authorization`, `agent_proxy_helper_live.proxy.clean_shutdown_removes_only_owned_socket` |
-| `HB-SURFACE-OPENAPI-UI` | `client_operator` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-OPENAPI-UI` | `client_operator` | `IMPLEMENTED_SCOPED` | `openapi_live.root_openapi_entries`, `openapi_live.candidate_has_only_standard_openapi_operation_keys`, `openapi_live.non_root_visibility_fails_closed`, `openapi_live.revoked_token_denied`, `openapi_live.openapi_restart_stable` |
 | `HB-SURFACE-OPERATIONS` | `client_operator` | `IMPLEMENTED_SCOPED` | `operations.seal_status` |
 | `HB-SURFACE-NAMESPACE-TREE` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-NAMESPACE-SEAL` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
@@ -128,7 +128,7 @@ state means full behavior coverage, independent admission or production readines
 | `HB-SURFACE-SELF-INIT` | `namespace_workflow` | `DEFINED_NOT_IMPLEMENTED` | None |
 | `HB-SURFACE-MIGRATION-LOGICAL` | `migration` | `IMPLEMENTED_SCOPED` | `live_migration_rehearsal.history_and_metadata_readback`, `live_migration_rehearsal.target_sigkill_preserves_all_versions`, `live_migration_rehearsal.checkpoint_resume_without_duplicate_version`, `live_migration_rehearsal.rollback_source_same_root_preserves_original_history` |
 | `HB-SURFACE-MIGRATION-SNAPSHOT` | `migration` | `DEFINED_NOT_IMPLEMENTED` | None |
-| `HB-SURFACE-MIGRATION-CUTOVER` | `migration` | `DEFINED_NOT_IMPLEMENTED` | None |
+| `HB-SURFACE-MIGRATION-CUTOVER` | `migration` | `IMPLEMENTED_SCOPED` | `live_migration_rehearsal.cutover_source_process_fenced_before_target_acceptance`, `live_migration_rehearsal.cutover_target_serves_verified_migrated_history`, `live_migration_rehearsal.cutover_target_still_rejects_source_active_token`, `live_migration_rehearsal.cutover_target_still_rejects_source_revoked_token`, `live_migration_rehearsal.cutover_target_still_rejects_source_wrapping_token`, `live_migration_rehearsal.rollback_target_process_fenced_before_source_reactivation`, `live_migration_rehearsal.rollback_reactivates_source_authority_only_after_target_fence`, `live_migration_rehearsal.rollback_does_not_resurrect_source_revoked_token`, `live_migration_rehearsal.rollback_source_wrapping_authority_restored_only_after_target_fence` |
 <!-- END CURRENT REPLACEMENT SURFACES -->
 
 ## Full replacement requires more than these profiles

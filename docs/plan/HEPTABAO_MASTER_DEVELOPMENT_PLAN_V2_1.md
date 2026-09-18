@@ -25,7 +25,7 @@ A convergence commit may reuse the approved tree but may not claim that an earli
 
 ## Current implementation reading order
 
-The plan retains the original 40-package lineage, while the current workspace has 46 packages. `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` and `docs/modules/CURRENT_RUNTIME_MAP.md` define the actual five-package server assembly and the remaining independent libraries/tools. `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` separates present implementation from historical pass receipts. Original acceptance criteria below remain qualification objectives; implemented code is not equivalent to independently admitted completion.
+The plan retains the original 40-package lineage, while the current workspace has 46 packages. `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` and `docs/modules/CURRENT_RUNTIME_MAP.md` define the actual server assembly and the remaining independent libraries/tools. `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` separates present implementation from historical pass receipts. Original acceptance criteria below remain qualification objectives; implemented code is not equivalent to independently admitted completion.
 
 ## 3. Scope
 

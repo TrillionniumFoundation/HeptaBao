@@ -127,7 +127,7 @@ pub(crate) struct TokenRequestPlan {
 
 pub(crate) enum Dispatch {
     Immediate(EngineResponse),
-    External(TokenRequestPlan),
+    External(Box<TokenRequestPlan>),
 }
 
 pub(crate) struct TokenMetadata {
@@ -166,9 +166,9 @@ fn ok(body: Value, mutated: bool) -> EngineResponse {
 fn valid_component(value: &str, maximum: usize) -> bool {
     !value.is_empty()
         && value.len() <= maximum
-        && value.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.')
-        })
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
 }
 
 fn valid_kubernetes_name(value: &str) -> bool {
@@ -203,7 +203,10 @@ fn validate_audiences(values: Vec<String>) -> std::result::Result<Vec<String>, E
     Ok(values)
 }
 
-fn string_list(value: Option<&Value>, field: &str) -> std::result::Result<Vec<String>, EngineError> {
+fn string_list(
+    value: Option<&Value>,
+    field: &str,
+) -> std::result::Result<Vec<String>, EngineError> {
     let Some(value) = value else {
         return Ok(Vec::new());
     };
@@ -211,11 +214,7 @@ fn string_list(value: Option<&Value>, field: &str) -> std::result::Result<Vec<St
         if text.is_empty() {
             return Ok(Vec::new());
         }
-        return Ok(text
-            .split(',')
-            .map(str::trim)
-            .map(str::to_owned)
-            .collect());
+        return Ok(text.split(',').map(str::trim).map(str::to_owned).collect());
     }
     let array = value
         .as_array()
@@ -237,9 +236,12 @@ fn duration(value: Option<&Value>, default: u64) -> std::result::Result<u64, Eng
     if let Some(seconds) = value.as_u64() {
         return Ok(seconds);
     }
-    let text = value
-        .as_str()
-        .ok_or_else(|| err(400, "Kubernetes token TTL must be seconds or a bounded duration"))?;
+    let text = value.as_str().ok_or_else(|| {
+        err(
+            400,
+            "Kubernetes token TTL must be seconds or a bounded duration",
+        )
+    })?;
     if text.is_empty() || text.len() > 32 {
         return Err(err(400, "invalid Kubernetes token TTL"));
     }
@@ -318,7 +320,10 @@ impl Kubernetes {
             || self.pending.len() > MAX_PENDING
             || self.leases.len() > MAX_LEASES
         {
-            return Err(err(503, "Kubernetes secrets state exceeds bounded capacity"));
+            return Err(err(
+                503,
+                "Kubernetes secrets state exceeds bounded capacity",
+            ));
         }
         if let Some(config) = &self.config {
             let target = Target::parse(&config.kubernetes_host, "https")
@@ -558,8 +563,10 @@ impl Kubernetes {
                     if !valid_kubernetes_name(&service_account_name) {
                         return Err(err(400, "invalid Kubernetes service account name"));
                     }
-                    let allowed_values =
-                        string_list(body.get("allowed_kubernetes_namespaces"), "allowed_kubernetes_namespaces")?;
+                    let allowed_values = string_list(
+                        body.get("allowed_kubernetes_namespaces"),
+                        "allowed_kubernetes_namespaces",
+                    )?;
                     let allowed_namespaces =
                         if allowed_values.len() == 1 && allowed_values[0] == "*" {
                             AllowedNamespaces::Any("*".into())
@@ -575,8 +582,7 @@ impl Kubernetes {
                         };
                     let token_default_ttl =
                         duration(body.get("token_default_ttl"), DEFAULT_TOKEN_TTL)?;
-                    let token_max_ttl =
-                        duration(body.get("token_max_ttl"), DEFAULT_MAX_TOKEN_TTL)?;
+                    let token_max_ttl = duration(body.get("token_max_ttl"), DEFAULT_MAX_TOKEN_TTL)?;
                     if !(MIN_TOKEN_TTL..=MAX_TOKEN_TTL).contains(&token_default_ttl)
                         || token_max_ttl < token_default_ttl
                         || token_max_ttl > MAX_TOKEN_TTL
@@ -635,11 +641,17 @@ impl Kubernetes {
             if !valid_kubernetes_name(&kubernetes_namespace)
                 || !role.allowed_namespaces.permits(&kubernetes_namespace)
             {
-                return Err(err(403, "Kubernetes namespace is not admitted by this role"));
+                return Err(err(
+                    403,
+                    "Kubernetes namespace is not admitted by this role",
+                ));
             }
             let ttl = duration(body.get("ttl"), role.token_default_ttl)?;
             if ttl < MIN_TOKEN_TTL || ttl > role.token_max_ttl {
-                return Err(err(400, "requested Kubernetes token TTL exceeds role bounds"));
+                return Err(err(
+                    400,
+                    "requested Kubernetes token TTL exceeds role bounds",
+                ));
             }
             let audiences = if body.get("audiences").is_some() {
                 validate_audiences(string_list(body.get("audiences"), "audiences")?)?
@@ -661,10 +673,8 @@ impl Kubernetes {
                 &audiences,
                 &config_digest,
             )?;
-            let entropy = hex(
-                &crypto::random::<16>()
-                    .map_err(|_| err(503, "operating system randomness unavailable"))?,
-            );
+            let entropy = hex(&crypto::random::<16>()
+                .map_err(|_| err(503, "operating system randomness unavailable"))?);
             let lease_id = format!("{mount}creds/{role_name}/{entropy}");
             let provider_url = format!(
                 "{}/api/v1/namespaces/{}/serviceaccounts/{}/token",
@@ -684,7 +694,7 @@ impl Kubernetes {
                 },
             );
             self.validate()?;
-            return Ok(Dispatch::External(TokenRequestPlan {
+            return Ok(Dispatch::External(Box::new(TokenRequestPlan {
                 namespace: service_namespace.to_owned(),
                 mount: mount.to_owned(),
                 lease_id,
@@ -696,7 +706,7 @@ impl Kubernetes {
                 service_account_name: role.service_account_name,
                 ttl,
                 audiences,
-            }));
+            })));
         }
 
         Err(err(404, "unsupported Kubernetes secrets path"))
@@ -710,7 +720,12 @@ impl Kubernetes {
         let pending = self
             .pending
             .get(&plan.lease_id)
-            .ok_or_else(|| err(503, "Kubernetes token intent disappeared after provider entry"))?
+            .ok_or_else(|| {
+                err(
+                    503,
+                    "Kubernetes token intent disappeared after provider entry",
+                )
+            })?
             .clone();
         if pending.request_digest != plan.request_digest
             || pending.config_digest != plan.config_digest

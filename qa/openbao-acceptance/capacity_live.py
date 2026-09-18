@@ -16,7 +16,8 @@ import subprocess
 import tempfile
 import time
 
-from bao_http import SafeArgumentParser, private_write
+from bao_http import BaoError, SafeArgumentParser, private_write
+from heptabao.private_state import StateDirectory
 from core_isolation import ROOT, ScenarioFailure, file_hash
 
 CURRENT_STATE_LIMIT_BYTES = 16 * 1024 * 1024
@@ -145,16 +146,21 @@ def validate_observation(data: dict) -> None:
             raise ScenarioFailure('capacity.inflated_claim')
 
 
-def main() -> int:
+def main(argv=None) -> int:
     parser = SafeArgumentParser(description=__doc__)
-    parser.add_argument('--binary', required=True)
-    parser.add_argument('--output', required=True)
-    args = parser.parse_args()
-    binary = Path(args.binary).resolve(strict=True)
-    output = Path(args.output).absolute()
-    info = output.parent.stat()
-    if os.path.lexists(output) or output.parent.is_symlink() or info.st_uid != os.geteuid() or info.st_mode & 0o077:
-        parser.error('new output in private caller-owned directory required')
+    parser.add_argument('--binary', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args(argv)
+    output = args.output.absolute()
+    if os.path.lexists(output):
+        raise BaoError('output_already_exists')
+    with StateDirectory(output.parent):
+        pass
+    return run(args.binary, output)
+
+
+def run(binary: Path, output: Path) -> int:
+    binary = binary.resolve(strict=True)
     root = Path(tempfile.mkdtemp(prefix='heptabao-capacity-live-'))
     root.chmod(0o700)
     instance = None
@@ -206,7 +212,10 @@ def main() -> int:
         reopened = observe()
         unseal_and_load_ms = (time.monotonic() - unseal_started) * 1000
         total_ms = (time.monotonic() - started_recovery) * 1000
-        check(f'capacity.{label}.reopen_exact', reopened == expected)
+        check(f'capacity.{label}.read_counter_reset', reopened.get('kv_read_only_dispatches') == 0)
+        check(f'capacity.{label}.reopen_exact',
+              {k: v for k, v in reopened.items() if k != 'kv_read_only_dispatches'} ==
+              {k: v for k, v in expected.items() if k != 'kv_read_only_dispatches'})
         recovery_samples.append({
             'label': label,
             'state_bytes': state_bytes,

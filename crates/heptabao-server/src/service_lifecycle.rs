@@ -28,12 +28,13 @@ impl Service {
             self.sync_from_ha()
                 .map_err(|_| "lifecycle ReadIndex unavailable")?;
         }
-        let Some(mut next) = self.state.clone() else {
+        let Some(current) = self.state.as_ref() else {
             return Ok(false);
         };
-        if !next.auth.has_live_wrappers() && !next.engines.has_live_leases() {
+        if !current.auth.has_live_wrappers() && !current.engines.has_live_leases() {
             return Ok(false);
         }
+        let mut next = current.clone();
         let changed = Self::reconcile_lease_owners(&mut next, now)
             | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now));
         if !changed {

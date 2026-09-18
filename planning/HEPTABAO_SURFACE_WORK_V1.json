@@ -316,6 +316,20 @@
         "pinned_official_openbao_2_6_2"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "audit-socket": {
+      "script": "qa/openbao-acceptance/audit_socket_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_new_work_dir}"
+      ],
+      "prerequisites": [
+        "actual candidate binary",
+        "new synthetic local TCP audit collector"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -360,7 +374,7 @@
           },
           {
             "path": "crates/heptabao-server/src/service_tests.rs",
-            "name": "unknown_commit_releases_no_secret_and_recovers_written_value"
+            "name": "unknown_journal_write_releases_no_secret_and_preserves_last_committed_state"
           },
           {
             "path": "crates/heptabao-server/src/service_tests.rs",

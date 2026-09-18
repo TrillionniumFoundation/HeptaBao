@@ -554,10 +554,10 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
         replay_epoch: 0,
-        auth,
-        engines: EngineState::default(),
-        database: database::DatabaseState::default(),
-        raft_admin: raft_admin::RaftAdminState::default(),
+        auth: auth.into(),
+        engines: EngineState::default().into(),
+        database: database::DatabaseState::default().into(),
+        raft_admin: raft_admin::RaftAdminState::default().into(),
     };
     let bytes = serde_json::to_vec(&state)?;
     let restored: State = serde_json::from_slice(&bytes)?;
@@ -621,10 +621,8 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
     // on-disk format; no runtime API permits downgrading this discriminator.
     let mut legacy = s.state.clone().ok_or("state")?;
     legacy.schema = 1;
-    let bytes = serde_json::to_vec(&legacy)?;
     assert!(legacy.validate_format().is_ok());
-    s.commit_state_bytes(&bytes)
-        .map_err(|_| "fixture persistence")?;
+    s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
     s.state = Some(legacy);
     drop(s);
     let mut s = f.service()?;
@@ -697,8 +695,7 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     let mut legacy = s.state.clone().ok_or("state")?;
     legacy.schema = 1;
     assert!(legacy.validate_format().is_ok());
-    s.commit_state_bytes(&serde_json::to_vec(&legacy)?)
-        .map_err(|_| "fixture persistence")?;
+    s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
     s.state = Some(legacy);
     assert_eq!(
         call(

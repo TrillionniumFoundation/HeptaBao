@@ -63,6 +63,14 @@ class RuntimeDocumentationTests(unittest.TestCase):
             stream.write('\nService schema remains 3.\n')
         self.assertTrue(any('obsolete current-tense' in p for p in module.validate(self.root)))
 
+    def test_common_current_tense_phrasings_cannot_hide_stale_schema(self):
+        original = (self.root / module.ARCH).read_text()
+        for phrase in ('Service schema is 4.', 'Service state is now schema 4.',
+                       'Current application writes use schema 4.', 'current writes use schema 4.'):
+            with self.subTest(phrase=phrase):
+                (self.root / module.ARCH).write_text(original + '\n' + phrase + '\n')
+                self.assertTrue(any('obsolete current-tense' in p for p in module.validate(self.root)))
+
     def test_false_unsupported_mount_claim_is_rejected(self):
         with (self.root / module.ENGINE).open('a') as stream:
             stream.write('\nPKI, SSH, database, LDAP,\nKubernetes and other engine types return HTTP 501\n')

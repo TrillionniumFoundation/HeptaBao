@@ -70,7 +70,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | PluginSecret | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
+  .backend.{Database | Kubernetes | PluginSecret | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]
 ```
 

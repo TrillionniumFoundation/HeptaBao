@@ -1,6 +1,6 @@
 # Current runnable architecture and state ownership
 
-Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 46-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the five runtime packages from the 41 separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
+Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 46-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the actual server dependencies from separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
 
 ## Actual workspace dependency graph
 
@@ -12,6 +12,13 @@ flowchart TD
     Server --> Transport["heptabao-ha-service"]
     Server --> Raft["heptabao-raft-runtime"]
     Durable --> Guard["heptabao-filesystem-guard"]
+    Server --> Domain["heptabao-domain"]
+    Server --> Contracts["heptabao-plugin-contracts"]
+    Server --> Plugin["heptabao-plugin-host"]
+    Plugin --> Durable
+    Plugin --> Contracts
+    Plugin --> Domain
+    Contracts --> Domain
 ```
 
 `ha-service` provides the concrete mutually authenticated peer transport and certificate binding consumed by the server. Its generic `HaService` facade is a separate model. `raft-runtime::ProcessRaftNode` provides one voter per process; `RaftRuntime` also retains a three-voter in-process test facade. Compiling those packages does not mean a single-node server automatically runs HA: operators must explicitly supply HA configuration and admit the cluster/key identity.
@@ -32,7 +39,7 @@ flowchart TD
     Tx --> HA["ha.rs, ha_forward.rs, ha_state.rs"]
 ```
 
-TLS parsing is followed by service admission. The service serializes mutable state, obtains and consumes a request-scoped private `Principal`, and rechecks authorization with the live `now`. HTTP workers and authenticated HA forwarding now acquire the single Service writer only until an explicit deadline; a slow in-flight provider or persistence operation can still serialize subsequent stateful work, but it cannot make another request wait on the mutex without bound. Deadline expiry returns 503 without entering Service dispatch. Neither `AuthState` nor `Principal` is exported. Public Rust callers enter `Service::handle` or `handle_at`; only deterministic tests or a trusted embedding should supply the latter's clock. A normal request owns its JSON body; secret-bearing request/response data is cleared on the relevant drop paths with documented best-effort limits.
+TLS parsing is followed by service admission. The service serializes mutable state, obtains and consumes a request-scoped private `Principal`, and rechecks authorization with the live `now`. HTTP workers and authenticated HA forwarding now acquire the single Service writer only until an explicit deadline; external provider effects run outside the global Service writer; persistence and audit publication still serialize stateful work, but it cannot make another request wait on the mutex without bound. Deadline expiry returns 503 without entering Service dispatch. Neither `AuthState` nor `Principal` is exported. Public Rust callers enter `Service::handle` or `handle_at`; only deterministic tests or a trusted embedding should supply the latter's clock. A normal request owns its JSON body; secret-bearing request/response data is cleared on the relevant drop paths with documented best-effort limits.
 
 Audit is part of admission and response publication: a request record is persisted before dispatch, and a response record before releasing the result. The mandatory authenticated file device remains the durable local owner. An optional process-configured HTTP audit collector may additionally be installed only through the pre-unseal host egress allowlist; each record is fsynced locally before one no-retry HTTPS delivery, and collector failure fences audit admission until restart/recovery. Runtime API calls may inspect but cannot redirect or replace that collector. Finite-use token consumption is itself persisted before dispatch. A later denied or failed operation can therefore have consumed the admitted use. A response/audit or transport failure is not evidence that the preceding state mutation did not commit. Parsing/rate-limit rejection records use the separate wire-rejection path; no claim is made that every failed TLS handshake can be audited as an application request.
 
@@ -49,7 +56,9 @@ Audit is part of admission and response publication: a request record is persist
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
 | HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding, authenticated `sys/step-down` and `sys/storage/raft/*`; HA and raft-runtime tests |
 
-The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `plugin-host`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. In particular the server does not yet integrate a general plugin backend, dynamic-secret lease subsystem, KMS auto-unseal provider or remote rollback anchor merely because corresponding crates exist.
+The integrated `plugin-host`, `plugin-contracts` and `domain` packages own the deployment-enrolled read-only secret-plugin boundary. They do not provide general OpenBao RPC plugin compatibility, write/lease callbacks or qualified sandbox containment.
+
+The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. In particular the server does not yet integrate a general plugin backend, dynamic-secret lease subsystem, KMS auto-unseal provider or remote rollback anchor merely because corresponding crates exist.
 
 ## Historical and target diagrams
 
@@ -68,7 +77,7 @@ snapshot, durably admits finite bearer use, and dispatches an isolated candidate
 current ACL/Identity projections, and `engines/ssh` with `engine_leases` owns the
 online OTP profile. Result audit and durable publication precede response release.
 HBFQ2 carries wrapping options without downgrade. These are internal modules of
-`heptabao-server`; the five-package normal Cargo dependency closure is unchanged.
+`heptabao-server`; the current normal dependency closure is listed in `CURRENT_RUNTIME_MAP.md`.
 
 The real Python transport/CLI lives in `clients/python`; QA imports that transport.
 It is a separate language package, not an additional Cargo crate and not a daemon.
@@ -87,7 +96,7 @@ pending checkpoint/token sink, a Linux same-UID Unix listener, and explicit host
 role verification respectively. Their protocol/operations/remaining boundaries are
 in `docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md`. The existing Rust agent/proxy
 model crates remain outside the normal server closure; no package-count inference
-is made. Service schema is 4; [current format and rollback rules](HEPTABAO_CURRENT_STATE_FORMAT.md) supersede earlier increment descriptions. Mixed-version HA is not qualified.
+is made. The current schema is specified by the linked format contract; [current format and rollback rules](HEPTABAO_CURRENT_STATE_FORMAT.md) supersede earlier increment descriptions. Mixed-version HA is not qualified.
 
 ## Current PKI, JWKS and explicit leadership-transfer increment
 
@@ -110,7 +119,30 @@ Service now composes the native TLS/SCRAM PostgreSQL adapter and a bounded encry
 [Online Kubernetes / OIDC authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
 TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
 loopback callback CLI. The separate remote-JWT profile above remains a bearer
-verifier, not code flow. Current application writes use schema 7. The new profiles
+verifier, not code flow. Application writes use the discriminator in the current state-format contract. The new profiles
 retain root-controlled enrollment, live Identity, audit and durable/HA publication.
 They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
 independent acceptance or production authority.
+
+## Current immutable reads and shared state ownership
+
+`State` shares its Auth, Engine, Database and Raft-administration owners through
+`CowOwner`; mutating an owner isolates it using `Arc::make_mut`. This is
+owner-level copy-on-write, not a record-oriented durable store. Mutations still
+serialize the complete logical image for current local/HA publication.
+
+After HA ReadIndex/synchronization and recovery fencing, `immutable_kv_response`
+handles only eligible KV GET/LIST/SCAN requests with unlimited ordinary tokens.
+It borrows the authoritative state, applies current parent/token expiry, Identity,
+namespace and ACL checks and calls the same immutable KV read handlers as the
+transactional path. It cannot allocate namespaces or mutate application state.
+GET `list=true` uses LIST authority for both direct Service callers and HTTP.
+Finite-use tokens, wrapping requests/tokens and live local lease cleanup retain
+the durable transaction path. Outer request and result audit are unchanged;
+result-audit failure still withholds the secret and fences the Service.
+
+KV listing seeks its ordered record index from the cursor and skips already
+emitted shallow subtrees rather than collecting every key. Idle lifecycle ticks
+check for relevant work before cloning owners. See the capacity guide for the
+actual process measurement profile; these optimizations are not write-scaling,
+complete migration or production qualification.

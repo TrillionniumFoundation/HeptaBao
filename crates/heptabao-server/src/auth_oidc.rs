@@ -692,19 +692,6 @@ impl AuthState {
         Ok(response(json!({"auth_url":auth_url}), true))
     }
 
-    pub(crate) fn begin_oidc(
-        &mut self,
-        namespace: &str,
-        mount: &str,
-        body: &Value,
-        now: u64,
-        outbound: &Outbound,
-    ) -> Result<AuthResponse, AuthError> {
-        let plan = self.prepare_oidc_begin(namespace, mount, body, now)?;
-        let observation = plan.execute(outbound)?;
-        self.finish_oidc_begin(plan, observation)
-    }
-
     pub(crate) fn consume_oidc(
         &mut self,
         namespace: &str,
@@ -791,19 +778,6 @@ impl AuthState {
             exchange.role.token_num_uses,
             observation.now,
         )
-    }
-
-    pub(crate) fn finish_oidc(
-        &mut self,
-        namespace: &str,
-        mount: &str,
-        exchange: OidcExchange,
-        now: u64,
-        started: std::time::Instant,
-        outbound: &Outbound,
-    ) -> Result<AuthResponse, AuthError> {
-        let observation = exchange.execute(namespace, now, started, outbound)?;
-        self.finish_oidc_observation(namespace, mount, exchange, observation)
     }
 }
 

@@ -52,16 +52,43 @@ fn ldap_bounded_profile_config_login_and_injection_rejection() {
         json!({"password":"correct horse battery staple"}),
         100,
     );
-    let login = call(
-        &mut state,
-        &root,
+    let before = state.tokens.len();
+    let offline = state.handle(
+        Some(&root),
         "",
         "POST",
         "auth/ldap/login/alice",
-        json!({"password":"correct horse battery staple"}),
+        &json!({"password":"correct horse battery staple"}),
         101,
     );
-    assert!(login.body["auth"]["client_token"].as_str().is_some());
+    assert_eq!(offline.err().unwrap().status, 503);
+    assert_eq!(
+        state.tokens.len(),
+        before,
+        "local password must not replace LDAP bind"
+    );
+    let plan = state
+        .prepare_ldap_login(
+            "",
+            "ldap",
+            "alice",
+            "POST",
+            &json!({"password":"directory-password"}),
+            101,
+        )
+        .unwrap();
+    // This unit observation exercises local mapping only. Real LDAPS bind and
+    // directory-group readback are exercised by ldap_openldap_live.py.
+    let login = state
+        .finish_ldap_login(
+            plan,
+            LdapLoginObservation {
+                groups: BTreeSet::new(),
+            },
+        )
+        .unwrap();
+    let issued = login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(issued, 102).is_ok());
     assert!(
         state
             .handle(

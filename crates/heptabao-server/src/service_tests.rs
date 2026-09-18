@@ -1104,12 +1104,25 @@ fn finite_use_is_committed_for_acl_denial_and_state_capacity_rejection()
 }
 
 #[test]
-fn unknown_commit_releases_no_secret_and_recovers_written_value()
+fn unknown_journal_write_releases_no_secret_and_preserves_last_committed_state()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (key, token) = bootstrap(&mut service)?;
-    fs::create_dir(root.path.join("data/ledger.tmp"))?;
+    let seeded = call(
+        &mut service,
+        "PUT",
+        "secret/data/committed",
+        &token,
+        json!({"data":{"value":"acknowledged-secret"}}),
+    );
+    assert_eq!(seeded.status, 200);
+    // The normal writer appends deltas; ledger.tmp is used only by checkpoints.
+    fs::rename(
+        root.path.join("data/journal.hbj"),
+        root.path.join("data/journal.saved"),
+    )?;
+    fs::create_dir(root.path.join("data/journal.hbj"))?;
     let result = call(
         &mut service,
         "PUT",
@@ -1133,7 +1146,11 @@ fn unknown_commit_releases_no_secret_and_recovers_written_value()
         503
     );
     drop(service);
-    fs::remove_dir(root.path.join("data/ledger.tmp"))?;
+    fs::remove_dir(root.path.join("data/journal.hbj"))?;
+    fs::rename(
+        root.path.join("data/journal.saved"),
+        root.path.join("data/journal.hbj"),
+    )?;
     let mut service = root.service()?;
     assert_eq!(
         call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
@@ -1143,12 +1160,23 @@ fn unknown_commit_releases_no_secret_and_recovers_written_value()
         call(
             &mut service,
             "GET",
-            "secret/data/uncertain",
+            "secret/data/committed",
             &token,
             json!({})
         )
         .body["data"]["data"]["value"],
-        "uncertain-secret"
+        "acknowledged-secret"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/uncertain",
+            &token,
+            json!({})
+        )
+        .status,
+        404
     );
     Ok(())
 }
@@ -1659,15 +1687,15 @@ fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std
 fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads()
 -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(
-        classify_request_effect("GET", b"same", b"same"),
+        classify_request_effect("GET", crypto::digest(b"same"), crypto::digest(b"same")),
         RequestEffectClass::PureRead
     );
     assert_eq!(
-        classify_request_effect("GET", b"before", b"after"),
+        classify_request_effect("GET", crypto::digest(b"before"), crypto::digest(b"after")),
         RequestEffectClass::SideEffectingRead
     );
     assert_eq!(
-        classify_request_effect("PUT", b"before", b"after"),
+        classify_request_effect("PUT", crypto::digest(b"before"), crypto::digest(b"after")),
         RequestEffectClass::DurableMutation
     );
 

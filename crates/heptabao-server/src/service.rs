@@ -36,10 +36,10 @@ mod capabilities;
 mod database;
 #[path = "service_identity.rs"]
 mod identity;
-#[path = "service_lifecycle.rs"]
-mod lifecycle;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
+#[path = "service_lifecycle.rs"]
+mod lifecycle;
 #[path = "service_online_auth.rs"]
 mod online_auth;
 #[path = "service_plugin.rs"]
@@ -356,7 +356,6 @@ fn syslog_facility_code(facility: &str) -> Option<u8> {
     }
 }
 
-
 impl WireRejection {
     fn code(self) -> &'static [u8] {
         match self {
@@ -462,7 +461,7 @@ struct RequestView<'a> {
 
 pub(crate) enum RequestExecution {
     Complete(Response),
-    External(PendingExternalRequest),
+    External(Box<PendingExternalRequest>),
 }
 
 enum ExternalEffectPlan {
@@ -521,6 +520,18 @@ enum RequestEffectClass {
     SideEffectingRead,
 }
 
+fn kv_authorization_method<'a>(method: &'a str, body: &Value) -> &'a str {
+    if method == "GET"
+        && body
+            .get("list")
+            .is_some_and(|value| value == true || value == "true")
+    {
+        "LIST"
+    } else {
+        method
+    }
+}
+
 fn classify_request_effect(
     method: &str,
     before_digest: [u8; 32],
@@ -561,6 +572,7 @@ pub struct Service {
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
+    kv_read_only_dispatches: u64,
     seal: Option<SealMetadata>,
     unseal_shares: BTreeMap<u8, SecretShare>,
     unseal_nonce: String,
@@ -746,6 +758,7 @@ impl Service {
             durable: None,
             state: None,
             state_digest: None,
+            kv_read_only_dispatches: 0,
             seal,
             unseal_shares: BTreeMap::new(),
             unseal_nonce,
@@ -908,7 +921,7 @@ impl Service {
             RequestExecution::Complete(response) => response,
             RequestExecution::External(pending) => {
                 let provider_result = pending.execute();
-                self.finish_external_request(pending, provider_result)
+                self.finish_external_request(*pending, provider_result)
             }
         }
     }
@@ -1113,11 +1126,11 @@ impl Service {
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken));
         if let Some(effect) = effect {
-            return RequestExecution::External(PendingExternalRequest {
+            return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
                 now,
                 effect,
-            });
+            }));
         }
         RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response))
     }
@@ -1205,6 +1218,11 @@ impl Service {
             );
         }
 
+        if let Some(response) = self.immutable_kv_response(&request) {
+            self.kv_read_only_dispatches = self.kv_read_only_dispatches.saturating_add(1);
+            return response;
+        }
+
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");
         };
@@ -1284,15 +1302,17 @@ impl Service {
             let Some(plugin_principal) = principal.as_ref() else {
                 return Response::error(403, "missing client token");
             };
-            if let Err(error) = admitted
-                .auth
-                .authorize_request(plugin_principal, namespace, path, "sudo", now)
+            if let Err(error) =
+                admitted
+                    .auth
+                    .authorize_request(plugin_principal, namespace, path, "sudo", now)
             {
                 return Response::error(error.status, &error.message);
             }
-            if let Err(error) = admitted
-                .auth
-                .authorize_request(plugin_principal, namespace, path, "update", now)
+            if let Err(error) =
+                admitted
+                    .auth
+                    .authorize_request(plugin_principal, namespace, path, "update", now)
             {
                 return Response::error(error.status, &error.message);
             }
@@ -1558,6 +1578,65 @@ impl Service {
         response
     }
 
+    fn immutable_kv_response(&self, request: &RequestView<'_>) -> Option<Response> {
+        let state = self.state.as_ref()?;
+        if request.wrap_ttl_seconds.is_some()
+            || state.engines.has_live_leases()
+            || state.auth.is_wrapping_token(request.token)
+            || !state
+                .engines
+                .is_immutable_kv_read(request.namespace, request.method, request.path)
+        {
+            return None;
+        }
+        if request.token.is_empty() {
+            return Some(Response::error(403, "missing client token"));
+        }
+        let mut principal = match state
+            .auth
+            .authenticate_read_only(request.token, request.now)
+        {
+            Ok(Some(principal)) => principal,
+            Ok(None) => return None,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
+        if let Err(error) = Self::bind_identity_principal(state, &mut principal, request.namespace)
+        {
+            return Some(error);
+        }
+        // Direct Service callers must authorize the same operation as the HTTP
+        // parser: GET+list is a LIST, never a read-only-policy enumeration bypass.
+        let method = kv_authorization_method(request.method, request.body);
+        let capability =
+            state
+                .engines
+                .required_capability(request.namespace, method, request.path)?;
+        if let Err(error) = state.auth.authorize_request(
+            &principal,
+            request.namespace,
+            request.path,
+            capability,
+            request.now,
+        ) {
+            return Some(Response::error(error.status, &error.message));
+        }
+        Some(
+            match state.engines.handle_immutable_kv_read(
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                request.now,
+            ) {
+                Ok(mut response) => Response {
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                },
+                Err(error) => Response::error(error.status, &error.message),
+            },
+        )
+    }
+
     fn dispatch(
         state: &mut State,
         principal: Option<Principal>,
@@ -1679,8 +1758,8 @@ impl Service {
                     return error;
                 }
                 if response.mutated {
-                    state.auth = auth.into();
-                    state.engines = engines.into();
+                    state.auth = auth;
+                    state.engines = engines;
                 }
                 return Response {
                     status: response.status,
@@ -1720,7 +1799,7 @@ impl Service {
         };
         let capability = state
             .engines
-            .required_capability(namespace, method, path)
+            .required_capability(namespace, kv_authorization_method(method, body), path)
             .unwrap_or(fallback);
         if path.starts_with("sys/mounts")
             && !matches!(method, "GET" | "LIST" | "HEAD")
@@ -4511,8 +4590,7 @@ mod cow_owner_tests {
         assert_eq!(owner.len(), 1);
         assert_eq!(fork.len(), 2);
 
-        let decoded: CowOwner<BTreeMap<String, String>> =
-            serde_json::from_slice(&encoded_owner)?;
+        let decoded: CowOwner<BTreeMap<String, String>> = serde_json::from_slice(&encoded_owner)?;
         assert_eq!(&*decoded, &plain);
         Ok(())
     }
@@ -4571,3 +4649,7 @@ mod capacity;
 #[cfg(test)]
 #[path = "service_capacity_tests.rs"]
 mod capacity_tests;
+
+#[cfg(test)]
+#[path = "service_immutable_read_tests.rs"]
+mod immutable_read_tests;

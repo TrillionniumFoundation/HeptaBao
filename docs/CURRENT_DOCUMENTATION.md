@@ -19,9 +19,9 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
-- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 7, legacy read admission, commit promotion and rollback boundaries.
+- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — the current discriminator, legacy read admission, commit promotion and rollback boundaries.
 
-- `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
+- `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual runtime dependency closure and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
 
 The following retained increment/target documents describe their own historical or library scope:
@@ -33,7 +33,7 @@ The following retained increment/target documents describe their own historical 
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The runnable server composes real TLS, private persistent authentication/ACL, bounded live login/Identity/internal-group policies, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested plugin-host, identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
+The runnable server composes real TLS, private persistent authentication/ACL, bounded live login/Identity/internal-group policies, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
 
 ## Module documentation
 
@@ -194,7 +194,7 @@ existing real executables; it is subordinate to the active V2.1 plan, not a seco
 plan or completion evidence. Technical contracts and open work are described in
 `docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
 audited capacity observation, safe journal checkpoint maintenance and an explicit
-Transit ciphertext re-encryption tool. It does not raise the aggregate state/ID
+Transit ciphertext re-encryption tool. It does not remove the aggregate state or per-epoch identity
 limits, import raw OpenBao snapshots, update application ciphertext references,
 or advance Hepta's independently requalified consumer pin.
 
@@ -215,7 +215,7 @@ It does not replace bounded KV transfer, full asset conversion or cutover admiss
 [Online Kubernetes / OIDC authentication](auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
 TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
 loopback callback CLI. The separate remote-JWT profile above remains a bearer
-verifier, not code flow. Current application writes use schema 7. The new profiles
+verifier, not code flow. Application writes use the discriminator in the current state-format contract. The new profiles
 retain root-controlled enrollment, live Identity, audit and durable/HA publication.
 They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
 independent acceptance or production authority.

@@ -677,9 +677,11 @@ impl DurableLogStore {
         ensure_real_directory(root, "raft log store root")?;
         let state_path = root.join("raft-log.bin");
         ensure_create_location_is_fresh(root, &state_path)?;
-        let mut state = PersistentLogState::default();
-        state.journal_format = 1;
-        state.journal_epoch = 1;
+        let state = PersistentLogState {
+            journal_format: 1,
+            journal_epoch: 1,
+            ..Default::default()
+        };
         write_json(&state_path, LOG_MAGIC, &state)?;
         initialize_log_journal(&log_journal_path(&state_path), state.journal_epoch)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
@@ -1204,8 +1206,10 @@ impl DurableStateMachine {
         ensure_real_directory(root, "state-machine store root")?;
         let bundle_path = root.join("state-bundle.bin");
         ensure_create_location_is_fresh(root, &bundle_path)?;
-        let mut bundle = PersistentStateBundle::default();
-        bundle.journal_format = 1;
+        let bundle = PersistentStateBundle {
+            journal_format: 1,
+            ..Default::default()
+        };
         write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
         initialize_state_journal(&state_journal_path(&bundle_path))?;
         persist_initialization_marker(root, STATE_MACHINE_DOMAIN, "state-bundle.bin")?;

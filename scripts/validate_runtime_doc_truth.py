@@ -114,7 +114,7 @@ def validate(root: Path = ROOT) -> list[str]:
             text = (root / path).read_text()
             if Path(FORMAT).name not in text:
                 errors.append(f'{path}: missing current state-format navigation')
-            for found in re.findall(r'(?:Service schema remains |Existing state remains schema |`State` schema )(\d+)', text):
+            for found in re.findall(r'(?:Service schema (?:remains |is )|Service state is (?:now )?schema |Existing state remains schema |`State` schema |[Cc]urrent(?: application)? writes use schema |[Cc]urrent application writes use schema |[Cc]urrent schema )(\d+)', text):
                 if found != schema:
                     errors.append(f'{path}: obsolete current-tense schema assertion')
         compact = re.sub(r'\s+', ' ', engine)

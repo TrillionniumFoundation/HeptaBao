@@ -7,7 +7,7 @@
 
 use super::*;
 use crate::engines::kubernetes::{TokenMetadata, TokenRequestPlan};
-use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use std::sync::{Arc, Mutex};
 use zeroize::Zeroizing;
 
@@ -115,8 +115,8 @@ fn token_metadata(
             .decode(payload)
             .map_err(|_| outcome_unknown(&plan.lease_id))?,
     );
-    let claims = crate::auth::parse_strict_json(&decoded)
-        .map_err(|_| outcome_unknown(&plan.lease_id))?;
+    let claims =
+        crate::auth::parse_strict_json(&decoded).map_err(|_| outcome_unknown(&plan.lease_id))?;
     let expires_at = claims
         .get("exp")
         .and_then(Value::as_u64)
@@ -183,11 +183,7 @@ fn observed_audiences(value: &Value, lease_id: &str) -> Result<Vec<String>, Resp
 }
 
 impl Service {
-    pub(super) fn kubernetes_secret_handles(
-        state: &State,
-        namespace: &str,
-        path: &str,
-    ) -> bool {
+    pub(super) fn kubernetes_secret_handles(state: &State, namespace: &str, path: &str) -> bool {
         state.engines.kubernetes_mount(namespace, path).is_some()
     }
 
@@ -261,6 +257,7 @@ impl Service {
                 }
             }
             crate::engines::kubernetes::Dispatch::External(plan) => {
+                let plan = *plan;
                 state.schema = CURRENT_STATE_SCHEMA;
                 if let Err(error) = state.validate_format() {
                     return error;

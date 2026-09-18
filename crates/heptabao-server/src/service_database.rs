@@ -1230,7 +1230,7 @@ impl Service {
         }
         let attempted = results.len();
         let mut first_error = None;
-        for (effect, result) in plan.plans.iter().zip(results.into_iter()) {
+        for (effect, result) in plan.plans.iter().zip(results) {
             let response = self.finalize_database_effect(effect, result);
             if response.status >= 300 && first_error.is_none() {
                 first_error = Some(response);
@@ -1510,7 +1510,7 @@ impl Service {
             self.sync_from_ha()
                 .map_err(|_| "provider ReadIndex unavailable")?;
         }
-        let mut state = self.state.clone().ok_or("sealed")?;
+        let state = self.state.as_ref().ok_or("sealed")?;
         let now = now.max(state.database.clock);
         let mut candidates = Vec::new();
         for (ns, mounts) in &state.database.mounts {
@@ -1519,7 +1519,7 @@ impl Service {
                     let owner = state.auth.lease_issuer_by_digest(&l.owner, ns, now);
                     let live = owner
                         .as_ref()
-                        .is_some_and(|o| Self::database_owner_active(&state, o, ns));
+                        .is_some_and(|o| Self::database_owner_active(state, o, ns));
                     if l.phase == Phase::Revoked
                         || (!matches!(l.phase, Phase::Quarantined)
                             && (l.phase != Phase::Active || l.expires <= now || !live))
@@ -1542,6 +1542,7 @@ impl Service {
         let Some((ns, mount, id)) = selected else {
             return Ok(None);
         };
+        let mut state = state.clone();
         let fingerprint = self.request_fingerprint("INTERNAL", "database/reconcile", &ns, "");
         self.audit_event("provider-request", &fingerprint, now, None)
             .map_err(|_| "provider audit unavailable")?;
@@ -1725,12 +1726,13 @@ mod tests {
         assert_eq!(state.provider_fence, 0);
         assert_eq!(state.next_provider_fence()?, 2);
         assert_eq!(state.next_provider_fence()?, 3);
-        state
+        let lease = state
             .mount_mut("", "database/")
             .leases
             .get_mut(&id)
-            .ok_or_else(|| failure("missing"))?
-            .seq = 9;
+            .ok_or_else(|| failure("missing"))?;
+        lease.seq = 9;
+        lease.request_digest = digest_lease(lease)?;
         assert_eq!(state.next_provider_fence()?, 10);
         state.validate_scope("cluster")?;
         Ok(())

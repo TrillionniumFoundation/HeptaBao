@@ -69,6 +69,7 @@ impl Service {
             "state_schema": CURRENT_STATE_SCHEMA,
             "state_storage_format": state_store::STATE_STORAGE_FORMAT,
             "state_chunk_target_bytes": state_store::STATE_CHUNK_BYTES,
+            "kv_read_only_dispatches": self.kv_read_only_dispatches,
             "state_bytes": state_bytes,
             "state_limit_bytes": state_limit,
             "state_remaining_bytes": state_limit - state_bytes,
@@ -201,6 +202,13 @@ mod tests {
             .ok_or("durable missing")?
             .capacity()?
             .logical_payload_bytes;
+        let logical_bytes =
+            serde_json::to_vec(service.state.as_ref().ok_or("state missing")?)?.len();
+        assert!(durable_bytes > logical_bytes + 1);
+        // V3 retires obsolete chunks instead of retaining an alternating slot.
+        // Put the test-only bound between actual logical and physical sizes;
+        // growth must not depend on the amount of historical garbage retained.
+        service.state_capacity = logical_bytes + (durable_bytes - logical_bytes) / 2;
         let response = call(
             &mut service,
             "GET",

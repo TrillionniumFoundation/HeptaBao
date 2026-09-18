@@ -254,7 +254,7 @@ migration remain separate, unqualified capabilities.
 
 ### Subsequent runtime format
 
-The current wrapping/SSH-OTP increment writes Service schema 3 and preserves
+The historical wrapping/SSH-OTP increment introduced Service schema 3 and preserves
 read-only access to valid older identity-aware schema 2 state. It extends the
 same old-reader rejection rule; it does not make schema downgrade or mixed-version
 rolling HA upgrades safe. See `../auth/HEPTABAO_RESPONSE_WRAPPING.md`.

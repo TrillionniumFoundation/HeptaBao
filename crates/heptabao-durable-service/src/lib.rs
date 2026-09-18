@@ -406,7 +406,6 @@ impl Binding {
         bytes.extend_from_slice(&self.value_digest);
         digest32(b"heptabao.durable-service.binding.v1", &bytes)
     }
-
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

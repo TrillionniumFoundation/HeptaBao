@@ -113,8 +113,8 @@ impl Entry {
     }
 }
 
-pub(super) fn handle_v1(
-    entries: &mut BTreeMap<String, Value>,
+pub(super) fn read_v1(
+    entries: &BTreeMap<String, Value>,
     method: &str,
     path: &str,
     body: &Value,
@@ -123,19 +123,35 @@ pub(super) fn handle_v1(
         if !path.is_empty() {
             valid_path(path.trim_end_matches('/'))?;
         }
-        let keys = list_keys(entries.keys(), path, method == "SCAN", body)?;
-        if keys.is_empty() {
-            return Err(not_found());
-        }
-        return Ok(ok(json!({"keys":keys}), false));
+        let keys = list_map_keys(entries, path, method == "SCAN", body)?;
+        return if keys.is_empty() {
+            Err(not_found())
+        } else {
+            Ok(ok(json!({"keys":keys}), false))
+        };
+    }
+    valid_path(path)?;
+    if method != "GET" {
+        return Err(unsupported());
+    }
+    entries
+        .get(path)
+        .cloned()
+        .map(|data| ok(data, false))
+        .ok_or_else(not_found)
+}
+
+pub(super) fn handle_v1(
+    entries: &mut BTreeMap<String, Value>,
+    method: &str,
+    path: &str,
+    body: &Value,
+) -> Result<EngineResponse> {
+    if matches!(method, "GET" | "LIST" | "SCAN") {
+        return read_v1(entries, method, path, body);
     }
     valid_path(path)?;
     match method {
-        "GET" => entries
-            .get(path)
-            .cloned()
-            .map(|data| ok(data, false))
-            .ok_or_else(not_found),
         "POST" | "PUT" => {
             if !body.is_object() {
                 return Err(bad("secret data must be an object"));
@@ -157,6 +173,64 @@ pub(super) fn handle_v1(
     }
 }
 
+/// Seek from the cursor in the ordered record index. A shallow directory is
+/// emitted once and then its entire subtree is skipped by advancing '/' to '0'
+/// (the next byte in UTF-8 order). No secret values or unrelated keys are read.
+fn list_map_keys<T>(
+    entries: &BTreeMap<String, T>,
+    prefix: &str,
+    recursive: bool,
+    body: &Value,
+) -> Result<Vec<String>> {
+    use std::ops::Bound::{Excluded, Included, Unbounded};
+    let prefix = if prefix.is_empty() {
+        String::new()
+    } else {
+        format!("{}/", prefix.trim_end_matches('/'))
+    };
+    let after = body.get("after").and_then(Value::as_str).unwrap_or("");
+    let limit = optional_u64(body, "limit")?.unwrap_or(0);
+    let limit = if limit == 0 {
+        usize::MAX
+    } else {
+        usize::try_from(limit).unwrap_or(usize::MAX)
+    };
+    let mut bound = if after.is_empty() {
+        Included(prefix.clone())
+    } else if !recursive && after.ends_with('/') {
+        Included(format!("{prefix}{}0", &after[..after.len() - 1]))
+    } else {
+        Excluded(format!("{prefix}{after}"))
+    };
+    let mut found = Vec::new();
+    while found.len() < limit {
+        let Some((key, _)) = entries.range((bound, Unbounded)).next() else {
+            break;
+        };
+        let Some(rest) = key.strip_prefix(&prefix) else {
+            break;
+        };
+        bound = Excluded(key.clone());
+        if rest.is_empty() {
+            continue;
+        }
+        let value = if !recursive {
+            if let Some((directory, _)) = rest.split_once('/') {
+                bound = Included(format!("{prefix}{directory}0"));
+                format!("{directory}/")
+            } else {
+                rest.to_owned()
+            }
+        } else {
+            rest.to_owned()
+        };
+        if value.as_str() > after {
+            found.push(value);
+        }
+    }
+    Ok(found)
+}
+
 impl Kv2 {
     pub(super) fn contains(&self, path: &str) -> bool {
         self.entries
@@ -164,26 +238,22 @@ impl Kv2 {
             .is_some_and(|e| e.current_version > 0)
     }
 
-    pub(super) fn handle(
-        &mut self,
+    pub(super) fn handle_read(
+        &self,
         method: &str,
         path: &str,
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if !matches!(method, "GET" | "LIST" | "SCAN") {
+            return Err(unsupported());
+        }
         if path == "config" {
-            if method == "GET" {
-                return Ok(ok(self.config.json(), false));
-            }
-            if !write_method(method) {
-                return Err(unsupported());
-            }
-            reject_unknown(
-                body,
-                &["max_versions", "cas_required", "delete_version_after"],
-            )?;
-            self.config.update(body)?;
-            return Ok(empty(true));
+            return if method == "GET" {
+                Ok(ok(self.config.json(), false))
+            } else {
+                Err(unsupported())
+            };
         }
         let (operation, resource) = path.split_once('/').unwrap_or((path, ""));
         if matches!(operation, "metadata" | "detailed-metadata")
@@ -192,7 +262,7 @@ impl Kv2 {
             if !resource.is_empty() {
                 valid_path(resource.trim_end_matches('/'))?;
             }
-            let keys = list_keys(self.entries.keys(), resource, method == "SCAN", body)?;
+            let keys = list_map_keys(&self.entries, resource, method == "SCAN", body)?;
             if keys.is_empty() {
                 return Err(not_found());
             }
@@ -222,10 +292,47 @@ impl Kv2 {
             return Err(error(404, "unknown KV v2 operation"));
         }
         valid_path(resource)?;
-        match operation {
-            "data" | "subkeys" if method == "GET" => {
-                self.read(resource, body, now, operation == "subkeys")
+        match (operation, method) {
+            ("data" | "subkeys", "GET") => self.read(resource, body, now, operation == "subkeys"),
+            ("metadata", "GET") => self
+                .entries
+                .get(resource)
+                .map(|entry| ok(entry.metadata(), false))
+                .ok_or_else(not_found),
+            _ => Err(unsupported()),
+        }
+    }
+
+    pub(super) fn handle(
+        &mut self,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        if matches!(method, "GET" | "LIST" | "SCAN") {
+            return self.handle_read(method, path, body, now);
+        }
+        if path == "config" {
+            if !write_method(method) {
+                return Err(unsupported());
             }
+            reject_unknown(
+                body,
+                &["max_versions", "cas_required", "delete_version_after"],
+            )?;
+            self.config.update(body)?;
+            return Ok(empty(true));
+        }
+        let (operation, resource) = path.split_once('/').unwrap_or((path, ""));
+        if !matches!(
+            operation,
+            "data" | "subkeys" | "metadata" | "delete" | "undelete" | "destroy"
+        ) {
+            return Err(error(404, "unknown KV v2 operation"));
+        }
+        valid_path(resource)?;
+        match operation {
             "data" if write_method(method) || method == "PATCH" => {
                 self.write(resource, body, now, method == "PATCH")
             }
@@ -243,11 +350,6 @@ impl Kv2 {
             "delete" | "undelete" | "destroy" if write_method(method) => {
                 self.change_versions(resource, operation, body, now)
             }
-            "metadata" if method == "GET" => self
-                .entries
-                .get(resource)
-                .map(|e| ok(e.metadata(), false))
-                .ok_or_else(not_found),
             "metadata" if method == "DELETE" => Ok(empty(self.entries.remove(resource).is_some())),
             "metadata" if write_method(method) || method == "PATCH" => {
                 self.write_metadata(resource, body, now, method == "PATCH")
@@ -530,5 +632,37 @@ fn strip_values(value: &Value, depth: u64, level: u64) -> Value {
                 .collect(),
         ),
         _ => Value::Null,
+    }
+}
+
+#[cfg(test)]
+mod ordered_list_tests {
+    use super::*;
+    #[test]
+    fn record_index_paging_matches_reference_for_shallow_recursive_and_unicode_keys() -> Result<()>
+    {
+        let mut entries = BTreeMap::new();
+        for prefix in ["", "nested/", "é/"] {
+            for key in [
+                "a", "a/one", "a/two", "a0", "b", "b/one", "é", "é/深", "深/a",
+            ] {
+                entries.insert(format!("{prefix}{key}"), ());
+            }
+        }
+        for prefix in ["", "a", "a/", "nested", "nested/a", "é", "missing"] {
+            for recursive in [false, true] {
+                for after in ["", "a", "a/", "a/one", "a0", "b/", "é", "é/", "深"] {
+                    for limit in [0, 1, 2, 20] {
+                        let body = json!({"after":after,"limit":limit});
+                        assert_eq!(
+                            list_map_keys(&entries, prefix, recursive, &body)?,
+                            list_keys(entries.keys(), prefix, recursive, &body)?,
+                            "prefix={prefix:?} recursive={recursive} after={after:?} limit={limit}"
+                        );
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 }

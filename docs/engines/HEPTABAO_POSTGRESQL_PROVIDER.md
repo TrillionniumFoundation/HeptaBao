@@ -35,9 +35,9 @@ No component may infer an external transaction's success from local persistence.
 
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
-never installs a second local authoritative store. Service state is now schema 4;
+never installs a second local authoritative store. This provider increment introduced schema 4;
 read-only opening of valid older state does not upgrade it. Any real mutation
-publishes schema 4. An old executable must refuse the new state; changing the
+publishes the current discriminator defined in `../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the new state; changing the
 schema number by hand is not a downgrade or rollback procedure.
 
 ## Enrollment and bounded API

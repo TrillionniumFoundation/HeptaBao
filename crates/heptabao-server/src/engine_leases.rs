@@ -54,15 +54,12 @@ impl EngineState {
     pub(crate) fn has_lease_state(&self) -> bool {
         self.lease_clock != 0
             || self.namespaces.values().any(|state| {
-                state
-                    .mounts
-                    .values()
-                    .any(|mount| {
-                        matches!(
-                            mount.backend,
-                            Backend::Ssh(_) | Backend::Pki(_) | Backend::Kubernetes(_)
-                        )
-                    })
+                state.mounts.values().any(|mount| {
+                    matches!(
+                        mount.backend,
+                        Backend::Ssh(_) | Backend::Pki(_) | Backend::Kubernetes(_)
+                    )
+                })
             })
     }
     pub(crate) fn validate_lease_state(&self) -> Result<()> {

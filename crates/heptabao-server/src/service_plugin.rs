@@ -162,8 +162,7 @@ fn failure(error: PluginHostError) -> Response {
 
 impl Service {
     pub(super) fn plugin_catalog_handles(path: &str) -> bool {
-        path == "sys/plugins/catalog/secret"
-            || path.starts_with("sys/plugins/catalog/secret/")
+        path == "sys/plugins/catalog/secret" || path.starts_with("sys/plugins/catalog/secret/")
     }
 
     pub(super) fn validate_plugin_mount_request(
@@ -238,10 +237,7 @@ impl Service {
             .unwrap_or_default();
         if suffix.is_empty() {
             if !matches!(*method, "GET" | "HEAD" | "LIST" | "SCAN") {
-                return Response::error(
-                    501,
-                    "runtime plugin catalog mutation is not implemented",
-                );
+                return Response::error(501, "runtime plugin catalog mutation is not implemented");
             }
             return Response::ok(json!({
                 "data": {
@@ -249,16 +245,14 @@ impl Service {
                 }
             }));
         }
-        let Some(plugin_id) = suffix.strip_prefix('/').filter(|value| {
-            !value.is_empty() && !value.contains('/')
-        }) else {
+        let Some(plugin_id) = suffix
+            .strip_prefix('/')
+            .filter(|value| !value.is_empty() && !value.contains('/'))
+        else {
             return Response::error(404, "plugin catalog entry not found");
         };
         if !matches!(*method, "GET" | "HEAD") {
-            return Response::error(
-                501,
-                "runtime plugin catalog mutation is not implemented",
-            );
+            return Response::error(501, "runtime plugin catalog mutation is not implemented");
         }
         let Some(host) = self.plugins.get(plugin_id) else {
             return Response::error(404, "plugin catalog entry not found");

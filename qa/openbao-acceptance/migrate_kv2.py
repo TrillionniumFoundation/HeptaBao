@@ -332,6 +332,53 @@ def transfer_record(target, mount, record, checkpoint):
     return "copied_and_verified"
 
 
+
+def verified_existing_prefix(target, mount, record):
+    """Read-only admission for explicit append import; never truncate or overwrite.
+
+    Existing readable versions must be an exact prefix, with identical selected
+    metadata and explicit retention for the entire imported history. This does
+    not prove that an external writer is fenced; deployment control must do that.
+    """
+    validate_export_record(record)
+    before = read_metadata(target, mount, record["key"])
+    count = active_history(before)
+    if count > len(record["versions"]):
+        raise BaoError("append_target_is_ahead_of_frozen_source")
+    if not settings_match(before, record["target_metadata"]):
+        raise BaoError("append_target_metadata_mismatch")
+    maximum = before.get("max_versions")
+    if type(maximum) is not int or maximum < len(record["versions"]):
+        raise BaoError("append_requires_explicit_retention_for_complete_history")
+    verify_target(target, mount, record, count)
+    if read_metadata(target, mount, record["key"]) != before:
+        raise BaoError("append_target_changed_during_prefix_verification")
+    return count
+
+
+def append_existing_record(target, mount, record, checkpoint):
+    """Explicit existing-prefix import with the same durable CAS/reconcile path.
+
+    Normal transfer_record still refuses an unowned existing destination. Only
+    this opt-in entry point admits a byte/ordinal-verified historical prefix.
+    An uncertain append resumes by exact readback, never by reseeding its intent.
+    """
+    validate_export_record(record)
+    object_id = digest(record["key"])
+    if object_id not in checkpoint.state["objects"]:
+        count = verified_existing_prefix(target, mount, record)
+        checkpoint.state["objects"][object_id] = {
+            "source_digest": digest(record), "completed_version": count,
+            "phase": "copying", "admission": "verified-existing-prefix-v1",
+            "original_prefix_versions": count,
+        }
+        checkpoint.save()  # Own the verified prefix before any append effect.
+    elif (not isinstance(checkpoint.state["objects"][object_id], dict)
+          or checkpoint.state["objects"][object_id].get("admission") != "verified-existing-prefix-v1"):
+        raise BaoError("append_checkpoint_admission_mismatch")
+    return transfer_record(target, mount, record, checkpoint)
+
+
 def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("transfer", "export", "import"))
@@ -346,6 +393,8 @@ def main(argv=None):
     parser.add_argument("--source-writes-frozen", action="store_true", help="operator attests source writers remain frozen")
     parser.add_argument("--target-exclusive", action="store_true", help="operator attests exclusive control of selected target keys")
     parser.add_argument("--allow-plaintext-export", action="store_true")
+    parser.add_argument("--append-verified-prefix", action="store_true",
+                        help="import only: explicitly admit an identical existing history prefix; never overwrite it")
     args = parser.parse_args(argv)
     result = {"schema": "heptabao.kv2-transfer-result.v1", "status": "failed", "mode": "apply" if args.apply else "dry_run",
               "action": args.action, "objects_checked": 0, "objects_copied": 0, "objects_already_verified": 0,
@@ -354,6 +403,9 @@ def main(argv=None):
               "scope": "contiguous_readable_active_versions_1_to_n_and_selected_metadata"}
     code = 2
     try:
+        if args.append_verified_prefix and args.action != "import":
+            raise BaoError("append_verified_prefix_requires_offline_import")
+        result["target_admission"] = "verified_existing_prefix" if args.append_verified_prefix else "new_owned_object"
         source = target = None
         records = None
         if args.action in ("transfer", "export"):
@@ -431,6 +483,8 @@ def main(argv=None):
             inventory_digest,
             target_identity,
         )
+        if args.append_verified_prefix:
+            binding["target_admission"] = "verified-existing-prefix-v1"
         checkpoint = lock = None
         exported = []
         try:
@@ -447,7 +501,8 @@ def main(argv=None):
                         if len(canonical(exported)) > MAX_BODY - 65536:
                             raise BaoError("export_size_limit_use_direct_transfer")
                 elif args.apply:
-                    outcome = transfer_record(target, args.target_mount, record, checkpoint)
+                    copier = append_existing_record if args.append_verified_prefix else transfer_record
+                    outcome = copier(target, args.target_mount, record, checkpoint)
                     result["objects_already_verified" if outcome == "already_verified" else "objects_copied"] += 1
                     if source and read_metadata(source, args.source_mount, key) != record["source_metadata"]:
                         raise BaoError("source_changed_after_copy_target_not_cut_over")
@@ -456,6 +511,9 @@ def main(argv=None):
                     if existing is not None:
                         # Dry-run cannot certify a resumable target without checking the bound checkpoint.
                         result["target_existing_objects"] = result.get("target_existing_objects", 0) + 1
+                    if args.append_verified_prefix:
+                        verified_existing_prefix(target, args.target_mount, record)
+                        result["verified_prefix_objects"] = result.get("verified_prefix_objects", 0) + 1
             if args.action == "export" and args.apply:
                 private_write(args.export_file, {"schema": SCHEMA, "source_identity": source_identity,
                               "source_writes_frozen_attestation": True,

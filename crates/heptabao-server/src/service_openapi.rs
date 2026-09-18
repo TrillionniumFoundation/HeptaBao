@@ -461,13 +461,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn generated_document_is_deterministic_and_does_not_advertise_unimplemented_auth() {
+    fn generated_document_is_deterministic_and_does_not_advertise_unimplemented_auth()
+    -> Result<(), Box<dyn std::error::Error>> {
         let first = handle("POST", &json!({"generic_mount_paths":true}), true);
         let second = handle("POST", &json!({"generic_mount_paths":true}), true);
         assert_eq!(first.status, 200);
         assert_eq!(second.status, 200);
         assert_eq!(first.body, second.body);
-        let paths = first.body["paths"].as_object().expect("paths");
+        let paths = first.body["paths"]
+            .as_object()
+            .ok_or("missing OpenAPI paths")?;
         assert!(paths.contains_key("/sys/health"));
         assert!(paths.contains_key("/{kv_mount_path}/data/{path}"));
         assert!(paths.contains_key("/auth/{userpass_mount_path}/login/{username}"));
@@ -480,6 +483,7 @@ mod tests {
                 || path.contains("rabbitmq")
                 || path.contains("openldap")
         }));
+        Ok(())
     }
 
     #[test]
@@ -493,17 +497,21 @@ mod tests {
     }
 
     #[test]
-    fn non_root_document_fails_closed_instead_of_over_advertising() {
+    fn non_root_document_fails_closed_instead_of_over_advertising()
+    -> Result<(), Box<dyn std::error::Error>> {
         let response = handle("GET", &json!({}), false);
         assert_eq!(response.status, 200);
         assert_eq!(
             response.body["x-heptabao-policy-filtering"],
             "fail_closed_non_root_subset"
         );
-        let paths = response.body["paths"].as_object().expect("paths");
+        let paths = response.body["paths"]
+            .as_object()
+            .ok_or("missing OpenAPI paths")?;
         assert!(paths.contains_key("/sys/health"));
         assert!(paths.contains_key("/sys/internal/specs/openapi"));
         assert!(!paths.contains_key("/auth/token/create"));
         assert!(!paths.contains_key("/identity/entity"));
+        Ok(())
     }
 }

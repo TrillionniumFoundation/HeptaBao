@@ -189,20 +189,6 @@ impl Outbound {
         read_discard_response_status(&mut stream, &[200, 201, 202, 204])
     }
 
-    /// Perform one LDAPv3 simple bind over an exactly enrolled LDAPS endpoint.
-    /// This is intentionally narrower than a general LDAP client: no DNS,
-    /// StartTLS upgrade, referrals, search, SASL, redirect, or automatic retry.
-    pub(crate) fn ldap_simple_bind(
-        &self,
-        url: &str,
-        dn: &str,
-        password: &str,
-    ) -> Result<bool, &'static str> {
-        Ok(self
-            .ldap_bind_and_search_groups(url, dn, password, "", "member", "cn")?
-            .is_some())
-    }
-
     /// Bind as the authenticating user and, on that same TLS session, optionally
     /// perform one bounded subtree group-membership search. The search grammar is
     /// fixed: equality on one configured attribute against the exact user DN,
@@ -1072,7 +1058,7 @@ mod tests {
         ]
         .concat();
         let success = ber_value(0x30, &success)?;
-        assert_eq!(read_ldap_bind_response(&mut success.as_slice())?, true);
+        assert!(read_ldap_bind_response(&mut success.as_slice())?);
 
         let denied = [
             ber_value(0x02, &[0x01])?,
@@ -1088,7 +1074,7 @@ mod tests {
         ]
         .concat();
         let denied = ber_value(0x30, &denied)?;
-        assert_eq!(read_ldap_bind_response(&mut denied.as_slice())?, false);
+        assert!(!read_ldap_bind_response(&mut denied.as_slice())?);
 
         let mut malformed = success.clone();
         malformed.push(0);

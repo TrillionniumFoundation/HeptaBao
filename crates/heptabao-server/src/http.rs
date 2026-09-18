@@ -448,7 +448,7 @@ fn execute_service_request(
             pending,
             deadline,
             |pending| pending.execute(),
-            |writer, pending, result| writer.finish_external_request(pending, result),
+            |writer, pending, result| writer.finish_external_request(*pending, result),
         ),
     }
 }
@@ -1017,17 +1017,20 @@ mod service_lock_deadline_tests {
     use super::*;
 
     #[test]
-    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer() {
+    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
         let lock = Mutex::new(());
-        let _held = lock.lock().expect("test lock");
-        assert_eq!(
-            lock_until(&lock, Instant::now() + Duration::from_millis(5)).unwrap_err(),
-            LockWaitError::Busy
-        );
+        let _held = lock.lock().map_err(|_| "test mutex poisoned")?;
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_millis(5)),
+            Err(LockWaitError::Busy)
+        ));
+        Ok(())
     }
 
     #[test]
-    fn external_effect_phase_does_not_hold_the_shared_state_writer() {
+    fn external_effect_phase_does_not_hold_the_shared_state_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
         let state = Arc::new(Mutex::new(0_u64));
         let entered = Arc::new(std::sync::Barrier::new(2));
         let release = Arc::new(std::sync::Barrier::new(2));
@@ -1046,36 +1049,50 @@ mod service_lock_deadline_tests {
                 },
                 |value, (), result| {
                     *value = result + 1;
-                    Response::ok(json!({"data":{"completed":true}}))
+                    Response {
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
                 },
             )
         });
         entered.wait();
-        {
-            let guard = state
-                .try_lock()
-                .expect("external effect must run without holding shared state writer");
-            assert_eq!(*guard, 0);
-        }
+        let observed = state
+            .try_lock()
+            .map(|guard| *guard)
+            .map_err(|_| "external effect held the shared writer");
         release.wait();
-        let response = worker.join().expect("external effect worker");
+        let response = worker
+            .join()
+            .map_err(|_| "external effect worker panicked")?;
+        assert_eq!(observed?, 0);
         assert_eq!(response.status, 200);
-        assert_eq!(*state.lock().expect("state after external effect"), 42);
+        assert_eq!(
+            *state
+                .lock()
+                .map_err(|_| "state poisoned after external effect")?,
+            42
+        );
+        Ok(())
     }
 
     #[test]
     fn poisoned_service_lock_fails_without_waiting_for_the_deadline() {
         let lock = Arc::new(Mutex::new(()));
         let worker = Arc::clone(&lock);
-        let _ = std::thread::spawn(move || {
-            let _held = worker.lock().expect("test lock");
-            panic!("poison test mutex");
+        let poisoned = std::thread::spawn(move || {
+            if let Ok(_held) = worker.lock() {
+                // Deliberately unwind while holding the lock: this is the fault
+                // being tested, not an assertion failure or production panic.
+                std::panic::resume_unwind(Box::new("poison test mutex"));
+            }
         })
         .join();
-        assert_eq!(
-            lock_until(&lock, Instant::now() + Duration::from_secs(1)).unwrap_err(),
-            LockWaitError::Poisoned
-        );
+        assert!(poisoned.is_err());
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_secs(1)),
+            Err(LockWaitError::Poisoned)
+        ));
     }
 }
 

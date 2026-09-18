@@ -1167,7 +1167,9 @@ fn plan_replicated_chunks<'a>(
         return Err("HA content-defined chunk count exceeds bounded physical index space".into());
     }
 
-    let previous_chunks = previous.map(|manifest| manifest.chunks.as_slice()).unwrap_or(&[]);
+    let previous_chunks = previous
+        .map(|manifest| manifest.chunks.as_slice())
+        .unwrap_or(&[]);
     let mut reserved = BTreeSet::new();
     let mut matches = Vec::with_capacity(chunks.len());
     for chunk in &chunks {
@@ -1210,7 +1212,9 @@ fn plan_replicated_chunks<'a>(
             })
             .ok_or_else(|| "HA physical chunk index space exhausted".to_owned())?;
         used.insert(index);
-        let slot = old_by_index.get(&index).map_or(0, |reference| 1 - reference.slot);
+        let slot = old_by_index
+            .get(&index)
+            .map_or(0, |reference| 1 - reference.slot);
         plans.push(ReplicatedChunkPlan {
             bytes: chunk,
             reference: ReplicatedChunkRef {
@@ -1238,8 +1242,7 @@ fn replicated_content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
         }
         let length = index + 1 - start;
         if length >= REPLICATED_CHUNK_MIN_BYTES
-            && ((rolling & REPLICATED_CHUNK_MASK) == 0
-                || length >= REPLICATED_STATE_CHUNK_BYTES)
+            && ((rolling & REPLICATED_CHUNK_MASK) == 0 || length >= REPLICATED_STATE_CHUNK_BYTES)
         {
             chunks.push(&bytes[start..=index]);
             start = index + 1;
@@ -1393,7 +1396,11 @@ mod tests {
             "content-defined HA chunking should resynchronize and preserve most physical indices"
         );
         assert_eq!(
-            second.iter().map(|plan| plan.reference.index).collect::<BTreeSet<_>>().len(),
+            second
+                .iter()
+                .map(|plan| plan.reference.index)
+                .collect::<BTreeSet<_>>()
+                .len(),
             second.len()
         );
         Ok(())
