@@ -341,6 +341,18 @@ impl DatabaseEffectPlan {
     }
 }
 impl DatabaseState {
+    pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
+        self.mounts
+            .keys()
+            .filter(|namespace| !namespace.is_empty())
+            .cloned()
+            .collect()
+    }
+
+    pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        self.mounts.get(namespace).is_none_or(|mounts| mounts.is_empty())
+    }
+
     pub(super) fn is_empty(&self) -> bool {
         self.mounts.is_empty() && self.provider_fence == 0
     }

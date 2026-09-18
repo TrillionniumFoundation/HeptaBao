@@ -881,6 +881,42 @@ fn claim_values(body: &Value, name: &str) -> Result<BTreeSet<String>, AuthError>
 }
 
 impl AuthState {
+    pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
+        let mut namespaces = BTreeSet::new();
+        for token in self.tokens.values() {
+            if !token.namespace.is_empty() {
+                namespaces.insert(token.namespace.clone());
+            }
+        }
+        namespaces.extend(self.policies.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.users.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.roles.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.mounted_users.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.mounted_roles.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.auth_mounts.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.jwt_mounts.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.kubernetes_mounts.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.oidc_mounts.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.ldap_mounts.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.ldap_groups.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces
+    }
+
+    pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        !self.tokens.values().any(|token| token.namespace == namespace)
+            && self.policies.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.users.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.roles.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.mounted_users.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.mounted_roles.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.auth_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.jwt_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.kubernetes_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.oidc_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.ldap_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self.ldap_groups.get(namespace).is_none_or(|entries| entries.is_empty())
+    }
+
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
             wrapping_clock: 0,

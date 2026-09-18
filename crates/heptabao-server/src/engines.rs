@@ -345,6 +345,22 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
+        self.namespaces
+            .keys()
+            .filter(|namespace| !namespace.is_empty())
+            .cloned()
+            .collect()
+    }
+
+    /// Conservative deletion fence: a namespace that ever materialized engine
+    /// state must be cleaned through the owning engine before its catalog entry
+    /// can be removed. This prevents namespace deletion from silently dropping
+    /// secret, identity or lease state.
+    pub(crate) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        !self.namespaces.contains_key(namespace)
+    }
+
     /// The caller must authorize this capability under the same service lock used
     /// by `handle`. `None` means this module does not own the supplied route.
     pub(crate) fn database_mount(&self, namespace: &str, path: &str) -> Option<&str> {

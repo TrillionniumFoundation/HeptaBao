@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 8;
+const CURRENT_STATE_SCHEMA: u32 = 9;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -36,6 +36,8 @@ mod capabilities;
 mod database;
 #[path = "service_identity.rs"]
 mod identity;
+#[path = "service_namespaces.rs"]
+mod namespaces;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
 #[path = "service_lifecycle.rs"]
@@ -225,6 +227,8 @@ struct State {
     /// replay ledger before publishing state for the new epoch.
     #[serde(default, skip_serializing_if = "replay_epoch_is_zero")]
     replay_epoch: u64,
+    #[serde(default, skip_serializing_if = "namespaces::NamespaceRegistry::is_empty")]
+    namespaces: namespaces::NamespaceRegistry,
     auth: CowOwner<AuthState>,
     engines: CowOwner<EngineState>,
     #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
@@ -1287,6 +1291,9 @@ impl Service {
         {
             return error;
         }
+        if namespaces::owns(path) {
+            return self.namespace_route(admitted, principal.as_ref(), &request);
+        }
         if path == "sys/audit"
             || path.starts_with("sys/audit/")
             || path == "sys/internal/audit/file"
@@ -1899,8 +1906,17 @@ impl Service {
         // Older single-node builds could retire the durable replay ledger without
         // recording the epoch in application state. Normalize that one-way legacy
         // condition and rewrite it before the state may join an HA cluster.
+        let mut logical_rewrite = false;
         if state.replay_epoch < durable_epoch {
             state.replay_epoch = durable_epoch;
+            logical_rewrite = true;
+        }
+        if state.adopt_legacy_namespaces()? {
+            logical_rewrite = true;
+        }
+        if logical_rewrite {
+            state.schema = CURRENT_STATE_SCHEMA;
+            state.validate_format()?;
             bytes = Zeroizing::new(
                 serde_json::to_vec(&state)
                     .map_err(|_| Response::error(500, "state serialization failed"))?,
@@ -2194,6 +2210,7 @@ impl Service {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default(),
             auth: auth.into(),
             engines: EngineState::default().into(),
             database: database::DatabaseState::default().into(),

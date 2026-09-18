@@ -47,6 +47,13 @@ impl State {
         self.engines
             .validate_kubernetes_state()
             .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < 9 && !self.namespaces.is_empty() {
+            return Err(Response::error(
+                503,
+                "explicit namespace catalog requires schema 9",
+            ));
+        }
+        self.namespaces.validate(&self.cluster_id)?;
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -67,7 +74,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

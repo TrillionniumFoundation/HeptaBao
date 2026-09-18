@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **8**. Its source constant is
+The current Service state schema is **9**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -20,7 +20,9 @@ provider state inside its mount: encrypted provider bearer/configuration, roles,
 pre-entry issuance intents and terminal lease metadata. This is distinct from the
 schema-5 Kubernetes **authentication method** state. Old binaries must refuse newer
 state rather than authenticate or issue credentials while silently dropping live
-authorization/provider semantics. Separate seal metadata uses schema 1; the application schema must never
+authorization/provider semantics. Schema 9 adds the explicit namespace catalog: durable
+namespace IDs/incarnations and custom metadata are bound into application state while
+namespace sealing remains a separate, still-open surface. Separate seal metadata uses schema 1; the application schema must never
 be inferred from that number.
 
 ## Read admission and mutation promotion
@@ -34,7 +36,8 @@ be inferred from that number.
 | 5 | Online methods and replay epoch are admitted, but the PostgreSQL `provider_fence` must remain absent/zero. |
 | 6 | Online methods, replay epoch and durable PostgreSQL provider fencing; LDAP group synchronization state must be absent. |
 | 7 | LDAP group synchronization/group-to-policy mappings are admitted; Kubernetes secrets-engine mounts must be absent. |
-| 8 | Current format, including bounded Kubernetes TokenRequest secrets-engine configuration, roles, issuance intents and lease metadata. |
+| 8 | Kubernetes TokenRequest secrets-engine state is admitted; the explicit namespace catalog must still be absent. |
+| 9 | Current format, adding explicit namespace IDs/incarnations and custom metadata for the namespace tree. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -45,7 +48,7 @@ legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 8. An authenticated
+it. Initialization and committed mutations use schema 9. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -59,14 +62,15 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-8-capable rollback binary with compatible HA and provider formats.
-A schema-7 binary must fail closed once Kubernetes secrets-engine state has been
+fields it happens to know. Keep a schema-9-capable rollback binary with compatible HA and provider formats.
+A schema-8 binary must fail closed once explicit namespace catalog state has been committed;
+a schema-7 binary must fail closed once Kubernetes secrets-engine state has been
 committed; a schema-6 binary must fail closed once LDAP group synchronization
 state has been committed. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-8 rolling upgrade receipt. Mixed-version cluster operation, source
+not a schema-9 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Restoring database provider records is also
