@@ -94,6 +94,33 @@ struct LdapMount {
     starttls: bool,
 }
 
+pub(crate) struct LdapLoginPlan {
+    namespace: String,
+    mount: String,
+    name: String,
+    dn: String,
+    config: LdapMount,
+    password: Zeroizing<String>,
+    totp_code: Option<Zeroizing<String>>,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct LdapLoginObservation;
+
+impl LdapLoginPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &crate::outbound::Outbound,
+    ) -> Result<LdapLoginObservation, AuthError> {
+        match outbound.ldap_simple_bind(&self.config.url, &self.dn, self.password.as_str()) {
+            Ok(true) => Ok(LdapLoginObservation),
+            Ok(false) => Err(denied()),
+            Err(_) => Err(err(503, "LDAP provider bind unavailable")),
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtKeyRecord {
     algorithm: String,
@@ -1749,26 +1776,167 @@ impl AuthState {
         }
     }
 
-    fn login_ldap(
-        &mut self,
-        scope: AuthScope<'_>,
-        method: &str,
+    pub(crate) fn prepare_ldap_login(
+        &self,
+        namespace: &str,
+        mount: &str,
         name: &str,
+        method: &str,
         body: &Value,
         now: u64,
-    ) -> Result<AuthResponse, AuthError> {
-        if self
-            .ldap_mounts
-            .get(scope.namespace)
-            .and_then(|m| m.get(scope.mount))
-            .is_none()
-        {
-            return Err(err(503, "LDAP auth is not configured"));
+    ) -> Result<LdapLoginPlan, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Err(err(405, "method not allowed"));
         }
-        // This bounded profile uses the mount's durable directory fixture. It
-        // preserves LDAP login and revocation semantics while external network
-        // bind/provider qualification remains explicitly outside this runtime.
-        self.login_userpass(scope, method, name, body, now)
+        validate_namespace(namespace)?;
+        if !valid_name(name)
+            || !self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .is_some_and(|entry| entry.kind == "ldap")
+        {
+            return Err(denied());
+        }
+        reject_unknown(body, &["password", "totp_code"])?;
+        let password = string_field(body, "password")?;
+        if password.is_empty() || password.len() > 1024 || password.contains('\0') {
+            return Err(denied());
+        }
+        let scope = AuthScope { namespace, mount };
+        let config = self
+            .ldap_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "LDAP auth is not configured"))?;
+        if !config.url.starts_with("ldaps://") || config.starttls {
+            return Err(err(
+                503,
+                "external LDAP login requires a host-enrolled LDAPS endpoint",
+            ));
+        }
+        let dn = config.user_dn_template.replace("{{username}}", name);
+        if dn.is_empty()
+            || dn.len() > 1024
+            || dn.bytes().any(|byte| byte == 0 || byte < 0x20)
+        {
+            return Err(bad("LDAP user DN is outside bounds"));
+        }
+        let totp_code = body
+            .get("totp_code")
+            .map(|value| {
+                value
+                    .as_str()
+                    .filter(|value| value.len() <= 64 && !value.contains('\0'))
+                    .map(|value| Zeroizing::new(value.to_owned()))
+                    .ok_or_else(denied)
+            })
+            .transpose()?;
+        // Policy/token mapping remains a local administrative object, but the
+        // password verifier is deliberately not consulted for LDAP login.
+        let _ = self.users_at(scope).and_then(|users| users.get(name));
+        Ok(LdapLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            name: name.into(),
+            dn,
+            config,
+            password: Zeroizing::new(password.to_owned()),
+            totp_code,
+            now,
+            started: std::time::Instant::now(),
+        })
+    }
+
+    pub(crate) fn finish_ldap_login(
+        &mut self,
+        plan: LdapLoginPlan,
+        _observation: LdapLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        if !self
+            .effective_auth_mounts(&plan.namespace)
+            .get(&plan.mount)
+            .is_some_and(|entry| entry.kind == "ldap")
+            || self
+                .ldap_mounts
+                .get(&plan.namespace)
+                .and_then(|mounts| mounts.get(&plan.mount))
+                != Some(&plan.config)
+        {
+            return Err(err(409, "LDAP configuration changed during bind"));
+        }
+        let mut user = self
+            .users_at(scope)
+            .and_then(|users| users.get(&plan.name))
+            .cloned()
+            .ok_or_else(denied)?;
+        let elapsed = plan.started.elapsed();
+        let now = plan.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        );
+        let accepted_counter = match user.mfa.as_ref() {
+            Some(enrollment) => Some(verify_totp(
+                enrollment,
+                plan.totp_code
+                    .as_deref()
+                    .map(|value| value.as_str())
+                    .ok_or_else(denied)?,
+                now,
+            )?),
+            None => {
+                if plan.totp_code.is_some() {
+                    return Err(bad("MFA is not configured for this LDAP user"));
+                }
+                None
+            }
+        };
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
+        let mut token = login_token(
+            &plan.namespace,
+            user.policies.clone(),
+            token_ttl,
+            token_max_ttl,
+            user.token_num_uses,
+            format!("ldap-{}", plan.name),
+            now,
+        )?;
+        token.auth_mount = Some(plan.mount.clone());
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: plan.mount.clone(),
+            alias: plan.name.clone(),
+        });
+        if let Some(counter) = accepted_counter {
+            let enrollment = user
+                .mfa
+                .as_mut()
+                .ok_or_else(|| err(500, "LDAP MFA enrollment disappeared during login"))?;
+            enrollment.last_accepted_counter = Some(counter);
+        }
+        self.users_at_mut(scope).insert(plan.name, user);
+        self.tokens.insert(token_id, token);
+        Ok(response)
+    }
+
+    fn login_ldap(
+        &mut self,
+        _scope: AuthScope<'_>,
+        _method: &str,
+        _name: &str,
+        _body: &Value,
+        _now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        Err(err(
+            503,
+            "LDAP login requires the Service online-auth dispatcher",
+        ))
     }
 
     fn jwt_route(
