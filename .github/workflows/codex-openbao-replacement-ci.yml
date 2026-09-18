@@ -229,8 +229,9 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends postgresql-common ca-certificates
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-          sudo apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17 slapd ldap-utils
           /usr/lib/postgresql/17/bin/postgres --version
+          slapd -VV 2>&1 | head -n 2
           dpkg-query -W postgresql-17 postgresql-client-17
 
       - name: Exercise actual PostgreSQL SQL and active-session revocation
@@ -265,6 +266,7 @@ jobs:
           python -c 'import os,sys; os.mkdir(sys.argv[1],0o700); os.chmod(sys.argv[1],0o700)' "$reports"
           timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
           timeout 180 python qa/openbao-acceptance/ldap_bounded.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap.json"
+          timeout 240 python qa/openbao-acceptance/ldap_openldap_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/openldap.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.
