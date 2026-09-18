@@ -476,8 +476,10 @@ impl EngineState {
         })
     }
 
-    /// All successful state changes are atomic even for a direct caller: the
-    /// namespace candidate replaces live state only after complete validation.
+    /// Successful state changes remain atomic for a direct caller, but ordinary
+    /// engine requests clone only their target mount instead of the complete
+    /// namespace. This keeps rollback-by-replacement semantics without making an
+    /// unrelated large KV/PKI/Transit mount part of every request's memory cost.
     pub fn handle(
         &mut self,
         namespace: &str,
@@ -510,63 +512,91 @@ impl EngineState {
             } else {
                 method
             };
-        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+
         if identity::owns(path) {
-            let response = identity::handle(&mut candidate.identity, method, path, &params, now)?;
+            let mut candidate = self
+                .namespaces
+                .get(namespace)
+                .map(|state| state.identity.clone())
+                .unwrap_or_default();
+            let response = identity::handle(&mut candidate, method, path, &params, now)?;
             if response.mutated {
-                self.namespaces.insert(namespace.into(), candidate);
+                self.namespaces
+                    .entry(namespace.into())
+                    .or_default()
+                    .identity = candidate;
             }
             return Ok(Some(response));
         }
-        let response = if path == "sys/mounts" || path == "sys/mounts/" {
+
+        if path == "sys/mounts" || path == "sys/mounts/" {
             if method != "GET" {
                 return Err(unsupported());
             }
-            let mut mounts: serde_json::Map<String, Value> = candidate
+            let fallback = NamespaceState::default();
+            let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+            let mut mounts: serde_json::Map<String, Value> = state
                 .mounts
                 .iter()
                 .map(|(name, mount)| (name.clone(), mount.descriptor()))
                 .collect();
             mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
-            ok(Value::Object(mounts), false)
-        } else if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
-            handle_mounts(&mut candidate, method, mount_path, &params)?
-        } else {
-            let Some(mount_path) = candidate
-                .mounts
-                .keys()
-                .find(|m| path.starts_with(m.as_str()))
-                .cloned()
-            else {
-                return Ok(None);
-            };
-            let relative = &path[mount_path.len()..];
-            let mount = candidate
-                .mounts
-                .get_mut(&mount_path)
-                .ok_or_else(not_found)?;
-            match &mut mount.backend {
-                Backend::Database => {
-                    return Err(error(
-                        501,
-                        "database operations require the audited external-effect dispatcher",
-                    ));
-                }
-                Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
-                Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Transit(engine) => {
-                    engine.handle(namespace, &mount_path, method, relative, &params, now)?
-                }
-                Backend::Pki(engine) => engine.handle_admin(method, relative, &params, now)?,
-                Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
+            return Ok(Some(ok(Value::Object(mounts), false)));
+        }
+
+        if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
+            // Registry operations can affect overlap/incarnation state across
+            // mounts, so they deliberately retain namespace-level transactionality.
+            let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+            let response = handle_mounts(&mut candidate, method, mount_path, &params)?;
+            if response.mutated {
+                self.namespaces.insert(namespace.into(), candidate);
             }
+            return Ok(Some(response));
+        }
+
+        let fallback = NamespaceState::default();
+        let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+        let Some(mount_path) = state
+            .mounts
+            .keys()
+            .find(|mount| path.starts_with(mount.as_str()))
+            .cloned()
+        else {
+            return Ok(None);
+        };
+        let relative = &path[mount_path.len()..];
+        let mut mount = state
+            .mounts
+            .get(&mount_path)
+            .cloned()
+            .ok_or_else(not_found)?;
+        let response = match &mut mount.backend {
+            Backend::Database => {
+                return Err(error(
+                    501,
+                    "database operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
+            Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Transit(engine) => {
+                engine.handle(namespace, &mount_path, method, relative, &params, now)?
+            }
+            Backend::Pki(engine) => engine.handle_admin(method, relative, &params, now)?,
+            Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
         };
         if response.mutated {
-            self.namespaces.insert(namespace.into(), candidate);
+            self.namespaces
+                .entry(namespace.into())
+                .or_default()
+                .mounts
+                .insert(mount_path, mount);
         }
         Ok(Some(response))
     }
+
 }
 
 fn cubbyhole_descriptor() -> Value {
