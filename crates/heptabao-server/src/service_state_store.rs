@@ -21,8 +21,7 @@ const STATE_CHUNK_MAX_BYTES: usize = 768 * 1024;
 const STATE_CHUNK_WINDOW_BYTES: usize = 64;
 const STATE_CHUNK_MASK: u64 = (1_u64 << 19) - 1;
 pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
-const MAX_FIXED_STATE_CHUNKS: usize =
-    MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_BYTES);
+const MAX_FIXED_STATE_CHUNKS: usize = MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_BYTES);
 pub(crate) const MAX_STATE_CHUNKS: usize =
     MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_MIN_BYTES);
 const STATE_SLOT_COUNT: u8 = 2;
@@ -134,14 +133,11 @@ impl StateManifest {
                 }
             }
             STATE_STORAGE_FORMAT => {
-                let total_from_chunks = self.chunk_sizes.iter().try_fold(
-                    0_usize,
-                    |total, size| {
-                        usize::try_from(*size)
-                            .ok()
-                            .and_then(|size| total.checked_add(size))
-                    },
-                );
+                let total_from_chunks = self.chunk_sizes.iter().try_fold(0_usize, |total, size| {
+                    usize::try_from(*size)
+                        .ok()
+                        .and_then(|size| total.checked_add(size))
+                });
                 let invalid_size = self.chunk_sizes.iter().enumerate().any(|(index, size)| {
                     let Ok(size) = usize::try_from(*size) else {
                         return true;
@@ -259,9 +255,8 @@ impl StateWritePlan {
             let digest = hex(&crypto::digest(chunk));
             let resource = digest_chunk_resource(&digest);
             chunk_digests.push(digest);
-            chunk_sizes.push(
-                u32::try_from(chunk.len()).map_err(|_| StateStoreError::InvalidChunk)?,
-            );
+            chunk_sizes
+                .push(u32::try_from(chunk.len()).map_err(|_| StateStoreError::InvalidChunk)?);
             if previous_resources.contains(&resource) {
                 required_existing.insert(resource);
             } else {
@@ -361,11 +356,13 @@ pub(crate) fn assemble_state(
                     && (last || chunk.len() == STATE_CHUNK_BYTES)
                     && chunk.len() <= STATE_CHUNK_BYTES
             }
-            STATE_STORAGE_FORMAT => manifest
-                .chunk_sizes
-                .get(index)
-                .and_then(|size| usize::try_from(*size).ok())
-                == Some(chunk.len()),
+            STATE_STORAGE_FORMAT => {
+                manifest
+                    .chunk_sizes
+                    .get(index)
+                    .and_then(|size| usize::try_from(*size).ok())
+                    == Some(chunk.len())
+            }
             _ => false,
         };
         if !valid_length {
@@ -516,12 +513,7 @@ mod tests {
         changed.extend_from_slice(&state[..128 * 1024]);
         changed.extend_from_slice(&insertion);
         changed.extend_from_slice(&state[128 * 1024..]);
-        let second = StateWritePlan::new(
-            &changed,
-            "cdc-after",
-            5,
-            Some(&first_manifest),
-        )?;
+        let second = StateWritePlan::new(&changed, "cdc-after", 5, Some(&first_manifest))?;
         assert!(
             second.required_existing.len() >= first_manifest.chunk_count().saturating_sub(1),
             "a small prefix insertion should resynchronize and reuse later content-addressed chunks"
@@ -548,7 +540,10 @@ mod tests {
         let bytes = serde_json::to_vec(&manifest)?;
         let decoded = decode_manifest(&bytes)?.ok_or("manifest missing")?;
         assert_eq!(decoded.storage_format(), STATE_STORAGE_FORMAT_V2);
-        assert_eq!(assemble_state(&decoded, &[&state[..]])?.as_slice(), &state[..]);
+        assert_eq!(
+            assemble_state(&decoded, &[&state[..]])?.as_slice(),
+            &state[..]
+        );
         Ok(())
     }
 
