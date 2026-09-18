@@ -163,7 +163,7 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             "actual_sigkill_releases_writer_and_recovers_pending_publication",
             "real_partial_write_efbig_tail_is_recovered",
         ):
-            self.assertRegex(source, rf"\\bfn\\s+{re.escape(regression)}\\s*\\(\\s*\\)")
+            self.assertRegex(source, rf"\bfn\s+{re.escape(regression)}\s*\(\s*\)")
         self.assertIn("child.kill()", source)
         self.assertIn("ulimit -f 1", source)
         self.assertIn("ExclusiveDirectory::open(root)", source)
