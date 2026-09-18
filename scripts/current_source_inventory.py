@@ -22,7 +22,7 @@ SNAPSHOT = "planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json"
 HISTORICAL = "planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml"
 # Exact preserved bytes at the reviewed input to this remediation, not regenerated.
 HISTORICAL_SHA256 = "4b88d830ad088b9b611f051164b1c202d3cfcee986d100ae67706c701f5c8cf7"
-SCHEMA = "heptabao.current-source-inventory.v3"
+SCHEMA = "heptabao.current-source-inventory.v4"
 PUBLIC = re.compile(r"^\s*pub(?:\([^)]*\))?\s+(?:(?:async|unsafe|const)\s+)*(fn|struct|enum|trait|type|mod|use|static|const)\s+([A-Za-z_][A-Za-z0-9_]*)")
 TEST = re.compile(r"^\s*#\[(?:test|(?:tokio|async_std)::test)(?:\([^]]*\))?\]\s*$")
 FN = re.compile(r"\b(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)")
@@ -144,21 +144,38 @@ def inventory(root: Path = ROOT) -> tuple[dict[str, Any], dict[str, Any]]:
                "lockfile_sha256": digest(read(root, "Cargo.lock")),
                "historical_v1_4_7_sha256": HISTORICAL_SHA256,
                "modules": rows}
-    snapshot = {"schema": SCHEMA, "scope": "source-and-document-binding-only",
-                "package_count": len(rows),
-                "inventory_sha256": digest(canonical(binding)),
+    snapshot = {"schema": SCHEMA, "scope": "runtime-generated-receipt-policy",
                 "qualification": False, "compatibility_claim": False,
                 "production_authority": False, "release_authority": False}
     return snapshot, all_details
 
 
 def validate(root: Path = ROOT) -> list[str]:
+    """Validate the live tree directly; do not make a generated digest a truth source.
+
+    The inventory walk still reads every workspace manifest, guide and Rust source,
+    verifies the exact workspace/guide closure and computes reproducible details.
+    Exact source bytes are already bound by the Git commit/tree used by CI.  A
+    committed aggregate digest would duplicate that authority and force a noisy
+    rewrite on every ordinary source edit.
+    """
     try:
-        expected, _ = inventory(root)
-        if read(root, SNAPSHOT) != canonical(expected):
-            return ["current source inventory drift: regenerate and review the compact current snapshot, not V1.4.7"]
+        inventory(root)
+        receipt = json.loads(read(root, SNAPSHOT))
+        if receipt.get("schema") != SCHEMA:
+            return ["current source inventory receipt schema is obsolete"]
+        if receipt.get("scope") != "runtime-generated-receipt-policy":
+            return ["current source inventory receipt must be policy-only"]
+        for key in (
+            "qualification",
+            "compatibility_claim",
+            "production_authority",
+            "release_authority",
+        ):
+            if receipt.get(key) is not False:
+                return [f"current source inventory receipt must keep {key}=false"]
         return []
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
         return [f"current source inventory: {error}"]
 
 
@@ -174,7 +191,11 @@ def main() -> int:
         for error in errors:
             print(error, file=sys.stderr)
         if not errors:
-            print("current-source-inventory: PASS (source binding only)")
+            snapshot, _ = inventory()
+            print(
+                "current-source-inventory: PASS "
+                f"(live tree checked; receipt={snapshot['schema']})"
+            )
         return int(bool(errors))
     try:
         snapshot, details = inventory()
