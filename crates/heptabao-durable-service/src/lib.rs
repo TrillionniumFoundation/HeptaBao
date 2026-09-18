@@ -3258,8 +3258,10 @@ mod tests {
         let root = TestRoot::new("snapshot-rollback")?;
         let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
         service.put(put_request("one", b"one")?)?;
+        service.compact()?;
         let old_snapshot = fs::read(snapshot_path(&root.0))?;
         service.put(put_request("two", b"two")?)?;
+        service.compact()?;
         let current_snapshot = fs::read(snapshot_path(&root.0))?;
         let mut ledger = service.ledger.clone();
         let record = ledger
