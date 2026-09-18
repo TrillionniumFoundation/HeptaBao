@@ -115,24 +115,29 @@ class Directory:
             try:
                 with self.context.wrap_socket(client, server_side=True) as stream:
                     stream.settimeout(3)
-                    head = stream.recv(4)
-                    if len(head) < 2 or head[0] != 0x30:
+                    def recv_exact(count: int) -> bytes:
+                        data = bytearray()
+                        while len(data) < count:
+                            part = stream.recv(count - len(data))
+                            if not part:
+                                raise ValueError("truncated")
+                            data.extend(part)
+                        return bytes(data)
+
+                    head = recv_exact(2)
+                    if head[0] != 0x30:
                         continue
                     if head[1] < 128:
                         total = 2 + head[1]
-                        raw = bytearray(head[:2])
+                        raw = bytearray(head)
                     else:
                         count = head[1] & 0x7F
                         if count not in (1, 2):
                             continue
-                        while len(head) < 2 + count:
-                            part = stream.recv(2 + count - len(head))
-                            if not part:
-                                break
-                            head += part
-                        length = int.from_bytes(head[2:2 + count], "big")
+                        length_bytes = recv_exact(count)
+                        length = int.from_bytes(length_bytes, "big")
                         total = 2 + count + length
-                        raw = bytearray(head[:2 + count])
+                        raw = bytearray(head + length_bytes)
                     while len(raw) < total:
                         part = stream.recv(total - len(raw))
                         if not part:
