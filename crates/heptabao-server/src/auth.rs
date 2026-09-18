@@ -85,6 +85,12 @@ pub struct AuthState {
     ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    /// Deployment-enrolled authentication plugins never choose token authority.
+    /// This durable map binds a mount to one admitted plugin id and server-owned
+    /// policy/TTL limits. The plugin returns only an authentication decision and
+    /// a bounded external alias.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    plugin_auth_mounts: BTreeMap<String, BTreeMap<String, PluginAuthMount>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -116,6 +122,38 @@ impl LdapMount {
         } else {
             &self.group_name_attr
         }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct PluginAuthMount {
+    plugin_id: String,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
+#[derive(Clone)]
+pub(crate) struct PluginAuthLoginPlan {
+    namespace: String,
+    mount: String,
+    config: PluginAuthMount,
+    now: u64,
+}
+
+impl PluginAuthLoginPlan {
+    pub(crate) fn namespace(&self) -> &str {
+        &self.namespace
+    }
+    pub(crate) fn mount(&self) -> &str {
+        &self.mount
+    }
+    pub(crate) fn plugin_id(&self) -> &str {
+        &self.config.plugin_id
+    }
+    pub(crate) fn now(&self) -> u64 {
+        self.now
     }
 }
 
@@ -899,6 +937,12 @@ impl AuthState {
         namespaces.extend(self.oidc_mounts.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(self.ldap_mounts.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(self.ldap_groups.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(
+            self.plugin_auth_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces
     }
 
@@ -915,6 +959,10 @@ impl AuthState {
             && self.oidc_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
             && self.ldap_mounts.get(namespace).is_none_or(|entries| entries.is_empty())
             && self.ldap_groups.get(namespace).is_none_or(|entries| entries.is_empty())
+            && self
+                .plugin_auth_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
     }
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
@@ -932,6 +980,7 @@ impl AuthState {
             oidc_mounts: BTreeMap::new(),
             ldap_mounts: BTreeMap::new(),
             ldap_groups: BTreeMap::new(),
+            plugin_auth_mounts: BTreeMap::new(),
         };
         let token = Token {
             wrapping: None,
@@ -1303,6 +1352,9 @@ impl AuthState {
         if let Some(mounts) = self.ldap_groups.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         let revoke: Vec<String> = self
             .tokens
             .iter()
@@ -1669,7 +1721,7 @@ impl AuthState {
                     .ok_or_else(|| bad("auth mount type is required"))?;
                 if !matches!(
                     kind,
-                    "userpass" | "approle" | "jwt" | "kubernetes" | "oidc" | "ldap"
+                    "userpass" | "approle" | "jwt" | "kubernetes" | "oidc" | "ldap" | "plugin"
                 ) {
                     return Err(err(501, "auth method type is not implemented"));
                 }
@@ -1760,6 +1812,7 @@ impl AuthState {
                     "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
                     "approle" | "jwt" | "kubernetes" => suffix == "login",
                     "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
+                    "plugin" => suffix == "login",
                     _ => false,
                 }
             })
@@ -1830,6 +1883,13 @@ impl AuthState {
                 "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
                 "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
                 "ldap" => self.ldap_route(principal, scope, method, suffix, body, now),
+                "plugin" if suffix == "config" => {
+                    self.plugin_auth_route(principal, scope, method, body, now)
+                }
+                "plugin" if suffix == "login" => Err(err(
+                    503,
+                    "plugin login requires the Service external-effect dispatcher",
+                )),
                 _ => Err(err(404, "unsupported auth route")),
             };
             return result.map(Some);
@@ -1844,6 +1904,215 @@ impl AuthState {
                 .map(Some);
         }
         Ok(None)
+    }
+
+    pub(crate) fn has_plugin_auth_state(&self) -> bool {
+        self.plugin_auth_mounts
+            .values()
+            .any(|mounts| !mounts.is_empty())
+    }
+
+    pub(crate) fn prepare_plugin_auth_login(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<PluginAuthLoginPlan>, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Ok(None);
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return Ok(None);
+        };
+        let mounts = self.effective_auth_mounts(namespace);
+        let Some((mount, entry, suffix)) = mounts.iter().find_map(|(mount, entry)| {
+            auth_path
+                .strip_prefix(&format!("{mount}/"))
+                .map(|suffix| (mount, entry, suffix))
+        }) else {
+            return Ok(None);
+        };
+        if entry.kind != "plugin" || suffix != "login" {
+            return Ok(None);
+        }
+        if body.as_object().is_none() {
+            return Err(bad("plugin login requires a JSON object"));
+        }
+        let encoded = serde_json::to_vec(body)
+            .map_err(|_| bad("plugin login request encoding failed"))?;
+        if encoded.len() > 256 * 1024 {
+            return Err(err(413, "plugin login request exceeds bound"));
+        }
+        let config = self
+            .plugin_auth_mounts
+            .get(namespace)
+            .and_then(|entries| entries.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "plugin authentication is not configured"))?;
+        Ok(Some(PluginAuthLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.clone(),
+            config,
+            now,
+        }))
+    }
+
+    pub(crate) fn finish_plugin_auth_login(
+        &mut self,
+        plan: PluginAuthLoginPlan,
+        alias: &str,
+    ) -> Result<AuthResponse, AuthError> {
+        if alias.is_empty() || alias.len() > 1024 || alias.chars().any(char::is_control) {
+            return Err(denied());
+        }
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        let current = self
+            .plugin_auth_mounts
+            .get(&plan.namespace)
+            .and_then(|entries| entries.get(&plan.mount))
+            .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
+        if current != &plan.config
+            || !self
+                .effective_auth_mounts(&plan.namespace)
+                .get(&plan.mount)
+                .is_some_and(|entry| entry.kind == "plugin")
+        {
+            return Err(err(409, "plugin authentication binding changed"));
+        }
+        if plan.config.policies.contains("root") {
+            return Err(denied());
+        }
+        let (token_ttl, token_max_ttl) = self.auth_mount_token_limits(
+            scope,
+            plan.config.token_ttl,
+            plan.config.token_max_ttl,
+        )?;
+        let alias_hash = hash(alias);
+        let suffix = alias_hash.get(..16).unwrap_or(alias_hash.as_str());
+        let mut token = login_token(
+            &plan.namespace,
+            plan.config.policies.clone(),
+            token_ttl,
+            token_max_ttl,
+            plan.config.token_num_uses,
+            format!("plugin-{suffix}"),
+            plan.now,
+        )?;
+        token.auth_mount = Some(plan.mount.clone());
+        let (token_id, token, mut response) = Self::prepare_issue(token, plan.now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: plan.mount,
+            alias: alias.into(),
+        });
+        self.tokens.insert(token_id, token);
+        Ok(response)
+    }
+
+    fn plugin_auth_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/config", scope.mount);
+        let capability = route_capability(method, false)?;
+        let actor = self.permission(principal, scope.namespace, &path, capability, now)?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let config = self
+                    .plugin_auth_mounts
+                    .get(scope.namespace)
+                    .and_then(|entries| entries.get(scope.mount))
+                    .ok_or_else(|| err(404, "plugin authentication is not configured"))?;
+                Ok(response(
+                    json!({
+                        "plugin_id": config.plugin_id,
+                        "policies": config.policies,
+                        "token_policies": config.policies,
+                        "token_ttl": config.token_ttl,
+                        "token_max_ttl": config.token_max_ttl,
+                        "token_num_uses": config.token_num_uses
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "plugin_id",
+                        "policies",
+                        "token_policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let plugin_id = string_field(body, "plugin_id")?;
+                if !valid_name(plugin_id) {
+                    return Err(bad("invalid plugin identifier"));
+                }
+                let policy_field = if body.get("token_policies").is_some() {
+                    "token_policies"
+                } else {
+                    "policies"
+                };
+                let configured_policies =
+                    policies(body, policy_field, &BTreeSet::new(), true)?;
+                if configured_policies.contains("root") {
+                    return Err(bad("plugin authentication cannot grant root policy"));
+                }
+                let token_ttl = duration(body, "token_ttl", 0)?;
+                let token_max_ttl = duration(body, "token_max_ttl", 0)?;
+                let token_num_uses = number(body, "token_num_uses", 0)?;
+                if token_ttl > MAX_TTL
+                    || token_max_ttl > MAX_TTL
+                    || token_ttl > 0 && token_max_ttl > 0 && token_ttl > token_max_ttl
+                {
+                    return Err(bad("invalid plugin authentication token TTL limits"));
+                }
+                let next = PluginAuthMount {
+                    plugin_id: plugin_id.into(),
+                    policies: configured_policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses,
+                };
+                let changed = self
+                    .plugin_auth_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .insert(scope.mount.into(), next.clone())
+                    .as_ref()
+                    != Some(&next);
+                Ok(empty(changed))
+            }
+            "DELETE" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self
+                    .plugin_auth_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .remove(scope.mount);
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "plugin authentication is not configured"))
+                }
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
     }
 
     fn ldap_route(

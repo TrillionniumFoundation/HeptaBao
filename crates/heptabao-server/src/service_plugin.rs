@@ -37,7 +37,26 @@ pub struct PluginSecretConfig {
     pub timeout_ms: u64,
 }
 
+#[derive(Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PluginAuthConfig {
+    pub id: String,
+    pub command: String,
+    pub command_sha256: String,
+    pub sandbox_provider_id: String,
+    pub sandbox_command: String,
+    pub sandbox_command_sha256: String,
+    pub sandbox_profile_id: String,
+    #[serde(default = "req_bytes")]
+    pub maximum_request_bytes: usize,
+    #[serde(default = "resp_bytes")]
+    pub maximum_response_bytes: usize,
+    #[serde(default = "timeout_ms")]
+    pub timeout_ms: u64,
+}
+
 pub(super) type SharedSecretPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
+pub(super) type SharedAuthPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
 
 pub(super) struct PluginReadPlan {
     pub namespace: String,
@@ -45,6 +64,24 @@ pub(super) struct PluginReadPlan {
     pub plugin_id: String,
     host: SharedSecretPlugin,
     request: SecretValue,
+}
+
+pub(super) struct PluginAuthPlan {
+    pub(super) auth: crate::auth::PluginAuthLoginPlan,
+    host: SharedAuthPlugin,
+    request: SecretValue,
+}
+
+pub(crate) struct PluginAuthObservation {
+    alias: String,
+}
+
+#[derive(Serialize)]
+struct PluginAuthRequest<'a> {
+    method: &'a str,
+    namespace: &'a str,
+    mount: &'a str,
+    data: &'a Value,
 }
 
 #[derive(Serialize)]
@@ -64,6 +101,59 @@ fn digest(value: &str) -> Result<[u8; 32], String> {
     for (i, byte) in out.iter_mut().enumerate() {
         *byte = u8::from_str_radix(&value[i * 2..i * 2 + 2], 16)
             .map_err(|_| "invalid plugin checksum")?;
+    }
+    Ok(out)
+}
+
+pub(super) fn admit_auth_plugins(
+    configs: Vec<PluginAuthConfig>,
+) -> Result<BTreeMap<String, SharedAuthPlugin>, String> {
+    if configs.len() > 32 {
+        return Err("authentication plugin runtime count exceeds bound".into());
+    }
+    let mut out = BTreeMap::new();
+    for c in configs {
+        let id = Id::parse(c.id.clone()).map_err(|_| "invalid plugin identifier")?;
+        if out.contains_key(id.as_str()) {
+            return Err("duplicate authentication plugin identifier".into());
+        }
+        let descriptor = PluginDescriptor::new(
+            id.clone(),
+            PluginKind::Authentication,
+            CanonicalPath::parse(c.command).map_err(|_| "invalid plugin executable path")?,
+            digest(&c.command_sha256)?,
+            1,
+        )
+        .map_err(|_| "invalid plugin descriptor")?;
+        let mut registry = PluginRegistry::default();
+        registry
+            .register(descriptor)
+            .map_err(|_| "cannot register plugin")?;
+        registry.enable(&id).map_err(|_| "cannot enable plugin")?;
+        let descriptor = registry.get(&id).map_err(|_| "plugin disappeared")?.clone();
+        let sandbox = SandboxBinding::new(
+            Id::parse(c.sandbox_provider_id).map_err(|_| "invalid sandbox provider identifier")?,
+            CanonicalPath::parse(c.sandbox_command)
+                .map_err(|_| "invalid sandbox executable path")?,
+            digest(&c.sandbox_command_sha256)?,
+            Id::parse(c.sandbox_profile_id).map_err(|_| "invalid sandbox profile identifier")?,
+        )
+        .map_err(|_| "invalid sandbox binding")?;
+        let manifest = PluginManifest::new(
+            descriptor,
+            sandbox,
+            PluginLimits {
+                maximum_request_bytes: c.maximum_request_bytes,
+                maximum_response_bytes: c.maximum_response_bytes,
+                timeout_ms: c.timeout_ms,
+            },
+            BTreeSet::from([PluginOperation::Read]),
+            BTreeSet::new(),
+        )
+        .map_err(|_| "invalid authentication plugin manifest")?;
+        let host = PluginHost::admit(manifest, CommandSandboxRunner)
+            .map_err(|_| "plugin or sandbox admission failed")?;
+        out.insert(id.to_string(), Arc::new(Mutex::new(host)));
     }
     Ok(out)
 }
@@ -121,6 +211,55 @@ pub(super) fn admit_secret_plugins(
     Ok(out)
 }
 
+impl PluginAuthPlan {
+    pub(super) fn execute(&self) -> Result<PluginAuthObservation, Response> {
+        let mut host = self
+            .host
+            .lock()
+            .map_err(|_| Response::error(503, "authentication plugin host lock unavailable"))?;
+        let response = host
+            .invoke(
+                PluginOperation::Read,
+                &self.request,
+                &SecretEnvironment::new(),
+            )
+            .map_err(failure)?;
+        let value = crate::auth::parse_strict_json(response.expose())
+            .map_err(|_| Response::error(503, "authentication plugin returned invalid JSON"))?;
+        let object = value.as_object().ok_or_else(|| {
+            Response::error(503, "authentication plugin response must be an object")
+        })?;
+        if object
+            .keys()
+            .any(|key| !matches!(key.as_str(), "authenticated" | "alias"))
+        {
+            return Err(Response::error(
+                503,
+                "authentication plugin response contains unsupported authority fields",
+            ));
+        }
+        let authenticated = object
+            .get("authenticated")
+            .and_then(Value::as_bool)
+            .ok_or_else(|| Response::error(503, "authentication plugin result is missing"))?;
+        if !authenticated {
+            return Err(Response::error(403, "plugin authentication denied"));
+        }
+        let alias = object
+            .get("alias")
+            .and_then(Value::as_str)
+            .filter(|value| {
+                !value.is_empty()
+                    && value.len() <= 1024
+                    && !value.chars().any(char::is_control)
+            })
+            .ok_or_else(|| Response::error(503, "authentication plugin alias is invalid"))?;
+        Ok(PluginAuthObservation {
+            alias: alias.to_owned(),
+        })
+    }
+}
+
 impl PluginReadPlan {
     pub(super) fn execute(&self) -> Result<Value, Response> {
         let mut host = self
@@ -162,7 +301,10 @@ fn failure(error: PluginHostError) -> Response {
 
 impl Service {
     pub(super) fn plugin_catalog_handles(path: &str) -> bool {
-        path == "sys/plugins/catalog/secret" || path.starts_with("sys/plugins/catalog/secret/")
+        path == "sys/plugins/catalog/secret"
+            || path.starts_with("sys/plugins/catalog/secret/")
+            || path == "sys/plugins/catalog/auth"
+            || path.starts_with("sys/plugins/catalog/auth/")
     }
 
     pub(super) fn validate_plugin_mount_request(
@@ -232,16 +374,21 @@ impl Service {
         if body.as_object().is_none_or(|object| !object.is_empty()) {
             return Response::error(400, "plugin catalog accepts an empty request body");
         }
-        let suffix = path
-            .strip_prefix("sys/plugins/catalog/secret")
-            .unwrap_or_default();
+        let (kind, suffix, plugins) =
+            if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/secret") {
+                ("secret", suffix, &self.plugins)
+            } else if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/auth") {
+                ("auth", suffix, &self.auth_plugins)
+            } else {
+                return Response::error(404, "plugin catalog not found");
+            };
         if suffix.is_empty() {
             if !matches!(*method, "GET" | "HEAD" | "LIST" | "SCAN") {
                 return Response::error(501, "runtime plugin catalog mutation is not implemented");
             }
             return Response::ok(json!({
                 "data": {
-                    "keys": self.plugins.keys().cloned().collect::<Vec<_>>()
+                    "keys": plugins.keys().cloned().collect::<Vec<_>>()
                 }
             }));
         }
@@ -254,7 +401,7 @@ impl Service {
         if !matches!(*method, "GET" | "HEAD") {
             return Response::error(501, "runtime plugin catalog mutation is not implemented");
         }
-        let Some(host) = self.plugins.get(plugin_id) else {
+        let Some(host) = plugins.get(plugin_id) else {
             return Response::error(404, "plugin catalog entry not found");
         };
         let host = match host.lock() {
@@ -272,7 +419,7 @@ impl Service {
         Response::ok(json!({
             "data": {
                 "name": plugin_id,
-                "type": "secret",
+                "type": kind,
                 "sha256": hex(descriptor.checksum()),
                 "protocol_version": descriptor.protocol_version(),
                 "generation": descriptor.generation(),
@@ -282,6 +429,120 @@ impl Service {
                 "timeout_ms": limits.timeout_ms
             }
         }))
+    }
+
+    pub(super) fn plugin_auth_login(
+        &mut self,
+        state: &State,
+        request: &RequestView<'_>,
+    ) -> Option<Response> {
+        let auth = match state.auth.prepare_plugin_auth_login(
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            request.now,
+        ) {
+            Ok(Some(plan)) => plan,
+            Ok(None) => return None,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
+        if request.wrap_ttl_seconds.is_some() {
+            return Some(Response::error(
+                501,
+                "response wrapping is not implemented for authentication plugins",
+            ));
+        }
+        if self.pending_plugin_auth.is_some() {
+            return Some(Response::error(
+                503,
+                "another authentication plugin invocation is pending",
+            ));
+        }
+        let Some(host) = self.auth_plugins.get(auth.plugin_id()).cloned() else {
+            return Some(Response::error(
+                503,
+                "auth mount references an unadmitted deployment plugin",
+            ));
+        };
+        let encoded = match serde_json::to_vec(&PluginAuthRequest {
+            method: request.method,
+            namespace: request.namespace,
+            mount: auth.mount(),
+            data: request.body,
+        }) {
+            Ok(value) => value,
+            Err(_) => {
+                return Some(Response::error(
+                    500,
+                    "authentication plugin request encoding failed",
+                ));
+            }
+        };
+        let plugin_request = match SecretValue::new(encoded) {
+            Ok(value) => value,
+            Err(_) => {
+                return Some(Response::error(
+                    413,
+                    "authentication plugin request exceeds runtime bound",
+                ));
+            }
+        };
+        self.pending_plugin_auth = Some(PluginAuthPlan {
+            auth,
+            host,
+            request: plugin_request,
+        });
+        Some(Response::error(
+            500,
+            "authentication plugin was not dispatched",
+        ))
+    }
+
+    pub(super) fn finalize_plugin_auth(
+        &mut self,
+        plan: PluginAuthPlan,
+        result: Result<PluginAuthObservation, Response>,
+    ) -> Response {
+        let observation = match result {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        let Some(mut state) = self.state.clone() else {
+            return Response::error(
+                503,
+                "authentication plugin result withheld because server sealed",
+            );
+        };
+        let namespace = plan.auth.namespace().to_owned();
+        let now = plan.auth.now();
+        let mut issued = match state
+            .auth
+            .finish_plugin_auth_login(plan.auth, &observation.alias)
+        {
+            Ok(response) => response,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
+        if let Err(error) = Self::finish_identity_response(
+            &mut state.auth,
+            &mut state.engines,
+            &mut issued,
+            &namespace,
+            now,
+        ) {
+            erase_json(&mut issued.body);
+            return error;
+        }
+        state.schema = CURRENT_STATE_SCHEMA;
+        if let Err(error) = self.commit_state(&state) {
+            erase_json(&mut issued.body);
+            return error;
+        }
+        self.state = Some(state);
+        Response {
+            status: issued.status,
+            body: issued.body,
+        }
     }
 
     pub(super) fn plugin_secret_handles(&self, state: &State, namespace: &str, path: &str) -> bool {

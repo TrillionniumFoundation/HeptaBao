@@ -54,6 +54,12 @@ impl State {
             ));
         }
         self.namespaces.validate(&self.cluster_id)?;
+        if self.schema < 10 && self.auth.has_plugin_auth_state() {
+            return Err(Response::error(
+                503,
+                "authentication plugin state requires schema 10",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -74,7 +80,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

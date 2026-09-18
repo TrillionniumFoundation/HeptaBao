@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 9;
+const CURRENT_STATE_SCHEMA: u32 = 10;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -46,7 +46,7 @@ mod lifecycle;
 mod online_auth;
 #[path = "service_plugin.rs"]
 mod plugin;
-pub use plugin::PluginSecretConfig;
+pub use plugin::{PluginAuthConfig, PluginSecretConfig};
 #[path = "service_openapi.rs"]
 mod openapi;
 #[path = "service_raft_admin.rs"]
@@ -475,6 +475,7 @@ enum ExternalEffectPlan {
     DatabaseConfig(database::DatabaseConfigPlan),
     DatabaseBatch(database::DatabaseBatchEffectPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
+    PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
 }
@@ -484,6 +485,7 @@ pub(crate) enum ExternalEffectResult {
     DatabaseConfig(Result<(), Response>),
     DatabaseBatch(database::DatabaseBatchEffectResult),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
+    PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
 }
@@ -508,6 +510,9 @@ impl PendingExternalRequest {
             }
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
+            }
+            ExternalEffectPlan::PluginAuth(plan) => {
+                ExternalEffectResult::PluginAuth(plan.execute())
             }
             ExternalEffectPlan::PluginRead(plan) => {
                 ExternalEffectResult::PluginRead(plan.execute())
@@ -559,8 +564,10 @@ pub struct Service {
     pending_database_config_effect: Option<database::DatabaseConfigPlan>,
     pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
+    pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
+    auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
@@ -602,6 +609,17 @@ impl Service {
             return Err("outbound policy is immutable while unsealed".into());
         }
         self.outbound = crate::outbound::Outbound::new(endpoints).map_err(str::to_owned)?;
+        Ok(())
+    }
+
+    pub fn install_auth_plugins(
+        &mut self,
+        configs: Vec<PluginAuthConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        self.auth_plugins = plugin::admit_auth_plugins(configs)?;
         Ok(())
     }
 
@@ -745,8 +763,10 @@ impl Service {
             pending_database_config_effect: None,
             pending_database_batch_effect: None,
             pending_online_auth_effect: None,
+            pending_plugin_auth: None,
             pending_plugin_read: None,
             pending_kubernetes_token: None,
+            auth_plugins: BTreeMap::new(),
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
@@ -952,6 +972,9 @@ impl Service {
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
             }
+            (ExternalEffectPlan::PluginAuth(plan), ExternalEffectResult::PluginAuth(result)) => {
+                self.finalize_plugin_auth(plan, result)
+            }
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
                 self.finalize_plugin_read(&plan, result)
             }
@@ -1001,6 +1024,7 @@ impl Service {
             || self.pending_database_config_effect.is_some()
             || self.pending_database_batch_effect.is_some()
             || self.pending_online_auth_effect.is_some()
+            || self.pending_plugin_auth.is_some()
             || self.pending_plugin_read.is_some()
             || self.pending_kubernetes_token.is_some()
         {
@@ -1108,12 +1132,14 @@ impl Service {
         let database_config = self.pending_database_config_effect.take();
         let database_batch = self.pending_database_batch_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
+        let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_batch.is_some())
             + usize::from(online_auth.is_some())
+            + usize::from(plugin_auth.is_some())
             + usize::from(plugin_read.is_some())
             + usize::from(kubernetes_token.is_some());
         if staged > 1 {
@@ -1129,6 +1155,7 @@ impl Service {
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
             .or_else(|| database_batch.map(ExternalEffectPlan::DatabaseBatch))
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
+            .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken));
         if let Some(effect) = effect {
@@ -1451,6 +1478,9 @@ impl Service {
                 status: 204,
                 body: Value::Null,
             };
+        }
+        if let Some(response) = self.plugin_auth_login(&admitted, &request) {
+            return response;
         }
         if let Some(response) = self.online_login(&admitted, &request) {
             return response;

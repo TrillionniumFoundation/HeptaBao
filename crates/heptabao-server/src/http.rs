@@ -65,6 +65,8 @@ pub struct Config {
     #[serde(default)]
     pub audit_syslog: Option<crate::AuditSyslogConfig>,
     #[serde(default)]
+    pub plugin_auth: Vec<crate::PluginAuthConfig>,
+    #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
 }
 fn default_lifecycle_interval() -> u64 {
@@ -219,6 +221,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
         service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_auth_plugins(config.plugin_auth)?;
         service.install_secret_plugins(config.plugin_secrets)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;
