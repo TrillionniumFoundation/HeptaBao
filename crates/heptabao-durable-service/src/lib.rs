@@ -208,8 +208,13 @@ pub enum Failpoint {
     AfterIntent,
     AfterSnapshotPublication,
     AfterCommitJournal,
-    AfterReplayRetirementLedger,
-    AfterReplayRetirementJournal,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ReplayRetirementFailpoint {
+    None,
+    AfterLedgerPublication,
+    AfterJournalPublication,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -761,12 +766,12 @@ impl<B: Barrier> DurableService<B> {
     /// historical rather than replay authority. Unknown outcomes must be
     /// reconciled before this maintenance operation is allowed.
     pub fn retire_replay_epoch(&mut self) -> Result<ReplayRetirementOutcome, ServiceError> {
-        self.retire_replay_epoch_with_failpoint(Failpoint::None)
+        self.retire_replay_epoch_with_failpoint(ReplayRetirementFailpoint::None)
     }
 
     fn retire_replay_epoch_with_failpoint(
         &mut self,
-        failpoint: Failpoint,
+        failpoint: ReplayRetirementFailpoint,
     ) -> Result<ReplayRetirementOutcome, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
@@ -800,13 +805,13 @@ impl<B: Barrier> DurableService<B> {
         self.ledger.clear();
         self.replay_epoch = current_epoch;
         self.retired_through_generation = retired_through_generation;
-        if failpoint == Failpoint::AfterReplayRetirementLedger {
+        if failpoint == ReplayRetirementFailpoint::AfterLedgerPublication {
             return Err(ServiceError::RecoveryRequired);
         }
         atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
         self.journal_bytes = journal.len();
-        if failpoint == Failpoint::AfterReplayRetirementJournal {
+        if failpoint == ReplayRetirementFailpoint::AfterJournalPublication {
             return Err(ServiceError::RecoveryRequired);
         }
         self.reconciliation.clear();
@@ -2653,8 +2658,8 @@ mod tests {
     fn replay_retirement_publication_boundaries_fence_and_recover() -> Result<(), ServiceError> {
         let _serial = serial_test();
         for (label, failpoint) in [
-            ("retire-ledger-boundary", Failpoint::AfterReplayRetirementLedger),
-            ("retire-journal-boundary", Failpoint::AfterReplayRetirementJournal),
+            ("retire-ledger-boundary", ReplayRetirementFailpoint::AfterLedgerPublication),
+            ("retire-journal-boundary", ReplayRetirementFailpoint::AfterJournalPublication),
         ] {
             let root = TestRoot::new(label)?;
             let barrier = TestBarrier::new();
