@@ -81,6 +81,20 @@ const FIXED_ROUTES: &[Route] = &[
         unauthenticated: false,
     },
     Route {
+        path: "/sys/plugins/catalog/secret",
+        methods: &["get"],
+        description: "List deployment-admitted read-only secret plugins.",
+        sudo: true,
+        unauthenticated: false,
+    },
+    Route {
+        path: "/sys/plugins/catalog/secret/{name}",
+        methods: &["get"],
+        description: "Inspect one deployment-admitted read-only secret plugin.",
+        sudo: true,
+        unauthenticated: false,
+    },
+    Route {
         path: "/sys/policies/acl",
         methods: &["get"],
         description: "List ACL policies.",
@@ -457,6 +471,8 @@ mod tests {
         assert!(paths.contains_key("/sys/health"));
         assert!(paths.contains_key("/{kv_mount_path}/data/{path}"));
         assert!(paths.contains_key("/auth/{userpass_mount_path}/login/{username}"));
+        assert!(paths.contains_key("/sys/plugins/catalog/secret"));
+        assert!(paths.contains_key("/sys/plugins/catalog/secret/{name}"));
         assert!(!paths.keys().any(|path| {
             path.contains("cert_mount_path")
                 || path.contains("radius")
