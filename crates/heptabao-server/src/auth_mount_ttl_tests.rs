@@ -2,8 +2,8 @@ use super::tests::{Root, bootstrap, call};
 use serde_json::json;
 
 #[test]
-fn auth_mount_ttl_limits_drive_issue_and_survive_restart()
--> Result<(), Box<dyn std::error::Error>> {
+fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn std::error::Error>>
+{
     let root = Root::new();
     let mut service = root.service()?;
     let (unseal, root_token) = bootstrap(&mut service)?;
