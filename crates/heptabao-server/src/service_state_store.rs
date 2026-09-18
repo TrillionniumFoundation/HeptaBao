@@ -113,10 +113,7 @@ impl StateManifest {
                 if self.manifest_schema != 2
                     || self.slot.is_some()
                     || self.chunks.len() != chunk_count
-                    || self
-                        .chunks
-                        .iter()
-                        .any(|digest| !is_lower_hex(digest, 64))
+                    || self.chunks.iter().any(|digest| !is_lower_hex(digest, 64))
                 {
                     return Err(StateStoreError::InvalidManifest);
                 }
@@ -167,7 +164,9 @@ impl StateManifest {
         }
     }
 
-    pub fn unique_chunk_resources(&self) -> Result<std::collections::BTreeSet<String>, StateStoreError> {
+    pub fn unique_chunk_resources(
+        &self,
+    ) -> Result<std::collections::BTreeSet<String>, StateStoreError> {
         (0..self.chunk_count())
             .map(|index| self.chunk_resource(index))
             .collect()
@@ -264,7 +263,6 @@ impl StateWritePlan {
             .saturating_add(1)
     }
 }
-
 
 /// Detect a chunked-state manifest without mistaking a legacy State JSON object
 /// for one. Once the storage-format discriminator is present, malformed or
@@ -369,8 +367,7 @@ mod tests {
     #[test]
     fn one_chunk_plan_round_trips() -> Result<(), Box<dyn std::error::Error>> {
         let state = br#"{"schema":5,"value":"small"}"#;
-        let plan =
-            StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5, None)?;
+        let plan = StateWritePlan::new(state, "0123456789abcdef0123456789abcdef", 5, None)?;
         assert_eq!(plan.required_mutations(), 2);
         assert!(plan.required_existing.is_empty());
         assert!(plan.deletes.is_empty());
