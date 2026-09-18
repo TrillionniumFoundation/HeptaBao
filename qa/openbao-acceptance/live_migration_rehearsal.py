@@ -197,6 +197,41 @@ def run(binary, launcher_path, work_dir, oracle_port):
         results["import_repeat"] = run_tool(import_args)
         check("offline_import_idempotent", results["import_repeat"]["objects_already_verified"] == len(keys))
         check("source_selected_objects_unchanged", all(migration.snapshot(source, source_mount, key) == record for key, record in zip(keys, original)))
+
+        # Rehearse deployment-level writer fencing with the real processes. The
+        # source is stopped before target service is accepted as the cutover
+        # endpoint. Rollback then fences the target process before restarting the
+        # exact same OpenBao data root; there is never a live source/target writer
+        # overlap in this bounded fixture.
+        stage = "cutover_source_fence"
+        launcher.stop_oracle(oracle)
+        check(
+            "cutover_source_process_fenced_before_target_acceptance",
+            oracle["process"].poll() is not None,
+        )
+        try:
+            source.request("GET", migration.api(source_mount, "metadata", keys[0]))
+            raise BaoError("cutover_source_still_reachable")
+        except BaoError as error:
+            if error.code == "cutover_source_still_reachable":
+                raise
+        for record in original:
+            migration.verify_target(target, "secret", record, len(record["versions"]))
+        check("cutover_target_serves_verified_migrated_history", True)
+
+        stage = "rollback_target_fence"
+        instance.stop()
+        check("rollback_target_process_fenced_before_source_reactivation", instance.process is None)
+        launcher.restart_oracle(oracle)
+        source = Client.from_env("HB_SOURCE")
+        for key, record in zip(keys, original):
+            check(
+                "rollback_source_same_root_preserves_original_history",
+                migration.snapshot(source, source_mount, key) == record,
+            )
+        report["bounded_process_cutover_rehearsed"] = True
+        report["bounded_process_rollback_rehearsed"] = True
+        report["writer_overlap_observed"] = False
         report["status"] = "passed_live_scoped_migration"
         report["ack_loss_injection"] = "real_https_write_committed_then_client_discards_response_before_checkpoint_ack"
     except BaoError as error:
