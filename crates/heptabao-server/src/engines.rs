@@ -863,6 +863,12 @@ fn handle_mounts(
             return Ok(empty(false));
         };
         require_mount_revision(optional_u64(body, "cas_revision")?, current.revision)?;
+        if matches!(&current.backend, Backend::Kubernetes(engine) if engine.has_unresolved()) {
+            return Err(error(
+                409,
+                "Kubernetes mount is fenced while token intents or leases exist",
+            ));
+        }
         let incarnation = current.incarnation.max(1);
         state.mounts.remove(&name);
         state.mount_epochs.insert(
