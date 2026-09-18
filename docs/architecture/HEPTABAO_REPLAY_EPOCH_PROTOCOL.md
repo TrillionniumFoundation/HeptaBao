@@ -57,30 +57,33 @@ principal in the root namespace and an empty object. The server:
 3. creates the next application state with schema 5 and the new epoch;
 4. in HA, proposes that complete state through the existing linearizable Raft
    state transition; on a single node, proceeds directly to local persistence;
-5. immediately before publishing the local state batch, calls
-   `DurableService::retire_replay_epoch()` if and only if the target is exactly
-   one epoch ahead;
-6. publishes the state chunks/manifest under the new durable epoch;
+5. immediately before publishing the local state batch, advances local durable
+   replay authority one authenticated epoch at a time until it equals the target;
+   the active leader's own transition is exactly one step, while an offline
+   follower may perform several crash-durable local retirements during catch-up;
+6. publishes the state chunks/manifest under the resulting durable epoch;
 7. updates the in-memory state only after the complete path succeeds.
 
 Unlike an ordinary mutation, step 4 is allowed while the detailed ledger is full:
-retirement is the authenticated capacity escape hatch itself. Arbitrary jumps,
-old-epoch writes and a target epoch that does not match the resulting durable
-epoch are rejected.
+retirement is the authenticated capacity escape hatch itself. Client-originated
+retirement still advances exactly one cluster epoch. Old-epoch writes and a target
+epoch that does not match the resulting durable authority are rejected.
 
 ## Follower catch-up
 
 A follower learns the same schema-5 state through the existing committed Raft
 state. `sync_from_ha()` validates the cluster ID and state schema, then calls the
-same `persist_local()` path. Seeing target epoch `local + 1` causes that follower
-to retire its local detailed ledger before it publishes the committed state.
-Thus leader and follower use one local durable transition implementation rather
-than a separate maintenance protocol.
+same `persist_local()` path. If the follower was offline across several committed
+retirements, it advances its local durable replay epoch repeatedly until the
+authenticated local epoch equals the committed target, then publishes that state.
+The node processed no requests in those skipped epochs, so it has no intermediate
+local request identities to preserve. Every local retirement is individually
+crash-durable; restart resumes from the authenticated durable epoch rather than
+deleting or resetting the ledger by hand.
 
-A node more than one epoch behind cannot jump. It fails closed and must recover
-through a state/snapshot sequence that establishes each required replay frontier
-or another future explicitly versioned migration. This avoids silently erasing
-multiple generations of replay authority.
+A target behind local durable authority is still rejected. A client cannot request
+an arbitrary cluster jump: the leader route computes only `current + 1`. The
+multi-step path exists solely while applying an already committed HA state.
 
 ## Failure ordering
 
@@ -117,6 +120,7 @@ Native server tests cover:
 - retirement while a deliberately one-record active ledger is full;
 - restart preserving application and durable epoch;
 - follower-style application of a committed next-epoch state;
+- follower-style catch-up across multiple retired epochs without manual ledger reset;
 - fencing when retirement publishes but the following state request is rejected.
 
 `heptabao-durable-service` tests additionally cover authenticated frontier
