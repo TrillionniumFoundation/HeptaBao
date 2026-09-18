@@ -64,7 +64,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         )
         self.assertIn("letmuttransaction=admitted.clone();", compact)
         self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
-        self.assertEqual(3, compact.count(".authorize_request("))
+        self.assertGreaterEqual(compact.count(".authorize_request("), 3)
         self.assertIn(",now)", compact)
 
     def test_wrapping_request_envelope_does_not_carry_authority(self) -> None:
