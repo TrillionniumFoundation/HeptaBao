@@ -237,6 +237,44 @@ class PartitionCluster(Cluster):
             time.sleep(0.1)
         raise FixtureError("partition_readback_timeout")
 
+    def replay_capacity(self, node) -> dict[str, object]:
+        status, body = node.call(
+            "GET",
+            "sys/internal/storage/capacity",
+            token=self.root_token,
+            timeout=10,
+        )
+        data = body.get("data") if isinstance(body, dict) else None
+        if (
+            status != 200
+            or not isinstance(data, dict)
+            or type(data.get("replay_epoch")) is not int
+            or data["replay_epoch"] < 0
+            or data.get("replay_retirement") != "raft-coordinated"
+        ):
+            raise FixtureError("partition_replay_capacity_invalid")
+        return data
+
+    def retire_replay_epoch(self, node, previous: int, scenario: str) -> int:
+        status, body = node.call(
+            "POST",
+            "sys/storage/raft/replay-retire",
+            {},
+            token=self.root_token,
+            timeout=15,
+        )
+        data = body.get("data") if isinstance(body, dict) else None
+        if (
+            status != 200
+            or not isinstance(data, dict)
+            or data.get("previous_epoch") != previous
+            or data.get("replay_epoch") != previous + 1
+            or data.get("cluster_coordinated") is not True
+        ):
+            raise FixtureError(scenario)
+        self.check(scenario, True)
+        return previous + 1
+
     def partition_round(self, label: str, outbound_only: bool) -> None:
         isolated = self.leader()
         pids = [node.process.pid for node in self.nodes]
@@ -254,6 +292,26 @@ class PartitionCluster(Cluster):
         status, _ = isolated.call("POST", f"secret/data/{refused}",
                                    {"data": {"value": "must-not-commit"}}, token=self.root_token)
         self.check(f"{label}_minority_write_refused", status == 503)
+
+        # Replay retirement is itself a consensus state transition. The isolated
+        # former leader must not advance its local epoch without quorum, while the
+        # majority leader may commit exactly one transition. Healing must preserve
+        # that committed epoch before subsequent application mutations.
+        previous_epoch = int(self.replay_capacity(leader)["replay_epoch"])
+        status, _ = isolated.call(
+            "POST",
+            "sys/storage/raft/replay-retire",
+            {},
+            token=self.root_token,
+            timeout=8,
+        )
+        self.check(f"{label}_minority_replay_retirement_refused", status == 503)
+        committed_epoch = self.retire_replay_epoch(
+            leader,
+            previous_epoch,
+            f"{label}_majority_replay_retirement_committed",
+        )
+
         path, value = f"partition-accepted-{label}", secrets.token_hex(16)
         self._new_value(leader, path, value)
         for node in self.nodes:
@@ -261,7 +319,11 @@ class PartitionCluster(Cluster):
                 self._read_exact(node, path, value)
         self.check(f"{label}_majority_acknowledged_cas_and_readback", True)
         self._heal()
-        self.leader()
+        healed_leader = self.leader()
+        self.check(
+            f"{label}_healed_cluster_retains_committed_replay_epoch",
+            self.replay_capacity(healed_leader)["replay_epoch"] == committed_epoch,
+        )
         for node in self.nodes:
             self._read_exact(node, path, value)
             status, _ = node.call("GET", f"secret/data/{refused}", token=self.root_token)

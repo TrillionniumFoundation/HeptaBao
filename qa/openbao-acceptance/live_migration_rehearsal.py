@@ -15,6 +15,7 @@ import os
 import secrets
 import sys
 import time
+from unittest.mock import patch
 from pathlib import Path
 
 from bao_http import BaoError, Client, SafeArgumentParser, digest, private_read, private_write
@@ -48,6 +49,9 @@ class LoseOneAcknowledgement:
     """Every request reaches real HTTPS; discard one successful data-write result."""
     def __init__(self, client):
         self.client, self.discarded = client, False
+
+    def __getattr__(self, name):
+        return getattr(self.client, name)
 
     def request(self, method, path, payload=None):
         response = self.client.request(method, path, payload)
@@ -124,6 +128,73 @@ def run(binary, launcher_path, work_dir, oracle_port):
                                                 {"data": value, "options": {"cas": version - 1}}))
         stage = "source_snapshot"
         original = [migration.snapshot(source, source_mount, key) for key in keys]
+
+        # Exercise authority classes that must never be copied. An active source
+        # token owns cubbyhole state; a second token is explicitly revoked; and a
+        # response-wrapping token is minted from the selected source data. None of
+        # these identities may authenticate to the target, before or after cutover.
+        stage = "source_nontransferable_authority"
+        active_created = source.request("POST", "/v1/auth/token/create",
+                                        {"policies": ["default"], "ttl": "1h"})
+        check("source_active_token_created", active_created.status == 200)
+        source_active_token = active_created.body.get("auth", {}).get("client_token")
+        check("source_active_token_is_present", isinstance(source_active_token, str) and bool(source_active_token))
+        authority_marker = "source-cubbyhole-" + secrets.token_hex(16)
+        check(
+            "source_active_token_owns_cubbyhole_state",
+            source.request("POST", "/v1/cubbyhole/migration-authority",
+                           {"value": authority_marker}, token=source_active_token).status in (200, 204),
+        )
+        source_cubbyhole = source.request("GET", "/v1/cubbyhole/migration-authority",
+                                          token=source_active_token)
+        check(
+            "source_cubbyhole_readback",
+            source_cubbyhole.status == 200
+            and source_cubbyhole.body.get("data", {}).get("value") == authority_marker,
+        )
+
+        revoked_created = source.request("POST", "/v1/auth/token/create",
+                                         {"policies": ["default"], "ttl": "1h"})
+        check("source_revoked_token_created", revoked_created.status == 200)
+        source_revoked_token = revoked_created.body.get("auth", {}).get("client_token")
+        check("source_revoked_token_is_present", isinstance(source_revoked_token, str) and bool(source_revoked_token))
+        check(
+            "source_token_revoked_before_cutover",
+            source.request("POST", "/v1/auth/token/revoke",
+                           {"token": source_revoked_token}).status in (200, 204),
+        )
+        check(
+            "source_revoked_token_immediately_denied",
+            source.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+
+        wrapped = source.request(
+            "GET",
+            migration.api(source_mount, "data", keys[0]) + "?version=1",
+            wrap_ttl="600s",
+        )
+        source_wrap_token = wrapped.body.get("wrap_info", {}).get("token")
+        check(
+            "source_wrapping_token_created",
+            wrapped.status == 200 and isinstance(source_wrap_token, str) and bool(source_wrap_token),
+        )
+        check(
+            "source_active_token_never_admitted_by_target",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_active_token).status >= 400,
+        )
+        check(
+            "source_revoked_token_never_admitted_by_target",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        check(
+            "source_wrapping_authority_never_admitted_by_target",
+            target.request("POST", "/v1/sys/wrapping/unwrap", {},
+                           token=source_wrap_token).status >= 400,
+        )
+
         keys_file, checkpoint_file = work_dir / "keys.json", work_dir / "transfer-checkpoint.json"
         private_write(keys_file, keys)
         base = ["transfer", "--source-mount", source_mount, "--keys-file", str(keys_file), "--target-mount", "secret"]
@@ -149,11 +220,12 @@ def run(binary, launcher_path, work_dir, oracle_port):
         single_file = work_dir / "single-key.json"
         private_write(single_file, [keys[0]])
         resume_file = work_dir / "resume-checkpoint.json"
-        binding = {"source_identity": {"endpoint": source.address, "namespace": source.namespace, "mount": source_mount,
-                    "cluster_id": source_health["cluster_id"], "version": source_health["version"]},
-                   "keys_digest": digest([keys[0]]), "profile": migration.SCHEMA,
-                   "target_identity": {"endpoint": target.address, "namespace": target.namespace, "mount": "resumed",
-                                       "cluster_id": target_health["cluster_id"]}}
+        binding = migration.checkpoint_binding(
+            migration.source_binding_identity(source, source_health, source_mount),
+            [keys[0]],
+            migration.selected_inventory_digest(source_mount, [original[0]]),
+            migration.target_binding_identity(target, target_health, "resumed"),
+        )
         loss = LoseOneAcknowledgement(target)
         cp = migration.Checkpoint(resume_file, binding)
         try:
@@ -192,6 +264,128 @@ def run(binary, launcher_path, work_dir, oracle_port):
         results["import_repeat"] = run_tool(import_args)
         check("offline_import_idempotent", results["import_repeat"]["objects_already_verified"] == len(keys))
         check("source_selected_objects_unchanged", all(migration.snapshot(source, source_mount, key) == record for key, record in zip(keys, original)))
+
+        # Rehearse deployment-level writer fencing with the real processes. The
+        # source is stopped before target service is accepted as the cutover
+        # endpoint. Rollback then fences the target process before restarting the
+        # exact same OpenBao data root; there is never a live source/target writer
+        # overlap in this bounded fixture.
+        stage = "cutover_source_fence"
+        launcher.stop_oracle(oracle)
+        check(
+            "cutover_source_process_fenced_before_target_acceptance",
+            oracle["process"].poll() is not None,
+        )
+        try:
+            source.request("GET", migration.api(source_mount, "metadata", keys[0]))
+            raise BaoError("cutover_source_still_reachable")
+        except BaoError as error:
+            if error.code == "cutover_source_still_reachable":
+                raise
+        for record in original:
+            migration.verify_target(target, "secret", record, len(record["versions"]))
+        check("cutover_target_serves_verified_migrated_history", True)
+        check(
+            "cutover_target_still_rejects_source_active_token",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_active_token).status >= 400,
+        )
+        check(
+            "cutover_target_still_rejects_source_revoked_token",
+            target.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        check(
+            "cutover_target_still_rejects_source_wrapping_token",
+            target.request("POST", "/v1/sys/wrapping/unwrap", {},
+                           token=source_wrap_token).status >= 400,
+        )
+
+        # Now the source process is demonstrably stopped. Admit synthetic new
+        # target versions, capture a frozen offline image, and only then stop the
+        # target before restarting the original source for append-only readback.
+        stage = "post_cutover_target_writes"
+        for record in original:
+            old_count = len(record["versions"])
+            for version in range(old_count + 1, old_count + 3):
+                migration.expect(target.request("POST", migration.api("secret", "data", record["key"]),
+                    {"data": {"synthetic_post_cutover": secrets.token_hex(16), "generation": version},
+                     "options": {"cas": version - 1}}))
+        post_cutover = [migration.snapshot(target, "secret", key) for key in keys]
+        check("post_cutover_appends_observed_only_with_source_stopped", oracle["process"].poll() is not None)
+        reverse_export = work_dir / "synthetic-post-cutover-export.json"
+        results["post_cutover_export"] = run_tool([
+            "export", "--source-prefix", "HB_TARGET", "--source-mount", "secret",
+            "--keys-file", str(keys_file), "--export-file", str(reverse_export),
+            "--apply", "--source-writes-frozen", "--allow-plaintext-export"])
+        check("post_cutover_export_is_private", reverse_export.stat().st_mode & 0o777 == 0o600)
+
+        stage = "rollback_target_fence"
+        instance.stop()
+        check("rollback_target_process_fenced_before_source_reactivation", instance.process is None)
+        launcher.restart_oracle(oracle)
+        source = Client.from_env("HB_SOURCE")
+        for key, record in zip(keys, original):
+            check(
+                "rollback_source_same_root_preserves_original_history",
+                migration.snapshot(source, source_mount, key) == record,
+            )
+        stage = "rollback_append_new_versions"
+        rollback_checkpoint = work_dir / "rollback-append-checkpoint.json"
+        rollback_args = ["import", "--target-prefix", "HB_SOURCE", "--target-mount", source_mount,
+                         "--export-file", str(reverse_export), "--append-verified-prefix"]
+        results["rollback_dry_run"] = run_tool(rollback_args)
+        check("rollback_prefix_preflight_is_read_only", not rollback_checkpoint.exists()
+              and all(migration.snapshot(source, source_mount, key) == record for key, record in zip(keys, original)))
+        rollback_apply = rollback_args + ["--apply", "--target-exclusive", "--checkpoint", str(rollback_checkpoint)]
+        # Inject response loss only after the actual OpenBao HTTPS append
+        # acknowledges success. The production copier/checkpoint code is unchanged.
+        reverse_loss = LoseOneAcknowledgement(source)
+        with patch.object(migration.Client, "from_env", return_value=reverse_loss):
+            results["rollback_lost_ack"] = run_tool(rollback_apply, expected_code=2)
+        check("rollback_actual_append_committed_before_lost_ack", reverse_loss.discarded
+              and results["rollback_lost_ack"].get("reason") == "transport_outcome_unknown"
+              and migration.read_metadata(source, source_mount, keys[0])["current_version"] == len(original[0]["versions"]) + 1)
+        launcher.stop_oracle(oracle)
+        launcher.restart_oracle(oracle)
+        results["rollback_resume_after_source_restart"] = run_tool(rollback_apply)
+        for record in post_cutover:
+            meta = migration.verify_target(source, source_mount, record, len(record["versions"]))
+            check("rollback_preserves_original_prefix_and_post_cutover_versions",
+                  migration.settings_match(meta, record["target_metadata"]))
+        results["rollback_repeat"] = run_tool(rollback_apply)
+        check("rollback_repeat_does_not_duplicate_versions", results["rollback_repeat"]["objects_already_verified"] == len(keys))
+        check("rollback_target_remains_stopped_during_source_append", instance.process is None)
+        report["post_cutover_kv_appends_repatriated"] = True
+        report["post_cutover_new_keys_deletes_or_metadata_changes_covered"] = False
+        report["writer_overlap_scope"] = "cutover_and_rollback_activation"
+
+        restored_cubbyhole = source.request(
+            "GET", "/v1/cubbyhole/migration-authority", token=source_active_token
+        )
+        check(
+            "rollback_reactivates_source_authority_only_after_target_fence",
+            restored_cubbyhole.status == 200
+            and restored_cubbyhole.body.get("data", {}).get("value") == authority_marker,
+        )
+        check(
+            "rollback_does_not_resurrect_source_revoked_token",
+            source.request("GET", "/v1/auth/token/lookup-self",
+                           token=source_revoked_token).status >= 400,
+        )
+        unwrapped = source.request(
+            "POST", "/v1/sys/wrapping/unwrap", {}, token=source_wrap_token
+        )
+        check(
+            "rollback_source_wrapping_authority_restored_only_after_target_fence",
+            unwrapped.status == 200 and isinstance(unwrapped.body.get("data"), dict),
+        )
+        report["source_authority_reactivated_only_after_target_fence"] = True
+        report["revoked_source_authority_remained_revoked_after_rollback"] = True
+        report["source_ephemeral_authority_never_admitted_by_target"] = True
+        report["bounded_process_cutover_rehearsed"] = True
+        report["bounded_process_rollback_rehearsed"] = True
+        report["writer_overlap_observed"] = False
         report["status"] = "passed_live_scoped_migration"
         report["ack_loss_injection"] = "real_https_write_committed_then_client_discards_response_before_checkpoint_ack"
     except BaoError as error:

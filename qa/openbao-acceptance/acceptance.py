@@ -22,12 +22,16 @@ CASES = {
               "revoke", "revoked_denied", "invalid_denied", "create_expiring", "expired_denied"],
     "transit": ["mount", "create_key", "read_key", "encrypt_v1", "decrypt_v1", "rotate",
                 "read_rotated_key", "encrypt_v2", "decrypt_v2", "decrypt_old_after_rotation"],
+    "pki": ["mount", "root", "role", "role_read", "issue", "lease_lookup", "lease_expire_issue", "lease_expire_lookup",
+            "cert_lookup", "lease_revoke", "revoked_lease_absent", "crl_json"],
     "totp": ["roundtrip"],
     "userpass": ["login"],
     "approle": ["login"],
     "edge_tls": ["health"],
     "system": ["init_status"],
     "operations": ["seal_status"],
+    "identity": ["entity_create", "entity_read", "entity_disable", "entity_disabled", "entity_delete", "entity_deleted"],
+    "wrapping": ["create", "unwrap", "replay_denied"],
 }
 
 
@@ -35,8 +39,8 @@ class Suite:
     def __init__(self, client: Client, run_id: str, modules: set[str], allow_writes: bool):
         self.client, self.run_id, self.modules = client, run_id, modules
         self.allow_writes = allow_writes
-        self.kv, self.transit, self.totp, self.policy = (
-            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "totp", "reader")
+        self.kv, self.transit, self.pki, self.totp, self.policy = (
+            f"hbqa-{run_id}-{suffix}" for suffix in ("kv", "transit", "pki", "totp", "reader")
         )
         self.marker = "heptabao-synthetic-" + run_id
         self.results = {}
@@ -48,12 +52,12 @@ class Suite:
         self.policy_owned = False
         self.child_tokens = []
 
-    def call(self, case, method, path, payload=None, *, token=None):
+    def call(self, case, method, path, payload=None, *, token=None, wrap_ttl=None):
         if method not in ("GET", "LIST", "HEAD") and not self.allow_writes:
             raise BaoError("test_write_opt_in_required")
         self.requests[case] = {"method": method, "path_template": path.replace(self.run_id, "{run_id}")}
         try:
-            return self.client.request(method, path, payload, token=token)
+            return self.client.request(method, path, payload, token=token, wrap_ttl=wrap_ttl)
         except BaoError as error:
             self.results[case] = {"result": "failed", "reason": error.code,
                                   "http_status": None, "semantics": {}}
@@ -76,11 +80,13 @@ class Suite:
         inventory = self.client.request("GET", "/v1/sys/mounts")
         if inventory.status != 200 or mount + "/" in inventory.data():
             raise BaoError("cannot_prove_synthetic_mount_absent")
-        if kind not in {"kv", "transit", "totp"}:
+        if kind not in {"kv", "transit", "pki", "totp"}:
             raise BaoError("unsupported_fixture_mount_kind")
         payload = {"type": kind, "description": self.marker}
         if kind == "kv":
             payload["options"] = {"version": "2"}
+        elif kind == "pki":
+            payload["config"] = {"max_lease_ttl": "8760h"}
         self.perform(kind + ".mount", "POST", "/v1/sys/mounts/" + mount, payload)
         self.owned_mounts.append(mount)
 
@@ -150,6 +156,85 @@ class Suite:
         r = self.call("kv.metadata_read", "GET", path + "/metadata/item")
         self.check("kv.metadata_read", r, 200, custom_metadata=r.data().get("custom_metadata") == {"qa": "synthetic"},
                    cas_required=r.data().get("cas_required") is True, max_versions=r.data().get("max_versions") == 5)
+
+    def pki_cases(self):
+        self.mount("pki", self.pki)
+        path = "/v1/" + self.pki
+        r = self.call("pki.root", "POST", path + "/root/generate/internal",
+                      {"common_name": "ca.example.test", "ttl": "8760h", "key_type": "ed25519"})
+        data = r.data()
+        self.check("pki.root", r, 200,
+                   certificate=data.get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   issuing_ca=data.get("issuing_ca", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   serial=bool(data.get("serial_number")),
+                   expiration=int(data.get("expiration", 0)) > 0)
+        r = self.call("pki.role", "POST", path + "/roles/web",
+                      {"allowed_domains": ["example.test"], "allow_subdomains": True,
+                       "max_ttl": "2h", "generate_lease": True, "key_type": "ed25519"})
+        data = r.data()
+        self.check("pki.role", r, 200,
+                   domains=data.get("allowed_domains") == ["example.test"],
+                   subdomains=data.get("allow_subdomains") is True,
+                   max_ttl=int(data.get("max_ttl", 0)) == 7200,
+                   generate_lease=data.get("generate_lease") is True,
+                   key_type=data.get("key_type") == "ed25519")
+        r = self.call("pki.role_read", "GET", path + "/roles/web")
+        data = r.data()
+        self.check("pki.role_read", r, 200,
+                   domains=data.get("allowed_domains") == ["example.test"],
+                   subdomains=data.get("allow_subdomains") is True,
+                   max_ttl=int(data.get("max_ttl", 0)) == 7200,
+                   generate_lease=data.get("generate_lease") is True,
+                   key_type=data.get("key_type") == "ed25519")
+        r = self.call("pki.issue", "POST", path + "/issue/web",
+                      {"common_name": "api.example.test", "alt_names": "www.example.test", "ttl": "1h"})
+        data = r.data()
+        lease_id = r.body.get("lease_id", "")
+        serial = data.get("serial_number", "")
+        self.check("pki.issue", r, 200,
+                   lease_id=bool(lease_id), renewable=r.body.get("renewable") is False,
+                   lease_duration=0 < int(r.body.get("lease_duration", 0)) <= 3600,
+                   serial=bool(serial),
+                   certificate=data.get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   issuing_ca=data.get("issuing_ca", "").startswith("-----BEGIN CERTIFICATE-----"),
+                   private_key=data.get("private_key", "").startswith("-----BEGIN " + "PRIVATE KEY-----"),
+                   private_key_type=data.get("private_key_type") == "ed25519")
+        r = self.call("pki.lease_lookup", "POST", "/v1/sys/leases/lookup", {"lease_id": lease_id})
+        data = r.data()
+        self.check("pki.lease_lookup", r, 200, exact_id=data.get("id") == lease_id,
+                   renewable=data.get("renewable") is False, ttl=0 < int(data.get("ttl", 0)) <= 3600)
+        # A short-lived dynamic certificate must disappear from the lease
+        # index after its TTL; this is a bounded expiration check only.
+        short = self.call("pki.lease_expire_issue", "POST", path + "/issue/web",
+                          {"common_name": "short.example.test", "ttl": "2s"})
+        short_id = short.body.get("lease_id", "")
+        self.check("pki.lease_expire_issue", short, 200,
+                   lease_issued=isinstance(short_id, str) and bool(short_id),
+                   bounded_ttl=0 < int(short.body.get("lease_duration", 0)) <= 2)
+        time.sleep(2.3)
+        expired = self.call("pki.lease_expire_lookup", "POST", "/v1/sys/leases/lookup",
+                            {"lease_id": short_id})
+        self.check("pki.lease_expire_lookup", expired, (400, 404),
+                   errors_present=isinstance(expired.body.get("errors"), list)
+                   and bool(expired.body["errors"]))
+        self.results["pki.lease_expire_lookup"]["http_status"] = "rejected_after_ttl"
+        r = self.call("pki.cert_lookup", "GET", path + "/cert/" + serial)
+        self.requests["pki.cert_lookup"]["path_template"] = "/v1/{pki}/cert/{serial}"
+        self.check("pki.cert_lookup", r, 200,
+                   certificate=r.data().get("certificate", "").startswith("-----BEGIN CERTIFICATE-----"))
+        self.perform("pki.lease_revoke", "POST", "/v1/sys/leases/revoke",
+                     {"lease_id": lease_id, "sync": True}, status=204)
+        r = self.call("pki.revoked_lease_absent", "POST", "/v1/sys/leases/lookup", {"lease_id": lease_id})
+        self.check("pki.revoked_lease_absent", r, (400, 404),
+                   errors_present=isinstance(r.body.get("errors"), list) and bool(r.body["errors"]))
+        # Both implementations reject an already-revoked lease lookup; OpenBao
+        # uses 400 while the bounded candidate uses 404. Normalize only this
+        # explicitly admitted rejection class so differential equality compares
+        # the security effect instead of one allowed status spelling.
+        self.results["pki.revoked_lease_absent"]["http_status"] = "rejected_400_or_404"
+        r = self.call("pki.crl_json", "GET", path + "/cert/crl")
+        self.check("pki.crl_json", r, 200,
+                   crl=r.data().get("certificate", "").startswith("-----BEGIN X509 CRL-----"))
 
     def token_cases(self):
         if self.results.get("kv.metadata_read", {}).get("result") != "passed":
@@ -307,6 +392,29 @@ class Suite:
             default_policy="default" in auth.get("policies", []),
         )
 
+    def identity_cases(self):
+        # Bounded Identity CRUD/disable lifecycle on a synthetic entity. This
+        # exercises live entity state without claiming the complete Identity API.
+        name = "hbqa-identity-" + self.run_id
+        r = self.call("identity.entity_create", "POST", "/v1/identity/entity",
+                      {"name": name, "metadata": {"fixture": "synthetic"}})
+        raw_entity_id = r.data().get("id")
+        entity_id = raw_entity_id if isinstance(raw_entity_id, str) else ""
+        self.check("identity.entity_create", r, 200,
+                   entity_created=bool(entity_id))
+        if not entity_id:
+            raise BaoError("identity_entity_id_missing")
+        r = self.call("identity.entity_read", "GET", "/v1/identity/entity/id/" + entity_id)
+        self.check("identity.entity_read", r, 200,
+                   exact_name=r.data().get("name") == name,
+                   metadata=r.data().get("metadata") == {"fixture": "synthetic"})
+        self.perform("identity.entity_disable", "POST", "/v1/identity/entity/id/" + entity_id,
+                     {"disabled": True})
+        r = self.call("identity.entity_disabled", "GET", "/v1/identity/entity/id/" + entity_id)
+        self.check("identity.entity_disabled", r, 200, disabled=r.data().get("disabled") is True)
+        self.perform("identity.entity_delete", "DELETE", "/v1/identity/entity/id/" + entity_id)
+        self.perform("identity.entity_deleted", "GET", "/v1/identity/entity/id/" + entity_id, status=404)
+
     def edge_tls_cases(self):
         r = self.call("edge_tls.health", "GET", "/v1/sys/health")
         self.check("edge_tls.health", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)
@@ -318,6 +426,38 @@ class Suite:
     def operations_cases(self):
         r = self.call("operations.seal_status", "GET", "/v1/sys/seal-status")
         self.check("operations.seal_status", r, 200, initialized=r.body.get("initialized") is True, unsealed=r.body.get("sealed") is False)
+
+    def wrapping_cases(self):
+        """Exercise the bounded opaque response-wrapping lifecycle.
+
+        This deliberately covers only creation, one-shot unwrap and replay
+        rejection. It is a scoped fixture for the combined cubbyhole/wrapping
+        surface, not a claim of complete OpenBao wrapping compatibility.
+        """
+        payload = {"synthetic": "heptabao-wrapping-" + self.run_id, "nested": {"count": 1}}
+        created = self.call("wrapping.create", "POST", "/v1/sys/wrapping/wrap", payload,
+                            wrap_ttl="60s")
+        info = created.body.get("wrap_info", {})
+        self.check(
+            "wrapping.create",
+            created,
+            200,
+            response_redacted=created.body.get("data") is None and created.body.get("auth") is None,
+            wrapper_token_present=isinstance(info.get("token"), str) and bool(info.get("token")),
+            ttl_is_bounded=info.get("ttl") == 60,
+        )
+        wrapper = info.get("token")
+        if not isinstance(wrapper, str) or not wrapper:
+            # Keep malformed server responses inside the bounded result
+            # vocabulary instead of leaking a KeyError or response contents.
+            raise BaoError("unexpected_response_schema")
+        unwrapped = self.call("wrapping.unwrap", "POST", "/v1/sys/wrapping/unwrap", {},
+                              token=wrapper)
+        self.check("wrapping.unwrap", unwrapped, 200,
+                   exact_payload=unwrapped.body.get("data") == payload)
+        replay = self.call("wrapping.replay_denied", "POST", "/v1/sys/wrapping/unwrap", {},
+                           token=wrapper)
+        self.check("wrapping.replay_denied", replay, 400)
 
     def cleanup(self):
         failures = 0
@@ -372,7 +512,7 @@ class Suite:
     def run(self):
         cleanup = {"result": "not_run", "reason": "writes_not_authorized"}
         try:
-            for module in ("core", "kv", "token", "transit", "totp", "userpass", "approle", "edge_tls", "system", "operations"):
+            for module in ("core", "kv", "token", "transit", "pki", "totp", "userpass", "approle", "identity", "wrapping", "edge_tls", "system", "operations"):
                 if module not in self.modules or not self.allow_writes:
                     continue
                 try:
@@ -402,7 +542,7 @@ def main(argv=None):
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
     parser.add_argument("--allow-test-writes", action="store_true")
-    parser.add_argument("--modules", default="core,kv,token,transit,totp,userpass,approle,edge_tls,system,operations")
+    parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
     report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",

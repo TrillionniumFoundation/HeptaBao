@@ -7,6 +7,11 @@ import subprocess
 import sys
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 import yaml
@@ -28,6 +33,7 @@ def section(text: str, title: str) -> str:
 
 
 class CurrentEntryTests(unittest.TestCase):
+    @historical_only
     def test_current_entry_remains_v2_1(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         portal = (ROOT / "docs/CURRENT_DOCUMENTATION.md").read_text(encoding="utf-8")
@@ -66,6 +72,7 @@ class CurrentEntryTests(unittest.TestCase):
         )
         return root
 
+    @historical_only
     def test_check_mode_does_not_read_current_entry_as_expected_output(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = self._candidate(temporary)
@@ -85,6 +92,7 @@ class CurrentEntryTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertEqual(before, (readme.read_bytes(), portal.read_bytes()))
 
+    @historical_only
     def test_missing_current_entry_is_not_recreated(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = self._candidate(temporary)
@@ -104,6 +112,7 @@ class CurrentEntryTests(unittest.TestCase):
             self.assertFalse(readme.exists())
             self.assertFalse(portal.exists())
 
+    @historical_only
     def test_module_index_labels_current_workspace_truth(self) -> None:
         module_index = (ROOT / "docs/modules/README.md").read_text(encoding="utf-8")
         self.assertNotIn("V1.4.4 documentation-coverage baseline:", module_index)

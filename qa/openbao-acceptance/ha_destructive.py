@@ -75,12 +75,17 @@ class Node:
     def data_dir(self) -> Path:
         return self.root / "data"
 
-    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0):
+    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0, wrap_ttl: str | None = None):
         if not path or path.startswith("/") or "://" in path or ".." in path.split("/"):
             raise FixtureError("invalid_fixture_request_path")
         headers = {"Content-Type": "application/json"}
         if token:
             headers["X-Vault-Token"] = token
+        if wrap_ttl is not None:
+            if not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64 or any(
+                    ord(c) < 33 or ord(c) > 126 for c in wrap_ttl):
+                raise FixtureError("invalid_fixture_wrapping_ttl")
+            headers["X-Vault-Wrap-TTL"] = wrap_ttl
         request = urllib.request.Request(
             f"https://127.0.0.1:{self.http_port}/v1/{path}",
             data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)
@@ -137,6 +142,7 @@ class Node:
 
 
 class Cluster:
+    NODE_IDS = (1, 2, 3)
     def __init__(self, binary: Path, root: Path):
         if not root.is_absolute() or root.resolve() != root or root.exists() or not root.parent.is_dir():
             raise FixtureError("work_directory_must_be_new_absolute_non_symlink")
@@ -164,7 +170,7 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
-        for number in (1, 2, 3):
+        for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
             node = Node(number, self.binary, root, context)
@@ -186,7 +192,7 @@ class Cluster:
                 "max_connections": 32, "timeout_seconds": 5,
                 "rate_limit_per_second": 1000, "rate_limit_burst": 2000, "rate_limit_entries": 256}))
         ports = [port for node in self.nodes for port in (node.http_port, node.raft_port)]
-        if len(set(ports)) != 6:
+        if len(set(ports)) != 2 * len(self.NODE_IDS):
             raise FixtureError("ephemeral_port_collision")
         self.peers = peers
 

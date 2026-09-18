@@ -7,7 +7,9 @@ not a separate crate or an independent production authority grant.
 ## Responsibility and durable transaction boundary
 
 `AuthState` owns token verifiers, ACL policies, user password verifiers,
-user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers, the auth mount registry and pinned-key JWT trust/role/replay state. It derives `Clone`, `Serialize` and
+user-bound TOTP MFA enrollments, AppRole configuration and secret-ID verifiers, the auth mount registry and pinned-key JWT trust/role/replay state. The online
+extension also owns encrypted Kubernetes reviewer configuration and OIDC
+client/session state; see `HEPTABAO_ONLINE_AUTHENTICATION.md`. It derives `Clone`, `Serialize` and
 `Deserialize`; neither this state nor credential-bearing records implements
 `Debug`. The surrounding service serializes it inside the encrypted durable
 server state. It is not a separate plaintext authentication database.
@@ -119,10 +121,16 @@ stored. This is an intentional compatibility boundary.
 
 The default is deny. Capabilities are `create`, `read`, `update`, `delete`,
 `list`, `patch`, `sudo` and `deny`. `sudo` does not imply any operation capability:
-a protected operation requires its normal capability and `sudo`. Every matching
-explicit `deny` overrides grants. Policy edits additionally require `sudo` in
-this bounded profile. This conservative rule is not an assertion of full
-OpenBao ACL priority compatibility.
+a protected operation requires its normal capability and `sudo`. Select the
+highest-priority matching path pattern; only identical winning patterns across
+policies union their capabilities. `deny` wins within that selected union.
+Priority uses later first wildcard, absence of a terminal `*`, fewer segment
+`+` wildcards, longer pattern, then lexical order. A broad grant cannot lend
+write authority to a narrower read-only match. A broader deny is not a veto on
+a different, higher-priority pattern. This changes the earlier all-matches
+union and requires policy review before rollout. `auth_acl.rs` implements the
+ordering and default rules. Policy edits additionally require `sudo` in this
+bounded profile; parameter/template parity remains separately incomplete.
 
 Literal paths, a whole-segment `+`, and one terminal `*` are supported:
 
@@ -148,16 +156,17 @@ same entry point to preserve duplicate-key rejection for object-form policies.
 {"path":{"secret/data/team/*":{"capabilities":["read"]}}}
 ```
 
-The built-in `default` policy grants only lookup-self, renew-self and revoke-self.
-It is automatically attached unless token creation requests `no_default_policy`;
+The built-in `default` policy grants lookup-self, renew-self, revoke-self and
+create/read/update/delete/list on `cubbyhole/*`. All these rules participate in
+the same highest-priority pattern selection. It is automatically attached unless
+token creation requests `no_default_policy`;
 root tokens do not receive it. An explicitly written namespace `default` policy
 replaces those defaults. `root` cannot be read, written or deleted, and `default`
 cannot be deleted. Unknown policy names grant nothing.
 
 Not supported: parameter constraints, `min_wrapping_ttl`, `max_wrapping_ttl`,
 control groups, identity templating, `required_parameters`, legacy `policy =`
-HCL attributes or OpenBao's full path-priority resolution. These inputs fail
-closed. There is no silently ignored HCL or JSON policy attribute.
+HCL attributes. These unsupported inputs fail closed. There is no silently ignored HCL or JSON policy attribute.
 
 ## Userpass
 
@@ -222,11 +231,11 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding, response wrapping, general identity/group administration, batch tokens, LDAP, OIDC discovery/browser login, Kubernetes, cloud IAM, certificate auth, WebAuthn/push/external MFA, auth-plugin execution, mount relocation or per-mount tuning. Unknown security-relevant request fields are rejected. The bounded JWT integration below is a configured verifier protocol, not complete OpenBao JWT/OIDC API compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, certificate/RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes and LDAP each have bounded runtime profiles described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
-`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle` or `jwt`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc` or bounded `ldap`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
 
 Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
 
@@ -234,7 +243,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. It does not accept the OpenBao PEM `jwt_validation_pubkeys` configuration, fetch a JWKS URL, perform OIDC discovery or implement a browser callback.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports host-enrolled `jwks_url` and OIDC Discovery over verified HTTPS; see [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks and full OpenBao claim-mapping semantics remain unimplemented. Static and remote trust sources are mutually exclusive.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 
@@ -245,7 +254,8 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | `required_namespace` | If supplied, equals the configuring request namespace; root empty string is handled as no additional verifier namespace restriction, while route admission still checks the root namespace |
 | `clock_skew_seconds` | Default 30, maximum 300; applies to future `iat`/`nbf`, not to accepting an already expired token |
 | `maximum_token_lifetime_seconds` | Default 3600, maximum 86400; bounds the JWT's issued-to-expiry lifetime |
-| `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64` |
+| `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64`; mutually exclusive with `jwks` |
+| `jwks` | Inline RFC 7517 public key set; accepts only signature-use Ed25519/EdDSA or P-256/ES256 public material, rejects private/symmetric/duplicate/unknown-key input; mutually exclusive with `keys` |
 | key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
 | key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
 
@@ -253,7 +263,7 @@ A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_g
 
 Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. The service token's lifetime cannot exceed the JWT's remaining lifetime. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
 
-Accepted JWT replay identity, verified identity projection and issued token commit together in `AuthState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
+Accepted JWT replay identity and the issued token are owned by `AuthState`; Service commits them atomically with the mount/subject alias and entity association in `EngineState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
 
 Successful JWT login creates an ordinary bounded HeptaBao token. Subsequent requests authenticate that token through the same private capability/ACL flow as other methods; JWT verifier helper types are not authorization capabilities. Mount disable removes JWT trust/replay state and revokes its issued tokens. Independent OpenBao differential fixtures must still cover this protocol's intended compatibility scope.
 
@@ -334,3 +344,144 @@ The following functions in `crates/heptabao-server/src/auth_tests.rs` exercise t
 - `jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen` initializes a real Service/disk state, logs in, reads KV, reopens, rejects replay, disables the mount and verifies revocation after another reopen.
 
 Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. Named scenarios identify executable evidence; current pass receipts and independent qualification remain separate.
+
+## Integrated token-private storage
+
+The current Cubbyhole backend lives in the server's private Token state, not a
+standalone engine crate. See [the Cubbyhole implementation contract](../engines/HEPTABAO_CUBBYHOLE.md)
+for routes, ACL selection, atomic final-use clearing, expiry/tidy, bounds,
+restart behavior and tests. Built-in default rules do not let a token access
+another token's map, including a root token. New tokens never inherit values.
+This increment does not add response wrapping or full lease expiration.
+
+The [current Identity runtime contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md)
+describes the implemented Service-owned login binding and live authorization
+projection, not the separate identity crate. After credential verification,
+Userpass uses the authenticated user name, AppRole the verified role ID, and the
+pinned JWT profile the verified `sub`, each scoped to namespace and the current
+mount accessor. JWT subjects must additionally satisfy the current Identity
+alias alphabet/128-byte ceiling; broader JWT/OIDC claim mapping remains work.
+
+New login tokens durably store only `entity_id`, not a frozen copy of identity
+policy grants. Each admitted Service request obtains current entity/internal
+group policy names, rejects disabled or deleted entities, and applies the same
+ACL specificity/deny rules as token policies. Responses separate `token_policies`
+from `identity_policies`; child-token policy attenuation uses token policies
+only. A policy change therefore affects an already-issued token on its next
+request. Disabling is not revocation: enabling the same entity again can restore
+its nonrevoked token, whereas a deleted entity name cannot revive old tokens.
+
+`AuthMount.accessor` is persisted. Legacy records missing it use a deterministic,
+namespace/mount/type-separated accessor without read-side writes. New or
+re-enabled mounts get a fresh random accessor. Old tokens missing `entity_id`
+remain readable and unbound; this is an explicit compatibility limitation, not
+silent reconstruction from names. Remount/re-enrollment is an operator action.
+
+The `identity_service_tests.rs` suite exercises grants/revocation on existing
+tokens, disable/re-enable, nested groups, child attenuation, merge lineage,
+namespace/mount incarnation isolation, restart and failed-login publication.
+These are source test anchors, not independent OpenBao or production admission.
+
+Identity-aware token bindings use Service state version 2. Old optional fields
+are omitted for byte-preserving version-1 reads, but the first durable mutation
+promotes the complete state to version 2. Version-1-only binaries must reject
+that state; see the server guide and operator runbook before any rollback.
+
+## Current wrapping and introspection APIs
+
+[Response wrapping](HEPTABAO_RESPONSE_WRAPPING.md) and
+[live capability inspection](HEPTABAO_CAPABILITIES.md) now run through the actual
+Service boundary. Wrapper records are encrypted and single-use; ordinary lookup
+metadata does not consume them. The default policy grants wrap/unwrap/lookup and
+self capability inspection, but not rewrap or arbitrary subject inspection.
+The new state writer emits schema 3; the identity-aware schema-2 baseline remains
+readable only without wrapping/SSH-lease state and is upgraded only on mutation.
+The SSH engine's CIDR rules are not authentication-method CIDR support.
+
+## Remote key-source extension
+
+The current [remote JWKS / OIDC Discovery JWT implementation](HEPTABAO_REMOTE_JWT_KEYS.md) adds host-enrolled verified HTTPS, login-time key refresh and RSA/RS256. Static keys remain a separate mutually exclusive profile. Browser authorization-code OIDC, MFA and arbitrary claim mapping are not implied. Newly persisted source/algorithm constraints require schema 4.
+
+## Online methods and schema 5
+
+The current [online authentication guide](HEPTABAO_ONLINE_AUTHENTICATION.md)
+specifies actual Kubernetes TokenReview and confidential OIDC code flow, including
+all supported input fields, boundaries and executable tests. Those use distinct
+`kubernetes` and `oidc` mount types; the static/remote `jwt` sections retain their
+existing verifier scope and jti requirement. Complete JWT/OIDC alias/API parity,
+real Kubernetes control-plane qualification and full external MFA remain open.
+
+## Bounded external LDAP authentication
+
+A mount of type `ldap` has a real external authentication path. Root-controlled
+`auth/<mount>/config` binds an exact host-enrolled `ldaps://` origin and a
+bounded `user_dn_template` containing `{{username}}`. Login performs an LDAPv3
+simple bind over rustls with the deployment-pinned address, server name and CA.
+The outbound path performs no DNS discovery, redirect, referral, StartTLS upgrade,
+SASL fallback or automatic retry. Empty passwords, plaintext `ldap://` login,
+unenrolled origins and malformed DN/template inputs fail closed.
+
+The Service prepares the LDAP login under the authoritative writer, releases that
+writer for the bounded network bind, and reacquires it before token publication.
+A successful provider bind is therefore only authentication evidence: the
+mount-local durable user record still owns policies, token limits and optional
+TOTP state. Removing that local mapping prevents token issuance even if the
+directory continues to authenticate the password. Changing the mount/config while
+a bind is in flight is fenced before publication. The local password verifier in
+that mapping is deliberately not consulted for LDAP login.
+
+`qa/openbao-acceptance/ldap_bounded.py` exercises the production LDAPS framing
+against a strict TLS LDAP fixture. `qa/openbao-acceptance/ldap_openldap_live.py`
+launches the host-installed OpenLDAP `slapd`, seeds a synthetic inetOrgPerson,
+then verifies real TLS bind, wrong-password denial, provider outage/recovery,
+server restart and local-authority revocation. When `group_dn` is configured, the same successfully authenticated user TLS
+session performs one bounded subtree search with an equality match on
+`group_attr` (default `member`) against the exact authenticated user DN and
+returns only `group_name_attr` (default `cn`). Local
+`auth/<mount>/groups/<name>` records map those observed directory group names to
+token policies. Membership is observed on every login, so removal from the
+directory removes those policies from the next token without waiting for a local
+cache expiry. Search is capped at 128 groups and rejects referrals, controls,
+arbitrary filter syntax and paging.
+
+The current profile still does **not** rotate/use a privileged bind-account
+credential for search, implement StartTLS/SASL/referrals, arbitrary LDAP filters,
+nested-group expansion, or establish full OpenBao LDAP API/error parity. Those
+remain product work rather than qualification paperwork.
+
+## Auth mount revision, tune and remount boundary
+
+Auth mounts expose a persisted `revision` alongside the existing accessor. Tune, disable
+and remount accept `cas_revision` and reject stale operators without mutation. A remount
+preserves the accessor while atomically moving mount-local users, roles, JWT/OIDC,
+Kubernetes and bounded LDAP state and retagging issued-token mount provenance. Disabling
+the moved mount retains the existing credential/token revocation behavior; recreating the
+path issues a different accessor and revision 1. `sys/remount` cannot cross auth/secret
+classes or namespaces. These are repository-local runtime guarantees, not full external
+provider or OpenBao compatibility admission.
+
+## Public mounted login and unrelated bearer headers
+
+Exact mounted POST/PUT login paths authenticate their explicit password,
+SecretID or verified external assertion rather than an unrelated bearer header.
+A stale bearer does not block valid login; a separate finite-use bearer is not
+consumed by that login. Namespace, enabled mount kind, method and complete path
+shape select this exception. A root bearer does not make a wrong password or
+SecretID succeed, and token-management/protected routes still reject invalid
+bearers. The same audited durable issuance, MFA and provider checks remain.
+The public-login regressions include nested mounts, restart, finite-use
+non-consumption, wrong-namespace and protected-route denial.
+
+
+## Bounded authentication mount migration input contract
+
+`qa/openbao-acceptance/migrate_auth_mount.py` is a separate metadata/re-enrollment
+adapter, not a credential transfer. For lockout-capable source methods, live
+OpenBao 2.6.2 tune readback uses flat `user_lockout_disable` and
+`user_lockout_{threshold,duration,counter_reset_duration}` fields, unlike the
+request's nested `user_lockout_config`. The importer requires explicit disabled
+lockout for this limited profile and typed bounded counters; nested caller-shaped
+configuration is not accepted as proof. Source credentials, accessors and token
+authority are not transferred. Consumers must authenticate against deliberately
+provisioned destination credentials after migration. The real fixture verifies
+mount TTL, old-credential refusal, new login, restart and idempotent resume.

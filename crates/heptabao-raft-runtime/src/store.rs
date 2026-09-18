@@ -20,7 +20,11 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
 const LOG_MAGIC: [u8; 8] = *b"HBRLOG01";
+const LOG_JOURNAL_MAGIC: [u8; 8] = *b"HBRLJ001";
+const LOG_EVENT_MAGIC: [u8; 8] = *b"HBRLE001";
 const STATE_BUNDLE_MAGIC: [u8; 8] = *b"HBRSB001";
+const STATE_JOURNAL_MAGIC: [u8; 8] = *b"HBRSJ001";
+const STATE_EVENT_MAGIC: [u8; 8] = *b"HBRSE001";
 const INITIALIZATION_MAGIC: [u8; 8] = *b"HBRINI01";
 const INITIALIZATION_MARKER_FILE: &str = "initialized.bin";
 const LOG_DOMAIN: &str = "raft-log";
@@ -306,6 +310,60 @@ fn atomic_write(path: &Path, magic: [u8; 8], payload: &[u8]) -> io::Result<()> {
     result
 }
 
+fn atomic_write_raw(path: &Path, bytes: &[u8]) -> io::Result<()> {
+    let parent = path
+        .parent()
+        .ok_or_else(|| invalid(format!("{} has no parent directory", path.display())))?;
+    require_real_directory(parent, "durable raw write parent directory")?;
+    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    let file_name = path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| invalid("durable raw file name is not valid UTF-8"))?;
+    let temporary = parent.join(format!(
+        ".{file_name}.{}.{}.tmp",
+        std::process::id(),
+        sequence
+    ));
+    let current_exists = regular_file_status(path, "durable raw current generation")?;
+    let result = (|| -> io::Result<()> {
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(&temporary)?;
+        file.write_all(bytes)?;
+        file.flush()?;
+        file.sync_all()?;
+        drop(file);
+        #[cfg(windows)]
+        if current_exists {
+            let previous = parent.join(format!(
+                ".{file_name}.{}.{}.previous",
+                std::process::id(),
+                sequence
+            ));
+            fs::rename(path, &previous)?;
+            if let Err(error) = fs::rename(&temporary, path) {
+                let _ = fs::rename(&previous, path);
+                return Err(error);
+            }
+            let _ = fs::remove_file(previous);
+        } else {
+            fs::rename(&temporary, path)?;
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = current_exists;
+            fs::rename(&temporary, path)?;
+        }
+        sync_parent(path)
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
 fn read_json<T>(path: &Path, magic: [u8; 8]) -> io::Result<T>
 where
     T: for<'de> Deserialize<'de>,
@@ -392,14 +450,203 @@ fn persist_initialization_marker(
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 struct PersistentLogState {
+    #[serde(default)]
+    journal_format: u16,
+    #[serde(default)]
+    journal_epoch: u64,
     last_purged_log_id: Option<LogIdOf<TypeConfig>>,
     committed: Option<LogIdOf<TypeConfig>>,
     vote: Option<VoteOf<TypeConfig>>,
     log: BTreeMap<u64, String>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+enum LogJournalEvent {
+    Vote(VoteOf<TypeConfig>),
+    Committed(Option<LogIdOf<TypeConfig>>),
+    Append(Vec<(u64, String)>),
+    Truncate { start: u64 },
+    Purge { log_id: LogIdOf<TypeConfig> },
+}
+
+fn log_journal_path(state_path: &Path) -> PathBuf {
+    state_path.with_file_name("raft-log.journal")
+}
+
+fn initialize_log_journal(path: &Path, epoch: u64) -> io::Result<()> {
+    if epoch == 0 {
+        return Err(invalid("raft log journal epoch must be nonzero"));
+    }
+    let mut header = Vec::with_capacity(LOG_JOURNAL_MAGIC.len() + 8);
+    header.extend_from_slice(&LOG_JOURNAL_MAGIC);
+    header.extend_from_slice(&epoch.to_le_bytes());
+    atomic_write_raw(path, &header)
+}
+
+fn log_journal_epoch(path: &Path) -> io::Result<u64> {
+    if !regular_file_status(path, "raft log delta journal")? {
+        return Err(invalid("raft log delta journal is missing"));
+    }
+    let mut file = File::open(path)?;
+    let mut header = [0_u8; 16];
+    file.read_exact(&mut header)?;
+    if header[..8] != LOG_JOURNAL_MAGIC {
+        return Err(invalid("raft log delta journal magic mismatch"));
+    }
+    let epoch = u64::from_le_bytes(
+        header[8..16]
+            .try_into()
+            .map_err(|_| invalid("invalid raft log journal epoch"))?,
+    );
+    if epoch == 0 {
+        return Err(invalid("raft log journal epoch is zero"));
+    }
+    Ok(epoch)
+}
+
+fn append_log_journal(path: &Path, expected_epoch: u64, event: &LogJournalEvent) -> io::Result<()> {
+    if log_journal_epoch(path)? != expected_epoch {
+        return Err(invalid("raft log checkpoint/journal epoch mismatch"));
+    }
+    let payload = serde_json::to_vec(event).map_err(|error| invalid(error.to_string()))?;
+    if payload.len() > 16 * 1024 * 1024 {
+        return Err(invalid("raft log delta event exceeds 16 MiB"));
+    }
+    let frame = encode_envelope(LOG_EVENT_MAGIC, &payload)?;
+    let mut file = OpenOptions::new().append(true).open(path)?;
+    file.write_all(&frame)?;
+    file.flush()?;
+    file.sync_all()
+}
+
+fn apply_log_journal_event(
+    state: &mut PersistentLogState,
+    event: LogJournalEvent,
+) -> io::Result<()> {
+    match event {
+        LogJournalEvent::Vote(vote) => state.vote = Some(vote),
+        LogJournalEvent::Committed(committed) => state.committed = committed,
+        LogJournalEvent::Append(entries) => {
+            for (index, serialized) in entries {
+                if let Some(existing) = state.log.get(&index) {
+                    if existing != &serialized {
+                        return Err(invalid(format!(
+                            "journal attempts conflicting overwrite at log index {index}"
+                        )));
+                    }
+                } else {
+                    state.log.insert(index, serialized);
+                }
+            }
+        }
+        LogJournalEvent::Truncate { start } => {
+            let remove = state
+                .log
+                .range(start..)
+                .map(|(index, _)| *index)
+                .collect::<Vec<_>>();
+            for index in remove {
+                state.log.remove(&index);
+            }
+        }
+        LogJournalEvent::Purge { log_id } => {
+            if state.last_purged_log_id.is_some_and(|last| last > log_id) {
+                return Err(invalid("purge log id regressed"));
+            }
+            let remove = state
+                .log
+                .range(..=log_id.index)
+                .map(|(index, _)| *index)
+                .collect::<Vec<_>>();
+            for index in remove {
+                state.log.remove(&index);
+            }
+            state.last_purged_log_id = Some(log_id);
+        }
+    }
+    Ok(())
+}
+
+fn replay_log_journal(path: &Path, state: &mut PersistentLogState) -> io::Result<()> {
+    let mut file = File::open(path)?;
+    let metadata = file.metadata()?;
+    if metadata.len() > 256 * 1024 * 1024 {
+        return Err(invalid("raft log delta journal exceeds 256 MiB"));
+    }
+    let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
+    file.read_to_end(&mut bytes)?;
+    if bytes.len() < 16 || bytes[..8] != LOG_JOURNAL_MAGIC {
+        return Err(invalid(
+            "raft log delta journal header is truncated or invalid",
+        ));
+    }
+    let journal_epoch = u64::from_le_bytes(
+        bytes[8..16]
+            .try_into()
+            .map_err(|_| invalid("invalid raft log journal epoch"))?,
+    );
+    if journal_epoch < state.journal_epoch {
+        // The checkpoint was durably replaced before the previous journal could
+        // be collapsed. The newer checkpoint already includes every old event.
+        initialize_log_journal(path, state.journal_epoch)?;
+        return state.validate();
+    }
+    if journal_epoch != state.journal_epoch {
+        return Err(invalid("raft log journal leads its checkpoint epoch"));
+    }
+    let mut offset = 16;
+    let mut last_good = offset;
+    while offset < bytes.len() {
+        if bytes.len() - offset < 16 {
+            break;
+        }
+        if bytes[offset..offset + 8] != LOG_EVENT_MAGIC {
+            return Err(invalid("raft log delta event magic mismatch"));
+        }
+        let length = usize::try_from(u64::from_le_bytes(
+            bytes[offset + 8..offset + 16]
+                .try_into()
+                .map_err(|_| invalid("invalid raft log event length"))?,
+        ))
+        .map_err(|_| invalid("raft log event length overflow"))?;
+        if length > 16 * 1024 * 1024 {
+            return Err(invalid("raft log delta event exceeds 16 MiB"));
+        }
+        let frame_len = 16_usize
+            .checked_add(length)
+            .and_then(|value| value.checked_add(4))
+            .ok_or_else(|| invalid("raft log event size overflow"))?;
+        if bytes.len() - offset < frame_len {
+            break;
+        }
+        let payload = &bytes[offset + 16..offset + 16 + length];
+        let stored_crc = u32::from_le_bytes(
+            bytes[offset + 16 + length..offset + frame_len]
+                .try_into()
+                .map_err(|_| invalid("invalid raft log event checksum"))?,
+        );
+        if crc32(payload) != stored_crc {
+            return Err(invalid("raft log delta event checksum mismatch"));
+        }
+        let event: LogJournalEvent =
+            serde_json::from_slice(payload).map_err(|error| invalid(error.to_string()))?;
+        apply_log_journal_event(state, event)?;
+        offset += frame_len;
+        last_good = offset;
+    }
+    if last_good != bytes.len() {
+        let file = OpenOptions::new().write(true).open(path)?;
+        file.set_len(u64::try_from(last_good).map_err(|_| invalid("journal offset overflow"))?)?;
+        file.sync_all()?;
+    }
+    state.validate()
+}
+
 impl PersistentLogState {
     fn validate(&self) -> io::Result<()> {
+        if self.journal_format > 1 || (self.journal_format == 1 && self.journal_epoch == 0) {
+            return Err(invalid("unsupported or zero raft log journal epoch"));
+        }
         let mut previous = self.last_purged_log_id.as_ref().map(|log_id| log_id.index);
         for index in self.log.keys().copied() {
             if let Some(previous) = previous {
@@ -430,8 +677,13 @@ impl DurableLogStore {
         ensure_real_directory(root, "raft log store root")?;
         let state_path = root.join("raft-log.bin");
         ensure_create_location_is_fresh(root, &state_path)?;
-        let state = PersistentLogState::default();
+        let state = PersistentLogState {
+            journal_format: 1,
+            journal_epoch: 1,
+            ..Default::default()
+        };
         write_json(&state_path, LOG_MAGIC, &state)?;
+        initialize_log_journal(&log_journal_path(&state_path), state.journal_epoch)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
         Ok(Self {
             state_path,
@@ -455,8 +707,28 @@ impl DurableLogStore {
                 "initialized raft log store is missing its authoritative generation",
             ));
         }
-        let state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
+        let mut state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
         state.validate()?;
+        let journal_path = log_journal_path(&state_path);
+        if state.journal_format == 0 {
+            state.journal_epoch = 1;
+            if !regular_file_status(&journal_path, "legacy raft log delta journal")? {
+                initialize_log_journal(&journal_path, state.journal_epoch)?;
+            }
+            replay_log_journal(&journal_path, &mut state)?;
+            state.journal_format = 1;
+            write_json(&state_path, LOG_MAGIC, &state)?;
+            initialize_log_journal(&journal_path, state.journal_epoch)?;
+        } else if state.journal_format == 1 {
+            if !regular_file_status(&journal_path, "raft log delta journal")? {
+                return Err(invalid(
+                    "initialized raft log checkpoint requires its delta journal",
+                ));
+            }
+            replay_log_journal(&journal_path, &mut state)?;
+        } else {
+            return Err(invalid("unsupported raft log journal format"));
+        }
         discard_stale_previous_after_validation(&state_path)?;
         Ok(Self {
             state_path,
@@ -490,8 +762,12 @@ impl DurableLogStore {
                 "legacy raft log store has no authoritative generation",
             ));
         }
-        let state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
+        let mut state: PersistentLogState = read_json(&state_path, LOG_MAGIC)?;
         state.validate()?;
+        state.journal_format = 1;
+        state.journal_epoch = 1;
+        initialize_log_journal(&log_journal_path(&state_path), state.journal_epoch)?;
+        write_json(&state_path, LOG_MAGIC, &state)?;
         discard_stale_previous_after_validation(&state_path)?;
         persist_initialization_marker(root, LOG_DOMAIN, "raft-log.bin")?;
         Ok(Self {
@@ -558,11 +834,13 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
 
     async fn save_vote(&mut self, vote: &VoteOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        candidate.vote = Some(*vote);
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Vote(*vote);
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn save_committed(
@@ -570,11 +848,13 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         committed: Option<LogIdOf<TypeConfig>>,
     ) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        candidate.committed = committed;
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Committed(committed);
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn read_committed(&mut self) -> Result<Option<LogIdOf<TypeConfig>>, io::Error> {
@@ -591,26 +871,54 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         I::IntoIter: OptionalSend,
     {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
+        let mut serialized = Vec::new();
+        let mut last = state
+            .log
+            .keys()
+            .next_back()
+            .copied()
+            .or_else(|| state.last_purged_log_id.map(|value| value.index));
         for entry in entries {
             let index = entry.index();
-            let serialized =
+            let value =
                 serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
-            if let Some(existing) = candidate.log.get(&index) {
-                if existing != &serialized {
+            if let Some(existing) = state.log.get(&index) {
+                if existing != &value {
                     let error = invalid(format!(
                         "attempted to overwrite log index {index} without truncate"
                     ));
                     callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
                     return Err(error);
                 }
-            } else {
-                candidate.log.insert(index, serialized);
+                continue;
             }
+            if let Some(previous) = last {
+                let expected = previous
+                    .checked_add(1)
+                    .ok_or_else(|| invalid("log append index overflow"))?;
+                if index != expected {
+                    let error = invalid(format!(
+                        "log append would create a hole: expected {expected}, observed {index}"
+                    ));
+                    callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
+                    return Err(error);
+                }
+            }
+            last = Some(index);
+            serialized.push((index, value));
         }
-        match self.persist(&candidate) {
+        if serialized.is_empty() {
+            callback.io_completed(Ok(()));
+            return Ok(());
+        }
+        let event = LogJournalEvent::Append(serialized);
+        match append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        ) {
             Ok(()) => {
-                *state = candidate;
+                apply_log_journal_event(&mut state, event)?;
                 callback.io_completed(Ok(()));
                 Ok(())
             }
@@ -633,39 +941,41 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
             None => 0,
         };
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        let remove = candidate
-            .log
-            .range(start..)
-            .map(|(index, _)| *index)
-            .collect::<Vec<_>>();
-        for index in remove {
-            candidate.log.remove(&index);
-        }
-        self.persist(&candidate)?;
-        *state = candidate;
-        Ok(())
+        let event = LogJournalEvent::Truncate { start };
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
+        apply_log_journal_event(&mut state, event)
     }
 
     async fn purge(&mut self, log_id: LogIdOf<TypeConfig>) -> Result<(), io::Error> {
         let mut state = self.state.lock().await;
-        let mut candidate = state.clone();
-        if candidate
-            .last_purged_log_id
-            .is_some_and(|last| last > log_id)
-        {
+        if state.last_purged_log_id.is_some_and(|last| last > log_id) {
             return Err(invalid("purge log id regressed"));
         }
-        let remove = candidate
-            .log
-            .range(..=log_id.index)
-            .map(|(index, _)| *index)
-            .collect::<Vec<_>>();
-        for index in remove {
-            candidate.log.remove(&index);
+        if let Some(last) = state.log.keys().next_back().copied()
+            && log_id.index > last
+        {
+            return Err(invalid(
+                "purge log id exceeds locally retained log frontier",
+            ));
         }
-        candidate.last_purged_log_id = Some(log_id);
+        let event = LogJournalEvent::Purge { log_id };
+        append_log_journal(
+            &log_journal_path(&self.state_path),
+            state.journal_epoch,
+            &event,
+        )?;
+        let mut candidate = state.clone();
+        apply_log_journal_event(&mut candidate, event)?;
+        candidate.journal_epoch = candidate
+            .journal_epoch
+            .checked_add(1)
+            .ok_or_else(|| invalid("raft log journal epoch overflow"))?;
         self.persist(&candidate)?;
+        initialize_log_journal(&log_journal_path(&self.state_path), candidate.journal_epoch)?;
         *state = candidate;
         Ok(())
     }
@@ -680,6 +990,8 @@ struct PersistentSnapshot {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct PersistentStateBundle {
     format_version: u16,
+    #[serde(default)]
+    journal_format: u16,
     generation: u64,
     state: MemStoreStateMachine,
     current_snapshot: Option<PersistentSnapshot>,
@@ -689,11 +1001,168 @@ impl Default for PersistentStateBundle {
     fn default() -> Self {
         Self {
             format_version: 1,
+            journal_format: 0,
             generation: 1,
             state: MemStoreStateMachine::default(),
             current_snapshot: None,
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+enum StateJournalEvent {
+    Apply { generation: u64, entry: String },
+}
+
+fn state_journal_path(bundle_path: &Path) -> PathBuf {
+    bundle_path.with_file_name("state-machine.journal")
+}
+
+fn initialize_state_journal(path: &Path) -> io::Result<()> {
+    atomic_write_raw(path, &STATE_JOURNAL_MAGIC)
+}
+
+fn append_state_journal(path: &Path, event: &StateJournalEvent) -> io::Result<()> {
+    if !regular_file_status(path, "raft state-machine delta journal")? {
+        return Err(invalid("raft state-machine delta journal is missing"));
+    }
+    let payload = serde_json::to_vec(event).map_err(|error| invalid(error.to_string()))?;
+    if payload.len() > 16 * 1024 * 1024 {
+        return Err(invalid("raft state-machine delta event exceeds 16 MiB"));
+    }
+    let frame = encode_envelope(STATE_EVENT_MAGIC, &payload)?;
+    let mut file = OpenOptions::new().append(true).open(path)?;
+    file.write_all(&frame)?;
+    file.flush()?;
+    file.sync_all()
+}
+
+fn apply_state_entry(
+    state: &mut MemStoreStateMachine,
+    entry: &EntryOf<TypeConfig>,
+) -> ClientResponse {
+    state.last_applied_log = Some(entry.log_id);
+    match &entry.payload {
+        EntryPayload::Blank => ClientResponse(None),
+        EntryPayload::Normal(data) => {
+            let previous = state
+                .client_status
+                .insert(data.client.clone(), data.status.clone());
+            ClientResponse(previous)
+        }
+        EntryPayload::Membership(membership) => {
+            state.last_membership =
+                StoredMembershipOf::<TypeConfig>::new(Some(entry.log_id), membership.clone());
+            ClientResponse(None)
+        }
+    }
+}
+
+fn apply_state_journal_event(
+    bundle: &mut PersistentStateBundle,
+    event: StateJournalEvent,
+) -> io::Result<Option<ClientResponse>> {
+    match event {
+        StateJournalEvent::Apply { generation, entry } => {
+            let entry: EntryOf<TypeConfig> =
+                serde_json::from_str(&entry).map_err(|error| invalid(error.to_string()))?;
+            if generation <= bundle.generation {
+                let checkpoint_index = bundle
+                    .state
+                    .last_applied_log
+                    .map(|log_id| log_id.index)
+                    .ok_or_else(|| invalid("checkpoint generation covers no applied log"))?;
+                if entry.log_id.index > checkpoint_index {
+                    return Err(invalid(
+                        "checkpoint generation claims an unapplied state-machine event",
+                    ));
+                }
+                return Ok(None);
+            }
+            let expected_generation = bundle.next_generation()?;
+            if generation != expected_generation {
+                return Err(invalid(format!(
+                    "state-machine journal generation gap: expected {expected_generation}, observed {generation}"
+                )));
+            }
+            if let Some(previous) = bundle.state.last_applied_log {
+                let expected_index = previous
+                    .index
+                    .checked_add(1)
+                    .ok_or_else(|| invalid("state-machine log index overflow"))?;
+                if entry.log_id.index != expected_index {
+                    return Err(invalid(format!(
+                        "state-machine journal log gap: expected {expected_index}, observed {}",
+                        entry.log_id.index
+                    )));
+                }
+            }
+            let response = apply_state_entry(&mut bundle.state, &entry);
+            bundle.generation = generation;
+            Ok(Some(response))
+        }
+    }
+}
+
+fn replay_state_journal(path: &Path, bundle: &mut PersistentStateBundle) -> io::Result<()> {
+    let mut file = File::open(path)?;
+    let metadata = file.metadata()?;
+    if metadata.len() > 256 * 1024 * 1024 {
+        return Err(invalid("raft state-machine delta journal exceeds 256 MiB"));
+    }
+    let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
+    file.read_to_end(&mut bytes)?;
+    if bytes.len() < STATE_JOURNAL_MAGIC.len() || bytes[..8] != STATE_JOURNAL_MAGIC {
+        return Err(invalid("raft state-machine delta journal magic mismatch"));
+    }
+    let mut offset = STATE_JOURNAL_MAGIC.len();
+    let mut last_good = offset;
+    while offset < bytes.len() {
+        if bytes.len() - offset < 16 {
+            break;
+        }
+        if bytes[offset..offset + 8] != STATE_EVENT_MAGIC {
+            return Err(invalid("raft state-machine delta event magic mismatch"));
+        }
+        let length = usize::try_from(u64::from_le_bytes(
+            bytes[offset + 8..offset + 16]
+                .try_into()
+                .map_err(|_| invalid("invalid state-machine event length"))?,
+        ))
+        .map_err(|_| invalid("state-machine event length overflow"))?;
+        if length > 16 * 1024 * 1024 {
+            return Err(invalid("raft state-machine delta event exceeds 16 MiB"));
+        }
+        let frame_len = 16_usize
+            .checked_add(length)
+            .and_then(|value| value.checked_add(4))
+            .ok_or_else(|| invalid("state-machine event size overflow"))?;
+        if bytes.len() - offset < frame_len {
+            break;
+        }
+        let payload = &bytes[offset + 16..offset + 16 + length];
+        let stored_crc = u32::from_le_bytes(
+            bytes[offset + 16 + length..offset + frame_len]
+                .try_into()
+                .map_err(|_| invalid("invalid state-machine event checksum"))?,
+        );
+        if crc32(payload) != stored_crc {
+            return Err(invalid("raft state-machine delta event checksum mismatch"));
+        }
+        let event: StateJournalEvent =
+            serde_json::from_slice(payload).map_err(|error| invalid(error.to_string()))?;
+        let _ = apply_state_journal_event(bundle, event)?;
+        offset += frame_len;
+        last_good = offset;
+    }
+    if last_good != bytes.len() {
+        let file = OpenOptions::new().write(true).open(path)?;
+        file.set_len(
+            u64::try_from(last_good).map_err(|_| invalid("state journal offset overflow"))?,
+        )?;
+        file.sync_all()?;
+    }
+    bundle.validate()
 }
 
 impl PersistentStateBundle {
@@ -704,7 +1173,7 @@ impl PersistentStateBundle {
     }
 
     fn validate(&self) -> io::Result<()> {
-        if self.format_version != 1 || self.generation == 0 {
+        if self.format_version != 1 || self.journal_format > 1 || self.generation == 0 {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
         if let Some(snapshot) = &self.current_snapshot {
@@ -737,8 +1206,12 @@ impl DurableStateMachine {
         ensure_real_directory(root, "state-machine store root")?;
         let bundle_path = root.join("state-bundle.bin");
         ensure_create_location_is_fresh(root, &bundle_path)?;
-        let bundle = PersistentStateBundle::default();
+        let bundle = PersistentStateBundle {
+            journal_format: 1,
+            ..Default::default()
+        };
         write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
+        initialize_state_journal(&state_journal_path(&bundle_path))?;
         persist_initialization_marker(root, STATE_MACHINE_DOMAIN, "state-bundle.bin")?;
         Ok(Self {
             bundle_path,
@@ -762,8 +1235,27 @@ impl DurableStateMachine {
                 "initialized state machine is missing its authoritative generation",
             ));
         }
-        let bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
+        let mut bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
         bundle.validate()?;
+        let journal_path = state_journal_path(&bundle_path);
+        if bundle.journal_format == 0 {
+            if !regular_file_status(&journal_path, "legacy state-machine delta journal")? {
+                initialize_state_journal(&journal_path)?;
+            }
+            replay_state_journal(&journal_path, &mut bundle)?;
+            bundle.journal_format = 1;
+            write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
+            initialize_state_journal(&journal_path)?;
+        } else if bundle.journal_format == 1 {
+            if !regular_file_status(&journal_path, "state-machine delta journal")? {
+                return Err(invalid(
+                    "initialized state-machine checkpoint requires its delta journal",
+                ));
+            }
+            replay_state_journal(&journal_path, &mut bundle)?;
+        } else {
+            return Err(invalid("unsupported state-machine journal format"));
+        }
         discard_stale_previous_after_validation(&bundle_path)?;
         Ok(Self {
             bundle_path,
@@ -800,8 +1292,11 @@ impl DurableStateMachine {
                 "legacy state machine has no authoritative generation",
             ));
         }
-        let bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
+        let mut bundle: PersistentStateBundle = read_json(&bundle_path, STATE_BUNDLE_MAGIC)?;
         bundle.validate()?;
+        bundle.journal_format = 1;
+        initialize_state_journal(&state_journal_path(&bundle_path))?;
+        write_json(&bundle_path, STATE_BUNDLE_MAGIC, &bundle)?;
         discard_stale_previous_after_validation(&bundle_path)?;
         persist_initialization_marker(root, STATE_MACHINE_DOMAIN, "state-bundle.bin")?;
         Ok(Self {
@@ -854,10 +1349,15 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
             meta: meta.clone(),
             data: data.clone(),
         };
-        let mut candidate = bundle.clone();
-        candidate.generation = candidate.next_generation()?;
-        candidate.current_snapshot = Some(snapshot);
+        let candidate = PersistentStateBundle {
+            format_version: bundle.format_version,
+            journal_format: 1,
+            generation: bundle.next_generation()?,
+            state,
+            current_snapshot: Some(snapshot),
+        };
         self.persist_bundle(&candidate)?;
+        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
         *bundle = candidate;
         Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
             meta,
@@ -887,29 +1387,16 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         while let Some((entry, responder)) = entries.try_next().await? {
             let response = {
                 let mut bundle = self.bundle.lock().await;
-                let mut candidate = bundle.clone();
-                candidate.generation = candidate.next_generation()?;
-                candidate.state.last_applied_log = Some(entry.log_id);
-                let response = match entry.payload {
-                    EntryPayload::Blank => ClientResponse(None),
-                    EntryPayload::Normal(ref data) => {
-                        let previous = candidate
-                            .state
-                            .client_status
-                            .insert(data.client.clone(), data.status.clone());
-                        ClientResponse(previous)
-                    }
-                    EntryPayload::Membership(ref membership) => {
-                        candidate.state.last_membership = StoredMembershipOf::<TypeConfig>::new(
-                            Some(entry.log_id),
-                            membership.clone(),
-                        );
-                        ClientResponse(None)
-                    }
+                let generation = bundle.next_generation()?;
+                let serialized =
+                    serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
+                let event = StateJournalEvent::Apply {
+                    generation,
+                    entry: serialized,
                 };
-                self.persist_bundle(&candidate)?;
-                *bundle = candidate;
-                response
+                append_state_journal(&state_journal_path(&self.bundle_path), &event)?;
+                apply_state_journal_event(&mut bundle, event)?
+                    .ok_or_else(|| invalid("fresh state-machine event was not applied"))?
             };
             if let Some(responder) = responder {
                 responder.send(response);
@@ -949,11 +1436,15 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
             data,
         };
         let mut bundle = self.bundle.lock().await;
-        let mut candidate = bundle.clone();
-        candidate.generation = candidate.next_generation()?;
-        candidate.state = state;
-        candidate.current_snapshot = Some(persisted);
+        let candidate = PersistentStateBundle {
+            format_version: bundle.format_version,
+            journal_format: 1,
+            generation: bundle.next_generation()?,
+            state,
+            current_snapshot: Some(persisted),
+        };
         self.persist_bundle(&candidate)?;
+        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
         *bundle = candidate;
         Ok(())
     }
@@ -996,7 +1487,7 @@ mod tests {
     };
     use std::collections::BTreeMap;
     use std::fs;
-    use std::io;
+    use std::io::{self, Write};
     use std::sync::Arc;
     use std::sync::atomic::{AtomicU64, Ordering};
     use tokio::sync::Mutex;
@@ -1079,6 +1570,135 @@ mod tests {
         assert_eq!(recovered.generation, expected.generation);
         assert!(target.is_file());
         assert!(!previous.exists());
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn initialized_delta_journals_are_required() {
+        let log_root = root("missing-log-journal");
+        DurableLogStore::create(&log_root).expect("create log store");
+        fs::remove_file(log_root.join("raft-log.journal")).expect("remove log journal");
+        let error = DurableLogStore::open_existing(&log_root)
+            .expect_err("format-1 log checkpoint must require its journal");
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+
+        let state_root = root("missing-state-journal");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        fs::remove_file(state_root.join("state-machine.journal")).expect("remove state journal");
+        let error = DurableStateMachine::open_existing(&state_root)
+            .expect_err("format-1 state checkpoint must require its journal");
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn incomplete_delta_journal_tails_are_repaired_only_to_last_complete_frame() {
+        let log_root = root("log-tail-repair");
+        DurableLogStore::create(&log_root).expect("create log store");
+        let log_journal = log_root.join("raft-log.journal");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&log_journal)
+                .expect("open log journal");
+            file.write_all(b"HBR").expect("append truncated log frame");
+            file.sync_all().expect("sync truncated log frame");
+        }
+        DurableLogStore::open_existing(&log_root).expect("repair truncated log tail");
+        assert_eq!(
+            fs::metadata(&log_journal)
+                .expect("log journal metadata")
+                .len(),
+            16
+        );
+
+        let state_root = root("state-tail-repair");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        let state_journal = state_root.join("state-machine.journal");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&state_journal)
+                .expect("open state journal");
+            file.write_all(b"HBRS")
+                .expect("append truncated state frame");
+            file.sync_all().expect("sync truncated state frame");
+        }
+        DurableStateMachine::open_existing(&state_root).expect("repair truncated state tail");
+        assert_eq!(
+            fs::metadata(&state_journal)
+                .expect("state journal metadata")
+                .len(),
+            8
+        );
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn fully_framed_bad_delta_events_fail_closed() {
+        let log_root = root("log-bad-event");
+        DurableLogStore::create(&log_root).expect("create log store");
+        let log_frame =
+            super::encode_envelope(super::LOG_EVENT_MAGIC, b"not-json").expect("encode log frame");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(log_root.join("raft-log.journal"))
+                .expect("open log journal");
+            file.write_all(&log_frame).expect("append log frame");
+            file.sync_all().expect("sync log frame");
+        }
+        assert!(
+            DurableLogStore::open_existing(&log_root).is_err(),
+            "complete invalid log event must not be truncated as an incomplete tail"
+        );
+
+        let state_root = root("state-bad-event");
+        DurableStateMachine::create(&state_root).expect("create state machine");
+        let state_frame = super::encode_envelope(super::STATE_EVENT_MAGIC, b"not-json")
+            .expect("encode state frame");
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(state_root.join("state-machine.journal"))
+                .expect("open state journal");
+            file.write_all(&state_frame).expect("append state frame");
+            file.sync_all().expect("sync state frame");
+        }
+        assert!(
+            DurableStateMachine::open_existing(&state_root).is_err(),
+            "complete invalid state event must fail closed"
+        );
+
+        let _ = fs::remove_dir_all(log_root);
+        let _ = fs::remove_dir_all(state_root);
+    }
+
+    #[test]
+    fn newer_log_checkpoint_retires_stale_precheckpoint_journal() {
+        let root = root("log-stale-journal");
+        let store = DurableLogStore::create(&root).expect("create log store");
+        drop(store);
+
+        let state_path = root.join("raft-log.bin");
+        let mut state: PersistentLogState =
+            read_json(&state_path, LOG_MAGIC).expect("read log checkpoint");
+        assert_eq!(state.journal_epoch, 1);
+        state.journal_epoch = 2;
+        write_json(&state_path, LOG_MAGIC, &state).expect("publish newer checkpoint");
+
+        DurableLogStore::open_existing(&root)
+            .expect("newer checkpoint must retire stale old-epoch journal");
+        assert_eq!(
+            super::log_journal_epoch(&root.join("raft-log.journal"))
+                .expect("read repaired log journal epoch"),
+            2
+        );
+
         let _ = fs::remove_dir_all(root);
     }
 

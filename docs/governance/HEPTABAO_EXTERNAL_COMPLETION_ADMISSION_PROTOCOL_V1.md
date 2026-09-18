@@ -36,6 +36,7 @@ Templates under `qualifications/external/templates/` are intentionally `UNEXECUT
 - `HB-BLK-EXT-005`: Oracle operator, sanitization operator, transfer custodian and compatibility reviewer.
 - `HB-BLK-EXT-006`: independently controlled storage-lab operator and storage reviewer.
 - `HB-BLK-EXT-007`: independent reproduction operator and separate reproduction reviewer.
+- `HB-BLK-EXT-008`: plugin qualifier and provider reviewer with separated sandbox/provider custody.
 
 ## Invocation
 

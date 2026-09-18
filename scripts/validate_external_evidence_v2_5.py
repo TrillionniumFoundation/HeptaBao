@@ -35,41 +35,15 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$")
 
 REQUIRED_CASES: dict[str, frozenset[str]] = {
-    "HB-BLK-CTRL-001": frozenset({
-        "main-ruleset-enforced", "required-checks-enforced",
-        "non-admin-bypass-denied", "force-push-denied", "deletion-denied",
-    }),
-    "HB-BLK-EXT-001": frozenset({
-        "program-review", "product-security-review", "storage-distributed-review",
-        "reviewer-independence", "current-head-binding",
-    }),
-    "HB-BLK-EXT-002": frozenset({
-        "license-disposition", "trademark-disposition", "patent-disposition",
-        "export-control-disposition", "clean-room-disposition",
-    }),
-    "HB-BLK-EXT-003": frozenset({
-        "private-disclosure-channel", "24x7-roster", "incident-drill",
-        "credential-revocation-drill", "forensic-retention-drill",
-    }),
-    "HB-BLK-EXT-004": frozenset({
-        "isolated-release-signer", "kms-hsm-custody", "key-rotation-ceremony",
-        "emergency-revocation", "transparency-checkpoint",
-    }),
-    "HB-BLK-EXT-005": frozenset({
-        "restricted-oracle-capture", "deterministic-sanitization",
-        "role-separated-transfer", "oracle-artifact-rehash",
-        "candidate-artifact-rehash", "complete-surface-differential",
-    }),
-    "HB-BLK-EXT-006": frozenset({
-        "power-cut-campaign", "torn-write-campaign", "fsync-loss-campaign",
-        "disk-stall-campaign", "filesystem-corruption-campaign",
-        "multi-platform-destructive-campaign",
-    }),
-    "HB-BLK-EXT-007": frozenset({
-        "independent-source-acquisition", "independent-toolchain",
-        "independent-runner", "independent-cache-root",
-        "independent-signing-root", "exact-output-reproduction",
-    }),
+    "HB-BLK-CTRL-001": frozenset({"main-ruleset-enforced", "required-checks-enforced", "non-admin-bypass-denied", "force-push-denied", "deletion-denied"}),
+    "HB-BLK-EXT-001": frozenset({"program-review", "product-security-review", "storage-distributed-review", "reviewer-independence", "current-head-binding"}),
+    "HB-BLK-EXT-002": frozenset({"license-disposition", "trademark-disposition", "patent-disposition", "export-control-disposition", "clean-room-disposition"}),
+    "HB-BLK-EXT-003": frozenset({"private-disclosure-channel", "24x7-roster", "incident-drill", "credential-revocation-drill", "forensic-retention-drill"}),
+    "HB-BLK-EXT-004": frozenset({"isolated-release-signer", "kms-hsm-custody", "key-rotation-ceremony", "emergency-revocation", "transparency-checkpoint"}),
+    "HB-BLK-EXT-005": frozenset({"restricted-oracle-capture", "deterministic-sanitization", "role-separated-transfer", "oracle-artifact-rehash", "candidate-artifact-rehash", "complete-surface-differential"}),
+    "HB-BLK-EXT-006": frozenset({"power-cut-campaign", "torn-write-campaign", "fsync-loss-campaign", "disk-stall-campaign", "filesystem-corruption-campaign", "multi-platform-destructive-campaign"}),
+    "HB-BLK-EXT-007": frozenset({"independent-source-acquisition", "independent-toolchain", "independent-runner", "independent-cache-root", "independent-signing-root", "exact-output-reproduction"}),
+    "HB-BLK-EXT-008": frozenset({"linux-sandbox-provider", "macos-sandbox-provider", "windows-sandbox-provider", "process-tree-termination", "authenticated-multiplexed-transport", "provider-connectors", "rolling-plugin-upgrade", "destructive-provider-qualification"}),
 }
 
 REQUIRED_ROLE_COUNTS: dict[str, dict[str, int]] = {
@@ -104,6 +78,10 @@ REQUIRED_ROLE_COUNTS: dict[str, dict[str, int]] = {
     },
     "HB-BLK-EXT-007": {
         "independent-reproducer": 2,
+    },
+    "HB-BLK-EXT-008": {
+        "plugin-qualifier": 1,
+        "provider-reviewer": 1,
     },
 }
 ROLE_BY_GATE: dict[str, frozenset[str]] = {

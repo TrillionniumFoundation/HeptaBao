@@ -785,6 +785,7 @@ dependencies = [
 name = "heptabao-raft-runtime"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "futures",
  "openraft",
  "openraft-macros",
@@ -793,6 +794,7 @@ dependencies = [
  "openraft-rt-tokio",
  "serde",
  "serde_json",
+ "sha2",
  "tokio",
 ]
 
@@ -838,9 +840,13 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "futures",
+ "heptabao-domain",
  "heptabao-durable-service",
  "heptabao-ha-service",
+ "heptabao-plugin-contracts",
+ "heptabao-plugin-host",
  "heptabao-raft-runtime",
+ "libc",
  "ring",
  "rustls",
  "rustls-pemfile",

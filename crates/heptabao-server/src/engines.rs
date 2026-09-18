@@ -1,21 +1,37 @@
-//! Single-node secret engines. State is secret-bearing and must only be persisted
-//! through the server's authenticated encryption boundary; Debug redacts it.
+//! Single-node secret engines and core logical surfaces. State is secret-bearing
+//! and must only be persisted through the server's authenticated encryption boundary;
+//! Debug redacts it.
 //!
 //! Namespace, mount and resource identifiers are separate map dimensions. No
 //! delimiter-concatenated value is ever used as a storage identity.
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 use zeroize::Zeroize;
 
+mod identity;
+#[path = "engine_identity.rs"]
+mod identity_projection;
+use identity_projection::IdentityProjection;
+pub(crate) mod kubernetes;
 mod kv;
+#[path = "engine_leases.rs"]
+mod leases;
+mod pki;
+mod ssh;
 mod totp;
 mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
-    namespaces: BTreeMap<String, NamespaceState>,
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    lease_clock: u64,
+    namespaces: BTreeMap<String, CowNamespace>,
 }
 
 impl std::fmt::Debug for EngineState {
@@ -26,9 +42,70 @@ impl std::fmt::Debug for EngineState {
     }
 }
 
+fn lease_clock_is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
+const fn mount_revision_one() -> u64 {
+    1
+}
+
+struct CowNamespace(Arc<NamespaceState>);
+
+impl Clone for CowNamespace {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl Default for CowNamespace {
+    fn default() -> Self {
+        Self(Arc::new(NamespaceState::default()))
+    }
+}
+
+impl Deref for CowNamespace {
+    type Target = NamespaceState;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for CowNamespace {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl Serialize for CowNamespace {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for CowNamespace {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        NamespaceState::deserialize(deserializer).map(|value| Self(Arc::new(value)))
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct NamespaceState {
     mounts: BTreeMap<String, Mount>,
+    /// Next path incarnation after disable/recreate. The active Mount carries
+    /// its own incarnation; this tombstone map prevents stale path identity
+    /// from being resurrected after deletion.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    mount_epochs: BTreeMap<String, u64>,
+    #[serde(default)]
+    identity: identity::IdentityState,
 }
 
 impl Default for NamespaceState {
@@ -47,21 +124,35 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            mount_epochs: BTreeMap::new(),
+            identity: identity::IdentityState::default(),
         }
     }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Mount {
+    #[serde(default = "mount_revision_one")]
+    revision: u64,
+    #[serde(default = "mount_revision_one")]
+    incarnation: u64,
     description: String,
     backend: Backend,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 enum Backend {
+    // Runtime provider state and effects belong to the audited Service writer.
+    Database,
+    /// External Kubernetes TokenRequest provider state is owned by Service.
+    Kubernetes(kubernetes::Kubernetes),
+    /// Durable binding to a deployment-enrolled read-only secret plugin.
+    PluginSecret(String),
     Kv1(BTreeMap<String, Value>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
+    Pki(pki::Pki),
+    Ssh(ssh::SshOtp),
     Totp(totp::Totp),
 }
 
@@ -111,22 +202,39 @@ impl Drop for SecretJson {
 
 impl Mount {
     fn new(backend: Backend, description: &str) -> Self {
+        Self::with_incarnation(backend, description, 1)
+    }
+
+    fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
         Self {
+            revision: 1,
+            incarnation: incarnation.max(1),
             description: description.into(),
             backend,
         }
     }
 
     fn descriptor(&self) -> Value {
-        let (kind, options) = match self.backend {
+        let (kind, options) = match &self.backend {
+            Backend::Database => ("database", json!({})),
+            Backend::Kubernetes(_) => ("kubernetes", json!({})),
+            Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
+            Backend::Pki(_) => ("pki", json!({})),
+            Backend::Ssh(_) => ("ssh", json!({})),
             Backend::Totp(_) => ("totp", json!({})),
         };
+        let (default_ttl, max_ttl) = match &self.backend {
+            Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
+            Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
+            _ => (0, 0),
+        };
         json!({"type":kind,"description":self.description,"options":options,
+            "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
-            "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
+            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}})
     }
 }
 
@@ -287,8 +395,252 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
+        self.namespaces
+            .keys()
+            .filter(|namespace| !namespace.is_empty())
+            .cloned()
+            .collect()
+    }
+
+    /// Conservative deletion fence: a namespace that ever materialized engine
+    /// state must be cleaned through the owning engine before its catalog entry
+    /// can be removed. This prevents namespace deletion from silently dropping
+    /// secret, identity or lease state.
+    pub(crate) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        !self.namespaces.contains_key(namespace)
+    }
+
     /// The caller must authorize this capability under the same service lock used
     /// by `handle`. `None` means this module does not own the supplied route.
+    pub(crate) fn database_mount(&self, namespace: &str, path: &str) -> Option<&str> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(mount, value)| {
+                matches!(value.backend, Backend::Database).then_some(mount.as_str())
+            })
+    }
+
+    pub(crate) fn plugin_secret_mount(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| match &value.backend {
+                Backend::PluginSecret(plugin_id) => Some((mount.clone(), plugin_id.clone())),
+                _ => None,
+            })
+            .max_by_key(|(mount, _)| mount.len())
+    }
+
+    pub(crate) fn kubernetes_mount(&self, namespace: &str, path: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| {
+                matches!(value.backend, Backend::Kubernetes(_)).then_some(mount.clone())
+            })
+            .max_by_key(String::len)
+    }
+
+    pub(crate) fn has_kubernetes_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|mount| matches!(mount.backend, Backend::Kubernetes(_)))
+        })
+    }
+
+    pub(crate) fn kubernetes_dispatch(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<kubernetes::Dispatch>> {
+        let mount = self.kubernetes_mount(namespace, path);
+        let Some(mount_path) = mount else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount_path)
+            .ok_or_else(|| bad("invalid Kubernetes mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        engine
+            .dispatch(namespace, &mount_path, method, relative, body, now)
+            .map(Some)
+    }
+
+    pub(crate) fn kubernetes_finalize(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &kubernetes::TokenRequestPlan,
+        metadata: kubernetes::TokenMetadata,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes mount changed after provider entry"));
+        };
+        engine.finalize(plan, metadata)
+    }
+
+    pub(crate) fn validate_kubernetes_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Kubernetes(engine) = &mount.backend {
+                    engine.validate()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn is_immutable_kv_read(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "GET" | "LIST" | "SCAN") {
+            return false;
+        }
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .find(|(mount, _)| path.starts_with(mount.as_str()))
+            })
+            .is_some_and(|(_, mount)| matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)))
+    }
+
+    /// Requires live Service authorization. The immutable receiver makes this
+    /// path unable to allocate a namespace, consume a token or modify an engine.
+    pub(crate) fn handle_immutable_kv_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let (mount_path, mount) = state
+            .mounts
+            .iter()
+            .find(|(mount, _)| path.starts_with(mount.as_str()))
+            .ok_or_else(not_found)?;
+        let params = SecretJson(if body.is_null() {
+            json!({})
+        } else {
+            body.clone()
+        });
+        if !params.is_object() {
+            return Err(bad("request body must be an object"));
+        }
+        let method =
+            if method == "GET" && params.get("list").is_some_and(|v| v == "true" || v == true) {
+                "LIST"
+            } else {
+                method
+            };
+        let relative = &path[mount_path.len()..];
+        match &mount.backend {
+            Backend::Kv1(entries) => kv::read_v1(entries, method, relative, &params),
+            Backend::Kv2(engine) => engine.handle_read(method, relative, &params, now),
+            _ => Err(unsupported()),
+        }
+    }
+
+    /// Atomically relocate one registered secret-engine mount inside the
+    /// caller's namespace. The backend moves as one value, so old route lookup
+    /// cannot observe it after publication. A revision CAS fences stale
+    /// operators and path-incarnation tombstones prevent disable/recreate ABA.
+    pub(crate) fn remount(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+    ) -> Result<EngineResponse> {
+        let from = canonical_secret_mount(from)?;
+        let to = canonical_secret_mount(to)?;
+        if from == to {
+            return Err(bad("remount source and destination must differ"));
+        }
+        if self.has_live_leases() {
+            return Err(error(
+                409,
+                "secret-engine remount is fenced while dynamic leases are live",
+            ));
+        }
+        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+        let from_name = format!("{from}/");
+        let to_name = format!("{to}/");
+        let current = candidate
+            .mounts
+            .get(&from_name)
+            .cloned()
+            .ok_or_else(not_found)?;
+        require_mount_revision(cas_revision, current.revision)?;
+        if candidate.mounts.keys().any(|existing| {
+            existing != &from_name
+                && (existing.starts_with(&to_name) || to_name.starts_with(existing))
+        }) {
+            return Err(bad("remount destination conflicts with an existing mount"));
+        }
+        let mut moved = candidate.mounts.remove(&from_name).ok_or_else(not_found)?;
+        moved.revision = next_mount_revision(moved.revision)?;
+        let destination_floor = candidate
+            .mount_epochs
+            .get(&to_name)
+            .copied()
+            .unwrap_or(moved.incarnation);
+        moved.incarnation = moved.incarnation.max(destination_floor).max(1);
+        let old_next = moved
+            .incarnation
+            .checked_add(1)
+            .ok_or_else(|| error(507, "mount incarnation exhausted"))?;
+        candidate.mount_epochs.insert(from_name, old_next);
+        let revision = moved.revision;
+        let incarnation = moved.incarnation;
+        candidate.mounts.insert(to_name, moved);
+        self.namespaces.insert(namespace.into(), candidate);
+        Ok(ok(
+            json!({"from":format!("{from}/"),"to":format!("{to}/"),
+                "revision":revision,"incarnation":incarnation}),
+            true,
+        ))
+    }
+
+    pub(crate) fn has_database_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|m| matches!(m.backend, Backend::Database))
+        })
+    }
+
     pub fn required_capability(
         &self,
         namespace: &str,
@@ -300,7 +652,16 @@ impl EngineState {
             .next()
             .unwrap_or(path)
             .trim_start_matches('/');
-        let fallback = NamespaceState::default();
+        if identity::owns(path) {
+            return Some(match method {
+                "GET" | "HEAD" => "read",
+                "LIST" | "SCAN" => "list",
+                "DELETE" => "delete",
+                "PATCH" => "patch",
+                _ => "update",
+            });
+        }
+        let fallback = CowNamespace::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
         let (mount_path, mount) = state
             .mounts
@@ -315,6 +676,11 @@ impl EngineState {
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
+                Backend::Database
+                | Backend::Kubernetes(_)
+                | Backend::PluginSecret(_)
+                | Backend::Pki(_)
+                | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -334,8 +700,10 @@ impl EngineState {
         })
     }
 
-    /// All successful state changes are atomic even for a direct caller: the
-    /// namespace candidate replaces live state only after complete validation.
+    /// Successful state changes remain atomic for a direct caller, but ordinary
+    /// engine requests clone only their target mount instead of the complete
+    /// namespace. This keeps rollback-by-replacement semantics without making an
+    /// unrelated large KV/PKI/Transit mount part of every request's memory cost.
     pub fn handle(
         &mut self,
         namespace: &str,
@@ -368,51 +736,144 @@ impl EngineState {
             } else {
                 method
             };
-        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
-        let response = if path == "sys/mounts" || path == "sys/mounts/" {
+
+        if identity::owns(path) {
+            let mut candidate = self
+                .namespaces
+                .get(namespace)
+                .map(|state| state.identity.clone())
+                .unwrap_or_default();
+            let response = identity::handle(&mut candidate, method, path, &params, now)?;
+            if response.mutated {
+                self.namespaces
+                    .entry(namespace.into())
+                    .or_default()
+                    .identity = candidate;
+            }
+            return Ok(Some(response));
+        }
+
+        if path == "sys/mounts" || path == "sys/mounts/" {
             if method != "GET" {
                 return Err(unsupported());
             }
-            ok(
-                Value::Object(
-                    candidate
-                        .mounts
-                        .iter()
-                        .map(|(name, mount)| (name.clone(), mount.descriptor()))
-                        .collect(),
-                ),
-                false,
-            )
-        } else if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
-            handle_mounts(&mut candidate, method, mount_path, &params)?
-        } else {
-            let Some(mount_path) = candidate
+            let fallback = CowNamespace::default();
+            let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+            let mut mounts: serde_json::Map<String, Value> = state
                 .mounts
-                .keys()
-                .find(|m| path.starts_with(m.as_str()))
-                .cloned()
-            else {
-                return Ok(None);
-            };
-            let relative = &path[mount_path.len()..];
-            let mount = candidate
-                .mounts
-                .get_mut(&mount_path)
-                .ok_or_else(not_found)?;
-            match &mut mount.backend {
-                Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
-                Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Transit(engine) => {
-                    engine.handle(namespace, &mount_path, method, relative, &params, now)?
-                }
+                .iter()
+                .map(|(name, mount)| (name.clone(), mount.descriptor()))
+                .collect();
+            mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
+            return Ok(Some(ok(Value::Object(mounts), false)));
+        }
+
+        if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
+            // Registry operations can affect overlap/incarnation state across
+            // mounts, so they deliberately retain namespace-level transactionality.
+            let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+            let response = handle_mounts(&mut candidate, method, mount_path, &params)?;
+            if response.mutated {
+                self.namespaces.insert(namespace.into(), candidate);
             }
+            return Ok(Some(response));
+        }
+
+        let fallback = CowNamespace::default();
+        let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+        let Some(mount_path) = state
+            .mounts
+            .keys()
+            .find(|mount| path.starts_with(mount.as_str()))
+            .cloned()
+        else {
+            return Ok(None);
+        };
+        let relative = &path[mount_path.len()..];
+        let mut mount = state
+            .mounts
+            .get(&mount_path)
+            .cloned()
+            .ok_or_else(not_found)?;
+        let response = match &mut mount.backend {
+            Backend::Database => {
+                return Err(error(
+                    501,
+                    "database operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kubernetes(_) => {
+                return Err(error(
+                    501,
+                    "Kubernetes operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::PluginSecret(_) => {
+                return Err(error(
+                    501,
+                    "plugin operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
+            Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Transit(engine) => {
+                engine.handle(namespace, &mount_path, method, relative, &params, now)?
+            }
+            Backend::Pki(engine) => engine.handle_admin(method, relative, &params, now)?,
+            Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
         };
         if response.mutated {
-            self.namespaces.insert(namespace.into(), candidate);
+            self.namespaces
+                .entry(namespace.into())
+                .or_default()
+                .mounts
+                .insert(mount_path, mount);
         }
         Ok(Some(response))
     }
+}
+
+fn cubbyhole_descriptor() -> Value {
+    json!({"type":"cubbyhole","description":"per-token private secret storage",
+        "options":{},"local":true,"seal_wrap":false,"external_entropy_access":false,
+        "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
+}
+
+fn canonical_secret_mount(value: &str) -> Result<String> {
+    let value = value.trim_end_matches('/');
+    valid_path(value)?;
+    if matches!(
+        value.split('/').next(),
+        Some("sys" | "auth" | "identity" | "cubbyhole")
+    ) {
+        return Err(bad("reserved mount path"));
+    }
+    Ok(value.to_owned())
+}
+
+fn require_mount_revision(expected: Option<u64>, current: u64) -> Result<()> {
+    if expected.is_some_and(|value| value != current) {
+        return Err(error(409, "stale mount revision; no state was changed"));
+    }
+    Ok(())
+}
+
+fn require_absent_mount_revision(expected: Option<u64>) -> Result<()> {
+    if expected.is_some_and(|value| value != 0) {
+        return Err(error(
+            409,
+            "mount is absent; cas_revision must be zero for creation",
+        ));
+    }
+    Ok(())
+}
+
+fn next_mount_revision(current: u64) -> Result<u64> {
+    current
+        .max(1)
+        .checked_add(1)
+        .ok_or_else(|| error(507, "mount revision exhausted"))
 }
 
 fn handle_mounts(
@@ -423,27 +884,60 @@ fn handle_mounts(
 ) -> Result<EngineResponse> {
     let requested = requested.trim_end_matches('/');
     if let Some(mount_path) = requested.strip_suffix("/tune") {
-        let mount = state
-            .mounts
-            .get_mut(&format!("{mount_path}/"))
-            .ok_or_else(not_found)?;
+        let name = format!("{mount_path}/");
+        let mount = state.mounts.get_mut(&name).ok_or_else(not_found)?;
         if method == "GET" {
             return Ok(ok(
-                json!({"description":mount.description,"options":mount.descriptor()["options"],"default_lease_ttl":0,"max_lease_ttl":0}),
+                json!({"description":mount.description,"options":mount.descriptor()["options"],
+                    "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
+                    "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"],
+                    "revision":mount.revision,"incarnation":mount.incarnation}),
                 false,
             ));
         }
         if !write_method(method) {
             return Err(unsupported());
         }
-        reject_unknown(body, &["description", "options"])?;
-        if let Some(description) = body.get("description") {
+        let expected = optional_u64(body, "cas_revision")?;
+        require_mount_revision(expected, mount.revision)?;
+        let before = serde_json::to_vec(&*mount)
+            .map_err(|_| error(500, "mount state serialization failed"))?;
+        let mut tune = body.clone();
+        tune.as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .remove("cas_revision");
+        if let Backend::Ssh(engine) = &mut mount.backend {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            engine.tune(&tune)?;
+        } else if let Backend::Pki(engine) = &mut mount.backend {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            engine.tune(&tune)?;
+        } else {
+            reject_unknown(body, &["description", "options", "cas_revision"])?;
+        }
+        if let Some(description) = tune.get("description") {
             mount.description = description
                 .as_str()
                 .ok_or_else(|| bad("description must be a string"))?
                 .into();
         }
-        if let Some(options) = body.get("options") {
+        if let Some(options) = tune.get("options") {
             reject_unknown(options, &["version"])?;
             let version = options
                 .get("version")
@@ -459,15 +953,21 @@ fn handle_mounts(
                 }
             }
         }
+        let after = serde_json::to_vec(&*mount)
+            .map_err(|_| error(500, "mount state serialization failed"))?;
+        if before == after {
+            return Ok(empty(false));
+        }
+        mount.revision = next_mount_revision(mount.revision)?;
         return Ok(empty(true));
     }
-    valid_path(requested)?;
-    if matches!(
-        requested.split('/').next(),
-        Some("sys" | "auth" | "identity" | "cubbyhole")
-    ) {
+    if requested == "cubbyhole" {
+        if method == "GET" {
+            return Ok(ok(cubbyhole_descriptor(), false));
+        }
         return Err(bad("reserved mount path"));
     }
+    let requested = canonical_secret_mount(requested)?;
     let name = format!("{requested}/");
     if method == "GET" {
         return state
@@ -477,7 +977,26 @@ fn handle_mounts(
             .ok_or_else(not_found);
     }
     if method == "DELETE" {
-        return Ok(empty(state.mounts.remove(&name).is_some()));
+        reject_unknown(body, &["cas_revision"])?;
+        let Some(current) = state.mounts.get(&name) else {
+            return Ok(empty(false));
+        };
+        require_mount_revision(optional_u64(body, "cas_revision")?, current.revision)?;
+        if matches!(&current.backend, Backend::Kubernetes(engine) if engine.has_unresolved()) {
+            return Err(error(
+                409,
+                "Kubernetes mount is fenced while token intents or leases exist",
+            ));
+        }
+        let incarnation = current.incarnation.max(1);
+        state.mounts.remove(&name);
+        state.mount_epochs.insert(
+            name,
+            incarnation
+                .checked_add(1)
+                .ok_or_else(|| error(507, "mount incarnation exhausted"))?,
+        );
+        return Ok(empty(true));
     }
     if !write_method(method) {
         return Err(unsupported());
@@ -492,8 +1011,10 @@ fn handle_mounts(
             "local",
             "seal_wrap",
             "external_entropy_access",
+            "cas_revision",
         ],
     )?;
+    require_absent_mount_revision(optional_u64(body, "cas_revision")?)?;
     if state
         .mounts
         .keys()
@@ -506,7 +1027,10 @@ fn handle_mounts(
             return Err(error(501, "requested mount option is not implemented"));
         }
     }
-    if body
+    if !matches!(
+        body.get("type").and_then(Value::as_str),
+        Some("ssh" | "pki" | "plugin")
+    ) && body
         .get("config")
         .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
     {
@@ -534,6 +1058,45 @@ fn handle_mounts(
                 _ => return Err(bad("KV version must be 1 or 2")),
             }
         }
+        "database" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("database mount options are not supported"));
+            }
+            Backend::Database
+        }
+        "kubernetes" => {
+            if body
+                .get("options")
+                .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+                || body
+                    .get("config")
+                    .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+            {
+                return Err(bad(
+                    "Kubernetes mount options are configured through the engine config endpoint",
+                ));
+            }
+            Backend::Kubernetes(kubernetes::Kubernetes::default())
+        }
+        "plugin" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("plugin mount options are not supported"));
+            }
+            let config = body
+                .get("config")
+                .ok_or_else(|| bad("plugin mount requires config.plugin_id"))?;
+            reject_unknown(config, &["plugin_id"])?;
+            let plugin_id = string(config, "plugin_id")?;
+            heptabao_domain::Id::parse(plugin_id.to_owned())
+                .map_err(|_| bad("invalid plugin identifier"))?;
+            Backend::PluginSecret(plugin_id.to_owned())
+        }
         "transit" => {
             if body
                 .get("options")
@@ -552,6 +1115,34 @@ fn handle_mounts(
             }
             Backend::Totp(totp::Totp::default())
         }
+        "pki" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("PKI mount options are not supported"));
+            }
+            let mut engine = pki::Pki::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Pki(engine)
+        }
+        "ssh" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("SSH mount options are not supported"));
+            }
+            let mut engine = ssh::SshOtp::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Ssh(engine)
+        }
         _ => return Err(error(501, "secret engine type is not implemented")),
     };
     let description = body
@@ -562,12 +1153,16 @@ fn handle_mounts(
         })
         .transpose()?
         .unwrap_or("");
-    state.mounts.insert(name, Mount::new(backend, description));
+    let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
+    state.mounts.insert(
+        name,
+        Mount::with_incarnation(backend, description, incarnation),
+    );
     Ok(empty(true))
 }
 
 /// RFC 3339 UTC, second resolution, for persisted Unix timestamps.
-fn timestamp(seconds: u64) -> String {
+pub(crate) fn timestamp(seconds: u64) -> String {
     let seconds = seconds.min(253402300799); // last second of year 9999
     let days = (seconds / 86400) as i64;
     let z = days + 719468;
@@ -627,3 +1222,11 @@ fn duration_seconds(value: &Value) -> Result<u64> {
 #[cfg(test)]
 #[path = "engine_tests.rs"]
 mod tests;
+
+fn listing(keys: Vec<String>) -> Result<EngineResponse> {
+    if keys.is_empty() {
+        Err(not_found())
+    } else {
+        Ok(ok(json!({"keys":keys}), false))
+    }
+}

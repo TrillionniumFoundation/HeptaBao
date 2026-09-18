@@ -115,11 +115,11 @@ repository_blockers:
   title: current CI must validate exact V2.1 head and real prospective main merge
   state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
-  - .github/workflows/v2-1-main-convergence.yml
-  - .github/workflows/v2-1-main-exact-and-merge.yml
+  - .github/workflows/codex-openbao-replacement-ci.yml
+  - .github/workflows/workflow-trust-boundary.yml
   closure_criteria:
-  - read-only exact-head lane executes all repository and Rust gates
-  - real prospective-main-merge lane validates ordered parents and complete gates
+  - current read-only replacement lane executes repository Rust runtime and provider gates on the exact head
+  - current prospective-main-merge lane validates ordered parents and the same replacement gate without inheriting historical success
   - current-head independent review follows terminal checks
 - id: HB-V2-REP-008
   class: REPOSITORY_CONTROLLED
@@ -191,8 +191,19 @@ repository_blockers:
   evidence:
   - crates/heptabao-server/src/auth.rs
   - docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md
+  - docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md
+  - crates/heptabao-server/src/auth_kubernetes.rs
+  - crates/heptabao-server/src/auth_oidc.rs
+  - crates/heptabao-server/src/service_online_auth.rs
+  - clients/python/heptabao/oidc_login.py
+  - qa/openbao-acceptance/kubernetes_online.py
+  - qa/openbao-acceptance/oidc_code_live.py
+  - qa/openbao-acceptance/online_auth_ha.py
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
+  - retain current scoped online Kubernetes and confidential OIDC runtime without calling protocol fixtures full method qualification
+  - qualify actual kube-apiserver TokenReview RBAC audience and ServiceAccount lifecycle on supported versions
+  - complete remaining auth methods MFA and complete OIDC provider client claim and browser interaction profiles
   - implement and test persistent-identity-and-auth-methods
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
@@ -255,7 +266,7 @@ repository_blockers:
 - id: HB-V2-REP-016
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: exact compatibility denominator is enforced but 47 surface fixtures remain incomplete
+  title: exact compatibility denominator is enforced but remaining surface fixtures are incomplete
   state: IMPLEMENTATION_IN_PROGRESS
   evidence:
   - crates/heptabao-compatibility/src/lib.rs
@@ -268,7 +279,7 @@ repository_blockers:
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
   closure_criteria:
   - retain all 60 inventoried surfaces exactly once and map every implemented case exactly once
-  - implement executable positive hostile and side-effect fixtures for the remaining 47 surfaces
+  - implement executable positive hostile and side-effect fixtures for every corpus row classified DEFINED_NOT_IMPLEMENTED; derive counts from corpus rows rather than prose; remaining coverage is derived from the fixed corpus
   - require exact inventory Oracle artifact candidate artifact and independent-origin binding before admission
   - execute the complete corpus against an independently deployed Oracle and current exact candidate head
   - bind source guide exact-head and prospective-main-merge evidence

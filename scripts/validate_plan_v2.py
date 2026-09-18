@@ -255,7 +255,7 @@ def qualification_instance(*, failed: int, high_open: int) -> dict[str, Any]:
         "generated_at_utc": "2026-08-28T00:00:00Z",
         "valid_until_utc": "2026-09-28T00:00:00Z",
         "source": {
-            "repository": "ProfHepta/HeptaBao",
+            "repository": "TrillionniumFoundation/HeptaBao",
             "commit_sha": SHA40_ZERO,
             "tree_sha": SHA40_ONE,
             "clean_tree": True,

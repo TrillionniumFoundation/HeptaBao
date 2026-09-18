@@ -16,6 +16,33 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_oidc.rs"]
+mod oidc;
+
+#[path = "auth_kubernetes.rs"]
+mod kubernetes;
+
+pub(crate) use kubernetes::{KubernetesLoginObservation, KubernetesLoginPlan};
+pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation};
+
+#[path = "auth_remote.rs"]
+mod remote;
+use remote::RemoteJwtSource;
+pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
+
+#[path = "auth_acl.rs"]
+mod acl;
+#[path = "auth_capabilities.rs"]
+mod capabilities;
+#[path = "auth_cubbyhole.rs"]
+mod cubbyhole;
+#[path = "auth_identity.rs"]
+mod identity;
+#[path = "auth_wrapping.rs"]
+mod wrapping;
+pub(crate) use capabilities::InspectionTarget;
+use identity::LoginIdentity;
+
 const DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
 const PASSWORD_ROUNDS: u32 = 600_000;
@@ -30,6 +57,8 @@ const CAPABILITIES: &[&str] = &[
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "is_zero")]
+    wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -45,6 +74,131 @@ pub struct AuthState {
     auth_mounts: BTreeMap<String, BTreeMap<String, AuthMount>>,
     #[serde(default)]
     jwt_mounts: BTreeMap<String, BTreeMap<String, JwtMountState>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    kubernetes_mounts: BTreeMap<String, BTreeMap<String, kubernetes::KubernetesMount>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    oidc_mounts: BTreeMap<String, BTreeMap<String, oidc::OidcMount>>,
+    /// Bounded LDAP directory profile. Password verification and optional group
+    /// membership are observed from the enrolled directory; local user/group
+    /// records retain the policy, TTL and MFA authority issued by this server.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    /// Deployment-enrolled authentication plugins never choose token authority.
+    /// This durable map binds a mount to one admitted plugin id and server-owned
+    /// policy/TTL limits. The plugin returns only an authentication decision and
+    /// a bounded external alias.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    plugin_auth_mounts: BTreeMap<String, BTreeMap<String, PluginAuthMount>>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct LdapMount {
+    url: String,
+    bind_dn: String,
+    user_dn_template: String,
+    #[serde(default)]
+    starttls: bool,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_dn: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_attr: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    group_name_attr: String,
+}
+
+impl LdapMount {
+    fn group_attr(&self) -> &str {
+        if self.group_attr.is_empty() {
+            "member"
+        } else {
+            &self.group_attr
+        }
+    }
+    fn group_name_attr(&self) -> &str {
+        if self.group_name_attr.is_empty() {
+            "cn"
+        } else {
+            &self.group_name_attr
+        }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct PluginAuthMount {
+    plugin_id: String,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
+#[derive(Clone)]
+pub(crate) struct PluginAuthLoginPlan {
+    namespace: String,
+    mount: String,
+    config: PluginAuthMount,
+    now: u64,
+}
+
+impl PluginAuthLoginPlan {
+    pub(crate) fn namespace(&self) -> &str {
+        &self.namespace
+    }
+    pub(crate) fn mount(&self) -> &str {
+        &self.mount
+    }
+    pub(crate) fn plugin_id(&self) -> &str {
+        &self.config.plugin_id
+    }
+    pub(crate) fn now(&self) -> u64 {
+        self.now
+    }
+}
+
+fn valid_ldap_attribute_name(value: &str) -> bool {
+    let mut bytes = value.bytes();
+    !value.is_empty()
+        && value.len() <= 64
+        && bytes.next().is_some_and(|byte| byte.is_ascii_alphabetic())
+        && bytes.all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
+}
+
+pub(crate) struct LdapLoginPlan {
+    namespace: String,
+    mount: String,
+    name: String,
+    dn: String,
+    config: LdapMount,
+    password: Zeroizing<String>,
+    totp_code: Option<Zeroizing<String>>,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct LdapLoginObservation {
+    groups: BTreeSet<String>,
+}
+
+impl LdapLoginPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &crate::outbound::Outbound,
+    ) -> Result<LdapLoginObservation, AuthError> {
+        match outbound.ldap_bind_and_search_groups(
+            &self.config.url,
+            &self.dn,
+            self.password.as_str(),
+            &self.config.group_dn,
+            self.config.group_attr(),
+            self.config.group_name_attr(),
+        ) {
+            Ok(Some(groups)) => Ok(LdapLoginObservation { groups }),
+            Ok(None) => Err(denied()),
+            Err(_) => Err(err(503, "LDAP provider bind or group search unavailable")),
+        }
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -55,12 +209,154 @@ struct JwtKeyRecord {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    remote: Option<RemoteJwtSource>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    jwt_supported_algs: Option<BTreeSet<String>>,
     issuer: String,
     audiences: BTreeSet<String>,
     required_namespace: Option<String>,
     clock_skew_seconds: u64,
     maximum_token_lifetime_seconds: u64,
     keys: BTreeMap<String, JwtKeyRecord>,
+}
+
+fn valid_jwt_kid(kid: &str) -> bool {
+    !kid.is_empty() && kid.len() <= 1024 && !kid.chars().any(char::is_control)
+}
+
+fn insert_jwt_key(
+    keys: &mut BTreeMap<String, JwtKeyRecord>,
+    kid: &str,
+    algorithm: &str,
+    bytes: Vec<u8>,
+) -> Result<(), AuthError> {
+    if !valid_jwt_kid(kid) || keys.contains_key(kid) {
+        return Err(bad("invalid or duplicate JWT key id"));
+    }
+    if !matches!(algorithm, "EdDSA" | "ES256" | "RS256") {
+        return Err(bad("unsupported JWT algorithm"));
+    }
+    if bytes.is_empty() || bytes.len() > 16 * 1024 {
+        return Err(bad("JWT key is outside bounds"));
+    }
+    keys.insert(
+        kid.into(),
+        JwtKeyRecord {
+            algorithm: algorithm.into(),
+            bytes,
+        },
+    );
+    Ok(())
+}
+
+fn parse_legacy_jwt_keys(values: &[Value]) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
+    if values.is_empty() || values.len() > 64 {
+        return Err(bad("JWT key count is outside bounds"));
+    }
+    let mut keys = BTreeMap::new();
+    for value in values {
+        reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
+        let kid = string_field(value, "kid")?;
+        let algorithm = string_field(value, "algorithm")?;
+        let bytes = URL_SAFE_NO_PAD
+            .decode(string_field(value, "key_base64")?)
+            .map_err(|_| bad("invalid JWT key encoding"))?;
+        insert_jwt_key(&mut keys, kid, algorithm, bytes)?;
+    }
+    Ok(keys)
+}
+
+/// Parse the public-key subset of RFC 7517 needed by the bounded JWT verifier.
+/// Only explicit signature keys are admitted; symmetric keys, private material,
+/// unknown curves and duplicate key IDs are rejected before state mutation.
+fn parse_jwks(jwks: &Value) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
+    reject_unknown(jwks, &["keys"])?;
+    let values = jwks
+        .get("keys")
+        .and_then(Value::as_array)
+        .ok_or_else(|| bad("jwks.keys must be an array"))?;
+    if values.is_empty() || values.len() > 64 {
+        return Err(bad("JWT key count is outside bounds"));
+    }
+    let mut keys = BTreeMap::new();
+    for value in values {
+        let object = value
+            .as_object()
+            .ok_or_else(|| bad("JWK must be an object"))?;
+        if object.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "kid" | "kty" | "crv" | "x" | "y" | "n" | "e" | "alg" | "use" | "key_ops"
+            )
+        }) {
+            return Err(bad("unsupported JWK member"));
+        }
+        let kid = string_field(value, "kid")?;
+        if object.get("use").is_some_and(|v| v.as_str() != Some("sig")) {
+            return Err(bad("JWK use must be sig when present"));
+        }
+        if let Some(ops) = object.get("key_ops") {
+            let ops = ops
+                .as_array()
+                .ok_or_else(|| bad("JWK key_ops must be an array"))?;
+            if ops.is_empty() || ops.len() > 8 || ops.iter().any(|op| op.as_str() != Some("verify"))
+            {
+                return Err(bad("JWK key_ops must contain only verify"));
+            }
+        }
+        let kty = string_field(value, "kty")?;
+        let alg = string_field(value, "alg")?;
+        if kty == "RSA" {
+            if alg != "RS256" || ["crv", "x", "y"].iter().any(|k| object.contains_key(*k)) {
+                return Err(bad("unsupported RSA JWK profile"));
+            }
+            let n = URL_SAFE_NO_PAD
+                .decode(string_field(value, "n")?)
+                .map_err(|_| bad("invalid RSA modulus"))?;
+            let e = URL_SAFE_NO_PAD
+                .decode(string_field(value, "e")?)
+                .map_err(|_| bad("invalid RSA exponent"))?;
+            if !(256..=512).contains(&n.len())
+                || n.first().is_none_or(|v| *v < 0x80)
+                || e != [1, 0, 1]
+            {
+                return Err(bad("RSA key must use 2048..4096 bits and exponent 65537"));
+            }
+            let mut bytes = Vec::with_capacity(n.len() + 5);
+            bytes.extend_from_slice(&(n.len() as u16).to_be_bytes());
+            bytes.extend(n);
+            bytes.extend(e);
+            insert_jwt_key(&mut keys, kid, alg, bytes)?;
+            continue;
+        }
+        if object.contains_key("n") || object.contains_key("e") {
+            return Err(bad("RSA fields on non-RSA key"));
+        }
+        let crv = string_field(value, "crv")?;
+        let x = URL_SAFE_NO_PAD
+            .decode(string_field(value, "x")?)
+            .map_err(|_| bad("invalid JWK x coordinate"))?;
+        let bytes = match (kty, crv, alg) {
+            ("OKP", "Ed25519", "EdDSA") if x.len() == 32 && !object.contains_key("y") => x,
+            ("EC", "P-256", "ES256") if x.len() == 32 => {
+                let y = URL_SAFE_NO_PAD
+                    .decode(string_field(value, "y")?)
+                    .map_err(|_| bad("invalid JWK y coordinate"))?;
+                if y.len() != 32 {
+                    return Err(bad("invalid P-256 JWK coordinate size"));
+                }
+                let mut point = Vec::with_capacity(65);
+                point.push(4);
+                point.extend_from_slice(&x);
+                point.extend_from_slice(&y);
+                point
+            }
+            _ => return Err(bad("unsupported JWK key type, curve or algorithm")),
+        };
+        insert_jwt_key(&mut keys, kid, alg, bytes)?;
+    }
+    Ok(keys)
 }
 
 impl JwtConfig {
@@ -77,9 +373,17 @@ impl JwtConfig {
         .map_err(|_| bad("invalid JWT trust policy"))?;
         let mut keys = Vec::with_capacity(self.keys.len());
         for (key_id, record) in &self.keys {
+            if self
+                .jwt_supported_algs
+                .as_ref()
+                .is_some_and(|algs| !algs.contains(&record.algorithm))
+            {
+                continue;
+            }
             let algorithm = match record.algorithm.as_str() {
                 "EdDSA" => JwtAlgorithm::Ed25519,
                 "ES256" => JwtAlgorithm::Es256,
+                "RS256" => JwtAlgorithm::Rs256,
                 _ => return Err(bad("unsupported JWT algorithm")),
             };
             keys.push(
@@ -134,8 +438,16 @@ impl Drop for JwtMountState {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    accessor: Option<String>,
+    #[serde(default = "auth_mount_revision_one")]
+    revision: u64,
     kind: String,
     description: String,
+    #[serde(default)]
+    default_lease_ttl: u64,
+    #[serde(default)]
+    max_lease_ttl: u64,
 }
 
 #[derive(Clone, Copy)]
@@ -144,24 +456,34 @@ struct AuthScope<'a> {
     mount: &'a str,
 }
 
+const fn auth_mount_revision_one() -> u64 {
+    1
+}
+
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            accessor: None,
+            revision: 1,
             kind: kind.into(),
             description: description.into(),
+            default_lease_ttl: 0,
+            max_lease_ttl: 0,
         }
     }
 
     fn descriptor(&self) -> Value {
         json!({
             "type": self.kind,
+            "accessor": self.accessor.as_deref().unwrap_or(""),
+            "revision": self.revision,
             "description": self.description,
             "local": false,
             "seal_wrap": false,
             "options": {},
             "config": {
-                "default_lease_ttl": 0,
-                "max_lease_ttl": 0,
+                "default_lease_ttl": self.default_lease_ttl,
+                "max_lease_ttl": self.max_lease_ttl,
                 "force_no_cache": false
             }
         })
@@ -196,6 +518,12 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    wrapping: Option<wrapping::WrappedResponse>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    entity_id: Option<String>,
+    #[serde(default)]
+    cubbyhole: cubbyhole::TokenCubbyhole,
     accessor: String,
     namespace: String,
     policies: BTreeSet<String>,
@@ -227,6 +555,8 @@ impl Drop for Token {
 /// An affine capability owned by exactly one service dispatcher invocation.
 /// It is non-cloneable, non-serializable and never crosses the public API.
 pub(super) struct Principal {
+    identity_policies: BTreeSet<String>,
+    identity_checked: bool,
     digest: String,
     token: Token,
     #[cfg(test)]
@@ -326,6 +656,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(super) login_identity: Option<LoginIdentity>,
     pub status: u16,
     pub body: Value,
     pub mutated: bool,
@@ -358,6 +689,7 @@ fn denied() -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        login_identity: None,
         status: 200,
         body: json!({"data": data}),
         mutated,
@@ -365,6 +697,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        login_identity: None,
         status: 204,
         body: Value::Null,
         mutated,
@@ -389,6 +722,10 @@ fn checked_expiry(now: u64, ttl: u64) -> Result<u64, AuthError> {
     now.checked_add(ttl)
         .ok_or_else(|| bad("TTL overflows timestamp"))
 }
+fn is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
 fn unlimited_zero(value: u64) -> Option<u64> {
     if value == 0 { None } else { Some(value) }
 }
@@ -458,6 +795,36 @@ fn boolean(body: &Value, field: &str, default: bool) -> Result<bool, AuthError> 
         None => Ok(default),
         Some(value) => value.as_bool().ok_or_else(|| bad("expected boolean")),
     }
+}
+fn optional_auth_revision(body: &Value) -> Result<Option<u64>, AuthError> {
+    body.get("cas_revision")
+        .map(|value| {
+            value
+                .as_u64()
+                .ok_or_else(|| bad("cas_revision must be a nonnegative integer"))
+        })
+        .transpose()
+}
+fn require_auth_revision(expected: Option<u64>, current: u64) -> Result<(), AuthError> {
+    if expected.is_some_and(|value| value != current) {
+        return Err(err(409, "stale auth mount revision; no state was changed"));
+    }
+    Ok(())
+}
+fn require_absent_auth_revision(expected: Option<u64>) -> Result<(), AuthError> {
+    if expected.is_some_and(|value| value != 0) {
+        return Err(err(
+            409,
+            "auth mount is absent; cas_revision must be zero for creation",
+        ));
+    }
+    Ok(())
+}
+fn next_auth_revision(current: u64) -> Result<u64, AuthError> {
+    current
+        .max(1)
+        .checked_add(1)
+        .ok_or_else(|| err(507, "auth mount revision exhausted"))
 }
 fn duration(body: &Value, field: &str, default: u64) -> Result<u64, AuthError> {
     match body.get(field) {
@@ -552,8 +919,136 @@ fn claim_values(body: &Value, name: &str) -> Result<BTreeSet<String>, AuthError>
 }
 
 impl AuthState {
+    pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
+        let mut namespaces = BTreeSet::new();
+        for token in self.tokens.values() {
+            if !token.namespace.is_empty() {
+                namespaces.insert(token.namespace.clone());
+            }
+        }
+        namespaces.extend(
+            self.policies
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(self.users.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(self.roles.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(
+            self.mounted_users
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.mounted_roles
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.auth_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.jwt_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.kubernetes_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.oidc_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.ldap_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.ldap_groups
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
+            self.plugin_auth_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces
+    }
+
+    pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        !self
+            .tokens
+            .values()
+            .any(|token| token.namespace == namespace)
+            && self
+                .policies
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .mounted_users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .mounted_roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .auth_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .jwt_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .kubernetes_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .oidc_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .ldap_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .ldap_groups
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
+                .plugin_auth_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+    }
+
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            wrapping_clock: 0,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
             users: BTreeMap::new(),
@@ -562,8 +1057,16 @@ impl AuthState {
             mounted_roles: BTreeMap::new(),
             auth_mounts: BTreeMap::new(),
             jwt_mounts: BTreeMap::new(),
+            kubernetes_mounts: BTreeMap::new(),
+            oidc_mounts: BTreeMap::new(),
+            ldap_mounts: BTreeMap::new(),
+            ldap_groups: BTreeMap::new(),
+            plugin_auth_mounts: BTreeMap::new(),
         };
         let token = Token {
+            wrapping: None,
+            entity_id: None,
+            cubbyhole: cubbyhole::TokenCubbyhole::default(),
             accessor: random_id("a.")?,
             namespace: String::new(),
             policies: BTreeSet::from(["root".into()]),
@@ -586,6 +1089,11 @@ impl AuthState {
 
     fn active_token(&self, id: &str, now: u64, consume_check: bool) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
+        let now = if token.wrapping.is_some() {
+            now.max(self.wrapping_clock)
+        } else {
+            now
+        };
         if token.expires_at.is_some_and(|t| now >= t)
             || consume_check && token.uses_remaining == Some(0)
         {
@@ -607,6 +1115,35 @@ impl AuthState {
         Ok(token)
     }
 
+    /// A read-only capability is available only for an unlimited ordinary token.
+    /// Finite-use and wrapping tokens must enter the durable admission path.
+    pub(super) fn authenticate_read_only(
+        &self,
+        raw: &str,
+        now: u64,
+    ) -> Result<Option<Principal>, AuthError> {
+        if raw.len() > 256 || !raw.starts_with("hvs.") {
+            return Err(denied());
+        }
+        let id = hash(raw);
+        let token = self.active_token(&id, now, true)?;
+        if token.uses_remaining.is_some() || token.wrapping.is_some() {
+            return Ok(None);
+        }
+        Ok(Some(Self::request_principal(id, token.clone(), now)))
+    }
+
+    fn request_principal(id: String, token: Token, _now: u64) -> Principal {
+        Principal {
+            identity_policies: BTreeSet::new(),
+            identity_checked: false,
+            digest: id,
+            token,
+            #[cfg(test)]
+            request_time: _now,
+        }
+    }
+
     pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
@@ -617,12 +1154,15 @@ impl AuthState {
         if let Some(remaining) = &mut token.uses_remaining {
             *remaining -= 1;
         }
-        Ok(Principal {
-            digest: id,
-            token: token.clone(),
-            #[cfg(test)]
-            request_time: now,
-        })
+        // Retain the last-use view only in this affine request capability.
+        // Durable admission destroys its stored cubbyhole before any secret
+        // can leave the service. A failed response cannot make it reusable.
+        let request_token = token.clone();
+        if token.uses_remaining == Some(0) {
+            token.cubbyhole = cubbyhole::TokenCubbyhole::default();
+            token.wrapping = None;
+        }
+        Ok(Self::request_principal(id, request_token, now))
     }
 
     fn check_principal<'a>(
@@ -633,7 +1173,10 @@ impl AuthState {
     ) -> Result<&'a Token, AuthError> {
         validate_namespace(namespace)?;
         let token = self.active_token(&principal.digest, now, false)?;
-        if token.accessor != principal.token.accessor || !token.root && token.namespace != namespace
+        if token.accessor != principal.token.accessor
+            || token.entity_id != principal.token.entity_id
+            || token.entity_id.is_some() && !principal.identity_checked
+            || !token.root && token.namespace != namespace
         {
             return Err(denied());
         }
@@ -653,29 +1196,71 @@ impl AuthState {
             return Err(denied());
         }
         let token = self.check_principal(principal, namespace, now)?;
+        if principal.token.wrapping.is_some() {
+            return if path == "sys/wrapping/unwrap" && capability == "update" {
+                Ok(())
+            } else {
+                Err(denied())
+            };
+        }
         if token.root {
             return Ok(());
         }
-        let mut granted = false;
-        for policy_name in &token.policies {
+        if self.policy_allows(
+            namespace,
+            path,
+            capability,
+            &token.policies,
+            &principal.identity_policies,
+        ) {
+            Ok(())
+        } else {
+            Err(denied())
+        }
+    }
+
+    pub(super) fn authorize_sudo_request(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        self.authorize_request(principal, namespace, path, capability, now)?;
+        self.authorize_request(principal, namespace, path, "sudo", now)
+    }
+
+    fn policy_allows(
+        &self,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        policies: &BTreeSet<String>,
+        identity_policies: &BTreeSet<String>,
+    ) -> bool {
+        let mut decision = acl::Decision::default();
+        for policy_name in policies.iter().chain(identity_policies) {
             let explicit = self
                 .policies
                 .get(namespace)
                 .and_then(|entries| entries.get(policy_name));
             if let Some(policy) = explicit {
                 for rule in &policy.rules {
-                    if path_matches(&rule.path, path) {
-                        if rule.capabilities.contains("deny") {
-                            return Err(denied());
-                        }
-                        granted |= rule.capabilities.contains(capability);
-                    }
+                    decision.consider(
+                        &rule.path,
+                        rule.capabilities.iter().map(String::as_str),
+                        path,
+                        capability,
+                    );
                 }
-            } else if policy_name == "default" && default_grants(path, capability) {
-                granted = true;
+            } else if policy_name == "default" {
+                for (pattern, capabilities) in acl::DEFAULT_RULES {
+                    decision.consider(pattern, capabilities.iter().copied(), path, capability);
+                }
             }
         }
-        if granted { Ok(()) } else { Err(denied()) }
+        decision.allowed()
     }
 
     #[cfg(test)]
@@ -712,11 +1297,12 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            login_identity: None,
             status: 200,
             mutated: true,
             body: json!({"auth": {
                 "client_token": raw.as_str(), "accessor": token.accessor, "policies": token.policies,
-                "token_policies": token.policies, "metadata": {}, "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
+                "token_policies": token.policies, "entity_id": token.entity_id.as_deref().unwrap_or(""), "metadata": {}, "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
                 "renewable": token.renewable, "token_type": "service", "orphan": token.parent.is_none(), "num_uses": token.uses_remaining.unwrap_or(0)
             }}),
         };
@@ -753,10 +1339,25 @@ impl AuthState {
     }
 
     fn effective_auth_mounts(&self, namespace: &str) -> BTreeMap<String, AuthMount> {
-        self.auth_mounts
+        let mut entries = self
+            .auth_mounts
             .get(namespace)
             .cloned()
-            .unwrap_or_else(legacy_auth_mounts)
+            .unwrap_or_else(legacy_auth_mounts);
+        for (name, entry) in &mut entries {
+            if entry.accessor.is_none() {
+                // Preserve legacy mount identity without a read-side mutation.
+                // Re-enabled mounts receive random new incarnation accessors.
+                entry.accessor = Some(format!(
+                    "auth_legacy_{}",
+                    hash(&format!(
+                        "heptabao-legacy-auth-mount-v1\0{namespace}\0{name}\0{}",
+                        entry.kind
+                    ))
+                ));
+            }
+        }
+        entries
     }
 
     fn users_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, User>> {
@@ -799,10 +1400,40 @@ impl AuthState {
         }
     }
 
+    fn ldap_groups_at(&self, scope: AuthScope<'_>) -> Option<&BTreeMap<String, BTreeSet<String>>> {
+        self.ldap_groups.get(scope.namespace)?.get(scope.mount)
+    }
+
+    fn ldap_groups_at_mut(
+        &mut self,
+        scope: AuthScope<'_>,
+    ) -> &mut BTreeMap<String, BTreeSet<String>> {
+        self.ldap_groups
+            .entry(scope.namespace.into())
+            .or_default()
+            .entry(scope.mount.into())
+            .or_default()
+    }
+
     fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
+        if let Some(mounts) = self.oidc_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.kubernetes_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         self.users_at_mut(scope).clear();
         self.roles_at_mut(scope).clear();
         if let Some(mounts) = self.jwt_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.ldap_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.ldap_groups.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
+        if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
         let revoke: Vec<String> = self
@@ -888,6 +1519,157 @@ impl AuthState {
         )
     }
 
+    pub(super) fn remount_mount(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+    ) -> Result<AuthResponse, AuthError> {
+        if from.is_empty()
+            || to.is_empty()
+            || from == to
+            || from.len() > 256
+            || to.len() > 256
+            || !from.split('/').all(valid_name)
+            || !to.split('/').all(valid_name)
+        {
+            return Err(bad(
+                "auth remount paths must be distinct canonical segments",
+            ));
+        }
+        if from == "token" || to == "token" {
+            return Err(bad("the built-in token auth method cannot be remounted"));
+        }
+        let mut entries = self.effective_auth_mounts(namespace);
+        let mut moved = entries
+            .get(from)
+            .cloned()
+            .ok_or_else(|| err(404, "auth mount not found"))?;
+        require_auth_revision(cas_revision, moved.revision)?;
+        if entries.keys().any(|name| {
+            name != from
+                && (name == to
+                    || name.starts_with(&format!("{to}/"))
+                    || to.starts_with(&format!("{name}/")))
+        }) {
+            return Err(bad(
+                "auth remount destination conflicts with an existing mount",
+            ));
+        }
+        entries.remove(from);
+        moved.revision = next_auth_revision(moved.revision)?;
+        let revision = moved.revision;
+        let accessor = moved.accessor.clone().unwrap_or_default();
+        entries.insert(to.into(), moved);
+        self.auth_mounts.insert(namespace.into(), entries);
+
+        if from == "userpass" {
+            if let Some(users) = self.users.remove(namespace) {
+                self.mounted_users
+                    .entry(namespace.into())
+                    .or_default()
+                    .insert(to.into(), users);
+            }
+        } else if let Some(users) = self
+            .mounted_users
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.mounted_users
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), users);
+        }
+        if from == "approle" {
+            if let Some(roles) = self.roles.remove(namespace) {
+                self.mounted_roles
+                    .entry(namespace.into())
+                    .or_default()
+                    .insert(to.into(), roles);
+            }
+        } else if let Some(roles) = self
+            .mounted_roles
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.mounted_roles
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), roles);
+        }
+        if let Some(value) = self
+            .jwt_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.jwt_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .kubernetes_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.kubernetes_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .oidc_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.oidc_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .ldap_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.ldap_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .ldap_groups
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.ldap_groups
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .plugin_auth_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.plugin_auth_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        for token in self.tokens.values_mut() {
+            if token.namespace == namespace && token.auth_mount.as_deref() == Some(from) {
+                token.auth_mount = Some(to.into());
+            }
+        }
+        Ok(response(
+            json!({"from":format!("auth/{from}/"),"to":format!("auth/{to}/"),
+                "revision":revision,"accessor":accessor}),
+            true,
+        ))
+    }
+
     fn auth_mount_route(
         &mut self,
         principal: Option<&Principal>,
@@ -913,11 +1695,102 @@ impl AuthState {
                 .collect();
             return Ok(response(Value::Object(entries), false));
         }
-        let mount = suffix.trim_start_matches('/').trim_end_matches('/');
+        let requested = suffix.trim_start_matches('/').trim_end_matches('/');
+        let (mount, tune) = requested
+            .strip_suffix("/tune")
+            .map_or((requested, false), |mount| (mount, true));
         if mount.is_empty() || mount.len() > 256 || !mount.split('/').all(valid_name) {
             return Err(bad("auth mount path must contain canonical segments"));
         }
-        let route = format!("sys/auth/{mount}");
+        let route = if tune {
+            format!("sys/auth/{mount}/tune")
+        } else {
+            format!("sys/auth/{mount}")
+        };
+        if tune {
+            return match method {
+                "GET" => {
+                    let actor = self.permission(principal, namespace, &route, "read", now)?;
+                    self.authorize_request(actor, namespace, &route, "sudo", now)?;
+                    reject_unknown(body, &[])?;
+                    let entry = self
+                        .effective_auth_mounts(namespace)
+                        .get(mount)
+                        .cloned()
+                        .ok_or_else(|| err(404, "auth mount not found"))?;
+                    Ok(response(
+                        json!({
+                            "default_lease_ttl":entry.default_lease_ttl,
+                            "description":entry.description,
+                            "force_no_cache":false,
+                            "max_lease_ttl":entry.max_lease_ttl,
+                            "token_type":"default-service",
+                            "revision":entry.revision,
+                            "accessor":entry.accessor.as_deref().unwrap_or("")
+                        }),
+                        false,
+                    ))
+                }
+                "POST" | "PUT" => {
+                    let actor = self.permission(principal, namespace, &route, "update", now)?;
+                    self.authorize_request(actor, namespace, &route, "sudo", now)?;
+                    reject_unknown(
+                        body,
+                        &[
+                            "description",
+                            "default_lease_ttl",
+                            "max_lease_ttl",
+                            "cas_revision",
+                        ],
+                    )?;
+                    let mut entries = self.effective_auth_mounts(namespace);
+                    let mut entry = entries
+                        .get(mount)
+                        .cloned()
+                        .ok_or_else(|| err(404, "auth mount not found"))?;
+                    require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
+                    let mut changed = false;
+                    if let Some(description) = body.get("description") {
+                        let description = description
+                            .as_str()
+                            .ok_or_else(|| bad("description must be a string"))?;
+                        if description.len() > 512 || description.chars().any(char::is_control) {
+                            return Err(bad("invalid auth mount description"));
+                        }
+                        if entry.description != description {
+                            entry.description = description.into();
+                            changed = true;
+                        }
+                    }
+                    let default_lease_ttl =
+                        duration(body, "default_lease_ttl", entry.default_lease_ttl)?;
+                    let max_lease_ttl = duration(body, "max_lease_ttl", entry.max_lease_ttl)?;
+                    if default_lease_ttl > MAX_TTL
+                        || max_lease_ttl > MAX_TTL
+                        || default_lease_ttl > 0
+                            && max_lease_ttl > 0
+                            && default_lease_ttl > max_lease_ttl
+                    {
+                        return Err(bad("invalid auth mount TTL limits"));
+                    }
+                    if entry.default_lease_ttl != default_lease_ttl {
+                        entry.default_lease_ttl = default_lease_ttl;
+                        changed = true;
+                    }
+                    if entry.max_lease_ttl != max_lease_ttl {
+                        entry.max_lease_ttl = max_lease_ttl;
+                        changed = true;
+                    }
+                    if changed {
+                        entry.revision = next_auth_revision(entry.revision)?;
+                        entries.insert(mount.into(), entry);
+                        self.auth_mounts.insert(namespace.into(), entries);
+                    }
+                    Ok(empty(changed))
+                }
+                _ => Err(err(405, "method not allowed")),
+            };
+        }
         match method {
             "GET" => {
                 self.permission(principal, namespace, &route, "read", now)?;
@@ -932,12 +1805,15 @@ impl AuthState {
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &["type", "description"])?;
+                reject_unknown(body, &["type", "description", "cas_revision"])?;
                 let kind = body
                     .get("type")
                     .and_then(Value::as_str)
                     .ok_or_else(|| bad("auth mount type is required"))?;
-                if !matches!(kind, "userpass" | "approle" | "jwt") {
+                if !matches!(
+                    kind,
+                    "userpass" | "approle" | "jwt" | "kubernetes" | "oidc" | "ldap" | "plugin"
+                ) {
                     return Err(err(501, "auth method type is not implemented"));
                 }
                 let description = body
@@ -953,7 +1829,8 @@ impl AuthState {
                     return Err(bad("invalid auth mount description"));
                 }
                 let mut entries = self.effective_auth_mounts(namespace);
-                if mount == "token" || entries.get(mount).is_some_and(|old| old.kind != kind) {
+                let existing = entries.get(mount).cloned();
+                if mount == "token" || existing.as_ref().is_some_and(|old| old.kind != kind) {
                     return Err(bad("auth mount is already in use by another method"));
                 }
                 if entries.keys().any(|name| {
@@ -963,8 +1840,23 @@ impl AuthState {
                 }) {
                     return Err(bad("auth mount paths cannot overlap"));
                 }
-                let next = AuthMount::new(kind, description);
-                let mutated = entries.get(mount) != Some(&next);
+                match existing.as_ref() {
+                    Some(old) => {
+                        require_auth_revision(optional_auth_revision(body)?, old.revision)?
+                    }
+                    None => require_absent_auth_revision(optional_auth_revision(body)?)?,
+                }
+                let mut next = AuthMount::new(kind, description);
+                if let Some(old) = existing.as_ref() {
+                    next.accessor = old.accessor.clone();
+                    next.revision = old.revision;
+                    if old.description != description {
+                        next.revision = next_auth_revision(old.revision)?;
+                    }
+                } else {
+                    next.accessor = Some(random_id("auth_")?);
+                }
+                let mutated = existing.as_ref() != Some(&next);
                 entries.insert(mount.into(), next);
                 self.auth_mounts.insert(namespace.into(), entries);
                 Ok(empty(mutated))
@@ -972,22 +1864,49 @@ impl AuthState {
             "DELETE" => {
                 let actor = self.permission(principal, namespace, &route, "update", now)?;
                 self.authorize_request(actor, namespace, &route, "sudo", now)?;
-                reject_unknown(body, &[])?;
+                reject_unknown(body, &["cas_revision"])?;
                 if mount == "token" {
                     return Err(bad("the built-in token auth method cannot be disabled"));
                 }
                 let mut entries = self.effective_auth_mounts(namespace);
-                let mutated = entries.remove(mount).is_some();
+                let current = entries
+                    .get(mount)
+                    .cloned()
+                    .ok_or_else(|| err(404, "auth mount not found"))?;
+                require_auth_revision(optional_auth_revision(body)?, current.revision)?;
+                entries.remove(mount);
                 self.auth_mounts.insert(namespace.into(), entries);
-                if mutated {
-                    self.disable_auth_mount(AuthScope { namespace, mount });
-                    Ok(empty(true))
-                } else {
-                    Err(err(404, "auth mount not found"))
-                }
+                self.disable_auth_mount(AuthScope { namespace, mount });
+                Ok(empty(true))
             }
             _ => Err(err(405, "method not allowed")),
         }
+    }
+
+    /// Login credentials, not an unrelated bearer header, authenticate these
+    /// exact mounted endpoints. Never classify a route by an arbitrary `/login`
+    /// suffix: mount kind, namespace, operation and suffix all bind this decision.
+    pub(super) fn is_public_login(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "POST" | "PUT") {
+            return false;
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return false;
+        };
+        self.effective_auth_mounts(namespace)
+            .iter()
+            .any(|(mount, entry)| {
+                let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else {
+                    return false;
+                };
+                match entry.kind.as_str() {
+                    "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
+                    "approle" | "jwt" | "kubernetes" => suffix == "login",
+                    "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
+                    "plugin" => suffix == "login",
+                    _ => false,
+                }
+            })
     }
 
     /// Returns None only for routes owned by another service subsystem.
@@ -1002,6 +1921,16 @@ impl AuthState {
     ) -> Result<Option<AuthResponse>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
+        if path.starts_with("sys/wrapping/") {
+            return self
+                .wrapping_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
+        if path == "cubbyhole" || path.starts_with("cubbyhole/") {
+            return self
+                .cubbyhole_route(principal, namespace, method, path, body, now)
+                .map(Some);
+        }
         if path == "sys/auth" || path.starts_with("sys/auth/") {
             return self
                 .auth_mount_route(principal, namespace, method, path, body, now)
@@ -1025,8 +1954,14 @@ impl AuthState {
                 "userpass" if suffix.starts_with("login/") => {
                     self.login_userpass(scope, method, &suffix[6..], body, now)
                 }
-                "userpass" if suffix == "users" || suffix.starts_with("users/") => {
+                "ldap" if suffix.starts_with("login/") => {
+                    self.login_ldap(scope, method, &suffix[6..], body, now)
+                }
+                "userpass" | "ldap" if suffix == "users" || suffix.starts_with("users/") => {
                     self.user_route(principal, scope, method, path, body, now)
+                }
+                "ldap" if suffix == "groups" || suffix.starts_with("groups/") => {
+                    self.ldap_group_route(principal, scope, method, path, body, now)
                 }
                 "approle" if suffix == "login" => self.login_approle(scope, method, body, now),
                 "approle" if suffix == "tidy/secret-id" => {
@@ -1036,6 +1971,16 @@ impl AuthState {
                     self.role_route(principal, scope, method, path, body, now)
                 }
                 "jwt" => self.jwt_route(principal, scope, method, path, body, now),
+                "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
+                "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
+                "ldap" => self.ldap_route(principal, scope, method, suffix, body, now),
+                "plugin" if suffix == "config" => {
+                    self.plugin_auth_route(principal, scope, method, body, now)
+                }
+                "plugin" if suffix == "login" => Err(err(
+                    503,
+                    "plugin login requires the Service external-effect dispatcher",
+                )),
                 _ => Err(err(404, "unsupported auth route")),
             };
             return result.map(Some);
@@ -1050,6 +1995,633 @@ impl AuthState {
                 .map(Some);
         }
         Ok(None)
+    }
+
+    pub(crate) fn has_plugin_auth_state(&self) -> bool {
+        self.plugin_auth_mounts
+            .values()
+            .any(|mounts| !mounts.is_empty())
+    }
+
+    pub(crate) fn validate_plugin_auth_state(&self) -> Result<(), AuthError> {
+        for (namespace, mounts) in &self.plugin_auth_mounts {
+            validate_namespace(namespace)?;
+            let effective = self.effective_auth_mounts(namespace);
+            for (mount, config) in mounts {
+                if mount.is_empty()
+                    || mount.len() > 256
+                    || !mount.split('/').all(valid_name)
+                    || !effective
+                        .get(mount)
+                        .is_some_and(|entry| entry.kind == "plugin")
+                    || !valid_name(&config.plugin_id)
+                    || config.policies.contains("root")
+                    || config.policies.iter().any(|policy| !valid_name(policy))
+                    || config.token_ttl > MAX_TTL
+                    || config.token_max_ttl > MAX_TTL
+                    || config.token_ttl > 0
+                        && config.token_max_ttl > 0
+                        && config.token_ttl > config.token_max_ttl
+                {
+                    return Err(err(503, "invalid persisted authentication plugin state"));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn prepare_plugin_auth_login(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<PluginAuthLoginPlan>, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Ok(None);
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return Ok(None);
+        };
+        let mounts = self.effective_auth_mounts(namespace);
+        let Some((mount, entry, suffix)) = mounts.iter().find_map(|(mount, entry)| {
+            auth_path
+                .strip_prefix(&format!("{mount}/"))
+                .map(|suffix| (mount, entry, suffix))
+        }) else {
+            return Ok(None);
+        };
+        if entry.kind != "plugin" || suffix != "login" {
+            return Ok(None);
+        }
+        if body.as_object().is_none() {
+            return Err(bad("plugin login requires a JSON object"));
+        }
+        let encoded =
+            serde_json::to_vec(body).map_err(|_| bad("plugin login request encoding failed"))?;
+        if encoded.len() > 256 * 1024 {
+            return Err(err(413, "plugin login request exceeds bound"));
+        }
+        let config = self
+            .plugin_auth_mounts
+            .get(namespace)
+            .and_then(|entries| entries.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "plugin authentication is not configured"))?;
+        Ok(Some(PluginAuthLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.clone(),
+            config,
+            now,
+        }))
+    }
+
+    pub(crate) fn finish_plugin_auth_login(
+        &mut self,
+        plan: PluginAuthLoginPlan,
+        alias: &str,
+    ) -> Result<AuthResponse, AuthError> {
+        if alias.is_empty() || alias.len() > 1024 || alias.chars().any(char::is_control) {
+            return Err(denied());
+        }
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        let current = self
+            .plugin_auth_mounts
+            .get(&plan.namespace)
+            .and_then(|entries| entries.get(&plan.mount))
+            .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
+        if current != &plan.config
+            || !self
+                .effective_auth_mounts(&plan.namespace)
+                .get(&plan.mount)
+                .is_some_and(|entry| entry.kind == "plugin")
+        {
+            return Err(err(409, "plugin authentication binding changed"));
+        }
+        if plan.config.policies.contains("root") {
+            return Err(denied());
+        }
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
+        let alias_hash = hash(alias);
+        let suffix = alias_hash.get(..16).unwrap_or(alias_hash.as_str());
+        let mut token = login_token(
+            &plan.namespace,
+            plan.config.policies.clone(),
+            token_ttl,
+            token_max_ttl,
+            plan.config.token_num_uses,
+            format!("plugin-{suffix}"),
+            plan.now,
+        )?;
+        token.auth_mount = Some(plan.mount.clone());
+        let (token_id, token, mut response) = Self::prepare_issue(token, plan.now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: plan.mount,
+            alias: alias.into(),
+        });
+        self.tokens.insert(token_id, token);
+        Ok(response)
+    }
+
+    fn plugin_auth_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/config", scope.mount);
+        let capability = route_capability(method, false)?;
+        let actor = self.permission(principal, scope.namespace, &path, capability, now)?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let config = self
+                    .plugin_auth_mounts
+                    .get(scope.namespace)
+                    .and_then(|entries| entries.get(scope.mount))
+                    .ok_or_else(|| err(404, "plugin authentication is not configured"))?;
+                Ok(response(
+                    json!({
+                        "plugin_id": config.plugin_id,
+                        "policies": config.policies,
+                        "token_policies": config.policies,
+                        "token_ttl": config.token_ttl,
+                        "token_max_ttl": config.token_max_ttl,
+                        "token_num_uses": config.token_num_uses
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "plugin_id",
+                        "policies",
+                        "token_policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let plugin_id = string_field(body, "plugin_id")?;
+                if !valid_name(plugin_id) {
+                    return Err(bad("invalid plugin identifier"));
+                }
+                let policy_field = if body.get("token_policies").is_some() {
+                    "token_policies"
+                } else {
+                    "policies"
+                };
+                let configured_policies = policies(body, policy_field, &BTreeSet::new(), true)?;
+                if configured_policies.contains("root") {
+                    return Err(bad("plugin authentication cannot grant root policy"));
+                }
+                let token_ttl = duration(body, "token_ttl", 0)?;
+                let token_max_ttl = duration(body, "token_max_ttl", 0)?;
+                let token_num_uses = number(body, "token_num_uses", 0)?;
+                if token_ttl > MAX_TTL
+                    || token_max_ttl > MAX_TTL
+                    || token_ttl > 0 && token_max_ttl > 0 && token_ttl > token_max_ttl
+                {
+                    return Err(bad("invalid plugin authentication token TTL limits"));
+                }
+                let next = PluginAuthMount {
+                    plugin_id: plugin_id.into(),
+                    policies: configured_policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses,
+                };
+                let changed = self
+                    .plugin_auth_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .insert(scope.mount.into(), next.clone())
+                    .as_ref()
+                    != Some(&next);
+                Ok(empty(changed))
+            }
+            "DELETE" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self
+                    .plugin_auth_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .remove(scope.mount);
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "plugin authentication is not configured"))
+                }
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn ldap_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        suffix: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/{}", scope.mount, suffix);
+        if suffix != "config" {
+            return Err(err(404, "unsupported LDAP route"));
+        }
+        let actor = self.permission(
+            principal,
+            scope.namespace,
+            &path,
+            route_capability(method, false)?,
+            now,
+        )?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let config = self
+                    .ldap_mounts
+                    .get(scope.namespace)
+                    .and_then(|m| m.get(scope.mount))
+                    .ok_or_else(|| err(404, "LDAP auth is not configured"))?;
+                Ok(response(
+                    json!({"url": config.url, "bind_dn": config.bind_dn,
+                        "user_dn_template": config.user_dn_template, "starttls": config.starttls,
+                        "group_dn": config.group_dn, "group_attr": config.group_attr(),
+                        "group_name_attr": config.group_name_attr()}),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "url",
+                        "bind_dn",
+                        "user_dn_template",
+                        "starttls",
+                        "group_dn",
+                        "group_attr",
+                        "group_name_attr",
+                    ],
+                )?;
+                let url = string_field(body, "url")?;
+                let authority = url
+                    .strip_prefix("ldaps://")
+                    .or_else(|| url.strip_prefix("ldap://"));
+                if authority.is_none_or(|host| {
+                    host.is_empty()
+                        || host.starts_with('/')
+                        || host
+                            .chars()
+                            .any(|c| matches!(c, '?' | '(' | ')' | '*' | '|'))
+                }) || url.len() > 2048
+                    || url.chars().any(char::is_control)
+                {
+                    return Err(bad("LDAP url must be ldap:// or ldaps:// with a host"));
+                }
+                let bind_dn = string_field(body, "bind_dn")?;
+                let user_dn_template = string_field(body, "user_dn_template")?;
+                if bind_dn.is_empty()
+                    || bind_dn.len() > 1024
+                    || bind_dn.chars().any(char::is_control)
+                {
+                    return Err(bad("invalid LDAP bind_dn"));
+                }
+                if user_dn_template.len() > 1024
+                    || !user_dn_template.contains("{{username}}")
+                    || user_dn_template.chars().any(char::is_control)
+                {
+                    return Err(bad(
+                        "user_dn_template must contain {{username}} and no control characters",
+                    ));
+                }
+                let starttls = boolean(body, "starttls", false)?;
+                let group_dn = body
+                    .get("group_dn")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_dn must be a string"))
+                    })
+                    .transpose()?
+                    .unwrap_or("");
+                if group_dn.len() > 1024 || group_dn.chars().any(char::is_control) {
+                    return Err(bad("invalid LDAP group_dn"));
+                }
+                let group_attr = body
+                    .get("group_attr")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_attr must be a string"))
+                    })
+                    .transpose()?
+                    .unwrap_or("member");
+                let group_name_attr = body
+                    .get("group_name_attr")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("group_name_attr must be a string"))
+                    })
+                    .transpose()?
+                    .unwrap_or("cn");
+                if !valid_ldap_attribute_name(group_attr)
+                    || !valid_ldap_attribute_name(group_name_attr)
+                {
+                    return Err(bad("invalid LDAP group attribute name"));
+                }
+                let next = LdapMount {
+                    url: url.into(),
+                    bind_dn: bind_dn.into(),
+                    user_dn_template: user_dn_template.into(),
+                    starttls,
+                    group_dn: group_dn.into(),
+                    group_attr: if group_attr == "member" {
+                        String::new()
+                    } else {
+                        group_attr.into()
+                    },
+                    group_name_attr: if group_name_attr == "cn" {
+                        String::new()
+                    } else {
+                        group_name_attr.into()
+                    },
+                };
+                let changed = self
+                    .ldap_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .insert(scope.mount.into(), next.clone())
+                    .as_ref()
+                    != Some(&next);
+                Ok(empty(changed))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    fn ldap_group_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let prefix = format!("auth/{}/groups", scope.mount);
+        let name = path
+            .strip_prefix(&prefix)
+            .ok_or_else(|| bad("invalid LDAP group route"))?
+            .trim_start_matches('/');
+        let capability = route_capability(method, name.is_empty())?;
+        let actor = self.permission(principal, scope.namespace, path, capability, now)?;
+        if name.is_empty() {
+            if capability != "list" {
+                return Err(err(405, "method not allowed"));
+            }
+            reject_unknown(body, &[])?;
+            let keys = self
+                .ldap_groups_at(scope)
+                .map(|groups| groups.keys().cloned().collect::<Vec<_>>())
+                .unwrap_or_default();
+            return Ok(response(json!({"keys": keys}), false));
+        }
+        if !valid_name(name) {
+            return Err(bad("invalid LDAP group name"));
+        }
+        match capability {
+            "read" => {
+                reject_unknown(body, &[])?;
+                let mapped = self
+                    .ldap_groups_at(scope)
+                    .and_then(|groups| groups.get(name))
+                    .cloned()
+                    .ok_or_else(|| err(404, "LDAP group not found"))?;
+                Ok(response(
+                    json!({"policies": mapped, "token_policies": mapped}),
+                    false,
+                ))
+            }
+            "delete" => {
+                reject_unknown(body, &[])?;
+                self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+                let removed = self.ldap_groups_at_mut(scope).remove(name);
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "LDAP group not found"))
+                }
+            }
+            "update" => {
+                self.authorize_request(actor, scope.namespace, path, "sudo", now)?;
+                reject_unknown(body, &["policies", "token_policies"])?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let current = self
+                    .ldap_groups_at(scope)
+                    .and_then(|groups| groups.get(name))
+                    .cloned()
+                    .unwrap_or_default();
+                let field = if body.get("token_policies").is_some() {
+                    "token_policies"
+                } else {
+                    "policies"
+                };
+                let mapped = policies(body, field, &current, false)?;
+                self.validate_assignment(actor, &mapped)?;
+                let changed = self
+                    .ldap_groups_at_mut(scope)
+                    .insert(name.into(), mapped.clone())
+                    .as_ref()
+                    != Some(&mapped);
+                Ok(empty(changed))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    pub(crate) fn prepare_ldap_login(
+        &self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<LdapLoginPlan, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Err(err(405, "method not allowed"));
+        }
+        validate_namespace(namespace)?;
+        if !valid_name(name)
+            || !self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .is_some_and(|entry| entry.kind == "ldap")
+        {
+            return Err(denied());
+        }
+        reject_unknown(body, &["password", "totp_code"])?;
+        let password = string_field(body, "password")?;
+        if password.is_empty() || password.len() > 1024 || password.contains('\0') {
+            return Err(denied());
+        }
+        let scope = AuthScope { namespace, mount };
+        let config = self
+            .ldap_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "LDAP auth is not configured"))?;
+        if !config.url.starts_with("ldaps://") || config.starttls {
+            return Err(err(
+                503,
+                "external LDAP login requires a host-enrolled LDAPS endpoint",
+            ));
+        }
+        let dn = config.user_dn_template.replace("{{username}}", name);
+        if dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20) {
+            return Err(bad("LDAP user DN is outside bounds"));
+        }
+        let totp_code = body
+            .get("totp_code")
+            .map(|value| {
+                value
+                    .as_str()
+                    .filter(|value| value.len() <= 64 && !value.contains('\0'))
+                    .map(|value| Zeroizing::new(value.to_owned()))
+                    .ok_or_else(denied)
+            })
+            .transpose()?;
+        // Policy/token mapping remains a local administrative object, but the
+        // password verifier is deliberately not consulted for LDAP login.
+        let _ = self.users_at(scope).and_then(|users| users.get(name));
+        Ok(LdapLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            name: name.into(),
+            dn,
+            config,
+            password: Zeroizing::new(password.to_owned()),
+            totp_code,
+            now,
+            started: std::time::Instant::now(),
+        })
+    }
+
+    pub(crate) fn finish_ldap_login(
+        &mut self,
+        plan: LdapLoginPlan,
+        observation: LdapLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        if !self
+            .effective_auth_mounts(&plan.namespace)
+            .get(&plan.mount)
+            .is_some_and(|entry| entry.kind == "ldap")
+            || self
+                .ldap_mounts
+                .get(&plan.namespace)
+                .and_then(|mounts| mounts.get(&plan.mount))
+                != Some(&plan.config)
+        {
+            return Err(err(409, "LDAP configuration changed during bind"));
+        }
+        let mut user = self
+            .users_at(scope)
+            .and_then(|users| users.get(&plan.name))
+            .cloned()
+            .ok_or_else(denied)?;
+        let elapsed = plan.started.elapsed();
+        let now = plan.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        );
+        let accepted_counter = match user.mfa.as_ref() {
+            Some(enrollment) => Some(verify_totp(
+                enrollment,
+                plan.totp_code
+                    .as_ref()
+                    .map(|value| value.as_str())
+                    .ok_or_else(denied)?,
+                now,
+            )?),
+            None => {
+                if plan.totp_code.is_some() {
+                    return Err(bad("MFA is not configured for this LDAP user"));
+                }
+                None
+            }
+        };
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
+        let mut effective_policies = user.policies.clone();
+        if let Some(mappings) = self.ldap_groups_at(scope) {
+            for group in &observation.groups {
+                if let Some(mapped) = mappings.get(group) {
+                    effective_policies.extend(mapped.iter().cloned());
+                }
+            }
+        }
+        let mut token = login_token(
+            &plan.namespace,
+            effective_policies,
+            token_ttl,
+            token_max_ttl,
+            user.token_num_uses,
+            format!("ldap-{}", plan.name),
+            now,
+        )?;
+        token.auth_mount = Some(plan.mount.clone());
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: plan.mount.clone(),
+            alias: plan.name.clone(),
+        });
+        if let Some(counter) = accepted_counter {
+            let enrollment = user
+                .mfa
+                .as_mut()
+                .ok_or_else(|| err(500, "LDAP MFA enrollment disappeared during login"))?;
+            enrollment.last_accepted_counter = Some(counter);
+        }
+        self.users_at_mut(scope).insert(plan.name, user);
+        self.tokens.insert(token_id, token);
+        Ok(response)
+    }
+
+    fn login_ldap(
+        &mut self,
+        _scope: AuthScope<'_>,
+        _method: &str,
+        _name: &str,
+        _body: &Value,
+        _now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        Err(err(
+            503,
+            "LDAP login requires the Service online-auth dispatcher",
+        ))
     }
 
     fn jwt_route(
@@ -1086,7 +2658,14 @@ impl AuthState {
                 .and_then(|roles| roles.get(role_name))
                 .cloned()
                 .ok_or_else(denied)?;
-            let verified = config.verifier()?.verify(jwt, now).map_err(|_| denied())?;
+            let mut verification_config = config.clone();
+            if verification_config.audiences.is_empty() {
+                verification_config.audiences = role.bound_audiences.clone();
+            }
+            let verified = verification_config
+                .verifier()?
+                .verify(jwt, now)
+                .map_err(|_| denied())?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
                 || !role.bound_groups.is_subset(&verified.groups)
@@ -1106,6 +2685,7 @@ impl AuthState {
             }
             let ttl = role.token_ttl.min(remaining).max(1);
             let max_ttl = role.token_max_ttl.min(remaining).max(ttl);
+            let (ttl, max_ttl) = self.auth_mount_token_limits(scope, ttl, max_ttl)?;
             let fingerprint = verified.replay_fingerprint();
             let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
             let identity = ExternalIdentity {
@@ -1118,6 +2698,9 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                wrapping: None,
+                entity_id: None,
+                cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
                 policies: role.policies,
@@ -1134,6 +2717,10 @@ impl AuthState {
                 auth_origin_known: true,
             };
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+            response.login_identity = Some(LoginIdentity {
+                mount: mount.into(),
+                alias: verified.subject.clone(),
+            });
             if let Err(error) =
                 self.admit_external_replay(scope, fingerprint, verified.expires_at, now)
             {
@@ -1194,7 +2781,10 @@ impl AuthState {
                     .collect();
                 Ok(response(
                     json!({
+                        "jwks_url": config.remote.as_ref().and_then(|s| s.jwks_url.as_deref()),
+                        "oidc_discovery_url": config.remote.as_ref().and_then(|s| s.oidc_discovery_url.as_deref()),
                         "issuer": config.issuer,
+                        "jwt_supported_algs": config.jwt_supported_algs,
                         "audiences": config.audiences,
                         "required_namespace": config.required_namespace,
                         "clock_skew_seconds": config.clock_skew_seconds,
@@ -1216,9 +2806,23 @@ impl AuthState {
                         "clock_skew_seconds",
                         "maximum_token_lifetime_seconds",
                         "keys",
+                        "jwks",
+                        "jwks_url",
+                        "oidc_discovery_url",
+                        "bound_issuer",
+                        "jwt_supported_algs",
                     ],
                 )?;
-                let issuer = string_field(body, "issuer")?.to_owned();
+                reject_alias_pair(body, "issuer", "bound_issuer")?;
+                let issuer = string_field(
+                    body,
+                    if body.get("issuer").is_some() {
+                        "issuer"
+                    } else {
+                        "bound_issuer"
+                    },
+                )?
+                .to_owned();
                 let audiences = claim_values(body, "audiences")?;
                 let required_namespace = body
                     .get("required_namespace")
@@ -1240,43 +2844,37 @@ impl AuthState {
                 let clock_skew_seconds = number(body, "clock_skew_seconds", 30)?;
                 let maximum_token_lifetime_seconds =
                     number(body, "maximum_token_lifetime_seconds", 3600)?;
-                let key_values = body
-                    .get("keys")
-                    .and_then(Value::as_array)
-                    .ok_or_else(|| bad("JWT keys must be an array"))?;
-                if key_values.is_empty() || key_values.len() > 64 {
-                    return Err(bad("JWT key count is outside bounds"));
+                if body.get("keys").is_some() && body.get("jwks").is_some() {
+                    return Err(bad("configure either JWT keys or jwks, not both"));
                 }
-                let mut keys = BTreeMap::new();
-                for value in key_values {
-                    reject_unknown(value, &["kid", "algorithm", "key_base64"])?;
-                    let kid = string_field(value, "kid")?;
-                    if kid.is_empty()
-                        || kid.len() > 1024
-                        || kid.chars().any(char::is_control)
-                        || keys.contains_key(kid)
+                let jwt_supported_algs = if body.get("jwt_supported_algs").is_some() {
+                    let values = claim_values(body, "jwt_supported_algs")?;
+                    if values.is_empty()
+                        || values
+                            .iter()
+                            .any(|v| !matches!(v.as_str(), "EdDSA" | "ES256" | "RS256"))
                     {
-                        return Err(bad("invalid or duplicate JWT key id"));
+                        return Err(bad("unsupported JWT algorithm allowlist"));
                     }
-                    let algorithm = string_field(value, "algorithm")?;
-                    if !matches!(algorithm, "EdDSA" | "ES256") {
-                        return Err(bad("unsupported JWT algorithm"));
-                    }
-                    let bytes = URL_SAFE_NO_PAD
-                        .decode(string_field(value, "key_base64")?)
-                        .map_err(|_| bad("invalid JWT key encoding"))?;
-                    if bytes.is_empty() || bytes.len() > 16 * 1024 {
-                        return Err(bad("JWT key is outside bounds"));
-                    }
-                    keys.insert(
-                        kid.into(),
-                        JwtKeyRecord {
-                            algorithm: algorithm.into(),
-                            bytes,
-                        },
-                    );
-                }
+                    Some(values)
+                } else {
+                    None
+                };
+                let remote = RemoteJwtSource::parse(body)?;
+                let keys = if remote.is_some() {
+                    BTreeMap::new()
+                } else if let Some(jwks) = body.get("jwks") {
+                    parse_jwks(jwks)?
+                } else {
+                    let key_values = body
+                        .get("keys")
+                        .and_then(Value::as_array)
+                        .ok_or_else(|| bad("JWT keys or jwks are required"))?;
+                    parse_legacy_jwt_keys(key_values)?
+                };
                 let config = JwtConfig {
+                    remote,
+                    jwt_supported_algs,
                     issuer,
                     audiences,
                     required_namespace,
@@ -1284,7 +2882,22 @@ impl AuthState {
                     maximum_token_lifetime_seconds,
                     keys,
                 };
-                config.verifier()?;
+                if config.remote.is_none() {
+                    config.verifier()?;
+                } else {
+                    let mut audiences = config.audiences.clone();
+                    if audiences.is_empty() {
+                        audiences.insert("configuration-shape-only".into());
+                    }
+                    TrustPolicy::new(
+                        config.issuer.clone(),
+                        audiences,
+                        config.required_namespace.clone().filter(|s| !s.is_empty()),
+                        config.clock_skew_seconds,
+                        config.maximum_token_lifetime_seconds,
+                    )
+                    .map_err(|_| bad("invalid remote JWT trust policy"))?;
+                }
                 let mutated =
                     self.jwt_at(scope).and_then(|state| state.config.as_ref()) != Some(&config);
                 self.jwt_at_mut(scope).config = Some(config);
@@ -1333,6 +2946,8 @@ impl AuthState {
                 reject_unknown(
                     body,
                     &[
+                        "role_type",
+                        "user_claim",
                         "bound_groups",
                         "bound_subject",
                         "bound_audiences",
@@ -1343,6 +2958,18 @@ impl AuthState {
                         "token_num_uses",
                     ],
                 )?;
+                if body
+                    .get("role_type")
+                    .is_some_and(|v| v.as_str() != Some("jwt"))
+                    || body
+                        .get("user_claim")
+                        .is_some_and(|v| v.as_str() != Some("sub"))
+                {
+                    return Err(err(
+                        501,
+                        "only role_type jwt with sub identity is implemented",
+                    ));
+                }
                 let bound_groups = claim_values(body, "bound_groups")?;
                 let bound_audiences = claim_values(body, "bound_audiences")?;
                 let bound_subject = body
@@ -1609,10 +3236,12 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    login_identity: None,
                     status: 200,
                     mutated: true,
                     body: json!({"auth": {
                         "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
+                        "entity_id": token.entity_id.as_deref().unwrap_or(""),
                         "lease_duration": expires_at - now, "renewable": true, "token_type": "service"
                     }}),
                 })
@@ -1748,6 +3377,9 @@ impl AuthState {
         }
         self.issue(
             Token {
+                wrapping: None,
+                entity_id: parent.entity_id.clone(),
+                cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
                 policies: requested,
@@ -1987,13 +3619,14 @@ impl AuthState {
         {
             return Err(bad("policies endpoint accepts only policy fields"));
         }
+        let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
         let mut user = existing.clone().unwrap_or(User {
             salt: vec![],
             verifier: vec![],
             rounds: PASSWORD_ROUNDS,
             policies: BTreeSet::from(["default".into()]),
-            token_ttl: DEFAULT_TTL,
-            token_max_ttl: MAX_TTL,
+            token_ttl: mount_default_ttl,
+            token_max_ttl: mount_max_ttl,
             token_num_uses: 0,
             mfa: None,
         });
@@ -2056,6 +3689,40 @@ impl AuthState {
         user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
+    }
+
+    fn auth_mount_token_limits(
+        &self,
+        scope: AuthScope<'_>,
+        ttl: u64,
+        max_ttl: u64,
+    ) -> Result<(u64, u64), AuthError> {
+        let mount = self
+            .effective_auth_mounts(scope.namespace)
+            .get(scope.mount)
+            .cloned()
+            .ok_or_else(|| err(404, "auth mount not found"))?;
+        let mount_default = if mount.default_lease_ttl == 0 {
+            DEFAULT_TTL
+        } else {
+            mount.default_lease_ttl
+        };
+        let mount_max = if mount.max_lease_ttl == 0 {
+            MAX_TTL
+        } else {
+            mount.max_lease_ttl
+        };
+        if mount_default == 0 || mount_default > mount_max || mount_max > MAX_TTL {
+            return Err(bad("invalid persisted auth mount TTL limits"));
+        }
+        let mut effective_ttl = if ttl == 0 { mount_default } else { ttl };
+        let mut effective_max = if max_ttl == 0 { mount_max } else { max_ttl };
+        effective_max = effective_max.min(mount_max);
+        effective_ttl = effective_ttl.min(effective_max);
+        if effective_ttl == 0 || effective_ttl > effective_max {
+            return Err(bad("invalid effective auth token TTL limits"));
+        }
+        Ok((effective_ttl, effective_max))
     }
 
     fn validate_assignment(
@@ -2126,17 +3793,23 @@ impl AuthState {
                 None
             }
         };
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
         let mut token = login_token(
             namespace,
             user.policies.clone(),
-            user.token_ttl,
-            user.token_max_ttl,
+            token_ttl,
+            token_max_ttl,
             user.token_num_uses,
             format!("userpass-{name}"),
             now,
         )?;
         token.auth_mount = Some(mount.into());
-        let (token_id, token, response) = Self::prepare_issue(token, now)?;
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: mount.into(),
+            alias: name.into(),
+        });
         if let Some(counter) = accepted_counter {
             let enrollment = user
                 .mfa
@@ -2216,11 +3889,12 @@ impl AuthState {
                 return Err(bad("AppRole requires secret_id binding"));
             }
             reject_alias_pair(body, "policies", "token_policies")?;
+            let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
             let mut role = existing.unwrap_or(Role {
                 role_id: random_id("role.")?,
                 policies: BTreeSet::from(["default".into()]),
-                token_ttl: DEFAULT_TTL,
-                token_max_ttl: MAX_TTL,
+                token_ttl: mount_default_ttl,
+                token_max_ttl: mount_max_ttl,
                 token_num_uses: 0,
                 secret_id_ttl: DEFAULT_TTL,
                 secret_id_num_uses: 1,
@@ -2387,17 +4061,23 @@ impl AuthState {
         if let Some(remaining) = &mut secret.uses_remaining {
             *remaining -= 1;
         }
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
         let mut token = login_token(
             namespace,
             role.policies.clone(),
-            role.token_ttl,
-            role.token_max_ttl,
+            token_ttl,
+            token_max_ttl,
             role.token_num_uses,
             format!("approle-{name}"),
             now,
         )?;
         token.auth_mount = Some(mount.into());
-        let issued = self.issue(token, now)?;
+        let mut issued = self.issue(token, now)?;
+        issued.login_identity = Some(LoginIdentity {
+            mount: mount.into(),
+            alias: role_id.into(),
+        });
         self.roles_at_mut(scope).insert(name, role);
         Ok(issued)
     }
@@ -2513,6 +4193,9 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        wrapping: None,
+        entity_id: None,
+        cubbyhole: cubbyhole::TokenCubbyhole::default(),
         accessor: random_id("a.")?,
         namespace: namespace.into(),
         policies,
@@ -2534,19 +4217,22 @@ fn token_info(token: &Token, now: u64) -> Value {
         "creation_time": token.created_at, "ttl": token.expires_at.map(|t| t.saturating_sub(now)).unwrap_or(0),
         "expire_time_unix": token.expires_at, "explicit_max_ttl": token.max_expires_at.map(|t| t.saturating_sub(token.created_at)).unwrap_or(0),
         "period": token.period, "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
-        "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace})
+        "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
+        "entity_id": token.entity_id.as_deref().unwrap_or("")})
 }
 
-fn default_grants(path: &str, capability: &str) -> bool {
-    matches!(
-        (path, capability),
-        ("auth/token/lookup-self", "read")
-            | ("auth/token/renew-self", "update")
-            | ("auth/token/revoke-self", "update")
-    )
-}
 fn default_policy_source() -> String {
-    "path \"auth/token/lookup-self\" { capabilities = [\"read\"] }\npath \"auth/token/renew-self\" { capabilities = [\"update\"] }\npath \"auth/token/revoke-self\" { capabilities = [\"update\"] }\n".into()
+    acl::DEFAULT_RULES
+        .iter()
+        .map(|(path, caps)| {
+            let caps = caps
+                .iter()
+                .map(|cap| format!("\"{cap}\""))
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("path \"{path}\" {{ capabilities = [{caps}] }}\n")
+        })
+        .collect()
 }
 
 fn path_matches(pattern: &str, path: &str) -> bool {
@@ -2860,3 +4546,48 @@ fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
 #[cfg(test)]
 #[path = "auth_tests.rs"]
 mod tests;
+
+// A bounded issuer reference is metadata, not a reusable execution Principal.
+pub(crate) struct LeaseIssuer {
+    pub(crate) digest: String,
+    pub(crate) expires_at: Option<u64>,
+    pub(crate) entity_id: Option<String>,
+}
+impl AuthState {
+    pub(crate) fn lease_issuer(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        now: u64,
+    ) -> Result<LeaseIssuer, AuthError> {
+        self.check_principal(actor, namespace, now)?;
+        self.lease_issuer_by_digest(&actor.digest, namespace, now)
+            .ok_or_else(denied)
+    }
+    pub(crate) fn lease_issuer_by_digest(
+        &self,
+        id: &str,
+        namespace: &str,
+        now: u64,
+    ) -> Option<LeaseIssuer> {
+        let token = self.active_token(id, now, true).ok()?;
+        if !token.root && token.namespace != namespace {
+            return None;
+        }
+        let mut expires = token.expires_at;
+        let mut parent = token.parent.as_deref();
+        // active_token already rejected cycles, missing or expired ancestors.
+        while let Some(id) = parent {
+            let ancestor = self.tokens.get(id)?;
+            if let Some(limit) = ancestor.expires_at {
+                expires = Some(expires.map_or(limit, |current| current.min(limit)));
+            }
+            parent = ancestor.parent.as_deref();
+        }
+        Some(LeaseIssuer {
+            digest: id.into(),
+            expires_at: expires,
+            entity_id: token.entity_id.clone(),
+        })
+    }
+}

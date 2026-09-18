@@ -1,11 +1,6 @@
 name: Codex OpenBao replacement full qualification
 
 on:
-  push:
-    branches:
-      - codex/openbao-replacement-full-closure-20260908
-      - codex/openbao-2-6-production-replacement-closure-20260911-r1
-      - codex/openbao-2.6-production-gap-closure-20260911
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
@@ -14,6 +9,9 @@ permissions:
   contents: read
 
 concurrency:
+  # During active development only the newest PR head is useful feedback. Once
+  # the candidate is frozen, that unchanged head and its prospective merge must
+  # reach terminal success before integration.
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
@@ -57,42 +55,43 @@ jobs:
 
       - name: Install Python validation dependencies
         shell: bash
-        run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python scripts/verify_python_environment.py
 
       - name: Install exact Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+
+      - name: Check formatting without changing source
+        shell: bash
+        run: cargo +1.98.0 fmt --all -- --check
 
       - name: Validate current repository truth and acceptance fixtures
         shell: bash
         run: |
           set -euo pipefail
           python scripts/validate_repository_v2.py
+          python scripts/validate_module_closure.py
+          python scripts/surface_work.py
           python -m unittest discover -s tests/repository -p 'test_*.py' -v
           python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
+          python -m unittest discover -s clients/python/tests -p 'test_*.py' -v
 
       - name: Test the complete locked Rust workspace
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
 
-      - name: Check formatting without changing source
-        if: ${{ success() || failure() }}
-        shell: bash
-        run: cargo +1.98.0 fmt --all -- --check
-
       - name: Check strict workspace Clippy
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
 
       - name: Build workspace documentation
-        if: ${{ success() || failure() }}
         shell: bash
         run: cargo +1.98.0 doc --locked --workspace --no-deps
 
       - name: Build and exercise the real TLS service
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
@@ -100,6 +99,66 @@ jobs:
           python qa/single-node/smoke.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
+
+      - name: Exercise bounded server-integrated read-only secret plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 python qa/openbao-acceptance/plugin_secret_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-plugin-secret"
+
+      - name: Exercise bounded server-integrated authentication plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 python qa/openbao-acceptance/plugin_auth_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-plugin-auth"
+
+      - name: Exercise mandatory host-enrolled HTTPS audit delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 python qa/openbao-acceptance/audit_http_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-http-audit"
+
+      - name: Exercise deployment-owned TCP socket audit delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 python qa/openbao-acceptance/audit_socket_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-socket-audit"
+
+
+
+      - name: Exercise process-configured local Unix syslog audit delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 python qa/openbao-acceptance/audit_syslog_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-syslog-audit"
+
+      - name: Exercise bounded state saturation and replay-preserving capacity recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-capacity-evidence"
+          mkdir -m 700 "$reports"
+          timeout 180 python qa/openbao-acceptance/capacity_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
+
+      - name: Measure audited immutable KV reads over growing state
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-read-scaling-evidence"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/kv_read_scaling_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/reads.json"
 
       - name: Exercise real three-process HA with synthetic state
         shell: bash
@@ -124,10 +183,362 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
+      - name: Exercise multi-epoch replay retirement, snapshot catch-up and failover
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/replay_epoch_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --work-dir "$RUNNER_TEMP/heptabao-replay-epoch-ha"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
+      - name: Exercise exact-base to candidate HA rolling upgrade
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_BASE" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          base_dir="$RUNNER_TEMP/heptabao-upgrade-base"
+          base_target="$RUNNER_TEMP/heptabao-upgrade-base-target"
+          rm -rf "$base_dir" "$base_target"
+          git worktree add --detach "$base_dir" "$PR_BASE"
+          cleanup() { git worktree remove --force "$base_dir" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          CARGO_TARGET_DIR="$base_target" cargo +1.98.0 build             --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
+          base_binary="$base_target/debug/heptabao-server"
+          candidate_binary="$PWD/target/debug/heptabao-server"
+          base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
+          candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
+          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade"
+          cleanup
+          trap - EXIT
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Exercise actual private-output client and OTP wrapping HA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          evidence="$RUNNER_TEMP/heptabao-runtime-profile-evidence"
+          mkdir -m 700 "$evidence"
+          python qa/openbao-acceptance/client_live.py --binary "$binary" --output "$evidence/client.json"
+          timeout 180 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$binary" --output "$evidence/agent-proxy-helper.json"
+          timeout 360 python qa/openbao-acceptance/ssh_otp_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
+            --output "$evidence/ssh-ha.json"
+          timeout 240 python qa/openbao-acceptance/idle_lifecycle_ha.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
+            --output "$evidence/idle-ha.json"
+
+      - name: Install the real PostgreSQL 17 prerequisite from signed packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-common ca-certificates
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends postgresql-17 postgresql-client-17 slapd ldap-utils
+          /usr/lib/postgresql/17/bin/postgres --version
+          slapd -VV 2>&1 | head -n 2
+          dpkg-query -W postgresql-17 postgresql-client-17
+
+      - name: Exercise actual PostgreSQL SQL and active-session revocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/postgres_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --output "$RUNNER_TEMP/heptabao-postgresql-real.json"
+          # The runner returns 77 for missing real binaries; that is a blocking
+          # failure here, never a successful skip or a protocol-model fallback.
+
+      - name: Acquire the checksum-pinned official binary in the Oracle lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
+
+      - name: Compare operational Agent and Proxy behavior with official OpenBao
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          candidate="$RUNNER_TEMP/heptabao-runtime-profile-evidence/agent-proxy-helper.json"
+          test -s "$candidate"
+          reports="$RUNNER_TEMP/heptabao-agent-proxy-differential"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/agent_proxy_helper_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --oracle \
+            --output "$reports/oracle.json"
+          python qa/openbao-acceptance/compare_operational_reports.py \
+            --candidate "$candidate" \
+            --oracle "$reports/oracle.json" \
+            --output "$reports/comparison.json"
+          python - "$reports/comparison.json" <<'PY'
+          import json, pathlib, sys
+          report = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["matched"] is True
+          assert report["common_observations"] >= 49
+          assert report["full_openbao_compatibility"] is False
+          assert report["independent_qualification"] is False
+          assert report["production_authority"] is False
+          print(json.dumps(report, sort_keys=True, separators=(",", ":")))
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
+      - name: Exercise online authentication and durable cross-node code consumption
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-online-authentication"
+          python -c 'import os,sys; os.mkdir(sys.argv[1],0o700); os.chmod(sys.argv[1],0o700)' "$reports"
+          timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
+          timeout 180 python qa/openbao-acceptance/ldap_bounded.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap.json"
+          timeout 240 python qa/openbao-acceptance/ldap_openldap_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/openldap.json"
+          timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
+          timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
+          # A controlled TokenReview fixture is not an actual Kubernetes cluster.
+          # No secret-bearing service/issuer/client directories are uploaded.
+
+      - name: Prove a slow provider does not serialize unrelated durable work
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          timeout 90 python qa/openbao-acceptance/provider_concurrency_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$RUNNER_TEMP/heptabao-provider-concurrency.json"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
+      - name: Observe real migration catalogs and target capacity without cutover
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-preflight-evidence"
+          mkdir -m 700 "$reports"
+          timeout 180 python qa/openbao-acceptance/migration_preflight_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/preflight.json"
+
+      - name: Execute all bounded official-binary differential profiles
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          # The comparison runners require a new caller-owned 0700 output parent;
+          # RUNNER_TEMP itself may be searchable by other users. Keep that guard.
+          reports="$RUNNER_TEMP/heptabao-official-profile-reports"
+          mkdir -m 700 "$reports"
+          failed=0
+          for profile in core_isolation identity_live response_wrapping pki_live ssh_otp_live audit_file_live namespace_tree_live remote_jwks_compare; do
+            if timeout 240 python "qa/openbao-acceptance/$profile.py" \
+                --binary "$binary" --output "$reports/$profile.json"; then
+              printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
+            else
+              status=$?
+              printf 'profile=%s process_exit=%s scope=blocked_or_failed\n' "$profile" "$status"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+
+      - name: Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-transit-migration-reports"
+          mkdir -m 700 "$reports"
+          timeout 300 python qa/openbao-acceptance/transit_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/transit.json"
+          # Missing official binaries (exit 77) remain a blocking failure.
+
+      - name: Execute the fixed corpus against the official OpenBao binary
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/run_official_comparison.py \
+            --binary "$PWD/target/debug/heptabao-server" --candidate-source "$PWD" \
+            --work-dir "$RUNNER_TEMP/heptabao-fixed-corpus-comparison"
+
+      - name: Rehearse the real bounded KV migration and lost acknowledgement
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/live_migration_rehearsal.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
+            --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
+
+      - name: Compare bounded OpenAPI runtime with official OpenBao
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          reports="$RUNNER_TEMP/heptabao-openapi-live"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/openapi_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/openapi.json"
+          python - "$reports/openapi.json" <<'PY'
+          import json, pathlib, sys
+          report=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert report["status"] == "passed_scoped_openapi_runtime"
+          assert report["official_openbao_version"] == "2.6.2"
+          assert report["openapi_version"] == "3.0.2"
+          assert report["runtime_entry_implemented"] is True
+          assert report["root_schema_restart_stable"] is True
+          assert report["non_root_overadvertising_prevented"] is True
+          assert report["exact_policy_filtered_schema_implemented"] is False
+          assert report["browser_ui_implemented"] is False
+          assert report["full_openbao_compatibility"] is False
+          assert report["production_authority"] is False
+          assert report["independent_qualification"] is False
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
+      - name: Rehearse bounded policy Identity auth-mount and SSH role migration against the official source
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-configuration-migration-reports"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/policy_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/policy.json"
+          timeout 300 python qa/openbao-acceptance/identity_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/identity.json"
+          timeout 300 python qa/openbao-acceptance/auth_mount_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/auth-mount.json"
+          timeout 240 python qa/openbao-acceptance/ssh_role_migration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --output "$reports/ssh-role.json"
+          python - "$reports/policy.json" "$reports/identity.json" "$reports/auth-mount.json" "$reports/ssh-role.json" <<'PY'
+          import json, pathlib, sys
+          policy=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          identity=json.loads(pathlib.Path(sys.argv[2]).read_text())
+          auth_mount=json.loads(pathlib.Path(sys.argv[3]).read_text())
+          ssh=json.loads(pathlib.Path(sys.argv[4]).read_text())
+          assert policy["status"] == "passed_scoped_policy_transfer"
+          assert identity["status"] == "passed_scoped_identity_recreation"
+          assert auth_mount["status"] == "passed_scoped_auth_mount_recreation"
+          assert ssh["status"] == "passed_scoped_ssh_role_transfer"
+          for report in (policy, identity, auth_mount, ssh):
+              assert report["official_openbao_version"] == "2.6.2"
+              assert report["full_asset_migration"] is False
+              assert report["cutover_authority"] is False
+              assert report["rollback_authority"] is False
+              assert report["independent_qualification"] is False
+          assert identity["aliases_transferred"] is False
+          assert identity["group_aliases_transferred"] is False
+          assert identity["tokens_transferred"] is False
+          assert identity["auth_credentials_transferred"] is False
+          assert auth_mount["consumer_reauthentication_required"] is True
+          assert auth_mount["consumer_reauthentication_rehearsed"] is True
+          assert auth_mount["source_user_lockout_explicitly_disabled"] is True
+          assert auth_mount["accessor_transferred"] is False
+          assert auth_mount["principals_transferred"] is False
+          assert auth_mount["approle_secret_ids_transferred"] is False
+          assert auth_mount["tokens_transferred"] is False
+          assert auth_mount["identity_alias_bindings_transferred"] is False
+          assert ssh["issued_credentials_transferred"] is False
+          assert ssh["lease_state_transferred"] is False
+          assert ssh["ca_authority_transferred"] is False
+          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
+      - name: Exercise committed membership snapshot catch-up and real cleanup grace
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 360 python qa/openbao-acceptance/raft_membership_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --dead-cleanup \
+            --output "$RUNNER_TEMP/heptabao-raft-membership.json"
+
+      - name: Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node
+        shell: bash
+        run: |
+          set -euo pipefail
+          tools="$RUNNER_TEMP/heptabao-kind-input"
+          reports="$RUNNER_TEMP/heptabao-real-kubernetes-reports"
+          mkdir -m 700 "$tools" "$reports"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+            --max-time 120 https://github.com/kubernetes-sigs/kind/releases/download/v0.31.0/kind-linux-amd64 \
+            --output "$tools/kind"
+          printf '%s  %s\n' eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa "$tools/kind" | sha256sum -c -
+          chmod 700 "$tools/kind"
+          timeout 600 python qa/openbao-acceptance/kubernetes_cluster_live.py \
+            --binary "$PWD/target/debug/heptabao-server" --kind "$tools/kind" \
+            --output "$reports/actual-kubernetes.json" --allow-disposable-cluster
+          # Exit 77, missing Docker, image failure, timeout and any failed case block CI.
+          # No kubeconfig, TokenRequest response, private key or cluster data is uploaded.
+
       - name: Confirm source remained immutable
-        if: ${{ success() || failure() }}
         shell: bash
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
+
+  qualification-verdict:
+    name: OpenBao replacement / exact-head-and-merge verdict
+    if: ${{ always() }}
+    needs: [qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject failed cancelled or skipped qualification matrix
+        shell: bash
+        env:
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_SOURCE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$QUALIFY_RESULT" = success
+          if test "$GITHUB_EVENT_NAME" = pull_request; then
+            [[ "$PR_HEAD" =~ ^[0-9a-f]{40}$ ]]
+            [[ "$EXPECTED_SOURCE" =~ ^[0-9a-f]{40}$ ]]
+          fi
+          printf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$GITHUB_EVENT_NAME"

@@ -89,7 +89,64 @@ def stop_oracle(oracle):
         log.close()
 
 
-def start_oracle(port):
+def restart_oracle(oracle):
+    """Restart the same private synthetic Oracle root without reinitializing it."""
+    binary = verify_inputs()
+    root = Path(oracle["root"]).resolve(strict=True)
+    process = oracle.get("process")
+    if process is not None and process.poll() is None:
+        raise BaoError("official_oracle_restart_requires_stopped_process")
+    for name in ("server.json", "ca.crt", "tls.crt", "tls.key", "root.token", "unseal.key"):
+        path = root / name
+        if not path.is_file() or path.is_symlink():
+            raise BaoError("official_oracle_restart_input_missing")
+    token = (root / "root.token").read_text().strip()
+    key = (root / "unseal.key").read_text().strip()
+    if not token or not key:
+        raise BaoError("official_oracle_restart_secret_missing")
+    oracle["log"] = open(root / "server.log", "ab")
+    oracle["process"] = subprocess.Popen(
+        [str(binary), "server", "-config=" + str(root / "server.json")],
+        stdout=oracle["log"], stderr=oracle["log"],
+    )
+    client = Client(oracle["address"], oracle["ca_file"], token, timeout=2)
+    observed_health = None
+    for _ in range(100):
+        if oracle["process"].poll() is not None:
+            raise BaoError("official_oracle_exited_during_restart")
+        try:
+            response = client.request("GET", "/v1/sys/health")
+            if response.status in (200, 429, 503):
+                observed_health = response.body
+                break
+        except BaoError:
+            pass
+        time.sleep(0.05)
+    else:
+        stop_oracle(oracle)
+        raise BaoError("official_oracle_restart_timeout")
+    if not isinstance(observed_health, dict) or observed_health.get("initialized") is not True:
+        stop_oracle(oracle)
+        raise BaoError("official_oracle_restart_health_invalid")
+    if observed_health.get("sealed") is True:
+        if client.request("POST", "/v1/sys/unseal", {"key": key}).status != 200:
+            stop_oracle(oracle)
+            raise BaoError("official_oracle_restart_unseal_failed")
+    health = client.health()
+    if health["version"] != VERSION:
+        stop_oracle(oracle)
+        raise BaoError("official_oracle_restart_version_mismatch")
+    expected_cluster = oracle.get("cluster_id")
+    if expected_cluster is not None and health["cluster_id"] != expected_cluster:
+        stop_oracle(oracle)
+        raise BaoError("official_oracle_restart_cluster_identity_changed")
+    oracle["cluster_id"] = health["cluster_id"]
+    return oracle
+
+
+def start_oracle(port, *, audit_file=False):
+    if type(audit_file) is not bool:
+        raise BaoError("official_oracle_invalid_audit_profile")
     if type(port) is not int or not 1024 <= port <= 65534:
         raise BaoError("official_oracle_invalid_loopback_port")
     binary = verify_inputs()
@@ -101,7 +158,7 @@ def start_oracle(port):
               "artifact_sha256": ARTIFACT_SHA256, "binary_sha256": BINARY_SHA256}
     try:
         certificates(root)
-        private_text(root / "server.json", json.dumps({
+        config = {
             "disable_mlock": True, "ui": False,
             "api_addr": oracle["address"], "cluster_addr": f"https://127.0.0.1:{port + 1}",
             "storage": {"file": {"path": str(root / "data")}},
@@ -109,7 +166,15 @@ def start_oracle(port):
                                     "tls_cert_file": str(root / "tls.crt"),
                                     "tls_key_file": str(root / "tls.key"),
                                     "tls_min_version": "tls12"}}],
-        }))
+        }
+        if audit_file:
+            # Fixed synthetic deployment configuration; no arbitrary caller path,
+            # API-enrollment opt-in, or raw secret logging is introduced.
+            config["audit"] = [{"file": {"file": {
+                "description": "Synthetic declarative file audit device",
+                "options": {"file_path": str(root / "audit.jsonl"), "mode": "0600"},
+            }}}]
+        private_text(root / "server.json", json.dumps(config))
         oracle["log"] = open(root / "server.log", "ab")
         # Configuration contains no credential. Never use -dev or a token argument.
         oracle["process"] = subprocess.Popen(
@@ -148,6 +213,7 @@ def start_oracle(port):
                     "launcher_source_sha256": file_digest(__file__)}
         private_write(root / "oracle-identity.json", identity)
         oracle["identity_file"] = str(root / "oracle-identity.json")
+        oracle["cluster_id"] = health["cluster_id"]
         return oracle
     except Exception:
         stop_oracle(oracle)

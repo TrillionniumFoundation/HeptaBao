@@ -14,7 +14,7 @@ ARCHITECTURE = (
 PLAN = ROOT / "docs" / "plan" / "HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md"
 MATRIX = ROOT / "planning" / "HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml"
 REGISTER = ROOT / "planning" / "HEPTABAO_BLOCKER_REGISTER_V2_0.yaml"
-WORKFLOW = ROOT / ".github" / "workflows" / "v2-1-main-convergence.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "codex-openbao-replacement-ci.yml"
 
 
 def function_body(source: str, function: str) -> str:
@@ -59,9 +59,9 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         source = (CRATE / "src" / "lib.rs").read_text(encoding="utf-8")
         for required in (
             "JournalEvent::Intent",
-            "persist_snapshot",
+            "JournalEvent::Apply",
             "JournalEvent::Commit",
-            "persist_ledger",
+            "apply_journal_mutations",
             "MutationOutcome::Committed",
             "ServiceError::OutcomeUnknown",
             "ReconciliationStatus::Aborted",
@@ -70,19 +70,24 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             self.assertIn(required, source)
 
         execute = source[source.index("fn execute(") : source.index("fn append_frame(")]
-        # Cryptographic serialization and terminal-record capacity reservation
-        # happen before the first I/O attempt. Afterwards every failure must
-        # retain OutcomeUnknown, including genuine append/snapshot/ledger errors.
+        # The current runtime commits authenticated resource deltas.  Intent,
+        # Apply and Commit frames are sealed and capacity-checked before the
+        # first append; full snapshot/ledger serialization belongs to explicit
+        # checkpoint/compaction rather than the ordinary mutation path.
         entry = execute.index("self.unresolved = true")
-        for serialization in ("sealed_snapshot", "sealed_ledger", "sealed_journal_record"):
-            self.assertLess(execute.index(serialization), entry)
-        self.assertLess(execute.index("JournalCapacityExhausted"), entry)
+        pre_entry = execute[:entry]
+        self.assertGreaterEqual(pre_entry.count("sealed_journal_record("), 3)
+        self.assertIn("JournalCapacityExhausted", pre_entry)
+        self.assertNotIn("atomic_write(", execute)
+        self.assertNotIn("sealed_snapshot(", execute)
+        self.assertNotIn("sealed_ledger(", execute)
         admitted = execute[entry:]
         positions = [
             admitted.index("self.append_frame(&intent)"),
-            admitted.index("snapshot_path(&self.root)"),
+            admitted.index("self.append_frame(&apply)"),
+            admitted.index("apply_journal_mutations("),
             admitted.index("self.append_frame(&commit)"),
-            admitted.index("ledger_path(&self.root)"),
+            admitted.index("self.ledger.insert("),
             admitted.index("MutationOutcome::Committed"),
         ]
         self.assertEqual(sorted(positions), positions)
@@ -151,14 +156,14 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         for regression in (
             "ambiguous_namespace_resource_pairs_are_isolated_across_restart_and_delete",
             "legacy_schema_is_rejected_without_rewriting_it",
-            "genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference",
+            "checkpoint_file_faults_do_not_reenter_request_commit_path_and_recover_fail_closed",
             "failed_append_does_not_consume_sequence_and_reopen_recovers",
             "authenticated_old_snapshot_and_contradictory_ledger_fail_closed",
             "journal_budget_reserves_terminal_record_before_entry",
             "actual_sigkill_releases_writer_and_recovers_pending_publication",
             "real_partial_write_efbig_tail_is_recovered",
         ):
-            self.assertIn(f"fn {regression}()", source)
+            self.assertRegex(source, rf"\bfn\s+{re.escape(regression)}\s*\(\s*\)")
         self.assertIn("child.kill()", source)
         self.assertIn("ulimit -f 1", source)
         self.assertIn("ExclusiveDirectory::open(root)", source)
@@ -170,7 +175,8 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
         self.assertNotIn("persist-credentials: true", workflow)
-        self.assertIn("branches: [main]", workflow)
+        self.assertIn("pull_request:", workflow)
+        self.assertIn("prospective-merge", workflow)
         self.assertIn("cargo +1.98.0 test --locked --workspace --all-targets", workflow)
         self.assertIn("cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings", workflow)
 

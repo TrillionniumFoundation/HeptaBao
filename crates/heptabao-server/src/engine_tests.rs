@@ -3,6 +3,44 @@ use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 
 type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 
+#[test]
+fn namespace_state_is_copy_on_write_without_changing_json_shape() -> TestResult {
+    let mut state = EngineState::default();
+    state.namespaces.insert("team-a".into(), CowNamespace::default());
+    state.namespaces.insert("team-b".into(), CowNamespace::default());
+    let before = serde_json::to_vec(&state)?;
+
+    let mut clone = state.clone();
+    let team_b_before = Arc::clone(&clone.namespaces.get("team-b").ok_or("team-b")?.0);
+    clone
+        .namespaces
+        .get_mut("team-a")
+        .ok_or("team-a")?
+        .mount_epochs
+        .insert("extra/".into(), 2);
+
+    assert!(Arc::ptr_eq(
+        &team_b_before,
+        &clone.namespaces.get("team-b").ok_or("team-b")?.0,
+    ));
+    assert!(state
+        .namespaces
+        .get("team-a")
+        .ok_or("team-a")?
+        .mount_epochs
+        .is_empty());
+    assert!(!clone
+        .namespaces
+        .get("team-a")
+        .ok_or("team-a")?
+        .mount_epochs
+        .is_empty());
+
+    let round_trip: EngineState = serde_json::from_slice(&before)?;
+    assert_eq!(serde_json::to_vec(&round_trip)?, before);
+    Ok(())
+}
+
 fn request(
     state: &mut EngineState,
     namespace: &str,
@@ -998,7 +1036,6 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
             "transit/encrypt/key",
             json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
         ),
-        ("sys/mounts/pki", json!({"type":"pki"})),
     ] {
         assert_eq!(
             request(&mut state, "", "POST", path, body, 3)
@@ -1392,6 +1429,109 @@ fn totp_guessing_limit_is_persisted_and_recovers_next_period() -> TestResult {
         )?
         .body["data"]["valid"],
         true
+    );
+    Ok(())
+}
+
+#[test]
+fn mount_registry_revision_cas_remount_and_incarnation_are_persisted() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/team",
+        json!({"type":"kv","options":{"version":"2"},"cas_revision":0}),
+        100,
+    )?;
+    let created = request(&mut state, "", "GET", "sys/mounts/team", json!({}), 100)?;
+    assert_eq!(created.body["data"]["revision"], 1);
+    assert_eq!(created.body["data"]["incarnation"], 1);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "team/data/app",
+        json!({"data":{"value":"kept"}}),
+        101,
+    )?;
+    request(
+        &mut state,
+        "",
+        "PUT",
+        "sys/mounts/team/tune",
+        json!({"description":"team-v2","cas_revision":1}),
+        102,
+    )?;
+    let tuned = request(&mut state, "", "GET", "sys/mounts/team", json!({}), 102)?;
+    assert_eq!(tuned.body["data"]["revision"], 2);
+    let before_stale = serde_json::to_vec(&state)?;
+    assert_eq!(
+        request(
+            &mut state,
+            "",
+            "PUT",
+            "sys/mounts/team/tune",
+            json!({"description":"stale","cas_revision":1}),
+            103,
+        )
+        .err()
+        .map(|error| error.status),
+        Some(409)
+    );
+    assert_eq!(before_stale, serde_json::to_vec(&state)?);
+    let moved = state.remount("", "team", "archive", Some(2))?;
+    assert_eq!(moved.body["data"]["revision"], 3);
+    assert!(
+        state
+            .handle("", "GET", "team/data/app", &json!({}), 104)?
+            .is_none()
+    );
+    let read = request(&mut state, "", "GET", "archive/data/app", json!({}), 104)?;
+    assert_eq!(read.body["data"]["data"]["value"], "kept");
+    let mut restored: EngineState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    let descriptor = request(
+        &mut restored,
+        "",
+        "GET",
+        "sys/mounts/archive",
+        json!({}),
+        105,
+    )?;
+    assert_eq!(descriptor.body["data"]["revision"], 3);
+    assert_eq!(descriptor.body["data"]["incarnation"], 1);
+    request(
+        &mut restored,
+        "",
+        "DELETE",
+        "sys/mounts/archive",
+        json!({"cas_revision":3}),
+        106,
+    )?;
+    request(
+        &mut restored,
+        "",
+        "POST",
+        "sys/mounts/archive",
+        json!({"type":"kv","options":{"version":"2"},"cas_revision":0}),
+        107,
+    )?;
+    let recreated = request(
+        &mut restored,
+        "",
+        "GET",
+        "sys/mounts/archive",
+        json!({}),
+        107,
+    )?;
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_eq!(recreated.body["data"]["incarnation"], 2);
+    assert_eq!(
+        restored
+            .handle("", "GET", "archive/data/app", &json!({}), 108)
+            .err()
+            .map(|error| error.status),
+        Some(404)
     );
     Ok(())
 }

@@ -3,7 +3,9 @@
 Status: implemented candidate; explicit API subset; not a production or complete
 OpenBao replacement acceptance. This document describes the code under
 `crates/heptabao-server/src/engines.rs`, `engines/{kv,transit,totp}.rs` and
-`engine_tests.rs`. It is separate from the older in-memory domain-model crates.
+`engine_tests.rs`, with current PKI/SSH/lease and database routing extensions
+below. It is separate from the older in-memory domain-model crates. Current
+state-format rules are in [the Service format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md).
 
 ## Responsibility and integration boundary
 
@@ -68,7 +70,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Kv1 | Kv2 | Transit | Totp}
+  .backend.{Database | Kubernetes | PluginSecret | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]
 ```
 
@@ -105,17 +107,19 @@ still protect the host and snapshot encryption keys.
 | Method and path | Implemented behavior |
 | --- | --- |
 | `GET sys/mounts` | Namespace-local descriptors, backend types, options and default lease settings |
-| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit` or `totp` after option validation |
+| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit`, `totp`, bounded `pki`/`ssh`, or the Service-owned `database` route after option validation |
 | `GET sys/mounts/:path` | Read one mount descriptor |
 | `DELETE sys/mounts/:path` | Remove the mount and its namespace-local resources |
 | `GET sys/mounts/:path/tune` | Read supported mount configuration |
-| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version |
+| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version; enforce supported PKI/SSH TTL tuning |
 
 Online KV version conversion, custom lease tuning, local mount replication
 semantics, seal wrapping and external entropy sources are not implemented.
-Requests for these options return explicit errors. PKI, SSH, database, LDAP,
-Kubernetes and other engine types return HTTP 501 instead of registering a
-nonfunctional mount. There is no generic plugin-success route.
+Requests for these options return explicit errors. Bounded PKI and SSH implementations are described below. `database` is a
+routing marker whose effects, configuration and leases are owned by Service, not
+an unauthenticated EngineState callback; read the [PostgreSQL contract](HEPTABAO_POSTGRESQL_PROVIDER.md).
+LDAP, Kubernetes and other unimplemented engine types return HTTP 501 instead
+of registering a nonfunctional mount. There is no generic plugin-success route.
 
 ## KV v1
 
@@ -321,3 +325,44 @@ acceptance. Implementing another route does not establish HA or migration safety
 - [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238): TOTP algorithm and fixed interoperability vectors.
 - [RFC 4231](https://www.rfc-editor.org/rfc/rfc4231): HMAC SHA-2 test vectors.
 - [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648): base32 encoding examples.
+
+## Current bounded PKI increment
+
+The runnable server now admits a `pki` secrets mount with an internal Ed25519
+root, bounded DNS roles, leaf issuance, optional registered certificate leases,
+exact lease revocation, certificate lookup and a signed JSON CRL at
+`cert/crl`. Mount default/max lease TTL tuning is enforced by the same mount
+registry used by the Service. Generated leaf private keys are returned only in
+the successful response and are not retained; the CA key and certificate state
+are persisted only inside the encrypted Service state. Lease-backed certificates
+are revoked rather than deleted when their issuer becomes invalid, so the CRL
+continues to publish the revocation after restart and HA replication.
+
+The selected `qa/openbao-acceptance/pki_live.py` profile compares the same
+internal Ed25519 root/role/lease-backed issue/revoke/CRL observations with the
+pinned OpenBao 2.6.2 binary. That finite profile is not the full PKI surface.
+Intermediates, imported/KMS keys, CSR signing/sign-verbatim, issuer/key rotation,
+OCSP, ACME, EST, PKIext, raw CRL endpoints, all role parameters and high-volume
+revocation/tidy behavior remain outside the current implementation.
+
+## Current SSH OTP increment
+
+[SSH OTP and registered local leases](HEPTABAO_SSH_OTP.md) now supports actual
+role CRUD, online credential issuance/verification, mount TTL tuning, local lease
+lookup/list/exact and segment-bound prefix revocation. It does not implement SSH
+CA, a host/PAM integration, general renewable-provider callbacks. The current bounded Service
+lifecycle worker and its expiry rules are documented in
+[the operational consumer contract](../operations/HEPTABAO_AGENT_PROXY_HELPER.md). The real `Service` owns authorization, issuer liveness, durable
+consumption and commit-before-response; standalone `EngineState` is not a bypass.
+
+## Mount registry revision and remount boundary
+
+Secret-engine mounts now persist a monotonically increasing `revision` and a path
+`incarnation`. Mutating tune/delete/remount calls may provide `cas_revision`; a stale
+value returns conflict before state mutation. Disable records the next path incarnation,
+so recreating the same path cannot resurrect the old mount identity or embedded dynamic
+state. `sys/remount` moves the complete backend atomically inside the Service transaction,
+invalidates the old route immediately, rejects overlapping/reserved destinations, and is
+fenced while dynamic leases are live. Repository-local restart tests verify the moved
+backend, revision/incarnation and disable/recreate boundary. Later migration, multi-host
+fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain open.

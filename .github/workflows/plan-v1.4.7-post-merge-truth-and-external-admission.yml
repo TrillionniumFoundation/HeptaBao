@@ -1,6 +1,7 @@
 name: HeptaBao V1.4.7 post-merge truth and external admission
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:

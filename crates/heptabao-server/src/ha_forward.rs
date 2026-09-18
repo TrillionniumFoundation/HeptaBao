@@ -4,6 +4,7 @@ use std::fmt;
 use zeroize::{Zeroize, Zeroizing};
 
 const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
+const WRAPPED_REQUEST_MAGIC: &[u8; 5] = b"HBFQ2";
 const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
@@ -21,6 +22,8 @@ pub(crate) struct ForwardRequest {
     pub namespace: String,
     pub token: String,
     pub body: Value,
+    #[serde(default)]
+    pub wrap_ttl_seconds: Option<u64>,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -54,6 +57,8 @@ struct ForwardRequestRef<'a> {
     namespace: &'a str,
     token: &'a str,
     body: &'a Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    wrap_ttl_seconds: Option<u64>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -84,7 +89,7 @@ impl Drop for ForwardResponse {
 }
 
 pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
-    encoded.starts_with(REQUEST_MAGIC)
+    encoded.starts_with(REQUEST_MAGIC) || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
 }
 
 pub(crate) fn encode_request(
@@ -108,12 +113,56 @@ pub(crate) fn encode_request(
             namespace,
             token,
             body,
+            wrap_ttl_seconds: None,
+        },
+    )
+}
+
+pub(crate) fn encode_wrapped_request(
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+) -> Result<Vec<u8>, String> {
+    let (source, target) = direction;
+    validate_direction(source, target)?;
+    validate_request_fields(method, path, namespace, token)?;
+    if ttl == 0 || ttl > 32 * 24 * 3600 {
+        return Err("invalid HA wrapping TTL".into());
+    }
+    encode(
+        WRAPPED_REQUEST_MAGIC,
+        &ForwardRequestRef {
+            source,
+            target,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: Some(ttl),
         },
     )
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
-    let request: ForwardRequest = decode(REQUEST_MAGIC, encoded)?;
+    let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
+    let magic = if wrapped {
+        WRAPPED_REQUEST_MAGIC
+    } else {
+        REQUEST_MAGIC
+    };
+    let request: ForwardRequest = decode(magic, encoded)?;
+    if wrapped != request.wrap_ttl_seconds.is_some()
+        || request
+            .wrap_ttl_seconds
+            .is_some_and(|ttl| ttl == 0 || ttl > 32 * 24 * 3600)
+    {
+        return Err("HA wrapping version or TTL mismatch".into());
+    }
     validate_direction(request.source, request.target)?;
     validate_request_fields(
         &request.method,
@@ -307,6 +356,48 @@ mod tests {
         let mut encoded = encode_response(2, 1, 200, &json!({}))?;
         encoded.push(0);
         assert!(decode_response(&encoded).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod wrapping_frame_tests {
+    use super::*;
+    use serde_json::json;
+    #[test]
+    fn wrapped_forwarding_binds_options_and_rejects_version_downgrade() -> Result<(), String> {
+        let frame = encode_wrapped_request(
+            (1, 2),
+            "GET",
+            "secret/data/a",
+            "",
+            "synthetic",
+            &json!({}),
+            60,
+        )?;
+        let decoded = decode_request(&frame)?;
+        assert_eq!(decoded.wrap_ttl_seconds, Some(60));
+        assert!(is_forward_request(&frame));
+        let mut changed = frame.clone();
+        changed[..5].copy_from_slice(REQUEST_MAGIC);
+        assert!(decode_request(&changed).is_err());
+        let legacy = encode_request(1, 2, "GET", "secret/data/a", "", "synthetic", &json!({}))?;
+        assert!(decode_request(&legacy)?.wrap_ttl_seconds.is_none());
+        let mut changed = legacy;
+        changed[..5].copy_from_slice(WRAPPED_REQUEST_MAGIC);
+        assert!(decode_request(&changed).is_err());
+        assert!(
+            encode_wrapped_request(
+                (1, 2),
+                "GET",
+                "secret/data/a",
+                "",
+                "synthetic",
+                &json!({}),
+                0
+            )
+            .is_err()
+        );
         Ok(())
     }
 }

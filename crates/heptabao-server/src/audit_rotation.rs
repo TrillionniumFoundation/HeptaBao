@@ -8,12 +8,12 @@ use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, File, OpenOptions},
     io::{self, Read, Seek, SeekFrom, Write},
-    path::{Component, Path, PathBuf},
+    path::{Path, PathBuf},
 };
 const MAX_SEGMENT_BYTES: u64 = 32 * 1024 * 1024;
 const MAX_MANIFEST_BYTES: u64 = 128 * 1024;
 const STAGING_MAGIC: &[u8] = b"heptabao-audit-manifest-staging-v1\n";
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(default, deny_unknown_fields)]
 pub struct AuditConfig {
     pub segment_bytes: u64,
@@ -56,6 +56,12 @@ struct Segment {
 #[serde(deny_unknown_fields)]
 struct Manifest {
     schema: u32,
+    /// The startup rotation policy is carried inside the authenticated
+    /// checkpoint once the first rotation is published.  `None` is accepted
+    /// only for manifests written before policy persistence was introduced;
+    /// the next checkpoint upgrades such manifests in place.
+    #[serde(default)]
+    config: Option<AuditConfig>,
     generation: u64,
     base: Frontier,
     segments: Vec<Segment>,
@@ -146,6 +152,7 @@ impl AuditRotation {
                 config,
                 manifest: Manifest {
                     schema: 1,
+                    config: Some(config),
                     ..Manifest::default()
                 },
                 manifest_exists: false,
@@ -157,6 +164,10 @@ impl AuditRotation {
     }
     pub(super) fn active_path(&self) -> PathBuf {
         self.access.join(&self.name)
+    }
+
+    pub(super) fn config(&self) -> AuditConfig {
+        self.config
     }
     fn sidecar(&self, suffix: &str) -> PathBuf {
         self.access.join(format!("{}.{suffix}", self.name))
@@ -180,6 +191,13 @@ impl AuditRotation {
             Ok(mut file) => {
                 self.manifest = decode_manifest(&mut file, key)?;
                 self.manifest_exists = true;
+                if let Some(persisted) = self.manifest.config
+                    && persisted != self.config
+                {
+                    return Err(invalid(
+                        "audit rotation policy differs from authenticated checkpoint",
+                    ));
+                }
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound => {}
             Err(e) => return Err(e),
@@ -418,6 +436,10 @@ impl AuditRotation {
         self.publish(complete, key)
     }
     fn publish(&mut self, manifest: Manifest, key: &hmac::Key) -> io::Result<()> {
+        let mut manifest = manifest;
+        // Persist the effective startup policy in the signed checkpoint. This
+        // also upgrades a legacy checkpoint that did not carry configuration.
+        manifest.config = Some(self.config);
         let target = self.sidecar("rotation.json");
         match open_read(&target) {
             Ok(mut file) => {
@@ -531,18 +553,24 @@ fn open_read(path: &Path) -> io::Result<File> {
     Ok(file)
 }
 fn private_options(create: bool) -> OpenOptions {
-    let mut options = OpenOptions::new();
+    let options = OpenOptions::new();
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        let mut options = options;
+        // These values differ between Linux x86_64 and aarch64. Never copy
+        // numeric O_* flags from the build host into target filesystem code.
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
         if create {
             options.mode(0o600);
         }
+        options
     }
     #[cfg(not(target_os = "linux"))]
-    let _ = create;
-    options
+    {
+        let _ = create;
+        options
+    }
 }
 fn descriptor_path(file: &File) -> io::Result<PathBuf> {
     #[cfg(target_os = "linux")]
@@ -564,11 +592,14 @@ fn open_directory(path: &Path) -> io::Result<File> {
     }
     #[cfg(target_os = "linux")]
     {
-        use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+        use std::{
+            os::unix::fs::{OpenOptionsExt, PermissionsExt},
+            path::Component,
+        };
         let mut options = OpenOptions::new();
         options
             .read(true)
-            .custom_flags(0o200000 | 0o400000 | 0o2000000);
+            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
         let mut current = options.open("/")?;
         for component in path.components() {
             match component {
@@ -651,14 +682,13 @@ mod tests {
             self.0.join("audit.jsonl")
         }
         fn service(&self, retained: usize) -> Result<Service, &'static str> {
-            Service::new_with_audit_config(
-                self.0.join("data"),
-                &self.path(),
-                AuditConfig {
-                    segment_bytes: 4096,
-                    retained_segments: retained,
-                },
-            )
+            self.service_with_config(AuditConfig {
+                segment_bytes: 4096,
+                retained_segments: retained,
+            })
+        }
+        fn service_with_config(&self, config: AuditConfig) -> Result<Service, &'static str> {
+            Service::new_with_audit_config(self.0.join("data"), &self.path(), config)
         }
     }
     impl Drop for Root {
@@ -887,6 +917,31 @@ mod tests {
         Ok(())
     }
     #[test]
+    fn audit_rotation_persists_policy_and_rejects_restart_mismatch() -> ResultTest {
+        let root = Root::new()?;
+        let config = AuditConfig {
+            segment_bytes: 4096,
+            retained_segments: 2,
+        };
+        let mut service = root.service_with_config(config)?;
+        requests(&mut service, 2);
+        rotate(&mut service)?;
+        let checkpoint = service.audit_rotation.sidecar("rotation.json");
+        let checkpoint_text = fs::read_to_string(&checkpoint)?;
+        assert!(checkpoint_text.contains("segment_bytes"));
+        assert!(checkpoint_text.contains("retained_segments"));
+        drop(service);
+        assert!(
+            root.service_with_config(AuditConfig {
+                segment_bytes: 4096,
+                retained_segments: 3,
+            })
+            .is_err()
+        );
+        assert!(root.service_with_config(config).is_ok());
+        Ok(())
+    }
+    #[test]
     fn audit_rotation_abrupt_subprocess_exit_recovers_all_durable_boundaries() -> ResultTest {
         const PHASES: [&str; 5] = ["archive", "pending", "truncated", "complete", "garbage"];
         if let Some(path) = std::env::var_os("HEPTABAO_TEST_AUDIT_CHILD_ROOT") {
@@ -1002,3 +1057,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "audit_platform_tests.rs"]
+mod platform_tests;

@@ -6,7 +6,7 @@ OpenBao Oracle, a compatibility corpus, or evidence of a deployed service.
 
 | Entry point | Purpose | Default effect |
 |---|---|---|
-| `acceptance.py` | 38 synthetic KV-v2/token/Transit black-box cases, optional independent OpenBao comparison | No writes without `--allow-test-writes` |
+| `acceptance.py` | Synthetic KV-v2/token/Transit/auth black-box cases, optional independent OpenBao comparison | No writes without `--allow-test-writes` |
 | `migrate_kv2.py` | Explicitly selected KV-v2 histories, direct transfer or private export/import | Read-only dry-run |
 | `ha_acceptance.py` | Three-or-more-node observation and controlled external failover/readback phases | Observation only; missing nodes are `not_run` |
 | `live_migration_rehearsal.py` | Start a supplied verified Oracle and real candidate in one network context; rehearse copy, SIGKILL, acknowledgement loss and resume | Explicit invocation creates synthetic test resources |
@@ -63,3 +63,39 @@ rehearsal against the named OpenBao2.6.2 and candidate binary digests. It is not
 receipt for future binaries or full-format migration. Archive additional actual
 execution receipts and bind each to the tested deployment and immutable candidate
 source identity before making a scoped claim. No live HA pass is bundled.
+
+## Additional selected runtime profiles
+
+`response_wrapping.py`, `capabilities_live.py`, `ssh_otp_live.py` reuse the strict
+nonempty/all-passed comparison harness with the pinned official binary. They do
+not self-advance `complete_surface_corpus_v1.json`. `client_live.py` exercises the
+real Python CLI. `wrapping_ha.py` and `ssh_otp_ha.py` include earlier HA profiles,
+so their scenario counts are overlapping, not additive coverage. `wrapping_upgrade.py`
+requires the exact schema-2 legacy binary hash and exercises actual schema-3
+wrapping/OTP mutation, old-reader rejection and recovery. Use absolute binaries,
+new output names and an existing mode-0700 evidence directory. All fixture secrets
+remain in temporary private directories and are removed by these launchers.
+
+Capacity saturation/reopen and real metadata preflight use `capacity_live.py` and
+`migration_preflight_live.py`. Both create only new synthetic TLS instances;
+preflight fixture success never authorizes a full-instance migration. See
+`docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md` and
+`docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md`.
+
+## Online authentication profiles
+
+`kubernetes_online.py` exercises the actual server and pinned-TLS TokenReview
+protocol; it explicitly does not qualify a kube-apiserver or Kubernetes RBAC.
+`oidc_code_live.py` uses the fixed official 2.6.2 issuer, actual code/PKCE exchange,
+ID-token signatures and the native callback executable. `online_auth_ha.py`
+extends the real three-process fixture with leader death, quorum loss and
+concurrent code consumption. All need a new report in an owner-only directory;
+the latter two also require the existing verified official binary/archive.
+These profiles do not alter fixed-corpus surface status, production authority
+or independent admission. See `docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md`.
+
+The compatibility corpus records selected checks from these profiles through
+`external_fixture_case_registry_v1.json`. The registry binds every external
+case to its executable script and keeps those checks separate from the generic
+differential runner; a scoped fixture is evidence of bounded runtime behavior,
+never a claim of complete OpenBao auth compatibility or independent admission.

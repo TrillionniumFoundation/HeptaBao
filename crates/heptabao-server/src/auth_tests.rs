@@ -6,6 +6,104 @@ fn setup() -> (AuthState, String, Principal) {
     let principal = state.authenticate(&raw, 100).unwrap();
     (state, raw, principal)
 }
+
+#[test]
+fn ldap_bounded_profile_config_login_and_injection_rejection() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/ldap",
+        json!({"type":"ldap"}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/ldap/config",
+        json!({
+            "url":"ldaps://directory.example.test",
+            "bind_dn":"cn=heptabao,dc=example,dc=test",
+            "user_dn_template":"uid={{username}},ou=people,dc=example,dc=test",
+            "starttls":false
+        }),
+        100,
+    );
+    let cfg = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/ldap/config",
+        json!({}),
+        100,
+    );
+    assert_eq!(cfg.body["data"]["url"], "ldaps://directory.example.test");
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/ldap/users/alice",
+        json!({"password":"correct horse battery staple"}),
+        100,
+    );
+    let before = state.tokens.len();
+    let offline = state.handle(
+        Some(&root),
+        "",
+        "POST",
+        "auth/ldap/login/alice",
+        &json!({"password":"correct horse battery staple"}),
+        101,
+    );
+    assert_eq!(offline.err().unwrap().status, 503);
+    assert_eq!(
+        state.tokens.len(),
+        before,
+        "local password must not replace LDAP bind"
+    );
+    let plan = state
+        .prepare_ldap_login(
+            "",
+            "ldap",
+            "alice",
+            "POST",
+            &json!({"password":"directory-password"}),
+            101,
+        )
+        .unwrap();
+    // This unit observation exercises local mapping only. Real LDAPS bind and
+    // directory-group readback are exercised by ldap_openldap_live.py.
+    let login = state
+        .finish_ldap_login(
+            plan,
+            LdapLoginObservation {
+                groups: BTreeSet::new(),
+            },
+        )
+        .unwrap();
+    let issued = login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(issued, 102).is_ok());
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "",
+                "PUT",
+                "auth/ldap/config",
+                &json!({
+                    "url":"ldap://directory.example.test/??(|(uid=*))"
+                }),
+                100
+            )
+            .is_err()
+    );
+}
 fn call(
     state: &mut AuthState,
     actor: &Principal,
@@ -2303,4 +2401,247 @@ fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen(
             .status,
         403
     );
+}
+
+#[test]
+fn jwt_jwks_config_accepts_public_ed25519_and_drives_login() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[91; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "reader",
+        json!(r#"path "secret/data/app" { capabilities = ["read"] }"#),
+    );
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let config = json!({
+        "issuer":"https://issuer.example",
+        "audiences":["https://service.example/bao"],
+        "required_namespace":"team",
+        "clock_skew_seconds":0,
+        "maximum_token_lifetime_seconds":3600,
+        "jwks":{"keys":[{
+            "kid":"key-1","kty":"OKP","crv":"Ed25519","alg":"EdDSA","use":"sig","key_ops":["verify"],
+            "x":URL_SAFE_NO_PAD.encode(pair.public_key().as_ref())
+        }]}
+    });
+    let response = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/config",
+        config,
+        1000,
+    );
+    assert_eq!(response.status, 204);
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/role/app",
+        json!({"token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
+            "bound_audiences":["https://service.example/bao"],"token_ttl":120,"token_max_ttl":240}),
+        1000,
+    );
+    let token = signed_jwt(
+        &pair,
+        &json!({"alg":"EdDSA","kid":"key-1","typ":"JWT"}),
+        &jwt_claims("jwks-login"),
+    );
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/federated/login",
+            &json!({"role":"app","jwt":token}),
+            1001,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(
+        login.body["auth"]["token_policies"],
+        json!(["default", "reader"])
+    );
+}
+
+#[test]
+fn jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[92; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let base = serde_json::to_vec(&state).unwrap();
+    let x = URL_SAFE_NO_PAD.encode(pair.public_key().as_ref());
+    let bad_jwks = [
+        json!({"keys":[{"kid":"k","kty":"oct","crv":"Ed25519","alg":"EdDSA","x":x}]}),
+        json!({"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x,"d":"private"}]}),
+        json!({"keys":[
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x},
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}
+        ]}),
+    ];
+    for jwks in bad_jwks {
+        let result = state.handle(
+            Some(&root),
+            "team",
+            "POST",
+            "auth/federated/config",
+            &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+                "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+                "jwks":jwks}),
+            1000,
+        );
+        assert!(result.is_err());
+        assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+    }
+    let mixed = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/federated/config",
+        &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+            "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+            "keys":[{"kid":"legacy","algorithm":"EdDSA","key_base64":x}],
+            "jwks":{"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}]}}),
+        1000,
+    );
+    assert!(mixed.is_err());
+    assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+}
+
+#[test]
+fn auth_mount_revision_tune_remount_and_recreate_rotate_identity() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/team",
+        json!({"type":"userpass","cas_revision":0}),
+        100,
+    );
+    let created = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/team",
+        json!({}),
+        100,
+    );
+    let accessor = created.body["data"]["accessor"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(created.body["data"]["revision"], 1);
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "sys/auth/team/tune",
+        json!({"description":"team-v2","cas_revision":1}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/team/users/alice",
+        json!({"password":"correct horse battery staple"}),
+        100,
+    );
+    let issued = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/team/login/alice",
+        json!({"password":"correct horse battery staple"}),
+        101,
+    )
+    .body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let moved = state.remount_mount("", "team", "moved", Some(2)).unwrap();
+    assert_eq!(moved.body["data"]["revision"], 3);
+    assert_eq!(moved.body["data"]["accessor"], accessor);
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/team/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .err()
+            .map(|error| error.status),
+        Some(404)
+    );
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/moved/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .unwrap()
+            .unwrap()
+            .status,
+        200
+    );
+    assert!(state.authenticate(&issued, 102).is_ok());
+    let before_stale = serde_json::to_vec(&state).unwrap();
+    assert_eq!(
+        state
+            .remount_mount("", "moved", "other", Some(1))
+            .err()
+            .map(|error| error.status),
+        Some(409)
+    );
+    assert_eq!(before_stale, serde_json::to_vec(&state).unwrap());
+    call(
+        &mut state,
+        &root,
+        "",
+        "DELETE",
+        "sys/auth/moved",
+        json!({"cas_revision":3}),
+        103,
+    );
+    assert!(state.authenticate(&issued, 103).is_err());
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/moved",
+        json!({"type":"userpass","cas_revision":0}),
+        104,
+    );
+    let recreated = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/moved",
+        json!({}),
+        104,
+    );
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_ne!(recreated.body["data"]["accessor"], accessor);
 }

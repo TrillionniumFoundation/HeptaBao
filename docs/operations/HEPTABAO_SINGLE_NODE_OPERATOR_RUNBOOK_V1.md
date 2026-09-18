@@ -29,7 +29,9 @@ Illustrative configuration with synthetic paths (supply real certificate files a
   "rate_limit_per_second": 200,
   "rate_limit_burst": 400,
   "rate_limit_entries": 4096,
-  "audit": {"segment_bytes": 33554432, "retained_segments": 8}
+  "audit": {"segment_bytes": 33554432, "retained_segments": 8},
+  "outbound_endpoints": [],
+  "audit_http_url": null
 }
 ```
 
@@ -52,13 +54,35 @@ After unsealing and verifying custody, an effective root token in the root names
 
 `sys/rekey/init` and `sys/rekey/update` implement the bounded Shamir rekey/verification protocol described in the server guide and service tests. Rekey changes wrapping/share custody while preserving the barrier key; it is not KMS auto-unseal or a general data-key rewrap facility. Preserve pending verification state across response loss/restart and explicitly complete or cancel the ceremony. New shares must be verified before discarding the previous custody set.
 
+## Identity-aware upgrade and rollback boundary
+
+The current Service state discriminator is version 2 (independent of the
+unchanged seal metadata and durable envelope versions). A valid version-1
+state without new identity bindings remains readable. The first durable
+mutation, even finite-token consumption followed by ACL denial, atomically
+publishes version 2. A startup/read-only check alone is not a migration receipt.
+
+Stop old clients/writers and retain original encrypted state/custody before an
+isolated upgrade drill. Verify data, auth, identity denial and restart with the
+exact candidate. After the transition, the previous version-1-only executable
+will reject unseal with 503; this is intentional and must not be bypassed by
+editing state, clearing fields or deleting files. Recovery needs a compatible
+version-2 binary and current revocation information. Restoring an older backup
+can restore obsolete permissions; it is not a safe substitute for rollback.
+
+`qa/openbao-acceptance/identity_upgrade.py` tests the binary boundary on newly
+created local synthetic state and requires the legacy executable's SHA-256.
+It does not accept an existing deployment. These checks do not admit production
+migration, mixed-version rolling HA, forced old-format restore or an external
+rollback-protection provider. Consult the detailed Identity and server guides.
+
 ## Limits, compaction and pressure
 
 | Resource | Current enforced bound | Action |
 |---|---|---|
 | HTTP headers / normal body | 16 KiB / 256 KiB | Send one canonical JSON request per connection; chunked/pipelined requests are rejected |
 | Snapshot request / response body | 32 MiB / 32 MiB | Snapshot-specific JSON/base64 transfer still has the smaller decoded limit below |
-| Serialized Service state | 768 KiB | Remove obsolete data/credentials using authenticated APIs; compaction alone cannot shrink live secrets |
+| Serialized logical Service state | 16 MiB, published as 512 KiB immutable chunks plus one manifest | This removes the legacy 768 KiB single-value ceiling but not whole-state serialization/write amplification; use capacity preflight and measured growth curves rather than raising the bound |
 | Retained durable operation identities | 32,000 | Compact the journal when needed; compaction retains replay identities and does not reset this limit |
 | Durable journal | 64 MiB | Root `POST /v1/sys/storage/raft/compact` with `{}`; inspect returned generation and before/after byte counts |
 | Decoded backup transfer | 20 MiB | Export fails with 507 above the limit; keep size headroom before a restore drill |
@@ -66,6 +90,32 @@ After unsealing and verifying custody, an effective root token in the root names
 | Retained sealed audit segments | 1–64, default 8, plus active segment | Archive sealed segments externally before retention removes older records |
 
 Capacity or filesystem failure is not permission to continue unrecorded requests. New durable writes can fail before entry with 507; an unavailable audit path can block reads, health and denied attempts as well. A finite-use token may already have consumed its admitted use before a subsequent ACL or state-capacity rejection. Alert externally on byte/inode headroom and failed operations; there is no integrated metrics exporter or background retention daemon for general token/lease models.
+
+## Optional mandatory HTTPS audit collector
+
+A deployment may pair the mandatory authenticated file audit with one fixed HTTPS
+collector by adding an `outbound_endpoints` entry and `audit_http_url` to
+`server.json` **before unseal**. The audit URL must resolve through that exact
+host-enrolled origin/address/server-name/CA/path-prefix tuple. Do not expose a
+generic Internet origin or a root `/` path. Runtime `sys/audit/http` requests may
+inspect the device but cannot replace, redirect or disable it.
+
+Each admitted audit record is serialized once, appended and `fsync`ed to the local
+authenticated JSONL chain, then delivered exactly once to the configured collector
+with a three-second absolute egress deadline. Redirects, unenrolled destinations,
+invalid TLS, malformed responses, oversized responses and collector errors fail
+closed; no automatic retry is performed because the collector may already have
+accepted the record. The process fences further audit admission after such a
+failure.
+
+A remote delivery failure therefore creates an intentional reconciliation case:
+the local authenticated chain can contain a record that the remote collector did
+not receive. Preserve the local chain and treat any remote sequence gap as an
+incident. Restart only after restoring the same trusted collector configuration
+or making an explicit operator decision to run without that optional device.
+Restart does not silently replay the missing remote record. This profile provides
+a bounded synchronous HTTPS device, not complete dynamic OpenBao audit-device
+configuration/batching/backpressure compatibility.
 
 ## Authenticated audit rotation and retention
 
@@ -101,3 +151,22 @@ Root `GET /v1/sys/internal/recovery/<reference>` returns the bounded local recon
 Optional `--ha-config /absolute/ha.json` enables one voter per process with pinned mTLS peers and the actual initialized application's cluster identity. See the server guide for required node/peer fields, 200 ms heartbeats, 1000–2000 ms elections and bounded forwarding workers. ReadIndex remains required; a local leader observation is insufficient. The synthetic destructive fixture uses cold-cloned development seed data and is not a production enrollment procedure.
 
 Repository checks include `root_maintenance_routes_compact_snapshot_restore_and_reconcile`, `result_audit_failure_withholds_plaintext_and_preserves_consumed_token_after_reopen` and the `audit_rotation_*` interruption/tamper tests in the server package. Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`; the standalone smoke and HA fixtures exercise additional named scenarios. Independently witnessed restore, filesystem/power failure, HA faults, rolling upgrades, custody, archival retention and incident response remain qualification work.
+
+## Wrapping/OTP schema-3 operations
+
+Use the current wrapping and SSH OTP guides for scoped command and lifecycle
+semantics. Keep original pre-upgrade backups and the actual capable binary under
+operator control. Schema-1/2 reads do not rewrite state; the first real mutation
+upgrades to schema 3. An old binary must reject schema 3; do not hand-edit the
+schema, delete identity/wrapper/lease fields or restore stale grants to bypass it.
+This is not a qualified mixed-version HA upgrade or production migration plan.
+
+For uncertain unwrap or OTP verification, do not blindly retry. The capability
+may already be durably consumed while the response was withheld. Metadata lookup
+and the existing authenticated recovery boundary are investigative tools, not an
+instruction to recreate the credential. An SSH integration must separately bind
+returned username/IP to the actual host; no host integration has been deployed.
+
+## Schema 4 and external providers
+
+Before configuring remote JWT or PostgreSQL, read [remote key enrollment](../auth/HEPTABAO_REMOTE_JWT_KEYS.md) and [provider ownership/reconciliation](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md). No outbound endpoint exists by default. Provider timeouts leave durable pending effects, not a retry permission; the bounded reconciler revokes uncertain leases. Actual PostgreSQL 17 acceptance is mandatory before any deployment use. See [Raft administration](HEPTABAO_RAFT_ADMINISTRATION.md) for member operations. Do not roll back schema 4 to an old executable or restore provider-bearing snapshots by hand.

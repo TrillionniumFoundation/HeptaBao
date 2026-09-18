@@ -34,7 +34,7 @@ class ExternalEvidenceSchemaBindingTests(unittest.TestCase):
         source = VALIDATOR.read_text(encoding="utf-8")
         for gate in schema_gates:
             self.assertIn(f'"{gate}"', source)
-        self.assertEqual(len(schema_gates), 8)
+        self.assertEqual(len(schema_gates), 9)
 
     def test_documentation_names_all_executable_assets(self) -> None:
         text = DOC.read_text(encoding="utf-8")
@@ -49,6 +49,7 @@ class ExternalEvidenceSchemaBindingTests(unittest.TestCase):
             "HB-BLK-EXT-005",
             "HB-BLK-EXT-006",
             "HB-BLK-EXT-007",
+            "HB-BLK-EXT-008",
         ):
             self.assertIn(gate, text)
 

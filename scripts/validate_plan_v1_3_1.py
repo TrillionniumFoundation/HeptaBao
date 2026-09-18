@@ -337,7 +337,15 @@ def _validate_workflow_security(document: Mapping[Any, Any], label: str) -> None
 
 
 def validate_workflow_admission(root: Path) -> None:
-    paths = _workflow_paths(root)
+    required_names = {
+        CANONICAL_PR_WORKFLOW,
+        EXACT_SOURCE_WORKFLOW,
+        DIAGNOSTIC_FALLBACK_WORKFLOW,
+        Path(HISTORICAL_WORKFLOW).name,
+    }
+    # Validate the frozen V1.3.1 workflow set only. Later V1.4/V2 lanes have
+    # independent admission contracts and are intentionally out of scope here.
+    paths = [path for path in _workflow_paths(root) if path.name in required_names]
     names = {path.name for path in paths}
     for required_name in (
         CANONICAL_PR_WORKFLOW,
@@ -350,6 +358,10 @@ def validate_workflow_admission(root: Path) -> None:
     active_push_workflows: list[str] = []
     event_map: dict[str, dict[str, Any]] = {}
     for path in paths:
+        # V2.x continuation lanes are outside the frozen V1.3.1 workflow
+        # admission set; the current V2.5 gate validates them separately.
+        if path.name.startswith(("v2-", "four-track", "codex-", "plan-v1.4.7")):
+            continue
         value, _ = _read_workflow(path)
         _validate_workflow_security(value, path.name)
         events = _events(value, path.name)

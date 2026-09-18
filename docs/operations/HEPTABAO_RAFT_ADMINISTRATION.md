@@ -1,0 +1,122 @@
+# Raft membership, persisted snapshots and bounded Autopilot
+
+Status: implemented same-version, pre-enrolled development profile with real
+multi-process tests. Not full OpenBao Integrated Storage compatibility, arbitrary
+node discovery, mixed-version upgrade or independent destructive qualification.
+
+## Owners and persistence
+
+`heptabao-raft-runtime/src/process/admin.rs` uses native Raft membership, committed
+configuration, applied frontier, peer replication/contact and persisted snapshots.
+`heptabao-server/src/service_raft_admin.rs` owns the encrypted Service Autopilot
+policy and requested candidate promotions. Source, transport and durable boundaries
+are those of the existing Service/Raft pipeline; configuration text is never itself
+a committed membership receipt.
+
+The host enrolls every peer's ID, address and TLS certificate before start. The
+optional `initial_voters` selects 3–9 voters from that fixed peer set. An enrolled
+peer outside this list starts as a future learner, not an automatic voter. There
+is no endpoint that grants a submitted host/address/certificate network authority.
+All admin paths require root namespace, a live authenticated principal, operation
+capability and sudo. Requests cannot supply arbitrary network destinations, weaken
+quorum bounds or bypass policy by setting an unknown force flag.
+
+## Service operations and expected-frontier fence
+
+```text
+GET  sys/storage/raft/configuration
+POST sys/storage/raft/join
+POST sys/storage/raft/promote
+POST sys/storage/raft/demote
+POST sys/storage/raft/remove-peer
+GET  sys/storage/raft/snapshot-status
+GET  sys/storage/raft/autopilot/state
+GET  sys/storage/raft/autopilot/configuration
+POST sys/storage/raft/autopilot/configuration
+```
+
+Membership requests bind `server_id` to an enrolled peer and `expected_index` to
+the observed committed membership frontier. Join registers a learner; promotion
+requires the continuously observed health interval and catch-up to the policy's
+applied frontier. Native APIs carry the actual change through consensus, including
+joint configuration. Success is returned only after committed and effective
+membership agree, the configuration is no longer joint, the desired member state
+is observed, and a fresh ReadIndex establishes current authority.
+
+Timeout or inability to observe completion produces an explicit reconcile outcome,
+not "nothing changed". Read the current configuration and obtain a new frontier
+before another operation. Removing a learner really removes its native node entry;
+demoting a voter retains a learner. Removal or demotion may never leave fewer than
+three voters. The policy min_quorum may impose a stricter limit. The original
+step-down path now selects actual voters rather than any configured peer.
+
+## Snapshots: durable completion, not queue acceptance
+
+A requested native snapshot waits for an appropriate persisted snapshot frontier,
+then returns the native snapshot identity, applied index, exact byte count and
+SHA-256 of the stored data. Triggering Raft work alone is not a completion result.
+A learner joined after prior logs are purged must catch up through Raft's snapshot
+installation mechanism; the five-process suite exercises this path.
+
+The existing Service HTTP snapshot body remains the repository's encrypted backup
+format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
+and learner catch-up do not implement cross-product snapshot restore, forced
+restore, disaster recovery with another seal, or mixed-version snapshot formats.
+Service restores with database provider records are refused rather than reviving
+external credentials from a stale local image.
+
+## Autopilot safety and lifecycle
+
+The current bounded configuration persists cleanup enablement, contact threshold,
+maximum trailing logs, min_quorum and server stabilization time. Cleanup defaults
+to false. Default contact threshold is 10 seconds, default dead-server threshold
+is one day, default min_quorum is 3 and default stable interval is 10 seconds.
+Supported bounds: contact 1–60 seconds, dead contact 60–86400 seconds, stable
+interval 1–600 seconds, min_quorum 3–9, max trailing logs up to 10000.
+
+Health requires known recent peer contact and bounded native replication lag.
+Unknown contact is not proof of a dead peer. Promotion additionally requires a
+fresh matched frontier; being reachable alone is insufficient. The advisory
+continuous-stability clock resets on term, membership, config or health change.
+`stabilized` is reported from those real observations, not from time since an API
+request. It is not an independently certified node-health assertion.
+
+The existing lifecycle worker performs at most one guarded consensus transition
+per tick. It promotes only requested eligible learners and cleans up only after
+explicit enablement plus the full dead-contact grace. A policy change is committed
+through Service before external consensus administration. Losing leadership or
+quorum blocks further admission. Existing Service/raft persistence, retry/reconcile
+and audit boundaries remain in force; no operator safety override is manufactured.
+
+## Operation and verification
+
+Changing static enrollment requires a reviewed host-profile change, not a join
+URL. Observe configuration and Autopilot state before and after each transition.
+A queued change may have committed despite response loss. Do not assume retry is
+safe against an old expected_index, force an unseal, or erase logs to recover.
+
+```sh
+cargo test --locked -p heptabao-raft-runtime
+python qa/openbao-acceptance/raft_membership_live.py --binary <server> --dead-cleanup --output <new-json>
+python qa/openbao-acceptance/ha_network_partition.py --binary <server> --output <new-json>
+```
+
+The membership suite starts five real local processes with three initial voters,
+persists a snapshot, joins learners, checks stale/unknown-peer rejection, observes
+stabilization and catch-up, promotes/demotes/removes native members, verifies real
+dead-server grace and cleanup, then checks leader failure and restart. These are
+same-binary loopback tests, not five physical hosts or simulated power failures.
+ARM64/macOS/Windows, large-state load, physical disk faults, OpenBao binary-format
+parity, automatic arbitrary-node challenge enrollment, force restore and rolling
+mixed-version upgrade require separate evidence.
+
+### Explicit linearizable read probe
+
+`GET sys/storage/raft/linearizable-read` is a root-scoped diagnostic route. It
+first executes the native OpenRaft `ReadIndex` barrier and only then reads the
+current term, committed membership frontier and applied index. A successful
+`200` response includes `data.linearizable=true` and
+`observation_scope=native-raft-ReadIndex`; a lost leader or quorum returns
+`503` and no stale success is emitted. The route is an HeptaBao qualification
+probe, not an OpenBao compatibility claim, and still requires independent
+partition/failover evidence before production authority can be granted.

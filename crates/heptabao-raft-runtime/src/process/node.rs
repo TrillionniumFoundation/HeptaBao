@@ -13,11 +13,13 @@ use crate::store::{DurableLogStore, DurableStateMachine};
 use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
+const PRODUCTION_CHUNK_CLIENT_PREFIX: &str = "heptabao-production-ha-chunk";
+const MAX_APPLICATION_CHUNK_INDEX: u16 = 127;
 
 pub struct ProcessRaftNode {
-    id: u64,
-    raft: DurableRaft,
-    state_machine: DurableStateMachine,
+    pub(super) id: u64,
+    pub(super) raft: DurableRaft,
+    pub(super) state_machine: DurableStateMachine,
     rpc_service: RaftRpcService,
 }
 
@@ -136,6 +138,16 @@ impl ProcessRaftNode {
     pub async fn current_leader(&self) -> Option<u64> {
         self.raft.current_leader().await
     }
+    pub async fn transfer_leadership(&self, target: u64) -> Result<(), RemoteRaftError> {
+        if target == 0 || target == self.id {
+            return Err(RemoteRaftError::InvalidTopology);
+        }
+        self.raft
+            .trigger()
+            .transfer_leader(target)
+            .await
+            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+    }
 
     /// Return a nonzero monotonically increasing serial for the production
     /// application client.
@@ -162,13 +174,38 @@ impl ProcessRaftNode {
         client_serial: u64,
         envelope: &ReplicatedEnvelope,
     ) -> Result<CommitReceipt, RaftRuntimeError> {
+        self.replicate_for_client(PRODUCTION_CLIENT_ID, client_serial, envelope)
+            .await
+    }
+
+    /// Stage one bounded application-state chunk under a fixed index/slot key.
+    /// The authoritative production manifest is a different client identity, so
+    /// an interrupted sequence of chunk writes cannot publish a partial state.
+    pub async fn replicate_application_chunk(
+        &self,
+        index: u16,
+        slot: u8,
+        client_serial: u64,
+        envelope: &ReplicatedEnvelope,
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        let client = application_chunk_client(index, slot)?;
+        self.replicate_for_client(&client, client_serial, envelope)
+            .await
+    }
+
+    async fn replicate_for_client(
+        &self,
+        client: &str,
+        client_serial: u64,
+        envelope: &ReplicatedEnvelope,
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
         if client_serial == 0 {
             return Err(RaftRuntimeError::InvalidSerial);
         }
         let response = self
             .raft
             .client_write(ClientRequest {
-                client: PRODUCTION_CLIENT_ID.to_owned(),
+                client: client.to_owned(),
                 serial: client_serial,
                 status: envelope.encoded_status(),
             })
@@ -216,6 +253,26 @@ impl ProcessRaftNode {
             })
     }
 
+    pub async fn application_chunk_envelope(
+        &self,
+        index: u16,
+        slot: u8,
+    ) -> Result<Option<ReplicatedEnvelope>, RemoteRaftError> {
+        let client = application_chunk_client(index, slot)
+            .map_err(|error| RemoteRaftError::Io(error.to_string()))?;
+        let state = self.state_machine.get_state_machine().await;
+        let Some(status) = state.client_status.get(&client) else {
+            return Ok(None);
+        };
+        ReplicatedEnvelope::decode_status(status)
+            .map(Some)
+            .map_err(|error| {
+                RemoteRaftError::Io(format!(
+                    "invalid staged application chunk envelope: {error}"
+                ))
+            })
+    }
+
     pub async fn shutdown(self) -> Result<(), RemoteRaftError> {
         self.raft
             .shutdown()
@@ -224,12 +281,26 @@ impl ProcessRaftNode {
     }
 }
 
+fn application_chunk_client(index: u16, slot: u8) -> Result<String, RaftRuntimeError> {
+    if index > MAX_APPLICATION_CHUNK_INDEX || slot > 1 {
+        return Err(RaftRuntimeError::InvalidEnvelope);
+    }
+    Ok(format!(
+        "{PRODUCTION_CHUNK_CLIENT_PREFIX}:{index:03}:{slot}"
+    ))
+}
+
 fn production_config() -> Result<Config, RemoteRaftError> {
     Config {
         heartbeat_interval: 200,
         election_timeout_min: 1_000,
         election_timeout_max: 2_000,
-        snapshot_policy: SnapshotPolicy::LogsSinceLast(3),
+        // A single logical state commit can stage dozens of bounded chunks plus
+        // one manifest. Snapshotting every three Raft entries would turn the
+        // periodic full checkpoint into the dominant write path and erase the
+        // delta-journal benefit. 128 keeps worst-case retained encoded chunk
+        // history bounded while amortizing full state-machine checkpoints.
+        snapshot_policy: SnapshotPolicy::LogsSinceLast(128),
         max_in_snapshot_log_to_keep: 0,
         enable_pre_vote: Some(true),
         ..Config::default()

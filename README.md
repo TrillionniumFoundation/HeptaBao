@@ -12,6 +12,46 @@ The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable stat
 
 The current candidate includes a repository-owned durable three-voter Raft consensus core with ReadIndex, restart and quorum-loss tests; a checksum-pinned sandbox-wrapper plugin boundary with encrypted restart-safe invocation intents and lease projections; and an exact 60-surface OpenBao 2.6.2 compatibility denominator that rejects partial or repository-controlled admission. The current source now also contains an authenticated HA service boundary with mTLS peer identity binding, durable replay fencing, leader-forwarding contracts, snapshot/membership framing and bounded peer transport. The `heptabao-raft-runtime` ↔ `heptabao-ha-service` ↔ `heptabao-server` per-process composition is present in this candidate, but production admission and destructive three-process HA qualification remain open, as do qualified operating-system sandbox and provider implementations, complete identity/MFA/external-auth methods, full-format migration adapters, fixtures for the remaining compatibility surfaces, current exact-head independent Oracle observation and destructive multi-platform qualification. These are explicit blockers, not implied capabilities.
 
+## Current integrated runtime additions
+
+The source also implements [single-use response wrapping](docs/auth/HEPTABAO_RESPONSE_WRAPPING.md),
+[live capability inspection](docs/auth/HEPTABAO_CAPABILITIES.md), and
+[SSH OTP with scoped local leases](docs/engines/HEPTABAO_SSH_OTP.md). The
+[Python HTTPS SDK and private-output CLI](clients/python/README.md) is runnable,
+not only a contract. These remain bounded development profiles, not full OpenBao
+compatibility or production readiness. The wrapping increment introduced schema 3; the current state format also refuses unsafe old-binary fallback;
+no mixed-version rollout is implied. No real SSH host/PAM, CA, general provider
+worker, full Agent/Proxy or independent acceptance is created by these additions.
+
+The [operational consumer implementation](docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md)
+adds a bounded AppRole auto-auth/renewal process, generation-checked private sink,
+Linux Unix-socket proxy, host/user/role-bound OTP helper, and idle Service lease
+maintenance through the existing audited durable/Raft writer. These are scoped
+executables, not full Agent/Proxy/SSH parity, PAM/sshd deployment or general
+external-provider revocation. The current Service state discriminator is defined in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`.
+
+## Current capacity and migration prerequisites
+
+The [capacity interface and recovery path](docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md)
+expose the actual bounded-state/replay/journal headroom. The authoritative Service
+state is still serialized as one logical image, but current local storage uses
+owner-scoped V4 content-defined chunks (384 KiB minimum, 512 KiB target,
+768 KiB maximum) plus one authenticated owner manifest publication point. HA uses its
+own bounded chunk framing after serializing the same complete logical image. Local
+state and HA replication share a **16 MiB serialized-state bound**. V4 gives Auth, Engines, Database, Raft-admin and Namespace independent local
+content-addressed ownership. Their in-memory owners are copy-on-write; after the one
+logical State serialization needed for the cluster digest, unchanged owners carry
+forward the previous authenticated descriptor/chunks without a second owner
+serialization/hash/chunk pass, while changed owners publish new chunks atomically
+with the manifest. The HA compatibility path still serializes the complete logical State for its digest and
+replication manifest, so end-to-end write cost is not yet fully record-oriented. The active replay
+ledger remains bounded to 32,000 identities per epoch, and ordinary compaction does
+not evict identities. These are bounded mechanisms, not production-scale proof.
+[Live migration preflight](docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md) observes
+real source catalogs and target headroom without copying or cutover. The
+[per-surface execution map](docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md)
+retains all original 60 surfaces and their work packages without issuing passes.
+
 ## Current source of truth
 
 1. `planning/HEPTABAO_CANONICAL_PROJECT_STATE_V2_0.yaml`
@@ -55,11 +95,11 @@ cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
 cargo +1.98.0 doc --locked --workspace --no-deps
 ```
 
-The read-only V2.1 workflows validate the immutable exact PR head and the real prospective merge into `main`; old-head success is never inherited.
+The current read-only replacement workflow validates the immutable exact PR head and the real prospective merge into `main`; old-head success is never inherited.
 
 ## Documentation
 
-Current source facts: `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`.
+Current source authority: the exact Git commit/tree exercised by CI. `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is a reproducible diagnostic snapshot.
 See `docs/modules/CURRENT_SOURCE_BINDING.md` for reproducible current API/test
 projections and the separation from frozen V1.4.7 evidence.
 
@@ -88,3 +128,39 @@ migration_authority: false
 release_authority: false
 authority_effect: NONE
 ```
+
+## Current external-provider and cluster-administration additions
+
+The [PostgreSQL provider and renewable-lease profile](docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md) now has a native TLS/SCRAM client, encrypted pre-entry intents, provider-side sequence/tombstone SQL, readback and restart reconciliation. The baseline candidate `0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5` executed real PostgreSQL acceptance in repository-controlled CI run `34924284502`, on both head and prospective-merge jobs. See `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md`. This is a baseline observation, not a pass for later source or independent qualification; protocol-model tests alone do not qualify database credentials or revocation. [Remote JWKS and OIDC Discovery-backed JWT](docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md) use host-enrolled verified HTTPS and fresh login-time keys, not browser OIDC code flow. [Raft administration](docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md) changes native committed membership, observes persisted snapshots and applies bounded Autopilot stabilization/cleanup. These additions were introduced with **Service schema 4**; current writes use the discriminator in the current state-format contract. The current read, mutation and rollback rules are consolidated in `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`; earlier formats are not downgrade permissions. Full OpenBao compatibility and production authority remain false.
+
+## Current online authentication increment
+
+[Online Kubernetes / OIDC authentication](docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
+TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
+loopback callback CLI. The separate remote-JWT profile above remains a bearer
+verifier, not code flow. Application writes use the discriminator in the current state-format contract. The new profiles
+retain root-controlled enrollment, live Identity, audit and durable/HA publication.
+They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
+independent acceptance or production authority.
+
+## Section-six execution increment
+
+The current work inventory is `planning/HEPTABAO_SURFACE_WORK_V1.json`, checked by
+`scripts/surface_work.py`. It retains every original surface/case binding and links
+existing real executables; it is subordinate to the active V2.1 plan, not a second
+plan or completion evidence. Technical contracts and open work are described in
+`docs/plan/HEPTABAO_SECTION6_EXECUTION.md`. The current runtime increment adds
+audited capacity observation, safe journal checkpoint maintenance and an explicit
+Transit ciphertext re-encryption tool. It raises the historical 768 KiB state ceiling
+to the current 16 MiB chunked whole-state bound, but does not make storage
+record-oriented, remove the 32,000-identities-per-epoch bound, import raw OpenBao
+snapshots, update application ciphertext references, or advance Hepta's
+independently requalified consumer pin.
+
+## Integrated remote continuation
+
+`docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.md` records the reconciled PR96
+and local online-auth inputs, both capacity response contracts, unified durable
+maintenance, retained Transit tooling, the actual Kubernetes API/etcd/RBAC gate
+and exact direct-Python-version validation. Source presence and workflow wiring
+are not execution receipts. The separate record-store source is not included.

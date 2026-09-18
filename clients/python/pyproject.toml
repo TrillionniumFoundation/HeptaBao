@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=65"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heptabao-client"
+version = "0.2.0"
+description = "Explicit, HTTPS-only HeptaBao client with private response publication"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+heptabao = "heptabao.cli:main"
+heptabao-agent = "heptabao.agent:main"
+heptabao-proxy = "heptabao.proxy:main"
+heptabao-ssh-helper = "heptabao.ssh_helper:main"
+heptabao-oidc-login = "heptabao.oidc_login:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["heptabao*"]

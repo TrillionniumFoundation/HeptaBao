@@ -14,7 +14,7 @@ This package owns a fail-closed process boundary between HeptaBao and an externa
 
 `PluginManifest::new(descriptor, sandbox, limits, operations, environment_allowlist)` owns an enabled descriptor, sandbox-wrapper metadata, declared operations and environment names. `PluginLimits::validate` permits 1 byte–1 MiB request/response payloads and 1–60,000 ms timeout; there are at most 64 environment entries, with at most 16 KiB per nonempty value. `SecretEnvironment::insert` owns zeroizing values and can replace an existing name; the host additionally requires every supplied name be declared. Authentication plugins allow only Read/Write and audit plugins only Write; Secrets/Database may declare dynamic operations.
 
-`SandboxRunner::admit(&manifest)` and `invoke(&manifest, operation, &request, &environment)` define provider validation and the before-entry/unknown result boundary. `PluginHost::admit` owns manifest and runner. `PluginHost::invoke` rejects undeclared operations, size/environment violations and revoked/fenced state before delegating; provider uncertainty or an oversized successful response fences future calls. `reconcile(ReconciliationProof)` rechecks runner admission and accepts a caller-supplied no-effect/nonzero completed digest; it does not independently obtain provider evidence. `revoke()` is terminal host admission state, not external credential revocation.
+`SandboxRunner::admit(&manifest)` and `invoke(&manifest, operation, &request, &environment)` define provider validation and the before-entry/unknown result boundary. `PluginHost::admit` owns manifest and runner. `PluginHost::invoke` rejects undeclared operations, size/environment violations and revoked/fenced state before delegating; provider uncertainty or an oversized successful response fences future calls. `upgrade(replacement)` re-admits a same-ID/kind manifest before atomically switching to a strictly newer descriptor generation; existing capabilities and environment names may only be preserved or expanded. `reconcile(ReconciliationProof)` rechecks runner admission and accepts a caller-supplied no-effect/nonzero completed digest; it does not independently obtain provider evidence. `revoke()` is terminal host admission state, not external credential revocation.
 
 `CommandSandboxRunner` is a Linux wrapper-process adapter implemented in `src/command_runner.rs`. Admission opens owner-controlled regular files through no-follow directory descriptors, copies each bounded executable (at most 64 MiB) into an executable memfd while hashing, checks the manifest SHA-256, and seals the snapshot against write/grow/shrink and execution-mode changes. Invocation launches the wrapper's sealed descriptor path and passes the plugin's sealed descriptor path, retaining both parent-owned descriptors for the invocation. The sandbox wrapper must open the supplied proc descriptor before changing proc mounts or credentials in a way that removes access; it must not resolve the original manifest pathname again. Replacing or modifying the original installed paths after snapshot creation cannot substitute different executed bytes. It requires kernel executable-memfd/sealing support and usable proc descriptor paths; unsupported environments fail before entry rather than falling back to path execution.
 
@@ -28,7 +28,9 @@ Cleanup targets the process group; a descendant that escapes via a new session s
 
 `pending_invocation()` returns a safe projection; `reopen` detects persisted intent and fences the host. `reconcile(&context, DurableReconciliationDecision)` revalidates runner admission, checks a completed lease against the exact pending ID/owner/scope/generation/expiry/digest or restores the previous no-effect projection, persists the result and clears intent before activation. The caller must supply authenticated provider readback and fresh operation context. Known `ProcessBeforeEntry` clears the durable intent; other validation errors after intent publication can leave it pending, so callers must inspect pending state rather than assume every pre-process rejection is automatically retryable. `view` still performs lazy in-memory expiry and does not itself publish an expiry transition.
 
-These process and durable broker implementations are **outside the current server dependency closure**. The current server has no generic plugin-success or database credential backend route and does not invoke this host. The `HBP1`/`HBR1` protocol is repository-defined, not OpenBao's plugin gRPC ABI, and the wrapper test below establishes process/framing behavior rather than a real database connector or qualified sandbox.
+`DurableDynamicSecretBroker::upgrade(replacement)` exposes the same generation-fenced host handoff for the durable composition. It refuses while an invocation is pending, admits the replacement before swapping, and leaves persisted lease projections unchanged. It is a local lifecycle primitive; it does not perform provider credential migration or prove a mixed-version rolling upgrade.
+
+The process host is now in the current server dependency closure for one deliberately bounded profile: deployment-admitted, checksum-bound **read-only secret plugins** enter through `service_plugin.rs`, are invoked outside the global Service writer, and are revalidated against HA leadership plus the durable mount binding before a response is released. The root-namespace `sys/plugins/catalog/secret` read path exposes only admitted IDs and bounded runtime metadata; catalog mutation is not implemented, and a new plugin mount is rejected before durable publication when its ID is not admitted by the deployment. The dynamic `DurableDynamicSecretBroker`, write/issue/renew/revoke plugin effects, authentication/database plugin product integration, and provider reconciliation remain outside the server product path. The `HBP1`/`HBR1` protocol is repository-defined, not OpenBao's plugin gRPC ABI, and the live wrapper profile proves the bounded process/framing/mount lifecycle rather than OpenBao plugin interoperability or a qualified OS sandbox.
 
 ### Historical V1.4.7 lexical snapshot
 
@@ -155,7 +157,7 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 
 ## Evolution and open boundaries
 
-Repository-controlled durable invocation and lease journaling are implemented and remain review-required. External work includes independently qualified Linux/macOS/Windows sandbox providers, process-tree termination guarantees, authenticated multiplexed transport, server routing, real database and cloud provider connectors, rolling plugin upgrades and destructive provider qualification. Those observations are tracked as external completion and this package alone grants no production or dynamic-secret authority.
+Repository-controlled durable invocation and lease journaling are implemented and remain review-required. The new `upgrade` method provides only an atomic, generation-fenced repository handoff after provider admission. External work includes independently qualified Linux/macOS/Windows sandbox providers, process-tree termination guarantees, authenticated multiplexed transport, server routing, real database and cloud provider connectors, mixed-version rolling upgrade and destructive provider qualification. Those observations are tracked as external completion and this package alone grants no production or dynamic-secret authority.
 
 ## Machine-verified source truth
 
@@ -173,3 +175,23 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Platform-specific test compilation
+
+The `TEST_SEQUENCE` counter and its atomic imports are compiled only with the
+Linux command-runner tests that consume them. Portable contract tests and strict
+Clippy remain enabled on macOS. This removes unused Linux test support from the
+non-Linux compilation unit; it does not add macOS sandbox or durable-host support.
+
+## Descendant cleanup fixture publication
+
+The Linux process-group timeout fixture publishes its complete PID/proc identity
+with a temporary file followed by atomic rename. A concurrent timeout must not
+expose an empty or half-written identity as if it named a surviving process. The
+200 ms invocation deadline, two-second overall cleanup assertion and real proc
+termination checks are unchanged; missing publication remains a test failure.
+This is a fixture race correction, not a change to the production sandbox runner.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-plugin-host.md).

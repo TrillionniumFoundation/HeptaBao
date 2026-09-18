@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 13,
-    "defined_not_implemented_surface_count": 47,
-    "fixture_case_count": 45,
+    "implemented_surface_count": 43,
+    "defined_not_implemented_surface_count": 17,
+    "fixture_case_count": 226,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -70,9 +70,16 @@
       "surface_id": "HB-SURFACE-IDENTITY",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 6,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "identity.entity_create",
+        "identity.entity_read",
+        "identity.entity_disable",
+        "identity.entity_disabled",
+        "identity.entity_delete",
+        "identity.entity_deleted"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -93,18 +100,25 @@
       "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 3,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "wrapping.create",
+        "wrapping.unwrap",
+        "wrapping.replay_denied"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 2,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "pki.lease_expire_issue",
+        "pki.lease_expire_lookup"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -155,27 +169,49 @@
       "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "remote_jwks_live.real_rsa_signature_login",
+        "remote_jwks_live.same_assertion_replay_rejected",
+        "remote_jwks_live.p256_rotation_login",
+        "remote_jwks_live.disabled_subject_login_rejected",
+        "remote_jwks_live.restart_current_key_login"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kubernetes_online.online_review_to_real_token",
+        "kubernetes_online.reviewer_request_binding",
+        "kubernetes_online.disabled_identity_denies_new_login",
+        "kubernetes_online.finite_replay_denied",
+        "kubernetes_online.all_egress_requests_match_review_contract"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUTH-LDAP",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ldap_bounded.config_roundtrip",
+        "ldap_bounded.login_and_revocation",
+        "ldap_bounded.filter_injection_rejected",
+        "ldap_openldap_live.real_openldap_bind_mints_token",
+        "ldap_openldap_live.live_directory_group_grants_policy",
+        "ldap_openldap_live.live_group_revocation_removes_policy_on_next_login",
+        "ldap_openldap_live.group_mapping_survives_restart",
+        "ldap_openldap_live.provider_outage_fails_closed",
+        "ldap_openldap_live.provider_success_cannot_bypass_local_revocation"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -257,9 +293,20 @@
       "surface_id": "HB-SURFACE-SECRET-PKI",
       "category": "secret_engines",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "pki.mount",
+        "pki.root",
+        "pki.role",
+        "pki.role_read",
+        "pki.issue",
+        "pki.lease_lookup",
+        "pki.cert_lookup",
+        "pki.lease_revoke",
+        "pki.revoked_lease_absent",
+        "pki.crl_json"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -275,27 +322,57 @@
       "surface_id": "HB-SURFACE-SECRET-SSH",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ssh_otp_live.ssh.mount",
+        "ssh_otp_live.ssh.role",
+        "ssh_otp_live.ssh.issue",
+        "ssh_otp_live.ssh.verify_exact_target",
+        "ssh_otp_live.ssh.replay_denied",
+        "ssh_otp_live.ssh.revoke",
+        "ssh_otp_live.ssh.revoked_denied",
+        "ssh_otp_live.ssh.wrapped_issue",
+        "ssh_otp_live.ssh.unwrapped_otp_works"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-SECRET-DATABASE",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "postgres_pipeline_simulated.verified_scram_configuration",
+        "postgres_pipeline_simulated.configuration_never_returns_password",
+        "postgres_pipeline_simulated.no_arbitrary_sql",
+        "postgres_pipeline_simulated.issue_after_durable_intent_and_readback",
+        "postgres_pipeline_simulated.model_observed_matches_returned_credentials",
+        "postgres_pipeline_simulated.renew_external_expiry_then_commit",
+        "postgres_pipeline_simulated.precise_revoke",
+        "postgres_pipeline_simulated.lost_post_apply_response_no_secret"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kubernetes_cluster_live.real_kubernetes_secrets_mount",
+        "kubernetes_cluster_live.real_kubernetes_secrets_config",
+        "kubernetes_cluster_live.real_kubernetes_secrets_role",
+        "kubernetes_cluster_live.real_kubernetes_tokenrequest_issues_secret",
+        "kubernetes_cluster_live.kubernetes_secret_lease_is_bounded_nonrenewable",
+        "kubernetes_cluster_live.issued_kubernetes_secret_token_is_real",
+        "kubernetes_cluster_live.kubernetes_secret_role_readback_redacts_manager",
+        "kubernetes_cluster_live.kubernetes_secret_config_role_survive_restart",
+        "kubernetes_cluster_live.deleted_serviceaccount_invalidates_secret_tokens",
+        "kubernetes_cluster_live.recreated_serviceaccount_gets_new_secret_token"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -320,9 +397,18 @@
       "surface_id": "HB-SURFACE-DB-POSTGRESQL",
       "category": "database_providers",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "postgres_live.native_pg_tls_scram_config",
+        "postgres_live.credential_really_logs_into_postgresql",
+        "postgres_live.slow_provider_does_not_block_unrelated_kv_write",
+        "postgres_live.renewed_credential_survives_service_restart",
+        "postgres_live.revoke_terminates_existing_database_session",
+        "postgres_live.revoke_really_prevents_pg_login",
+        "postgres_live.provider_outage_is_pending_not_success",
+        "postgres_live.restart_reconcile"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -365,36 +451,70 @@
       "surface_id": "HB-SURFACE-AUDIT-FILE",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_file_live.list",
+        "audit_file_live.path_present",
+        "audit_file_live.read_binding",
+        "audit_file_live.duplicate_enable_rejected",
+        "audit_file_live.disable_rejected"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-HTTP",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 7,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_http_live.sys_audit_lists_file_and_http",
+        "audit_http_live.api_cannot_rebind_http_audit_destination",
+        "audit_http_live.audited_mutation_succeeds",
+        "audit_http_live.every_local_audit_record_delivered_to_http_collector",
+        "audit_http_live.http_audit_records_do_not_expose_secret_or_bearer",
+        "audit_http_live.collector_outage_fails_request_closed",
+        "audit_http_live.collector_recovery_restores_audited_service"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-SOCKET",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_socket_live.sys_audit_lists_file_and_socket",
+        "audit_socket_live.api_cannot_rebind_socket_destination",
+        "audit_socket_live.audited_mutation_succeeds",
+        "audit_socket_live.socket_tail_matches_local_before_fault",
+        "audit_socket_live.socket_records_do_not_expose_secret_or_bearer",
+        "audit_socket_live.bounded_socket_outage_uses_mandatory_file_device",
+        "audit_socket_live.socket_outage_is_observable",
+        "audit_socket_live.collector_receives_new_records_after_recovery"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
       "category": "audit_devices",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "audit_syslog_live.sys_audit_lists_file_and_syslog",
+        "audit_syslog_live.syslog_device_reports_facility_and_tag_only",
+        "audit_syslog_live.api_cannot_rebind_syslog_device",
+        "audit_syslog_live.audited_mutation_succeeds",
+        "audit_syslog_live.syslog_tail_matches_local_authenticated_audit",
+        "audit_syslog_live.syslog_records_do_not_expose_secret_or_bearer",
+        "audit_syslog_live.syslog_outage_uses_mandatory_file_device",
+        "audit_syslog_live.syslog_outage_is_observable",
+        "audit_syslog_live.collector_recovery_preserves_service",
+        "audit_syslog_live.mandatory_file_audit_continues_through_syslog_fault"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -410,27 +530,46 @@
       "surface_id": "HB-SURFACE-STORAGE-RAFT",
       "category": "storage_backends",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "raft_membership_live.native_learner_join_acknowledged",
+        "raft_membership_live.snapshot_caught_up_learner_unseals",
+        "raft_membership_live.membership_persists_across_old_leader_restart",
+        "raft_membership_live.failover_after_membership_changes"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-PLUGIN-AUTH",
       "category": "plugin_classes",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 7,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_auth_live.login",
+        "plugin_auth_live.denied",
+        "plugin_auth_live.plugin_authority_fields_rejected",
+        "plugin_auth_live.server_owned_policy",
+        "plugin_auth_live.restart_login",
+        "plugin_auth_live.digest_fence",
+        "plugin_auth_live.issued_token_revoked_on_disable"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-PLUGIN-SECRET",
       "category": "plugin_classes",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_secret_live.read",
+        "plugin_secret_live.write_fenced",
+        "plugin_secret_live.unauthorized_no_entry",
+        "plugin_secret_live.restart_binding",
+        "plugin_secret_live.digest_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -456,8 +595,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_mtls.peer_identity_and_cluster_authentication"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -465,8 +606,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_forwarding.standby_mutation_forwarding_and_context"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -474,8 +617,10 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_read_standby.readindex_committed_state_and_partition_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -483,17 +628,24 @@
       "category": "cluster_ha",
       "criticality": "DISTRIBUTED_SYSTEMS_CRITICAL",
       "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "ha_step_down.explicit_leadership_transfer_and_old_writer_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
       "category": "cluster_ha",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "raft_membership_live.continuous_stabilization_promotes_voter",
+        "raft_membership_live.dead_voter_removed_after_real_contact_threshold",
+        "raft_membership_live.minimum_three_voters_preserved",
+        "raft_membership_live.autopilot_policy_persists_across_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -511,36 +663,59 @@
       "surface_id": "HB-SURFACE-CLI-ROOT",
       "category": "client_operator",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 6,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "client_live.client.write_version",
+        "client_live.client.read_value",
+        "client_live.client.list_key",
+        "client_live.client.capability_root",
+        "client_live.client.wrap_redacts",
+        "client_live.client.replay_error_no_data"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-AGENT",
       "category": "client_operator",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "agent_proxy_helper_live.agent.real_login_ready",
+        "agent_proxy_helper_live.agent.private_sink",
+        "agent_proxy_helper_live.agent.real_renewal",
+        "agent_proxy_helper_live.agent.graceful_stop_invalidates_sink"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-PROXY",
       "category": "client_operator",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "agent_proxy_helper_live.proxy.real_secret_read",
+        "agent_proxy_helper_live.proxy.rejects_supplied_root_token",
+        "agent_proxy_helper_live.proxy.uses_live_server_authorization",
+        "agent_proxy_helper_live.proxy.clean_shutdown_removes_only_owned_socket"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
       "surface_id": "HB-SURFACE-OPENAPI-UI",
       "category": "client_operator",
       "criticality": "COMPATIBILITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "openapi_live.root_openapi_entries",
+        "openapi_live.candidate_has_only_standard_openapi_operation_keys",
+        "openapi_live.non_root_visibility_fails_closed",
+        "openapi_live.revoked_token_denied",
+        "openapi_live.openapi_restart_stable"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -558,9 +733,30 @@
       "surface_id": "HB-SURFACE-NAMESPACE-TREE",
       "category": "namespace_workflow",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 20,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "namespace_tree_live.namespace.create_parent",
+        "namespace_tree_live.namespace.read_parent",
+        "namespace_tree_live.namespace.parent_shape",
+        "namespace_tree_live.namespace.list_root",
+        "namespace_tree_live.namespace.list_parent_metadata",
+        "namespace_tree_live.namespace.create_child",
+        "namespace_tree_live.namespace.read_child",
+        "namespace_tree_live.namespace.child_shape",
+        "namespace_tree_live.namespace.list_direct_children_only",
+        "namespace_tree_live.namespace.child_not_flattened_into_root_list",
+        "namespace_tree_live.namespace.patch_child",
+        "namespace_tree_live.namespace.read_patched_child",
+        "namespace_tree_live.namespace.merge_patch_semantics",
+        "namespace_tree_live.namespace.delete_child",
+        "namespace_tree_live.namespace.child_absent",
+        "namespace_tree_live.namespace.delete_parent",
+        "namespace_tree_live.namespace.recreate_parent",
+        "namespace_tree_live.namespace.read_recreated_parent",
+        "namespace_tree_live.namespace.recreate_changes_identity",
+        "namespace_tree_live.namespace.cleanup_parent"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -594,9 +790,14 @@
       "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
       "category": "migration",
       "criticality": "OPERATOR_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 4,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "live_migration_rehearsal.history_and_metadata_readback",
+        "live_migration_rehearsal.target_sigkill_preserves_all_versions",
+        "live_migration_rehearsal.checkpoint_resume_without_duplicate_version",
+        "live_migration_rehearsal.rollback_source_same_root_preserves_original_history"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -612,9 +813,19 @@
       "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
       "category": "migration",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 9,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "live_migration_rehearsal.cutover_source_process_fenced_before_target_acceptance",
+        "live_migration_rehearsal.cutover_target_serves_verified_migrated_history",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_active_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_revoked_token",
+        "live_migration_rehearsal.cutover_target_still_rejects_source_wrapping_token",
+        "live_migration_rehearsal.rollback_target_process_fenced_before_source_reactivation",
+        "live_migration_rehearsal.rollback_reactivates_source_authority_only_after_target_fence",
+        "live_migration_rehearsal.rollback_does_not_resurrect_source_revoked_token",
+        "live_migration_rehearsal.rollback_source_wrapping_authority_restored_only_after_target_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     }
   ],

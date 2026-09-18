@@ -1,11 +1,11 @@
 use super::*;
 use std::sync::atomic::{AtomicU64, Ordering};
 static ROOT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
-struct Root {
-    path: PathBuf,
+pub(super) struct Root {
+    pub(super) path: PathBuf,
 }
 impl Root {
-    fn new() -> Self {
+    pub(super) fn new() -> Self {
         let path = std::env::temp_dir().join(format!(
             "heptabao-service-test-{}-{}",
             std::process::id(),
@@ -13,7 +13,7 @@ impl Root {
         ));
         Self { path }
     }
-    fn service(&self) -> Result<Service, Box<dyn std::error::Error>> {
+    pub(super) fn service(&self) -> Result<Service, Box<dyn std::error::Error>> {
         if !self.path.exists() {
             private_directory(&self.path)?;
         }
@@ -25,10 +25,18 @@ impl Drop for Root {
         let _ = fs::remove_dir_all(&self.path);
     }
 }
-fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Value) -> Response {
+pub(super) fn call(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+) -> Response {
     service.handle_at(method, path, "", token, body, 100)
 }
-fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {
+pub(super) fn bootstrap(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
     let response = call(
         service,
         "PUT",
@@ -52,7 +60,7 @@ fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::err
     );
     Ok((key, token))
 }
-fn limited_token(
+pub(super) fn limited_token(
     service: &mut Service,
     root: &str,
     policy: &str,
@@ -1096,12 +1104,25 @@ fn finite_use_is_committed_for_acl_denial_and_state_capacity_rejection()
 }
 
 #[test]
-fn unknown_commit_releases_no_secret_and_recovers_written_value()
+fn unknown_journal_write_releases_no_secret_and_preserves_last_committed_state()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (key, token) = bootstrap(&mut service)?;
-    fs::create_dir(root.path.join("data/ledger.tmp"))?;
+    let seeded = call(
+        &mut service,
+        "PUT",
+        "secret/data/committed",
+        &token,
+        json!({"data":{"value":"acknowledged-secret"}}),
+    );
+    assert_eq!(seeded.status, 200);
+    // The normal writer appends deltas; ledger.tmp is used only by checkpoints.
+    fs::rename(
+        root.path.join("data/journal.hbj"),
+        root.path.join("data/journal.saved"),
+    )?;
+    fs::create_dir(root.path.join("data/journal.hbj"))?;
     let result = call(
         &mut service,
         "PUT",
@@ -1125,7 +1146,11 @@ fn unknown_commit_releases_no_secret_and_recovers_written_value()
         503
     );
     drop(service);
-    fs::remove_dir(root.path.join("data/ledger.tmp"))?;
+    fs::remove_dir(root.path.join("data/journal.hbj"))?;
+    fs::rename(
+        root.path.join("data/journal.saved"),
+        root.path.join("data/journal.hbj"),
+    )?;
     let mut service = root.service()?;
     assert_eq!(
         call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
@@ -1135,12 +1160,23 @@ fn unknown_commit_releases_no_secret_and_recovers_written_value()
         call(
             &mut service,
             "GET",
-            "secret/data/uncertain",
+            "secret/data/committed",
             &token,
             json!({})
         )
         .body["data"]["data"]["value"],
-        "uncertain-secret"
+        "acknowledged-secret"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/uncertain",
+            &token,
+            json!({})
+        )
+        .status,
+        404
     );
     Ok(())
 }
@@ -1592,5 +1628,769 @@ fn legacy_unkeyed_audit_and_partial_audit_tail_are_rejected()
         .open(&audit)?
         .set_len(length - 2)?;
     assert!(root.service().is_err());
+    Ok(())
+}
+
+#[test]
+fn sys_audit_exposes_and_binds_mandatory_file_device() -> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_key, token) = bootstrap(&mut service)?;
+
+    let list = call(&mut service, "GET", "sys/audit", &token, json!({}));
+    assert_eq!(list.status, 200);
+    assert_eq!(list.body["data"]["file/"]["type"], "file");
+    let configured_path = list.body["data"]["file/"]["options"]["file_path"]
+        .as_str()
+        .ok_or("missing configured audit path")?;
+
+    // The standard declarative route does not expose HeptaBao's extension.
+    assert_eq!(
+        call(&mut service, "GET", "sys/audit/file", &token, json!({})).status,
+        405
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/audit/file",
+            &token,
+            json!({"type":"file","options":{"file_path":configured_path}})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(&mut service, "DELETE", "sys/audit/file", &token, json!({})).status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/internal/audit/file",
+            "invalid",
+            json!({})
+        )
+        .status,
+        403
+    );
+
+    let read = call(
+        &mut service,
+        "GET",
+        "sys/internal/audit/file",
+        &token,
+        json!({}),
+    );
+    assert_eq!(read.status, 200);
+    assert_eq!(read.body["data"]["options"]["file_path"], configured_path);
+
+    let enable = call(
+        &mut service,
+        "PUT",
+        "sys/internal/audit/file",
+        &token,
+        json!({"type":"file","options":{"file_path":configured_path}}),
+    );
+    assert_eq!(enable.status, 204);
+
+    let wrong_path = call(
+        &mut service,
+        "PUT",
+        "sys/internal/audit/file",
+        &token,
+        json!({"type":"file","options":{"file_path":"/tmp/other-audit.jsonl"}}),
+    );
+    assert_eq!(wrong_path.status, 409);
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/internal/audit/file",
+            &token,
+            json!({})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/internal/audit/file",
+            &token,
+            json!({"type":"http"}),
+        )
+        .status,
+        501
+    );
+    Ok(())
+}
+
+#[test]
+fn request_effect_classification_persists_side_effecting_reads_and_skips_pure_reads()
+-> Result<(), Box<dyn std::error::Error>> {
+    assert_eq!(
+        classify_request_effect("GET", crypto::digest(b"same"), crypto::digest(b"same")),
+        RequestEffectClass::PureRead
+    );
+    assert_eq!(
+        classify_request_effect("GET", crypto::digest(b"before"), crypto::digest(b"after")),
+        RequestEffectClass::SideEffectingRead
+    );
+    assert_eq!(
+        classify_request_effect("PUT", crypto::digest(b"before"), crypto::digest(b"after")),
+        RequestEffectClass::DurableMutation
+    );
+
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, root_token) = bootstrap(&mut service)?;
+
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable service")?
+        .generation();
+    let pure = call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(pure.status, 200);
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable service")?
+            .generation(),
+        generation,
+        "pure authenticated read allocated durable state"
+    );
+
+    let finite = limited_token(
+        &mut service,
+        &root_token,
+        r#"path "auth/token/lookup-self" { capabilities = ["read"] }"#,
+    )?;
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable service")?
+        .generation();
+    let side_effecting = call(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        &finite,
+        json!({}),
+    );
+    assert_eq!(side_effecting.status, 200);
+    assert!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable service")?
+            .generation()
+            > generation,
+        "finite-use read did not durably publish consumption"
+    );
+
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &finite,
+            json!({}),
+        )
+        .status,
+        403,
+        "side-effecting read resurrected consumed authority after reopen"
+    );
+    Ok(())
+}
+
+#[test]
+fn system_backend_health_seal_and_error_precedence_are_executable()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+
+    let health = call(&mut service, "GET", "sys/health", "", json!({}));
+    assert_eq!(health.status, 501);
+    assert_eq!(health.body["initialized"], false);
+    assert_eq!(health.body["sealed"], true);
+    assert_eq!(
+        call(&mut service, "GET", "sys/init", "", json!({})).body,
+        json!({"initialized":false})
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/init",
+            "",
+            json!({"secret_shares":1,"secret_threshold":1,"unknown":true}),
+        )
+        .status,
+        400
+    );
+    assert!(!service.initialized());
+
+    let initialized = call(
+        &mut service,
+        "POST",
+        "sys/init",
+        "",
+        json!({"secret_shares":2,"secret_threshold":2}),
+    );
+    assert_eq!(initialized.status, 200);
+    let shares = initialized.body["keys_base64"]
+        .as_array()
+        .ok_or("missing initialization shares")?
+        .iter()
+        .map(|value| value.as_str().ok_or("invalid share").map(str::to_owned))
+        .collect::<Result<Vec<_>, _>>()?;
+    let root_token = initialized.body["root_token"]
+        .as_str()
+        .ok_or("missing root token")?
+        .to_owned();
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", "", json!({})).status,
+        503
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/blocked",
+            &root_token,
+            json!({})
+        )
+        .status,
+        503,
+        "sealed state must win before active authenticated dispatch"
+    );
+    for share in &shares {
+        assert_eq!(
+            call(&mut service, "POST", "sys/unseal", "", json!({"key":share}),).status,
+            200
+        );
+    }
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", "", json!({})).status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", "", json!({})).status,
+        403,
+        "root authorization must precede seal mutation"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/rekey/update",
+            &root_token,
+            json!({"nonce":"missing","key":"bad"}),
+        )
+        .status,
+        400
+    );
+    assert_eq!(service.seal.as_ref().ok_or("missing seal")?.generation, 1);
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "HEAD", "sys/health", "", json!({})).status,
+        503
+    );
+    Ok(())
+}
+
+#[test]
+fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/team",
+            &token,
+            json!({"type":"kv","options":{"version":"2"},"cas_revision":0})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "team/data/app",
+            &token,
+            json!({"data":{"value":"persisted"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/remount",
+            &token,
+            json!({"from":"team/","to":"archive/","cas_revision":1})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "GET", "team/data/app", &token, json!({})).status,
+        404
+    );
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).body["data"]["data"]["value"],
+        "persisted"
+    );
+    let audit = call(
+        &mut service,
+        "GET",
+        "sys/internal/audit/file",
+        &token,
+        json!({}),
+    );
+    assert_eq!(audit.body["data"]["revision"], 1);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/internal/audit/file",
+            &token,
+            json!({"type":"file","cas_revision":2})
+        )
+        .status,
+        409
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/internal/audit/file",
+            &token,
+            json!({"type":"file","cas_revision":1})
+        )
+        .status,
+        204
+    );
+    drop(service);
+
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let descriptor = call(&mut service, "GET", "sys/mounts/archive", &token, json!({}));
+    assert_eq!(descriptor.body["data"]["revision"], 2);
+    assert_eq!(descriptor.body["data"]["incarnation"], 1);
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).body["data"]["data"]["value"],
+        "persisted"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/mounts/archive/tune",
+            &token,
+            json!({"description":"stale","cas_revision":1})
+        )
+        .status,
+        409
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/mounts/archive",
+            &token,
+            json!({"cas_revision":2})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/archive",
+            &token,
+            json!({"type":"kv","options":{"version":"2"},"cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let recreated = call(&mut service, "GET", "sys/mounts/archive", &token, json!({}));
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_eq!(recreated.body["data"]["incarnation"], 2);
+    assert_eq!(
+        call(&mut service, "GET", "archive/data/app", &token, json!({})).status,
+        404
+    );
+
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team",
+            &token,
+            json!({"type":"userpass","cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let auth_before = call(&mut service, "GET", "sys/auth/team", &token, json!({}));
+    let auth_accessor = auth_before.body["data"]["accessor"]
+        .as_str()
+        .ok_or("missing auth accessor")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "auth/team/users/alice",
+            &token,
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        204
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/team/login/alice",
+        "",
+        json!({"password":"correct horse battery staple"}),
+    );
+    let issued_token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("missing auth token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/remount",
+            &token,
+            json!({"from":"auth/team/","to":"auth/moved/","cas_revision":1})
+        )
+        .status,
+        200
+    );
+    let auth_after = call(&mut service, "GET", "sys/auth/moved", &token, json!({}));
+    assert_eq!(auth_after.body["data"]["revision"], 2);
+    assert_eq!(auth_after.body["data"]["accessor"], auth_accessor);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/login/alice",
+            "",
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/moved/login/alice",
+            "",
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &issued_token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/auth/moved",
+            &token,
+            json!({"cas_revision":2})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &issued_token,
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/moved",
+            &token,
+            json!({"type":"userpass","cas_revision":0})
+        )
+        .status,
+        204
+    );
+    let auth_recreated = call(&mut service, "GET", "sys/auth/moved", &token, json!({}));
+    assert_eq!(auth_recreated.body["data"]["revision"], 1);
+    assert_ne!(auth_recreated.body["data"]["accessor"], auth_accessor);
+    Ok(())
+}
+
+#[test]
+fn public_approle_login_ignores_unrelated_bearer_without_bypassing_credentials()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team/role",
+            &token,
+            json!({"type":"approle"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/team/role/tune",
+            &token,
+            json!({"default_lease_ttl":120,"max_lease_ttl":300})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/role/reader",
+            &token,
+            json!({"token_policies":["default"],"secret_id_num_uses":0})
+        )
+        .status,
+        204
+    );
+    let role = call(
+        &mut service,
+        "GET",
+        "auth/team/role/role/reader/role-id",
+        &token,
+        json!({}),
+    );
+    let secret = call(
+        &mut service,
+        "POST",
+        "auth/team/role/role/reader/secret-id",
+        &token,
+        json!({}),
+    );
+    let credentials = json!({"role_id":role.body["data"]["role_id"],
+        "secret_id":secret.body["data"]["secret_id"]});
+    let login = call(
+        &mut service,
+        "POST",
+        "auth/team/role/login",
+        "expired-source-token",
+        credentials.clone(),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["lease_duration"], 120);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/login",
+            &token,
+            json!({"role_id":role.body["data"]["role_id"],"secret_id":"incorrect"})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/team/role/role/reader/role-id",
+            "expired-source-token",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/login",
+            "expired-source-token",
+            credentials.clone()
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/team/role/login",
+                "other",
+                "expired-source-token",
+                credentials.clone(),
+                100
+            )
+            .status,
+        403
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/role/login",
+            "expired-source-token",
+            credentials
+        )
+        .status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn public_userpass_login_does_not_spend_a_separate_finite_bearer()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/reader",
+            &token,
+            json!({"password":"synthetic-password","token_policies":["default"]})
+        )
+        .status,
+        204
+    );
+    let separate = limited_token(
+        &mut service,
+        &token,
+        "path \"secret/*\" { capabilities = [\"read\"] }",
+    )?;
+    let data = json!({"password":"synthetic-password"});
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            "invalid-old-token",
+            data.clone()
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            &separate,
+            data
+        )
+        .status,
+        200
+    );
+    let observed = call(
+        &mut service,
+        "POST",
+        "auth/token/lookup",
+        &token,
+        json!({"token":separate}),
+    );
+    assert_eq!(observed.status, 200);
+    assert_eq!(observed.body["data"]["num_uses"], 1);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/login/reader",
+            &token,
+            json!({"password":"incorrect"})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/userpass/users/reader",
+            "invalid-old-token",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "secret/login",
+            "invalid-old-token",
+            json!({})
+        )
+        .status,
+        403
+    );
     Ok(())
 }

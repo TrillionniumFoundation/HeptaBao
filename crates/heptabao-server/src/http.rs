@@ -1,6 +1,10 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
+use crate::{
+    Response, Service, ServiceRequest, crypto,
+    ha::HaProcess,
+    service::{RequestExecution, WireRejection},
+};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -11,7 +15,7 @@ use std::{
     net::{IpAddr, SocketAddr, TcpListener, TcpStream},
     path::PathBuf,
     sync::{
-        Arc, Mutex,
+        Arc, Mutex, MutexGuard, TryLockError,
         atomic::{AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
@@ -43,6 +47,30 @@ pub struct Config {
     pub rate_limit_burst: u32,
     #[serde(default = "default_rate_limit_entries")]
     pub rate_limit_entries: usize,
+    /// Zero explicitly disables idle maintenance. Active request checks remain mandatory.
+    #[serde(default = "default_lifecycle_interval")]
+    pub lifecycle_interval_seconds: u64,
+    /// Deployment-owned egress allowlist; API configuration cannot widen it.
+    #[serde(default)]
+    pub outbound_endpoints: Vec<crate::outbound::EndpointConfig>,
+    /// Optional mandatory HTTPS audit collector. The URL must resolve only
+    /// through `outbound_endpoints`; API requests cannot replace it.
+    #[serde(default)]
+    pub audit_http_url: Option<String>,
+    /// Optional deployment-owned TCP socket audit collector. The mandatory
+    /// authenticated file sink remains enabled even if this collector fails.
+    #[serde(default)]
+    pub audit_socket: Option<crate::AuditSocketConfig>,
+    /// Optional deployment-owned local Unix syslog audit device.
+    #[serde(default)]
+    pub audit_syslog: Option<crate::AuditSyslogConfig>,
+    #[serde(default)]
+    pub plugin_auth: Vec<crate::PluginAuthConfig>,
+    #[serde(default)]
+    pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+}
+fn default_lifecycle_interval() -> u64 {
+    5
 }
 fn default_connections() -> usize {
     16
@@ -137,6 +165,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
+    if config.lifecycle_interval_seconds > 60 {
+        return Err("lifecycle interval must be zero or 1..=60 seconds".into());
+    }
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
         config.rate_limit_burst,
@@ -187,22 +218,34 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
+    {
+        let mut service = service.lock().map_err(|_| "service lock unavailable")?;
+        service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_auth_plugins(config.plugin_auth)?;
+        service.install_secret_plugins(config.plugin_secrets)?;
+        service.install_audit_http_endpoint(config.audit_http_url)?;
+        service.install_audit_socket(config.audit_socket)?;
+        service.install_audit_syslog(config.audit_syslog)?;
+    }
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
-                Ok(mut service) => service.handle_forwarded(
-                    &request.method,
-                    &request.path,
-                    &request.namespace,
-                    &request.token,
-                    std::mem::take(&mut request.body),
-                ),
-                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
-            };
+            let response = execute_service_request(
+                &service,
+                ServiceRequest {
+                    method: &request.method,
+                    path: &request.path,
+                    namespace: &request.namespace,
+                    token: &request.token,
+                    body: std::mem::take(&mut request.body),
+                    wrap_ttl_seconds: request.wrap_ttl_seconds,
+                },
+                Instant::now() + Duration::from_secs(15),
+                true,
+            );
             request.token.zeroize();
             response
         });
@@ -212,6 +255,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     }
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
+    let _lifecycle = crate::service::start_lifecycle_worker(
+        &service,
+        Duration::from_secs(config.lifecycle_interval_seconds),
+    )?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",
@@ -270,6 +317,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         WireRejection::RateLimited,
                         429,
                         "request rate limit exceeded",
+                        Instant::now() + timeout,
                     );
                     let _ = write_response(&mut stream, response, false);
                     return;
@@ -278,16 +326,23 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let (response, head) = match parsed {
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
-                            Ok(mut service) => service.handle(
-                                if is_head { "GET" } else { &request.method },
-                                &request.path,
-                                &request.namespace,
-                                &request.token,
-                                std::mem::take(&mut request.body.0),
-                            ),
-                            Err(_) => Response::error(503, "service state is unavailable"),
-                        };
+                        let response = execute_service_request(
+                            &service,
+                            ServiceRequest {
+                                method: if is_head && request.wrap_ttl_seconds.is_none() {
+                                    "GET"
+                                } else {
+                                    &request.method
+                                },
+                                path: &request.path,
+                                namespace: &request.namespace,
+                                token: &request.token,
+                                body: std::mem::take(&mut request.body.0),
+                                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                            },
+                            Instant::now() + timeout,
+                            false,
+                        );
                         (response, is_head)
                     }
                     Err(error) => (
@@ -297,6 +352,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
+                            Instant::now() + timeout,
                         ),
                         false,
                     ),
@@ -310,16 +366,108 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum LockWaitError {
+    Busy,
+    Poisoned,
+}
+
+fn lock_until<'a, T>(
+    mutex: &'a Mutex<T>,
+    deadline: Instant,
+) -> Result<MutexGuard<'a, T>, LockWaitError> {
+    loop {
+        match mutex.try_lock() {
+            Ok(guard) => return Ok(guard),
+            Err(TryLockError::Poisoned(_)) => return Err(LockWaitError::Poisoned),
+            Err(TryLockError::WouldBlock) => {
+                let now = Instant::now();
+                if now >= deadline {
+                    return Err(LockWaitError::Busy);
+                }
+                std::thread::sleep(
+                    deadline
+                        .saturating_duration_since(now)
+                        .min(Duration::from_millis(2)),
+                );
+            }
+        }
+    }
+}
+
+fn execute_external_without_writer<T, P, R, E, F>(
+    state: &Arc<Mutex<T>>,
+    pending: P,
+    deadline: Instant,
+    execute: E,
+    finish: F,
+) -> Response
+where
+    E: FnOnce(&P) -> R,
+    F: FnOnce(&mut T, P, R) -> Response,
+{
+    // Deliberately execute before acquiring the state writer. This helper is the
+    // production boundary that prevents slow enrolled providers from monopolizing
+    // unrelated service state while their external effect/readback is in flight.
+    let result = execute(&pending);
+    match lock_until(state, deadline) {
+        Ok(mut writer) => finish(&mut writer, pending, result),
+        Err(LockWaitError::Busy) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service finalize deadline exceeded",
+        ),
+        Err(LockWaitError::Poisoned) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service state unavailable",
+        ),
+    }
+}
+
+fn execute_service_request(
+    service: &Arc<Mutex<Service>>,
+    request: ServiceRequest<'_>,
+    deadline: Instant,
+    forwarded: bool,
+) -> Response {
+    let execution = match lock_until(service, deadline) {
+        Ok(mut writer) => {
+            if forwarded {
+                writer.begin_forwarded(request)
+            } else {
+                writer.begin_request(request)
+            }
+        }
+        Err(LockWaitError::Busy) => {
+            return Response::error(503, "service state lock deadline exceeded");
+        }
+        Err(LockWaitError::Poisoned) => {
+            return Response::error(503, "service state is unavailable");
+        }
+    };
+    match execution {
+        RequestExecution::Complete(response) => response,
+        RequestExecution::External(pending) => execute_external_without_writer(
+            service,
+            pending,
+            deadline,
+            |pending| pending.execute(),
+            |writer, pending, result| writer.finish_external_request(*pending, result),
+        ),
+    }
+}
+
 fn audited_wire_rejection(
     service: &Arc<Mutex<Service>>,
     attempt_id: &[u8; 16],
     rejection: WireRejection,
     status: u16,
     message: &'static str,
+    deadline: Instant,
 ) -> Response {
-    match service.lock() {
+    match lock_until(service, deadline) {
         Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
-        Err(_) => Response::error(503, "service state is unavailable"),
+        Err(LockWaitError::Busy) => Response::error(503, "service state lock deadline exceeded"),
+        Err(LockWaitError::Poisoned) => Response::error(503, "service state is unavailable"),
     }
 }
 
@@ -365,7 +513,7 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options.open(path).map_err(|_| "cannot open TLS file")?;
     let meta = file.metadata().map_err(|_| "cannot inspect TLS file")?;
@@ -401,6 +549,7 @@ struct Request {
     namespace: String,
     token: Zeroizing<String>,
     body: SecretJson,
+    wrap_ttl_seconds: Option<u64>,
 }
 struct ParseError {
     status: u16,
@@ -493,7 +642,11 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
             && !matches!(
                 name.as_str(),
-                "x-vault-token" | "x-vault-namespace" | "x-vault-request"
+                "x-vault-token"
+                    | "x-vault-namespace"
+                    | "x-vault-request"
+                    | "x-vault-wrap-ttl"
+                    | "x-vault-wrap-format"
             )
     }) {
         return Err(ParseError {
@@ -501,6 +654,20 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             message: "requested OpenBao header semantics are not implemented",
         });
     }
+    if map
+        .get("x-vault-wrap-format")
+        .is_some_and(|value| value.as_str() != "uuid")
+    {
+        return Err(ParseError {
+            status: 501,
+            message: "only opaque response wrapping tokens are supported",
+        });
+    }
+    let wrap_ttl_seconds = map
+        .get("x-vault-wrap-ttl")
+        .map(|value| parse_wrap_ttl(value))
+        .transpose()?
+        .flatten();
     if map.contains_key("transfer-encoding") || map.contains_key("expect") {
         return Err(bad("streamed request bodies are not supported"));
     }
@@ -618,7 +785,52 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         namespace,
         token,
         body,
+        wrap_ttl_seconds,
     })
+}
+
+fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
+    let invalid = || bad("invalid or unsupported wrapping TTL");
+    if value.is_empty() || value.len() > 64 || !value.is_ascii() {
+        return Err(invalid());
+    }
+    let mut total = 0u64;
+    let mut number = 0u64;
+    let mut digits = false;
+    for byte in value.bytes() {
+        if byte.is_ascii_digit() {
+            number = number
+                .checked_mul(10)
+                .and_then(|v| v.checked_add(u64::from(byte - b'0')))
+                .ok_or_else(invalid)?;
+            digits = true;
+        } else {
+            if !digits {
+                return Err(invalid());
+            }
+            let unit = match byte {
+                b'h' => 3600,
+                b'm' => 60,
+                b's' => 1,
+                _ => return Err(invalid()),
+            };
+            total = total
+                .checked_add(number.checked_mul(unit).ok_or_else(invalid)?)
+                .ok_or_else(invalid)?;
+            number = 0;
+            digits = false;
+        }
+    }
+    if digits {
+        if !value.bytes().all(|b| b.is_ascii_digit()) {
+            return Err(invalid());
+        }
+        total = number;
+    }
+    if total > 32 * 24 * 3600 {
+        return Err(invalid());
+    }
+    Ok((total != 0).then_some(total))
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -755,12 +967,7 @@ mod tests {
             payload.len()
         );
         assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
-        for header in [
-            "X-Vault-Wrap-TTL",
-            "X-Vault-MFA",
-            "X-Vault-Policy-Override",
-            "X-Vault-Index",
-        ] {
+        for header in ["X-Vault-MFA", "X-Vault-Policy-Override", "X-Vault-Index"] {
             let request = format!(
                 "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}: synthetic\r\n\r\n"
             );
@@ -805,5 +1012,137 @@ mod tests {
             .join()
             .map_err(|_| io::Error::other("sender thread failed"))?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod service_lock_deadline_tests {
+    use super::*;
+
+    #[test]
+    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let lock = Mutex::new(());
+        let _held = lock.lock().map_err(|_| "test mutex poisoned")?;
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_millis(5)),
+            Err(LockWaitError::Busy)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn external_effect_phase_does_not_hold_the_shared_state_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                Instant::now() + Duration::from_secs(2),
+                |_| {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    41_u64
+                },
+                |value, (), result| {
+                    *value = result + 1;
+                    Response {
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let observed = state
+            .try_lock()
+            .map(|guard| *guard)
+            .map_err(|_| "external effect held the shared writer");
+        release.wait();
+        let response = worker
+            .join()
+            .map_err(|_| "external effect worker panicked")?;
+        assert_eq!(observed?, 0);
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            *state
+                .lock()
+                .map_err(|_| "state poisoned after external effect")?,
+            42
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn poisoned_service_lock_fails_without_waiting_for_the_deadline() {
+        let lock = Arc::new(Mutex::new(()));
+        let worker = Arc::clone(&lock);
+        let poisoned = std::thread::spawn(move || {
+            if let Ok(_held) = worker.lock() {
+                // Deliberately unwind while holding the lock: this is the fault
+                // being tested, not an assertion failure or production panic.
+                std::panic::resume_unwind(Box::new("poison test mutex"));
+            }
+        })
+        .join();
+        assert!(poisoned.is_err());
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_secs(1)),
+            Err(LockWaitError::Poisoned)
+        ));
+    }
+}
+
+#[cfg(test)]
+mod wrapping_header_tests {
+    use super::*;
+    #[test]
+    fn wrapping_duration_is_bounded_and_rejects_silent_rounding() {
+        for (input, expected) in [
+            ("60", Some(60)),
+            ("1h30m5s", Some(5405)),
+            ("0s", None),
+            ("0", None),
+        ] {
+            assert!(parse_wrap_ttl(input).is_ok_and(|actual| actual == expected));
+        }
+        for input in [
+            "",
+            "-1",
+            "1.5s",
+            "1ms",
+            "1d",
+            "1s5",
+            "s",
+            " 60",
+            "18446744073709551616",
+            "768h1s",
+        ] {
+            assert!(parse_wrap_ttl(input).is_err());
+        }
+    }
+    #[test]
+    fn wrapping_headers_are_retained_and_duplicates_or_jwt_reject() {
+        let valid =
+            b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: 60s\r\n\r\n";
+        assert!(
+            read_request(&mut valid.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|r| r.wrap_ttl_seconds == Some(60))
+        );
+        for header in [
+            "X-Vault-Wrap-TTL: 60s\r\nx-vault-wrap-ttl: 1s",
+            "X-Vault-Wrap-TTL: invalid",
+            "X-Vault-Wrap-Format: jwt",
+        ] {
+            let request =
+                format!("GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
     }
 }

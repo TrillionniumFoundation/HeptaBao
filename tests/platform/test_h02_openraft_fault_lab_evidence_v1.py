@@ -106,7 +106,7 @@ class CollectorHarness:
             target="x86_64-unknown-linux-gnu",
             manifest=self.manifest,
             cargo_lock=lock_path if lock_path is not None else self.lock,
-            repository="ProfHepta/HeptaBao",
+            repository="TrillionniumFoundation/HeptaBao",
             source_commit="a" * 40,
             source_tree="b" * 40,
             branch="codex/test",
