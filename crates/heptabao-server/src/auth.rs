@@ -249,6 +249,12 @@ impl Principal {
     pub(super) fn consumed_use(&self) -> bool {
         self.token.uses_remaining.is_some()
     }
+
+    /// Stable authenticated token identity used only as an opaque owner binding.
+    /// The raw bearer token never crosses this boundary.
+    pub(super) fn subject_id(&self) -> &str {
+        &self.digest
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
