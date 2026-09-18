@@ -35,6 +35,7 @@ pub(super) enum OnlineAuthEffect {
 
 pub(super) struct OnlineAuthEffectPlan {
     outbound: crate::outbound::Outbound,
+    namespace: String,
     request_now: u64,
     effect: OnlineAuthEffect,
 }
@@ -70,7 +71,7 @@ impl OnlineAuthEffectPlan {
     }
 
     fn callback(&self) -> bool {
-        matches!(self.effect, OnlineAuthEffect::OidcCallback { .. })
+        matches!(&self.effect, OnlineAuthEffect::OidcCallback { .. })
     }
 }
 
@@ -160,6 +161,7 @@ impl Service {
 
         self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
             outbound: self.outbound.clone(),
+            namespace: request.namespace.into(),
             request_now: request.now,
             effect,
         });
@@ -178,6 +180,8 @@ impl Service {
         result: Result<OnlineAuthObservation, Response>,
     ) -> Response {
         let callback = plan.callback();
+        let request_namespace = plan.namespace.clone();
+        let request_now = plan.request_now;
         let observation = match result {
             Ok(observation) => observation,
             Err(response) => return response,
@@ -230,17 +234,8 @@ impl Service {
             &mut state.auth,
             &mut state.engines,
             &mut issued,
-            match &plan.effect {
-                OnlineAuthEffect::Kubernetes(_) | OnlineAuthEffect::OidcBegin(_) => {
-                    // These plans carry the namespace privately inside AuthState;
-                    // the identity projection for Kubernetes is filled below from
-                    // the issued login identity's mount namespace via request scope.
-                    // This arm is unreachable after plan.effect is moved above.
-                    ""
-                }
-                OnlineAuthEffect::OidcCallback { namespace, .. } => namespace,
-            },
-            plan.request_now,
+            &request_namespace,
+            request_now,
         ) {
             erase_json(&mut issued.body);
             return if callback {
