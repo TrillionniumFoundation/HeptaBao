@@ -345,7 +345,9 @@ impl PendingExternalRequest {
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute())
             }
-            ExternalEffectPlan::PluginRead(plan) => ExternalEffectResult::PluginRead(plan.execute()),
+            ExternalEffectPlan::PluginRead(plan) => {
+                ExternalEffectResult::PluginRead(plan.execute())
+            }
         }
     }
 }
@@ -418,8 +420,13 @@ impl Service {
         Ok(())
     }
 
-    pub fn install_secret_plugins(&mut self, configs: Vec<PluginSecretConfig>) -> Result<(), String> {
-        if self.state.is_some() { return Err("plugin runtime configuration is immutable while unsealed".into()); }
+    pub fn install_secret_plugins(
+        &mut self,
+        configs: Vec<PluginSecretConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
         self.plugins = plugin::admit_secret_plugins(configs)?;
         Ok(())
     }
@@ -723,7 +730,9 @@ impl Service {
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
                 self.finalize_online_auth_effect(plan, result)
             }
-            (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => self.finalize_plugin_read(&plan, result),
+            (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
+                self.finalize_plugin_read(&plan, result)
+            }
             _ => {
                 self.recovery_required = true;
                 Response::error(503, "external request observation type mismatch")
