@@ -231,7 +231,7 @@ impl AuthState {
         self.effective_auth_mounts(namespace)
             .into_iter()
             .find_map(|(mount, entry)| {
-                if !matches!(entry.kind.as_str(), "kubernetes" | "oidc") {
+                if !matches!(entry.kind.as_str(), "kubernetes" | "oidc" | "ldap") {
                     return None;
                 }
                 rest.strip_prefix(&format!("{mount}/"))
@@ -241,9 +241,10 @@ impl AuthState {
     pub(crate) fn has_online_auth_state(&self) -> bool {
         self.has_oidc_state()
             || self.kubernetes_mounts.values().any(|m| !m.is_empty())
+            || self.ldap_mounts.values().any(|m| !m.is_empty())
             || self.auth_mounts.values().any(|m| {
                 m.values()
-                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc"))
+                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc" | "ldap"))
             })
     }
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
@@ -288,10 +289,27 @@ impl AuthState {
         outbound: &Outbound,
     ) -> Result<(), AuthError> {
         self.check_oidc_enrollment(namespace, path, outbound)?;
-        let Some((_, mount, suffix)) = self.online_mount_route(namespace, path) else {
+        let Some((kind, mount, suffix)) = self.online_mount_route(namespace, path) else {
             return Ok(());
         };
         if suffix != "config" {
+            return Ok(());
+        }
+        if kind == "ldap" {
+            let config = self
+                .ldap_mounts
+                .get(namespace)
+                .and_then(|mounts| mounts.get(&mount))
+                .ok_or_else(|| err(503, "LDAP auth is not configured"))?;
+            if config.starttls || !config.url.starts_with("ldaps://") {
+                return Err(err(
+                    503,
+                    "LDAP configuration requires a host-enrolled LDAPS endpoint",
+                ));
+            }
+            outbound
+                .endpoint(&config.url, "ldaps")
+                .map_err(|_| err(503, "LDAP bind target is not host-enrolled"))?;
             return Ok(());
         }
         if let Some(config) = self
