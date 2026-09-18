@@ -587,30 +587,6 @@ impl Service {
         })
     }
 
-    pub(crate) fn handle_forwarded(&mut self, request: ServiceRequest<'_>) -> Response {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |duration| duration.as_secs());
-        let ServiceRequest {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            wrap_ttl_seconds,
-        } = request;
-        self.handle_at_mode(RequestDispatch {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            now,
-            allow_forward: false,
-            wrap_ttl_seconds,
-        })
-    }
-
     /// Start a network request while holding the Service writer. A database
     /// provider effect may be returned as an owned external plan after its
     /// intent has been durably committed.
