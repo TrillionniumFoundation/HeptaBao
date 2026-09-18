@@ -57,6 +57,10 @@ pub struct Config {
     /// through `outbound_endpoints`; API requests cannot replace it.
     #[serde(default)]
     pub audit_http_url: Option<String>,
+    /// Optional deployment-owned TCP socket audit collector. The mandatory
+    /// authenticated file sink remains enabled even if this collector fails.
+    #[serde(default)]
+    pub audit_socket: Option<crate::AuditSocketConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
 }
@@ -214,6 +218,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         service.install_outbound_endpoints(config.outbound_endpoints)?;
         service.install_secret_plugins(config.plugin_secrets)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
+        service.install_audit_socket(config.audit_socket)?;
     }
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
