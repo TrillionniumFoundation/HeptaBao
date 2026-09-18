@@ -194,8 +194,13 @@ def main() -> int:
         ):
             errors.append(f"{name}: forbidden claim/placeholder")
 
-    if len(entries) != 46:
-        errors.append(f"expected 46 modules, found {len(entries)}")
+    # The workspace is the denominator.  Do not freeze today's crate count into
+    # an acceptance rule: adding/removing a real workspace member must require
+    # the registry/dossier set to move with it, not a validator source edit.
+    if len(entries) != len(workspace):
+        errors.append(
+            f"registry/workspace count mismatch registry={len(entries)} workspace={len(workspace)}"
+        )
 
     if errors:
         print("\n".join(errors), file=sys.stderr)
