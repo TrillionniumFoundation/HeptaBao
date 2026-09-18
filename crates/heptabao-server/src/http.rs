@@ -1,6 +1,10 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
+use crate::{
+    Response, Service, ServiceRequest, crypto,
+    ha::HaProcess,
+    service::{RequestExecution, WireRejection},
+};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -216,22 +220,19 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match lock_until(&service, Instant::now() + Duration::from_secs(15)) {
-                Ok(mut service) => service.handle_forwarded(crate::ServiceRequest {
+            let response = execute_service_request(
+                &service,
+                ServiceRequest {
                     method: &request.method,
                     path: &request.path,
                     namespace: &request.namespace,
                     token: &request.token,
                     body: std::mem::take(&mut request.body),
                     wrap_ttl_seconds: request.wrap_ttl_seconds,
-                }),
-                Err(LockWaitError::Busy) => {
-                    Response::error(503, "HA forward service lock deadline exceeded")
-                }
-                Err(LockWaitError::Poisoned) => {
-                    Response::error(503, "HA forward service lock is unavailable")
-                }
-            };
+                },
+                Instant::now() + Duration::from_secs(15),
+                true,
+            );
             request.token.zeroize();
             response
         });
@@ -312,8 +313,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let (response, head) = match parsed {
                     Ok(mut request) => {
                         let is_head = request.method == "HEAD";
-                        let response = match lock_until(&service, Instant::now() + timeout) {
-                            Ok(mut service) => service.handle_request(crate::ServiceRequest {
+                        let response = execute_service_request(
+                            &service,
+                            ServiceRequest {
                                 method: if is_head && request.wrap_ttl_seconds.is_none() {
                                     "GET"
                                 } else {
@@ -324,14 +326,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 token: &request.token,
                                 body: std::mem::take(&mut request.body.0),
                                 wrap_ttl_seconds: request.wrap_ttl_seconds,
-                            }),
-                            Err(LockWaitError::Busy) => {
-                                Response::error(503, "service state lock deadline exceeded")
-                            }
-                            Err(LockWaitError::Poisoned) => {
-                                Response::error(503, "service state is unavailable")
-                            }
-                        };
+                            },
+                            Instant::now() + timeout,
+                            false,
+                        );
                         (response, is_head)
                     }
                     Err(error) => (
@@ -379,6 +377,49 @@ fn lock_until<'a, T>(
                         .saturating_duration_since(now)
                         .min(Duration::from_millis(2)),
                 );
+            }
+        }
+    }
+}
+
+fn execute_service_request(
+    service: &Arc<Mutex<Service>>,
+    request: ServiceRequest<'_>,
+    deadline: Instant,
+    forwarded: bool,
+) -> Response {
+    let execution = match lock_until(service, deadline) {
+        Ok(mut writer) => {
+            if forwarded {
+                writer.begin_forwarded(request)
+            } else {
+                writer.begin_request(request)
+            }
+        }
+        Err(LockWaitError::Busy) => {
+            return Response::error(503, "service state lock deadline exceeded");
+        }
+        Err(LockWaitError::Poisoned) => {
+            return Response::error(503, "service state is unavailable");
+        }
+    };
+    match execution {
+        RequestExecution::Complete(response) => response,
+        RequestExecution::External(pending) => {
+            // The Service writer is deliberately out of scope here. A slow or
+            // failed enrolled provider cannot monopolize unrelated state reads
+            // or mutations while its bounded side effect/readback is running.
+            let provider_result = pending.execute();
+            match lock_until(service, deadline) {
+                Ok(mut writer) => writer.finish_external_request(pending, provider_result),
+                Err(LockWaitError::Busy) => Response::error(
+                    503,
+                    "provider result awaits durable reconciliation; service finalize deadline exceeded",
+                ),
+                Err(LockWaitError::Poisoned) => Response::error(
+                    503,
+                    "provider result awaits durable reconciliation; service state unavailable",
+                ),
             }
         }
     }
