@@ -169,15 +169,14 @@ impl Service {
         } else {
             let entered = std::time::Instant::now();
             let mut state = admitted.clone();
-            let exchange = match state.auth.consume_oidc(
-                request.namespace,
-                &mount,
-                request.body,
-                request.now,
-            ) {
-                Ok(exchange) => exchange,
-                Err(error) => return Some(auth_error(error)),
-            };
+            let exchange =
+                match state
+                    .auth
+                    .consume_oidc(request.namespace, &mount, request.body, request.now)
+                {
+                    Ok(exchange) => exchange,
+                    Err(error) => return Some(auth_error(error)),
+                };
             state.schema = CURRENT_STATE_SCHEMA;
             // Critical order: one-use session removal is replicated and durable
             // before the global Service writer is released for code exchange.
@@ -237,15 +236,18 @@ impl Service {
         };
 
         let issued = match (plan.effect, observation) {
-            (OnlineAuthEffect::RemoteJwt(auth_plan), OnlineAuthObservation::RemoteJwt(observed)) => {
-                state.auth.finish_remote_jwt_login(auth_plan, observed)
-            }
-            (OnlineAuthEffect::Kubernetes(auth_plan), OnlineAuthObservation::Kubernetes(observed)) => {
-                state.auth.finish_kubernetes_login(auth_plan, observed)
-            }
-            (OnlineAuthEffect::OidcBegin(auth_plan), OnlineAuthObservation::OidcBegin(observed)) => {
-                state.auth.finish_oidc_begin(auth_plan, observed)
-            }
+            (
+                OnlineAuthEffect::RemoteJwt(auth_plan),
+                OnlineAuthObservation::RemoteJwt(observed),
+            ) => state.auth.finish_remote_jwt_login(auth_plan, observed),
+            (
+                OnlineAuthEffect::Kubernetes(auth_plan),
+                OnlineAuthObservation::Kubernetes(observed),
+            ) => state.auth.finish_kubernetes_login(auth_plan, observed),
+            (
+                OnlineAuthEffect::OidcBegin(auth_plan),
+                OnlineAuthObservation::OidcBegin(observed),
+            ) => state.auth.finish_oidc_begin(auth_plan, observed),
             (
                 OnlineAuthEffect::OidcCallback {
                     namespace,
