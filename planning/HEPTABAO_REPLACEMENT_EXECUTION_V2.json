@@ -1159,10 +1159,12 @@
       "guides": [
         "docs/modules/heptabao-server.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/audit_file_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Permissions, rotation, disk-full and partial-line behavior."
+      "remaining_scope": "Real sys/audit list/read/idempotent file enable and fail-closed disable are now exercised against the pinned OpenBao 2.6.2 oracle. Permission/rotation/disk-full/partial-line crash behavior, dynamic option parity and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-HTTP",
