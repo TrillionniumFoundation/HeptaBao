@@ -319,7 +319,7 @@ modules:
   source: crates/heptabao-raft-runtime/src
   manifest_sha256: 2f60db3259415fdf977e757a82741c6af2b8d5757d159d1ada347e28596d4087
   source_sha256: b03a83c067fc60a5c7b39e865731d7dd0d68f35ace6f322cb28a9e47dc7cee24
-  test_anchor: envelope_status_v2_round_trip_and_v1_compatibility
+  test_anchor: envelope_status_v3_round_trip_and_legacy_compatibility
   test_anchor_path: crates/heptabao-raft-runtime/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-recovery-core
