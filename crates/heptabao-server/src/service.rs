@@ -1325,6 +1325,7 @@ impl Service {
         state_schema: u32,
         target_replay_epoch: u64,
         compact_before_entry: bool,
+        allow_epoch_catchup: bool,
     ) -> Result<MutationOutcome, ServiceError> {
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
@@ -1334,10 +1335,14 @@ impl Service {
             return Err(ServiceError::ReplayEpochMismatch);
         }
         if target_replay_epoch > current_replay_epoch {
-            if current_replay_epoch.checked_add(1) != Some(target_replay_epoch) {
+            if !allow_epoch_catchup
+                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch)
+            {
                 return Err(ServiceError::ReplayEpochMismatch);
             }
-            durable.retire_replay_epoch()?;
+            while durable.replay_epoch() < target_replay_epoch {
+                durable.retire_replay_epoch()?;
+            }
         }
         let current = durable.get("system", "state")?;
         let slot = match current.as_ref() {
@@ -1620,6 +1625,7 @@ impl Service {
             &operation_id,
             state.schema,
             state.replay_epoch,
+            false,
             false,
         ) {
             return (
@@ -2779,6 +2785,15 @@ impl Service {
     }
 
     fn persist_local(&mut self, bytes: &[u8], operation_id: &str) -> Result<(), Response> {
+        self.persist_local_with_epoch_policy(bytes, operation_id, false)
+    }
+
+    fn persist_local_with_epoch_policy(
+        &mut self,
+        bytes: &[u8],
+        operation_id: &str,
+        allow_epoch_catchup: bool,
+    ) -> Result<(), Response> {
         let state: State = serde_json::from_slice(bytes)
             .map_err(|_| Response::error(503, "server state schema is invalid before commit"))?;
         state.validate_format()?;
@@ -2794,6 +2809,7 @@ impl Service {
             state.schema,
             state.replay_epoch,
             true,
+            allow_epoch_catchup,
         );
         // If retirement itself published but the following state batch failed,
         // application state and replay authority no longer have the same epoch.
@@ -2860,7 +2876,9 @@ impl Service {
             ));
         }
         let operation_id = format!("hasync-{}", hex(&committed.digest));
-        if let Err(error) = self.persist_local(&committed.bytes, &operation_id) {
+        if let Err(error) =
+            self.persist_local_with_epoch_policy(&committed.bytes, &operation_id, true)
+        {
             self.recovery_required = true;
             return Err(Self::ha_committed_local_failure(error));
         }
