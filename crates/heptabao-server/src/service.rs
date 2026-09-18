@@ -303,17 +303,32 @@ pub(crate) enum RequestExecution {
     External(PendingExternalRequest),
 }
 
+enum ExternalEffectPlan {
+    Database(database::DatabaseEffectPlan),
+    OnlineAuth(online_auth::OnlineAuthEffectPlan),
+}
+
+pub(crate) enum ExternalEffectResult {
+    Database(Result<(), Response>),
+    OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
+}
+
 pub(crate) struct PendingExternalRequest {
     fingerprint: String,
     now: u64,
-    database: database::DatabaseEffectPlan,
+    effect: ExternalEffectPlan,
 }
 
 impl PendingExternalRequest {
     /// Run only the bounded external side effect. The caller must not hold the
     /// global Service writer while this method is executing.
-    pub(crate) fn execute(&self) -> Result<(), Response> {
-        self.database.execute()
+    pub(crate) fn execute(&self) -> ExternalEffectResult {
+        match &self.effect {
+            ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
+            ExternalEffectPlan::OnlineAuth(plan) => {
+                ExternalEffectResult::OnlineAuth(plan.execute())
+            }
+        }
     }
 }
 
@@ -338,6 +353,7 @@ pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     pending_database_effect: Option<database::DatabaseEffectPlan>,
+    pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
     audit: File,
@@ -470,6 +486,7 @@ impl Service {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             pending_database_effect: None,
+            pending_online_auth_effect: None,
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
             audit,
@@ -651,9 +668,20 @@ impl Service {
     pub(crate) fn finish_external_request(
         &mut self,
         pending: PendingExternalRequest,
-        provider_result: Result<(), Response>,
+        result: ExternalEffectResult,
     ) -> Response {
-        let response = self.finalize_database_effect(&pending.database, provider_result);
+        let response = match (pending.effect, result) {
+            (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
+                self.finalize_database_effect(&plan, result)
+            }
+            (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
+                self.finalize_online_auth_effect(plan, result)
+            }
+            _ => {
+                self.recovery_required = true;
+                Response::error(503, "external request observation type mismatch")
+            }
+        };
         self.audit_completed_response(&pending.fingerprint, pending.now, response)
     }
 
@@ -687,11 +715,11 @@ impl Service {
             allow_forward,
             wrap_ttl_seconds,
         } = request;
-        if self.pending_database_effect.is_some() {
+        if self.pending_database_effect.is_some() || self.pending_online_auth_effect.is_some() {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
                 503,
-                "database provider dispatch state is unavailable",
+                "external request dispatch state is unavailable",
             ));
         }
         let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
@@ -788,11 +816,26 @@ impl Service {
             wrap_ttl_seconds,
         });
         erase_json(&mut body);
-        if let Some(database) = self.pending_database_effect.take() {
+        let database = self.pending_database_effect.take();
+        let online_auth = self.pending_online_auth_effect.take();
+        let effect = match (database, online_auth) {
+            (Some(plan), None) => Some(ExternalEffectPlan::Database(plan)),
+            (None, Some(plan)) => Some(ExternalEffectPlan::OnlineAuth(plan)),
+            (None, None) => None,
+            (Some(_), Some(_)) => {
+                self.recovery_required = true;
+                return RequestExecution::Complete(self.audit_completed_response(
+                    &fingerprint,
+                    now,
+                    Response::error(503, "multiple external effects staged for one request"),
+                ));
+            }
+        };
+        if let Some(effect) = effect {
             return RequestExecution::External(PendingExternalRequest {
                 fingerprint,
                 now,
-                database,
+                effect,
             });
         }
         RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response))
