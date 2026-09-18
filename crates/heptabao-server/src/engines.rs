@@ -7,7 +7,11 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 use zeroize::Zeroize;
 
 mod identity;
@@ -27,7 +31,7 @@ mod transit;
 pub struct EngineState {
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
-    namespaces: BTreeMap<String, NamespaceState>,
+    namespaces: BTreeMap<String, CowNamespace>,
 }
 
 impl std::fmt::Debug for EngineState {
@@ -44,6 +48,52 @@ fn lease_clock_is_zero(value: &u64) -> bool {
 
 const fn mount_revision_one() -> u64 {
     1
+}
+
+struct CowNamespace(Arc<NamespaceState>);
+
+impl Clone for CowNamespace {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl Default for CowNamespace {
+    fn default() -> Self {
+        Self(Arc::new(NamespaceState::default()))
+    }
+}
+
+impl Deref for CowNamespace {
+    type Target = NamespaceState;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for CowNamespace {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl Serialize for CowNamespace {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for CowNamespace {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        NamespaceState::deserialize(deserializer).map(|value| Self(Arc::new(value)))
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -611,7 +661,7 @@ impl EngineState {
                 _ => "update",
             });
         }
-        let fallback = NamespaceState::default();
+        let fallback = CowNamespace::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
         let (mount_path, mount) = state
             .mounts
@@ -707,7 +757,7 @@ impl EngineState {
             if method != "GET" {
                 return Err(unsupported());
             }
-            let fallback = NamespaceState::default();
+            let fallback = CowNamespace::default();
             let state = self.namespaces.get(namespace).unwrap_or(&fallback);
             let mut mounts: serde_json::Map<String, Value> = state
                 .mounts
@@ -729,7 +779,7 @@ impl EngineState {
             return Ok(Some(response));
         }
 
-        let fallback = NamespaceState::default();
+        let fallback = CowNamespace::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
         let Some(mount_path) = state
             .mounts
