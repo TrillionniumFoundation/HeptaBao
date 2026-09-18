@@ -758,6 +758,74 @@ mod tests {
     }
 
     #[test]
+    fn chunked_manifest_round_trip_reconstructs_exact_state_and_binds_slots()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let codec = ClusterStateCodec::new("cluster-chunked", [13; 32])?;
+        let base = [4; 32];
+        let state = vec![0x5a; REPLICATED_STATE_CHUNK_BYTES + 73];
+        let mut refs = Vec::new();
+        let mut opened = Vec::new();
+        for (position, chunk) in state.chunks(REPLICATED_STATE_CHUNK_BYTES).enumerate() {
+            let index = u16::try_from(position)?;
+            let slot = u8::try_from(position % 2)?;
+            let operation = format!("chunk-op:{index}:{slot}");
+            let proposal = codec.seal_chunk(operation.clone(), index, slot, chunk)?;
+            let plaintext = codec.open_chunk_parts(
+                index,
+                slot,
+                proposal.operation_id(),
+                proposal.digest(),
+                proposal.sealed(),
+            )?;
+            opened.extend_from_slice(&plaintext);
+            refs.push(ReplicatedChunkRef {
+                index,
+                slot,
+                bytes: u32::try_from(chunk.len())?,
+                digest: proposal.digest(),
+            });
+            assert!(matches!(
+                codec.open_chunk_parts(
+                    index,
+                    1 - slot,
+                    proposal.operation_id(),
+                    proposal.digest(),
+                    proposal.sealed()
+                ),
+                Err(ReplicatedStateError::AuthenticationFailed)
+            ));
+        }
+        assert_eq!(opened, state);
+
+        let manifest = codec.seal_manifest("state-op", base, &state, refs.clone())?;
+        let descriptor = codec.open_committed_descriptor(
+            manifest.operation_id(),
+            manifest.digest(),
+            manifest.sealed(),
+        )?;
+        match descriptor {
+            CommittedStateDescriptor::Chunked(decoded) => {
+                assert_eq!(decoded.base_digest, base);
+                assert_eq!(decoded.state_digest, sha256(&state));
+                assert_eq!(usize::try_from(decoded.total_bytes)?, state.len());
+                assert_eq!(decoded.chunks, refs);
+            }
+            CommittedStateDescriptor::Legacy(_) => return Err("expected chunked manifest".into()),
+        }
+
+        let legacy = codec.seal("legacy-op", base, b"legacy-state")?;
+        assert!(matches!(
+            codec.open_committed_descriptor(
+                legacy.operation_id(),
+                legacy.digest(),
+                legacy.sealed()
+            )?,
+            CommittedStateDescriptor::Legacy(_)
+        ));
+        Ok(())
+    }
+
+    #[test]
     fn proposal_round_trip_is_base_fenced_and_authenticated()
     -> Result<(), Box<dyn std::error::Error>> {
         let codec = ClusterStateCodec::new("cluster-a", [9; 32])?;
