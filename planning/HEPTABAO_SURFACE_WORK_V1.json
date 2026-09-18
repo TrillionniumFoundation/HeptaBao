@@ -1070,18 +1070,20 @@
     {
       "surface_id": "HB-SURFACE-AUDIT-HTTP",
       "category": "audit_devices",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "sys/audit HTTP device",
         "required_positive_and_hostile_behavior": "Endpoint enrollment/TLS, bounded delivery, batching/backpressure and response classification",
-        "remaining_semantics_and_effect_checks": "Untrusted redirect never gets audit payload; delivery failures follow configured admission semantics",
+        "remaining_semantics_and_effect_checks": "Host-enrolled process-configured HTTPS delivery is live and fail-closed; dynamic API enrollment/options, batching/backpressure parity and full official differential remain open.",
         "crash_reopen": "Interrupt sys/audit HTTP device before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUDIT-HTTP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "available_scoped_profiles": [
+        "audit-http"
+      ],
       "whole_surface_admitted": false
     },
     {
