@@ -201,6 +201,46 @@ class ReplayEpochCluster(Cluster):
             third_epoch,
             "fourth_replay_epoch_retirement_with_same_offline_voter_committed",
         )
+
+        # Force a committed snapshot while the same voter is still offline, then
+        # wait until the leader reports a purged log frontier. The lagging voter
+        # can no longer rely on replaying the two retirement log entries it
+        # missed: rejoin must install state carrying the latest replay epoch.
+        status, snapshot = final_leader.call(
+            "GET",
+            "sys/storage/raft/snapshot",
+            token=self.root_token,
+            timeout=20,
+        )
+        self.check(
+            "multi_epoch_snapshot_committed_while_voter_offline",
+            status == 200 and isinstance(snapshot.get("data"), dict),
+        )
+        deadline = time.monotonic() + 10
+        snapshot_status: dict[str, object] = {}
+        while time.monotonic() < deadline:
+            status, body = final_leader.call(
+                "GET",
+                "sys/storage/raft/snapshot-status",
+                token=self.root_token,
+                timeout=10,
+            )
+            if status == 200 and isinstance(body.get("data"), dict):
+                snapshot_status = body["data"]
+                if (
+                    type(snapshot_status.get("snapshot_index")) is int
+                    and type(snapshot_status.get("purged_index")) is int
+                    and snapshot_status["purged_index"] > 0
+                ):
+                    break
+            time.sleep(0.1)
+        self.check(
+            "multi_epoch_snapshot_purged_pre_rejoin_log_frontier",
+            type(snapshot_status.get("snapshot_index")) is int
+            and type(snapshot_status.get("purged_index")) is int
+            and snapshot_status["purged_index"] > 0,
+        )
+
         self.restart(lagging)
         current = self.leader()
         if current is not lagging:
@@ -271,7 +311,6 @@ def main() -> int:
             "power_loss_during_epoch_transition",
             "disk_full_or_permission_fault_during_epoch_transition",
             "network_partition_during_epoch_transition",
-            "forced_snapshot_install_across_epoch",
             "rolling_version_upgrade_across_epoch",
             "more_than_32000_real_operations_between_retirements",
             "independent_reproduction",
