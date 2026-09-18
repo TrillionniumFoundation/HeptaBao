@@ -407,9 +407,6 @@ impl Binding {
         digest32(b"heptabao.durable-service.binding.v1", &bytes)
     }
 
-    fn storage_key(&self) -> (String, String) {
-        (self.key.namespace.clone(), self.resource.clone())
-    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -3012,7 +3009,7 @@ mod tests {
             ));
             drop(service);
 
-            let mut reopened = DurableService::open(&root.0, barrier.clone(), 16)?;
+            let mut reopened = DurableService::reopen(&root.0, barrier.clone(), 16)?;
             assert!(!reopened.recovery_required());
             assert_eq!(reopened.replay_epoch(), 1);
             assert_eq!(reopened.retired_through_generation(), generation);
@@ -3021,7 +3018,7 @@ mod tests {
             assert!(matches!(outcome, MutationOutcome::Committed { .. }));
             drop(reopened);
 
-            let reopened = DurableService::open(&root.0, barrier, 16)?;
+            let reopened = DurableService::reopen(&root.0, barrier, 16)?;
             assert_eq!(reopened.replay_epoch(), 1);
             assert_eq!(reopened.snapshot.generation, generation + 1);
         }
