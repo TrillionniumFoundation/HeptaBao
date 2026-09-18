@@ -19,7 +19,7 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
-- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 6, legacy read admission, commit promotion and rollback boundaries.
+- `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — current schema 7, legacy read admission, commit promotion and rollback boundaries.
 
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
@@ -215,7 +215,7 @@ It does not replace bounded KV transfer, full asset conversion or cutover admiss
 [Online Kubernetes / OIDC authentication](auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
 TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
 loopback callback CLI. The separate remote-JWT profile above remains a bearer
-verifier, not code flow. Current application writes use schema 6. The new profiles
+verifier, not code flow. Current application writes use schema 7. The new profiles
 retain root-controlled enrollment, live Identity, audit and durable/HA publication.
 They do not implement complete auth/MFA/browser UI compatibility, scalable storage,
 independent acceptance or production authority.
