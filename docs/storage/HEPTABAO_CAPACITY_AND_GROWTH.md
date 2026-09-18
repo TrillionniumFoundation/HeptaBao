@@ -26,19 +26,29 @@ The durable crash protocol remains intent -> candidate snapshot -> commit marker
 
 `GET /v1/sys/internal/storage/capacity` follows the audited service path, requires a root principal in the root namespace, and exposes metadata only. The response includes the explicit state bound, durable generation, logical payload/journal usage, retained request count and remaining replay slots. It does not expose tenant names, keys, operation IDs, tokens, password material or secret plaintext.
 
-The active replay ledger is bounded at **32,000** operation identities per epoch in the server profile. Preflight refuses a known-full active epoch before proposing a new HA state effect. Journal compaction by itself retains replay records. In single-node mode, authenticated replay retirement can advance the epoch/frontier and clear detailed active records without permitting a retired request to become fresh; HA mode deliberately refuses retirement until the transition is quorum ordered.
+The active replay ledger is bounded at **32,000** operation identities per epoch in the server profile. Preflight refuses a known-full active epoch before proposing a new HA state effect. Journal compaction by itself retains replay records. Authenticated replay retirement advances the epoch/frontier and clears detailed active records without permitting a retired request to become fresh. In HA, the next epoch is ordered through Raft and each node advances its local durable replay owner before publishing state for that committed epoch.
 
 ## Checkpoint and recovery behavior
 
 Automatic journal checkpointing is permitted only after a proven pre-entry journal-capacity rejection and retries the same bound request once. Unknown outcomes, filesystem failures and replay-capacity exhaustion are never automatically retried. A failed maintenance publication can fence the durable owner, and the server mirrors that recovery requirement rather than serving cached state as healthy.
 
-No replay identity is retired merely because its journal frame was compacted. Retirement is a separate authenticated protocol: single-node `sys/storage/raft/replay-retire` compacts, commits a new epoch plus retired-through generation frontier and checkpoints it. Restart, crash-window and backup/restore tests retain that frontier. HA mode returns 409 because one node cannot retire behind peers without consensus ordering.
+No replay identity is retired merely because its journal frame was compacted. Retirement is a separate authenticated protocol: `sys/storage/raft/replay-retire` compacts, commits a new epoch plus retired-through generation frontier and checkpoints it. In HA, the application epoch is committed through consensus first; each node then advances its local replay ledger before publishing that committed state. A stale follower may traverse several already-committed epochs during authoritative catch-up, while ordinary local publication remains restricted to the current or next epoch. Restart, crash-window and backup/restore tests retain the authenticated frontier.
 
-## Remaining replay-lifetime implementation
+## Remaining replay-lifetime qualification
 
-The remaining hard problem is **cluster-coordinated** replay retirement. The epoch/frontier must be ordered through consensus and applied on every admitted voter before old detailed identities are discarded. After retirement, delayed traffic from an old epoch must remain rejected across leader change, follower catch-up, snapshot install, stale-node rejoin and backup/restore. A local node may not infer that peers have advanced merely from its own checkpoint.
+Cluster-coordinated replay retirement is implemented for the current same-version
+Raft state path, including repeated epoch transitions, leadership change and
+authoritative follower catch-up. The remaining hard problem is destructive and
+long-duration qualification: delayed old-epoch traffic must remain rejected across
+directed partition/heal, forced snapshot install, stale-node rejoin, disk and
+power faults, backup/restore and supported mixed-version upgrade boundaries.
 
-Acceptance must include more than 32,000 successful logical mutations across retirement cycles, exact duplicate/conflict behavior inside the active window, deterministic rejection of retired identities, crash at each epoch publication boundary, leadership transfer during retirement, snapshot restore/rejoin and proof that no external-effect tombstone or state generation is incorrectly discarded.
+Acceptance must include more than 32,000 successful logical mutations across
+multiple retirement cycles, exact duplicate/conflict behavior inside the active
+window, deterministic rejection of retired identities, crash at each epoch
+publication boundary, leadership transfer during retirement, snapshot
+restore/rejoin and proof that no external-effect tombstone or state generation is
+incorrectly discarded.
 
 ## Wider scalability boundary
 
