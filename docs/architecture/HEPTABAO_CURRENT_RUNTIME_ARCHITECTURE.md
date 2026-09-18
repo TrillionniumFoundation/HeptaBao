@@ -56,7 +56,7 @@ Audit is part of admission and response publication: a request record is persist
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
 | HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding, authenticated `sys/step-down` and `sys/storage/raft/*`; HA and raft-runtime tests |
 
-The integrated `plugin-host`, `plugin-contracts` and `domain` packages own the deployment-enrolled read-only secret-plugin boundary. They do not provide general OpenBao RPC plugin compatibility, write/lease callbacks or qualified sandbox containment.
+The integrated `plugin-host`, `plugin-contracts` and `domain` packages own deployment-enrolled checksum-bound authentication and read-only secret-plugin boundaries. Authentication plugins may return only a decision and bounded alias; token policy/TTL authority remains in `auth.rs`. Secret plugins remain read-only. Neither path provides OpenBao Go-plugin RPC compatibility, secret write/lease callbacks or independently qualified sandbox containment.
 
 The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. In particular the server does not yet integrate a general plugin backend, dynamic-secret lease subsystem, KMS auto-unseal provider or remote rollback anchor merely because corresponding crates exist.
 

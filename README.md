@@ -39,8 +39,11 @@ owner-scoped V4 content-defined chunks (384 KiB minimum, 512 KiB target,
 768 KiB maximum) plus one authenticated owner manifest publication point. HA uses its
 own bounded chunk framing after serializing the same complete logical image. Local
 state and HA replication share a **16 MiB serialized-state bound**. V4 gives Auth, Engines, Database, Raft-admin and Namespace independent local
-content-addressed ownership and atomically publishes only changed owner chunks. The
-HA compatibility path still serializes the complete logical State for its digest and
+content-addressed ownership. Their in-memory owners are copy-on-write; after the one
+logical State serialization needed for the cluster digest, unchanged owners carry
+forward the previous authenticated descriptor/chunks without a second owner
+serialization/hash/chunk pass, while changed owners publish new chunks atomically
+with the manifest. The HA compatibility path still serializes the complete logical State for its digest and
 replication manifest, so end-to-end write cost is not yet fully record-oriented. The active replay
 ledger remains bounded to 32,000 identities per epoch, and ordinary compaction does
 not evict identities. These are bounded mechanisms, not production-scale proof.

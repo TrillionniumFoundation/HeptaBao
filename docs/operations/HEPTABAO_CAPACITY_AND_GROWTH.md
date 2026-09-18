@@ -21,9 +21,12 @@ resynchronize and reuse authenticated later chunks without shifting every
 subsequent Raft chunk key. Historical whole-state `HBSR1` and fixed-position
 `HBSM2` manifests remain readable for online upgrade. The manifest is still the
 sole authoritative publication point, so interrupted staging cannot expose a
-partial logical state. A point mutation can still clone/serialize the complete
-logical state before local/HA publication, so this reduces physical write and
-replication amplification but is **not** record-oriented scalability.
+partial logical state. A point mutation still serializes the complete logical State
+once for its cluster binding and HA-compatible digest. Local V4 persistence then
+uses copy-on-write owner identity to carry unchanged authenticated owner descriptors
+and chunks forward without a second serialization/hash/chunk pass; changed owners
+alone are rechunked locally. HA still consumes the complete logical image, so this
+reduces local physical/CPU amplification but is **not** record-oriented scalability.
 
 The active replay ledger admits at most **32,000 identities per epoch**. A
 root-authorized replay retirement operation creates a durable authenticated
