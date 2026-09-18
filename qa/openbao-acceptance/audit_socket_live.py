@@ -71,6 +71,15 @@ class Collector:
         with self.lock:
             return json.loads(json.dumps(self.records))
 
+    def wait_for_count(self, minimum: int, timeout: float = 3.0):
+        deadline = __import__("time").monotonic() + timeout
+        while __import__("time").monotonic() < deadline:
+            current = self.snapshot()
+            if len(current) >= minimum:
+                return current
+            __import__("time").sleep(0.01)
+        return self.snapshot()
+
 
 def configure(instance: smoke.Instance, collector: Collector):
     path = instance.root / "server.json"
@@ -147,12 +156,12 @@ def run(binary: Path, work_dir: Path) -> int:
             and body.get("data", {}).get("data", {}).get("value") == secret,
         )
 
-        remote = collector.snapshot()
         local = [
             json.loads(line)
             for line in (instance.root / "audit.jsonl").read_text().splitlines()
             if line
         ]
+        remote = collector.wait_for_count(len(local))
         check("socket_tail_matches_local_before_fault", remote == local)
         encoded = json.dumps(remote, sort_keys=True)
         check(
@@ -183,7 +192,7 @@ def run(binary: Path, work_dir: Path) -> int:
             "collector_recovery_preserves_service",
             instance.call("GET", "secret/data/audit-socket")[0] == 200,
         )
-        after = collector.snapshot()
+        after = collector.wait_for_count(before + 1)
         check("collector_receives_new_records_after_recovery", len(after) > before)
 
         result = {
