@@ -9,7 +9,7 @@ use crate::{crypto, outbound::Target};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
-use zeroize::Zeroize;
+use zeroize::{Zeroize, Zeroizing};
 
 const MAX_ROLES: usize = 64;
 const MAX_PENDING: usize = 64;
@@ -131,7 +131,7 @@ pub(crate) enum Dispatch {
 }
 
 pub(crate) struct TokenMetadata {
-    pub token: String,
+    pub token: Zeroizing<String>,
     pub expires_at: u64,
     pub audiences: Vec<String>,
 }
@@ -754,7 +754,7 @@ impl Kubernetes {
                 "data":{
                     "service_account_name":plan.service_account_name,
                     "service_account_namespace":plan.kubernetes_namespace,
-                    "service_account_token":metadata.token
+                    "service_account_token":metadata.token.as_str()
                 }
             }),
             true,
