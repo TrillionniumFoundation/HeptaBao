@@ -77,7 +77,11 @@ def main() -> int:
         result=json.loads(private_read(root/'preflight.json'))
         check('real_source_mounts_observed',result['source_catalogs']['mounts']['status']=='observed')
         check('real_source_transit_detected',result['source_catalogs']['mounts']['types'].get('transit')==1)
-        check('transit_adapter_stays_blocked','asset_adapter_not_qualified:transit' in result['blockers'])
+        check(
+            'transit_adapter_is_bounded_not_missing',
+            result['observed_asset_dispositions'].get('transit_keys_ciphertexts') == 'BOUNDED_ADAPTER'
+            and 'bounded_adapter_not_full_instance_ready:transit_keys_ciphertexts' in result['blockers'],
+        )
         check('real_target_capacity_observed',result['target_capacity']['status']=='observed')
         check('oversize_plan_is_blocked','target_state_estimate_exceeds_current_capacity' in result['blockers'])
         check('no_inventory_or_cutover_claim',not result['inventory_complete'] and not result['atomic_cutover_proven'])
