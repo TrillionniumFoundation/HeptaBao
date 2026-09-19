@@ -490,13 +490,18 @@
       "positive": "Authenticate real verified client chains and bind allowed certificate identities",
       "hostile": "Reject revoked leaf, bad EKU, unrelated CA and untrusted forwarded certificates",
       "lifecycle": "Refresh CRL/OCSP and rotate CA without resurrecting revoked sessions",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+    "implementation": "PARTIAL_RUNTIME",
+    "runtime_sources": [
+      "crates/heptabao-server/src/auth.rs",
+      "crates/heptabao-server/src/http.rs"
+    ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+    "executable_profiles": [
+      "qa/openbao-acceptance/cert_auth_live.py"
+    ],
       "full_surface_verified": false,
       "independently_admitted": false,
       "remaining_scope": "Chain, CRL, OCSP and trusted-forwarded-certificate behavior."

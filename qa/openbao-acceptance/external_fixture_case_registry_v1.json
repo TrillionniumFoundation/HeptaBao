@@ -59,6 +59,29 @@
         "client.replay_error_no_data"
       ]
     },
+    "cert_auth_live": {
+      "script": "qa/openbao-acceptance/cert_auth_live.py",
+      "case_ids": [
+        "mTLS_listener_rejects_missing_client_chain",
+        "mTLS_listener_requires_client_chain",
+        "initialize_over_mTLS",
+        "unseal_over_mTLS",
+        "cert_auth_mount",
+        "cert_policy",
+        "cert_role_with_chain_selectors",
+        "cert_login_chain_eku_and_selectors",
+        "cert_metadata_subject_san_ou_extension",
+        "root_secret_for_readback",
+        "cert_token_policy_read",
+        "cert_renewal_reauthenticates_same_leaf",
+        "same_CA_wrong_leaf_denied_by_role_digest",
+        "client_auth_EKU_rejects_server_only_certificate",
+        "untrusted_chain_rejected_by_TLS",
+        "restart_starts_sealed",
+        "restart_unseal_over_mTLS",
+        "cert_renewal_reauthenticates_after_restart"
+      ]
+    },
     "ha_forwarding": {
       "case_ids": [
         "standby_mutation_forwarding_and_context"

@@ -242,9 +242,9 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 ### HB-SURFACE-AUTH-CERT
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H16-WP04`, `H16-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP04`, `H16-WP10`.
 API families: `auth/{mount}/certs/*`; `auth/{mount}/login`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/http.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -256,7 +256,7 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Remaining scope:** Chain, CRL, OCSP and trusted-forwarded-certificate behavior.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/cert_auth_live.py`.
 
 ### HB-SURFACE-AUTH-JWT-OIDC
 

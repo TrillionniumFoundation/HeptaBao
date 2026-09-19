@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 43,
-    "defined_not_implemented_surface_count": 17,
-    "fixture_case_count": 226,
+    "implemented_surface_count": 44,
+    "defined_not_implemented_surface_count": 16,
+    "fixture_case_count": 244,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -160,9 +160,28 @@
       "surface_id": "HB-SURFACE-AUTH-CERT",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 18,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "cert_auth_live.mTLS_listener_rejects_missing_client_chain",
+        "cert_auth_live.mTLS_listener_requires_client_chain",
+        "cert_auth_live.initialize_over_mTLS",
+        "cert_auth_live.unseal_over_mTLS",
+        "cert_auth_live.cert_auth_mount",
+        "cert_auth_live.cert_policy",
+        "cert_auth_live.cert_role_with_chain_selectors",
+        "cert_auth_live.cert_login_chain_eku_and_selectors",
+        "cert_auth_live.cert_metadata_subject_san_ou_extension",
+        "cert_auth_live.root_secret_for_readback",
+        "cert_auth_live.cert_token_policy_read",
+        "cert_auth_live.cert_renewal_reauthenticates_same_leaf",
+        "cert_auth_live.same_CA_wrong_leaf_denied_by_role_digest",
+        "cert_auth_live.client_auth_EKU_rejects_server_only_certificate",
+        "cert_auth_live.untrusted_chain_rejected_by_TLS",
+        "cert_auth_live.restart_starts_sealed",
+        "cert_auth_live.restart_unseal_over_mTLS",
+        "cert_auth_live.cert_renewal_reauthenticates_after_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
