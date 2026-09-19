@@ -955,13 +955,11 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         if state.last_purged_log_id.is_some_and(|last| last > log_id) {
             return Err(invalid("purge log id regressed"));
         }
-        if let Some(last) = state.log.keys().next_back().copied()
-            && log_id.index > last
-        {
-            return Err(invalid(
-                "purge log id exceeds locally retained log frontier",
-            ));
-        }
+        // A follower may install a snapshot (or receive a purge request after
+        // reconnecting) whose frontier is ahead of the locally retained log.
+        // The Raft storage contract permits advancing the purge marker across
+        // that gap; rejecting it permanently shuts down a node during restart
+        // instead of allowing the subsequent snapshot/log reconciliation.
         let event = LogJournalEvent::Purge { log_id };
         append_log_journal(
             &log_journal_path(&self.state_path),
