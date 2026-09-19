@@ -1048,7 +1048,13 @@ mod tests {
             None,
             1_700_000_002,
         );
-        assert_eq!(denied.expect_err("role must gate IP SANs").status, 403);
+        let denied_status = match denied {
+            Ok(_) => {
+                return Err("role without allow_ip_sans unexpectedly issued a certificate".into());
+            }
+            Err(error) => error.status,
+        };
+        assert_eq!(denied_status, 403);
         pki.handle_admin(
             "POST",
             "roles/web-ip",

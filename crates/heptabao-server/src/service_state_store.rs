@@ -18,7 +18,9 @@ pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-chunks-v3";
 pub(crate) const STATE_CHUNK_BYTES: usize = 512 * 1024;
 const STATE_CHUNK_MIN_BYTES: usize = 384 * 1024;
 const STATE_CHUNK_MAX_BYTES: usize = 768 * 1024;
+#[cfg(test)]
 const STATE_CHUNK_WINDOW_BYTES: usize = 64;
+#[cfg(test)]
 const STATE_CHUNK_MASK: u64 = (1_u64 << 19) - 1;
 pub(crate) const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
 const MAX_FIXED_STATE_CHUNKS: usize = MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_BYTES);
@@ -46,12 +48,14 @@ pub(crate) struct StateManifest {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg(test)]
 pub(crate) struct StateChunk {
     pub resource: String,
     pub bytes: Vec<u8>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg(test)]
 pub(crate) struct StateWritePlan {
     /// New content-addressed chunks that do not already belong to the current
     /// manifest generation.
@@ -65,24 +69,32 @@ pub(crate) struct StateWritePlan {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum StateStoreError {
+    #[cfg(test)]
     EmptyState,
+    #[cfg(test)]
     StateTooLarge,
+    #[cfg(test)]
     InvalidOperationId,
     InvalidManifest,
     InvalidChunk,
     DigestMismatch,
+    #[cfg(test)]
     Serialization,
 }
 
 impl fmt::Display for StateStoreError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str(match self {
+            #[cfg(test)]
             Self::EmptyState => "server state is empty",
+            #[cfg(test)]
             Self::StateTooLarge => "server state exceeds the chunked storage bound",
+            #[cfg(test)]
             Self::InvalidOperationId => "server state operation identity is invalid",
             Self::InvalidManifest => "server state manifest is invalid",
             Self::InvalidChunk => "server state chunk set is invalid",
             Self::DigestMismatch => "server state chunks do not match the manifest digest",
+            #[cfg(test)]
             Self::Serialization => "server state manifest serialization failed",
         })
     }
@@ -213,6 +225,7 @@ impl StateManifest {
     }
 }
 
+#[cfg(test)]
 impl StateWritePlan {
     pub fn new(
         bytes: &[u8],
@@ -379,6 +392,7 @@ pub(crate) fn assemble_state(
     Ok(state)
 }
 
+#[cfg(test)]
 fn content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
     let mut chunks = Vec::new();
     let mut start = 0_usize;
@@ -403,6 +417,7 @@ fn content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
     chunks
 }
 
+#[cfg(test)]
 fn chunk_byte_hash(byte: u8) -> u64 {
     let mut value = u64::from(byte).wrapping_add(0x9e37_79b9_7f4a_7c15);
     value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
@@ -418,6 +433,7 @@ fn digest_chunk_resource(digest: &str) -> String {
     format!("state-chunks/by-digest/{digest}")
 }
 
+#[cfg(test)]
 pub(crate) fn validate_content_addressed_chunk(
     resource: &str,
     bytes: &[u8],

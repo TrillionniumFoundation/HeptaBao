@@ -275,6 +275,13 @@ impl OwnerReuseHint {
     }
 }
 
+#[derive(Clone, Copy)]
+struct PersistOwnerStateOptions {
+    compact_before_entry: bool,
+    allow_epoch_catchup: bool,
+    reuse: OwnerReuseHint,
+}
+
 fn replay_epoch_is_zero(value: &u64) -> bool {
     *value == 0
 }
@@ -1235,12 +1242,14 @@ impl Service {
             let sealed = self.state.is_none();
             let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();
             let status = health_status_with_codes(
-                initialized,
-                sealed,
-                self.recovery_required,
-                ha_enabled,
-                standby,
-                ha_active,
+                HealthObservation::new(
+                    initialized,
+                    sealed,
+                    self.recovery_required,
+                    ha_enabled,
+                    standby,
+                    ha_active,
+                ),
                 standby_ok,
                 health_codes,
             );
@@ -2079,9 +2088,7 @@ impl Service {
         operation_id: &str,
         state_schema: u32,
         target_replay_epoch: u64,
-        compact_before_entry: bool,
-        allow_epoch_catchup: bool,
-        reuse: OwnerReuseHint,
+        options: PersistOwnerStateOptions,
     ) -> Result<MutationOutcome, ServiceError> {
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
@@ -2091,7 +2098,7 @@ impl Service {
             return Err(ServiceError::ReplayEpochMismatch);
         }
         if target_replay_epoch > current_replay_epoch {
-            if !allow_epoch_catchup
+            if !options.allow_epoch_catchup
                 && current_replay_epoch.checked_add(1) != Some(target_replay_epoch)
             {
                 return Err(ServiceError::ReplayEpochMismatch);
@@ -2133,7 +2140,7 @@ impl Service {
         let owners = vec![
             (
                 "namespaces",
-                if may_reuse && reuse.namespaces {
+                if may_reuse && options.reuse.namespaces {
                     None
                 } else {
                     Some(
@@ -2144,7 +2151,7 @@ impl Service {
             ),
             (
                 "auth",
-                if may_reuse && reuse.auth {
+                if may_reuse && options.reuse.auth {
                     None
                 } else {
                     Some(serde_json::to_vec(&state.auth).map_err(|_| ServiceError::CorruptState)?)
@@ -2152,7 +2159,7 @@ impl Service {
             ),
             (
                 "engines",
-                if may_reuse && reuse.engines {
+                if may_reuse && options.reuse.engines {
                     None
                 } else {
                     Some(
@@ -2163,7 +2170,7 @@ impl Service {
             ),
             (
                 "database",
-                if may_reuse && reuse.database {
+                if may_reuse && options.reuse.database {
                     None
                 } else {
                     Some(
@@ -2174,7 +2181,7 @@ impl Service {
             ),
             (
                 "raft_admin",
-                if may_reuse && reuse.raft_admin {
+                if may_reuse && options.reuse.raft_admin {
                     None
                 } else {
                     Some(
@@ -2224,7 +2231,7 @@ impl Service {
         if replay_epoch != target_replay_epoch {
             return Err(ServiceError::ReplayEpochMismatch);
         }
-        if compact_before_entry {
+        if options.compact_before_entry {
             durable.apply_batch_with_compaction_in_replay_epoch(
                 replay_epoch,
                 "heptabao-server",
@@ -2483,9 +2490,11 @@ impl Service {
             &operation_id,
             state.schema,
             state.replay_epoch,
-            false,
-            false,
-            OwnerReuseHint::default(),
+            PersistOwnerStateOptions {
+                compact_before_entry: false,
+                allow_epoch_catchup: false,
+                reuse: OwnerReuseHint::default(),
+            },
         ) {
             return (
                 Response::error(
@@ -2819,9 +2828,11 @@ impl Service {
                 &operation_id,
                 state.schema,
                 state.replay_epoch,
-                true,
-                false,
-                OwnerReuseHint::default(),
+                PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: false,
+                    reuse: OwnerReuseHint::default(),
+                },
             ) {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
@@ -3698,9 +3709,11 @@ impl Service {
             operation_id,
             state_schema,
             target_replay_epoch,
-            true,
-            allow_epoch_catchup,
-            reuse,
+            PersistOwnerStateOptions {
+                compact_before_entry: true,
+                allow_epoch_catchup,
+                reuse,
+            },
         );
         // If retirement itself published but the following state batch failed,
         // application state and replay authority no longer have the same epoch.
@@ -4209,6 +4222,7 @@ fn write_audit_syslog(_config: &AuditSyslogConfig, _bytes: &[u8]) -> io::Result<
     ))
 }
 
+#[cfg(test)]
 fn health_status(
     initialized: bool,
     sealed: bool,
@@ -4218,12 +4232,14 @@ fn health_status(
     ha_active: bool,
 ) -> u16 {
     health_status_with_codes(
-        initialized,
-        sealed,
-        recovery_required,
-        ha_enabled,
-        standby,
-        ha_active,
+        HealthObservation::new(
+            initialized,
+            sealed,
+            recovery_required,
+            ha_enabled,
+            standby,
+            ha_active,
+        ),
         false,
         HealthStatusCodes {
             uninit: 501,
@@ -4234,27 +4250,52 @@ fn health_status(
     )
 }
 
-fn health_status_with_codes(
+#[derive(Clone, Copy)]
+struct HealthObservation {
     initialized: bool,
     sealed: bool,
     recovery_required: bool,
     ha_enabled: bool,
     standby: bool,
     ha_active: bool,
+}
+
+impl HealthObservation {
+    fn new(
+        initialized: bool,
+        sealed: bool,
+        recovery_required: bool,
+        ha_enabled: bool,
+        standby: bool,
+        ha_active: bool,
+    ) -> Self {
+        Self {
+            initialized,
+            sealed,
+            recovery_required,
+            ha_enabled,
+            standby,
+            ha_active,
+        }
+    }
+}
+
+fn health_status_with_codes(
+    observation: HealthObservation,
     standby_ok: bool,
     codes: HealthStatusCodes,
 ) -> u16 {
-    if !initialized {
+    if !observation.initialized {
         codes.uninit
-    } else if sealed || recovery_required {
+    } else if observation.sealed || observation.recovery_required {
         codes.sealed
-    } else if ha_enabled && standby {
+    } else if observation.ha_enabled && observation.standby {
         if standby_ok {
             codes.active
         } else {
             codes.standby
         }
-    } else if ha_enabled && !ha_active {
+    } else if observation.ha_enabled && !observation.ha_active {
         503
     } else {
         codes.active
@@ -4934,7 +4975,7 @@ mod cow_owner_tests {
 
 #[cfg(test)]
 mod ha_health_status_tests {
-    use super::{HealthStatusCodes, health_status, health_status_with_codes};
+    use super::{HealthObservation, HealthStatusCodes, health_status, health_status_with_codes};
 
     #[test]
     fn health_never_reports_active_without_current_linearizable_authority() {
@@ -4960,19 +5001,35 @@ mod ha_health_status_tests {
         // active. The HTTP parser may accept the flag for client tolerance,
         // but only standbyok changes this result.
         assert_eq!(
-            health_status_with_codes(true, false, false, true, true, false, false, codes),
+            health_status_with_codes(
+                HealthObservation::new(true, false, false, true, true, false),
+                false,
+                codes,
+            ),
             430
         );
         assert_eq!(
-            health_status_with_codes(true, false, false, true, true, false, true, codes),
+            health_status_with_codes(
+                HealthObservation::new(true, false, false, true, true, false),
+                true,
+                codes,
+            ),
             201
         );
         assert_eq!(
-            health_status_with_codes(false, false, false, true, false, false, false, codes),
+            health_status_with_codes(
+                HealthObservation::new(false, false, false, true, false, false),
+                false,
+                codes,
+            ),
             204
         );
         assert_eq!(
-            health_status_with_codes(true, true, false, true, false, true, true, codes),
+            health_status_with_codes(
+                HealthObservation::new(true, true, false, true, false, true),
+                true,
+                codes,
+            ),
             499
         );
     }

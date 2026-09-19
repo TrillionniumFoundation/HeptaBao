@@ -1207,49 +1207,52 @@ mod auto_rotation_tests {
     use super::*;
 
     #[test]
-    fn auto_rotation_uses_one_hour_minimum_and_persists_across_restart() {
+    fn auto_rotation_uses_one_hour_minimum_and_persists_across_restart()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
         let mut key = Key::new(
             &json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
             100,
-        )
-        .expect("key");
+        )?;
         assert_eq!(key.auto_rotate_period, 3600);
-        assert!(!key.auto_rotate(3_699).expect("before deadline"));
-        assert!(key.auto_rotate(3_700).expect("at deadline"));
+        assert!(!key.auto_rotate(3_699)?);
+        assert!(key.auto_rotate(3_700)?);
         assert_eq!(key.latest_version, 2);
         assert_eq!(key.versions[&2].created_at, 3_700);
-        assert!(!key.auto_rotate(7_299).expect("before reset deadline"));
-        assert!(key.auto_rotate(7_300).expect("after reset deadline"));
+        assert!(!key.auto_rotate(7_299)?);
+        assert!(key.auto_rotate(7_300)?);
 
-        let restored: Key =
-            serde_json::from_value(serde_json::to_value(&key).expect("encode")).expect("decode");
+        let restored: Key = serde_json::from_value(serde_json::to_value(&key)?)?;
         assert_eq!(restored.auto_rotate_period, 3600);
         assert_eq!(restored.latest_version, 3);
+        Ok(())
     }
 
     #[test]
-    fn zero_disables_rotation_and_soft_deleted_or_retained_keys_do_not_rotate() {
-        let mut disabled = Key::new(&json!({"auto_rotate_period":"0"}), 100).expect("key");
-        assert!(!disabled.auto_rotate(10_000).expect("disabled"));
+    fn zero_disables_rotation_and_soft_deleted_or_retained_keys_do_not_rotate()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut disabled = Key::new(&json!({"auto_rotate_period":"0"}), 100)?;
+        assert!(!disabled.auto_rotate(10_000)?);
 
-        let mut deleted = Key::new(&json!({"auto_rotate_period":"1h"}), 100).expect("key");
+        let mut deleted = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
         deleted.deleted = true;
-        assert!(!deleted.auto_rotate(10_000).expect("deleted"));
+        assert!(!deleted.auto_rotate(10_000)?);
 
-        let mut retained = Key::new(&json!({"auto_rotate_period":"1h"}), 100).expect("key");
+        let mut retained = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
         for version in 2..=10_000 {
-            retained.versions.insert(
-                version,
-                KeyVersion::generate(&retained.kind, version).expect("version"),
-            );
+            retained
+                .versions
+                .insert(version, KeyVersion::generate(&retained.kind, version)?);
         }
         retained.latest_version = 10_000;
-        assert!(!retained.auto_rotate(20_000).expect("retention bound"));
+        assert!(!retained.auto_rotate(20_000)?);
+        Ok(())
     }
 
     #[test]
-    fn auto_rotation_rejects_sub_hour_periods() {
+    fn auto_rotation_rejects_sub_hour_periods()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
         assert!(auto_rotate_period(Some(&json!("3599s"))).is_err());
-        assert_eq!(auto_rotate_period(Some(&json!("0"))).expect("disabled"), 0);
+        assert_eq!(auto_rotate_period(Some(&json!("0")))?, 0);
+        Ok(())
     }
 }

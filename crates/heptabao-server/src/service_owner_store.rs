@@ -163,6 +163,7 @@ impl OwnerStateManifest {
         self.replay_epoch
     }
 
+    #[cfg(test)]
     pub(crate) fn storage_format(&self) -> &str {
         &self.storage_format
     }
@@ -200,7 +201,7 @@ impl OwnerStateManifest {
             .chunks
             .get(index)
             .ok_or(OwnerStoreError::InvalidChunk)?;
-        Ok(owner_chunk_resource(owner, digest)?)
+        owner_chunk_resource(owner, digest)
     }
 
     pub(crate) fn unique_chunk_resources(&self) -> Result<BTreeSet<String>, OwnerStoreError> {
@@ -254,6 +255,7 @@ impl OwnerStateManifest {
 }
 
 impl OwnerWritePlan {
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         logical_bytes: &[u8],
