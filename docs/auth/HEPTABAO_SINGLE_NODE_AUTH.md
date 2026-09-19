@@ -526,6 +526,10 @@ directory removes those policies from the next token without waiting for a local
 cache expiry. Search is capped at 128 groups and rejects referrals, controls,
 arbitrary filter syntax and paging.
 
+The latest SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-d3a419.json).
+It is external-provider evidence only; it does not admit full OpenBao LDAP
+field/error parity or independent production qualification.
+
 The current profile still does **not** rotate/use a privileged bind-account
 credential for search, implement StartTLS/SASL/referrals, arbitrary LDAP filters,
 nested-group expansion, or establish full OpenBao LDAP API/error parity. Those
