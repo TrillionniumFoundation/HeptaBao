@@ -678,6 +678,35 @@ impl<R: SandboxRunner> DynamicSecretBroker<R> {
         }
     }
 
+    /// Revoke every active lease whose scope is below `prefix`.
+    ///
+    /// The IDs are snapshotted before invoking the provider so that each
+    /// provider effect has an independent generation and lease transition.
+    /// A failure stops at the first uncertain lease; earlier successful
+    /// revocations remain committed and later leases are left untouched.
+    pub fn revoke_prefix(
+        &mut self,
+        prefix: &CanonicalPath,
+        request: &SecretValue,
+        environment: &SecretEnvironment,
+    ) -> Result<usize, PluginHostError> {
+        let lease_ids = self
+            .leases
+            .iter()
+            .filter(|(_, record)| {
+                record.view.state == DynamicLeaseState::Active
+                    && record.view.scope.matches_prefix(prefix)
+            })
+            .map(|(lease_id, _)| lease_id.clone())
+            .collect::<Vec<_>>();
+        let mut revoked = 0;
+        for lease_id in lease_ids {
+            self.revoke(&lease_id, request, environment)?;
+            revoked += 1;
+        }
+        Ok(revoked)
+    }
+
     pub fn reconcile_host(
         &mut self,
         lease_id: &Id,
@@ -1097,6 +1126,54 @@ mod tests {
         assert_eq!(DynamicLeaseState::Revoked, revoked.state);
         assert!(format!("{broker:?}").contains("DynamicSecretBroker"));
         assert!(!format!("{broker:?}").contains("synthetic-dynamic-secret"));
+        Ok(())
+    }
+
+    #[test]
+    fn dynamic_revoke_prefix_respects_canonical_scope_boundaries() -> Result<(), Box<dyn Error>> {
+        let host = manifest(Behavior::Echo)?;
+        let mut broker = DynamicSecretBroker::new(host)?;
+        let request = SecretValue::new(b"synthetic-dynamic-secret".to_vec())?;
+        for (lease_id, scope) in [
+            ("lease_app", "/database/app"),
+            ("lease_role", "/database/role"),
+            ("lease_other", "/databases/other"),
+        ] {
+            broker.issue(
+                DynamicLeaseSpec {
+                    lease_id: Id::parse(lease_id)?,
+                    owner_entity: Id::parse("owner_one")?,
+                    scope: CanonicalPath::parse(scope)?,
+                    issued_at: Tick::new(10),
+                    ttl: 30,
+                    renewable: true,
+                },
+                &request,
+                &SecretEnvironment::new(),
+            )?;
+        }
+        assert_eq!(
+            2,
+            broker.revoke_prefix(
+                &CanonicalPath::parse("/database")?,
+                &request,
+                &SecretEnvironment::new(),
+            )?
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            broker.view(&Id::parse("lease_app")?, Tick::new(11))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            broker.view(&Id::parse("lease_role")?, Tick::new(11))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            broker
+                .view(&Id::parse("lease_other")?, Tick::new(11))?
+                .state
+        );
         Ok(())
     }
 }

@@ -388,6 +388,37 @@ impl<B: Barrier, R: SandboxRunner> DurableDynamicSecretBroker<B, R> {
         }
     }
 
+    /// Revoke all active leases below a canonical scope prefix.
+    ///
+    /// Each lease is committed independently through the normal durable
+    /// intent protocol. If a provider call becomes uncertain, the current
+    /// lease remains fenced and no later lease is attempted.
+    pub fn revoke_prefix(
+        &mut self,
+        context: &PluginMutationContext,
+        prefix: &CanonicalPath,
+        request: &SecretValue,
+        environment: &SecretEnvironment,
+    ) -> Result<usize, PluginHostError> {
+        self.ensure_ready()?;
+        let lease_ids = self
+            .broker
+            .leases
+            .iter()
+            .filter(|(_, record)| {
+                record.view.state == DynamicLeaseState::Active
+                    && record.view.scope.matches_prefix(prefix)
+            })
+            .map(|(lease_id, _)| lease_id.clone())
+            .collect::<Vec<_>>();
+        let mut revoked = 0;
+        for lease_id in lease_ids {
+            self.revoke(context, &lease_id, request, environment)?;
+            revoked += 1;
+        }
+        Ok(revoked)
+    }
+
     pub fn reconcile(
         &mut self,
         context: &PluginMutationContext,
@@ -1094,6 +1125,97 @@ mod tests {
             reopened.view(&Id::parse("lease_one")?, Tick::new(101))?
         );
         assert!(!tree_contains(&root.0, b"synthetic-issued-secret")?);
+        Ok(())
+    }
+
+    #[test]
+    fn durable_revoke_prefix_commits_each_matching_lease_and_survives_reopen()
+    -> Result<(), Box<dyn Error>> {
+        let root = TestRoot::new("revoke-prefix")?;
+        let mut durable = DurableDynamicSecretBroker::create_new(
+            &root.0,
+            TestBarrier::new(),
+            broker(Behavior::Success)?,
+            64,
+        )?;
+        let first = durable.issue(
+            &context("prefix_first")?,
+            spec()?,
+            &SecretValue::new(b"first-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        let second_spec = DynamicLeaseSpec {
+            lease_id: Id::parse("lease_two")?,
+            owner_entity: Id::parse("entity_two")?,
+            scope: CanonicalPath::parse("/database/role_two")?,
+            issued_at: Tick::new(100),
+            ttl: 300,
+            renewable: true,
+        };
+        durable.issue(
+            &context("prefix_second")?,
+            second_spec,
+            &SecretValue::new(b"second-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        let outside_spec = DynamicLeaseSpec {
+            lease_id: Id::parse("lease_outside")?,
+            owner_entity: Id::parse("entity_three")?,
+            scope: CanonicalPath::parse("/other/role")?,
+            issued_at: Tick::new(100),
+            ttl: 300,
+            renewable: true,
+        };
+        durable.issue(
+            &context("prefix_outside")?,
+            outside_spec,
+            &SecretValue::new(b"outside-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+
+        let revoked = durable.revoke_prefix(
+            &context("prefix_revoke")?,
+            &CanonicalPath::parse("/database")?,
+            &SecretValue::new(b"provider-revoke".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        assert_eq!(2, revoked);
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            durable.view(&first.lease.lease_id, Tick::new(101))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            durable
+                .view(&Id::parse("lease_two")?, Tick::new(101))?
+                .state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            durable
+                .view(&Id::parse("lease_outside")?, Tick::new(101))?
+                .state
+        );
+        drop(durable);
+
+        let mut reopened = DurableDynamicSecretBroker::reopen(
+            &root.0,
+            TestBarrier::new(),
+            broker(Behavior::Success)?,
+            64,
+        )?;
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            reopened
+                .view(&Id::parse("lease_two")?, Tick::new(101))?
+                .state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            reopened
+                .view(&Id::parse("lease_outside")?, Tick::new(101))?
+                .state
+        );
         Ok(())
     }
 
