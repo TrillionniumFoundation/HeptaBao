@@ -295,6 +295,7 @@
       "script": "qa/openbao-acceptance/self_init_live.py",
       "case_ids": [
         "self_init_starts_uninitialized",
+        "self_init_race_exclusion",
         "self_init_one_time_bootstrap",
         "self_init_custody_material_not_persisted_plaintext",
         "self_init_lost_ack_recovers_same_response",

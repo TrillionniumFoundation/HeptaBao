@@ -15,7 +15,7 @@
   "coverage_summary": {
     "implemented_surface_count": 45,
     "defined_not_implemented_surface_count": 15,
-    "fixture_case_count": 266,
+    "fixture_case_count": 267,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -800,10 +800,11 @@
       "surface_id": "HB-SURFACE-SELF-INIT",
       "category": "namespace_workflow",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 22,
+      "minimum_observations": 23,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
         "self_init_live.self_init_starts_uninitialized",
+        "self_init_live.self_init_race_exclusion",
         "self_init_live.self_init_one_time_bootstrap",
         "self_init_live.self_init_custody_material_not_persisted_plaintext",
         "self_init_live.self_init_lost_ack_recovers_same_response",

@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "45adcf1e1a3ae6cf5eb58408b5370cbc5a0f7ec500214c9a3287a4c537e6d6ad",
+  "corpus_sha256": "35ca80b24f0cef84dfdf1231bf1f0cb33e78e78054674d3513b9fea7d677255c",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -1792,6 +1792,7 @@
       },
       "fixture_case_ids": [
         "self_init_live.self_init_starts_uninitialized",
+        "self_init_live.self_init_race_exclusion",
         "self_init_live.self_init_one_time_bootstrap",
         "self_init_live.self_init_custody_material_not_persisted_plaintext",
         "self_init_live.self_init_lost_ack_recovers_same_response",

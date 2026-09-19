@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import importlib.util
 import json
@@ -73,7 +74,25 @@ def run_fixture(binary: Path, root: Path) -> dict:
         instance.start()
         check("self_init_starts_uninitialized", instance.call("GET", "sys/health")[0] == 501)
 
-        status, init_response = instance.call("POST", "sys/init", init_body)
+        # Distinct client nonces racing on a fresh directory must publish one
+        # initialization only.  Exactly one request may create the cluster;
+        # all other contenders must fail closed rather than minting another
+        # root or replacing the recovery binding.
+        contenders = []
+        for _ in range(4):
+            contender_nonce = base64.b64encode(secrets.token_bytes(32)).decode("ascii")
+            contenders.append({"secret_shares": 3, "secret_threshold": 2, "recovery_nonce": contender_nonce})
+        with ThreadPoolExecutor(max_workers=len(contenders)) as pool:
+            raced = list(pool.map(lambda body: instance.call("POST", "sys/init", body), contenders))
+        successful = [index for index, (status, _) in enumerate(raced) if status == 200]
+        check(
+            "self_init_race_exclusion",
+            len(successful) == 1
+            and all(status in (400, 403, 409, 503) for index, (status, _) in enumerate(raced) if index != successful[0]),
+        )
+        init_body = contenders[successful[0]]
+        nonce_text = init_body["recovery_nonce"]
+        status, init_response = raced[successful[0]]
         check(
             "self_init_one_time_bootstrap",
             status == 200
