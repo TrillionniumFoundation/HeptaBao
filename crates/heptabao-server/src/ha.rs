@@ -41,6 +41,7 @@ use crate::{
         ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
         REPLICATED_STATE_CHUNK_BYTES, ReplicatedChunkRef, ReplicatedStateManifest,
     },
+    service::OwnerPublicationBinding,
 };
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
@@ -668,6 +669,17 @@ impl HaProcess {
     /// authenticated chunks after insertions/deletions instead of shifting every
     /// later fixed chunk. New chunks are staged into an unreferenced index/slot;
     /// the production manifest remains the only publication point.
+    pub(crate) fn commit_state_with_owner_binding(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        binding: OwnerPublicationBinding,
+    ) -> Result<CommitReceipt, String> {
+        validate_owner_binding(operation_id, bytes, binding)?;
+        self.commit_state(operation_id, expected_base_digest, bytes)
+    }
+
     pub fn commit_state(
         &self,
         operation_id: &str,
@@ -1267,6 +1279,16 @@ struct ReplicatedChunkPlan<'a> {
     reused: bool,
 }
 
+fn validate_owner_binding(
+    operation_id: &str,
+    bytes: &[u8],
+    binding: OwnerPublicationBinding,
+) -> Result<(), String> {
+    binding
+        .verify(operation_id, bytes)
+        .map_err(|_| "local owner publication does not bind the HA state".to_owned())
+}
+
 fn plan_replicated_chunks<'a>(
     bytes: &'a [u8],
     previous: Option<&ReplicatedStateManifest>,
@@ -1510,6 +1532,35 @@ mod tests {
         assert_eq!(decoded.target, 2);
         assert_eq!(decoded.kind, RaftRpcKind::AppendEntries);
         assert_eq!(decoded.payload, b"bounded-raft-rpc");
+        Ok(())
+    }
+
+    #[test]
+    fn ha_commit_rejects_owner_binding_for_different_operation_or_state()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let plan = crate::service::OwnerWritePlan::new(
+            logical,
+            "owner-op-binding",
+            9,
+            "cluster",
+            0,
+            vec![
+                ("namespaces", br#"{"next_incarnation":1}"#.to_vec()),
+                ("auth", br#"{"tokens":[]}"#.to_vec()),
+                ("engines", br#"{"mounts":[]}"#.to_vec()),
+                ("database", br#"{"connections":[]}"#.to_vec()),
+                ("raft_admin", br#"{"policy":null}"#.to_vec()),
+            ],
+            None,
+            Vec::new(),
+        )?;
+        let binding = plan.publication_binding("owner-op-binding", logical)?;
+        assert!(validate_owner_binding("owner-op-binding", logical, binding).is_ok());
+        assert!(validate_owner_binding("owner-op-other", logical, binding).is_err());
+        let mut altered = logical.to_vec();
+        altered[0] ^= 1;
+        assert!(validate_owner_binding("owner-op-binding", &altered, binding).is_err());
         Ok(())
     }
 

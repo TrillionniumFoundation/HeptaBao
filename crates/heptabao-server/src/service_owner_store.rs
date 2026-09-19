@@ -59,6 +59,37 @@ pub(crate) struct OwnerWritePlan {
     pub manifest_bytes: Vec<u8>,
 }
 
+/// The immutable identity that local owner publication and the HA manifest
+/// must share for one logical state commit.  This does not authorize either
+/// side by itself; it only makes the cross-layer binding explicit.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct OwnerPublicationBinding {
+    operation_digest: [u8; 32],
+    logical_digest: [u8; 32],
+    logical_bytes: usize,
+}
+
+impl OwnerPublicationBinding {
+    pub(crate) fn verify(
+        self,
+        operation_id: &str,
+        logical_bytes: &[u8],
+    ) -> Result<(), OwnerStoreError> {
+        if operation_id.is_empty()
+            || operation_id.len() > 192
+            || !operation_id.bytes().all(|byte| {
+                byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':')
+            })
+            || self.logical_bytes != logical_bytes.len()
+            || self.operation_digest != crypto::digest(operation_id.as_bytes())
+            || self.logical_digest != crypto::digest(logical_bytes)
+        {
+            return Err(OwnerStoreError::DigestMismatch);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum OwnerStoreError {
     EmptyState,
@@ -426,6 +457,37 @@ impl OwnerWritePlan {
             .saturating_add(self.deletes.len())
             .saturating_add(1)
     }
+
+    /// Bind the local owner manifest to the exact operation and canonical
+    /// serialized state that the HA layer is about to seal.  The manifest is
+    /// still only a local publication plan; callers must perform their own
+    /// atomic commit after the HA commit succeeds.
+    pub(crate) fn publication_binding(
+        &self,
+        operation_id: &str,
+        logical_bytes: &[u8],
+    ) -> Result<OwnerPublicationBinding, OwnerStoreError> {
+        if operation_id.is_empty()
+            || operation_id.len() > 192
+            || !operation_id.bytes().all(|byte| {
+                byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':')
+            })
+        {
+            return Err(OwnerStoreError::InvalidOperationId);
+        }
+        let manifest =
+            decode_manifest(&self.manifest_bytes)?.ok_or(OwnerStoreError::InvalidManifest)?;
+        manifest.verify_logical(logical_bytes)?;
+        let operation_digest = crypto::digest(operation_id.as_bytes());
+        if manifest.revision != hex(&operation_digest) {
+            return Err(OwnerStoreError::DigestMismatch);
+        }
+        Ok(OwnerPublicationBinding {
+            operation_digest,
+            logical_digest: crypto::digest(logical_bytes),
+            logical_bytes: logical_bytes.len(),
+        })
+    }
 }
 
 pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<OwnerStateManifest>, OwnerStoreError> {
@@ -665,6 +727,35 @@ mod tests {
         tampered[0] ^= 1;
         assert_eq!(
             validate_content_addressed_chunk(&resource, &tampered),
+            Err(OwnerStoreError::DigestMismatch)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn owner_plan_publication_binding_covers_operation_and_logical_state()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let plan = OwnerWritePlan::new(
+            logical,
+            "owner-op-binding",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 128]),
+            None,
+            Vec::new(),
+        )?;
+        let binding = plan.publication_binding("owner-op-binding", logical)?;
+        assert!(binding.verify("owner-op-binding", logical).is_ok());
+        assert_eq!(
+            binding.verify("owner-op-other", logical),
+            Err(OwnerStoreError::DigestMismatch)
+        );
+        let mut altered = logical.to_vec();
+        altered[0] ^= 1;
+        assert_eq!(
+            binding.verify("owner-op-binding", &altered),
             Err(OwnerStoreError::DigestMismatch)
         );
         Ok(())

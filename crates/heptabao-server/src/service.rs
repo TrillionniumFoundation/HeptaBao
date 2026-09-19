@@ -51,6 +51,9 @@ pub use plugin::{PluginAuthConfig, PluginSecretConfig};
 mod openapi;
 #[path = "service_owner_store.rs"]
 mod owner_store;
+pub(crate) use owner_store::OwnerPublicationBinding;
+#[cfg(test)]
+pub(crate) use owner_store::OwnerWritePlan;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
 #[path = "service_state_store.rs"]
@@ -2116,31 +2119,25 @@ impl Service {
         Ok((state, bytes, needs_rewrite))
     }
 
-    fn persist_owner_state_batch(
-        durable: &mut DurableService<AeadBarrier>,
+    fn prepare_owner_state_plan(
+        durable: &DurableService<AeadBarrier>,
         state: &State,
         bytes: &[u8],
         operation_id: &str,
         state_schema: u32,
         target_replay_epoch: u64,
         options: PersistOwnerStateOptions,
-    ) -> Result<MutationOutcome, ServiceError> {
+    ) -> Result<owner_store::OwnerWritePlan, ServiceError> {
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         let current_replay_epoch = durable.replay_epoch();
-        if target_replay_epoch < current_replay_epoch {
+        if target_replay_epoch < current_replay_epoch
+            || (target_replay_epoch > current_replay_epoch
+                && !options.allow_epoch_catchup
+                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch))
+        {
             return Err(ServiceError::ReplayEpochMismatch);
-        }
-        if target_replay_epoch > current_replay_epoch {
-            if !options.allow_epoch_catchup
-                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch)
-            {
-                return Err(ServiceError::ReplayEpochMismatch);
-            }
-            while durable.replay_epoch() < target_replay_epoch {
-                durable.retire_replay_epoch()?;
-            }
         }
 
         let current = durable.get("system", "state")?;
@@ -2168,9 +2165,8 @@ impl Service {
         };
 
         // V4 copy-on-write owners carry their authenticated descriptor/chunks
-        // forward directly when the request did not mutate them. This removes a
-        // second full-owner serialization/hash/chunk pass after the logical State
-        // has already been serialized for the cluster digest.
+        // forward directly when the request did not mutate them. This keeps
+        // the local plan deterministic with the state digest sent to HA.
         let may_reuse = previous_owner.is_some();
         let owners = vec![
             (
@@ -2250,6 +2246,45 @@ impl Service {
             owner_store::validate_content_addressed_chunk(resource, existing.expose())
                 .map_err(|_| ServiceError::CorruptState)?;
         }
+        Ok(plan)
+    }
+
+    fn persist_owner_state_batch(
+        durable: &mut DurableService<AeadBarrier>,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        options: PersistOwnerStateOptions,
+    ) -> Result<MutationOutcome, ServiceError> {
+        if bytes.len() > MAX_STATE_BYTES {
+            return Err(ServiceError::RequestCapacityExhausted);
+        }
+        let current_replay_epoch = durable.replay_epoch();
+        if target_replay_epoch < current_replay_epoch {
+            return Err(ServiceError::ReplayEpochMismatch);
+        }
+        if target_replay_epoch > current_replay_epoch {
+            if !options.allow_epoch_catchup
+                && current_replay_epoch.checked_add(1) != Some(target_replay_epoch)
+            {
+                return Err(ServiceError::ReplayEpochMismatch);
+            }
+            while durable.replay_epoch() < target_replay_epoch {
+                durable.retire_replay_epoch()?;
+            }
+        }
+
+        let plan = Self::prepare_owner_state_plan(
+            durable,
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            options,
+        )?;
 
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {
@@ -3677,11 +3712,55 @@ impl Service {
         }
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
+        let owner_binding = if self.ha.is_some() {
+            let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+            let durable = self
+                .durable
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "server is sealed"))?;
+            let plan = Self::prepare_owner_state_plan(
+                durable,
+                state,
+                bytes,
+                &operation_id,
+                state_schema,
+                target_replay_epoch,
+                PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: false,
+                    reuse,
+                },
+            )
+            .map_err(|error| match error {
+                ServiceError::RequestCapacityExhausted | ServiceError::JournalCapacityExhausted => {
+                    Response::error(507, "durable capacity exhausted; no response released")
+                }
+                ServiceError::ReplayEpochMismatch => {
+                    Response::error(503, "invalid replay epoch transition")
+                }
+                _ => Response::error(503, "durable owner publication preflight failed"),
+            })?;
+            Some(
+                plan.publication_binding(&operation_id, bytes)
+                    .map_err(|_| {
+                        Response::error(503, "owner and HA state publication digests diverge")
+                    })?,
+            )
+        } else {
+            None
+        };
         if let Some(ha) = self.ha.as_ref() {
             let commit = ha
                 .lock()
                 .map_err(|_| Response::error(503, "HA control state is unavailable"))?
-                .commit_state(&operation_id, base_digest, bytes);
+                .commit_state_with_owner_binding(
+                    &operation_id,
+                    base_digest,
+                    bytes,
+                    owner_binding.ok_or_else(|| {
+                        Response::error(503, "owner publication binding is unavailable")
+                    })?,
+                );
             if let Err(error) = commit {
                 return Err(Response::error(503, &error));
             }
