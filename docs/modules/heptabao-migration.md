@@ -12,7 +12,7 @@ This package owns migration writer authority, the immutable source-to-target inv
 
 ### Current API contract and integration boundary
 
-Two exported layers coexist. `MigrationState` in `lib.rs` is a public-field in-memory phase model: `fence_source`, `begin_copy`, `verify_copy`, `activate_target`, `fence_target`, `rollback` and `fail` change flags/generation but do not operate a source or target. `validate_no_overlap` checks the two local flags; caller mutation of public fields is not an externally enforced writer fence.
+The migration transition API is durable-only. The former public-field `MigrationState` model was an in-memory phase simulation: it could change local flags without fencing either endpoint or persisting an intent. It is now an unconstructable, deprecated compatibility marker whose constructor always returns `DurableJournalRequired`; no process-local model can claim migration authority. Callers must use `DurableMigrationJournal` so every transition is bound to the guarded journal, inventory, operation identity and durable publication.
 
 `MigrationObject::new` binds ID/class/source path/source SHA-256/expected target SHA-256/dependencies. `MigrationInventory::new` owns 1–4096 objects, canonicalizes object order, requires at most 128 sorted unique dependencies per object, rejects missing dependencies/cycles and computes the inventory digest. `execution_order()` returns borrowed objects in deterministic dependency order. The 14 object-class variants define an inventory vocabulary; they do not supply class-specific OpenBao readers or target writers. SHA-256 text validation accepts 64 lowercase hex characters, including an all-zero value; actual source/target hashing is an adapter duty.
 
@@ -157,7 +157,7 @@ Current authenticated-profile regressions in `crates/heptabao-migration/src/dura
 
 Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
 
-- [`tests::rollback_requires_target_fencing_after_cutover`](../../crates/heptabao-migration/src/lib.rs) checks the in-memory phase ordering before source reactivation.
+- The deprecated `MigrationState::new` compatibility marker is fail-closed and always returns `DurableJournalRequired`; it is intentionally not a migration test path.
 - [`durable::tests::inventory_is_closed_sorted_dependency_checked_and_hashed`](../../crates/heptabao-migration/src/durable.rs) checks inventory ordering/digest and rejects a dependency cycle.
 - [`durable::tests::intent_unknown_and_reconciliation_survive_restart`](../../crates/heptabao-migration/src/durable.rs) checks explicitly marked unknown state persists, blocks blind retry and consumes old operation IDs.
 - [`durable::tests::persisted_intent_and_cutover_receipts_are_idempotent`](../../crates/heptabao-migration/src/durable.rs) checks restart-safe intent replay, duplicate acknowledgements and cutover receipt retries without new generations.
