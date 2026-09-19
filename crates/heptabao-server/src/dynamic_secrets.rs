@@ -13,7 +13,7 @@ use heptabao_plugin_host::{
     CommandSandboxRunner, DurableDynamicSecretBroker, DurableReconciliationDecision,
     DynamicLeaseSpec, DynamicLeaseState, DynamicLeaseView, DynamicSecretBroker, PluginHost,
     PluginHostError, PluginLimits, PluginManifest, PluginMutationContext, PluginOperation,
-    SecretEnvironment, SandboxBinding,
+    SandboxBinding, SecretEnvironment,
 };
 use ring::digest::{SHA256, digest};
 use serde::Deserialize;
@@ -56,10 +56,18 @@ pub struct DynamicSecretConfig {
     pub max_retained_requests: usize,
 }
 
-const fn default_request_bytes() -> usize { 64 * 1024 }
-const fn default_response_bytes() -> usize { 64 * 1024 }
-const fn default_timeout_ms() -> u64 { 5_000 }
-const fn default_retained_requests() -> usize { 100_000 }
+const fn default_request_bytes() -> usize {
+    64 * 1024
+}
+const fn default_response_bytes() -> usize {
+    64 * 1024
+}
+const fn default_timeout_ms() -> u64 {
+    5_000
+}
+const fn default_retained_requests() -> usize {
+    100_000
+}
 
 impl DynamicSecretConfig {
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
@@ -103,7 +111,10 @@ pub(crate) struct DynamicSecretRuntime {
 }
 
 impl DynamicSecretRuntime {
-    pub(crate) fn open(config: &DynamicSecretConfig, barrier_key: &[u8; 32]) -> Result<Self, String> {
+    pub(crate) fn open(
+        config: &DynamicSecretConfig,
+        barrier_key: &[u8; 32],
+    ) -> Result<Self, String> {
         config.validate().map_err(str::to_owned)?;
         let plugin_id = Id::parse(config.plugin_id.clone()).map_err(|e| e.to_string())?;
         let kind = match config.plugin_kind.as_str() {
@@ -148,7 +159,8 @@ impl DynamicSecretRuntime {
         .map_err(|e| e.to_string())?;
         let host = PluginHost::admit(manifest, CommandSandboxRunner).map_err(|e| e.to_string())?;
         let broker = DynamicSecretBroker::new(host).map_err(|e| e.to_string())?;
-        let barrier = AeadBarrier::new(*barrier_key).map_err(|_| "invalid dynamic-secret barrier key")?;
+        let barrier =
+            AeadBarrier::new(*barrier_key).map_err(|_| "invalid dynamic-secret barrier key")?;
 
         let create = match fs::read_dir(&config.state_dir) {
             Ok(mut entries) => entries.next().is_none(),
@@ -175,8 +187,10 @@ impl DynamicSecretRuntime {
     }
 
     pub(crate) fn owns_path(path: &str) -> bool {
-        matches!(path, ISSUE_PATH | PENDING_PATH | RECONCILE_PATH | RENEW_PATH | REVOKE_PATH)
-            || path.starts_with(LOOKUP_PREFIX)
+        matches!(
+            path,
+            ISSUE_PATH | PENDING_PATH | RECONCILE_PATH | RENEW_PATH | REVOKE_PATH
+        ) || path.starts_with(LOOKUP_PREFIX)
             || path.starts_with(OPERATION_LOOKUP_PREFIX)
     }
 
@@ -279,7 +293,16 @@ impl DynamicSecretRuntime {
         body: &Value,
         now: u64,
     ) -> Response {
-        if !only_fields(body, &["operation_id", "scope", "ttl", "renewable", "provider_request_base64"]) {
+        if !only_fields(
+            body,
+            &[
+                "operation_id",
+                "scope",
+                "ttl",
+                "renewable",
+                "provider_request_base64",
+            ],
+        ) {
             return Response::error(400, "invalid dynamic secret issuance fields");
         }
         let operation_id = match id_field(body, "operation_id") {
@@ -317,7 +340,8 @@ impl DynamicSecretRuntime {
             };
         }
         let owner = derived_actor_id(subject);
-        let context = match mutation_context(subject, namespace, method, path, &operation_id, body) {
+        let context = match mutation_context(subject, namespace, method, path, &operation_id, body)
+        {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
@@ -329,7 +353,10 @@ impl DynamicSecretRuntime {
             ttl,
             renewable,
         };
-        match self.broker.issue(&context, spec, &request, &SecretEnvironment::new()) {
+        match self
+            .broker
+            .issue(&context, spec, &request, &SecretEnvironment::new())
+        {
             Ok(issue) => {
                 let encoded = Zeroizing::new(STANDARD.encode(issue.secret.expose()));
                 Response::ok(json!({
@@ -352,7 +379,10 @@ impl DynamicSecretRuntime {
         body: &Value,
         now: u64,
     ) -> Response {
-        if !only_fields(body, &["operation_id", "lease_id", "ttl", "provider_request_base64"]) {
+        if !only_fields(
+            body,
+            &["operation_id", "lease_id", "ttl", "provider_request_base64"],
+        ) {
             return Response::error(400, "invalid lease renewal fields");
         }
         let operation_id = match id_field(body, "operation_id") {
@@ -371,7 +401,8 @@ impl DynamicSecretRuntime {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
-        let context = match mutation_context(subject, namespace, method, path, &operation_id, body) {
+        let context = match mutation_context(subject, namespace, method, path, &operation_id, body)
+        {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
@@ -396,7 +427,10 @@ impl DynamicSecretRuntime {
         path: &str,
         body: &Value,
     ) -> Response {
-        if !only_fields(body, &["operation_id", "lease_id", "provider_request_base64"]) {
+        if !only_fields(
+            body,
+            &["operation_id", "lease_id", "provider_request_base64"],
+        ) {
             return Response::error(400, "invalid lease revocation fields");
         }
         let operation_id = match id_field(body, "operation_id") {
@@ -411,7 +445,8 @@ impl DynamicSecretRuntime {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
-        let context = match mutation_context(subject, namespace, method, path, &operation_id, body) {
+        let context = match mutation_context(subject, namespace, method, path, &operation_id, body)
+        {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
@@ -435,7 +470,12 @@ impl DynamicSecretRuntime {
         let Some(object) = body.as_object() else {
             return Response::error(400, "reconciliation request must be an object");
         };
-        if object.keys().any(|key| !matches!(key.as_str(), "operation_id" | "decision" | "lease" | "response_sha256")) {
+        if object.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "operation_id" | "decision" | "lease" | "response_sha256"
+            )
+        }) {
             return Response::error(400, "unsupported reconciliation fields");
         }
         let operation_id = match id_field(body, "operation_id") {
@@ -445,9 +485,18 @@ impl DynamicSecretRuntime {
         let decision = match body.get("decision").and_then(Value::as_str) {
             Some("no_effect") => DurableReconciliationDecision::ProvenNoEffect,
             Some("completed") => {
-                let lease = match body.get("lease").and_then(Value::as_object).and_then(parse_lease) {
+                let lease = match body
+                    .get("lease")
+                    .and_then(Value::as_object)
+                    .and_then(parse_lease)
+                {
                     Some(value) => value,
-                    None => return Response::error(400, "completed reconciliation requires a valid lease"),
+                    None => {
+                        return Response::error(
+                            400,
+                            "completed reconciliation requires a valid lease",
+                        );
+                    }
                 };
                 let response_digest = match body.get("response_sha256").and_then(Value::as_str) {
                     Some(value) => match parse_digest(value) {
@@ -456,29 +505,37 @@ impl DynamicSecretRuntime {
                     },
                     None => return Response::error(400, "response_sha256 is required"),
                 };
-                DurableReconciliationDecision::Completed { lease, response_digest }
+                DurableReconciliationDecision::Completed {
+                    lease,
+                    response_digest,
+                }
             }
             _ => return Response::error(400, "decision must be no_effect or completed"),
         };
-        let context = match mutation_context(subject, namespace, method, path, &operation_id, body) {
+        let context = match mutation_context(subject, namespace, method, path, &operation_id, body)
+        {
             Ok(value) => value,
             Err(error) => return Response::error(400, error),
         };
         match self.broker.reconcile(&context, decision) {
-            Ok(Some(view)) => Response::ok(json!({"data":{"resolved":true,"lease":lease_json(&view)}})),
+            Ok(Some(view)) => {
+                Response::ok(json!({"data":{"resolved":true,"lease":lease_json(&view)}}))
+            }
             Ok(None) => Response::ok(json!({"data":{"resolved":true,"lease":Value::Null}})),
             Err(error) => self.error(error, None),
         }
     }
 
     fn pending_json(&self) -> Value {
-        self.broker.pending_invocation().map_or(Value::Null, |pending| {
-            json!({
-                "lease_id": pending.lease_id.as_str(),
-                "operation": operation_name(pending.operation),
-                "generation": pending.generation,
+        self.broker
+            .pending_invocation()
+            .map_or(Value::Null, |pending| {
+                json!({
+                    "lease_id": pending.lease_id.as_str(),
+                    "operation": operation_name(pending.operation),
+                    "generation": pending.generation,
+                })
             })
-        })
     }
 
     fn error(&self, error: PluginHostError, lease_id: Option<&Id>) -> Response {
@@ -626,7 +683,10 @@ fn provider_request(body: &Value) -> Result<SecretValue, &'static str> {
 }
 
 fn id_field(body: &Value, field: &str) -> Result<Id, &'static str> {
-    let value = body.get(field).and_then(Value::as_str).ok_or("required id is missing")?;
+    let value = body
+        .get(field)
+        .and_then(Value::as_str)
+        .ok_or("required id is missing")?;
     Id::parse(value.to_owned()).map_err(|_| "invalid bounded id")
 }
 
@@ -638,9 +698,8 @@ fn u64_field(body: &Value, field: &str) -> Result<u64, &'static str> {
 }
 
 fn only_fields(body: &Value, allowed: &[&str]) -> bool {
-    body.as_object().is_some_and(|object| {
-        object.keys().all(|key| allowed.contains(&key.as_str()))
-    })
+    body.as_object()
+        .is_some_and(|object| object.keys().all(|key| allowed.contains(&key.as_str())))
 }
 
 fn lease_json(view: &DynamicLeaseView) -> Value {
@@ -656,11 +715,20 @@ fn lease_json(view: &DynamicLeaseView) -> Value {
 }
 
 fn parse_lease(object: &Map<String, Value>) -> Option<DynamicLeaseView> {
-    if object.keys().any(|key| !matches!(
-        key.as_str(),
-        "lease_id" | "owner_entity" | "scope" | "state" | "issued_at" | "expires_at"
-            | "renewable" | "generation" | "secret_sha256"
-    )) {
+    if object.keys().any(|key| {
+        !matches!(
+            key.as_str(),
+            "lease_id"
+                | "owner_entity"
+                | "scope"
+                | "state"
+                | "issued_at"
+                | "expires_at"
+                | "renewable"
+                | "generation"
+                | "secret_sha256"
+        )
+    }) {
         return None;
     }
     let state = match object.get("state")?.as_str()? {
@@ -707,8 +775,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn derived_lease_identity_is_stable_and_operation_bound(
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    fn derived_lease_identity_is_stable_and_operation_bound()
+    -> Result<(), Box<dyn std::error::Error>> {
         let subject = "auth_digest_with-UPPER-and_urlsafe_chars";
         let operation = Id::parse("request_one")?;
         let first = derived_lease_id(subject, "", &operation);
@@ -718,10 +786,7 @@ mod tests {
             first,
             derived_lease_id(subject, "", &Id::parse("request_two")?)
         );
-        assert_ne!(
-            first,
-            derived_lease_id(subject, "team/one", &operation)
-        );
+        assert_ne!(first, derived_lease_id(subject, "team/one", &operation));
         Ok(())
     }
 

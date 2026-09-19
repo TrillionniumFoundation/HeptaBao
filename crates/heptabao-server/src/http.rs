@@ -183,12 +183,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     let ha_enabled = ha.is_some();
     let forwarding_ha = ha.clone();
     let mut service = match ha {
-        Some(ha) => Service::new_with_ha_audit_config(
-            config.data_dir,
-            &config.audit_file,
-            ha,
-            config.audit,
-        ),
+        Some(ha) => {
+            Service::new_with_ha_audit_config(config.data_dir, &config.audit_file, ha, config.audit)
+        }
         None => Service::new_with_audit_config(config.data_dir, &config.audit_file, config.audit),
     }
     .map_err(str::to_owned)?;

@@ -306,10 +306,7 @@ impl Service {
         Self::new_inner(data_dir, audit_path, Some(ha), audit_config)
     }
 
-    pub fn configure_dynamic_secrets(
-        &mut self,
-        config: DynamicSecretConfig,
-    ) -> Result<(), String> {
+    pub fn configure_dynamic_secrets(&mut self, config: DynamicSecretConfig) -> Result<(), String> {
         if self.state.is_some() {
             return Err("dynamic-secret runtime must be configured while sealed".into());
         }
@@ -707,7 +704,10 @@ impl Service {
                 return Response::error(403, "missing client token");
             };
             if DynamicSecretRuntime::root_only(path) && !principal.is_root() {
-                return Response::error(403, "dynamic-secret reconciliation requires root authority");
+                return Response::error(
+                    403,
+                    "dynamic-secret reconciliation requires root authority",
+                );
             }
             let capability = DynamicSecretRuntime::required_capability(method, path);
             if let Err(error) = admitted
@@ -719,14 +719,7 @@ impl Service {
             let Some(runtime) = self.dynamic_secrets.as_mut() else {
                 return Response::error(501, "dynamic-secret runtime is not configured");
             };
-            return runtime.handle(
-                principal.subject_id(),
-                namespace,
-                method,
-                path,
-                body,
-                now,
-            );
+            return runtime.handle(principal.subject_id(), namespace, method, path, body, now);
         }
         let before = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
@@ -1383,10 +1376,9 @@ impl Service {
             }
         }
         let dynamic_secrets = match self.dynamic_secret_config.as_ref() {
-            Some(config) => Some(
-                DynamicSecretRuntime::open(config, key)
-                    .map_err(|_| Response::error(503, "dynamic-secret runtime admission or recovery failed"))?,
-            ),
+            Some(config) => Some(DynamicSecretRuntime::open(config, key).map_err(|_| {
+                Response::error(503, "dynamic-secret runtime admission or recovery failed")
+            })?),
             None => None,
         };
         self.durable = Some(durable);
