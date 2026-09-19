@@ -229,7 +229,10 @@ Forward request Debug exposes only source, target and bounded method; path,
 namespace, token and body are redacted. Response Debug exposes direction/status
 and redacts the body. Serialization staging buffers are zeroized on drop,
 including oversize rejection; this does not guarantee removal of every library
-or allocator copy. Hostile Rust tests exercise redaction and frame bounds.
+or allocator copy. Every HBRT1 consensus frame and HBFQ/HBFS forwarding frame
+also carries the configured cluster identity; receivers reject a validly signed
+or mTLS-authenticated frame from another cluster before dispatch. Hostile Rust
+tests exercise redaction, frame bounds and cross-cluster rejection.
 
 Synthetic three-process testing is provided by
 `qa/openbao-acceptance/ha_destructive.py`; replay-epoch failover extends it in
