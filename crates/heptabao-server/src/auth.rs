@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
     collections::{BTreeMap, BTreeSet},
+    io::BufReader,
     num::NonZeroU32,
 };
 use zeroize::{Zeroize, Zeroizing};
@@ -95,6 +96,55 @@ pub struct AuthState {
     /// a bounded external alias.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     plugin_auth_mounts: BTreeMap<String, BTreeMap<String, PluginAuthMount>>,
+    /// Certificate-auth roles are bound to an exact leaf digest. The
+    /// certificate bytes never enter durable application state; TLS owns chain,
+    /// EKU and CRL validation. SAN/subject selectors remain explicitly outside
+    /// this minimal profile and are rejected by the route parser.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    cert_roles: BTreeMap<String, BTreeMap<String, BTreeMap<String, CertRole>>>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct CertRole {
+    certificate_sha256: String,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
+#[derive(Debug)]
+struct PresentedCertificate {
+    sha256: String,
+}
+
+fn certificate_sha256(der: &[u8]) -> String {
+    digest::digest(&digest::SHA256, der)
+        .as_ref()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
+}
+
+fn normalized_certificate_sha256(value: &str) -> Option<String> {
+    let normalized = value.trim().to_ascii_lowercase();
+    (normalized.len() == 64 && normalized.bytes().all(|byte| byte.is_ascii_hexdigit()))
+        .then_some(normalized)
+}
+
+fn parse_presented_certificate(chain: &[Vec<u8>]) -> Result<PresentedCertificate, AuthError> {
+    if chain.is_empty()
+        || chain.len() > 8
+        || chain
+            .iter()
+            .any(|cert| cert.is_empty() || cert.len() > 64 * 1024)
+    {
+        return Err(denied());
+    }
+    let leaf = chain.first().ok_or_else(denied)?;
+    Ok(PresentedCertificate {
+        sha256: certificate_sha256(leaf),
+    })
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -994,6 +1044,12 @@ impl AuthState {
                 .filter(|value| !value.is_empty())
                 .cloned(),
         );
+        namespaces.extend(
+            self.cert_roles
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces
     }
 
@@ -1050,6 +1106,10 @@ impl AuthState {
                 .plugin_auth_mounts
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
+            && self
+                .cert_roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
     }
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
@@ -1068,6 +1128,7 @@ impl AuthState {
             ldap_mounts: BTreeMap::new(),
             ldap_groups: BTreeMap::new(),
             plugin_auth_mounts: BTreeMap::new(),
+            cert_roles: BTreeMap::new(),
         };
         let token = Token {
             wrapping: None,
@@ -1442,6 +1503,9 @@ impl AuthState {
         if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.cert_roles.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         let revoke: Vec<String> = self
             .tokens
             .iter()
@@ -1664,6 +1728,16 @@ impl AuthState {
                 .or_default()
                 .insert(to.into(), value);
         }
+        if let Some(value) = self
+            .cert_roles
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.cert_roles
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
         for token in self.tokens.values_mut() {
             if token.namespace == namespace && token.auth_mount.as_deref() == Some(from) {
                 token.auth_mount = Some(to.into());
@@ -1818,7 +1892,14 @@ impl AuthState {
                     .ok_or_else(|| bad("auth mount type is required"))?;
                 if !matches!(
                     kind,
-                    "userpass" | "approle" | "jwt" | "kubernetes" | "oidc" | "ldap" | "plugin"
+                    "userpass"
+                        | "approle"
+                        | "jwt"
+                        | "kubernetes"
+                        | "oidc"
+                        | "ldap"
+                        | "plugin"
+                        | "cert"
                 ) {
                     return Err(err(501, "auth method type is not implemented"));
                 }
@@ -1909,6 +1990,7 @@ impl AuthState {
                     "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
                     "approle" | "jwt" | "kubernetes" => suffix == "login",
                     "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
+                    "cert" => suffix == "login",
                     "plugin" => suffix == "login",
                     _ => false,
                 }
@@ -1924,6 +2006,22 @@ impl AuthState {
         path: &str,
         body: &Value,
         now: u64,
+    ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_client_certificates(principal, namespace, method, path, body, now, None)
+    }
+
+    // The request fields stay separate here to keep the anonymous-login and
+    // TLS peer boundary explicit; each is independently validated below.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_client_certificates(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<AuthResponse>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
@@ -1977,6 +2075,15 @@ impl AuthState {
                     self.role_route(principal, scope, method, path, body, now)
                 }
                 "jwt" => self.jwt_route(principal, scope, method, path, body, now),
+                "cert" => self.cert_route(
+                    principal,
+                    scope,
+                    method,
+                    suffix,
+                    body,
+                    now,
+                    peer_certificates,
+                ),
                 "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
                 "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
                 "ldap" => self.ldap_route(principal, scope, method, suffix, body, now),
@@ -2628,6 +2735,195 @@ impl AuthState {
             503,
             "LDAP login requires the Service online-auth dispatcher",
         ))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn cert_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        suffix: &str,
+        body: &Value,
+        now: u64,
+        peer_certificates: Option<&[Vec<u8>]>,
+    ) -> Result<AuthResponse, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        let route = format!("auth/{mount}/{suffix}");
+        if suffix == "login" {
+            if !matches!(method, "POST" | "PUT") {
+                return Err(err(405, "method not allowed"));
+            }
+            reject_unknown(body, &[])?;
+            let presented = parse_presented_certificate(peer_certificates.ok_or_else(denied)?)?;
+            let roles = self
+                .cert_roles
+                .get(namespace)
+                .and_then(|mounts| mounts.get(mount))
+                .ok_or_else(denied)?;
+            let (role_name, role) = roles
+                .iter()
+                .find(|(_, role)| role.certificate_sha256 == presented.sha256)
+                .ok_or_else(denied)?;
+            let (token_ttl, token_max_ttl) =
+                self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
+            let display_suffix = presented.sha256.get(..16).unwrap_or(&presented.sha256);
+            let mut token = login_token(
+                namespace,
+                role.policies.clone(),
+                token_ttl,
+                token_max_ttl,
+                role.token_num_uses,
+                format!("cert-{display_suffix}"),
+                now,
+            )?;
+            token.auth_mount = Some(mount.into());
+            let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+            response.login_identity = Some(LoginIdentity {
+                mount: mount.into(),
+                alias: role_name.clone(),
+            });
+            self.tokens.insert(token_id, token);
+            return Ok(response);
+        }
+        let Some(name) = suffix.strip_prefix("certs/") else {
+            if suffix == "certs" && matches!(method, "GET" | "LIST") {
+                self.permission(principal, namespace, &route, "list", now)?;
+                reject_unknown(body, &[])?;
+                let keys = self
+                    .cert_roles
+                    .get(namespace)
+                    .and_then(|mounts| mounts.get(mount))
+                    .map(|roles| roles.keys().map(String::as_str).collect::<Vec<_>>())
+                    .unwrap_or_default();
+                return Ok(response(json!({"keys":keys}), false));
+            }
+            return Err(err(404, "unsupported certificate auth route"));
+        };
+        if !valid_name(name) {
+            return Err(bad("invalid certificate role name"));
+        }
+        let role_path = format!("auth/{mount}/certs/{name}");
+        match method {
+            "GET" => {
+                self.permission(principal, namespace, &role_path, "read", now)?;
+                reject_unknown(body, &[])?;
+                let role = self
+                    .cert_roles
+                    .get(namespace)
+                    .and_then(|mounts| mounts.get(mount))
+                    .and_then(|roles| roles.get(name))
+                    .ok_or_else(|| err(404, "certificate role not found"))?;
+                Ok(response(
+                    json!({
+                        "certificate_sha256": role.certificate_sha256,
+                        "token_policies": role.policies,
+                        "token_ttl": role.token_ttl,
+                        "token_max_ttl": role.token_max_ttl,
+                        "token_num_uses": role.token_num_uses,
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                let actor = self.permission(principal, namespace, &role_path, "update", now)?;
+                self.authorize_request(actor, namespace, &role_path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "certificate",
+                        "certificate_sha256",
+                        "token_policies",
+                        "policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                let certificate_sha256 =
+                    match (body.get("certificate"), body.get("certificate_sha256")) {
+                        (Some(_), Some(_)) => {
+                            return Err(bad(
+                                "certificate and certificate_sha256 are mutually exclusive",
+                            ));
+                        }
+                        (Some(value), None) => {
+                            let pem = value
+                                .as_str()
+                                .ok_or_else(|| bad("certificate must be PEM text"))?;
+                            let certificates =
+                                rustls_pemfile::certs(&mut BufReader::new(pem.as_bytes()))
+                                    .collect::<Result<Vec<_>, _>>()
+                                    .map_err(|_| bad("invalid certificate PEM"))?;
+                            let der = certificates
+                                .first()
+                                .ok_or_else(|| bad("certificate is required"))?;
+                            if certificates.len() != 1 {
+                                return Err(bad(
+                                    "certificate role accepts exactly one leaf certificate",
+                                ));
+                            }
+                            certificate_sha256(der.as_ref())
+                        }
+                        (None, Some(value)) => normalized_certificate_sha256(
+                            value
+                                .as_str()
+                                .ok_or_else(|| bad("certificate_sha256 must be a hex string"))?,
+                        )
+                        .ok_or_else(|| bad("certificate_sha256 must be 64 hex characters"))?,
+                        (None, None) => {
+                            return Err(bad("certificate or certificate_sha256 is required"));
+                        }
+                    };
+                let mut policies = policies(
+                    body,
+                    if body.get("token_policies").is_some() {
+                        "token_policies"
+                    } else {
+                        "policies"
+                    },
+                    &BTreeSet::from(["default".into()]),
+                    true,
+                )?;
+                self.validate_assignment(actor, &policies)?;
+                policies.remove("root");
+                let (mount_default_ttl, mount_max_ttl) =
+                    self.auth_mount_token_limits(scope, 0, 0)?;
+                let token_ttl = duration(body, "token_ttl", mount_default_ttl)?;
+                let token_max_ttl = duration(body, "token_max_ttl", mount_max_ttl)?;
+                let mut role = CertRole {
+                    certificate_sha256,
+                    policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses: number(body, "token_num_uses", 0)?,
+                };
+                normalize_ttl(&mut role.token_ttl, &mut role.token_max_ttl)?;
+                self.cert_roles
+                    .entry(namespace.into())
+                    .or_default()
+                    .entry(mount.into())
+                    .or_default()
+                    .insert(name.into(), role);
+                Ok(empty(true))
+            }
+            "DELETE" => {
+                let actor = self.permission(principal, namespace, &role_path, "delete", now)?;
+                self.authorize_request(actor, namespace, &role_path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self
+                    .cert_roles
+                    .get_mut(namespace)
+                    .and_then(|mounts| mounts.get_mut(mount))
+                    .and_then(|roles| roles.remove(name))
+                    .is_some();
+                if !removed {
+                    return Err(err(404, "certificate role not found"));
+                }
+                Ok(empty(true))
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
     }
 
     fn jwt_route(

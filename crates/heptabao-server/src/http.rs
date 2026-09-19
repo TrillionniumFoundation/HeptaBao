@@ -5,7 +5,9 @@ use crate::{
     ha::HaProcess,
     service::{RequestExecution, WireRejection},
 };
-use rustls::{ServerConfig, ServerConnection, StreamOwned};
+use rustls::pki_types::CertificateRevocationListDer;
+use rustls::server::WebPkiClientVerifier;
+use rustls::{RootCertStore, ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::{
@@ -37,6 +39,14 @@ pub struct Config {
     pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
+    /// Optional deployment-owned client trust roots. When configured, every
+    /// TLS connection must present a valid client-auth certificate chain.
+    #[serde(default)]
+    pub tls_client_ca_file: Option<PathBuf>,
+    /// Optional CRL bundle applied to the client certificate chain. A CRL is
+    /// never accepted without an explicit client CA bundle.
+    #[serde(default)]
+    pub tls_client_crl_file: Option<PathBuf>,
     #[serde(default = "default_connections")]
     pub max_connections: usize,
     #[serde(default = "default_timeout")]
@@ -194,12 +204,31 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         .map_err(|_| "invalid TLS key")?
         .ok_or("missing TLS private key")?;
     let provider = Arc::new(rustls::crypto::ring::default_provider());
-    let mut tls = ServerConfig::builder_with_provider(provider)
+    if config.tls_client_crl_file.is_some() && config.tls_client_ca_file.is_none() {
+        return Err("TLS client CRL requires a client CA bundle".into());
+    }
+    let verifier = match config.tls_client_ca_file.as_ref() {
+        Some(path) => Some(load_client_verifier(
+            path,
+            config.tls_client_crl_file.as_ref(),
+            &config.data_dir,
+            Arc::clone(&provider),
+        )?),
+        None => None,
+    };
+    let builder = ServerConfig::builder_with_provider(provider)
         .with_safe_default_protocol_versions()
-        .map_err(|_| "TLS versions unavailable")?
-        .with_no_client_auth()
-        .with_single_cert(certificates, key)
-        .map_err(|_| "TLS key and certificate do not match")?;
+        .map_err(|_| "TLS versions unavailable")?;
+    let mut tls = match verifier {
+        Some(verifier) => builder
+            .with_client_cert_verifier(verifier)
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+        None => builder
+            .with_no_client_auth()
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+    };
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
     let ha_enabled = ha.is_some();
@@ -242,6 +271,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     token: &request.token,
                     body: std::mem::take(&mut request.body),
                     wrap_ttl_seconds: request.wrap_ttl_seconds,
+                    client_certificates: request.client_certificates.take(),
                 },
                 Instant::now() + Duration::from_secs(15),
                 true,
@@ -325,6 +355,13 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let parsed = read_request(&mut stream, timeout);
                 let (response, head) = match parsed {
                     Ok(mut request) => {
+                        request.client_certificates =
+                            stream.conn.peer_certificates().map(|certificates| {
+                                certificates
+                                    .iter()
+                                    .map(|certificate| certificate.as_ref().to_vec())
+                                    .collect()
+                            });
                         let is_head = request.method == "HEAD";
                         let response = execute_service_request(
                             &service,
@@ -339,6 +376,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 token: &request.token,
                                 body: std::mem::take(&mut request.body.0),
                                 wrap_ttl_seconds: request.wrap_ttl_seconds,
+                                client_certificates: request.client_certificates.take(),
                             },
                             Instant::now() + timeout,
                             false,
@@ -537,6 +575,47 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     Ok(data)
 }
 
+fn load_client_verifier(
+    ca_path: &PathBuf,
+    crl_path: Option<&PathBuf>,
+    data_dir: &PathBuf,
+    provider: Arc<rustls::crypto::CryptoProvider>,
+) -> Result<Arc<dyn rustls::server::danger::ClientCertVerifier>, String> {
+    if !ca_path.is_absolute() || ca_path.starts_with(data_dir) {
+        return Err("TLS client CA path must be absolute and outside the data directory".into());
+    }
+    if crl_path.is_some_and(|path| !path.is_absolute() || path.starts_with(data_dir)) {
+        return Err("TLS client CRL path must be absolute and outside the data directory".into());
+    }
+    let ca_bytes = bounded_file(ca_path, false)?;
+    let mut roots = RootCertStore::empty();
+    let certificates = rustls_pemfile::certs(&mut BufReader::new(ca_bytes.as_slice()))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| "invalid TLS client CA bundle")?;
+    if certificates.is_empty() {
+        return Err("TLS client CA bundle is empty".into());
+    }
+    for certificate in certificates {
+        roots
+            .add(certificate)
+            .map_err(|_| "invalid TLS client CA certificate")?;
+    }
+    let mut builder = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider);
+    if let Some(crl_path) = crl_path {
+        let crl_bytes = bounded_file(crl_path, false)?;
+        let crls = rustls_pemfile::crls(&mut BufReader::new(crl_bytes.as_slice()))
+            .collect::<Result<Vec<CertificateRevocationListDer<'static>>, _>>()
+            .map_err(|_| "invalid TLS client CRL bundle")?;
+        if crls.is_empty() {
+            return Err("TLS client CRL bundle is empty".into());
+        }
+        builder = builder.with_crls(crls).enforce_revocation_expiration();
+    }
+    builder
+        .build()
+        .map_err(|_| "invalid TLS client certificate verifier".to_owned())
+}
+
 struct SecretJson(Value);
 impl Drop for SecretJson {
     fn drop(&mut self) {
@@ -550,6 +629,7 @@ struct Request {
     token: Zeroizing<String>,
     body: SecretJson,
     wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<Vec<Vec<u8>>>,
 }
 struct ParseError {
     status: u16,
@@ -815,6 +895,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         token,
         body,
         wrap_ttl_seconds,
+        client_certificates: None,
     })
 }
 

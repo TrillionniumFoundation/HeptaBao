@@ -282,6 +282,7 @@ fn wrapping_read_uses_transactional_capture_not_immutable_dispatch() -> TestResu
         now: 100,
         allow_forward: true,
         wrap_ttl_seconds: Some(30),
+        client_certificates: None,
     });
     assert_eq!(response.status, 200);
     let wrapping = response.body["wrap_info"]["token"]

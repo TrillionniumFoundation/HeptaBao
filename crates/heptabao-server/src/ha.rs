@@ -31,8 +31,10 @@ use crate::{
     Response,
     ha_forward::{
         ForwardRequest, decode_request as decode_forward_request,
-        decode_response as decode_forward_response, encode_request as encode_forward_request,
-        encode_response as encode_forward_response, encode_wrapped_request, is_forward_request,
+        decode_response as decode_forward_response,
+        encode_request_with_client_certificates as encode_forward_request_with_client_certificates,
+        encode_response as encode_forward_response,
+        encode_wrapped_request_with_client_certificates, is_forward_request,
     },
     ha_state::{
         ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
@@ -457,6 +459,9 @@ impl HaProcess {
         Ok(())
     }
 
+    // Forwarding preserves the existing wire tuple plus the verified client
+    // chain; keep fields explicit so no identity is silently omitted.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn forward_request(
         &self,
         method: &str,
@@ -465,6 +470,7 @@ impl HaProcess {
         token: &str,
         body: &serde_json::Value,
         wrap_ttl_seconds: Option<u64>,
+        client_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Response, String> {
         let local = self.local_id()?;
         let leader = self
@@ -478,10 +484,26 @@ impl HaProcess {
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let request = Zeroizing::new(match wrap_ttl_seconds {
-            Some(ttl) => {
-                encode_wrapped_request((local, leader), method, path, namespace, token, body, ttl)?
-            }
-            None => encode_forward_request(local, leader, method, path, namespace, token, body)?,
+            Some(ttl) => encode_wrapped_request_with_client_certificates(
+                (local, leader),
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                ttl,
+                client_certificates,
+            )?,
+            None => encode_forward_request_with_client_certificates(
+                local,
+                leader,
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                client_certificates,
+            )?,
         });
         let response = zeroize::Zeroizing::new(
             self.forward_transport

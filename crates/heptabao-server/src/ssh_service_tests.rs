@@ -415,6 +415,7 @@ fn ssh_wrapped_credentials_and_wrapper_failure_preserve_transaction_atomicity() 
             token: &root,
             body: json!({"ip":"127.0.0.1"}),
             wrap_ttl_seconds: Some(30),
+            client_certificates: None,
         },
         100,
     );
@@ -739,6 +740,7 @@ fn idle_maintenance_erases_expired_wrapped_payload_and_then_stops_writing() -> T
             token: &root,
             body: json!({"value":"synthetic-idle-wrapped-secret"}),
             wrap_ttl_seconds: Some(5),
+            client_certificates: None,
         },
         100,
     );
@@ -858,6 +860,7 @@ fn renewed_bearer_echo_is_request_bound_wrapped_and_never_reconstructed_from_acc
             token: &token,
             body: json!({"increment":60}),
             wrap_ttl_seconds: Some(10),
+            client_certificates: None,
         },
         100,
     );

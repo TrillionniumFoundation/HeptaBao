@@ -481,6 +481,10 @@ pub struct ServiceRequest<'a> {
     pub token: &'a str,
     pub body: Value,
     pub wrap_ttl_seconds: Option<u64>,
+    /// Peer certificate chain captured by the TLS listener. This is populated
+    /// only after rustls has completed client-chain validation; callers that do
+    /// not own a verified TLS session must leave it absent.
+    pub client_certificates: Option<Vec<Vec<u8>>>,
 }
 
 struct RequestDispatch<'a> {
@@ -492,6 +496,7 @@ struct RequestDispatch<'a> {
     now: u64,
     allow_forward: bool,
     wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<Vec<Vec<u8>>>,
 }
 
 struct RequestView<'a> {
@@ -503,6 +508,7 @@ struct RequestView<'a> {
     now: u64,
     allow_forward: bool,
     wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<&'a [Vec<u8>]>,
 }
 
 pub(crate) enum RequestExecution {
@@ -895,6 +901,7 @@ impl Service {
                 token,
                 body,
                 wrap_ttl_seconds: None,
+                client_certificates: None,
             },
             now,
         )
@@ -915,6 +922,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            client_certificates,
         } = request;
         self.handle_at_mode(RequestDispatch {
             method,
@@ -925,6 +933,7 @@ impl Service {
             now,
             allow_forward: true,
             wrap_ttl_seconds,
+            client_certificates,
         })
     }
 
@@ -942,6 +951,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            client_certificates,
         } = request;
         self.begin_at_mode(RequestDispatch {
             method,
@@ -952,6 +962,7 @@ impl Service {
             now,
             allow_forward: true,
             wrap_ttl_seconds,
+            client_certificates,
         })
     }
 
@@ -966,6 +977,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            client_certificates,
         } = request;
         self.begin_at_mode(RequestDispatch {
             method,
@@ -976,6 +988,7 @@ impl Service {
             now,
             allow_forward: false,
             wrap_ttl_seconds,
+            client_certificates,
         })
     }
 
@@ -1056,6 +1069,7 @@ impl Service {
             now,
             allow_forward,
             wrap_ttl_seconds,
+            client_certificates,
         } = request;
         if self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
@@ -1163,6 +1177,7 @@ impl Service {
             now,
             allow_forward,
             wrap_ttl_seconds,
+            client_certificates: client_certificates.as_deref(),
         });
         erase_json(&mut body);
         let database = self.pending_database_effect.take();
@@ -1215,6 +1230,7 @@ impl Service {
             now,
             allow_forward,
             wrap_ttl_seconds,
+            client_certificates,
         } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
@@ -1296,7 +1312,15 @@ impl Service {
                 }
                 return match ha.lock() {
                     Ok(ha) => ha
-                        .forward_request(method, path, namespace, token, body, wrap_ttl_seconds)
+                        .forward_request(
+                            method,
+                            path,
+                            namespace,
+                            token,
+                            body,
+                            wrap_ttl_seconds,
+                            client_certificates,
+                        )
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
                     Err(_) => Response::error(503, "HA process lock is unavailable"),
                 };
@@ -1586,6 +1610,7 @@ impl Service {
                 path,
                 body,
                 now,
+                client_certificates,
             )
         };
         if response.status < 300
@@ -1745,6 +1770,7 @@ impl Service {
         )
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn dispatch(
         state: &mut State,
         principal: Option<Principal>,
@@ -1753,6 +1779,7 @@ impl Service {
         path: &str,
         body: &Value,
         now: u64,
+        client_certificates: Option<&[Vec<u8>]>,
     ) -> Response {
         let principal = principal.as_ref();
         if path == "sys/remount" {
@@ -1850,7 +1877,15 @@ impl Service {
             return Self::capabilities_route(state, principal, namespace, method, path, body, now);
         }
         let mut auth = state.auth.clone();
-        match auth.handle(principal, namespace, method, path, body, now) {
+        match auth.handle_with_client_certificates(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            client_certificates,
+        ) {
             Ok(Some(mut response)) => {
                 let mut engines = state.engines.clone();
                 if !path.starts_with("sys/wrapping/")

@@ -11,6 +11,8 @@ const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
 const MAX_NAMESPACE_BYTES: usize = 512;
 const MAX_TOKEN_BYTES: usize = 16 * 1024;
+const MAX_CLIENT_CERT_CHAIN: usize = 8;
+const MAX_CLIENT_CERT_BYTES: usize = 64 * 1024;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -24,6 +26,8 @@ pub(crate) struct ForwardRequest {
     pub body: Value,
     #[serde(default)]
     pub wrap_ttl_seconds: Option<u64>,
+    #[serde(default)]
+    pub client_certificates: Option<Vec<Vec<u8>>>,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -44,6 +48,9 @@ impl fmt::Debug for ForwardRequest {
 impl Drop for ForwardRequest {
     fn drop(&mut self) {
         self.token.zeroize();
+        if let Some(certificates) = &mut self.client_certificates {
+            certificates.iter_mut().for_each(Vec::zeroize);
+        }
         erase_json(&mut self.body);
     }
 }
@@ -59,6 +66,8 @@ struct ForwardRequestRef<'a> {
     body: &'a Value,
     #[serde(skip_serializing_if = "Option::is_none")]
     wrap_ttl_seconds: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    client_certificates: Option<&'a [Vec<u8>]>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -92,6 +101,7 @@ pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
     encoded.starts_with(REQUEST_MAGIC) || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
 }
 
+#[cfg(test)]
 pub(crate) fn encode_request(
     source: u64,
     target: u64,
@@ -101,8 +111,25 @@ pub(crate) fn encode_request(
     token: &str,
     body: &Value,
 ) -> Result<Vec<u8>, String> {
+    encode_request_with_client_certificates(
+        source, target, method, path, namespace, token, body, None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_request_with_client_certificates(
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
     validate_direction(source, target)?;
     validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
     encode(
         REQUEST_MAGIC,
         &ForwardRequestRef {
@@ -114,10 +141,12 @@ pub(crate) fn encode_request(
             token,
             body,
             wrap_ttl_seconds: None,
+            client_certificates,
         },
     )
 }
 
+#[cfg(test)]
 pub(crate) fn encode_wrapped_request(
     direction: (u64, u64),
     method: &str,
@@ -127,9 +156,26 @@ pub(crate) fn encode_wrapped_request(
     body: &Value,
     ttl: u64,
 ) -> Result<Vec<u8>, String> {
+    encode_wrapped_request_with_client_certificates(
+        direction, method, path, namespace, token, body, ttl, None,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_wrapped_request_with_client_certificates(
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
     let (source, target) = direction;
     validate_direction(source, target)?;
     validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
     if ttl == 0 || ttl > 32 * 24 * 3600 {
         return Err("invalid HA wrapping TTL".into());
     }
@@ -144,6 +190,7 @@ pub(crate) fn encode_wrapped_request(
             token,
             body,
             wrap_ttl_seconds: Some(ttl),
+            client_certificates,
         },
     )
 }
@@ -170,6 +217,7 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         &request.namespace,
         &request.token,
     )?;
+    validate_client_certificates(request.client_certificates.as_deref())?;
     Ok(request)
 }
 
@@ -228,6 +276,21 @@ fn validate_request_fields(
         || token.len() > MAX_TOKEN_BYTES
     {
         return Err("HA forward request is outside bounded API shape".into());
+    }
+    Ok(())
+}
+
+fn validate_client_certificates(certificates: Option<&[Vec<u8>]>) -> Result<(), String> {
+    let Some(certificates) = certificates else {
+        return Ok(());
+    };
+    if certificates.is_empty()
+        || certificates.len() > MAX_CLIENT_CERT_CHAIN
+        || certificates
+            .iter()
+            .any(|certificate| certificate.is_empty() || certificate.len() > MAX_CLIENT_CERT_BYTES)
+    {
+        return Err("HA client certificate chain is outside bounds".into());
     }
     Ok(())
 }

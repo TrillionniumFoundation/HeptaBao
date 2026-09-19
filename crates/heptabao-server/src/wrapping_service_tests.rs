@@ -52,6 +52,7 @@ fn wrapped(
             token,
             body,
             wrap_ttl_seconds: Some(60),
+            client_certificates: None,
         },
         100,
     )
@@ -413,6 +414,7 @@ fn wrapping_invalid_ttl_and_nontransactional_effects_never_dispatch() -> TestRes
                 token: &root,
                 body: json!({}),
                 wrap_ttl_seconds: Some(ttl),
+                client_certificates: None,
             },
             100,
         );
@@ -432,6 +434,7 @@ fn wrapping_invalid_ttl_and_nontransactional_effects_never_dispatch() -> TestRes
             token: &root,
             body: json!({}),
             wrap_ttl_seconds: Some(60),
+            client_certificates: None,
         },
         100,
     );
