@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run bounded LDAPS login against an actual host-installed OpenLDAP slapd."""
 from __future__ import annotations
-import argparse, base64, hashlib, json, os, secrets, shutil, socket, subprocess, sys, tempfile, time
+import argparse, base64, grp, hashlib, json, os, pwd, secrets, shutil, socket, subprocess, sys, tempfile, time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/"qa/single-node"))
 from smoke import Instance
@@ -18,10 +18,16 @@ class Directory:
     def __init__(self,root,cert,key,ca):
         if any(shutil.which(x) is None for x in ("slapd","ldapadd")):raise FileNotFoundError
         self.root=root;root.mkdir(mode=0o700);(root/"db").mkdir(mode=0o700)
-        self.port=port();self.origin=f"ldaps://localhost:{self.port}"
+        # Use the IP literal in the LDAP URL.  Ubuntu's ldap-utils performs a
+        # reverse lookup for `localhost` and then validates that unrelated
+        # guest hostname against the certificate, while the fixture CA already
+        # carries the loopback IP SAN used by the real client connection.
+        self.port=port();self.origin=f"ldaps://127.0.0.1:{self.port}"
         self.admin_dn="cn=admin,dc=example,dc=test";self.admin_password=secrets.token_urlsafe(30)
         self.user_password=secrets.token_urlsafe(30)
-        pw=root/"admin.pass";private(pw,self.admin_password+"\n");self.password_file=pw
+        # ldap-utils `-y` consumes the file bytes verbatim (including a final
+        # newline), so keep the bind secret newline-free.
+        pw=root/"admin.pass";private(pw,self.admin_password);self.password_file=pw
         self.ldap_env={**os.environ,"LDAPTLS_CACERT":str(ca),"LDAPTLS_REQCERT":"demand"}
         conf=root/"slapd.conf";private(conf,f"""include /etc/ldap/schema/core.schema
 include /etc/ldap/schema/cosine.schema
@@ -80,7 +86,24 @@ member: uid=alice,ou=people,dc=example,dc=test
     def start(self):
         if self.proc is not None and self.proc.poll() is None:return
         log=open(self.root/"slapd.log","ab",buffering=0)
-        self.proc=subprocess.Popen(["slapd","-f",str(self.conf),"-h",f"ldaps://127.0.0.1:{self.port}/","-d","0"],
+        # The isolated fixture directory is owned by the invoking test user.  An
+        # Ubuntu slapd launched as root otherwise drops to the system
+        # `openldap` account before reading this private config and exits with
+        # EACCES.  Run the short-lived test daemon as that same unprivileged
+        # owner; the dynamically allocated high port keeps this safe and
+        # deterministic for both local and guest runs.
+        user=pwd.getpwuid(os.getuid()).pw_name;group=grp.getgrgid(os.getgid()).gr_name
+        # A nonzero debug level also keeps slapd in the foreground; level 1 is
+        # enough for this fixture and prevents Popen from observing the
+        # daemonizing parent exit before the readiness probe runs.
+        command=["slapd","-u",user,"-g",group,"-f",str(self.conf),"-h",f"ldaps://127.0.0.1:{self.port}/","-d","1"]
+        # Ubuntu's AppArmor profile denies LMDB file locks below /var/tmp,
+        # even though it permits the files themselves.  In an isolated QA
+        # guest, run only this short-lived fixture under the unconfined
+        # profile when aa-exec is available; production slapd remains confined.
+        if shutil.which("aa-exec") is not None:
+            command=["aa-exec","-p","unconfined","--",*command]
+        self.proc=subprocess.Popen(command,
             stdout=log,stderr=subprocess.STDOUT)
         end=time.monotonic()+10
         while time.monotonic()<end:
@@ -107,7 +130,10 @@ member: {member_dn}
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--binary",required=True,type=Path);p.add_argument("--output",required=True,type=Path);a=p.parse_args()
-    root=Path(tempfile.mkdtemp(prefix="hb-openldap-"));root.chmod(0o700);ins=Instance(a.binary,root/"candidate");checks=[]
+    # Ubuntu's packaged slapd is confined by AppArmor.  Its profile permits
+    # isolated owner-writable state below /var/tmp, while rejecting arbitrary
+    # /tmp config paths, so keep the complete short-lived fixture there.
+    root=Path(tempfile.mkdtemp(prefix="hb-openldap-",dir="/var/tmp"));root.chmod(0o700);ins=Instance(a.binary,root/"candidate");checks=[]
     try:
         try:d=Directory(root/"openldap",ins.root/"tls.crt",ins.root/"tls.key",ins.root/"ca.crt")
         except FileNotFoundError:return 77
@@ -116,7 +142,7 @@ def main():
             if ok is not True:raise RuntimeError(name)
         try:
             cfgp=ins.root/"server.json";cfg=json.loads(cfgp.read_text())
-            cfg["outbound_endpoints"]=[{"origin":d.origin,"address":f"127.0.0.1:{d.port}","server_name":"localhost",
+            cfg["outbound_endpoints"]=[{"origin":d.origin,"address":f"127.0.0.1:{d.port}","server_name":"127.0.0.1",
                 "ca_pem":(ins.root/"ca.crt").read_text(),"path_prefix":"/"}];private(cfgp,json.dumps(cfg))
             ins.start();st,init=ins.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1});check("initialize",st==200)
             key=init["keys_base64"][0];ins.token=init["root_token"];check("unseal",ins.call("POST","sys/unseal",{"key":key})[0]==200)
