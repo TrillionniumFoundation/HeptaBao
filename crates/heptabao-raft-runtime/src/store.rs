@@ -1512,6 +1512,27 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn purge_can_advance_past_a_reconnected_follower_log_frontier() {
+        let root = root("purge-ahead-of-local-frontier");
+        let mut store = DurableLogStore::create(&root).expect("create log store");
+        let purge = openraft::LogId {
+            leader_id: openraft::impls::leader_id_adv::LeaderId {
+                term: 2_u64,
+                node_id: 1_u64,
+            },
+            index: 7,
+        };
+        RaftLogStorage::purge(&mut store, purge)
+            .await
+            .expect("snapshot purge may advance an empty follower frontier");
+        let state = RaftLogStorage::get_log_state(&mut store)
+            .await
+            .expect("read purged frontier");
+        assert_eq!(state.last_purged_log_id, Some(purge));
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[tokio::test]
     async fn failed_log_persist_does_not_publish_candidate_state() {
         let root = root("log-persist-failure");
         fs::create_dir_all(&root).expect("test root");
