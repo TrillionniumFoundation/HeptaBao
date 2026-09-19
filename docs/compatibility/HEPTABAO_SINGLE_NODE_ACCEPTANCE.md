@@ -78,7 +78,7 @@ same cases as local smoke coverage; it never records an Oracle or a compatibilit
 match. `--modules kv`, `--modules kv,token`, or `--modules transit` narrows the
 profile; token tests depend on a successful KV fixture.
 
-The latest recorded scoped exact-head comparison is [`qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-28819ee.json`](../../qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-28819ee.json). It binds the clean `28819ee` source and reports no mismatches for its selected cases; it is not a complete-surface or production qualification receipt.
+The latest recorded scoped exact-head comparison is [`qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-d3467b1.json`](../../qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-d3467b1.json). It binds the clean `d3467b1` source and reports no mismatches for 67 selected cases, including the bounded Identity entity lifecycle; it is not a complete-surface or production qualification receipt.
 
 ## Executable case matrix
 
