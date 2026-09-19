@@ -239,6 +239,99 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
 }
 
 #[test]
+fn large_unchanged_owner_bounds_v4_write_set_to_changed_owner()
+-> Result<(), Box<dyn std::error::Error>> {
+    // This is deliberately larger than the legacy 768 KiB value ceiling.  It
+    // exercises the V4 owner plan directly so the assertion is about the
+    // durable mutation set, rather than a small end-to-end happy path.
+    let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+    let large_owner = |byte, size| vec![byte; size];
+    let first = owner_store::OwnerWritePlan::new(
+        logical,
+        "owner-write-set-1",
+        9,
+        "cluster",
+        0,
+        vec![
+            ("namespaces", large_owner(b'n', 512 * 1024)),
+            ("auth", large_owner(b'a', 2 * 1024 * 1024)),
+            ("engines", large_owner(b'e', 8 * 1024 * 1024)),
+            ("database", large_owner(b'd', 2 * 1024 * 1024)),
+            ("raft_admin", large_owner(b'r', 2 * 1024 * 1024)),
+        ],
+        None,
+        Vec::new(),
+    )?;
+    let previous = owner_store::decode_manifest(&first.manifest_bytes)?
+        .ok_or("initial owner manifest missing")?;
+    let mut unchanged = std::collections::BTreeSet::new();
+    for owner in ["namespaces", "engines", "database", "raft_admin"] {
+        for index in 0..previous.chunk_count(owner)? {
+            unchanged.insert(previous.chunk_resource(owner, index)?);
+        }
+    }
+    let previous_auth = (0..previous.chunk_count("auth")?)
+        .map(|index| previous.chunk_resource("auth", index))
+        .collect::<Result<std::collections::BTreeSet<_>, _>>()?;
+
+    // Only auth changes.  Use a byte pattern that cannot reuse the previous
+    // auth chunks, so every new/retired physical mutation is attributable to
+    // that owner and no hidden whole-state rewrite can satisfy the test.
+    let second = owner_store::OwnerWritePlan::new_with_reuse(
+        logical,
+        "owner-write-set-2",
+        9,
+        "cluster",
+        0,
+        vec![
+            ("namespaces", None),
+            ("auth", Some(large_owner(b'z', 2 * 1024 * 1024))),
+            ("engines", None),
+            ("database", None),
+            ("raft_admin", None),
+        ],
+        Some(&previous),
+        Vec::new(),
+    )?;
+
+    let added = second
+        .chunks
+        .iter()
+        .map(|chunk| chunk.resource.as_str())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert!(!added.is_empty());
+    assert!(added.iter().all(|resource| resource.starts_with("state-owners/auth/")));
+    assert!(second.deletes.iter().all(|resource| previous_auth.contains(resource)));
+    assert_eq!(second.deletes.len(), previous_auth.len());
+    let reused = second
+        .required_existing
+        .iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    assert!(unchanged.iter().all(|resource| reused.contains(resource)));
+    assert!(reused.iter().all(|resource| {
+        unchanged.contains(*resource)
+            || previous_auth.contains(*resource)
+    }));
+
+    let next = owner_store::decode_manifest(&second.manifest_bytes)?
+        .ok_or("next owner manifest missing")?;
+    let next_auth = (0..next.chunk_count("auth")?)
+        .map(|index| next.chunk_resource("auth", index))
+        .collect::<Result<std::collections::BTreeSet<_>, _>>()?;
+    assert_eq!(next_auth.len(), added.len());
+    assert_eq!(
+        second.required_mutations(),
+        second.chunks.len() + second.deletes.len() + 1,
+        "owner publication mutation accounting must include only staged chunks, retired chunks and manifest"
+    );
+    assert!(
+        second.required_mutations() <= previous_auth.len() + next_auth.len() + 1,
+        "single-owner V4 mutation set exceeded the changed owner's old/new chunk bound"
+    );
+    Ok(())
+}
+
+#[test]
 fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
