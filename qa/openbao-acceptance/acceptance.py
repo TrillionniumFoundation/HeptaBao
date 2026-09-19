@@ -52,10 +52,13 @@ class Suite:
         self.policy_owned = False
         self.child_tokens = []
 
-    def call(self, case, method, path, payload=None, *, token=None, wrap_ttl=None):
+    def call(self, case, method, path, payload=None, *, token=None, wrap_ttl=None, path_template=None):
         if method not in ("GET", "LIST", "HEAD") and not self.allow_writes:
             raise BaoError("test_write_opt_in_required")
-        self.requests[case] = {"method": method, "path_template": path.replace(self.run_id, "{run_id}")}
+        self.requests[case] = {
+            "method": method,
+            "path_template": path_template or path.replace(self.run_id, "{run_id}"),
+        }
         try:
             return self.client.request(method, path, payload, token=token, wrap_ttl=wrap_ttl)
         except BaoError as error:
@@ -73,8 +76,12 @@ class Suite:
             raise BaoError("case_status_or_semantics_mismatch")
         return response
 
-    def perform(self, case, method, path, payload=None, status=204, *, token=None):
-        return self.check(case, self.call(case, method, path, payload, token=token), status)
+    def perform(self, case, method, path, payload=None, status=204, *, token=None, path_template=None):
+        return self.check(
+            case,
+            self.call(case, method, path, payload, token=token, path_template=path_template),
+            status,
+        )
 
     def mount(self, kind, mount):
         inventory = self.client.request("GET", "/v1/sys/mounts")
@@ -404,16 +411,21 @@ class Suite:
                    entity_created=bool(entity_id))
         if not entity_id:
             raise BaoError("identity_entity_id_missing")
-        r = self.call("identity.entity_read", "GET", "/v1/identity/entity/id/" + entity_id)
+        identity_path_template = "/v1/identity/entity/id/{entity_id}"
+        r = self.call("identity.entity_read", "GET", "/v1/identity/entity/id/" + entity_id,
+                      path_template=identity_path_template)
         self.check("identity.entity_read", r, 200,
                    exact_name=r.data().get("name") == name,
                    metadata=r.data().get("metadata") == {"fixture": "synthetic"})
         self.perform("identity.entity_disable", "POST", "/v1/identity/entity/id/" + entity_id,
-                     {"disabled": True})
-        r = self.call("identity.entity_disabled", "GET", "/v1/identity/entity/id/" + entity_id)
+                     {"disabled": True}, path_template=identity_path_template)
+        r = self.call("identity.entity_disabled", "GET", "/v1/identity/entity/id/" + entity_id,
+                      path_template=identity_path_template)
         self.check("identity.entity_disabled", r, 200, disabled=r.data().get("disabled") is True)
-        self.perform("identity.entity_delete", "DELETE", "/v1/identity/entity/id/" + entity_id)
-        self.perform("identity.entity_deleted", "GET", "/v1/identity/entity/id/" + entity_id, status=404)
+        self.perform("identity.entity_delete", "DELETE", "/v1/identity/entity/id/" + entity_id,
+                     path_template=identity_path_template)
+        self.perform("identity.entity_deleted", "GET", "/v1/identity/entity/id/" + entity_id,
+                     status=404, path_template=identity_path_template)
 
     def edge_tls_cases(self):
         r = self.call("edge_tls.health", "GET", "/v1/sys/health")
