@@ -226,3 +226,46 @@ fn pki_rejects_domain_escape_and_unknown_fields_without_mutation() -> TestResult
     }
     Ok(())
 }
+
+#[test]
+fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    install(&mut s, &root);
+    let denied = call(
+        &mut s,
+        &root,
+        "POST",
+        "pki/issue/web",
+        json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
+        101,
+    );
+    assert_eq!(denied.status, 403);
+    assert_eq!(
+        call(
+            &mut s,
+            &root,
+            "POST",
+            "pki/roles/web-ip",
+            json!({"allowed_domains":["example.test"],"allow_subdomains":true,"allow_ip_sans":true}),
+            101,
+        )
+        .status,
+        200
+    );
+    let issued = call(
+        &mut s,
+        &root,
+        "POST",
+        "pki/issue/web-ip",
+        json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
+        101,
+    );
+    assert_eq!(issued.status, 200);
+    let certificate = text(&issued.body, "/data/certificate")?;
+    let der = pem_der(&certificate, "CERTIFICATE")?;
+    assert!(der.windows(6).any(|w| w == [0x87, 0x04, 127, 0, 0, 1]));
+    assert!(der.windows(18).any(|w| w[0] == 0x87 && w[1] == 0x10));
+    Ok(())
+}

@@ -8,6 +8,7 @@ use ring::{
     rand::SystemRandom,
     signature::{Ed25519KeyPair, KeyPair},
 };
+use std::net::IpAddr;
 use zeroize::{Zeroize, Zeroizing};
 
 const MAX_ROLES: usize = 256;
@@ -48,6 +49,8 @@ impl Drop for RootCa {
 struct Role {
     allowed_domains: BTreeSet<String>,
     allow_subdomains: bool,
+    #[serde(default)]
+    allow_ip_sans: bool,
     max_ttl: u64,
     generate_lease: bool,
 }
@@ -306,6 +309,7 @@ impl Pki {
                     not_after,
                     is_ca: true,
                     alt_names: &[],
+                    ip_sans: &[],
                 },
             )?;
             let certificate = pem("CERTIFICATE", &certificate_der);
@@ -393,6 +397,7 @@ impl Pki {
                         &[
                             "allowed_domains",
                             "allow_subdomains",
+                            "allow_ip_sans",
                             "max_ttl",
                             "generate_lease",
                             "key_type",
@@ -454,7 +459,7 @@ impl Pki {
         owner_expires: Option<u64>,
         now: u64,
     ) -> Result<EngineResponse> {
-        reject_unknown(body, &["common_name", "alt_names", "ttl"])?;
+        reject_unknown(body, &["common_name", "alt_names", "ip_sans", "ttl"])?;
         let root = self
             .root
             .as_ref()
@@ -476,6 +481,13 @@ impl Pki {
             return Err(error(
                 403,
                 "subject alternative name is not allowed by PKI role",
+            ));
+        }
+        let ip_sans = ip_list(body.get("ip_sans"))?;
+        if ip_sans.len() > 32 || !role.allow_ip_sans && !ip_sans.is_empty() {
+            return Err(error(
+                403,
+                "IP subject alternative names are not allowed by PKI role",
             ));
         }
         if self.issued.len() >= MAX_ISSUED {
@@ -516,6 +528,7 @@ impl Pki {
                 not_after: expires,
                 is_ca: false,
                 alt_names: &alt_names,
+                ip_sans: &ip_sans,
             },
         )?;
         let path = format!("{mount}issue/{role_name}");
@@ -604,6 +617,7 @@ impl Role {
         let role = Self {
             allowed_domains: allowed_domains.into_iter().collect(),
             allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
+            allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(false),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
             generate_lease: optional_bool(body, "generate_lease")?.unwrap_or(false),
         };
@@ -632,6 +646,7 @@ impl Role {
         json!({
             "allowed_domains": self.allowed_domains,
             "allow_subdomains": self.allow_subdomains,
+            "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,
             "generate_lease": self.generate_lease,
             "key_type": "ed25519",
@@ -679,6 +694,17 @@ fn string_list(value: Option<&Value>) -> Result<Vec<String>> {
             .collect(),
         Some(_) => Err(bad("expected a string or array of strings")),
     }
+}
+
+fn ip_list(value: Option<&Value>) -> Result<Vec<IpAddr>> {
+    string_list(value)?
+        .into_iter()
+        .map(|value| {
+            value
+                .parse()
+                .map_err(|_| bad("expected valid IP subject alternative names"))
+        })
+        .collect()
 }
 
 fn valid_name(name: &str) -> Result<()> {
@@ -754,6 +780,7 @@ struct CertificateSpec<'a> {
     not_after: u64,
     is_ca: bool,
     alt_names: &'a [String],
+    ip_sans: &'a [IpAddr],
 }
 
 fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
@@ -766,6 +793,7 @@ fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result
         not_after,
         is_ca,
         alt_names,
+        ip_sans,
     } = spec;
     if public_key.len() != 32 {
         return Err(error(500, "invalid Ed25519 public key"));
@@ -788,6 +816,13 @@ fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result
     names.push(context_primitive(2, subject_cn.as_bytes()));
     for name in alt_names {
         names.push(context_primitive(2, name.as_bytes()));
+    }
+    for ip in ip_sans {
+        let bytes = match ip {
+            IpAddr::V4(ip) => ip.octets().to_vec(),
+            IpAddr::V6(ip) => ip.octets().to_vec(),
+        };
+        names.push(context_primitive(7, &bytes));
     }
     extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
     let tbs = seq(&[
@@ -986,6 +1021,61 @@ mod tests {
                 .unwrap_or("")
                 .contains("BEGIN X509 CRL")
         );
+        Ok(())
+    }
+
+    #[test]
+    fn ip_sans_are_role_gated_and_encoded_as_general_name_ip()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut pki = Pki::default();
+        pki.handle_admin(
+            "POST",
+            "root/generate/internal",
+            &json!({"common_name":"ca.example.test","ttl":"48h"}),
+            1_700_000_000,
+        )?;
+        pki.handle_admin(
+            "POST",
+            "roles/web",
+            &json!({"allowed_domains":["example.test"]}),
+            1_700_000_001,
+        )?;
+        let denied = pki.issue(
+            "pki/",
+            "web",
+            &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
+            &"a".repeat(43),
+            None,
+            1_700_000_002,
+        );
+        assert_eq!(denied.expect_err("role must gate IP SANs").status, 403);
+        pki.handle_admin(
+            "POST",
+            "roles/web-ip",
+            &json!({"allowed_domains":["example.test"],"allow_subdomains":true,"allow_ip_sans":true}),
+            1_700_000_003,
+        )?;
+        let issued = pki.issue(
+            "pki/",
+            "web-ip",
+            &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
+            &"a".repeat(43),
+            None,
+            1_700_000_004,
+        )?;
+        let cert = issued.body["data"]["certificate"]
+            .as_str()
+            .ok_or("certificate")?;
+        let der = BASE64.decode(
+            cert.strip_prefix("-----BEGIN CERTIFICATE-----\n")
+                .ok_or("pem begin")?
+                .strip_suffix("-----END CERTIFICATE-----\n")
+                .ok_or("pem end")?
+                .lines()
+                .collect::<String>(),
+        )?;
+        assert!(der.windows(6).any(|v| v == [0x87, 0x04, 127, 0, 0, 1]));
+        assert!(der.windows(18).any(|v| v[0] == 0x87 && v[1] == 0x10));
         Ok(())
     }
 }
