@@ -6,7 +6,7 @@ permissions:
   contents: write
 jobs:
   transfer:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PYTHON'
+          python3 - <<'PYTHON'
           import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
           BASE = '676a3e68af340b2cb7439dbc99c69dee550e5db9'
           BASE_TREE = 'cc714bf471a270caf8b9a4e26047c4caae11bb34'
