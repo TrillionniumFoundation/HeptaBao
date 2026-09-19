@@ -322,23 +322,28 @@ class Cluster:
         self.configure_ha()
         for node in self.nodes[1:]:
             shutil.copytree(seed.data_dir, node.data_dir)
-        # Test that a legitimate peer cannot unseal a different application cluster.
-        wrong = self.nodes[2]
-        wrong_config = json.loads((wrong.root / "ha.json").read_text())
-        wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
-        wrong.ha_config = wrong.root / "wrong-cluster.json"
-        private_write(wrong.ha_config, json.dumps(wrong_config))
         # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
-        # Bind every HA process before waiting for readiness.  The bootstrap
-        # voter may contact its peers during membership expansion, so waiting
-        # for node 1 before starting nodes 2/3 can turn a valid cluster into a
-        # startup-order failure.
+        # Bootstrap every peer with the same cluster identity before exercising
+        # the hostile misbinding case.  The bootstrap voter may contact its
+        # peers during membership expansion, so bind every listener first.
         for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
             node.start(wait=False)
         for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
             node.wait_ready()
         self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
         self.wait_quorum()
+        for node in self.nodes:
+            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+
+        # Test that a legitimate peer cannot unseal a different application
+        # cluster after it has already joined the committed three-voter set.
+        wrong = self.nodes[2]
+        wrong.stop()
+        wrong_config = json.loads((wrong.root / "ha.json").read_text())
+        wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
+        wrong.ha_config = wrong.root / "wrong-cluster.json"
+        private_write(wrong.ha_config, json.dumps(wrong_config))
+        wrong.start()
         status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
         self.check("misbound_cluster_unseal_denied", status == 503 and denied.get("errors") == ["HA configuration belongs to a different cluster"])
         status, health = wrong.call("GET", "sys/health")
@@ -347,8 +352,7 @@ class Cluster:
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()
-        for node in self.nodes:
-            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.check("restored_peer_unsealed", wrong.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
         leader = self.leader()
         marker = secrets.token_hex(16)
         self.write(leader, "ha-probe", marker)

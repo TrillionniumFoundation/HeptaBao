@@ -3,7 +3,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use openraft::{Config, ReadPolicy, SnapshotPolicy};
+use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy};
 use openraft_memstore::{ClientRequest, MemStoreStateMachine};
 use tokio::task::spawn_blocking;
 
@@ -117,11 +117,53 @@ impl ProcessRaftNode {
         if id == 0 || id == self.id {
             return Err(RemoteRaftError::InvalidTopology);
         }
+        // Admission itself is deliberately non-blocking.  The OpenRaft
+        // blocking variant waits on its own replication heuristic and does
+        // not expose a committed, non-joint membership/heartbeat receipt to
+        // callers.  Observe those conditions explicitly below instead.
+        let response = self
+            .raft
+            .add_learner(id, (), false)
+            .await
+            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))?;
+        let membership_frontier = response.log_id.index;
+        let target = id;
         self.raft
-            .add_learner(id, (), true)
+            .wait(Some(std::time::Duration::from_secs(8)))
+            .metrics(
+                move |metrics| {
+                    let membership = &metrics.membership_config;
+                    if metrics.current_leader != Some(self.id)
+                        || membership != &metrics.committed_membership_config
+                        || membership.get_joint_config().len() != 1
+                        || membership.log_id().as_ref().map(|log| log.index)
+                            < Some(membership_frontier)
+                    {
+                        return false;
+                    }
+                    let matched = metrics
+                        .replication
+                        .as_ref()
+                        .and_then(|replication| replication.get(&target))
+                        .and_then(|log| log.as_ref())
+                        .map(|log| log.index);
+                    let heartbeat_recent = metrics
+                        .heartbeat
+                        .as_ref()
+                        .and_then(|heartbeats| heartbeats.get(&target))
+                        .and_then(|instant| instant.as_ref())
+                        .is_some_and(|instant| {
+                            instant.elapsed() <= std::time::Duration::from_secs(1)
+                        });
+                    matched.is_some_and(|index| index >= membership_frontier) && heartbeat_recent
+                },
+                "learner committed replication frontier",
+            )
             .await
             .map(|_| ())
-            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+            .map_err(|_| {
+                RemoteRaftError::Consensus("learner replication completion unobserved".into())
+            })
     }
 
     pub async fn change_membership(&self, voters: BTreeSet<u64>) -> Result<(), RemoteRaftError> {

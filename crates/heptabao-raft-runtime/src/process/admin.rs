@@ -89,13 +89,7 @@ impl ProcessRaftNode {
         let mut voters = before.voters.clone();
         match operation {
             "add_learner" if !before.nodes.contains(&target) => {
-                tokio::time::timeout(
-                    Duration::from_secs(4),
-                    self.raft.add_learner(target, (), true),
-                )
-                .await
-                .map_err(|_| RemoteRaftError::Consensus("membership outcome unknown".into()))?
-                .map_err(|_| RemoteRaftError::Consensus("learner admission failed".into()))?;
+                self.add_learner(target).await?;
             }
             "promote" if before.nodes.contains(&target) && !before.voters.contains(&target) => {
                 let frontier = before
