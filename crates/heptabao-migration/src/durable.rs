@@ -855,6 +855,33 @@ impl DurableMigrationJournal {
         self.record.objects.get(object_id)
     }
 
+    /// Return every object whose durable copy outcome still needs an
+    /// authoritative readback after a restart or lost response.
+    ///
+    /// `IntentPersisted` means the intent was published but the adapter may
+    /// have entered the target before the process lost its response.  It must
+    /// be read back before the controller resumes or marks it unknown.
+    /// `OutcomeUnknownAfterEntry` is already in that readback-only state.
+    /// Object identifiers are returned in canonical (lexicographic) order.
+    pub fn objects_requiring_reconciliation(&self) -> Vec<&str> {
+        self.record
+            .objects
+            .iter()
+            .filter_map(|(identifier, state)| {
+                matches!(
+                    state,
+                    MigrationObjectState::IntentPersisted { .. }
+                        | MigrationObjectState::OutcomeUnknownAfterEntry { .. }
+                )
+                .then_some(identifier.as_str())
+            })
+            .collect()
+    }
+
+    /// Return only objects explicitly marked as having an unknown provider
+    /// outcome.  A surviving `IntentPersisted` is intentionally not included;
+    /// callers must use [`Self::objects_requiring_reconciliation`] to discover
+    /// intents that also need authoritative readback after restart.
     pub fn pending_reconciliation(&self) -> Vec<&str> {
         self.record
             .objects
@@ -1849,6 +1876,40 @@ mod tests {
             reopened.begin_object("policy-root", "copy-policy-1"),
             Err(MigrationJournalError::DuplicateOperation)
         ));
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn persisted_intent_is_visible_to_restart_reconciliation() -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal = DurableMigrationJournal::create_new(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+        )?;
+        journal.fence_source(&source_fence()?)?;
+        journal.begin_object("policy-root", "copy-policy-1")?;
+        assert_eq!(
+            vec!["policy-root"],
+            journal.objects_requiring_reconciliation()
+        );
+        assert!(journal.pending_reconciliation().is_empty());
+        drop(journal);
+
+        let mut reopened =
+            DurableMigrationJournal::open(&directory.path, &expected, inventory.clone())?;
+        assert_eq!(
+            vec!["policy-root"],
+            reopened.objects_requiring_reconciliation()
+        );
+        let intent = reopened.resume_object("policy-root", "copy-policy-1")?;
+        assert_eq!(1, intent.attempt);
+        reopened.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        assert!(reopened.objects_requiring_reconciliation().is_empty());
+        assert!(reopened.pending_reconciliation().is_empty());
         Ok(())
     }
 
