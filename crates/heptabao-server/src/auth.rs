@@ -3074,7 +3074,16 @@ impl AuthState {
             if !matches!(method, "POST" | "PUT") {
                 return Err(err(405, "method not allowed"));
             }
-            reject_unknown(body, &[])?;
+            let requested_role = match body.get("name") {
+                None => None,
+                Some(value) => Some(
+                    value
+                        .as_str()
+                        .filter(|name| valid_name(name))
+                        .ok_or_else(|| bad("certificate role name must be a valid string"))?,
+                ),
+            };
+            reject_unknown(body, &["name"])?;
             let presented = parse_presented_certificate(peer_certificates.ok_or_else(denied)?)?;
             let roles = self
                 .cert_roles
@@ -3089,10 +3098,18 @@ impl AuthState {
             } else {
                 None
             };
-            let (role_name, role) = roles
-                .iter()
-                .find(|(_, role)| matches_cert_role(&presented, attributes.as_ref(), role))
-                .ok_or_else(denied)?;
+            let (role_name, role) = match requested_role {
+                Some(name) => roles
+                    .get(name)
+                    .filter(|role| matches_cert_role(&presented, attributes.as_ref(), role))
+                    .map(|role| (name, role))
+                    .ok_or_else(denied)?,
+                None => roles
+                    .iter()
+                    .find(|(_, role)| matches_cert_role(&presented, attributes.as_ref(), role))
+                    .map(|(name, role)| (name.as_str(), role))
+                    .ok_or_else(denied)?,
+            };
             let (token_ttl, token_max_ttl) =
                 self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
             let display_suffix = presented.sha256.get(..16).unwrap_or(&presented.sha256);
@@ -3106,12 +3123,12 @@ impl AuthState {
                 now,
             )?;
             token.auth_mount = Some(mount.into());
-            token.auth_cert_role = Some(role_name.clone());
+            token.auth_cert_role = Some(role_name.to_owned());
             token.auth_cert_sha256 = Some(presented.sha256.clone());
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
                 mount: mount.into(),
-                alias: role_name.clone(),
+                alias: role_name.to_owned(),
             });
             let metadata = certificate_metadata(attributes.as_ref(), role);
             if !metadata.is_empty() {

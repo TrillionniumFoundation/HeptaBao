@@ -1550,6 +1550,65 @@ fn certificate_role_login_requires_the_verified_leaf_digest() {
 }
 
 #[test]
+fn certificate_role_login_name_selects_the_requested_matching_role() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = vec![11_u8, 12, 13, 14];
+    let digest = certificate_sha256(&leaf);
+    for role in ["operator", "reader"] {
+        call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            &format!("auth/cert/certs/{role}"),
+            json!({
+                "certificate_sha256": digest,
+                "token_policies": ["default"],
+            }),
+            100,
+        );
+    }
+
+    let selected = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({"name": "reader"}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(selected.status, 200);
+    assert_eq!(selected.login_identity.unwrap().alias, "reader");
+
+    let unknown = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({"name": "missing"}),
+        101,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(unknown, Err(error) if error.status == 403));
+
+    let malformed = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({"name": "bad/name"}),
+        101,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(malformed, Err(error) if error.status == 400));
+}
+
+#[test]
 fn certificate_role_selectors_match_sans_subject_and_metadata() {
     let (mut state, _raw, root) = setup();
     mount_auth(&mut state, &root, "", "cert", "cert");

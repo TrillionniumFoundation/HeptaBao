@@ -228,7 +228,9 @@ After mounting `cert` with `POST sys/auth/cert`, an administrator can create
 `auth/cert/certs/<name>` with either a single PEM leaf certificate or its
 lowercase 64-character SHA-256 digest, plus the ordinary token policy and TTL
 limits. `POST auth/cert/login` accepts an empty body and matches the verified
-TLS leaf digest. A role may additionally set bounded `allowed_names`,
+TLS leaf digest. Its optional `name` field selects one named role when a
+certificate matches more than one role; an unknown or non-matching name is
+denied. A role may additionally set bounded `allowed_names`,
 `allowed_common_names`, `allowed_dns_sans`, `allowed_email_sans`,
 `allowed_uri_sans`, `allowed_organizational_units`, `required_extensions`
 (`oid:pattern`) and `allowed_metadata_extensions` (OID strings). Selectors
