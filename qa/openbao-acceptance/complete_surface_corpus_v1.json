@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 44,
-    "defined_not_implemented_surface_count": 16,
-    "fixture_case_count": 244,
+    "implemented_surface_count": 45,
+    "defined_not_implemented_surface_count": 15,
+    "fixture_case_count": 266,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -800,9 +800,32 @@
       "surface_id": "HB-SURFACE-SELF-INIT",
       "category": "namespace_workflow",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 22,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "self_init_live.self_init_starts_uninitialized",
+        "self_init_live.self_init_one_time_bootstrap",
+        "self_init_live.self_init_custody_material_not_persisted_plaintext",
+        "self_init_live.self_init_lost_ack_recovers_same_response",
+        "self_init_live.self_init_wrong_nonce_denied",
+        "self_init_live.self_init_parameter_replay_denied",
+        "self_init_live.self_init_without_nonce_cannot_reinitialize",
+        "self_init_live.self_init_threshold_unseal",
+        "self_init_live.self_init_declared_policy",
+        "self_init_live.self_init_declared_transient_token",
+        "self_init_live.self_init_declared_effect_readback",
+        "self_init_live.self_init_root_ack",
+        "self_init_live.self_init_ack_idempotent",
+        "self_init_live.self_init_recovery_artifact_removed",
+        "self_init_live.self_init_transient_root_revoked",
+        "self_init_live.self_init_root_unusable_after_revoke",
+        "self_init_live.self_init_child_unusable_after_root_revoke",
+        "self_init_live.self_init_restart_stays_sealed",
+        "self_init_live.self_init_restart_unseal",
+        "self_init_live.self_init_revocation_survives_restart",
+        "self_init_live.self_init_reinit_after_ack_rejected",
+        "self_init_live.self_init_persisted_credentials_absent"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

@@ -1052,9 +1052,9 @@ Existing bounded profiles: none bound yet; executable fixtures must be implement
 
 ### HB-SURFACE-SELF-INIT
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H15-WP07`, `H15-WP08`, `H15-WP09`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H15-WP07`, `H15-WP08`, `H15-WP09`.
 API families: `declarative initialization`; `transient-root lifecycle`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/auth.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -1064,9 +1064,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Revoke transient root unconditionally after interruption and resume idempotently.
 
-**Remaining scope:** Crash/resume idempotency and unconditional transient-root revocation.
+**Remaining scope:** Bounded sys/init recovery, declared policy/token application and explicit transient-root revocation are executable; declarative profile parsing, automatic revocation on runner interruption, namespace/mount-aware enrollment, independent custody and external admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/self_init_live.py`.
 
 ### HB-SURFACE-MIGRATION-LOGICAL
 

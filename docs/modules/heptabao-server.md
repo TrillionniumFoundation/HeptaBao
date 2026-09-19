@@ -206,6 +206,15 @@ After unseal and custody verification, root-namespace `POST`/`PUT sys/init/ack` 
 
 Current initialization regressions in `crates/heptabao-server/src/service_tests.rs` are `initialization_recovery_survives_response_loss_and_requires_root_ack`, `initialization_recovery_rejects_tampering_wrong_seal_and_invalid_secret`, `initialization_ack_directory_sync_failure_fences_and_retry_resyncs` and `initialization_without_recovery_secret_never_creates_escrow_and_legacy_is_rejected`. They bind the local recovery/custody boundary; they do not qualify a production ceremony.
 
+The bounded `qa/openbao-acceptance/self_init_live.py` fixture drives this
+recovery path through a real TLS process. It loses the initial response across
+SIGKILL, recovers the identical response with the same client nonce, applies a
+declared policy/token step, acknowledges the encrypted response and revokes the
+bootstrap root with its child token before a restart. This is a scoped runtime
+profile for `sys/init` recovery and transient-token cleanup. Declarative profile
+parsing, automatic revocation by a separate runner, namespace-aware enrollment,
+independent custody and production admission remain open.
+
 ## Current per-process HA composition
 
 The binary accepts `--ha-config /absolute/ha.json` in addition to the existing

@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "f3e6b32a46cd9ba93eb39eaaccf576747424e2960242a6ef014dfe1451f9e4ba",
+  "corpus_sha256": "45adcf1e1a3ae6cf5eb58408b5370cbc5a0f7ec500214c9a3287a4c537e6d6ad",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -186,6 +186,19 @@
       "prerequisites": [
         "Linux candidate runtime",
         "OpenSSL"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "self_init_live": {
+      "script": "qa/openbao-acceptance/self_init_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
@@ -1767,18 +1780,43 @@
     {
       "surface_id": "HB-SURFACE-SELF-INIT",
       "category": "namespace_workflow",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "Self-initialization and bootstrap enrollment targets",
         "required_positive_and_hostile_behavior": "One-time bootstrap, out-of-band trust, race exclusion and lost-ack recovery",
-        "remaining_semantics_and_effect_checks": "Never self-grant root or substitute a dev-mode startup; independent bootstrap custody required",
+        "remaining_semantics_and_effect_checks": "Bounded sys/init recovery, declared policy/token application and explicit transient-root revocation are executable; declarative profile parsing, automatic revocation on runner interruption and independent bootstrap custody remain open",
         "crash_reopen": "Interrupt Self-initialization and bootstrap enrollment targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SELF-INIT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "self_init_live.self_init_starts_uninitialized",
+        "self_init_live.self_init_one_time_bootstrap",
+        "self_init_live.self_init_custody_material_not_persisted_plaintext",
+        "self_init_live.self_init_lost_ack_recovers_same_response",
+        "self_init_live.self_init_wrong_nonce_denied",
+        "self_init_live.self_init_parameter_replay_denied",
+        "self_init_live.self_init_without_nonce_cannot_reinitialize",
+        "self_init_live.self_init_threshold_unseal",
+        "self_init_live.self_init_declared_policy",
+        "self_init_live.self_init_declared_transient_token",
+        "self_init_live.self_init_declared_effect_readback",
+        "self_init_live.self_init_root_ack",
+        "self_init_live.self_init_ack_idempotent",
+        "self_init_live.self_init_recovery_artifact_removed",
+        "self_init_live.self_init_transient_root_revoked",
+        "self_init_live.self_init_root_unusable_after_revoke",
+        "self_init_live.self_init_child_unusable_after_root_revoke",
+        "self_init_live.self_init_restart_stays_sealed",
+        "self_init_live.self_init_restart_unseal",
+        "self_init_live.self_init_revocation_survives_restart",
+        "self_init_live.self_init_reinit_after_ack_rejected",
+        "self_init_live.self_init_persisted_credentials_absent"
+      ],
+      "available_scoped_profiles": [
+        "self_init_live"
+      ],
       "whole_surface_admitted": false
     },
     {

@@ -291,6 +291,33 @@
         "namespace.cleanup_parent"
       ]
     },
+    "self_init_live": {
+      "script": "qa/openbao-acceptance/self_init_live.py",
+      "case_ids": [
+        "self_init_starts_uninitialized",
+        "self_init_one_time_bootstrap",
+        "self_init_custody_material_not_persisted_plaintext",
+        "self_init_lost_ack_recovers_same_response",
+        "self_init_wrong_nonce_denied",
+        "self_init_parameter_replay_denied",
+        "self_init_without_nonce_cannot_reinitialize",
+        "self_init_threshold_unseal",
+        "self_init_declared_policy",
+        "self_init_declared_transient_token",
+        "self_init_declared_effect_readback",
+        "self_init_root_ack",
+        "self_init_ack_idempotent",
+        "self_init_recovery_artifact_removed",
+        "self_init_transient_root_revoked",
+        "self_init_root_unusable_after_revoke",
+        "self_init_child_unusable_after_root_revoke",
+        "self_init_restart_stays_sealed",
+        "self_init_restart_unseal",
+        "self_init_revocation_survives_restart",
+        "self_init_reinit_after_ack_rejected",
+        "self_init_persisted_credentials_absent"
+      ]
+    },
     "plugin_auth_live": {
       "script": "qa/openbao-acceptance/plugin_auth_live.py",
       "case_ids": [

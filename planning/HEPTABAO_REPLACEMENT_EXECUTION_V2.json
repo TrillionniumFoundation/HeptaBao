@@ -1943,16 +1943,21 @@
       "positive": "Initialize declared configuration using a bounded transient root",
       "hostile": "Reject repeated initialization and retain no ordinary-output root credential",
       "lifecycle": "Revoke transient root unconditionally after interruption and resume idempotently",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs",
+        "crates/heptabao-server/src/auth.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/self_init_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Crash/resume idempotency and unconditional transient-root revocation."
+      "remaining_scope": "Bounded sys/init recovery, declared policy/token application and explicit transient-root revocation are executable; declarative profile parsing, automatic revocation on runner interruption, namespace/mount-aware enrollment, independent custody and external admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
