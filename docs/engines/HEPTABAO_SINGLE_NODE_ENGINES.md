@@ -225,14 +225,15 @@ is no handwritten cipher, hash, entropy generator or signature primitive.
 | `POST/PUT hash[/:algorithm]` | SHA-2-224/256/384/512 or SHA-3-224/256/384/512 over base64 input, in hex or base64 |
 | `GET export/{encryption-key,hmac-key}/:name[/:version]` | Explicitly exportable symmetric/HMAC material only |
 
-The opaque envelope is `vault:vN:BASE64(nonce || ciphertext || tag)`. Its AAD is
-the JSON tuple of a format-domain identifier, namespace, mount path, key name and
-decoded caller `associated_data`. Therefore an identical raw key moved to a
-different namespace/mount/name cannot decrypt the original ciphertext. This is
-an intentional security/portability boundary: OpenBao ciphertexts are not
-promised to decrypt here merely because the text prefix matches. Migrating
-Transit data requires source decryption followed by destination encryption, or a
-future independently verified import adapter with explicit domain handling.
+The opaque envelope is `vault:vN:BASE64(nonce || ciphertext || tag)`. Newly
+written AES-GCM, ChaCha20-Poly1305 and XChaCha20-Poly1305 ciphertexts bind exactly
+the decoded caller `associated_data`, matching OpenBao's portable AEAD contract.
+Already persisted pre-compatibility AES/ChaCha ciphertexts have a read-only
+fallback that also accepts the former namespace/mount/name-bound AAD. Moving an
+OpenBao-compatible key and ciphertext across those route domains therefore does
+not change authentication, while HeptaBao legacy ciphertexts remain readable.
+Migrating Transit data still requires source decryption followed by destination
+encryption when key material is not explicitly imported.
 
 Encryption, rewrap and datakey use count as mutations. A version refuses further
 encryption after 2^32 encryptions. Random nonces still have probabilistic collision
@@ -250,8 +251,9 @@ rejected. Partial failure follows the commit rule above. Inputs are bounded to
 approximately 4 MiB of decoded material, in addition to the HTTP request limit.
 
 Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA,
-SHA-224/SHA-3, Ed25519ph, BYOK wrapping/import, plaintext backup, automated periodic
-rotation and unsupported export formats are explicit errors. XChaCha20-Poly1305
+Ed25519ph, BYOK wrapping/import, plaintext backup and unsupported export formats
+are explicit errors. SHA-224/SHA-3 are available on the hash/HMAC routes while
+Ed25519 signing remains limited to its sha2-256 profile. XChaCha20-Poly1305
 and newly written AES/ChaCha ciphertexts use OpenBao's raw caller-supplied
 associated data and nonce envelopes for ciphertext portability. Existing
 pre-compatibility AES/ChaCha ciphertexts retain a read-only legacy
