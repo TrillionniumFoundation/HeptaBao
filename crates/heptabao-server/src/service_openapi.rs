@@ -425,6 +425,12 @@ pub(super) fn handle(method: &str, body: &Value, root_visibility: bool) -> Respo
     );
     add_mount_route(
         &mut paths,
+        format!("/auth/{approle}/role/{{role_name}}/custom-secret-id"),
+        &["post", "put"],
+        "Issue a bounded operator-supplied AppRole SecretID.",
+    );
+    add_mount_route(
+        &mut paths,
         format!("/auth/{approle}/login"),
         &["post", "put"],
         "Authenticate with AppRole credentials.",
@@ -474,6 +480,7 @@ mod tests {
         assert!(paths.contains_key("/sys/health"));
         assert!(paths.contains_key("/{kv_mount_path}/data/{path}"));
         assert!(paths.contains_key("/auth/{userpass_mount_path}/login/{username}"));
+        assert!(paths.contains_key("/auth/{approle_mount_path}/role/{role_name}/custom-secret-id"));
         assert!(paths.contains_key("/sys/plugins/catalog/secret"));
         assert!(paths.contains_key("/sys/plugins/catalog/secret/{name}"));
         assert!(!paths.keys().any(|path| {
