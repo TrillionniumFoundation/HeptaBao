@@ -1407,12 +1407,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn invalid_cluster_identity_is_rejected_before_peer_validation() {
+    fn invalid_cluster_identity_is_rejected_before_peer_validation() -> Result<(), String> {
         let config = HaProcessConfig {
             node_id: 0,
             cluster_id: "cluster/with-invalid-delimiter".into(),
             raft_dir: PathBuf::new(),
-            listen: "127.0.0.1:1".parse().expect("synthetic listener"),
+            listen: "127.0.0.1:1"
+                .parse()
+                .map_err(|_| "synthetic listener address")?,
             ca_file: PathBuf::new(),
             cert_file: PathBuf::new(),
             key_file: PathBuf::new(),
@@ -1427,6 +1429,7 @@ mod tests {
             validate_config(&config),
             Err("invalid HA cluster identity".into())
         );
+        Ok(())
     }
 
     #[test]
