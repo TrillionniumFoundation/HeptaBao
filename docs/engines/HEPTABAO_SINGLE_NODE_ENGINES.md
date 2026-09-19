@@ -270,9 +270,11 @@ compatibility mode; general Transit hash/sign endpoints do not offer SHA1.
 | `POST/PUT code/:name` | Validate exact decimal code and persist acceptance/guessing state |
 
 Generated enrollment requires issuer/account name and supports 10–128-byte keys.
-With `exported:true`, callers must explicitly set `qr_size:0`; the response
-contains a standards-compatible otpauth URL. Requested QR PNG generation returns
-501. `exported:false` returns no secret enrollment material. URL import checks
+With `exported:true`, the response contains a standards-compatible otpauth URL.
+`qr_size` defaults to 200 and returns a Base64-encoded grayscale PNG barcode;
+`qr_size:0` suppresses the barcode. The server bounds the requested image to
+4,096 pixels per side. `exported:false` returns no secret enrollment material.
+URL import checks
 the scheme, duplicate parameters, issuer consistency, percent encoding, base32
 padding and supported algorithms. Malformed or whitespace-padded codes return
 400. There is no MFA login integration hidden behind this engine: authentication

@@ -1418,19 +1418,56 @@ fn totp_url_enrollment_import_metadata_and_deletion() -> TestResult {
         100,
     )?;
     assert!(request(&mut state, "", "GET", "totp/code/imported", json!({}), 100).is_err());
-    assert_eq!(
-        request(
-            &mut state,
-            "",
-            "POST",
-            "totp/keys/qr",
-            json!({"generate":true,"issuer":"Hepta","account_name":"u"}),
-            100
-        )
-        .err()
-        .map(|e| e.status),
-        Some(501)
-    );
+    Ok(())
+}
+
+#[test]
+fn totp_generated_qr_barcode_is_png_and_export_controls_it() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/totp",
+        json!({"type":"totp"}),
+        100,
+    )?;
+    let exported = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/qr",
+        json!({"generate":true,"issuer":"Hepta","account_name":"u","qr_size":64}),
+        100,
+    )?;
+    let barcode = BASE64.decode(
+        exported.body["data"]["barcode"]
+            .as_str()
+            .ok_or("TOTP barcode missing")?,
+    )?;
+    assert!(barcode.starts_with(b"\x89PNG\r\n\x1a\n"));
+    assert_eq!(u32::from_be_bytes(barcode[16..20].try_into()?), 64);
+    assert_eq!(u32::from_be_bytes(barcode[20..24].try_into()?), 64);
+
+    let no_qr = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/no-qr",
+        json!({"generate":true,"issuer":"Hepta","account_name":"no-qr","qr_size":0}),
+        100,
+    )?;
+    assert!(no_qr.body["data"].get("barcode").is_none());
+
+    let imported = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/imported-qr",
+        json!({"key":"GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ","qr_size":64}),
+        100,
+    )?;
+    assert!(imported.body["data"].get("barcode").is_none());
     Ok(())
 }
 
