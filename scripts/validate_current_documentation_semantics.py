@@ -58,6 +58,14 @@ def runtime_closure(root: Path, packages: dict[str, dict]) -> set[str]:
                     continue
                 dependency = value.get("package", alias)
                 if dependency not in packages:
+                    # The current runtime map covers HeptaBao workspace crates.
+                    # Vendored third-party path packages (for example the pinned
+                    # QR encoder under vendor/) are still locked source inputs,
+                    # but are not HeptaBao modules that need a module guide.
+                    dependency_root = (root / value["path"]).resolve()
+                    workspace_crates = (root / "crates").resolve()
+                    if workspace_crates not in dependency_root.parents:
+                        continue
                     raise ValueError(f"unmapped runtime path dependency: {dependency}")
                 if dependency not in closure:
                     closure.add(dependency)
