@@ -1038,7 +1038,7 @@ impl Canvas {
 /// Gets whether the module at the given coordinates represents a functional
 /// module.
 pub fn is_functional(version: Version, width: i16, x: i16, y: i16) -> bool {
-    debug_assert!(width == version.width());
+    debug_assert_eq!(width, version.width());
 
     let x = if x < 0 { x + width } else { x };
     let y = if y < 0 { y + width } else { y };
@@ -1781,9 +1781,7 @@ impl Canvas {
                 }
             };
 
-            let colors = (0..self.width)
-                .map(map_fn)
-                .chain(Some(Module::Empty).into_iter());
+            let colors = (0..self.width).map(map_fn).chain(Some(Module::Empty));
             let mut last_color = Module::Empty;
             let mut consecutive_len = 1_u16;
 
@@ -1879,12 +1877,7 @@ impl Canvas {
         let dark_modules = self.modules.iter().filter(|m| m.is_dark()).count();
         let total_modules = self.modules.len();
         let ratio = dark_modules * 200 / total_modules;
-        if ratio >= 100 {
-            ratio - 100
-        } else {
-            100 - ratio
-        }
-        .as_u16()
+        ratio.abs_diff(100).as_u16()
     }
 
     /// Compute the penalty score for having too many light modules on the sides.
