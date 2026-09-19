@@ -15,6 +15,22 @@ REQUIRED_NATIVE_GATES = (
     "cargo +1.98.0 doc --locked --workspace --no-deps",
 )
 
+# Workflow trust must establish the execution boundary and source identity;
+# repository qualification owns the expensive current-state and native matrix.
+# Keeping these checks here prevents a future security-workflow edit from
+# quietly recreating the old duplicate full qualification.
+FORBIDDEN_TRUST_GATES = (
+    "python scripts/validate_repository_v2.py",
+    "python scripts/validate_plan_v1_4_7.py",
+    "python scripts/validate_plan_v1_4_6.py",
+    "python scripts/validate_plan_v1_4_5.py",
+    "python -m unittest discover -s tests/repository",
+    "python -m unittest discover -s tests/platform",
+    "python -m unittest discover -s tests/oracle",
+    "cargo +1.98.0 test --locked --workspace --all-targets",
+    "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+)
+
 
 def validate(root: Path = ROOT) -> list[str]:
     full = (root / ".github/workflows/codex-openbao-replacement-ci.yml").read_text(encoding="utf-8")
@@ -27,6 +43,9 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append(f"full qualification lost native gate: {gate}")
         if gate in trust:
             errors.append(f"workflow trust duplicates native gate: {gate}")
+    for gate in FORBIDDEN_TRUST_GATES:
+        if gate in trust:
+            errors.append(f"workflow trust duplicates full-qualification gate: {gate}")
     if "success() || failure()" in full:
         errors.append("full qualification contains unconditional diagnostic continuation")
     if "python scripts/validate_workflow_trust.py" not in trust:

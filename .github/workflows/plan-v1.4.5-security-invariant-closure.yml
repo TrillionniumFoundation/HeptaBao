@@ -132,8 +132,6 @@ jobs:
           python -m unittest discover -s tests/plan -p 'test_plan_v1_4_5.py' -v
           python scripts/validate_module_documentation_v1_4_4.py
           python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.py' -v
-          python -m unittest discover -s tests/platform -p 'test_*.py' -v
-          python -m unittest discover -s tests/oracle -p 'test_*.py' -v
 
       - name: Install exact Rust 1.98 toolchain
         shell: bash
@@ -149,8 +147,15 @@ jobs:
           set -euo pipefail
           cargo +1.98.0 metadata --locked --no-deps --format-version 1 >"$RUNNER_TEMP/v1.4.5-cargo-metadata.json"
           cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --locked --workspace --all-targets
-          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+          cargo +1.98.0 test --locked \
+            -p heptabao-durable-core \
+            -p heptabao-filesystem-guard \
+            -p heptabao-journal-api \
+            -p heptabao-journaled-core \
+            -p heptabao-key-lifecycle \
+            -p heptabao-operation-ledger \
+            -p heptabao-recovery-core \
+            -p heptabao-rollback-anchor
 
       - name: Confirm fail-closed authority boundary
         shell: bash
