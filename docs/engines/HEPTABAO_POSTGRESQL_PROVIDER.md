@@ -139,6 +139,14 @@ zero active sessions. A durable completion is committed before credentials or a
 success response are released. A post-commit result-audit failure withholds the
 response and retains the committed state under the existing recovery fence.
 
+Within one Service process, every staged provider plan holds a process-local
+in-flight marker for its namespace, mount and lease. Lifecycle reconciliation
+skips that pending row while the marker is live, and a second foreground
+renewal, revocation or prefix revocation for the same row receives a 503
+reconcile response instead of starting a duplicate provider effect. The marker
+is deliberately not persisted: after a process restart, the durable pending
+intent is eligible for the recovery path below.
+
 A timeout, SQL error, lost response, mismatched readback or failed local completion
 never means "not issued" or "revoked". It returns a safe pending/reconcile error
 and retains the encrypted intent. Restart or explicit reconciliation does **not**

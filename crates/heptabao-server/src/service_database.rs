@@ -4,6 +4,7 @@
 use super::*;
 use crate::{auth::LeaseIssuer, outbound::Target, postgres_wire::PgSession};
 use std::collections::BTreeSet;
+use std::sync::Weak;
 
 /// The provider has already been entered and its effect observed. No local
 /// persistence failure can now mean that issuance/renewal/revocation was absent.
@@ -101,6 +102,52 @@ pub(super) struct DatabaseEffectPlan {
     connection: Connection,
     fence_id: String,
     lease: DatabaseLease,
+    // Kept through provider execution and local finalization. Dropping an
+    // abandoned plan makes its durable intent eligible for maintenance again.
+    _in_flight: Arc<()>,
+}
+
+/// Advisory process-local ownership only; never persisted as lease authority.
+/// Weak entries cannot retain abandoned work or survive a Service reopen.
+#[derive(Default)]
+pub(super) struct DatabaseFlights {
+    leases: BTreeMap<(String, String, String), Weak<()>>,
+}
+
+impl DatabaseFlights {
+    fn prune(&mut self) {
+        self.leases.retain(|_, flight| flight.strong_count() != 0);
+    }
+
+    fn track(&mut self, namespace: &str, mount: &str, id: &str) -> Arc<()> {
+        self.prune();
+        let key = (namespace.to_owned(), mount.to_owned(), id.to_owned());
+        if let Some(flight) = self.leases.get(&key).and_then(Weak::upgrade) {
+            return flight;
+        }
+        let flight = Arc::new(());
+        self.leases.insert(key, Arc::downgrade(&flight));
+        flight
+    }
+
+    fn contains(&self, namespace: &str, mount: &str, id: &str) -> bool {
+        self.leases
+            .get(&(namespace.to_owned(), mount.to_owned(), id.to_owned()))
+            .is_some_and(|flight| flight.strong_count() != 0)
+    }
+}
+
+fn database_maintenance_candidate(
+    phase: &Phase,
+    expires: u64,
+    now: u64,
+    live_owner: bool,
+    in_flight: bool,
+) -> bool {
+    !in_flight
+        && (phase == &Phase::Revoked
+            || (phase != &Phase::Quarantined
+                && (phase != &Phase::Active || expires <= now || !live_owner)))
 }
 
 pub(super) struct DatabaseMaintenance {
@@ -1083,7 +1130,7 @@ impl Service {
     }
 
     fn database_effect_plan(
-        &self,
+        &mut self,
         ns: &str,
         mount: &str,
         id: &str,
@@ -1122,6 +1169,7 @@ impl Service {
             connection,
             fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
+            _in_flight: self.database_in_flight.track(ns, mount, id),
         })
     }
 
@@ -1132,6 +1180,10 @@ impl Service {
         id: &str,
         now: u64,
     ) -> Result<Response, Response> {
+        self.database_in_flight.prune();
+        if self.database_in_flight.contains(ns, mount, id) {
+            return Err(Self::database_effect_in_flight(id));
+        }
         if self.pending_database_effect.is_some() {
             return Err(failure(
                 "another database provider effect is already pending dispatch",
@@ -1364,6 +1416,17 @@ impl Service {
                     "database revoke-prefix selection exceeds the bounded synchronous batch",
                 ));
             }
+            if self.pending_database_batch_effect.is_some() {
+                return Err(failure(
+                    "another database provider batch is already pending dispatch",
+                ));
+            }
+            if let Some((_, id)) = matches
+                .iter()
+                .find(|(mount, id)| self.database_in_flight.contains(ns, mount, id))
+            {
+                return Err(Self::database_effect_in_flight(id));
+            }
             for (mount_name, id) in &matches {
                 Self::stage_revoke(&mut state, ns, mount_name, id)?;
             }
@@ -1371,11 +1434,6 @@ impl Service {
             let mut plans = Vec::with_capacity(matches.len());
             for (mount_name, id) in matches {
                 plans.push(self.database_effect_plan(ns, &mount_name, &id, now)?);
-            }
-            if self.pending_database_batch_effect.is_some() {
-                return Err(failure(
-                    "another database provider batch is already pending dispatch",
-                ));
             }
             self.pending_database_batch_effect = Some(DatabaseBatchEffectPlan { plans });
             return Ok(Response::error(
@@ -1456,6 +1514,9 @@ impl Service {
                 json!({"data":{"id":l.id,"ttl":l.expires.saturating_sub(now),"renewable":renewable,"issue_time":l.issued,"expire_time":l.expires,"last_renewal":l.last_renewal,"phase":l.phase}}),
             ));
         }
+        if self.database_in_flight.contains(ns, &mount, id) {
+            return Err(Self::database_effect_in_flight(id));
+        }
         if operation == "renew" {
             let owner = state
                 .auth
@@ -1508,6 +1569,17 @@ impl Service {
                 .is_ok_and(|p| !p.disabled)
         })
     }
+
+    fn database_effect_in_flight(id: &str) -> Response {
+        Response {
+            status: 503,
+            body: json!({
+                "errors":["database provider effect is already in flight; durable intent retained"],
+                "lease_id":id,
+                "reconcile_required":true
+            }),
+        }
+    }
     /// Stage at most one provider reconciliation while holding the Service
     /// writer. The returned plan owns everything required for remote I/O so the
     /// lifecycle worker can release the writer before provider entry.
@@ -1527,6 +1599,7 @@ impl Service {
             self.sync_from_ha()
                 .map_err(|_| "provider ReadIndex unavailable")?;
         }
+        self.database_in_flight.prune();
         let state = self.state.as_ref().ok_or("sealed")?;
         let now = now.max(state.database.clock);
         let mut candidates = Vec::new();
@@ -1537,16 +1610,16 @@ impl Service {
                     let live = owner
                         .as_ref()
                         .is_some_and(|o| Self::database_owner_active(state, o, ns));
-                    // A foreground issue/renew owns its pending fence while
-                    // provider I/O is in flight.  Letting the maintenance
-                    // worker stage a revoke for those phases races the
-                    // foreground readback and makes finalization fail with a
-                    // changed lease fence.  Only retry an already staged
-                    // revoke (or a terminal tombstone) and reclaim an active
-                    // lease whose owner/expiry is no longer live.
-                    if matches!(l.phase, Phase::PendingRevoke | Phase::Revoked)
-                        || (l.phase == Phase::Active && (l.expires <= now || !live))
-                    {
+                    // Do not race a live plan's provider I/O or finalization.
+                    // Once it is dropped (including failed/abandoned requests)
+                    // or the process reopens, recover the durable pending intent.
+                    if database_maintenance_candidate(
+                        &l.phase,
+                        l.expires,
+                        now,
+                        live,
+                        self.database_in_flight.contains(ns, mount, id),
+                    ) {
                         candidates.push((ns.clone(), mount.clone(), id.clone()));
                     }
                 }
@@ -1643,6 +1716,78 @@ mod tests {
             );
             assert!(result.body.get("password").is_none());
         }
+    }
+
+    #[test]
+    fn database_flights_are_process_local_and_reopen_pending_work_after_drop() {
+        let mut flights = DatabaseFlights::default();
+        assert!(!flights.contains("", "database/", "database/creds/reader/1"));
+        let first = flights.track("", "database/", "database/creds/reader/1");
+        assert!(flights.contains("", "database/", "database/creds/reader/1"));
+        let response = Service::database_effect_in_flight("database/creds/reader/1");
+        assert_eq!(response.status, 503);
+        assert_eq!(response.body["reconcile_required"], true);
+        let second = flights.track("", "database/", "database/creds/reader/1");
+        drop(second);
+        assert!(flights.contains("", "database/", "database/creds/reader/1"));
+        drop(first);
+        flights.prune();
+        assert!(!flights.contains("", "database/", "database/creds/reader/1"));
+
+        // A fresh Service process has a fresh empty registry and can recover a
+        // persisted pending intent without inheriting process-local ownership.
+        let fresh = DatabaseFlights::default();
+        assert!(!fresh.contains("", "database/", "database/creds/reader/1"));
+    }
+
+    #[test]
+    fn database_maintenance_skips_live_pending_effects_but_reclaims_after_drop() {
+        let mut flights = DatabaseFlights::default();
+        let flight = flights.track("", "database/", "database/creds/reader/1");
+        assert!(!database_maintenance_candidate(
+            &Phase::PendingIssue,
+            100,
+            100,
+            true,
+            flights.contains("", "database/", "database/creds/reader/1"),
+        ));
+        assert!(!database_maintenance_candidate(
+            &Phase::PendingRenew,
+            200,
+            100,
+            true,
+            flights.contains("", "database/", "database/creds/reader/1"),
+        ));
+        assert!(!database_maintenance_candidate(
+            &Phase::PendingRevoke,
+            0,
+            100,
+            false,
+            flights.contains("", "database/", "database/creds/reader/1"),
+        ));
+        drop(flight);
+        flights.prune();
+        assert!(database_maintenance_candidate(
+            &Phase::PendingIssue,
+            100,
+            100,
+            true,
+            flights.contains("", "database/", "database/creds/reader/1"),
+        ));
+        assert!(database_maintenance_candidate(
+            &Phase::PendingRenew,
+            200,
+            100,
+            true,
+            flights.contains("", "database/", "database/creds/reader/1"),
+        ));
+        assert!(!database_maintenance_candidate(
+            &Phase::Quarantined,
+            0,
+            100,
+            false,
+            false
+        ));
     }
 
     fn sample() -> Result<(DatabaseState, String), Response> {

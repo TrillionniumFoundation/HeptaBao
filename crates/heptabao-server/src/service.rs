@@ -609,6 +609,7 @@ fn classify_request_effect(
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
+    database_in_flight: database::DatabaseFlights,
     pending_database_effect: Option<database::DatabaseEffectPlan>,
     pending_database_config_effect: Option<database::DatabaseConfigPlan>,
     pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
@@ -805,6 +806,7 @@ impl Service {
         Ok(Self {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
+            database_in_flight: database::DatabaseFlights::default(),
             pending_database_effect: None,
             pending_database_config_effect: None,
             pending_database_batch_effect: None,
