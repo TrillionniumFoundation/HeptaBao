@@ -1,13 +1,7 @@
 name: plan-v1.4.5-security-invariant-closure
 
 on:
-  push:
-    branches:
-      - codex/plan-v1.4.5-security-invariant-closure-v1
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - integration/v1.4.4-technical-candidate
+  # Historical V1.4.5 closure; run on demand for forensic evidence only.
   workflow_dispatch:
 
 permissions:

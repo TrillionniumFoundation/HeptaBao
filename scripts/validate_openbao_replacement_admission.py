@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -12,9 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT = ROOT / "planning/OPENBAO_REPLACEMENT_ADMISSION_V1.yaml"
 EXPECTED_SCHEMA = "heptabao.openbao-replacement-admission.v1"
 ALLOWED = {"OPEN", "ADMITTED"}
+WORKFLOW_REFERENCE = re.compile(r"\.github/workflows/[A-Za-z0-9._-]+\.ya?ml")
 
 
-def validate(document: dict) -> list[str]:
+def validate(document: dict, root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     if document.get("schema") != EXPECTED_SCHEMA:
         errors.append("unexpected admission schema")
@@ -50,6 +52,11 @@ def validate(document: dict) -> list[str]:
         for field in ("owner", "requirement", "evidence"):
             if not isinstance(gate.get(field), str) or not gate[field].strip():
                 errors.append(f"{gate_id}: missing {field}")
+        evidence = gate.get("evidence")
+        if isinstance(evidence, str):
+            for reference in WORKFLOW_REFERENCE.findall(evidence):
+                if not (root / reference).is_file():
+                    errors.append(f"{gate_id}: evidence references missing workflow {reference}")
 
     authority = document.get("replacement_authority")
     status = document.get("status")
@@ -81,7 +88,7 @@ def main() -> int:
     if not isinstance(document, dict):
         print("admission contract must be a mapping", file=sys.stderr)
         return 1
-    errors = validate(document)
+    errors = validate(document, args.manifest.resolve().parents[1])
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1

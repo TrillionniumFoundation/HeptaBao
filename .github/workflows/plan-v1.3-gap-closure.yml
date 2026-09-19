@@ -1,9 +1,7 @@
 name: plan-v1.3-gap-closure
 
 on:
-  push:
-    branches:
-      - "main"
+  # Historical V1.3 closure; run on demand for forensic evidence only.
   workflow_dispatch:
 
 permissions:

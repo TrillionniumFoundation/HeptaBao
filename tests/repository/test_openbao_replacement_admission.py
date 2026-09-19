@@ -53,6 +53,19 @@ class ReplacementAdmissionTests(unittest.TestCase):
         document["baseline"]["version"] = "latest"
         self.assertTrue(MOD.validate(document))
 
+    def test_workflow_evidence_must_point_to_a_current_file(self):
+        document = contract()
+        document["required_gates"][0]["evidence"] = (
+            "receipt emitted by .github/workflows/missing.yml"
+        )
+        errors = MOD.validate(document)
+        self.assertTrue(any("missing workflow" in error for error in errors))
+
+        document["required_gates"][0]["evidence"] = (
+            "receipt emitted by .github/workflows/codex-openbao-replacement-ci.yml"
+        )
+        self.assertEqual([], MOD.validate(document))
+
 
 if __name__ == "__main__":
     unittest.main()

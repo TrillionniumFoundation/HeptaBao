@@ -16,12 +16,12 @@ required_gates:
     status: OPEN
     owner: ci
     requirement: exact candidate passes repository, security, Rust fmt/test/clippy/doc/build, OpenBao acceptance, and single-node smoke gates
-    evidence: exact-head receipt emitted by .github/workflows/v2-1-main-exact-and-merge.yml
+    evidence: exact-head receipt emitted by .github/workflows/codex-openbao-replacement-ci.yml
   - id: prospective_main_merge
     status: OPEN
     owner: ci
     requirement: immutable prospective main merge passes the same full gate set
-    evidence: prospective-merge receipt emitted by .github/workflows/v2-1-main-exact-and-merge.yml
+    evidence: prospective-merge receipt emitted by .github/workflows/codex-openbao-replacement-ci.yml
   - id: module_evidence_integrity
     status: OPEN
     owner: architecture
