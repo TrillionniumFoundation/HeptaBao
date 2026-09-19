@@ -526,7 +526,7 @@ directory removes those policies from the next token without waiting for a local
 cache expiry. Search is capped at 128 groups and rejects referrals, controls,
 arbitrary filter syntax and paging.
 
-The latest exact-head SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-613dfd3.json).
+The latest exact-head SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json).
 It is external-provider evidence only; it does not admit full OpenBao LDAP
 field/error parity or independent production qualification.
 
