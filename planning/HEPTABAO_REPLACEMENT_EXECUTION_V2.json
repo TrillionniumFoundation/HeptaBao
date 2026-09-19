@@ -613,7 +613,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real LDAPS user bind, bounded live subtree group-membership search, local group-to-policy mapping, membership revocation on the next login, restart/outage behavior and actual OpenLDAP distribution execution are implemented. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
+      "remaining_scope": "The scoped real OpenLDAP 2.6.10 LDAPS bind, group search/policy projection, outage/restart recovery and membership revocation receipt is qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
