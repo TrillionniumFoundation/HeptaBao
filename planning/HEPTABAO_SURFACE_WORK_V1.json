@@ -175,6 +175,20 @@
       "prerequisites": [],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
+    "cert_auth_live": {
+      "script": "qa/openbao-acceptance/cert_auth_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "OpenSSL"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
     "agent": {
       "script": "qa/openbao-acceptance/agent_proxy_helper_live.py",
       "arguments": [
@@ -689,8 +703,8 @@
     {
       "surface_id": "HB-SURFACE-AUTH-CERT",
       "category": "auth_methods",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/certs/* and auth/:mount/login",
         "required_positive_and_hostile_behavior": "Certificate chain, EKU, name constraints, serial revocation, client possession and policy mapping",
@@ -699,8 +713,29 @@
         "isolation": "For HB-SURFACE-AUTH-CERT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "cert_auth_live.mTLS_listener_rejects_missing_client_chain",
+        "cert_auth_live.mTLS_listener_requires_client_chain",
+        "cert_auth_live.initialize_over_mTLS",
+        "cert_auth_live.unseal_over_mTLS",
+        "cert_auth_live.cert_auth_mount",
+        "cert_auth_live.cert_policy",
+        "cert_auth_live.cert_role_with_chain_selectors",
+        "cert_auth_live.cert_login_chain_eku_and_selectors",
+        "cert_auth_live.cert_metadata_subject_san_ou_extension",
+        "cert_auth_live.root_secret_for_readback",
+        "cert_auth_live.cert_token_policy_read",
+        "cert_auth_live.cert_renewal_reauthenticates_same_leaf",
+        "cert_auth_live.same_CA_wrong_leaf_denied_by_role_digest",
+        "cert_auth_live.client_auth_EKU_rejects_server_only_certificate",
+        "cert_auth_live.untrusted_chain_rejected_by_TLS",
+        "cert_auth_live.restart_starts_sealed",
+        "cert_auth_live.restart_unseal_over_mTLS",
+        "cert_auth_live.cert_renewal_reauthenticates_after_restart"
+      ],
+      "available_scoped_profiles": [
+        "cert_auth_live"
+      ],
       "whole_surface_admitted": false
     },
     {
