@@ -1044,7 +1044,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real version/TLS/root-rotation/static/dynamic/renew/revoke matrix required."
+      "remaining_scope": "The scoped PostgreSQL 17.11 TLS/SCRAM dynamic issue/renew/revoke, session termination, outage/restart reconciliation and >128 retirement profile is recorded in qa/openbao-acceptance/evidence/postgresql-live-4b26baa.json; real static-role/root-rotation and full OpenBao statement/template/error parity, multi-host fault and independent qualification matrices remain required."
     },
     {
       "surface_id": "HB-SURFACE-DB-MYSQL",
