@@ -1407,6 +1407,29 @@ mod tests {
     use super::*;
 
     #[test]
+    fn invalid_cluster_identity_is_rejected_before_peer_validation() {
+        let config = HaProcessConfig {
+            node_id: 0,
+            cluster_id: "cluster/with-invalid-delimiter".into(),
+            raft_dir: PathBuf::new(),
+            listen: "127.0.0.1:1".parse().expect("synthetic listener"),
+            ca_file: PathBuf::new(),
+            cert_file: PathBuf::new(),
+            key_file: PathBuf::new(),
+            replication_key_file: PathBuf::new(),
+            peers: BTreeMap::new(),
+            bootstrap: false,
+            initial_voters: None,
+            peer_timeout_ms: 750,
+            max_inflight: 64,
+        };
+        assert_eq!(
+            validate_config(&config),
+            Err("invalid HA cluster identity".into())
+        );
+    }
+
+    #[test]
     fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>>
     {
         let encoded = encode_raft_frame(RaftWireFrame {
