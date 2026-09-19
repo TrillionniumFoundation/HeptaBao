@@ -1,9 +1,7 @@
 name: plan-v1.3.1-final-exact
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.3-gap-closure-v2"
+  # Historical V1.3 exact closure; run on demand for forensic evidence only.
   workflow_dispatch:
 
 permissions:
