@@ -4,6 +4,14 @@
 
 This guide describes the Python HTTPS transfer tool. The separate Rust `heptabao-migration` crate now offers explicit authenticated v2 migration checkpoints as well as legacy checksum checkpoints; this tool does not invoke that crate. Its live-transfer checkpoint and the Rust protocol journal must not be treated as one implementation or one security receipt. See `docs/modules/heptabao-migration.md` for the Rust profile/key/no-downgrade contracts.
 
+The Rust crate also exposes a bounded, inspection-only validator for OpenBao
+2.6.2 `raft.snap` archives. It checks the gzip/tar envelope, exact allowed
+member paths, version-1 `meta.json`, `state.bin` size and `SHA256SUMS` bytes,
+and reports whether the optional `SHA256SUMS.sealed` marker is present. It does
+not decrypt sealed checksums, restore a Raft store, or convert the archive into
+a HeptaBao backup. A passing inspection is format/integrity evidence only and
+does not change the snapshot migration gate or authorize cutover.
+
 ## Implemented transfer boundary
 
 `qa/openbao-acceptance/migrate_kv2.py` copies explicitly selected KV-v2 objects

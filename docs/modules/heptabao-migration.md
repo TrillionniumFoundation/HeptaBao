@@ -42,6 +42,27 @@ On restart, an `IntentPersisted` object is not automatically converted to `Outco
 
 The durable journal is implemented but **outside the current server dependency closure**. The Python live KV tool `qa/openbao-acceptance/migrate_kv2.py` does not use this Rust journal; selecting its v2 HMAC API does not automatically authenticate that tool's checkpoint. There is no automatic migration entrypoint in the native server through this crate, and no general OpenBao migration is established merely by serializing all object classes.
 
+### OpenBao `raft.snap` inspection boundary
+
+`inspect_openbao_raft_snapshot` and
+`inspect_openbao_raft_snapshot_with_limits` validate the OpenBao 2.6.2
+inspection format: a bounded gzip stream containing a tar archive with exactly
+`meta.json`, `state.bin` and `SHA256SUMS`, plus an optional non-empty
+`SHA256SUMS.sealed` marker. The validator rejects duplicate or unknown paths,
+non-regular entries, unsafe resource sizes, malformed version-1 Raft metadata,
+state-size mismatches, checksum-list substitutions and non-zero trailing bytes.
+It computes the metadata/state SHA-256 digests and reports only bounded
+metadata and sizes.
+
+This is deliberately an **inspection-only** API. It never decrypts or verifies
+`SHA256SUMS.sealed`, opens a Raft store, writes extracted `state.bin`, restores
+the snapshot or converts it into a HeptaBao backup. A valid inspection therefore
+proves archive structure and byte integrity only; it does not prove barrier-key
+availability, application-state compatibility, migration completeness or
+cutover authority. The `HB-SURFACE-MIGRATION-SNAPSHOT` admission gate remains
+open until a separately reviewed source-format adapter and interruption-safe
+conversion protocol exist.
+
 ### Historical V1.4.7 lexical snapshot
 
 The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).

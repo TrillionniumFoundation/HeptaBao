@@ -15,6 +15,9 @@
 mod durable;
 pub use durable::*;
 
+mod openbao_snapshot;
+pub use openbao_snapshot::*;
+
 /// Compatibility marker for callers that used the removed in-memory model.
 ///
 /// This type is deliberately unconstructable. Keeping a deprecated symbol
