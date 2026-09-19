@@ -3096,6 +3096,56 @@ fn jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation() {
 }
 
 #[test]
+fn jwt_config_and_role_readback_preserve_openbao_aliases() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[53; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    configured_jwt_mount(
+        &mut state,
+        &root,
+        "workload",
+        pair.public_key().as_ref(),
+        "EdDSA",
+    );
+
+    let config = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/workload/config",
+        json!({}),
+        1001,
+    );
+    assert_eq!(
+        config.body["data"]["issuer"],
+        config.body["data"]["bound_issuer"]
+    );
+    assert_eq!(
+        config.body["data"]["bound_issuer"],
+        "https://issuer.example"
+    );
+
+    let role = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/workload/role/app",
+        json!({}),
+        1001,
+    );
+    assert_eq!(
+        role.body["data"]["policies"],
+        role.body["data"]["token_policies"]
+    );
+    assert_eq!(
+        role.body["data"]["token_policies"],
+        json!(["default", "reader"])
+    );
+}
+
+#[test]
 fn jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion() {
     use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair};
     let rng = SystemRandom::new();

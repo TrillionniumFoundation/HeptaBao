@@ -3602,6 +3602,10 @@ impl AuthState {
                         "jwks_url": config.remote.as_ref().and_then(|s| s.jwks_url.as_deref()),
                         "oidc_discovery_url": config.remote.as_ref().and_then(|s| s.oidc_discovery_url.as_deref()),
                         "issuer": config.issuer,
+                        // OpenBao clients use `bound_issuer` for the same
+                        // trust field. Keep both spellings on readback so a
+                        // config written through either alias round-trips.
+                        "bound_issuer": config.issuer,
                         "jwt_supported_algs": config.jwt_supported_algs,
                         "audiences": config.audiences,
                         "required_namespace": config.required_namespace,
@@ -3751,6 +3755,7 @@ impl AuthState {
                         "bound_subject": role.bound_subject,
                         "bound_audiences": role.bound_audiences,
                         "policies": role.policies,
+                        "token_policies": role.policies,
                         "token_ttl": role.token_ttl,
                         "token_max_ttl": role.token_max_ttl,
                         "token_num_uses": role.token_num_uses
