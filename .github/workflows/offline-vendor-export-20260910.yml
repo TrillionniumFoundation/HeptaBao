@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: heptabao-offline-vendor-export-20260910
+  group: heptabao-locked-source-packaging-macos
   cancel-in-progress: true
 
 env:
