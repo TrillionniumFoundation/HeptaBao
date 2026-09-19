@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **10**. Its source constant is
+The current Service state schema is **11**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -26,8 +26,12 @@ namespace sealing remains a separate, still-open surface. Schema 10 adds durable
 authentication-plugin mount bindings: the deployment plugin id is paired with
 server-owned policy and token-lifetime limits. The external plugin can return only
 an authentication decision plus a bounded alias; token authority and Identity
-binding remain inside the Service transaction. Separate seal metadata uses schema
-1; the application schema must never be inferred from that number.
+binding remain inside the Service transaction. Schema 11 adds structured direct
+AppRole renewal provenance. It binds a token to its issuing namespace, mount and
+role name so renewal re-reads live role and mount limits; token-API children do
+not inherit this issuer authority. Old binaries must reject this state rather
+than use display names or stale issuance limits. Separate seal metadata uses
+schema 1; the application schema must never be inferred from that number.
 
 ## Read admission and mutation promotion
 
@@ -42,18 +46,19 @@ binding remain inside the Service transaction. Separate seal metadata uses schem
 | 7 | LDAP group synchronization/group-to-policy mappings are admitted; Kubernetes secrets-engine mounts must be absent. |
 | 8 | Kubernetes TokenRequest secrets-engine state is admitted; the explicit namespace catalog must still be absent. |
 | 9 | Explicit namespace IDs/incarnations and custom metadata; authentication-plugin state must still be absent. |
-| 10 | Current format, adding durable server-owned authentication-plugin mount bindings. |
+| 10 | Durable server-owned authentication-plugin mount bindings; AppRole renewal provenance must be absent. |
+| 11 | Current format, adding structured direct AppRole renewal provenance. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
 schemas below 6 reject a nonzero database provider fence. Schemas below 7 reject LDAP group-search configuration or group-to-policy
-mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Fields omitted from
+mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Fields omitted from
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 10. An authenticated
+it. Initialization and committed mutations use schema 11. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -67,7 +72,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-10-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-11-capable rollback binary with compatible HA and provider formats.
 A schema-9 binary must fail closed once authentication-plugin mount state has been committed;
 A schema-8 binary must fail closed once explicit namespace catalog state has been committed;
 a schema-7 binary must fail closed once Kubernetes secrets-engine state has been
@@ -76,7 +81,7 @@ state has been committed. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-10 rolling upgrade receipt. Mixed-version cluster operation, source
+not a schema-11 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Restoring database provider records is also

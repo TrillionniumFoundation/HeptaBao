@@ -63,6 +63,12 @@ impl State {
                 "authentication plugin state requires schema 10",
             ));
         }
+        if self.schema < 11 && self.auth.has_approle_token_provenance() {
+            return Err(Response::error(
+                503,
+                "AppRole renewal provenance requires schema 11",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -83,7 +89,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

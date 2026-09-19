@@ -1043,6 +1043,254 @@ fn approle_explicit_max_ttl_clamps_periodic_and_finite_tokens() {
 }
 
 #[test]
+fn approle_renewal_reloads_live_role_mount_and_survives_restart() {
+    let (mut state, root_raw, root) = setup();
+    mount_auth(&mut state, &root, "team", "build", "approle");
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 90,
+            "secret_id_num_uses": 0,
+            "policies": ["default"]
+        }),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/build/role/service/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/build/login",
+            &json!({"role_id": role_id, "secret_id": secret_id}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let id = hash(&raw);
+    assert!(matches!(
+        state.tokens[&id].auth_provenance.as_ref(),
+        Some(TokenAuthProvenance::AppRole { role_name }) if role_name == "service"
+    ));
+
+    // A restart must preserve the issuer binding without ever persisting the
+    // bearer or allowing display_name to stand in for role identity.
+    let saved = serde_json::to_string(&state).unwrap();
+    assert!(!saved.contains(&raw));
+    assert!(saved.contains("auth_provenance"));
+    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
+    let restarted_root = restarted.authenticate(&root_raw, 105).unwrap();
+    put_policy(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "changed",
+        json!(r#"path "secret/data/*" { capabilities = ["read"] }"#),
+    );
+    // Change the role's policies and finite bounds after issuance. Renewal
+    // keeps the token's original policies, but uses current TTL/max settings.
+    call(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "POST",
+        "auth/build/role/service",
+        json!({"token_ttl": 10, "token_max_ttl": 20, "policies": ["changed"]}),
+        110,
+    );
+    let actor = restarted.authenticate(&raw, 110).unwrap();
+    let renewed = call(
+        &mut restarted,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 0}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 10);
+    assert_eq!(renewed.body["auth"]["policies"], json!(["default"]));
+
+    // A current role max is an absolute lifetime from issue, not a new window
+    // beginning at each renewal. The 20-second cap therefore leaves 10 seconds.
+    let actor = restarted.authenticate(&raw, 115).unwrap();
+    let renewed = call(
+        &mut restarted,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        115,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 5);
+
+    // Deleting the live role fences an already-issued token at renewal.
+    call(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "DELETE",
+        "auth/build/role/service",
+        json!({}),
+        116,
+    );
+    let actor = restarted.authenticate(&raw, 116).unwrap();
+    let denied = restarted.handle(
+        Some(&actor),
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        &json!({"increment": 1}),
+        116,
+    );
+    assert!(matches!(denied, Err(error) if error.status == 403));
+}
+
+#[test]
+fn approle_periodic_renewal_uses_current_mount_bound_and_children_are_ordinary() {
+    let (mut state, _, root) = setup();
+    mount_auth(&mut state, &root, "team", "build", "approle");
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "issuer",
+        json!(r#"path "auth/token/create*" { capabilities = ["update"] }"#),
+    );
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/periodic",
+        json!({"token_period": 50, "token_ttl": 5, "secret_id_num_uses": 0, "policies": ["issuer"]}),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/build/role/periodic/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/periodic/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/build/login",
+            &json!({"role_id": role_id, "secret_id": secret_id}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let actor = state.authenticate(&raw, 101).unwrap();
+    let child = token(
+        &mut state,
+        &actor,
+        "team",
+        json!({"policies": ["default"]}),
+        101,
+    );
+    assert!(state.tokens[&hash(&child)].auth_provenance.is_none());
+
+    // The role's period is 50, but tuning the issuing mount to 20 clamps the
+    // next renewal without changing the already-issued token's policies.
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "sys/auth/build/tune",
+        json!({"default_lease_ttl": 10, "max_lease_ttl": 20}),
+        105,
+    );
+    let actor = state.authenticate(&raw, 110).unwrap();
+    let renewed = call(
+        &mut state,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 20);
+
+    // The token API child follows ordinary token renewal and is not coupled to
+    // the AppRole's current period or role deletion.
+    let child_actor = state.authenticate(&child, 110).unwrap();
+    let child_renewed = call(
+        &mut state,
+        &child_actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 7}),
+        110,
+    );
+    assert_eq!(child_renewed.body["auth"]["lease_duration"], 7);
+}
+
+#[test]
 fn approle_destroy_and_policy_assignment_fail_closed() {
     let (mut state, _, root) = setup();
     call(

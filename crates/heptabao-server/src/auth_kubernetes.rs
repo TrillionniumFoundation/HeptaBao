@@ -649,6 +649,7 @@ impl AuthState {
             auth_origin_known: true,
             auth_cert_role: None,
             auth_cert_sha256: None,
+            auth_provenance: None,
         };
         let (id, token, mut issued) = Self::prepare_issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {

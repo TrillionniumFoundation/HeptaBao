@@ -885,6 +885,27 @@ struct Token {
     auth_cert_role: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     auth_cert_sha256: Option<String>,
+    /// Structured authentication origin for renewals that must consult the
+    /// live issuer configuration. This is intentionally set only on a direct
+    /// AppRole login; token-API children retain mount revocation provenance
+    /// but never inherit this issuer authority.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auth_provenance: Option<TokenAuthProvenance>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+enum TokenAuthProvenance {
+    AppRole { role_name: String },
+}
+
+#[derive(Clone, Copy)]
+struct AppRoleRenewalLimits {
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_period: u64,
+    token_explicit_max_ttl: u64,
+    mount_max_ttl: u64,
 }
 
 impl Drop for Token {
@@ -1354,6 +1375,15 @@ fn certificate_metadata_extensions(body: &Value, field: &str) -> Result<Vec<Stri
 }
 
 impl AuthState {
+    pub(crate) fn has_approle_token_provenance(&self) -> bool {
+        self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance.as_ref(),
+                Some(TokenAuthProvenance::AppRole { .. })
+            )
+        })
+    }
+
     pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
         let mut namespaces = BTreeSet::new();
         for token in self.tokens.values() {
@@ -1529,6 +1559,7 @@ impl AuthState {
             auth_origin_known: true,
             auth_cert_role: None,
             auth_cert_sha256: None,
+            auth_provenance: None,
         };
         let raw = random_id("hvs.")?;
         state.tokens.insert(hash(&raw), token);
@@ -3501,6 +3532,7 @@ impl AuthState {
                 auth_origin_known: true,
                 auth_cert_role: None,
                 auth_cert_sha256: None,
+                auth_provenance: None,
             };
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
@@ -3983,6 +4015,7 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"))?
                 };
                 self.active_token(&id, now, false)?;
+                let approle_limits = self.approle_renewal_limits(&id)?;
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
                     .map(|(mount, token_ttl, token_max_ttl)| {
@@ -4013,11 +4046,25 @@ impl AuthState {
                     parent_id = ancestor.parent.as_deref();
                 }
                 let increment = duration(body, "increment", DEFAULT_TTL)?;
+                let issued_at = self.tokens.get(&id).ok_or_else(denied)?.created_at;
                 let token = self.tokens.get_mut(&id).ok_or_else(denied)?;
                 if !token.renewable {
                     return Err(bad("token is not renewable"));
                 }
-                let ttl = if token.period > 0 {
+                let ttl = if let Some(limits) = approle_limits {
+                    // AppRole renewal follows the current role. A role may be
+                    // tuned from finite to periodic (or back) after issue;
+                    // periodic values are always bounded by the current
+                    // mount maximum, while finite defaults/maxima are read
+                    // from the live role and mount.
+                    if limits.token_period > 0 {
+                        limits.token_period.min(limits.mount_max_ttl)
+                    } else if increment == 0 {
+                        limits.token_ttl
+                    } else {
+                        increment.min(limits.token_max_ttl)
+                    }
+                } else if token.period > 0 {
                     token.period
                 } else if increment == 0 {
                     cert_role_limits.map_or(DEFAULT_TTL, |(token_ttl, _)| token_ttl)
@@ -4025,6 +4072,9 @@ impl AuthState {
                     increment
                         .min(cert_role_limits.map_or(MAX_TTL, |(_, token_max_ttl)| token_max_ttl))
                 };
+                if ttl == 0 {
+                    return Err(denied());
+                }
                 let proposed = checked_expiry(now, ttl)?;
                 let expires_at = token
                     .max_expires_at
@@ -4037,6 +4087,25 @@ impl AuthState {
                     .map(|(_, token_max_ttl)| checked_expiry(now, token_max_ttl))
                     .transpose()?;
                 let expires_at = cert_max_expiry
+                    .map(|max| expires_at.min(max))
+                    .unwrap_or(expires_at);
+                let approle_max_expiry = approle_limits
+                    .filter(|limits| limits.token_period == 0 || limits.token_explicit_max_ttl > 0)
+                    .map(|limits| {
+                        // A current role maximum can shorten a renewal, but
+                        // never extend the absolute maximum captured at issue.
+                        // The explicit-max field is intentionally not used to
+                        // replace token.max_expires_at; it can only add a
+                        // newly configured cap for an already-issued token.
+                        let max_ttl = if limits.token_explicit_max_ttl > 0 {
+                            limits.token_explicit_max_ttl
+                        } else {
+                            limits.token_max_ttl
+                        };
+                        checked_expiry(issued_at, max_ttl)
+                    })
+                    .transpose()?;
+                let expires_at = approle_max_expiry
                     .map(|max| expires_at.min(max))
                     .unwrap_or(expires_at);
                 if expires_at <= now {
@@ -4115,6 +4184,51 @@ impl AuthState {
             return Err(denied());
         }
         Ok(Some((mount.into(), role.token_ttl, role.token_max_ttl)))
+    }
+
+    /// Re-read the AppRole issuer at renewal time. The token's namespace and
+    /// mount are authoritative; the request namespace and display name are
+    /// deliberately ignored. This mirrors OpenBao's role lookup while
+    /// retaining the issue-time absolute cap already persisted on the token.
+    fn approle_renewal_limits(&self, id: &str) -> Result<Option<AppRoleRenewalLimits>, AuthError> {
+        let token = self.tokens.get(id).ok_or_else(denied)?;
+        let Some(TokenAuthProvenance::AppRole { role_name }) = token.auth_provenance.as_ref()
+        else {
+            return Ok(None);
+        };
+        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
+        let scope = AuthScope {
+            namespace: &token.namespace,
+            mount,
+        };
+        // A disabled/deleted mount or role must fail closed even when a token
+        // still happens to be present in an old snapshot.
+        let mounts = self.effective_auth_mounts(scope.namespace);
+        let mount_entry = mounts
+            .get(scope.mount)
+            .filter(|entry| entry.kind == "approle")
+            .ok_or_else(denied)?;
+        let role = self
+            .roles_at(scope)
+            .and_then(|roles| roles.get(role_name))
+            .ok_or_else(denied)?;
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
+        let mount_max_ttl = if mount_entry.max_lease_ttl == 0 {
+            MAX_TTL
+        } else {
+            mount_entry.max_lease_ttl
+        };
+        if mount_max_ttl == 0 || mount_max_ttl > MAX_TTL {
+            return Err(bad("invalid persisted auth mount TTL limits"));
+        }
+        Ok(Some(AppRoleRenewalLimits {
+            token_ttl,
+            token_max_ttl,
+            token_period: role.token_period,
+            token_explicit_max_ttl: role.token_explicit_max_ttl,
+            mount_max_ttl,
+        }))
     }
 
     fn create_token(
@@ -4241,6 +4355,10 @@ impl AuthState {
                 auth_origin_known: parent.root || parent.auth_origin_known,
                 auth_cert_role: parent.auth_cert_role.clone(),
                 auth_cert_sha256: parent.auth_cert_sha256.clone(),
+                // A token created through auth/token/create has its own
+                // authority. Do not let it masquerade as a direct AppRole
+                // login during later renewal.
+                auth_provenance: None,
             },
             now,
         )
@@ -4978,6 +5096,9 @@ impl AuthState {
             token.expires_at = token.expires_at.map(|expiry| expiry.min(explicit_max));
         }
         token.auth_mount = Some(mount.into());
+        token.auth_provenance = Some(TokenAuthProvenance::AppRole {
+            role_name: name.clone(),
+        });
         let mut issued = self.issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {
             mount: mount.into(),
@@ -5117,6 +5238,7 @@ fn login_token(
         auth_origin_known: true,
         auth_cert_role: None,
         auth_cert_sha256: None,
+        auth_provenance: None,
     })
 }
 fn token_info(token: &Token, now: u64) -> Value {

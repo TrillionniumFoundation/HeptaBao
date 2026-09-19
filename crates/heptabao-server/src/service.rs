@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 10;
+const CURRENT_STATE_SCHEMA: u32 = 11;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

@@ -272,7 +272,8 @@ secret ID is valid for one hour and one login. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
 lifetime or use count. `token_period` can be set up to the service maximum to
-issue periodic AppRole tokens; such tokens renew at the fixed period. A
+issue periodic AppRole tokens; such tokens renew at the current role period,
+clamped to the current mount maximum. A
 positive `token_explicit_max_ttl` adds a hard lifetime cap from login time for
 both periodic and finite tokens, and periodic renewal is clamped to the
 remaining cap. Zero preserves the uncapped periodic behavior. Both fields are
@@ -298,6 +299,16 @@ security-relevant request fields are rejected. JWT/OIDC, Kubernetes, LDAP and
 the bounded certificate profile each have runtime limits described below; none
 alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate
 limiter; this module has no distributed login-throttling authority.
+
+Direct AppRole login tokens persist structured issuer provenance containing the
+token namespace, mount and role name. Renewal re-reads that exact live role and
+mount, so deleting the role or mount denies renewal and current finite TTL/max
+settings take effect without changing the token's policies. An explicit maximum
+captured at issue remains an absolute issue-time cap even if the role is later
+expanded. Tokens created through `auth/token/create` deliberately do not inherit
+AppRole issuer provenance and therefore use ordinary token renewal semantics.
+This persisted field requires service state schema 11; older binaries reject it
+instead of silently dropping renewal authority.
 
 ## Authentication mount registry
 
