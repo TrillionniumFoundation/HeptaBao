@@ -236,7 +236,13 @@ denied. A role may additionally set bounded `allowed_names`,
 (`oid:pattern`) and `allowed_metadata_extensions` (OID strings). Selectors
 use the OpenBao-style case-sensitive `*` glob; `?` is literal. Certificate
 attributes and metadata are capped, malformed or duplicate SAN/extensions fail
-closed, and selected metadata is returned under the login response's `auth.metadata`.
+closed. For a parseable leaf, `auth.metadata` includes OpenBao-compatible
+`cert_name`, `common_name`, decimal `serial_number`, and any present
+`subject_key_id`/`authority_key_id` (colon-separated lowercase hex), followed by
+the selected custom extension values with dotted OIDs converted to dashes. A
+synthetic exact-digest role whose leaf is not parseable may still authenticate
+when it has no selectors, but receives no certificate metadata; selector roles
+fail closed when parsing is ambiguous.
 The verified chain is carried to a leader only inside the authenticated,
 bounded HA forwarding frame and is cleared with the request.
 
