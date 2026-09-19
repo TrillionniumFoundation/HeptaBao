@@ -1543,3 +1543,59 @@ fn mount_registry_revision_cas_remount_and_incarnation_are_persisted() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn kv_mount_lease_ttl_configuration_is_persisted_and_tunable() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/leased",
+        json!({
+            "type":"kv",
+            "options":{"version":"2"},
+            "config":{"default_lease_ttl":"2h","max_lease_ttl":7200}
+        }),
+        1,
+    )?;
+    let created = request(
+        &mut state,
+        "",
+        "GET",
+        "sys/mounts/leased/tune",
+        json!({}),
+        1,
+    )?;
+    assert_eq!(created.body["data"]["default_lease_ttl"], 7200);
+    assert_eq!(created.body["data"]["max_lease_ttl"], 7200);
+
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/leased/tune",
+        json!({"default_lease_ttl":"30m","max_lease_ttl":"1h"}),
+        2,
+    )?;
+    let tuned = request(&mut state, "", "GET", "sys/mounts/leased", json!({}), 2)?;
+    assert_eq!(tuned.body["data"]["config"]["default_lease_ttl"], 1800);
+    assert_eq!(tuned.body["data"]["config"]["max_lease_ttl"], 3600);
+
+    let before = serde_json::to_vec(&state)?;
+    assert_eq!(
+        request(
+            &mut state,
+            "",
+            "POST",
+            "sys/mounts/leased/tune",
+            json!({"default_lease_ttl":"2h","max_lease_ttl":"1h"}),
+            3,
+        )
+        .err()
+        .map(|error| error.status),
+        Some(400)
+    );
+    assert_eq!(before, serde_json::to_vec(&state)?);
+    Ok(())
+}

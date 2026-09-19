@@ -137,6 +137,10 @@ struct Mount {
     #[serde(default = "mount_revision_one")]
     incarnation: u64,
     description: String,
+    #[serde(default)]
+    default_lease_ttl: u64,
+    #[serde(default)]
+    max_lease_ttl: u64,
     backend: Backend,
 }
 
@@ -206,10 +210,17 @@ impl Mount {
     }
 
     fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
+        let (default_lease_ttl, max_lease_ttl) = match &backend {
+            Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
+            Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
+            _ => (0, 0),
+        };
         Self {
             revision: 1,
             incarnation: incarnation.max(1),
             description: description.into(),
+            default_lease_ttl,
+            max_lease_ttl,
             backend,
         }
     }
@@ -226,15 +237,10 @@ impl Mount {
             Backend::Ssh(_) => ("ssh", json!({})),
             Backend::Totp(_) => ("totp", json!({})),
         };
-        let (default_ttl, max_ttl) = match &self.backend {
-            Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
-            Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
-            _ => (0, 0),
-        };
         json!({"type":kind,"description":self.description,"options":options,
             "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
-            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}})
+            "config":{"default_lease_ttl":self.default_lease_ttl,"max_lease_ttl":self.max_lease_ttl,"force_no_cache":false}})
     }
 }
 
@@ -917,6 +923,8 @@ fn handle_mounts(
                 ],
             )?;
             engine.tune(&tune)?;
+            mount.default_lease_ttl = engine.default_ttl;
+            mount.max_lease_ttl = engine.max_ttl;
         } else if let Backend::Pki(engine) = &mut mount.backend {
             reject_unknown(
                 body,
@@ -928,8 +936,34 @@ fn handle_mounts(
                 ],
             )?;
             engine.tune(&tune)?;
+            mount.default_lease_ttl = engine.default_ttl;
+            mount.max_lease_ttl = engine.max_ttl;
         } else {
-            reject_unknown(body, &["description", "options", "cas_revision"])?;
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "options",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            let default = body
+                .get("default_lease_ttl")
+                .map(|value| mount_ttl(value, mount.default_lease_ttl))
+                .transpose()?
+                .unwrap_or(mount.default_lease_ttl);
+            let max = body
+                .get("max_lease_ttl")
+                .map(|value| mount_ttl(value, mount.max_lease_ttl))
+                .transpose()?
+                .unwrap_or(mount.max_lease_ttl);
+            if (default != 0 && max != 0 && default > max) || (max != 0 && default == 0) {
+                return Err(bad("mount lease TTL policy is outside bounds"));
+            }
+            mount.default_lease_ttl = default;
+            mount.max_lease_ttl = max;
         }
         if let Some(description) = tune.get("description") {
             mount.description = description
@@ -1026,18 +1060,6 @@ fn handle_mounts(
         if optional_bool(body, flag)?.unwrap_or(false) {
             return Err(error(501, "requested mount option is not implemented"));
         }
-    }
-    if !matches!(
-        body.get("type").and_then(Value::as_str),
-        Some("ssh" | "pki" | "plugin")
-    ) && body
-        .get("config")
-        .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
-    {
-        return Err(error(
-            501,
-            "nondefault mount lease configuration is not implemented",
-        ));
     }
     let kind = string(body, "type")?;
     let backend = match kind {
@@ -1154,10 +1176,28 @@ fn handle_mounts(
         .transpose()?
         .unwrap_or("");
     let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
-    state.mounts.insert(
-        name,
-        Mount::with_incarnation(backend, description, incarnation),
-    );
+    let mut mount = Mount::with_incarnation(backend, description, incarnation);
+    if !matches!(&mount.backend, Backend::Ssh(_) | Backend::Pki(_)) {
+        if let Some(config) = body.get("config") {
+            reject_unknown(config, &["default_lease_ttl", "max_lease_ttl", "plugin_id"])?;
+            let default = config
+                .get("default_lease_ttl")
+                .map(|value| mount_ttl(value, mount.default_lease_ttl))
+                .transpose()?
+                .unwrap_or(mount.default_lease_ttl);
+            let max = config
+                .get("max_lease_ttl")
+                .map(|value| mount_ttl(value, mount.max_lease_ttl))
+                .transpose()?
+                .unwrap_or(mount.max_lease_ttl);
+            if (default != 0 && max != 0 && default > max) || (max != 0 && default == 0) {
+                return Err(bad("mount lease TTL policy is outside bounds"));
+            }
+            mount.default_lease_ttl = default;
+            mount.max_lease_ttl = max;
+        }
+    }
+    state.mounts.insert(name, mount);
     Ok(empty(true))
 }
 
@@ -1217,6 +1257,15 @@ fn duration_seconds(value: &Value) -> Result<u64> {
         return Err(bad("invalid duration or duration exceeds ten years"));
     }
     Ok(total)
+}
+
+fn mount_ttl(value: &Value, default: u64) -> Result<u64> {
+    let ttl = match value {
+        Value::Number(number) => number.as_u64().ok_or_else(|| bad("invalid lease TTL"))?,
+        Value::String(_) => duration_seconds(value)?,
+        _ => return Err(bad("invalid lease TTL")),
+    };
+    Ok(if ttl == 0 { default } else { ttl })
 }
 
 #[cfg(test)]
