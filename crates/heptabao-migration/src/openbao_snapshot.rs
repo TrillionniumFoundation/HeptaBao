@@ -163,6 +163,13 @@ pub fn inspect_openbao_raft_snapshot_with_limits<R: Read>(
                         "duplicate state.bin entry".into(),
                     ));
                 }
+                let size = entry.header().size()?;
+                if size > limits.max_state_bytes {
+                    return Err(SnapshotInspectionError::LimitExceeded {
+                        resource: "state",
+                        limit: limits.max_state_bytes,
+                    });
+                }
                 let mut sink = DigestSink::new(limits.max_state_bytes, "state");
                 io::copy(&mut entry, &mut sink)?;
                 state = Some(sink.finish());
