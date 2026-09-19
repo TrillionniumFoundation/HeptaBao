@@ -981,6 +981,10 @@ struct Role {
     token_max_ttl: u64,
     #[serde(default, skip_serializing_if = "is_zero")]
     token_period: u64,
+    /// A hard lifetime cap for tokens issued by this role.  Zero preserves
+    /// the legacy behavior and means that the role's token_max_ttl is used.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
     token_num_uses: u64,
     secret_id_ttl: u64,
     secret_id_num_uses: u64,
@@ -4701,6 +4705,8 @@ impl AuthState {
                 return Ok(response(
                     json!({"bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
+                    "period": role.token_period,
+                    "token_explicit_max_ttl": role.token_explicit_max_ttl,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
                     false,
                 ));
@@ -4721,6 +4727,7 @@ impl AuthState {
                     "token_ttl",
                     "token_max_ttl",
                     "token_period",
+                    "token_explicit_max_ttl",
                     "token_num_uses",
                     "secret_id_ttl",
                     "secret_id_num_uses",
@@ -4735,6 +4742,7 @@ impl AuthState {
                 token_ttl: mount_default_ttl,
                 token_max_ttl: mount_max_ttl,
                 token_period: 0,
+                token_explicit_max_ttl: 0,
                 token_num_uses: 0,
                 secret_id_ttl: DEFAULT_TTL,
                 secret_id_num_uses: 1,
@@ -4758,6 +4766,11 @@ impl AuthState {
             role.token_period = duration(body, "token_period", role.token_period)?;
             if role.token_period > MAX_TTL {
                 return Err(bad("token_period exceeds maximum TTL"));
+            }
+            role.token_explicit_max_ttl =
+                duration(body, "token_explicit_max_ttl", role.token_explicit_max_ttl)?;
+            if role.token_explicit_max_ttl > MAX_TTL {
+                return Err(bad("token_explicit_max_ttl exceeds maximum TTL"));
             }
             role.token_num_uses = number(body, "token_num_uses", role.token_num_uses)?;
             role.secret_id_ttl = duration(body, "secret_id_ttl", role.secret_id_ttl)?;
@@ -4940,8 +4953,29 @@ impl AuthState {
         )?;
         if role.token_period > 0 {
             token.period = role.token_period;
-            token.expires_at = Some(checked_expiry(now, role.token_period)?);
+            let period_expiry = checked_expiry(now, role.token_period)?;
+            // Periodic AppRole tokens renew by their period indefinitely unless
+            // an explicit hard maximum is configured.  token_max_ttl is the
+            // finite-token ceiling and must not silently turn periodic tokens
+            // into finite leases.
             token.max_expires_at = None;
+            if let Some(explicit_max) = (role.token_explicit_max_ttl > 0)
+                .then(|| checked_expiry(now, role.token_explicit_max_ttl))
+                .transpose()?
+            {
+                token.max_expires_at = Some(explicit_max);
+            }
+            token.expires_at =
+                Some(period_expiry.min(token.max_expires_at.unwrap_or(period_expiry)));
+        } else if role.token_explicit_max_ttl > 0 {
+            let explicit_max = checked_expiry(now, role.token_explicit_max_ttl)?;
+            token.max_expires_at = Some(
+                token
+                    .max_expires_at
+                    .map(|max| max.min(explicit_max))
+                    .unwrap_or(explicit_max),
+            );
+            token.expires_at = token.expires_at.map(|expiry| expiry.min(explicit_max));
         }
         token.auth_mount = Some(mount.into());
         let mut issued = self.issue(token, now)?;

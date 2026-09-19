@@ -272,11 +272,16 @@ secret ID is valid for one hour and one login. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
 lifetime or use count. `token_period` can be set up to the service maximum to
-issue periodic AppRole tokens; such tokens renew at the fixed period and do not
-carry a separate maximum expiry. Secret IDs can be listed by accessor, looked
-up, or destroyed by bearer or accessor. Role IDs can be changed, but duplicate
-role IDs within a namespace and mount are rejected. No secret-ID bearer can be
-recovered after its initial successful creation response.
+issue periodic AppRole tokens; such tokens renew at the fixed period. A
+positive `token_explicit_max_ttl` adds a hard lifetime cap from login time for
+both periodic and finite tokens, and periodic renewal is clamped to the
+remaining cap. Zero preserves the uncapped periodic behavior. Both fields are
+bounded by the 32-day service maximum; the role read response exposes
+`token_explicit_max_ttl` and the OpenBao-compatible `period` alias alongside
+`token_period`. Secret IDs can be listed by accessor, looked up, or destroyed
+by bearer or accessor. Role IDs can be changed, but duplicate role IDs within a
+namespace and mount are rejected. No secret-ID bearer can be recovered after
+its initial successful creation response.
 
 Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
 operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`

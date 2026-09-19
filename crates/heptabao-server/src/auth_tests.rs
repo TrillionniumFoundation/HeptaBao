@@ -893,6 +893,156 @@ fn approle_periodic_role_issues_fixed_period_tokens() {
 }
 
 #[test]
+fn approle_explicit_max_ttl_clamps_periodic_and_finite_tokens() {
+    let (mut state, _, root) = setup();
+    let configured = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/capped",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 60,
+            "token_period": 15,
+            "token_explicit_max_ttl": 20,
+            "secret_id_num_uses": 0
+        }),
+        100,
+    );
+    assert_eq!(configured.status, 204);
+    let role = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/capped",
+        json!({}),
+        100,
+    );
+    assert_eq!(role.body["data"]["token_explicit_max_ttl"], 20);
+    assert_eq!(role.body["data"]["period"], 15);
+    let role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/capped/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/capped/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": role_id, "secret_id": secret}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.body["auth"]["lease_duration"], 15);
+    let token = login.body["auth"]["client_token"].as_str().unwrap();
+
+    let actor = state.authenticate(token, 110).unwrap();
+    let renewed = call(
+        &mut state,
+        &actor,
+        "",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 10);
+    assert!(state.authenticate(token, 120).is_err());
+
+    let finite = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/finite-capped",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 60,
+            "token_explicit_max_ttl": 20,
+            "secret_id_num_uses": 0
+        }),
+        100,
+    );
+    assert_eq!(finite.status, 204);
+    let finite_role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/finite-capped/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let finite_secret = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/finite-capped/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let finite_login = state
+        .handle(
+            None,
+            "",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": finite_role_id, "secret_id": finite_secret}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(finite_login.body["auth"]["lease_duration"], 20);
+    let finite_token = finite_login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(finite_token, 120).is_err());
+
+    let rejected = state.handle(
+        Some(&root),
+        "",
+        "POST",
+        "auth/approle/role/too-large",
+        &json!({"token_explicit_max_ttl": 32 * 24 * 3600 + 1}),
+        100,
+    );
+    assert_eq!(rejected.err().unwrap().status, 400);
+}
+
+#[test]
 fn approle_destroy_and_policy_assignment_fail_closed() {
     let (mut state, _, root) = setup();
     call(
