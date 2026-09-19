@@ -625,9 +625,13 @@ fn storage_request_id(
     phase: &str,
     intent: &DurablePluginIntent,
 ) -> String {
+    // One logical prefix revoke expands into one durable mutation per lease.
+    // Bind the resource into the retained request identity so those mutations
+    // cannot collide when the caller supplies one outer request id.
     format!(
-        "{}:{}:{}:{}",
+        "{}:{}:{}:{}:{}",
         context.request_id.as_str(),
+        intent.lease_id.as_str(),
         phase,
         intent.operation.as_str(),
         intent.generation
