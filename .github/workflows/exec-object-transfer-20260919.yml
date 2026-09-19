@@ -21,17 +21,21 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PYTHON'
-          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          import base64, hashlib, json, lzma, os, pathlib, subprocess, urllib.request
           BASE = '676a3e68af340b2cb7439dbc99c69dee550e5db9'
           BASE_TREE = 'cc714bf471a270caf8b9a4e26047c4caae11bb34'
-          TREE = '17882b27a3cad871235540b34c5ccd0a33314db1'
-          PATCH_HASH = '59c9873e50ae2009ce3d36c3f667f00825e211dffd36a68c4fd26b9500537d9c'
-          PATCH_BLOB = '8c6e4edb2252404b78a856bd99f7dec85bd5d16d'
+          TREE = '5a8f2744cc803994f946dfab637119c1c3e2eed7'
+          PATCH_HASH = '9555aba88ecdf7794a26317ad0612361b0ab42e9836b81783659cd01d56fda65'
+          PARTS = [('7a433add69ca4ca9f2ef24dd087508c5b29ef98c', 7000),
+                   ('94f267f6468d29a00ed281bc796d265baab1cb90', 7000),
+                   ('563847755eef8f5b8788d00dd7980c3f9a26199c', 6876)]
           assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/HeptaBao'
           assert os.environ['GITHUB_REF'] == 'refs/heads/exec/heptabao-object-transfer-20260919'
           def api(endpoint, data=None):
-              assert endpoint in ('git/blobs', 'git/trees', 'git/commits', 'git/blobs/' + PATCH_BLOB)
-              assert (data is None) == endpoint.endswith(PATCH_BLOB)
+              if data is None:
+                  assert endpoint in {'git/blobs/' + sha for sha, _ in PARTS}
+              else:
+                  assert endpoint in ('git/blobs', 'git/trees')
               request = urllib.request.Request(
                   'https://api.github.com/repos/TrillionniumFoundation/HeptaBao/' + endpoint,
                   data=None if data is None else json.dumps(data).encode(),
@@ -42,13 +46,20 @@ jobs:
                            'Content-Type': 'application/json'})
               with urllib.request.urlopen(request, timeout=60) as response:
                   return json.load(response)
-          transport = api('git/blobs/' + PATCH_BLOB)
-          assert transport['sha'] == PATCH_BLOB and transport['encoding'] == 'base64'
-          compressed = base64.b64decode(''.join(transport['content'].split()), validate=True)
-          assert len(compressed) == 14309
-          assert hashlib.sha1(b'blob ' + str(len(compressed)).encode() + b'\0' + compressed).hexdigest() == PATCH_BLOB
-          patch = gzip.decompress(compressed)
-          assert len(patch) == 55588 and hashlib.sha256(patch).hexdigest() == PATCH_HASH
+          compressed = bytearray()
+          for sha, size in PARTS:
+              transport = api('git/blobs/' + sha)
+              assert transport['sha'] == sha and transport['encoding'] == 'base64'
+              raw = base64.b64decode(''.join(transport['content'].split()), validate=True)
+              assert len(raw) == size
+              assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == sha
+              compressed.extend(raw)
+          assert len(compressed) == 20876
+          assert hashlib.sha256(compressed).hexdigest() == '6f1abc14ace10b09871dab85e475b15bfb715be3f6ca518ca85f4839498cff08'
+          decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=128 * 1024 * 1024)
+          patch = decoder.decompress(compressed, max_length=87870)
+          assert decoder.eof and not decoder.unused_data
+          assert len(patch) == 87869 and hashlib.sha256(patch).hexdigest() == PATCH_HASH
           def git(*args, input=None):
               return subprocess.check_output(['git', *args], input=input).decode().strip()
           git('checkout', '--detach', BASE)
@@ -57,10 +68,11 @@ jobs:
           git('apply', '--index', '--whitespace=error', '-', input=patch)
           assert git('write-tree') == TREE
           files = git('diff', '--cached', '--name-only').splitlines()
-          assert len(files) == 22
+          assert len(files) == 31
           assert all(p.startswith(('crates/', 'docs/', 'planning/', 'qa/', 'tests/')) for p in files)
           entries = []
           for path in files:
+              assert '..' not in pathlib.PurePosixPath(path).parts
               meta = git('ls-files', '-s', '--', path).split()
               assert len(meta) >= 4 and meta[0] in ('100644', '100755') and meta[2] == '0'
               raw = pathlib.Path(path).read_bytes()
@@ -70,13 +82,9 @@ jobs:
               entries.append({'path': path, 'mode': meta[0], 'type': 'blob', 'sha': blob['sha']})
           tree = api('git/trees', {'base_tree': BASE_TREE, 'tree': entries})
           assert tree['sha'] == TREE
-          commit = api('git/commits', {
-              'message': 'fix: repair namespace incarnation and reduce HA state observation amplification\n\nBind the reviewed product tree to the existing PR108 head. Fix V4 migration preflight, current documentation drift, native compilation and strict lint. Keep ReadIndex and authenticated manifest checks; retain the failing leadership-failover qualification rather than declaring closure. This object-transfer job executes no candidate code and updates no product ref. No production, full compatibility, migration or release authority is asserted.',
-              'tree': TREE, 'parents': [BASE]})
-          assert commit['tree']['sha'] == TREE and [p['sha'] for p in commit['parents']] == [BASE]
-          result = {'commit': commit['sha'], 'tree': TREE, 'parent': BASE,
-                    'patch_sha256': PATCH_HASH, 'changed_files': len(files),
-                    'product_ref_updated': False, 'candidate_executed': False, 'qualification': False}
+          result = {'tree': TREE, 'base': BASE, 'patch_sha256': PATCH_HASH,
+                    'changed_files': len(files), 'product_ref_updated': False,
+                    'candidate_executed': False, 'qualification': False}
           print(json.dumps(result, sort_keys=True))
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
               out.write('Git objects only; no reference update or qualification.\n\n```json\n' + json.dumps(result, indent=2) + '\n```\n')
