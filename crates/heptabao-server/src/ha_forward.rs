@@ -1,3 +1,4 @@
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
@@ -13,10 +14,14 @@ const MAX_NAMESPACE_BYTES: usize = 512;
 const MAX_TOKEN_BYTES: usize = 16 * 1024;
 const MAX_CLIENT_CERT_CHAIN: usize = 8;
 const MAX_CLIENT_CERT_BYTES: usize = 64 * 1024;
+const MAX_CLUSTER_ID_BYTES: usize = 128;
+#[cfg(test)]
+const TEST_CLUSTER_ID: &str = "test-cluster";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardRequest {
+    pub cluster_id: String,
     pub source: u64,
     pub target: u64,
     pub method: String,
@@ -57,6 +62,7 @@ impl Drop for ForwardRequest {
 
 #[derive(Serialize)]
 struct ForwardRequestRef<'a> {
+    cluster_id: &'a str,
     source: u64,
     target: u64,
     method: &'a str,
@@ -73,6 +79,7 @@ struct ForwardRequestRef<'a> {
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardResponse {
+    pub cluster_id: String,
     pub source: u64,
     pub target: u64,
     pub status: u16,
@@ -116,6 +123,7 @@ pub(crate) fn encode_request(
     )
 }
 
+#[cfg(test)]
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn encode_request_with_client_certificates(
     source: u64,
@@ -127,12 +135,39 @@ pub(crate) fn encode_request_with_client_certificates(
     body: &Value,
     client_certificates: Option<&[Vec<u8>]>,
 ) -> Result<Vec<u8>, String> {
+    encode_request_for_cluster(
+        TEST_CLUSTER_ID,
+        source,
+        target,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        client_certificates,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_request_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
     validate_direction(source, target)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
     encode(
         REQUEST_MAGIC,
         &ForwardRequestRef {
+            cluster_id,
             source,
             target,
             method,
@@ -161,6 +196,7 @@ pub(crate) fn encode_wrapped_request(
     )
 }
 
+#[cfg(test)]
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn encode_wrapped_request_with_client_certificates(
     direction: (u64, u64),
@@ -172,7 +208,33 @@ pub(crate) fn encode_wrapped_request_with_client_certificates(
     ttl: u64,
     client_certificates: Option<&[Vec<u8>]>,
 ) -> Result<Vec<u8>, String> {
+    encode_wrapped_request_for_cluster(
+        TEST_CLUSTER_ID,
+        direction,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        ttl,
+        client_certificates,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_wrapped_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    ttl: u64,
+    client_certificates: Option<&[Vec<u8>]>,
+) -> Result<Vec<u8>, String> {
     let (source, target) = direction;
+    validate_cluster_id(cluster_id)?;
     validate_direction(source, target)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
@@ -182,6 +244,7 @@ pub(crate) fn encode_wrapped_request_with_client_certificates(
     encode(
         WRAPPED_REQUEST_MAGIC,
         &ForwardRequestRef {
+            cluster_id,
             source,
             target,
             method,
@@ -211,6 +274,7 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         return Err("HA wrapping version or TTL mismatch".into());
     }
     validate_direction(request.source, request.target)?;
+    validate_cluster_id(&request.cluster_id)?;
     validate_request_fields(
         &request.method,
         &request.path,
@@ -221,12 +285,36 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     Ok(request)
 }
 
+pub(crate) fn decode_request_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardRequest, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let request = decode_request(encoded)?;
+    if request.cluster_id != expected_cluster_id {
+        return Err("HA forward cluster identity is invalid".into());
+    }
+    Ok(request)
+}
+
+#[cfg(test)]
 pub(crate) fn encode_response(
     source: u64,
     target: u64,
     status: u16,
     body: &Value,
 ) -> Result<Vec<u8>, String> {
+    encode_response_for_cluster(TEST_CLUSTER_ID, source, target, status, body)
+}
+
+pub(crate) fn encode_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    status: u16,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
     validate_direction(source, target)?;
     if !(100..=599).contains(&status) {
         return Err("HA forward response status is invalid".into());
@@ -234,6 +322,7 @@ pub(crate) fn encode_response(
     encode(
         RESPONSE_MAGIC,
         &ForwardResponse {
+            cluster_id: cluster_id.to_owned(),
             source,
             target,
             status,
@@ -245,8 +334,21 @@ pub(crate) fn encode_response(
 pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
     let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
     validate_direction(response.source, response.target)?;
+    validate_cluster_id(&response.cluster_id)?;
     if !(100..=599).contains(&response.status) {
         return Err("HA forward response status is invalid".into());
+    }
+    Ok(response)
+}
+
+pub(crate) fn decode_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let response = decode_response(encoded)?;
+    if response.cluster_id != expected_cluster_id {
+        return Err("HA forward response cluster identity is invalid".into());
     }
     Ok(response)
 }
@@ -256,6 +358,26 @@ fn validate_direction(source: u64, target: u64) -> Result<(), String> {
         return Err("HA forward direction is invalid".into());
     }
     Ok(())
+}
+
+fn validate_cluster_id(cluster_id: &str) -> Result<(), String> {
+    if cluster_id.is_empty() || cluster_id.len() > MAX_CLUSTER_ID_BYTES {
+        return Err("HA cluster identity is outside bounds".into());
+    }
+    if cluster_id
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+    {
+        return Ok(());
+    }
+    let decoded = STANDARD
+        .decode(cluster_id)
+        .map_err(|_| "HA cluster identity is invalid")?;
+    if decoded.len() == 16 && STANDARD.encode(decoded) == cluster_id {
+        Ok(())
+    } else {
+        Err("HA cluster identity is invalid".into())
+    }
 }
 
 fn validate_request_fields(
@@ -354,12 +476,36 @@ mod tests {
         assert_eq!(request.source, 1);
         assert_eq!(request.target, 2);
         assert_eq!(request.method, "POST");
+        assert_eq!(request.cluster_id, TEST_CLUSTER_ID);
 
         let response = encode_response(2, 1, 200, &json!({"data":{"version":1}}))?;
         let response = decode_response(&response)?;
         assert_eq!(response.source, 2);
         assert_eq!(response.target, 1);
         assert_eq!(response.status, 200);
+        assert_eq!(response.cluster_id, TEST_CLUSTER_ID);
+        Ok(())
+    }
+
+    #[test]
+    fn cross_cluster_forward_frames_are_rejected() -> Result<(), String> {
+        let request = encode_request_for_cluster(
+            "cluster-a",
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "token",
+            &json!({}),
+            None,
+        )?;
+        assert!(decode_request_for_cluster(&request, "cluster-a").is_ok());
+        assert!(decode_request_for_cluster(&request, "cluster-b").is_err());
+
+        let response = encode_response_for_cluster("cluster-a", 2, 1, 200, &json!({}))?;
+        assert!(decode_response_for_cluster(&response, "cluster-a").is_ok());
+        assert!(decode_response_for_cluster(&response, "cluster-b").is_err());
         Ok(())
     }
 

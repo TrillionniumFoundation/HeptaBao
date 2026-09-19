@@ -9,6 +9,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
     MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, TlsPeerEndpoint,
@@ -30,11 +31,11 @@ use zeroize::Zeroizing;
 use crate::{
     Response,
     ha_forward::{
-        ForwardRequest, decode_request as decode_forward_request,
-        decode_response as decode_forward_response,
-        encode_request_with_client_certificates as encode_forward_request_with_client_certificates,
-        encode_response as encode_forward_response,
-        encode_wrapped_request_with_client_certificates, is_forward_request,
+        ForwardRequest, decode_request_for_cluster as decode_forward_request,
+        decode_response_for_cluster as decode_forward_response,
+        encode_request_for_cluster as encode_forward_request,
+        encode_response_for_cluster as encode_forward_response, encode_wrapped_request_for_cluster,
+        is_forward_request,
     },
     ha_state::{
         ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
@@ -45,6 +46,8 @@ use crate::{
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
 const RAFT_FRAME_RESPONSE: u8 = 2;
+const RAFT_FRAME_HEADER_BYTES: usize = 29;
+const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_RAFT_FRAME_BYTES: usize = 896 * 1024;
 const MAX_TLS_FILE_BYTES: usize = 1024 * 1024;
 const REPLICATION_KEY_BYTES: usize = 32;
@@ -105,6 +108,7 @@ struct ParsedPeer {
 #[derive(Clone)]
 struct MutualTlsRaftRpc {
     local_id: u64,
+    cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
     transport: MutualTlsPeerTransport,
     inflight: Arc<Semaphore>,
@@ -115,6 +119,7 @@ impl fmt::Debug for MutualTlsRaftRpc {
         formatter
             .debug_struct("MutualTlsRaftRpc")
             .field("local_id", &self.local_id)
+            .field("cluster_id", &self.cluster_id)
             .field("peers", &self.peers.keys().collect::<Vec<_>>())
             .field("transport", &"[MUTUAL_TLS]")
             .finish()
@@ -131,6 +136,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         timeout: Duration,
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         let local_id = self.local_id;
+        let cluster_id = self.cluster_id.clone();
         let target_node = self.peers.get(&target).cloned();
         let transport = self.transport.clone();
         let inflight = self.inflight.clone();
@@ -140,6 +146,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
             }
             let target_node = target_node.ok_or(RemoteRaftError::InvalidTopology)?;
             let request = encode_raft_frame(RaftWireFrame {
+                cluster_id: cluster_id.clone(),
                 role: RAFT_FRAME_REQUEST,
                 source,
                 target,
@@ -160,7 +167,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 .await
                 .map_err(|_| RemoteRaftError::Transport("peer RPC timed out".into()))?
                 .map_err(|error| RemoteRaftError::Transport(error.to_string()))??;
-            let response = decode_raft_frame(&response)?;
+            let response = decode_raft_frame_for_cluster(&response, &cluster_id)?;
             if response.role != RAFT_FRAME_RESPONSE
                 || response.source != target
                 || response.target != source
@@ -175,6 +182,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
 
 #[derive(Debug)]
 struct RaftWireFrame {
+    cluster_id: String,
     role: u8,
     source: u64,
     target: u64,
@@ -268,6 +276,7 @@ impl HaProcess {
         let peers = Arc::new(nodes_by_id);
         let rpc = Arc::new(MutualTlsRaftRpc {
             local_id: config.node_id,
+            cluster_id: config.cluster_id.clone(),
             peers: peers.clone(),
             transport: transport.clone(),
             inflight: Arc::new(Semaphore::new(config.max_inflight)),
@@ -316,6 +325,7 @@ impl HaProcess {
             workers: Vec::new(),
         };
         let local_id = config.node_id;
+        let cluster_id = config.cluster_id.clone();
         for worker_id in 0..config.max_inflight.clamp(4, 16) {
             let listener_stop = stop.clone();
             let listener = listener.clone();
@@ -326,6 +336,7 @@ impl HaProcess {
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
             let forward_slots = forward_slots.clone();
+            let listener_cluster_id = cluster_id.clone();
             let worker = thread::Builder::new()
                 .name(format!("heptabao-raft-peer-{local_id}-{worker_id}"))
                 .spawn(move || {
@@ -343,8 +354,11 @@ impl HaProcess {
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
                                 if is_forward_request(&frame) {
-                                    let request = decode_forward_request(&frame)
-                                        .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                    let request =
+                                        decode_forward_request(&frame, &listener_cluster_id)
+                                            .map_err(|_| {
+                                                heptabao_ha_service::HaError::InvalidFrame
+                                            })?;
                                     if request.source != source || request.target != local_id {
                                         return Err(
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
@@ -363,6 +377,7 @@ impl HaProcess {
                                         .ok_or(heptabao_ha_service::HaError::NotLeader)?;
                                     let response = handler(request);
                                     return encode_forward_response(
+                                        &listener_cluster_id,
                                         local_id,
                                         source,
                                         response.status,
@@ -370,8 +385,9 @@ impl HaProcess {
                                     )
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
                                 }
-                                let request = decode_raft_frame(&frame)
-                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                let request =
+                                    decode_raft_frame_for_cluster(&frame, &listener_cluster_id)
+                                        .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                                 if request.role != RAFT_FRAME_REQUEST
                                     || request.source != source
                                     || request.target != local_id
@@ -384,6 +400,7 @@ impl HaProcess {
                                     .block_on(service.handle(source, request.kind, request.payload))
                                     .map_err(map_remote_service_error)?;
                                 encode_raft_frame(RaftWireFrame {
+                                    cluster_id: listener_cluster_id.clone(),
                                     role: RAFT_FRAME_RESPONSE,
                                     source: local_id,
                                     target: source,
@@ -484,7 +501,8 @@ impl HaProcess {
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let request = Zeroizing::new(match wrap_ttl_seconds {
-            Some(ttl) => encode_wrapped_request_with_client_certificates(
+            Some(ttl) => encode_wrapped_request_for_cluster(
+                &self.cluster_id,
                 (local, leader),
                 method,
                 path,
@@ -494,7 +512,8 @@ impl HaProcess {
                 ttl,
                 client_certificates,
             )?,
-            None => encode_forward_request_with_client_certificates(
+            None => encode_forward_request(
+                &self.cluster_id,
                 local,
                 leader,
                 method,
@@ -510,7 +529,7 @@ impl HaProcess {
                 .exchange(target, &request)
                 .map_err(|error| error.to_string())?,
         );
-        let mut response = decode_forward_response(&response)?;
+        let mut response = decode_forward_response(&response, &self.cluster_id)?;
         if response.source != leader || response.target != local {
             return Err("HA forward response direction is invalid".into());
         }
@@ -891,6 +910,9 @@ impl Drop for HaProcess {
 }
 
 fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
+    if !valid_cluster_id(&config.cluster_id) {
+        return Err("invalid HA cluster identity".into());
+    }
     if config.initial_voters.as_ref().is_some_and(|v| {
         v.len() < 3
             || v.len() > 9
@@ -1079,7 +1101,8 @@ fn durable_state_exists(root: &Path) -> Result<bool, String> {
 }
 
 fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
-    if frame.source == 0
+    if !valid_cluster_id(&frame.cluster_id)
+        || frame.source == 0
         || frame.target == 0
         || frame.source == frame.target
         || !matches!(frame.role, RAFT_FRAME_REQUEST | RAFT_FRAME_RESPONSE)
@@ -1087,15 +1110,20 @@ fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
     {
         return Err(RemoteRaftError::InvalidRpc);
     }
+    let cluster_length =
+        u16::try_from(frame.cluster_id.len()).map_err(|_| RemoteRaftError::InvalidRpc)?;
     let payload_length =
         u32::try_from(frame.payload.len()).map_err(|_| RemoteRaftError::InvalidRpc)?;
-    let mut encoded = Vec::with_capacity(27 + frame.payload.len());
+    let mut encoded =
+        Vec::with_capacity(RAFT_FRAME_HEADER_BYTES + frame.cluster_id.len() + frame.payload.len());
     encoded.extend_from_slice(RAFT_FRAME_MAGIC);
     encoded.push(frame.role);
     encoded.extend_from_slice(&frame.source.to_be_bytes());
     encoded.extend_from_slice(&frame.target.to_be_bytes());
     encoded.push(kind_tag(frame.kind));
+    encoded.extend_from_slice(&cluster_length.to_be_bytes());
     encoded.extend_from_slice(&payload_length.to_be_bytes());
+    encoded.extend_from_slice(frame.cluster_id.as_bytes());
     encoded.extend_from_slice(&frame.payload);
     if encoded.len() > MAX_RAFT_FRAME_BYTES {
         return Err(RemoteRaftError::InvalidRpc);
@@ -1104,7 +1132,7 @@ fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
 }
 
 fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
-    if encoded.len() < 27
+    if encoded.len() < RAFT_FRAME_HEADER_BYTES
         || encoded.len() > MAX_RAFT_FRAME_BYTES
         || &encoded[..5] != RAFT_FRAME_MAGIC
     {
@@ -1125,22 +1153,75 @@ fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
             .map_err(|_| RemoteRaftError::InvalidRpc)?,
     );
     let kind = decode_kind(encoded[22])?;
-    let length = u32::from_be_bytes(
-        encoded[23..27]
+    let cluster_length = u16::from_be_bytes(
+        encoded[23..25]
             .try_into()
             .map_err(|_| RemoteRaftError::InvalidRpc)?,
     ) as usize;
-    if source == 0 || target == 0 || source == target || length == 0 || encoded.len() != 27 + length
+    let length = u32::from_be_bytes(
+        encoded[25..29]
+            .try_into()
+            .map_err(|_| RemoteRaftError::InvalidRpc)?,
+    ) as usize;
+    let payload_start = RAFT_FRAME_HEADER_BYTES
+        .checked_add(cluster_length)
+        .ok_or(RemoteRaftError::InvalidRpc)?;
+    if source == 0
+        || target == 0
+        || source == target
+        || cluster_length == 0
+        || cluster_length > MAX_CLUSTER_ID_BYTES
+        || length == 0
+        || encoded.len()
+            != payload_start
+                .checked_add(length)
+                .ok_or(RemoteRaftError::InvalidRpc)?
     {
         return Err(RemoteRaftError::InvalidRpc);
     }
+    let cluster_id = std::str::from_utf8(&encoded[RAFT_FRAME_HEADER_BYTES..payload_start])
+        .map_err(|_| RemoteRaftError::InvalidRpc)?
+        .to_owned();
+    if !valid_cluster_id(&cluster_id) {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
     Ok(RaftWireFrame {
+        cluster_id,
         role,
         source,
         target,
         kind,
-        payload: encoded[27..].to_vec(),
+        payload: encoded[payload_start..].to_vec(),
     })
+}
+
+fn valid_cluster_id(value: &str) -> bool {
+    if value.is_empty() || value.len() > MAX_CLUSTER_ID_BYTES {
+        return false;
+    }
+    if value
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+    {
+        return true;
+    }
+    STANDARD
+        .decode(value)
+        .is_ok_and(|bytes| bytes.len() == 16 && STANDARD.encode(bytes) == value)
+}
+
+fn decode_raft_frame_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<RaftWireFrame, RemoteRaftError> {
+    if !valid_cluster_id(expected_cluster_id) {
+        return Err(RemoteRaftError::InvalidTopology);
+    }
+    let frame = decode_raft_frame(encoded)?;
+    if frame.cluster_id != expected_cluster_id {
+        return Err(RemoteRaftError::InvalidTopology);
+    }
+    Ok(frame)
 }
 
 fn kind_tag(kind: RaftRpcKind) -> u8 {
@@ -1329,6 +1410,7 @@ mod tests {
     fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>>
     {
         let encoded = encode_raft_frame(RaftWireFrame {
+            cluster_id: "cluster-a".into(),
             role: RAFT_FRAME_REQUEST,
             source: 1,
             target: 2,
@@ -1336,6 +1418,7 @@ mod tests {
             payload: b"bounded-raft-rpc".to_vec(),
         })?;
         let decoded = decode_raft_frame(&encoded)?;
+        assert_eq!(decoded.cluster_id, "cluster-a");
         assert_eq!(decoded.role, RAFT_FRAME_REQUEST);
         assert_eq!(decoded.source, 1);
         assert_eq!(decoded.target, 2);
@@ -1348,6 +1431,7 @@ mod tests {
     fn raft_wire_frame_rejects_direction_and_length_drift() -> Result<(), Box<dyn std::error::Error>>
     {
         let mut encoded = encode_raft_frame(RaftWireFrame {
+            cluster_id: "cluster-a".into(),
             role: RAFT_FRAME_RESPONSE,
             source: 2,
             target: 1,
@@ -1356,6 +1440,17 @@ mod tests {
         })?;
         encoded[26] ^= 1;
         assert!(decode_raft_frame(&encoded).is_err());
+        let cross_cluster = encode_raft_frame(RaftWireFrame {
+            cluster_id: "cluster-b".into(),
+            role: RAFT_FRAME_REQUEST,
+            source: 1,
+            target: 2,
+            kind: RaftRpcKind::Vote,
+            payload: b"vote".to_vec(),
+        })?;
+        let decoded = decode_raft_frame(&cross_cluster)?;
+        assert_ne!(decoded.cluster_id, "cluster-a");
+        assert!(decode_raft_frame_for_cluster(&cross_cluster, "cluster-a").is_err());
         Ok(())
     }
 
