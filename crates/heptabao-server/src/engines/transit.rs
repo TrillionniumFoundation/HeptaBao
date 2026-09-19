@@ -897,11 +897,11 @@ fn associated_data(body: &Value) -> Result<Vec<u8>> {
     Ok(associated.to_vec())
 }
 
-fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+fn legacy_aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
     let associated = associated_data(body)?;
     // A JSON tuple is unambiguous even when namespace/path contain delimiters.
-    // Domain separation is intentionally stronger than OpenBao opaque ciphertext
-    // portability; moving raw key/ciphertext state requires a decrypt/re-encrypt.
+    // This remains a read-only migration path for pre-OpenBao-compatibility
+    // HeptaBao ciphertexts. New ciphertexts use the raw caller AAD below.
     serde_json::to_vec(&(
         "heptabao-transit-aead-v1",
         namespace,
@@ -944,9 +944,9 @@ fn xchacha20_decrypt(
 
 fn encrypt(
     key: &mut Key,
-    namespace: &str,
-    mount: &str,
-    name: &str,
+    _namespace: &str,
+    _mount: &str,
+    _name: &str,
     body: &Value,
     plaintext: &[u8],
 ) -> Result<Value> {
@@ -984,7 +984,7 @@ fn encrypt(
         let mut ciphertext = Zeroizing::new(plaintext.to_vec());
         key.seal_in_place_append_tag(
             aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(aad(namespace, mount, name, body)?),
+            aead::Aad::from(associated_data(body)?),
             &mut *ciphertext,
         )
         .map_err(|_| error(500, "encryption failed"))?;
@@ -1031,11 +1031,24 @@ fn decrypt(
     );
     let mut nonce = [0; 12];
     nonce.copy_from_slice(&ciphertext[..12]);
+    let associated = associated_data(body)?;
+    let mut raw_payload = ciphertext[12..].to_vec();
+    if let Ok(plaintext) = key.open_in_place(
+        aead::Nonce::assume_unique_for_key(nonce),
+        aead::Aad::from(associated),
+        &mut raw_payload,
+    ) {
+        return Ok(Zeroizing::new(plaintext.to_vec()));
+    }
+
+    // Keep already-persisted HeptaBao ciphertexts readable while all new
+    // ciphertexts follow OpenBao's portable raw-AAD contract.
+    let mut legacy_payload = ciphertext[12..].to_vec();
     let plaintext = key
         .open_in_place(
             aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(aad(namespace, mount, name, body)?),
-            &mut ciphertext[12..],
+            aead::Aad::from(legacy_aad(namespace, mount, name, body)?),
+            &mut legacy_payload,
         )
         .map_err(|_| bad("ciphertext authentication failed"))?;
     Ok(Zeroizing::new(plaintext.to_vec()))

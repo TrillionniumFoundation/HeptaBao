@@ -251,9 +251,10 @@ approximately 4 MiB of decoded material, in addition to the HTTP request limit.
 Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA,
 SHA-224/SHA-3, Ed25519ph, BYOK wrapping/import, plaintext backup, automated periodic
 rotation and unsupported export formats are explicit errors. XChaCha20-Poly1305
-uses OpenBao's raw caller-supplied associated data and its 24-byte nonce envelope
-for ciphertext portability; existing AES/ChaCha ciphertexts retain HeptaBao's
-namespace/mount/name binding. Descriptor flags
+and newly written AES/ChaCha ciphertexts use OpenBao's raw caller-supplied
+associated data and nonce envelopes for ciphertext portability. Existing
+pre-compatibility AES/ChaCha ciphertexts retain a read-only legacy
+namespace/mount/name-bound decryption path. Descriptor flags
 report the implemented capabilities; for example `supports_derivation` is false
 even where an OpenBao key of the same cipher type reports true.
 

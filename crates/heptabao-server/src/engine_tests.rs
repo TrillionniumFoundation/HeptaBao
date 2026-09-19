@@ -598,7 +598,7 @@ fn transit_xchacha_uses_openbao_raw_aad_and_24_byte_nonce() -> TestResult {
 }
 
 #[test]
-fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
+fn transit_aad_is_portable_and_rejects_tampering() -> TestResult {
     let mut state = EngineState::default();
     request(
         &mut state,
@@ -626,7 +626,7 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
         .cloned()
         .ok_or("namespace missing")?;
     state.namespaces.insert("a/b".into(), namespace.clone());
-    assert!(
+    assert_eq!(
         request(
             &mut state,
             "a/b",
@@ -634,8 +634,9 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
             "transit/decrypt/k",
             json!({"ciphertext":ciphertext}),
             3
-        )
-        .is_err()
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
     );
     let mount = namespace
         .mounts
@@ -648,7 +649,7 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
         .ok_or("namespace missing")?
         .mounts
         .insert("alternate/".into(), mount);
-    assert!(
+    assert_eq!(
         request(
             &mut state,
             "a",
@@ -656,21 +657,37 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
             "alternate/decrypt/k",
             json!({"ciphertext":ciphertext}),
             3
-        )
-        .is_err()
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
     );
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"]["a"]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["other"] =
         serialized["namespaces"]["a"]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["k"]
             .clone();
     let mut renamed: EngineState = serde_json::from_value(serialized)?;
-    assert!(
+    assert_eq!(
         request(
             &mut renamed,
             "a",
             "POST",
             "transit/decrypt/other",
             json!({"ciphertext":ciphertext}),
+            3
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
+    );
+    assert!(
+        request(
+            &mut renamed,
+            "a",
+            "POST",
+            "transit/decrypt/other",
+            json!({
+                "ciphertext":ciphertext,
+                "associated_data":BASE64.encode(b"tampered")
+            }),
             3
         )
         .is_err()
