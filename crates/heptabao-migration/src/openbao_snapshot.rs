@@ -320,6 +320,14 @@ fn parse_metadata(bytes: &[u8]) -> Result<MetadataSummary, SnapshotInspectionErr
     let term = required_u64(object, "Term")?;
     let configuration_index = required_u64(object, "ConfigurationIndex")?;
     let state_size = required_nonnegative_i64(object, "Size")?;
+    if let Some(peers) = object.get("Peers")
+        && !peers.is_null()
+        && peers.as_str().is_none()
+    {
+        return Err(SnapshotInspectionError::InvalidMetadata(
+            "Peers must be null or a base64 string".into(),
+        ));
+    }
     let configuration = object
         .get("Configuration")
         .ok_or_else(|| SnapshotInspectionError::InvalidMetadata("missing Configuration".into()))?;
@@ -353,7 +361,20 @@ fn parse_metadata(bytes: &[u8]) -> Result<MetadataSummary, SnapshotInspectionErr
                 "Configuration.Server has unknown fields".into(),
             ));
         }
-        for field in ["Suffrage", "ID", "Address"] {
+        let suffrage = server_object
+            .get("Suffrage")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| {
+                SnapshotInspectionError::InvalidMetadata(
+                    "Configuration.Server.Suffrage must be an integer".into(),
+                )
+            })?;
+        if suffrage > 2 {
+            return Err(SnapshotInspectionError::InvalidMetadata(
+                "Configuration.Server.Suffrage is outside the Raft enum".into(),
+            ));
+        }
+        for field in ["ID", "Address"] {
             if server_object.get(field).and_then(Value::as_str).is_none() {
                 return Err(SnapshotInspectionError::InvalidMetadata(format!(
                     "Configuration.Server.{field} must be a string"
@@ -571,7 +592,7 @@ mod tests {
 
     fn archive(state: &[u8], sums_override: Option<&str>, extra_path: Option<&str>) -> Vec<u8> {
         let metadata = format!(
-            "{{\"Version\":1,\"ID\":\"snapshot-id\",\"Index\":7,\"Term\":3,\"Peers\":null,\"Configuration\":{{\"Servers\":[{{\"Suffrage\":\"Voter\",\"ID\":\"node-1\",\"Address\":\"127.0.0.1:8201\"}}]}},\"ConfigurationIndex\":6,\"Size\":{}}}\n",
+            "{{\"Version\":1,\"ID\":\"snapshot-id\",\"Index\":7,\"Term\":3,\"Peers\":null,\"Configuration\":{{\"Servers\":[{{\"Suffrage\":0,\"ID\":\"node-1\",\"Address\":\"127.0.0.1:8201\"}}]}},\"ConfigurationIndex\":6,\"Size\":{}}}\n",
             state.len()
         );
         let meta_hash = hex_digest(metadata.as_bytes());
