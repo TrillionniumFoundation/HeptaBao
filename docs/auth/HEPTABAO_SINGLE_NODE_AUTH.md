@@ -266,7 +266,8 @@ own random accessor, expiry and remaining uses. Login validates role ID and
 secret ID within the exact namespace, checks expiry and use limits, decrements
 the secret ID and issues an orphan service token in one durable transaction.
 
-`bind_secret_id` is always true; requesting false is rejected. The default
+`bind_secret_id` defaults to true; setting it to false enables the bounded
+role-ID-only login path and rejects an unnecessary SecretID. The default
 secret ID is valid for one hour and one login. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
