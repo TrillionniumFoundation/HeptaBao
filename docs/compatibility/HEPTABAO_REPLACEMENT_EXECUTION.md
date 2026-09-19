@@ -542,7 +542,7 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Lifecycle:** Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL.
 
-**Remaining scope:** Real version/TLS/root-rotation/static/dynamic/renew/revoke matrix required.
+**Remaining scope:** The scoped PostgreSQL 17.11 TLS/SCRAM dynamic issue/renew/revoke, session termination, outage/restart reconciliation and >128 retirement profile is recorded in [`postgresql-live-4b26baa.json`](../../qa/openbao-acceptance/evidence/postgresql-live-4b26baa.json). Real static-role/root-rotation and full OpenBao statement/template/error parity, multi-host fault and independent qualification matrices remain required.
 
 Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`.
 
