@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: heptabao-offline-vendor-export-20260910
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   PRODUCT_SHA: 676a3e68af340b2cb7439dbc99c69dee550e5db9
@@ -18,7 +18,7 @@ env:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - name: Checkout exporter without persisted credentials
@@ -45,7 +45,7 @@ jobs:
             > "$RUNNER_TEMP/source-binding.txt"
           tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/heptabao-locked-vendor.tar.gz" \
             vendor vendor-config.toml Cargo.lock source-binding.txt
-          (cd "$RUNNER_TEMP" && sha256sum heptabao-locked-vendor.tar.gz > offline-inputs.sha256)
+          (cd "$RUNNER_TEMP" && shasum -a 256 heptabao-locked-vendor.tar.gz > offline-inputs.sha256)
 
       - name: Upload bounded offline dependency inputs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
