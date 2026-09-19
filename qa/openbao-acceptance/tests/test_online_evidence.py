@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import stat
 import sys
 import tempfile
 import unittest
@@ -33,6 +34,10 @@ class OnlineEvidenceTests(unittest.TestCase):
     def test_private_parent_rejects_setgid_and_group_access(self):
         for mode in (0o750,0o2700,0o755):
             os.chmod(self.root,mode)
+            # macOS strips a non-root caller's setgid bit.  Keep the Linux
+            # assertion while avoiding a false failure on that platform.
+            if stat.S_IMODE(self.root.lstat().st_mode) != mode:
+                continue
             with self.assertRaises(ValueError): admit_output(self.output)
         os.chmod(self.root,0o700)
     def test_linked_parent_or_ancestor_rejects(self):

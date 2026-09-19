@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import stat
 import sys
 import tempfile
 import unittest
@@ -33,6 +34,10 @@ class SectionSixProfileGuards(unittest.TestCase):
 
     def test_setgid_parent_not_silently_accepted(self):
         self.root.chmod(0o2700)
+        # macOS strips a non-root caller's setgid bit; Linux keeps the guard
+        # below meaningful while macOS must not report a false failure.
+        if stat.S_IMODE(self.root.lstat().st_mode) != 0o2700:
+            return
         for module in (capacity_live, kv_read_scaling_live, transit_migration_live):
             with patch.object(module, 'run') as run:
                 with self.assertRaises(BaoError):

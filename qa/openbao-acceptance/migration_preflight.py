@@ -147,7 +147,10 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
             validate_observation(capacity)
         except ScenarioFailure:
             raise BaoError('target_capacity_invalid') from None
-        if capacity.get('profile') != 'bounded-content-defined-state-v3' or capacity.get('scope') != 'serving-leader-local':
+        if (capacity.get('profile') != 'bounded-owner-state-v4'
+                or capacity.get('state_storage_format') != 'heptabao-state-owners-v4'
+                or capacity.get('state_chunk_target_bytes') != 512 * 1024
+                or capacity.get('scope') != 'serving-leader-local'):
             raise BaoError('target_capacity_profile_unknown')
         fields = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
                   'retained_operations', 'operation_limit', 'operations_remaining',
