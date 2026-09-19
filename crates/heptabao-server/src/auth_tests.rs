@@ -716,6 +716,96 @@ fn approle_secret_ids_are_hashed_consumable_and_expiring() {
 }
 
 #[test]
+fn approle_custom_secret_id_is_bounded_hashed_and_consumable() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/approle/role/custom",
+        json!({"secret_id_ttl": 30, "secret_id_num_uses": 2}),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/approle/role/custom/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = "operator-issued-secret";
+    let issued = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        json!({"secret_id": secret_id}),
+        100,
+    );
+    assert_eq!(issued.body["data"]["secret_id"], secret_id);
+    assert_eq!(issued.body["data"]["secret_id_num_uses"], 2);
+    assert_eq!(issued.body["data"]["secret_id_ttl"], 30);
+    let serialized = serde_json::to_string(&state).unwrap();
+    assert!(!serialized.contains(secret_id));
+
+    let login_body = json!({"role_id": role_id, "secret_id": secret_id});
+    assert!(
+        state
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 101)
+            .is_ok()
+    );
+    assert!(
+        state
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 102)
+            .is_ok()
+    );
+    assert!(
+        state
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 103)
+            .is_err()
+    );
+
+    let duplicate = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        &json!({"secret_id": secret_id}),
+        104,
+    );
+    assert_eq!(
+        duplicate
+            .err()
+            .expect("duplicate custom secret ID must fail")
+            .status,
+        400
+    );
+    let invalid = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        &json!({"secret_id": "", "unexpected": true}),
+        104,
+    );
+    assert_eq!(
+        invalid
+            .err()
+            .expect("invalid custom secret ID must fail")
+            .status,
+        400
+    );
+}
+
+#[test]
 fn approle_destroy_and_policy_assignment_fail_closed() {
     let (mut state, _, root) = setup();
     call(

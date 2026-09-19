@@ -4791,8 +4791,13 @@ impl AuthState {
                     .collect();
                 Ok(response(json!({"keys": keys}), false))
             }
-            ("secret-id", "update") => {
-                reject_unknown(body, &["ttl", "num_uses"])?;
+            ("secret-id", "update") | ("custom-secret-id", "update") => {
+                let custom = operation == "custom-secret-id";
+                if custom {
+                    reject_unknown(body, &["secret_id", "ttl", "num_uses"])?;
+                } else {
+                    reject_unknown(body, &["ttl", "num_uses"])?;
+                }
                 let ttl = duration(body, "ttl", role.secret_id_ttl)?;
                 let num_uses = number(body, "num_uses", role.secret_id_num_uses)?;
                 if ttl > MAX_TTL
@@ -4802,7 +4807,19 @@ impl AuthState {
                 {
                     return Err(bad("secret_id constraints exceed role limits"));
                 }
-                let raw = Zeroizing::new(random_id("secret.")?);
+                let raw = if custom {
+                    let value = string_field(body, "secret_id")?;
+                    if value.is_empty() || value.len() > 256 {
+                        return Err(bad("secret_id must be 1 to 256 bytes"));
+                    }
+                    Zeroizing::new(value.to_owned())
+                } else {
+                    Zeroizing::new(random_id("secret.")?)
+                };
+                let secret_hash = hash(&raw);
+                if role.secret_ids.contains_key(&secret_hash) {
+                    return Err(bad("secret_id already exists"));
+                }
                 let accessor = random_id("sa.")?;
                 let expires_at = if ttl == 0 {
                     None
@@ -4810,7 +4827,7 @@ impl AuthState {
                     Some(checked_expiry(now, ttl)?)
                 };
                 role.secret_ids.insert(
-                    hash(&raw),
+                    secret_hash,
                     SecretId {
                         accessor: accessor.clone(),
                         expires_at,

@@ -275,7 +275,21 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. AppRole roles support both the default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only login; the latter intentionally ignores an optional `secret_id` field. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes, LDAP and the bounded certificate profile each have runtime limits described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
+operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`
+limits. The value is returned only in the successful creation response and is
+stored as a SHA-256 digest; duplicate values are rejected rather than replacing
+an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
+on authentication methods, LDAP directory search/group-policy synchronization,
+batch tokens, cloud IAM, RADIUS/Kerberos auth, WebAuthn/push/external MFA,
+auth-plugin execution, complete OpenBao browser/UI semantics, and full
+per-method field parity remain unsupported. AppRole roles support both the
+default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only
+login; the latter intentionally ignores an optional `secret_id` field. Unknown
+security-relevant request fields are rejected. JWT/OIDC, Kubernetes, LDAP and
+the bounded certificate profile each have runtime limits described below; none
+alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate
+limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
@@ -338,6 +352,7 @@ Default userpass/AppRole paths below also project onto the corresponding configu
 | `auth/approle/role/:name` | GET, POST/PUT, DELETE |
 | `auth/approle/role/:name/role-id` | GET, POST/PUT |
 | `auth/approle/role/:name/secret-id` | POST/PUT issue, LIST accessors |
+| `auth/approle/role/:name/custom-secret-id` | POST/PUT issue an operator-supplied bounded SecretID |
 | `.../secret-id/lookup`, `.../secret-id/destroy` | POST/PUT |
 | `.../secret-id-accessor/lookup`, `.../secret-id-accessor/destroy` | POST/PUT |
 | `auth/approle/login` | unauthenticated POST/PUT |
