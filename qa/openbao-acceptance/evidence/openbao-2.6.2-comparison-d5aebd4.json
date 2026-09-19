@@ -1,7 +1,6 @@
 {
   "candidate": {
     "cluster_id_digest": "9a42a991171c66fdcb90adee04f29143738d2e9dbd4accc4c0b5d7e08f14a905",
-    "endpoint": "https://127.0.0.1:37113",
     "namespace_digest": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
     "version": "HeptaBao-0.2.0"
   },
@@ -789,8 +788,6 @@
       "archive_member_matches_executable": true,
       "artifact_sha256": "1b408e01f3565ac0cbcb88d637dca271d0515148fb72efdeff4473a34fa50c4e",
       "binary_sha256": "1c3f62018046ec72be8720b576a55105b64b4cbd634d98483a93c642e69dc153",
-      "cluster_id": "307e6d1a-cf06-cb23-2909-dfeab09adced",
-      "endpoint": "https://127.0.0.1:29263",
       "launcher_source_sha256": "180d40ef662aa3d94109b7a80af6c479887ca12a878c7a6a2a0c461bb012eb6e",
       "product": "OpenBao",
       "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.6.2",
@@ -810,7 +807,6 @@
     "artifact_sha256": "1b408e01f3565ac0cbcb88d637dca271d0515148fb72efdeff4473a34fa50c4e",
     "basis": "operator_artifact_attestation_plus_verified_tls_and_live_health",
     "cluster_id_digest": "89ae53a02d19767b80039e5e0d061f990f92bfa9d36126d1634cbeb88a004bc1",
-    "endpoint": "https://127.0.0.1:29263",
     "independent_binary_attestation": false,
     "product": "OpenBao",
     "version": "2.6.2"
