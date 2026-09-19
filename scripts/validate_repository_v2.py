@@ -193,7 +193,7 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
             "python scripts/validate_repository_v2.py",
             "cargo +1.98.0 fmt --all -- --check",
             "cargo +1.98.0 test --locked --workspace --all-targets",
-            "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
             "cargo +1.98.0 doc --locked --workspace --no-deps",
         ):
             if command not in readme:

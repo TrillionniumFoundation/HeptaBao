@@ -91,7 +91,8 @@ python scripts/validate_repository_v2.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
 cargo +1.98.0 fmt --all -- --check
 cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+# qrcode is vendored third-party code: workspace tests/build it, product Clippy owns first-party Rust.
+cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
 cargo +1.98.0 doc --locked --workspace --no-deps
 ```
 

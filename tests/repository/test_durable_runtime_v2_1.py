@@ -178,7 +178,10 @@ class DurableRuntimeV21Tests(unittest.TestCase):
         self.assertIn("pull_request:", workflow)
         self.assertIn("prospective-merge", workflow)
         self.assertIn("cargo +1.98.0 test --locked --workspace --all-targets", workflow)
-        self.assertIn("cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings", workflow)
+        self.assertIn(
+            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+            workflow,
+        )
 
     def test_authority_claims_remain_fail_closed(self) -> None:
         texts = [

@@ -83,9 +83,13 @@ jobs:
         shell: bash
         run: cargo +1.98.0 test --locked --workspace --all-targets
 
-      - name: Check strict workspace Clippy
+      - name: Check strict first-party workspace Clippy
         shell: bash
-        run: cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+        # qrcode is a vendored third-party package. It remains covered by the
+        # complete workspace test/build gates, while product lint owns only
+        # first-party Rust and does not turn upstream warning drift into a
+        # developer-only blocker.
+        run: cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
 
       - name: Build workspace documentation
         shell: bash

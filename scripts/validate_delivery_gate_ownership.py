@@ -11,7 +11,7 @@ TRUST = ROOT / ".github/workflows/workflow-trust-boundary.yml"
 REQUIRED_NATIVE_GATES = (
     "cargo +1.98.0 fmt --all -- --check",
     "cargo +1.98.0 test --locked --workspace --all-targets",
-    "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+    "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
     "cargo +1.98.0 doc --locked --workspace --no-deps",
 )
 
@@ -28,7 +28,7 @@ FORBIDDEN_TRUST_GATES = (
     "python -m unittest discover -s tests/platform",
     "python -m unittest discover -s tests/oracle",
     "cargo +1.98.0 test --locked --workspace --all-targets",
-    "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+    "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
 )
 
 
