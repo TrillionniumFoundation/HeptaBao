@@ -76,12 +76,12 @@ class PlanV145HostileTests(unittest.TestCase):
             ),
         )
 
-    def test_unscoped_historical_gate_is_rejected(self) -> None:
+    def test_historical_gate_must_remain_scoped_or_manual_only(self) -> None:
         self.assert_rejected(
             ".github/workflows/plan-v1.3.1-head-and-merge-closure.yml",
             lambda path: path.write_text(
                 path.read_text(encoding="utf-8").replace(
-                    "    branches:\n      - codex/plan-v1.3-gap-closure-v2\n",
+                    "  workflow_dispatch:\n",
                     "",
                 ),
                 encoding="utf-8",
