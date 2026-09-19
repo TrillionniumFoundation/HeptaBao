@@ -73,6 +73,14 @@ regressions; it does not replace native execution or prove all prose complete.
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
 fields it happens to know. Keep a schema-11-capable rollback binary with compatible HA and provider formats.
+
+V4 owner publication derives an authenticated write set from the next manifest:
+changed and reused owners are classified by content digest, and staged or retired
+owner chunks must belong to a changed owner. The only exception is the explicit
+one-time cleanup of legacy `state-chunks/*` resources during format migration.
+The service validates this write set before the durable batch is admitted. This
+protects the local owner boundary; HA still serializes the complete logical state
+and therefore remains outside the record-oriented scalability gate.
 A schema-9 binary must fail closed once authentication-plugin mount state has been committed;
 A schema-8 binary must fail closed once explicit namespace catalog state has been committed;
 a schema-7 binary must fail closed once Kubernetes secrets-engine state has been
