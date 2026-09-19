@@ -77,7 +77,8 @@ The server now provides a concrete `heptabao-raft-runtime` adapter with one vote
 
 `MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, accepts a bounded chain (up to eight certificates and four MiB), and binds the presented leaf certificate SHA-256 to an expected `NodeId`. Intermediates are not identity pins and may rotate only under the configured trust roots. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Certificate issuance, revocation, rotation, trust-root custody and destructive multi-node qualification remain external operational gates.
 
-The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining
+The endpoint admission rejects port zero and unspecified addresses; configured loopback,
+private and routable peer addresses remain valid. The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining
 bounded framing, certificate identity checks and configured read/write timeouts.
 The consuming server runs a fixed bounded peer worker pool rather than placing
 all consensus and forwarded-client work behind one serial TLS receiver. These

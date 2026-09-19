@@ -679,7 +679,9 @@ pub struct TlsPeerEndpoint {
 impl TlsPeerEndpoint {
     pub fn new(address: SocketAddr, server_name: impl Into<String>) -> Result<Self, HaError> {
         let server_name = server_name.into();
-        if server_name.is_empty()
+        if address.port() == 0
+            || address.ip().is_unspecified()
+            || server_name.is_empty()
             || server_name.len() > 253
             || rustls::pki_types::ServerName::try_from(server_name.clone()).is_err()
         {
@@ -1604,6 +1606,21 @@ mod tests {
         assert_eq!(
             TlsPeerEndpoint::new(address, "bad name with spaces"),
             Err(HaError::InvalidCluster)
+        );
+        assert_eq!(
+            TlsPeerEndpoint::new("0.0.0.0:8201".parse().unwrap(), "node-2.example.internal"),
+            Err(HaError::InvalidCluster)
+        );
+        assert_eq!(
+            TlsPeerEndpoint::new("127.0.0.1:0".parse().unwrap(), "node-2.example.internal"),
+            Err(HaError::InvalidCluster)
+        );
+        assert!(
+            TlsPeerEndpoint::new(
+                "192.0.2.10:8201".parse().unwrap(),
+                "node-2.example.internal"
+            )
+            .is_ok()
         );
         let certificate = b"synthetic-test-certificate-der";
         let peer = node("n2");
