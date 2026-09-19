@@ -1649,6 +1649,16 @@ mod tests {
             identify_peer_certificate_chain(&identities, &too_many),
             Err(HaError::PeerAuthenticationFailed)
         );
+
+        let oversized = vec![rustls::pki_types::CertificateDer::from(vec![
+            0_u8;
+            MAX_PEER_CERT_CHAIN_BYTES
+                + 1
+        ])];
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &oversized),
+            Err(HaError::PeerAuthenticationFailed)
+        );
     }
 
     #[test]
