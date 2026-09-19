@@ -1,0 +1,83 @@
+name: Transfer reviewed Git objects (no ref update or qualification)
+on:
+  push:
+    branches: [exec/heptabao-object-transfer-20260919]
+permissions:
+  contents: write
+jobs:
+  transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Transfer exact reviewed objects without changing a product ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PYTHON'
+          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          BASE = '676a3e68af340b2cb7439dbc99c69dee550e5db9'
+          BASE_TREE = 'cc714bf471a270caf8b9a4e26047c4caae11bb34'
+          TREE = '17882b27a3cad871235540b34c5ccd0a33314db1'
+          PATCH_HASH = '59c9873e50ae2009ce3d36c3f667f00825e211dffd36a68c4fd26b9500537d9c'
+          PATCH_BLOB = '8c6e4edb2252404b78a856bd99f7dec85bd5d16d'
+          assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/HeptaBao'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/exec/heptabao-object-transfer-20260919'
+          def api(endpoint, data=None):
+              assert endpoint in ('git/blobs', 'git/trees', 'git/commits', 'git/blobs/' + PATCH_BLOB)
+              assert (data is None) == endpoint.endswith(PATCH_BLOB)
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/HeptaBao/' + endpoint,
+                  data=None if data is None else json.dumps(data).encode(),
+                  method='GET' if data is None else 'POST',
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                           'Accept': 'application/vnd.github+json',
+                           'X-GitHub-Api-Version': '2022-11-28',
+                           'Content-Type': 'application/json'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  return json.load(response)
+          transport = api('git/blobs/' + PATCH_BLOB)
+          assert transport['sha'] == PATCH_BLOB and transport['encoding'] == 'base64'
+          compressed = base64.b64decode(''.join(transport['content'].split()), validate=True)
+          assert len(compressed) == 14309
+          assert hashlib.sha1(b'blob ' + str(len(compressed)).encode() + b'\0' + compressed).hexdigest() == PATCH_BLOB
+          patch = gzip.decompress(compressed)
+          assert len(patch) == 55588 and hashlib.sha256(patch).hexdigest() == PATCH_HASH
+          def git(*args, input=None):
+              return subprocess.check_output(['git', *args], input=input).decode().strip()
+          git('checkout', '--detach', BASE)
+          assert git('rev-parse', 'HEAD^{tree}') == BASE_TREE
+          assert not git('status', '--porcelain')
+          git('apply', '--index', '--whitespace=error', '-', input=patch)
+          assert git('write-tree') == TREE
+          files = git('diff', '--cached', '--name-only').splitlines()
+          assert len(files) == 22
+          assert all(p.startswith(('crates/', 'docs/', 'planning/', 'qa/', 'tests/')) for p in files)
+          entries = []
+          for path in files:
+              meta = git('ls-files', '-s', '--', path).split()
+              assert len(meta) >= 4 and meta[0] in ('100644', '100755') and meta[2] == '0'
+              raw = pathlib.Path(path).read_bytes()
+              assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == meta[1]
+              blob = api('git/blobs', {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
+              assert blob['sha'] == meta[1]
+              entries.append({'path': path, 'mode': meta[0], 'type': 'blob', 'sha': blob['sha']})
+          tree = api('git/trees', {'base_tree': BASE_TREE, 'tree': entries})
+          assert tree['sha'] == TREE
+          commit = api('git/commits', {
+              'message': 'fix: repair namespace incarnation and reduce HA state observation amplification\n\nBind the reviewed product tree to the existing PR108 head. Fix V4 migration preflight, current documentation drift, native compilation and strict lint. Keep ReadIndex and authenticated manifest checks; retain the failing leadership-failover qualification rather than declaring closure. This object-transfer job executes no candidate code and updates no product ref. No production, full compatibility, migration or release authority is asserted.',
+              'tree': TREE, 'parents': [BASE]})
+          assert commit['tree']['sha'] == TREE and [p['sha'] for p in commit['parents']] == [BASE]
+          result = {'commit': commit['sha'], 'tree': TREE, 'parent': BASE,
+                    'patch_sha256': PATCH_HASH, 'changed_files': len(files),
+                    'product_ref_updated': False, 'candidate_executed': False, 'qualification': False}
+          print(json.dumps(result, sort_keys=True))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('Git objects only; no reference update or qualification.\n\n```json\n' + json.dumps(result, indent=2) + '\n```\n')
+          PYTHON
