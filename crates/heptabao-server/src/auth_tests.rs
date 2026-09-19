@@ -718,17 +718,51 @@ fn approle_secret_ids_are_hashed_consumable_and_expiring() {
 #[test]
 fn approle_destroy_and_policy_assignment_fail_closed() {
     let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/no-secret",
+        json!({"bind_secret_id": false}),
+        100,
+    );
+    let no_secret_role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/no-secret/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let no_secret_role = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/no-secret",
+        json!({}),
+        100,
+    );
+    assert_eq!(no_secret_role.body["data"]["bind_secret_id"], false);
+    let no_secret_login = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/login",
+        json!({"role_id": no_secret_role_id}),
+        101,
+    );
     assert!(
-        state
-            .handle(
-                Some(&root),
-                "",
-                "POST",
-                "auth/approle/role/bad",
-                &json!({"bind_secret_id": false}),
-                100
-            )
-            .is_err()
+        no_secret_login.body["auth"]["client_token"]
+            .as_str()
+            .is_some()
     );
     assert!(
         state

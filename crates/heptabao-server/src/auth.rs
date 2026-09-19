@@ -55,6 +55,10 @@ const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
 
+fn default_bind_secret_id() -> bool {
+    true
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -631,6 +635,8 @@ impl Drop for User {
 #[derive(Clone, Serialize, Deserialize)]
 struct Role {
     role_id: String,
+    #[serde(default = "default_bind_secret_id")]
+    bind_secret_id: bool,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
@@ -3860,7 +3866,7 @@ impl AuthState {
             if capability == "read" {
                 let role = existing.ok_or_else(|| err(404, "role not found"))?;
                 return Ok(response(
-                    json!({"bind_secret_id": true, "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
                     false,
                 ));
@@ -3885,13 +3891,11 @@ impl AuthState {
                     "secret_id_num_uses",
                 ],
             )?;
-            if !boolean(body, "bind_secret_id", true)? {
-                return Err(bad("AppRole requires secret_id binding"));
-            }
             reject_alias_pair(body, "policies", "token_policies")?;
             let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
             let mut role = existing.unwrap_or(Role {
                 role_id: random_id("role.")?,
+                bind_secret_id: true,
                 policies: BTreeSet::from(["default".into()]),
                 token_ttl: mount_default_ttl,
                 token_max_ttl: mount_max_ttl,
@@ -3900,6 +3904,7 @@ impl AuthState {
                 secret_id_num_uses: 1,
                 secret_ids: BTreeMap::new(),
             });
+            role.bind_secret_id = boolean(body, "bind_secret_id", role.bind_secret_id)?;
             role.policies = policies(
                 body,
                 if body.get("token_policies").is_some() {
@@ -4043,8 +4048,8 @@ impl AuthState {
         }
         reject_unknown(body, &["role_id", "secret_id"])?;
         let role_id = string_field(body, "role_id")?;
-        let secret_id = string_field(body, "secret_id")?;
-        if role_id.len() > 256 || secret_id.len() > 256 {
+        let secret_id = body.get("secret_id").and_then(Value::as_str);
+        if role_id.len() > 256 || secret_id.is_some_and(|value| value.len() > 256) {
             return Err(denied());
         }
         let (name, mut role) = self
@@ -4052,14 +4057,18 @@ impl AuthState {
             .and_then(|roles| roles.iter().find(|(_, role)| role.role_id == role_id))
             .map(|(name, role)| (name.clone(), role.clone()))
             .ok_or_else(denied)?;
-        let id = hash(secret_id);
-        let secret = role.secret_ids.get_mut(&id).ok_or_else(denied)?;
-        if secret.expires_at.is_some_and(|expiry| now >= expiry) || secret.uses_remaining == Some(0)
-        {
-            return Err(denied());
-        }
-        if let Some(remaining) = &mut secret.uses_remaining {
-            *remaining -= 1;
+        if role.bind_secret_id {
+            let secret_id = secret_id.ok_or_else(denied)?;
+            let id = hash(secret_id);
+            let secret = role.secret_ids.get_mut(&id).ok_or_else(denied)?;
+            if secret.expires_at.is_some_and(|expiry| now >= expiry)
+                || secret.uses_remaining == Some(0)
+            {
+                return Err(denied());
+            }
+            if let Some(remaining) = &mut secret.uses_remaining {
+                *remaining -= 1;
+            }
         }
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;

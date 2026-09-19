@@ -231,7 +231,7 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, certificate/RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes and LDAP each have bounded runtime profiles described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, certificate/RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. AppRole roles support both the default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only login; the latter intentionally ignores an optional `secret_id` field. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes and LDAP each have bounded runtime profiles described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
