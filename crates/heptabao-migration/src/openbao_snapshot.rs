@@ -592,7 +592,7 @@ mod tests {
 
     fn archive(state: &[u8], sums_override: Option<&str>, extra_path: Option<&str>) -> Vec<u8> {
         let metadata = format!(
-            "{{\"Version\":1,\"ID\":\"snapshot-id\",\"Index\":7,\"Term\":3,\"Peers\":null,\"Configuration\":{{\"Servers\":[{{\"Suffrage\":0,\"ID\":\"node-1\",\"Address\":\"127.0.0.1:8201\"}}]}},\"ConfigurationIndex\":6,\"Size\":{}}}\n",
+            "{{\"Version\":1,\"ID\":\"snapshot-id\",\"Index\":7,\"Term\":3,\"Peers\":\"ka4xMjcuMC4wLjE6ODMwMA==\",\"Configuration\":{{\"Servers\":[{{\"Suffrage\":0,\"ID\":\"node-1\",\"Address\":\"127.0.0.1:8201\"}}]}},\"ConfigurationIndex\":6,\"Size\":{}}}\n",
             state.len()
         );
         let meta_hash = hex_digest(metadata.as_bytes());
