@@ -790,6 +790,8 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             && matches!(value.as_str(), "false" | "0")
         {
             Value::Bool(false)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
+            return Err(bad("invalid health boolean query"));
         } else if matches!(value.as_str(), "true" | "false") {
             Value::Bool(value.as_str() == "true")
         } else {
@@ -1191,12 +1193,13 @@ mod wrapping_header_tests {
 
     #[test]
     fn ordinary_boolean_queries_keep_their_boolean_shape() {
-        for (query, key) in [
-            ("list=true", "list"),
-            ("exclude_deleted=false", "exclude_deleted"),
+        for (method, query, key) in [
+            ("POST", "list=true", "list"),
+            ("GET", "exclude_deleted=false", "exclude_deleted"),
         ] {
-            let request =
-                format!("GET /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            let request = format!(
+                "{method} /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
             assert!(
                 read_request(&mut request.as_bytes(), Duration::from_secs(1))
                     .is_ok_and(|r| r.body.0[key].is_boolean())
@@ -1207,8 +1210,12 @@ mod wrapping_header_tests {
     #[test]
     fn health_status_code_queries_are_bounded_integers() {
         let request = b"GET /v1/sys/health?uninitcode=204&sealedcode=499&standbycode=430&activecode=201 HTTP/1.1\r\nHost: localhost\r\n\r\n";
-        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
-            .expect("valid health status overrides");
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1));
+        assert!(parsed.is_ok());
+        let parsed = match parsed {
+            Ok(request) => request,
+            Err(_) => return,
+        };
         assert_eq!(parsed.body.0["uninitcode"], json!(204));
         assert_eq!(parsed.body.0["sealedcode"], json!(499));
         assert_eq!(parsed.body.0["standbycode"], json!(430));
