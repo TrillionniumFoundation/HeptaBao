@@ -306,8 +306,8 @@ cargo test -p heptabao-server engines --lib --offline
 cargo clippy -p heptabao-server --lib --tests --offline -- -D warnings
 ```
 
-Twenty engine tests passed during implementation. They cover KV lifecycle/CAS
-atomicity and recovery, structural namespace/mount separation, retention and
+The current engine test selection covers KV lifecycle/CAS atomicity and
+recovery, structural namespace/mount separation, retention and
 deadline behavior, merge patches, lists/scans, all three AEAD implementations,
 tampered ciphertext and AAD, exact-key transplantation across domains, rotation
 and minimum-version policies, Ed25519 and HMAC verification, RFC 4231 HMAC case 1,
