@@ -20,7 +20,7 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'qa/openbao-acceptance'))
-from official_openbao_launcher import ARTIFACT_SHA256, BINARY_SHA256, VERSION
+from official_openbao_launcher import ARTIFACT_SHA256, BINARY_SHA256, VERSION, PINNED_ARTIFACTS, _platform_key, pinned_artifact
 
 LIMIT = 256 * 1024 * 1024
 RELEASE = f'https://api.github.com/repos/openbao/openbao/releases/tags/v{VERSION}'
@@ -78,8 +78,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    if platform.system() != 'Linux' or platform.machine() not in ('x86_64', 'amd64'):
-        parser.error('the pinned binary requires Linux amd64')
+    platform_key = _platform_key()
+    if platform_key not in PINNED_ARTIFACTS:
+        parser.error('no pinned official oracle artifact for this platform')
+    # Resolve the pins after the platform guard.  Keeping these module globals
+    # preserves the fixture tests and receipt shape while selecting the
+    # architecture-specific release on Linux arm64.
+    pins = PINNED_ARTIFACTS[platform_key]
+    global ARTIFACT_SHA256, BINARY_SHA256
+    ARTIFACT_SHA256, BINARY_SHA256 = pins['artifact_sha256'], pins['binary_sha256']
     output = args.output.absolute()
     output.mkdir(mode=0o700, parents=False, exist_ok=False)
     old_mask = os.umask(0o077)

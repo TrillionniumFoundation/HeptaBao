@@ -34,6 +34,23 @@ class ReadinessPrerequisiteTests(unittest.TestCase):
                 changed=copy.deepcopy(release);changed[key]=value
                 with self.assertRaises(ValueError):module.select_asset(changed)
 
+    def test_linux_arm64_uses_its_own_release_pin(self):
+        amd64 = module.pinned_artifact('Linux', 'x86_64')
+        arm64 = module.pinned_artifact('Linux', 'aarch64')
+        self.assertNotEqual(amd64, arm64)
+        self.assertEqual(
+            arm64['artifact_sha256'],
+            '1b408e01f3565ac0cbcb88d637dca271d0515148fb72efdeff4473a34fa50c4e',
+        )
+        self.assertEqual(
+            arm64['binary_sha256'],
+            '1c3f62018046ec72be8720b576a55105b64b4cbd634d98483a93c642e69dc153',
+        )
+
+    def test_unsupported_development_host_keeps_import_default_but_has_no_pin(self):
+        self.assertEqual(module.pinned_artifact('Darwin', 'arm64'), module.pinned_artifact('Linux', 'x86_64'))
+        self.assertNotIn(('darwin', 'arm64'), module.PINNED_ARTIFACTS)
+
     def test_missing_duplicate_and_other_origin_are_rejected(self):
         for transform in (lambda x:x.update(assets=[]),
                           lambda x:x['assets'].append(x['assets'][0]),

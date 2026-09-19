@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start only the pinned official OpenBao 2.6.2 Linux amd64 artifact locally.
+"""Start only a pinned official OpenBao 2.6.2 Linux artifact locally.
 
 Set HB_ORACLE_BINARY and HB_ORACLE_ARCHIVE to existing operator-provided files.
 There is no network download, development mode, insecure TLS, or external host.
@@ -9,6 +9,7 @@ The caller owns synthetic credentials retained in the returned private root.
 import hashlib
 import json
 import os
+import platform
 from pathlib import Path
 import subprocess
 import tarfile
@@ -18,8 +19,42 @@ import time
 from bao_http import BaoError, Client, private_write
 
 VERSION = "2.6.2"
-ARTIFACT_SHA256 = "8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa"
-BINARY_SHA256 = "8d18052337908a74f0d7dfacc8da7a1bff5f8a4ab6a2ad136fbf5ffeae243b00"
+# The release publishes independent archives for Linux amd64 and arm64.  Keep
+# both pins here so the same launcher can run in the amd64 CI runner and the
+# arm64 Linux qualification VM without accepting an unpinned or cross-arch
+# executable.  The amd64 constants remain the compatibility default on hosts
+# where no runnable official artifact exists (for example macOS development).
+PINNED_ARTIFACTS = {
+    ("linux", "amd64"): {
+        "artifact_sha256": "8dc11cc5fca0b539a9e352727dacb4e2d304daffcf9a66e0718ac325a20d05aa",
+        "binary_sha256": "8d18052337908a74f0d7dfacc8da7a1bff5f8a4ab6a2ad136fbf5ffeae243b00",
+    },
+    ("linux", "arm64"): {
+        "artifact_sha256": "1b408e01f3565ac0cbcb88d637dca271d0515148fb72efdeff4473a34fa50c4e",
+        "binary_sha256": "1c3f62018046ec72be8720b576a55105b64b4cbd634d98483a93c642e69dc153",
+    },
+}
+
+
+def _platform_key(system=None, machine=None):
+    system = (platform.system() if system is None else system).lower()
+    machine = (platform.machine() if machine is None else machine).lower()
+    machine = {"x86_64": "amd64", "aarch64": "arm64"}.get(machine, machine)
+    return system, machine
+
+
+def pinned_artifact(system=None, machine=None):
+    """Return the immutable release pins for the current runnable host.
+
+    Unsupported hosts retain the amd64 constants for report/import stability,
+    but ``verify_inputs`` rejects execution before it can launch a binary.
+    """
+    return PINNED_ARTIFACTS.get(_platform_key(system, machine), PINNED_ARTIFACTS[("linux", "amd64")])
+
+
+_CURRENT_PIN = pinned_artifact()
+ARTIFACT_SHA256 = _CURRENT_PIN["artifact_sha256"]
+BINARY_SHA256 = _CURRENT_PIN["binary_sha256"]
 PROVENANCE_URL = "https://github.com/openbao/openbao/releases/tag/v2.6.2"
 
 
@@ -36,16 +71,19 @@ def file_digest(path):
 
 
 def verify_inputs():
+    if _platform_key() not in PINNED_ARTIFACTS:
+        raise BaoError("official_oracle_unsupported_platform")
+    expected = pinned_artifact()
     binary = Path(os.environ["HB_ORACLE_BINARY"]).resolve(strict=True)
     archive = Path(os.environ["HB_ORACLE_ARCHIVE"]).resolve(strict=True)
-    if file_digest(archive) != ARTIFACT_SHA256 or file_digest(binary) != BINARY_SHA256:
+    if file_digest(archive) != expected["artifact_sha256"] or file_digest(binary) != expected["binary_sha256"]:
         raise BaoError("official_oracle_pinned_digest_mismatch")
     with tarfile.open(archive, "r:gz") as bundle:
         members = [entry for entry in bundle.getmembers() if entry.name.removeprefix("./") == "bao"]
         if len(members) != 1 or not members[0].isfile():
             raise BaoError("official_oracle_archive_binary_missing")
         with bundle.extractfile(members[0]) as stream:
-            if stream_digest(stream) != BINARY_SHA256:
+            if stream_digest(stream) != expected["binary_sha256"]:
                 raise BaoError("official_oracle_binary_not_archive_member")
     return binary
 
