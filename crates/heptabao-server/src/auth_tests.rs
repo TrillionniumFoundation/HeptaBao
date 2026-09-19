@@ -1547,6 +1547,11 @@ fn certificate_role_login_requires_the_verified_leaf_digest() {
         .unwrap();
     assert_eq!(login.status, 200);
     assert_eq!(login.login_identity.unwrap().alias, "operator");
+    assert!(
+        login.body["auth"]["metadata"]
+            .as_object()
+            .is_some_and(serde_json::Map::is_empty)
+    );
 }
 
 #[test]
