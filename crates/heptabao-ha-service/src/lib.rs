@@ -35,6 +35,8 @@ const MAX_PEER_CERT_CHAIN: usize = 8;
 const MAX_PEER_CERT_CHAIN_BYTES: usize = 4 * 1024 * 1024;
 const PEER_STATE_MAGIC: &[u8; 5] = b"HBPS1";
 const PEER_FRAME_MAGIC: &[u8; 5] = b"HBPF1";
+/// ALPN protocol negotiated by the authenticated Raft peer transport.
+pub const RAFT_ALPN_PROTOCOL: &[u8] = b"heptabao-raft/1";
 
 #[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct NodeId(String);
@@ -806,6 +808,7 @@ where
     tls.conn
         .complete_io(&mut tls.sock)
         .map_err(|_| HaError::PeerAuthenticationFailed)?;
+    require_raft_alpn(tls.conn.alpn_protocol())?;
     let certificates = tls
         .conn
         .peer_certificates()
@@ -814,6 +817,14 @@ where
     let request = read_bounded_frame(&mut tls)?;
     let response = handler(peer, request)?;
     write_bounded_frame(&mut tls, &response)
+}
+
+fn require_raft_alpn(protocol: Option<&[u8]>) -> Result<(), HaError> {
+    if protocol == Some(RAFT_ALPN_PROTOCOL) {
+        Ok(())
+    } else {
+        Err(HaError::PeerAuthenticationFailed)
+    }
 }
 
 fn identify_peer_certificate_chain(
@@ -1630,6 +1641,19 @@ mod tests {
         assert_eq!(identities.identify(certificate).unwrap(), peer);
         assert_eq!(
             identities.identify(b"different-certificate"),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn raft_peer_transport_requires_its_alpn_protocol() {
+        assert_eq!(require_raft_alpn(Some(RAFT_ALPN_PROTOCOL)), Ok(()));
+        assert_eq!(
+            require_raft_alpn(Some(b"http/1.1")),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+        assert_eq!(
+            require_raft_alpn(None),
             Err(HaError::PeerAuthenticationFailed)
         );
     }

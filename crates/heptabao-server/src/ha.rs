@@ -12,8 +12,8 @@ use std::time::Duration;
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
-    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, TlsPeerEndpoint,
-    serve_one_mtls_peer_frame,
+    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
+    TlsPeerEndpoint, serve_one_mtls_peer_frame,
 };
 use heptabao_raft_runtime::{
     CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RemoteNetworkFactory,
@@ -993,7 +993,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
         .with_root_certificates(client_roots)
         .with_client_auth_cert(certificates.clone(), clone_private_key(&key)?)
         .map_err(|_| "invalid HA TLS client identity".to_owned())?;
-    client.alpn_protocols = vec![b"heptabao-raft/1".to_vec()];
+    client.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
 
     let verifier = WebPkiClientVerifier::builder_with_provider(
         Arc::new(root_store(&ca)?),
@@ -1007,7 +1007,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
         .with_client_cert_verifier(verifier)
         .with_single_cert(certificates, key)
         .map_err(|_| "invalid HA TLS server identity".to_owned())?;
-    server.alpn_protocols = vec![b"heptabao-raft/1".to_vec()];
+    server.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
     Ok((Arc::new(client), Arc::new(server), local_leaf_digest))
 }
 
