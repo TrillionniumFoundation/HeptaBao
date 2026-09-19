@@ -126,6 +126,10 @@ Current source anchors include:
   crash-window and backup/restore tests;
 - `crates/heptabao-server/src/service_capacity_tests.rs` for root-only retirement
   and continued state commits in the new epoch;
+- `crates/heptabao-server/src/service_state_store_integration_tests.rs` for
+  `large_unchanged_owner_bounds_v4_write_set_to_changed_owner`, which checks
+  that a multi-megabyte local V4 update rewrites only the changed owner's
+  chunks and the publication manifest;
 - `qa/openbao-acceptance/capacity_live.py` for a real synthetic TLS process.
 
 Commands and source anchors are requirements, not inherited success receipts. The

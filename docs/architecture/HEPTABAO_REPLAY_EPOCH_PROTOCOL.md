@@ -74,6 +74,8 @@ Focused Rust source scenarios in `crates/heptabao-server/src/service_capacity_te
 
 `.github/workflows/replay-epoch-ha.yml` runs that fixture against the pull request's immutable exact head with read-only repository permissions and no persisted checkout credentials. A source file or workflow being present is not a pass receipt; only the current exact-head run establishes the named observation.
 
+The current SSD Linux receipt is [`qa/openbao-acceptance/evidence/replay-epoch-e57f045.json`](../../qa/openbao-acceptance/evidence/replay-epoch-e57f045.json): 53 scoped scenarios passed for binary digest `e57f04533c3beaf9560b0d5dd1af66355231df6bf8ddc09ace03598e338579b3`. It leaves the directed-partition, forced-snapshot, disk/power-fault, mixed-version, multi-host and independent-reproduction exits below open.
+
 ## Remaining admission gaps
 
 This protocol and its repository-controlled three-process fixture do not close replacement admission by themselves. Still required are at least:

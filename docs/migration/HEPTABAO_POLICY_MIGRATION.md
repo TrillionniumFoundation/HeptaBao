@@ -43,4 +43,6 @@ Repository-controlled evidence consists of:
 - `qa/openbao-acceptance/policy_migration_live.py` for an actual checksum-pinned OpenBao 2.6.2 source, an actual HeptaBao TLS target, exact readback, restart, and idempotent resume;
 - `.github/workflows/policy-migration-live.yml` for exact-head execution.
 
+The current exact-head live receipt is [`qa/openbao-acceptance/evidence/policy-migration-e7e5a0f.json`](../../qa/openbao-acceptance/evidence/policy-migration-e7e5a0f.json). It records 19/19 checks against a pinned OpenBao 2.6.2 arm64 oracle and the candidate binary digest `9ee7481825c1f01a1200faeb601bfe8d154e814445460c3e35b6f4e9f0178847`; it deliberately records `full_asset_migration`, cutover and rollback authority as false.
+
 This closes only the bounded adapter portion of the `policies_acl` asset class. Full asset migration still requires namespace-complete inventory, an explicit treatment of built-in policy semantics, token/revocation cutover ordering, rollback behavior, and independent admission on the unchanged release candidate.

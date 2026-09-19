@@ -110,6 +110,8 @@ ARM64/macOS/Windows, large-state load, physical disk faults, OpenBao binary-form
 parity, automatic arbitrary-node challenge enrollment, force restore and rolling
 mixed-version upgrade require separate evidence.
 
+The current SSD Linux receipt is [`qa/openbao-acceptance/evidence/raft-membership-e57f045.json`](../../qa/openbao-acceptance/evidence/raft-membership-e57f045.json): 38 native membership scenarios passed for binary digest `e57f04533c3beaf9560b0d5dd1af66355231df6bf8ddc09ace03598e338579b3`. It remains same-version loopback evidence and does not grant production or compatibility authority.
+
 ### Explicit linearizable read probe
 
 `GET sys/storage/raft/linearizable-read` is a root-scoped diagnostic route. It
