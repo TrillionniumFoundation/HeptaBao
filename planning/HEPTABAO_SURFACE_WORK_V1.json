@@ -397,6 +397,20 @@
         "linux_checksum_pinned_sandbox_wrapper"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "snapshot-inspection": {
+      "script": "qa/openbao-acceptance/migration_snapshot_live.py",
+      "arguments": [
+        "--inspector",
+        "{inspector}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2",
+        "inspect-openbao-snapshot_binary"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1848,18 +1862,27 @@
     {
       "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
       "category": "migration",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "tooling_partial",
+      "runtime_source": "crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs",
       "technical_contract": {
         "api_or_protocol": "OpenBao snapshot format conversion and native HeptaBao backup",
         "required_positive_and_hostile_behavior": "Authenticate input, prove seal/key binding, preserve tombstones and restore into a fenced new root",
-        "remaining_semantics_and_effect_checks": "A native backup is not OpenBao raft.snap; raw copy is forbidden until format adapter is verified",
+        "remaining_semantics_and_effect_checks": "Real OpenBao 2.6.2 snapshot structure/digest inspection is executable. Sealed-checksum authentication, decryption, typed conversion, restore and anti-resurrection remain open; raw raft.db mutation is excluded.",
         "crash_reopen": "Interrupt OpenBao snapshot format conversion and native HeptaBao backup before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-MIGRATION-SNAPSHOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "migration_snapshot_live.official_openbao_2_6_2_tls_oracle_ready",
+        "migration_snapshot_live.official_snapshot_saved",
+        "migration_snapshot_live.authentic_snapshot_inspected",
+        "migration_snapshot_live.tampered_archive_rejected",
+        "migration_snapshot_live.state_size_limit_rejected",
+        "migration_snapshot_live.unknown_archive_path_rejected"
+      ],
+      "available_scoped_profiles": [
+        "snapshot-inspection"
+      ],
       "whole_surface_admitted": false
     },
     {

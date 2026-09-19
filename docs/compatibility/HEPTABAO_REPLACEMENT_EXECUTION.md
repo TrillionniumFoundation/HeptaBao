@@ -1088,9 +1088,9 @@ Existing bounded profiles: `qa/openbao-acceptance/live_migration_rehearsal.py`, 
 
 ### HB-SURFACE-MIGRATION-SNAPSHOT
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H24-WP04`, `H24-WP05`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H24-WP04`, `H24-WP05`.
 API families: `snapshot inspection/conversion tools`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-migration/src/openbao_snapshot.rs`, `crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs`.
 Separate contracts: `crates/heptabao-migration/src/lib.rs`.
 Guides: `docs/modules/heptabao-migration.md`.
 
@@ -1100,9 +1100,9 @@ Guides: `docs/modules/heptabao-migration.md`.
 
 **Lifecycle:** Retain original and prove interrupted conversion/restore and anti-resurrection checks.
 
-**Remaining scope:** Direct raft.db mutation is excluded; parser requires separate qualification.
+**Remaining scope:** Inspection-only: byte integrity and structure do not prove sealed-checksum authenticity, decryption, application-state conversion, restore, lease preservation or cutover authority. Typed conversion and interruption-safe restore remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/migration_snapshot_live.py`.
 
 ### HB-SURFACE-MIGRATION-CUTOVER
 

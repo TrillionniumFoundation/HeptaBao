@@ -94,6 +94,23 @@ def private_text(path, value):
         handle.write(value)
 
 
+def oracle_environment(root):
+    """Do not inherit caller tokens, TLS overrides, namespaces or proxies."""
+    environment = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "TZ") if key in os.environ}
+    environment["TMPDIR"] = str(root)
+    return environment
+
+
+def oracle_cli_environment(oracle, token):
+    environment = oracle_environment(oracle["root"])
+    for prefix in ("BAO", "VAULT"):
+        environment.update({prefix + "_ADDR": oracle["address"],
+                            prefix + "_CACERT": oracle["ca_file"],
+                            prefix + "_TOKEN": token,
+                            prefix + "_MAX_RETRIES": "0"})
+    return environment
+
+
 def certificates(root):
     commands = [
         ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
@@ -145,7 +162,7 @@ def restart_oracle(oracle):
     oracle["log"] = open(root / "server.log", "ab")
     oracle["process"] = subprocess.Popen(
         [str(binary), "server", "-config=" + str(root / "server.json")],
-        stdout=oracle["log"], stderr=oracle["log"],
+        stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root),
     )
     client = Client(oracle["address"], oracle["ca_file"], token, timeout=2)
     observed_health = None
@@ -182,8 +199,8 @@ def restart_oracle(oracle):
     return oracle
 
 
-def start_oracle(port, *, audit_file=False):
-    if type(audit_file) is not bool:
+def start_oracle(port, *, audit_file=False, raft_storage=False):
+    if type(audit_file) is not bool or type(raft_storage) is not bool:
         raise BaoError("official_oracle_invalid_audit_profile")
     if type(port) is not int or not 1024 <= port <= 65534:
         raise BaoError("official_oracle_invalid_loopback_port")
@@ -196,10 +213,14 @@ def start_oracle(port, *, audit_file=False):
               "artifact_sha256": ARTIFACT_SHA256, "binary_sha256": BINARY_SHA256}
     try:
         certificates(root)
+        storage = ({"raft": {"path": str(root / "data"), "node_id": "synthetic-openbao-1"}}
+                   if raft_storage else {"file": {"path": str(root / "data")}})
+        if raft_storage:
+            (root / "data").mkdir(mode=0o700)
         config = {
             "disable_mlock": True, "ui": False,
             "api_addr": oracle["address"], "cluster_addr": f"https://127.0.0.1:{port + 1}",
-            "storage": {"file": {"path": str(root / "data")}},
+            "storage": storage,
             "listener": [{"tcp": {"address": f"127.0.0.1:{port}",
                                     "tls_cert_file": str(root / "tls.crt"),
                                     "tls_key_file": str(root / "tls.key"),
@@ -217,7 +238,7 @@ def start_oracle(port, *, audit_file=False):
         # Configuration contains no credential. Never use -dev or a token argument.
         oracle["process"] = subprocess.Popen(
             [str(binary), "server", "-config=" + str(root / "server.json")],
-            stdout=oracle["log"], stderr=oracle["log"],
+            stdout=oracle["log"], stderr=oracle["log"], env=oracle_environment(root),
         )
         client = Client(oracle["address"], oracle["ca_file"], "synthetic-uninitialized-client", timeout=2)
         for _ in range(100):
@@ -232,6 +253,12 @@ def start_oracle(port, *, audit_file=False):
             time.sleep(0.05)
         else:
             raise BaoError("official_oracle_tls_startup_timeout")
+        # A fresh Raft peer elects its first leader during init. The readiness
+        # polling timeout (2s) is too short for that one-time operation. Send
+        # exactly one request with a longer deadline; never retry an init with
+        # unknown outcome, which would lose the generated custody material.
+        if raft_storage:
+            client = Client(oracle["address"], oracle["ca_file"], "synthetic-uninitialized-client", timeout=30)
         initialized = client.request("POST", "/v1/sys/init", {"secret_shares": 1, "secret_threshold": 1})
         if initialized.status != 200:
             raise BaoError("official_oracle_init_failed")
@@ -247,7 +274,7 @@ def start_oracle(port, *, audit_file=False):
                     "binary_sha256": BINARY_SHA256, "provenance_url": PROVENANCE_URL,
                     "endpoint": oracle["address"], "cluster_id": health["cluster_id"],
                     "archive_member_matches_executable": True, "server_mode": "server_not_dev",
-                    "storage": "file", "tls_verified": True, "synthetic_only": True,
+                    "storage": "raft" if raft_storage else "file", "tls_verified": True, "synthetic_only": True,
                     "launcher_source_sha256": file_digest(__file__)}
         private_write(root / "oracle-identity.json", identity)
         oracle["identity_file"] = str(root / "oracle-identity.json")

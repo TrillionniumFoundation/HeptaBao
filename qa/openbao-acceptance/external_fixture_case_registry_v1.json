@@ -153,6 +153,17 @@
         "rollback_source_wrapping_authority_restored_only_after_target_fence"
       ]
     },
+    "migration_snapshot_live": {
+      "script": "qa/openbao-acceptance/migration_snapshot_live.py",
+      "case_ids": [
+        "official_openbao_2_6_2_tls_oracle_ready",
+        "official_snapshot_saved",
+        "authentic_snapshot_inspected",
+        "tampered_archive_rejected",
+        "state_size_limit_rejected",
+        "unknown_archive_path_rejected"
+      ]
+    },
     "openapi_live": {
       "script": "qa/openbao-acceptance/openapi_live.py",
       "case_ids": [

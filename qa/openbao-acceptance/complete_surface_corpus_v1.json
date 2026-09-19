@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 45,
-    "defined_not_implemented_surface_count": 15,
-    "fixture_case_count": 267,
+    "implemented_surface_count": 46,
+    "defined_not_implemented_surface_count": 14,
+    "fixture_case_count": 273,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -847,9 +847,16 @@
       "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
       "category": "migration",
       "criticality": "DATA_DURABILITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 6,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "migration_snapshot_live.official_openbao_2_6_2_tls_oracle_ready",
+        "migration_snapshot_live.official_snapshot_saved",
+        "migration_snapshot_live.authentic_snapshot_inspected",
+        "migration_snapshot_live.tampered_archive_rejected",
+        "migration_snapshot_live.state_size_limit_rejected",
+        "migration_snapshot_live.unknown_archive_path_rejected"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

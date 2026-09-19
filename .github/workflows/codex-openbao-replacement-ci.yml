@@ -344,6 +344,21 @@ jobs:
           timeout 180 python qa/openbao-acceptance/migration_preflight_live.py \
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/preflight.json"
 
+      - name: Inspect an authentic OpenBao Raft snapshot without restoring it
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-migration-snapshot"
+          cargo +1.98.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
+          timeout 300 python qa/openbao-acceptance/migration_snapshot_live.py \
+            --inspector "$PWD/target/debug/inspect-openbao-snapshot" \
+            --work-dir "$work"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Execute all bounded official-binary differential profiles
         shell: bash
         env:

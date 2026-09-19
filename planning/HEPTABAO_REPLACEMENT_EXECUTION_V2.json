@@ -490,18 +490,18 @@
       "positive": "Authenticate real verified client chains and bind allowed certificate identities",
       "hostile": "Reject revoked leaf, bad EKU, unrelated CA and untrusted forwarded certificates",
       "lifecycle": "Refresh CRL/OCSP and rotate CA without resurrecting revoked sessions",
-    "implementation": "PARTIAL_RUNTIME",
-    "runtime_sources": [
-      "crates/heptabao-server/src/auth.rs",
-      "crates/heptabao-server/src/http.rs"
-    ],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/http.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-    "executable_profiles": [
-      "qa/openbao-acceptance/cert_auth_live.py"
-    ],
+      "executable_profiles": [
+        "qa/openbao-acceptance/cert_auth_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
       "remaining_scope": "Chain, CRL, OCSP and trusted-forwarded-certificate behavior."
@@ -2008,18 +2008,23 @@
       "positive": "Inspect declared source snapshot and convert through a reviewed typed adapter",
       "hostile": "Reject unknown format, changed seal, corruption and direct raft.db mutation",
       "lifecycle": "Retain original and prove interrupted conversion/restore and anti-resurrection checks",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-migration/src/openbao_snapshot.rs",
+        "crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs"
+      ],
       "contract_sources": [
         "crates/heptabao-migration/src/lib.rs"
       ],
       "guides": [
         "docs/modules/heptabao-migration.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/migration_snapshot_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Direct raft.db mutation is excluded; parser requires separate qualification."
+      "remaining_scope": "Inspection-only: byte integrity and structure do not prove sealed-checksum authenticity, decryption, application-state conversion, restore, lease preservation or cutover authority. Typed conversion and interruption-safe restore remain open."
     },
     {
       "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",

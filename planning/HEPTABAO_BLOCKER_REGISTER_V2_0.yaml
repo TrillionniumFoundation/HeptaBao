@@ -225,6 +225,7 @@ repository_blockers:
   - replace the qualification router with authenticated bounded inter-process peer transport
   - compose the runtime into heptabao-server with leader forwarding and linearizable reads
   - execute destructive three-process failover, quorum-loss, snapshot-transfer and rolling-upgrade qualification
+  - distinguish committed learner enrollment from replication readiness during bootstrap; leadership loss or unavailable learners must not produce false admission success or an unrecoverable startup
   - bind source guide exact-head and prospective-main-merge evidence
   - retain authority false until independent admission
 - id: HB-V2-REP-014

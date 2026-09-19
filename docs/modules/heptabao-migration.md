@@ -59,9 +59,16 @@ This is deliberately an **inspection-only** API. It never decrypts or verifies
 the snapshot or converts it into a HeptaBao backup. A valid inspection therefore
 proves archive structure and byte integrity only; it does not prove barrier-key
 availability, application-state compatibility, migration completeness or
-cutover authority. The `HB-SURFACE-MIGRATION-SNAPSHOT` admission gate remains
-open until a separately reviewed source-format adapter and interruption-safe
-conversion protocol exist.
+cutover authority. The inspection subset is implemented-scoped; full snapshot
+conversion, restore and migration authority remain open until separately
+reviewed adapters and interruption-safe protocols exist.
+
+The `inspect-openbao-snapshot` binary is the bounded read-only caller for this
+API. `qa/openbao-acceptance/migration_snapshot_live.py` binds it to a pinned
+OpenBao 2.6.2 Raft oracle, checks an authentic `raft.snap`, and rejects tampered
+archives, state-size overflows and unknown archive members. These observations
+admit only the inspection subset; restore, conversion and migration authority
+remain open.
 
 ### Historical V1.4.7 lexical snapshot
 
