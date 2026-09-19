@@ -1549,6 +1549,72 @@ fn certificate_role_login_requires_the_verified_leaf_digest() {
     assert_eq!(login.login_identity.unwrap().alias, "operator");
 }
 
+#[test]
+fn certificate_role_selectors_match_sans_subject_and_metadata() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = include_bytes!("../testdata/cert-selector.der").to_vec();
+    let digest = certificate_sha256(&leaf);
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": digest,
+            "allowed_names": ["client.*"],
+            "allowed_common_names": ["client.example.test"],
+            "allowed_dns_sans": ["client.example.test"],
+            "allowed_email_sans": ["user@*example.test"],
+            "allowed_uri_sans": ["spiffe://example/*"],
+            "allowed_organizational_units": ["Eng*"],
+            "required_extensions": ["1.2.3.4.5:tenant-*"],
+            "allowed_metadata_extensions": ["1.2.3.4.5"],
+            "token_policies": ["default"],
+        }),
+        100,
+    );
+    let login = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.login_identity.unwrap().alias, "operator");
+    assert_eq!(login.body["auth"]["metadata"]["1-2-3-4-5"], "tenant-a");
+
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": certificate_sha256(&leaf),
+            "allowed_names": ["client?.example.test"],
+            "token_policies": ["default"],
+        }),
+        102,
+    );
+    let literal_question_mark = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        103,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(literal_question_mark, Err(error) if error.status == 403));
+}
+
 fn mount_auth(state: &mut AuthState, root: &Principal, namespace: &str, mount: &str, kind: &str) {
     assert_eq!(
         call(

@@ -15,6 +15,11 @@ use std::{
     io::BufReader,
     num::NonZeroU32,
 };
+use x509_parser::{
+    asn1_rs::{Any, FromDer},
+    extensions::GeneralName,
+    parse_x509_certificate,
+};
 use zeroize::{Zeroize, Zeroizing};
 
 #[path = "auth_oidc.rs"]
@@ -55,6 +60,9 @@ const MAX_EXTERNAL_REPLAY_ENTRIES: usize = 32_000;
 const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
+const MAX_CERT_ROLE_MATCH_VALUES: usize = 32;
+const MAX_CERT_ROLE_MATCH_VALUE_BYTES: usize = 256;
+const MAX_CERT_EXTENSION_VALUE_BYTES: usize = 4096;
 
 fn default_bind_secret_id() -> bool {
     true
@@ -96,10 +104,9 @@ pub struct AuthState {
     /// a bounded external alias.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     plugin_auth_mounts: BTreeMap<String, BTreeMap<String, PluginAuthMount>>,
-    /// Certificate-auth roles are bound to an exact leaf digest. The
-    /// certificate bytes never enter durable application state; TLS owns chain,
-    /// EKU and CRL validation. SAN/subject selectors remain explicitly outside
-    /// this minimal profile and are rejected by the route parser.
+    /// Certificate-auth roles are bound to an exact leaf digest and may carry
+    /// bounded subject/SAN selectors. Certificate bytes never enter durable
+    /// application state; TLS owns chain, EKU and CRL validation.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     cert_roles: BTreeMap<String, BTreeMap<String, BTreeMap<String, CertRole>>>,
 }
@@ -107,6 +114,22 @@ pub struct AuthState {
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct CertRole {
     certificate_sha256: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_common_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_dns_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_email_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_uri_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_organizational_units: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    required_extensions: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    allowed_metadata_extensions: Vec<String>,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
@@ -116,6 +139,29 @@ struct CertRole {
 #[derive(Debug)]
 struct PresentedCertificate {
     sha256: String,
+}
+
+#[derive(Default)]
+struct CertificateAttributes {
+    common_names: Vec<String>,
+    dns_sans: Vec<String>,
+    email_sans: Vec<String>,
+    uri_sans: Vec<String>,
+    organizational_units: Vec<String>,
+    extensions: BTreeMap<String, String>,
+}
+
+impl CertRole {
+    fn has_certificate_constraints(&self) -> bool {
+        !self.allowed_names.is_empty()
+            || !self.allowed_common_names.is_empty()
+            || !self.allowed_dns_sans.is_empty()
+            || !self.allowed_email_sans.is_empty()
+            || !self.allowed_uri_sans.is_empty()
+            || !self.allowed_organizational_units.is_empty()
+            || !self.required_extensions.is_empty()
+            || !self.allowed_metadata_extensions.is_empty()
+    }
 }
 
 fn certificate_sha256(der: &[u8]) -> String {
@@ -145,6 +191,188 @@ fn parse_presented_certificate(chain: &[Vec<u8>]) -> Result<PresentedCertificate
     Ok(PresentedCertificate {
         sha256: certificate_sha256(leaf),
     })
+}
+
+fn parse_certificate_attributes(der: &[u8]) -> Option<CertificateAttributes> {
+    let (remaining, certificate) = parse_x509_certificate(der).ok()?;
+    if !remaining.is_empty() {
+        return None;
+    }
+
+    let mut attributes = CertificateAttributes::default();
+    let mut seen_extension_oids = BTreeSet::new();
+    for value in certificate
+        .subject()
+        .iter_common_name()
+        .filter_map(|value| value.as_str().ok())
+    {
+        if value.len() <= MAX_CERT_ROLE_MATCH_VALUE_BYTES {
+            attributes.common_names.push(value.to_owned());
+        }
+    }
+    for value in certificate
+        .subject()
+        .iter_organizational_unit()
+        .filter_map(|value| value.as_str().ok())
+    {
+        if value.len() <= MAX_CERT_ROLE_MATCH_VALUE_BYTES {
+            attributes.organizational_units.push(value.to_owned());
+        }
+    }
+    // x509-parser rejects malformed or duplicate SAN extensions through this
+    // accessor. A constrained role must fail closed when SAN parsing is not
+    // unambiguous.
+    let subject_alt_names = certificate.subject_alternative_name().ok()?;
+    if let Some(subject_alt_names) = subject_alt_names {
+        for name in &subject_alt_names.value.general_names {
+            let (target, value) = match name {
+                GeneralName::DNSName(value) => (&mut attributes.dns_sans, *value),
+                GeneralName::RFC822Name(value) => (&mut attributes.email_sans, *value),
+                GeneralName::URI(value) => (&mut attributes.uri_sans, *value),
+                GeneralName::Invalid(_, _) => return None,
+                _ => continue,
+            };
+            if value.is_empty() || value.len() > MAX_CERT_ROLE_MATCH_VALUE_BYTES {
+                return None;
+            }
+            target.push(value.to_owned());
+        }
+    }
+    for extension in certificate.extensions() {
+        if extension.parsed_extension().error().is_some() {
+            return None;
+        }
+        let oid = extension.oid.to_id_string();
+        if !seen_extension_oids.insert(oid.clone()) {
+            return None;
+        }
+        if extension.value.len() <= MAX_CERT_EXTENSION_VALUE_BYTES
+            && let Some(value) = der_extension_value(extension.value)
+            && attributes.extensions.insert(oid, value).is_some()
+        {
+            return None;
+        }
+    }
+    Some(attributes)
+}
+
+fn der_extension_value(value: &[u8]) -> Option<String> {
+    let (remaining, value) = Any::from_der(value).ok()?;
+    if !remaining.is_empty() {
+        return None;
+    }
+    let bytes = value.data;
+    match value.tag().0 {
+        // OpenBao's cert backend unmarshals ASN.1 string extensions into a Go
+        // string. Keep the same bounded string family and reject binary values.
+        0x0c | 0x12 | 0x13 | 0x14 | 0x16 | 0x1a => {
+            let text = std::str::from_utf8(bytes).ok()?;
+            (!text.is_empty() && text.len() <= MAX_CERT_EXTENSION_VALUE_BYTES)
+                .then_some(text.to_owned())
+        }
+        0x1e if bytes.len() % 2 == 0 => {
+            let units = bytes
+                .as_chunks::<2>()
+                .0
+                .iter()
+                .map(|pair| u16::from_be_bytes([pair[0], pair[1]]));
+            let text = String::from_utf16(units.collect::<Vec<_>>().as_slice()).ok()?;
+            (!text.is_empty() && text.len() <= MAX_CERT_EXTENSION_VALUE_BYTES).then_some(text)
+        }
+        _ => None,
+    }
+}
+
+fn wildcard_match(pattern: &str, value: &str) -> bool {
+    let pattern: Vec<char> = pattern.chars().collect();
+    let value: Vec<char> = value.chars().collect();
+    let (mut pattern_index, mut value_index) = (0_usize, 0_usize);
+    let (mut star_index, mut star_value_index) = (None, 0_usize);
+    while value_index < value.len() {
+        if pattern_index < pattern.len() && pattern[pattern_index] == value[value_index] {
+            pattern_index += 1;
+            value_index += 1;
+        } else if pattern_index < pattern.len() && pattern[pattern_index] == '*' {
+            star_index = Some(pattern_index);
+            pattern_index += 1;
+            star_value_index = value_index;
+        } else if let Some(star) = star_index {
+            pattern_index = star + 1;
+            star_value_index += 1;
+            value_index = star_value_index;
+        } else {
+            return false;
+        }
+    }
+    while pattern_index < pattern.len() && pattern[pattern_index] == '*' {
+        pattern_index += 1;
+    }
+    pattern_index == pattern.len()
+}
+
+fn matches_any(values: &[String], patterns: &[String]) -> bool {
+    patterns.is_empty()
+        || patterns
+            .iter()
+            .any(|pattern| values.iter().any(|value| wildcard_match(pattern, value)))
+}
+
+fn matches_cert_role(
+    presented: &PresentedCertificate,
+    attributes: Option<&CertificateAttributes>,
+    role: &CertRole,
+) -> bool {
+    if role.certificate_sha256 != presented.sha256 {
+        return false;
+    }
+    if !role.has_certificate_constraints() {
+        return true;
+    }
+    let Some(attributes) = attributes else {
+        return false;
+    };
+    let mut names = attributes.common_names.clone();
+    names.extend(attributes.dns_sans.iter().cloned());
+    names.extend(attributes.email_sans.iter().cloned());
+    if !matches_any(&names, &role.allowed_names)
+        || !matches_any(&attributes.common_names, &role.allowed_common_names)
+        || !matches_any(&attributes.dns_sans, &role.allowed_dns_sans)
+        || !matches_any(&attributes.email_sans, &role.allowed_email_sans)
+        || !matches_any(&attributes.uri_sans, &role.allowed_uri_sans)
+        || !matches_any(
+            &attributes.organizational_units,
+            &role.allowed_organizational_units,
+        )
+    {
+        return false;
+    }
+    role.required_extensions.iter().all(|requirement| {
+        let Some((oid, pattern)) = requirement.split_once(':') else {
+            return false;
+        };
+        attributes
+            .extensions
+            .get(oid)
+            .is_some_and(|value| wildcard_match(pattern, value))
+    })
+}
+
+fn certificate_metadata(
+    attributes: Option<&CertificateAttributes>,
+    role: &CertRole,
+) -> BTreeMap<String, String> {
+    let Some(attributes) = attributes else {
+        return BTreeMap::new();
+    };
+    role.allowed_metadata_extensions
+        .iter()
+        .filter_map(|oid| {
+            attributes
+                .extensions
+                .get(oid)
+                .map(|value| (oid.replace('.', "-"), value.clone()))
+        })
+        .collect()
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -972,6 +1200,90 @@ fn claim_values(body: &Value, name: &str) -> Result<BTreeSet<String>, AuthError>
         ));
     }
     Ok(values.into_iter().map(str::to_owned).collect())
+}
+
+fn bounded_string_list(
+    body: &Value,
+    field: &str,
+    max_values: usize,
+    max_bytes: usize,
+) -> Result<Vec<String>, AuthError> {
+    let Some(value) = body.get(field) else {
+        return Ok(Vec::new());
+    };
+    let values: Vec<&str> = match value {
+        Value::String(value) => vec![value.as_str()],
+        Value::Array(values) => values
+            .iter()
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("certificate role selector values must be strings"))
+            })
+            .collect::<Result<_, _>>()?,
+        _ => return Err(bad("certificate role selectors must be a string or array")),
+    };
+    if values.len() > max_values
+        || values.iter().any(|value| {
+            value.is_empty() || value.len() > max_bytes || value.chars().any(char::is_control)
+        })
+    {
+        return Err(bad("certificate role selectors exceed their bounds"));
+    }
+    Ok(values.into_iter().map(str::to_owned).collect())
+}
+
+fn valid_oid(value: &str) -> bool {
+    let mut parts = value.split('.');
+    let Some(first) = parts.next() else {
+        return false;
+    };
+    let Some(second) = parts.next() else {
+        return false;
+    };
+    let first_arc = match first {
+        "0" => 0_u8,
+        "1" => 1,
+        "2" => 2,
+        _ => return false,
+    };
+    !value.is_empty()
+        && value.len() <= 64
+        && !second.is_empty()
+        && second.len() <= 8
+        && second.bytes().all(|byte| byte.is_ascii_digit())
+        && (second == "0" || !second.starts_with('0'))
+        && (first_arc == 2 || second.parse::<u16>().is_ok_and(|arc| arc <= 39))
+        && parts.all(|part| {
+            !part.is_empty()
+                && part.len() <= 8
+                && part.bytes().all(|byte| byte.is_ascii_digit())
+                && (part == "0" || !part.starts_with('0'))
+        })
+}
+
+fn certificate_extension_requirements(body: &Value, field: &str) -> Result<Vec<String>, AuthError> {
+    let values = bounded_string_list(body, field, MAX_CERT_ROLE_MATCH_VALUES, 320)?;
+    for value in &values {
+        let Some((oid, pattern)) = value.split_once(':') else {
+            return Err(bad(
+                "certificate extension requirements must be oid:pattern",
+            ));
+        };
+        if !valid_oid(oid) || pattern.is_empty() || pattern.len() > MAX_CERT_ROLE_MATCH_VALUE_BYTES
+        {
+            return Err(bad("invalid certificate extension requirement"));
+        }
+    }
+    Ok(values)
+}
+
+fn certificate_metadata_extensions(body: &Value, field: &str) -> Result<Vec<String>, AuthError> {
+    let values = bounded_string_list(body, field, MAX_CERT_ROLE_MATCH_VALUES, 64)?;
+    if values.iter().any(|value| !valid_oid(value)) {
+        return Err(bad("invalid certificate metadata extension OID"));
+    }
+    Ok(values)
 }
 
 impl AuthState {
@@ -2761,9 +3073,17 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|mounts| mounts.get(mount))
                 .ok_or_else(denied)?;
+            let constrained = roles.values().any(CertRole::has_certificate_constraints);
+            let attributes = if constrained {
+                peer_certificates
+                    .and_then(|chain| chain.first())
+                    .and_then(|leaf| parse_certificate_attributes(leaf))
+            } else {
+                None
+            };
             let (role_name, role) = roles
                 .iter()
-                .find(|(_, role)| role.certificate_sha256 == presented.sha256)
+                .find(|(_, role)| matches_cert_role(&presented, attributes.as_ref(), role))
                 .ok_or_else(denied)?;
             let (token_ttl, token_max_ttl) =
                 self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
@@ -2783,6 +3103,10 @@ impl AuthState {
                 mount: mount.into(),
                 alias: role_name.clone(),
             });
+            let metadata = certificate_metadata(attributes.as_ref(), role);
+            if !metadata.is_empty() {
+                response.body["auth"]["metadata"] = json!(metadata);
+            }
             self.tokens.insert(token_id, token);
             return Ok(response);
         }
@@ -2821,6 +3145,14 @@ impl AuthState {
                         "token_ttl": role.token_ttl,
                         "token_max_ttl": role.token_max_ttl,
                         "token_num_uses": role.token_num_uses,
+                        "allowed_names": role.allowed_names,
+                        "allowed_common_names": role.allowed_common_names,
+                        "allowed_dns_sans": role.allowed_dns_sans,
+                        "allowed_email_sans": role.allowed_email_sans,
+                        "allowed_uri_sans": role.allowed_uri_sans,
+                        "allowed_organizational_units": role.allowed_organizational_units,
+                        "required_extensions": role.required_extensions,
+                        "allowed_metadata_extensions": role.allowed_metadata_extensions,
                     }),
                     false,
                 ))
@@ -2838,6 +3170,14 @@ impl AuthState {
                         "token_ttl",
                         "token_max_ttl",
                         "token_num_uses",
+                        "allowed_names",
+                        "allowed_common_names",
+                        "allowed_dns_sans",
+                        "allowed_email_sans",
+                        "allowed_uri_sans",
+                        "allowed_organizational_units",
+                        "required_extensions",
+                        "allowed_metadata_extensions",
                     ],
                 )?;
                 let certificate_sha256 =
@@ -2891,8 +3231,56 @@ impl AuthState {
                     self.auth_mount_token_limits(scope, 0, 0)?;
                 let token_ttl = duration(body, "token_ttl", mount_default_ttl)?;
                 let token_max_ttl = duration(body, "token_max_ttl", mount_max_ttl)?;
+                let allowed_names = bounded_string_list(
+                    body,
+                    "allowed_names",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let allowed_common_names = bounded_string_list(
+                    body,
+                    "allowed_common_names",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let allowed_dns_sans = bounded_string_list(
+                    body,
+                    "allowed_dns_sans",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let allowed_email_sans = bounded_string_list(
+                    body,
+                    "allowed_email_sans",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let allowed_uri_sans = bounded_string_list(
+                    body,
+                    "allowed_uri_sans",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let allowed_organizational_units = bounded_string_list(
+                    body,
+                    "allowed_organizational_units",
+                    MAX_CERT_ROLE_MATCH_VALUES,
+                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                )?;
+                let required_extensions =
+                    certificate_extension_requirements(body, "required_extensions")?;
+                let allowed_metadata_extensions =
+                    certificate_metadata_extensions(body, "allowed_metadata_extensions")?;
                 let mut role = CertRole {
                     certificate_sha256,
+                    allowed_names,
+                    allowed_common_names,
+                    allowed_dns_sans,
+                    allowed_email_sans,
+                    allowed_uri_sans,
+                    allowed_organizational_units,
+                    required_extensions,
+                    allowed_metadata_extensions,
                     policies,
                     token_ttl,
                     token_max_ttl,

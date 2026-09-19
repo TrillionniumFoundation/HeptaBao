@@ -228,15 +228,22 @@ After mounting `cert` with `POST sys/auth/cert`, an administrator can create
 `auth/cert/certs/<name>` with either a single PEM leaf certificate or its
 lowercase 64-character SHA-256 digest, plus the ordinary token policy and TTL
 limits. `POST auth/cert/login` accepts an empty body and matches the verified
-TLS leaf digest. The verified chain is carried to a leader only inside the
-authenticated, bounded HA forwarding frame and is cleared with the request.
+TLS leaf digest. A role may additionally set bounded `allowed_names`,
+`allowed_common_names`, `allowed_dns_sans`, `allowed_email_sans`,
+`allowed_uri_sans`, `allowed_organizational_units`, `required_extensions`
+(`oid:pattern`) and `allowed_metadata_extensions` (OID strings). Selectors
+use the OpenBao-style case-sensitive `*` glob; `?` is literal. Certificate
+attributes and metadata are capped, malformed or duplicate SAN/extensions fail
+closed, and selected metadata is returned under the login response's `auth.metadata`.
+The verified chain is carried to a leader only inside the authenticated,
+bounded HA forwarding frame and is cleared with the request.
 
-This profile deliberately binds roles to the exact leaf digest. It does not
-claim OpenBao's complete certificate-role field set, SAN/subject selectors,
-OCSP behavior, browser flows or provider qualification; the certificate-auth
-surface remains outside whole-surface replacement admission. OpenBao's
-reference login path performs the corresponding connection-certificate
-selection and role validation in [`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
+This is still a bounded profile, not complete OpenBao certificate parity. It
+does not implement OCSP role checks, certificate-derived renewal binding,
+browser flows or provider qualification; the certificate-auth surface remains
+outside whole-surface replacement admission. OpenBao's reference login path
+performs the corresponding connection-certificate selection and role
+validation in [`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
 
 ## AppRole
 
