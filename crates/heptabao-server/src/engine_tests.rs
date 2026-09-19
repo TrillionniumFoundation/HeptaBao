@@ -470,7 +470,12 @@ fn failed_operations_never_modify_engine_state() -> TestResult {
 
 #[test]
 fn transit_all_aead_algorithms_authenticate_and_roundtrip_after_restart() -> TestResult {
-    for kind in ["aes128-gcm96", "aes256-gcm96", "chacha20-poly1305"] {
+    for kind in [
+        "aes128-gcm96",
+        "aes256-gcm96",
+        "chacha20-poly1305",
+        "xchacha20-poly1305",
+    ] {
         let mut state = EngineState::default();
         request(
             &mut state,
@@ -523,6 +528,72 @@ fn transit_all_aead_algorithms_authenticate_and_roundtrip_after_restart() -> Tes
         *last ^= 1;
         assert!(request(&mut restored, "team", "POST", "transit/decrypt/k", json!({"ciphertext":format!("vault:v1:{}",BASE64.encode(bytes)),"associated_data":associated}), 3).is_err());
     }
+    Ok(())
+}
+
+#[test]
+fn transit_xchacha_uses_openbao_raw_aad_and_24_byte_nonce() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "a",
+        "POST",
+        "transit/keys/k",
+        json!({"type":"xchacha20-poly1305"}),
+        1,
+    )?;
+    let associated = BASE64.encode(b"openbao-aad");
+    let ciphertext = request(
+        &mut state,
+        "a",
+        "POST",
+        "transit/encrypt/k",
+        json!({"plaintext":BASE64.encode(b"portable"),"associated_data":associated}),
+        2,
+    )?
+    .body["data"]["ciphertext"]
+        .clone();
+    let ciphertext_text = ciphertext.as_str().ok_or("ciphertext string missing")?;
+    let (_, versioned) = ciphertext_text
+        .split_once(':')
+        .ok_or("ciphertext version missing")?;
+    let (_, payload) = versioned
+        .split_once(':')
+        .ok_or("ciphertext payload missing")?;
+    assert_eq!(BASE64.decode(payload)?.len(), 24 + 8 + 16);
+
+    // OpenBao authenticates only the caller-provided associated data. A copied
+    // key ring therefore remains portable across logical paths, while the
+    // outer namespace/policy router still controls who can reach each path.
+    let namespace = state
+        .namespaces
+        .get("a")
+        .cloned()
+        .ok_or("namespace missing")?;
+    state.namespaces.insert("a/b".into(), namespace);
+    let decrypted = request(
+        &mut state,
+        "a/b",
+        "POST",
+        "transit/decrypt/k",
+        json!({"ciphertext":ciphertext,"associated_data":associated}),
+        3,
+    )?;
+    assert_eq!(
+        decrypted.body["data"]["plaintext"],
+        BASE64.encode(b"portable")
+    );
+    assert!(
+        request(
+            &mut state,
+            "a/b",
+            "POST",
+            "transit/decrypt/k",
+            json!({"ciphertext":ciphertext,"associated_data":BASE64.encode(b"wrong")}),
+            3,
+        )
+        .is_err()
+    );
     Ok(())
 }
 

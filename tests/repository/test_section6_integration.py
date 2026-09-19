@@ -52,7 +52,10 @@ class SectionSixIntegrationTests(unittest.TestCase):
         # V1-V3 is retained strictly as a migration reader, not the current writer.
         self.assertIn('heptabao-state-chunks-v1', legacy_state_store)
         self.assertIn('Self::persist_owner_state_batch(', service)
-        self.assertIn('OwnerWritePlan::new(', service)
+        # The owner write plan is deliberately isolated in its storage module;
+        # keep this check anchored to the module that owns the implementation
+        # instead of requiring a stale call-site in service.rs.
+        self.assertIn('OwnerWritePlan::new(', owner_store)
         self.assertIn('let replay_epoch = durable.replay_epoch();', service)
         self.assertIn('durable.apply_batch_in_replay_epoch(', service)
         self.assertIn('durable.apply_batch_with_compaction_in_replay_epoch(', service)

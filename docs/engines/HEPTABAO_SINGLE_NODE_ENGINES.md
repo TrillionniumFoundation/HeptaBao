@@ -195,6 +195,7 @@ a persisted encryption count. Private signing material uses ring's PKCS#8 output
 | `aes128-gcm96` | AES-128-GCM, 96-bit random nonce | No | SHA-256/384/512 |
 | `aes256-gcm96` | AES-256-GCM, 96-bit random nonce | No | SHA-256/384/512 |
 | `chacha20-poly1305` | ChaCha20-Poly1305, 96-bit random nonce | No | SHA-256/384/512 |
+| `xchacha20-poly1305` | XChaCha20-Poly1305, 192-bit random nonce | No | SHA-256/384/512 |
 | `ed25519` | No | Pure Ed25519 | SHA-256/384/512 |
 | `hmac` | No | No | SHA-256/384/512 |
 
@@ -247,9 +248,12 @@ items, individual fixed diagnostics and optional references. Nested batches are
 rejected. Partial failure follows the commit rule above. Inputs are bounded to
 approximately 4 MiB of decoded material, in addition to the HTTP request limit.
 
-Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA/XChaCha,
+Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA,
 SHA-224/SHA-3, Ed25519ph, BYOK wrapping/import, plaintext backup, automated periodic
-rotation and unsupported export formats are explicit errors. Descriptor flags
+rotation and unsupported export formats are explicit errors. XChaCha20-Poly1305
+uses OpenBao's raw caller-supplied associated data and its 24-byte nonce envelope
+for ciphertext portability; existing AES/ChaCha ciphertexts retain HeptaBao's
+namespace/mount/name binding. Descriptor flags
 report the implemented capabilities; for example `supports_derivation` is false
 even where an OpenBao key of the same cipher type reports true.
 

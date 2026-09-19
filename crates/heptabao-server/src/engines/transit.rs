@@ -1,5 +1,6 @@
 use super::*;
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
     aead, digest, hmac,
     rand::{SecureRandom, SystemRandom},
@@ -78,7 +79,9 @@ impl KeyVersion {
     fn generate(kind: &str, now: u64) -> Result<Self> {
         let material = match kind {
             "aes128-gcm96" => random_bytes(16)?,
-            "aes256-gcm96" | "chacha20-poly1305" | "hmac" => random_bytes(32)?,
+            "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" | "hmac" => {
+                random_bytes(32)?
+            }
             "ed25519" => Zeroizing::new(
                 signature::Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                     .map_err(|_| error(503, "key generation failed"))?
@@ -142,7 +145,7 @@ impl Key {
         }
         let encryption = matches!(
             self.kind.as_str(),
-            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
         );
         Ok(
             json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
@@ -485,7 +488,7 @@ impl Transit {
             && !(kind == "encryption-key"
                 && matches!(
                     key.kind.as_str(),
-                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
                 ))
         {
             return Err(error(501, "requested key export format is not implemented"));
@@ -880,7 +883,7 @@ fn aead_algorithm(kind: &str) -> Result<&'static aead::Algorithm> {
     }
 }
 
-fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+fn associated_data(body: &Value) -> Result<Vec<u8>> {
     let associated = body
         .get("associated_data")
         .map(|v| {
@@ -891,6 +894,11 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
         })
         .transpose()?
         .unwrap_or_default();
+    Ok(associated.to_vec())
+}
+
+fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+    let associated = associated_data(body)?;
     // A JSON tuple is unambiguous even when namespace/path contain delimiters.
     // Domain separation is intentionally stronger than OpenBao opaque ciphertext
     // portability; moving raw key/ciphertext state requires a decrypt/re-encrypt.
@@ -904,6 +912,36 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
     .map_err(|_| error(500, "associated data encoding failed"))
 }
 
+fn xchacha20_encrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+    cipher
+        .encrypt_in_place(XNonce::from_slice(nonce), aad, &mut *ciphertext)
+        .map_err(|_| error(500, "encryption failed"))?;
+    Ok(ciphertext.to_vec())
+}
+
+fn xchacha20_decrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    ciphertext: &mut [u8],
+) -> Result<Zeroizing<Vec<u8>>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut plaintext = ciphertext.to_vec();
+    cipher
+        .decrypt_in_place(XNonce::from_slice(nonce), aad, &mut plaintext)
+        .map_err(|_| bad("ciphertext authentication failed"))?;
+    Ok(Zeroizing::new(plaintext))
+}
+
 fn encrypt(
     key: &mut Key,
     namespace: &str,
@@ -912,7 +950,8 @@ fn encrypt(
     body: &Value,
     plaintext: &[u8],
 ) -> Result<Value> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let version_number = key.selected_version(body)?;
     let version = key
         .versions
@@ -924,22 +963,34 @@ fn encrypt(
         ));
     }
     let material = stored_material(&version.material)?;
-    let key = aead::LessSafeKey::new(
-        aead::UnboundKey::new(algorithm, &material)
-            .map_err(|_| error(500, "stored encryption key is invalid"))?,
-    );
-    let mut nonce_bytes = [0; 12];
-    SystemRandom::new()
-        .fill(&mut nonce_bytes)
-        .map_err(|_| error(503, "system entropy is unavailable"))?;
-    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
-    key.seal_in_place_append_tag(
-        aead::Nonce::assume_unique_for_key(nonce_bytes),
-        aead::Aad::from(aad(namespace, mount, name, body)?),
-        &mut *ciphertext,
-    )
-    .map_err(|_| error(500, "encryption failed"))?;
-    let mut wrapped = nonce_bytes.to_vec();
+    let (nonce, ciphertext) = if xchacha {
+        let mut nonce = [0; 24];
+        SystemRandom::new()
+            .fill(&mut nonce)
+            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let associated = associated_data(body)?;
+        let ciphertext = xchacha20_encrypt(&material, &nonce, &associated, plaintext)?;
+        (nonce.to_vec(), ciphertext)
+    } else {
+        let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
+        let key = aead::LessSafeKey::new(
+            aead::UnboundKey::new(algorithm, &material)
+                .map_err(|_| error(500, "stored encryption key is invalid"))?,
+        );
+        let mut nonce = [0; 12];
+        SystemRandom::new()
+            .fill(&mut nonce)
+            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+        key.seal_in_place_append_tag(
+            aead::Nonce::assume_unique_for_key(nonce),
+            aead::Aad::from(aad(namespace, mount, name, body)?),
+            &mut *ciphertext,
+        )
+        .map_err(|_| error(500, "encryption failed"))?;
+        (nonce.to_vec(), ciphertext.to_vec())
+    };
+    let mut wrapped = nonce;
     wrapped.extend_from_slice(&ciphertext);
     version.encryptions += 1;
     Ok(
@@ -954,13 +1005,26 @@ fn decrypt(
     name: &str,
     body: &Value,
 ) -> Result<Zeroizing<Vec<u8>>> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let (version_number, mut ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
     let version = key.decrypt_version(version_number)?;
-    if ciphertext.len() < 28 {
+    let nonce_len = if xchacha { 24 } else { 12 };
+    if ciphertext.len() < nonce_len + 16 {
         return Err(bad("invalid ciphertext"));
     }
     let material = stored_material(&version.material)?;
+    if xchacha {
+        let mut nonce = [0; 24];
+        nonce.copy_from_slice(&ciphertext[..24]);
+        return xchacha20_decrypt(
+            &material,
+            &nonce,
+            &associated_data(body)?,
+            &mut ciphertext[24..],
+        );
+    }
+    let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
     let key = aead::LessSafeKey::new(
         aead::UnboundKey::new(algorithm, &material)
             .map_err(|_| error(500, "stored encryption key is invalid"))?,
