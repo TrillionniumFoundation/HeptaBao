@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - codex/openbao-replacement-v2.4-authoritative-closure-20260909
-  pull_request:
-    branches:
-      - main
+  schedule:
+    # Expensive cross-platform qualification is a nightly signal.
+    - cron: "17 2 * * *"
   workflow_dispatch:
 
 permissions:

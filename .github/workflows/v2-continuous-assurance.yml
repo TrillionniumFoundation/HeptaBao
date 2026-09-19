@@ -1,14 +1,13 @@
 name: HeptaBao V2 continuous assurance
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - integration/v1.4.4-technical-candidate
-      - codex/ci-trust-boundary-closure-20260907
   push:
     branches:
       - codex/v2.0-product-closure-20260907
+  schedule:
+    # Full assurance remains available nightly without duplicating PR checks.
+    - cron: "47 2 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: read
