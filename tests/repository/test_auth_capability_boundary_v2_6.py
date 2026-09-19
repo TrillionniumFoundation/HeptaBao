@@ -86,11 +86,13 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
                 "token",
                 "body",
                 "wrap_ttl_seconds",
-                "client_certificates",
             },
         )
         # A verified TLS chain is transport evidence for certificate auth; it
-        # is never an authenticated Principal or an authorization decision.
+        # is never an authenticated Principal or an authorization decision. It
+        # is crate-private so external callers cannot inject an unverified
+        # chain through the public ServiceRequest literal.
+        self.assertIn("pub(crate) client_certificates", match.group(1))
         self.assertNotIn("Principal", match.group(1))
         self.assertNotIn("AuthState", match.group(1))
         self.assertNotRegex(text, r"#\[derive\([^]]*(?:Clone|Debug)[^]]*\)\]\s*pub struct ServiceRequest")

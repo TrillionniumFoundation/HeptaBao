@@ -484,7 +484,7 @@ pub struct ServiceRequest<'a> {
     /// Peer certificate chain captured by the TLS listener. This is populated
     /// only after rustls has completed client-chain validation; callers that do
     /// not own a verified TLS session must leave it absent.
-    pub client_certificates: Option<Vec<Vec<u8>>>,
+    pub(crate) client_certificates: Option<Vec<Vec<u8>>>,
 }
 
 struct RequestDispatch<'a> {
