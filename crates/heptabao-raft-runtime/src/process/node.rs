@@ -121,7 +121,32 @@ impl ProcessRaftNode {
             .add_learner(id, (), true)
             .await
             .map(|_| ())
-            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))?;
+
+        // OpenRaft's blocking learner admission can return success when the
+        // leader is lost while waiting: its internal check treats the absence
+        // of replication metrics as a completed wait.  Never let bootstrap
+        // promote a learner after that ambiguous outcome.  Require the
+        // committed, stable membership and a replication match at the
+        // membership frontier before reporting success to the server.
+        let observation = self.membership_observation().await?;
+        let frontier = observation.membership_index;
+        let matched = observation.peer_matched.get(&id).and_then(|index| *index);
+        let caught_up = frontier
+            .zip(matched)
+            .is_some_and(|(frontier, matched)| matched >= frontier);
+        if observation.leader != Some(self.id)
+            || !observation.committed
+            || observation.joint
+            || !observation.nodes.contains(&id)
+            || observation.voters.contains(&id)
+            || !caught_up
+        {
+            return Err(RemoteRaftError::Consensus(
+                "learner admission completed without stable replication".into(),
+            ));
+        }
+        Ok(())
     }
 
     pub async fn change_membership(&self, voters: BTreeSet<u64>) -> Result<(), RemoteRaftError> {
