@@ -1,0 +1,6 @@
+Temporary transport branch only. Do not merge this branch.
+The one-time workflow transfers hash-verified Git objects for product tree
+17882b27a3cad871235540b34c5ccd0a33314db1 over parent
+676a3e68af340b2cb7439dbc99c69dee550e5db9.
+It executes no candidate code and updates no product reference.
+Product integration and qualification are separate operations.
