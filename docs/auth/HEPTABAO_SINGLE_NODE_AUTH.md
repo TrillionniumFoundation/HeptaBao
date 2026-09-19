@@ -271,10 +271,12 @@ role-ID-only login path and rejects an unnecessary SecretID. The default
 secret ID is valid for one hour and one login. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
-lifetime or use count. Secret IDs can be listed by accessor, looked up, or
-destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
-within a namespace and mount are rejected. No secret-ID bearer can be recovered after
-its initial successful creation response.
+lifetime or use count. `token_period` can be set up to the service maximum to
+issue periodic AppRole tokens; such tokens renew at the fixed period and do not
+carry a separate maximum expiry. Secret IDs can be listed by accessor, looked
+up, or destroyed by bearer or accessor. Role IDs can be changed, but duplicate
+role IDs within a namespace and mount are rejected. No secret-ID bearer can be
+recovered after its initial successful creation response.
 
 Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
 operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`

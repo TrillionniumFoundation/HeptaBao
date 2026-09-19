@@ -979,6 +979,8 @@ struct Role {
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
     token_num_uses: u64,
     secret_id_ttl: u64,
     secret_id_num_uses: u64,
@@ -4698,7 +4700,8 @@ impl AuthState {
                 let role = existing.ok_or_else(|| err(404, "role not found"))?;
                 return Ok(response(
                     json!({"bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
-                    "token_max_ttl": role.token_max_ttl, "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
+                    "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
+                    "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
                     false,
                 ));
             }
@@ -4717,6 +4720,7 @@ impl AuthState {
                     "token_policies",
                     "token_ttl",
                     "token_max_ttl",
+                    "token_period",
                     "token_num_uses",
                     "secret_id_ttl",
                     "secret_id_num_uses",
@@ -4730,6 +4734,7 @@ impl AuthState {
                 policies: BTreeSet::from(["default".into()]),
                 token_ttl: mount_default_ttl,
                 token_max_ttl: mount_max_ttl,
+                token_period: 0,
                 token_num_uses: 0,
                 secret_id_ttl: DEFAULT_TTL,
                 secret_id_num_uses: 1,
@@ -4750,6 +4755,10 @@ impl AuthState {
             role.token_ttl = duration(body, "token_ttl", role.token_ttl)?;
             role.token_max_ttl = duration(body, "token_max_ttl", role.token_max_ttl)?;
             normalize_ttl(&mut role.token_ttl, &mut role.token_max_ttl)?;
+            role.token_period = duration(body, "token_period", role.token_period)?;
+            if role.token_period > MAX_TTL {
+                return Err(bad("token_period exceeds maximum TTL"));
+            }
             role.token_num_uses = number(body, "token_num_uses", role.token_num_uses)?;
             role.secret_id_ttl = duration(body, "secret_id_ttl", role.secret_id_ttl)?;
             if role.secret_id_ttl > MAX_TTL {
@@ -4929,6 +4938,11 @@ impl AuthState {
             format!("approle-{name}"),
             now,
         )?;
+        if role.token_period > 0 {
+            token.period = role.token_period;
+            token.expires_at = Some(checked_expiry(now, role.token_period)?);
+            token.max_expires_at = None;
+        }
         token.auth_mount = Some(mount.into());
         let mut issued = self.issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {
