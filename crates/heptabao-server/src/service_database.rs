@@ -180,15 +180,6 @@ impl DatabaseEffectPlan {
     /// fully owned so callers may drop the global Service writer while the
     /// bounded network operation is in flight.
     pub(super) fn execute(&self) -> Result<(), Response> {
-        if let Some(ha) = &self.ha {
-            ha.lock()
-                .map_err(|_| failure("HA provider fence unavailable"))?
-                .ensure_linearizable()
-                .map_err(|_| failure("HA provider fence unavailable"))?;
-        }
-        let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
-        let seq = self.lease.seq.to_string();
-        let expires = self.lease.expires.to_string();
         let indeterminate = || Response {
             status: 503,
             body: json!({
@@ -197,6 +188,18 @@ impl DatabaseEffectPlan {
                 "reconcile_required":true
             }),
         };
+        if let Some(ha) = &self.ha {
+            ha.lock()
+                .map_err(|_| failure("HA provider fence unavailable"))?
+                .ensure_linearizable()
+                .map_err(|_| failure("HA provider fence unavailable"))?;
+        }
+        let mut pg = self
+            .connection
+            .session(&self.outbound)
+            .map_err(|_| indeterminate())?;
+        let seq = self.lease.seq.to_string();
+        let expires = self.lease.expires.to_string();
 
         // A revoke may already have reached the terminal retirement boundary
         // before the caller lost its response or local publication. Exact
@@ -1534,9 +1537,15 @@ impl Service {
                     let live = owner
                         .as_ref()
                         .is_some_and(|o| Self::database_owner_active(state, o, ns));
-                    if l.phase == Phase::Revoked
-                        || (!matches!(l.phase, Phase::Quarantined)
-                            && (l.phase != Phase::Active || l.expires <= now || !live))
+                    // A foreground issue/renew owns its pending fence while
+                    // provider I/O is in flight.  Letting the maintenance
+                    // worker stage a revoke for those phases races the
+                    // foreground readback and makes finalization fail with a
+                    // changed lease fence.  Only retry an already staged
+                    // revoke (or a terminal tombstone) and reclaim an active
+                    // lease whose owner/expiry is no longer live.
+                    if matches!(l.phase, Phase::PendingRevoke | Phase::Revoked)
+                        || (l.phase == Phase::Active && (l.expires <= now || !live))
                     {
                         candidates.push((ns.clone(), mount.clone(), id.clone()));
                     }

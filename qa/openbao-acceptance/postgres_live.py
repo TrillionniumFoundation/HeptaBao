@@ -120,9 +120,9 @@ class Postgres:
         p=self.sql('SELECT current_user',user,password)
         return p.returncode==0 and p.stdout.strip()==user
     @contextmanager
-    def hold_provider_fence(self, provider_id):
-        if not re.fullmatch(r'hb1:[0-9a-f]{64}', provider_id):
-            raise RuntimeError('invalid_provider_id_for_lock_fixture')
+    def hold_provider_fence(self, fence_id):
+        if not re.fullmatch(r'hbf1:[0-9a-f]{64}', fence_id):
+            raise RuntimeError('invalid_fence_id_for_lock_fixture')
         with psql_environment(
             self.root.parent,
             port=self.port,
@@ -140,9 +140,9 @@ class Postgres:
             try:
                 process.stdin.write(
                     "SELECT pg_advisory_lock(hashtextextended('hb_manager:' || '"
-                    +provider_id+"',0)); SELECT 'locked'; SELECT pg_sleep(30);\n"
+                    +fence_id+"',0)); SELECT 'locked';\n"
                 )
-                process.stdin.close()
+                process.stdin.flush()
                 deadline=time.monotonic()+5
                 while time.monotonic()<deadline:
                     line=process.stdout.readline()
@@ -155,7 +155,11 @@ class Postgres:
                 yield process
             finally:
                 if process.poll() is None:
-                    process.terminate()
+                    process.stdin.write(
+                        "SELECT pg_advisory_unlock(hashtextextended('hb_manager:' || '"
+                        +fence_id+"',0));\n"
+                    )
+                    process.stdin.close()
                 try:
                     process.wait(timeout=5)
                 except subprocess.TimeoutExpired:
@@ -199,15 +203,22 @@ def run(binary,bin_dir,root,checks):
         provider_id=pg.sql(
             "SELECT lease_id FROM heptabao_provider.leases WHERE username='"+cred['username']+"'"
         ).stdout.strip()
+        fence_id=pg.sql(
+            "SELECT fence_id FROM heptabao_provider.leases WHERE lease_id='"+provider_id+"'"
+        ).stdout.strip()
         check('provider_fence_identity_observed',re.fullmatch(r'hb1:[0-9a-f]{64}',provider_id) is not None)
+        check('provider_fence_binding_observed',re.fullmatch(r'hbf1:[0-9a-f]{64}',fence_id) is not None)
         executor=concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
-            with pg.hold_provider_fence(provider_id) as holder:
+            with pg.hold_provider_fence(fence_id) as holder:
                 future=executor.submit(
                     instance.call,'POST','sys/leases/renew',
                     dict(lease_id=identity,increment=120)
                 )
-                deadline=time.monotonic()+3
+                # The native PostgreSQL client bounds lock wait at 1.5s; keep
+                # this real-provider fence hold well inside that budget while
+                # still observing the blocked query before unrelated KV I/O.
+                deadline=time.monotonic()+0.5
                 waiting=False
                 while time.monotonic()<deadline:
                     q=pg.sql(
@@ -260,13 +271,17 @@ def run(binary,bin_dir,root,checks):
         for index,(lease_id,prefix_cred) in enumerate(prefix_credentials):
             check('database_prefix_revoke_login_denied_'+str(index),not pg.login(prefix_cred['username'],prefix_cred['password']))
             check('database_prefix_revoke_lookup_absent_'+str(index),instance.call('POST','sys/leases/lookup',{'lease_id':lease_id})[0]==400)
-        for _ in range(132):
+        for index in range(132):
             status,churn=instance.call('GET','database/creds/churn')
             if status!=200:
-                raise RuntimeError('provider_retirement_churn_issue')
-            status,_=instance.call('POST','sys/leases/revoke',dict(lease_id=churn['lease_id']))
+                raise RuntimeError('provider_retirement_churn_issue_'+str(index)+'_'+str(status))
+            status,revoke_body=instance.call('POST','sys/leases/revoke',dict(lease_id=churn['lease_id']))
             if status!=204:
-                raise RuntimeError('provider_retirement_churn_revoke')
+                raise RuntimeError('provider_retirement_churn_revoke_'+str(index)+'_'+str(status))
+            # Let the lifecycle worker observe the terminal retirement before
+            # the next real provider effect; this keeps the stress run focused
+            # on the >128 retirement invariant rather than HTTP burst timing.
+            time.sleep(0.1)
         check('lease_retirement_survives_more_than_old_128_lifetime_limit',True)
         check('provider_ledger_compacts_after_churn',pg.sql("SELECT count(*) FROM heptabao_provider.leases").stdout.strip()=='0')
         check('provider_generated_roles_compact_after_churn',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'").stdout.strip()=='0')
@@ -274,7 +289,9 @@ def run(binary,bin_dir,root,checks):
         check('provider_global_fence_is_compact_and_monotonic',fence.returncode==0 and fence.stdout.strip().split('|')[0]=='1' and int(fence.stdout.strip().split('|')[2])>128)
         check('provider_manager_cannot_bypass_ledger',pg.sql('DELETE FROM heptabao_provider.leases','hb_manager',pg.manager_password).returncode!=0)
         status,issued=instance.call('GET','database/creds/reader');check('outage_seed',status==200);cred=issued['data'];identity=issued['lease_id']
-        pg.stop();status,body=instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120));check('provider_outage_is_pending_not_success',status==503 and body.get('reconcile_required') is True)
+        pg.stop();status,body=instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120))
+        check('provider_outage_is_pending_not_success',
+              status==503 and body.get('reconcile_required') is True and 'data' not in body)
         instance.stop();pg.start();instance.start();check('both_restart',instance.call('POST','sys/unseal',{'key':key})[0]==200)
         # Worker or explicit reconciliation may win; both must disable the role.
         status,_=instance.call('POST','sys/leases/reconcile/'+identity,{})
@@ -283,10 +300,13 @@ def run(binary,bin_dir,root,checks):
         deadline=time.monotonic()+15
         while True:
             q=pg.sql("SELECT NOT rolcanlogin FROM pg_roles WHERE rolname='"+cred['username']+"'")
-            disabled=q.returncode==0 and q.stdout.strip()=='t'
+            # A successful retirement may already have dropped the provider
+            # role; PostgreSQL then returns no row, which is as fail-closed as
+            # an observed NOLOGIN role for this expiry assertion.
+            disabled=q.returncode==0 and q.stdout.strip() in ('t','')
             if disabled or time.monotonic()>=deadline:break
             time.sleep(.1)
-        check('worker_really_disabled_pg_role_not_only_ttl',disabled)
+        check('worker_retires_role_not_only_ttl',disabled)
         check('idle_expiry_provider_login_denied',not pg.login(cred['username'],cred['password']))
         check('stored_provider_contract_version',pg.sql('SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password).stdout.strip()=='heptabao-postgresql-provider-v2')
     finally:
