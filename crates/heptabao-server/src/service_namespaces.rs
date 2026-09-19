@@ -232,7 +232,19 @@ impl NamespaceRegistry {
         if self.entries.len() >= MAX_NAMESPACE_COUNT {
             return Err(Response::error(507, "namespace catalog capacity exhausted"));
         }
-        let incarnation = self.next_incarnation.get(&path).copied().unwrap_or(1);
+        let prior_frontier = self.next_incarnation.get(&path).copied();
+        let incarnation = prior_frontier.unwrap_or(1);
+        // A tombstone stores the next incarnation to issue. Once it is
+        // consumed, advance the frontier again before publishing the entry;
+        // otherwise validate() quite correctly rejects the live entry as
+        // having a stale incarnation frontier on the same transaction.
+        let next_frontier = prior_frontier
+            .map(|frontier| {
+                frontier
+                    .checked_add(1)
+                    .ok_or_else(|| Response::error(507, "namespace incarnation exhausted"))
+            })
+            .transpose()?;
         self.entries.insert(
             path.clone(),
             NamespaceEntry {
@@ -241,6 +253,9 @@ impl NamespaceRegistry {
                 custom_metadata: BTreeMap::new(),
             },
         );
+        if let Some(next) = next_frontier {
+            self.next_incarnation.insert(path, next);
+        }
         Ok(true)
     }
 
@@ -282,7 +297,15 @@ impl NamespaceRegistry {
         if self.entries.len() >= MAX_NAMESPACE_COUNT {
             return Err(Response::error(507, "namespace catalog capacity exhausted"));
         }
-        let incarnation = self.next_incarnation.get(&path).copied().unwrap_or(1);
+        let prior_frontier = self.next_incarnation.get(&path).copied();
+        let incarnation = prior_frontier.unwrap_or(1);
+        let next_frontier = prior_frontier
+            .map(|frontier| {
+                frontier
+                    .checked_add(1)
+                    .ok_or_else(|| Response::error(507, "namespace incarnation exhausted"))
+            })
+            .transpose()?;
         self.entries.insert(
             path.clone(),
             NamespaceEntry {
@@ -291,6 +314,9 @@ impl NamespaceRegistry {
                 custom_metadata: metadata,
             },
         );
+        if let Some(next) = next_frontier {
+            self.next_incarnation.insert(path, next);
+        }
         Ok(())
     }
 
