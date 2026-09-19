@@ -746,7 +746,14 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         let value = Zeroizing::new(decode_query(value)?);
         if !matches!(
             key.as_str(),
-            "version" | "depth" | "limit" | "list" | "after" | "exclude_deleted"
+            "version"
+                | "depth"
+                | "limit"
+                | "list"
+                | "after"
+                | "exclude_deleted"
+                | "standbyok"
+                | "perfstandbyok"
         ) {
             return Err(bad(
                 "unsupported query parameter; request fields belong in JSON body",
@@ -761,9 +768,13 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
                     .parse::<u64>()
                     .map_err(|_| bad("invalid numeric query"))?
             )
-        } else if value.as_str() == "true" {
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "true" | "1")
+        {
             Value::Bool(true)
-        } else if value.as_str() == "false" {
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "false" | "0")
+        {
             Value::Bool(false)
         } else {
             Value::String(value.to_string())
@@ -1144,5 +1155,21 @@ mod wrapping_header_tests {
                 format!("GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}\r\n\r\n");
             assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
         }
+    }
+
+    #[test]
+    fn health_probe_query_flags_are_parsed_as_booleans() {
+        for (query, key) in [
+            ("standbyok=1", "standbyok"),
+            ("perfstandbyok=true", "perfstandbyok"),
+        ] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0[key] == Value::Bool(true))
+            );
+        }
+        let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
     }
 }

@@ -1216,7 +1216,7 @@ impl Service {
             let initialized = self.initialized();
             let sealed = self.state.is_none();
             let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();
-            let status = health_status(
+            let mut status = health_status(
                 initialized,
                 sealed,
                 self.recovery_required,
@@ -1224,6 +1224,15 @@ impl Service {
                 standby,
                 ha_active,
             );
+            // OpenBao clients use these query flags for load-balancer probes.
+            // A standby remains healthy when explicitly requested, while sealed,
+            // uninitialized, and recovery-required states retain their errors.
+            if status == 429
+                && (body.get("standbyok") == Some(&Value::Bool(true))
+                    || body.get("perfstandbyok") == Some(&Value::Bool(true)))
+            {
+                status = 200;
+            }
             return Response {
                 status,
                 body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"performance_standby":false,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required}),
@@ -2133,7 +2142,10 @@ impl Service {
                 if may_reuse && reuse.engines {
                     None
                 } else {
-                    Some(serde_json::to_vec(&state.engines).map_err(|_| ServiceError::CorruptState)?)
+                    Some(
+                        serde_json::to_vec(&state.engines)
+                            .map_err(|_| ServiceError::CorruptState)?,
+                    )
                 },
             ),
             (
@@ -2141,7 +2153,10 @@ impl Service {
                 if may_reuse && reuse.database {
                     None
                 } else {
-                    Some(serde_json::to_vec(&state.database).map_err(|_| ServiceError::CorruptState)?)
+                    Some(
+                        serde_json::to_vec(&state.database)
+                            .map_err(|_| ServiceError::CorruptState)?,
+                    )
                 },
             ),
             (
@@ -2149,7 +2164,10 @@ impl Service {
                 if may_reuse && reuse.raft_admin {
                     None
                 } else {
-                    Some(serde_json::to_vec(&state.raft_admin).map_err(|_| ServiceError::CorruptState)?)
+                    Some(
+                        serde_json::to_vec(&state.raft_admin)
+                            .map_err(|_| ServiceError::CorruptState)?,
+                    )
                 },
             ),
         ];
