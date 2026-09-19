@@ -925,6 +925,12 @@ fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
         || config.peers.len() < 3
         || config.peers.len() > 9
         || !config.peers.contains_key(&config.node_id)
+        // A zero listener port asks the OS to choose an ephemeral endpoint.
+        // Peer addresses are statically enrolled, so allowing that choice can
+        // leave a node listening on an address no peer can reach after a
+        // restart.  Outbound peer endpoints have the same bound in
+        // `TlsPeerEndpoint::new`.
+        || config.listen.port() == 0
         || !(50..=5_000).contains(&config.peer_timeout_ms)
         || !(4..=256).contains(&config.max_inflight)
         || !config.raft_dir.is_absolute()
@@ -1428,6 +1434,60 @@ mod tests {
         assert_eq!(
             validate_config(&config),
             Err("invalid HA cluster identity".into())
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn zero_listener_port_is_rejected_for_static_peer_enrollment() -> Result<(), String> {
+        let config = HaProcessConfig {
+            node_id: 1,
+            cluster_id: "cluster-a".into(),
+            raft_dir: PathBuf::from("/var/lib/heptabao/node-1/raft"),
+            listen: "127.0.0.1:0"
+                .parse()
+                .map_err(|_| "synthetic listener address")?,
+            ca_file: PathBuf::from("/var/lib/heptabao/ca.crt"),
+            cert_file: PathBuf::from("/var/lib/heptabao/node-1/tls.crt"),
+            key_file: PathBuf::from("/var/lib/heptabao/node-1/tls.key"),
+            replication_key_file: PathBuf::from("/var/lib/heptabao/replication.key"),
+            peers: BTreeMap::from([
+                (
+                    1,
+                    HaPeerConfig {
+                        node_name: "node-1".into(),
+                        address: "127.0.0.1:8201".parse().map_err(|_| "peer address")?,
+                        server_name: "node-1.example.internal".into(),
+                        certificate_sha256: "11".repeat(32),
+                    },
+                ),
+                (
+                    2,
+                    HaPeerConfig {
+                        node_name: "node-2".into(),
+                        address: "127.0.0.1:8202".parse().map_err(|_| "peer address")?,
+                        server_name: "node-2.example.internal".into(),
+                        certificate_sha256: "22".repeat(32),
+                    },
+                ),
+                (
+                    3,
+                    HaPeerConfig {
+                        node_name: "node-3".into(),
+                        address: "127.0.0.1:8203".parse().map_err(|_| "peer address")?,
+                        server_name: "node-3.example.internal".into(),
+                        certificate_sha256: "33".repeat(32),
+                    },
+                ),
+            ]),
+            bootstrap: false,
+            initial_voters: None,
+            peer_timeout_ms: 750,
+            max_inflight: 64,
+        };
+        assert_eq!(
+            validate_config(&config),
+            Err("invalid bounded HA process configuration".into())
         );
         Ok(())
     }
