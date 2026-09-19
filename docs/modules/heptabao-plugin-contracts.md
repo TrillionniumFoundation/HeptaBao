@@ -18,7 +18,7 @@ This package owns plugin descriptors, registry lifecycle and the semantic distin
 
 `PluginCallOutcome<T>` distinguishes `BeforeEntryFailure`, `Completed(T)` and `OutcomeUnknownAfterEntry { recovery_reference }`. The host must preserve this classification across process/IPC failure, bind the exact descriptor generation to each call, and obtain authoritative readback before retrying uncertainty. The enum carries no automatic retry or reconciliation implementation.
 
-This descriptor/outcome model is consumed by the independent `heptabao-plugin-host`, outside the current server dependency closure. It does not implement the server's native plugin paths or OpenBao's plugin RPC ABI. An operator action on this memory registry therefore does not administer a deployed server plugin.
+This descriptor/outcome model is consumed by `heptabao-plugin-host`, which is now in the server dependency closure for the explicitly configured dynamic-secret runtime. The server constructs and enables one descriptor from protected configuration; it still does not expose a generic plugin-registry administration API or OpenBao's plugin RPC ABI. Registry mutation outside that composition therefore does not administer the running provider.
 
 ### Historical V1.4.7 lexical snapshot
 

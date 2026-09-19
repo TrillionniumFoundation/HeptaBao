@@ -19,7 +19,7 @@ The exact Git commit and tree outrank generated status prose.
 
 ## Architecture
 
-- `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual five-package runtime and internal state owners.
+- `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual eight-package runtime and internal state owners.
 - `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
 
 The following retained increment/target documents describe their own historical or library scope:
@@ -31,7 +31,7 @@ The following retained increment/target documents describe their own historical 
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The runnable server composes real TLS, private persistent authentication/ACL, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested plugin-host, identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
+The runnable server composes real TLS, private persistent authentication/ACL, encrypted KV/Transit/TOTP, authenticated audit, an explicitly configured single-active dynamic-secret plugin/lease path, and optional per-process networked Raft. `plugin-host`, `plugin-contracts` and `domain` are now in that runtime dependency closure for the dynamic path; identity, standalone lease, telemetry, client and migration packages remain separate. Dynamic-secret configuration is intentionally rejected together with HA until a shared strongly consistent lease backend exists. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
 
 ## Module documentation
 

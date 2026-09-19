@@ -31,6 +31,8 @@ pub struct Config {
     pub audit_file: PathBuf,
     #[serde(default)]
     pub audit: crate::AuditConfig,
+    #[serde(default)]
+    pub dynamic_secrets: Option<crate::DynamicSecretConfig>,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
     #[serde(default = "default_connections")]
@@ -171,22 +173,26 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         .map_err(|_| "TLS key and certificate do not match")?;
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
+    let dynamic_secret_config = config.dynamic_secrets.clone();
+    if dynamic_secret_config.is_some() && ha.is_some() {
+        return Err(
+            "dynamic-secret runtime is single-active; HA activation requires a shared strongly consistent lease backend"
+                .into(),
+        );
+    }
     let ha_enabled = ha.is_some();
     let forwarding_ha = ha.clone();
-    let service = Arc::new(Mutex::new(
-        match ha {
-            Some(ha) => Service::new_with_ha_audit_config(
-                config.data_dir,
-                &config.audit_file,
-                ha,
-                config.audit,
-            ),
-            None => {
-                Service::new_with_audit_config(config.data_dir, &config.audit_file, config.audit)
-            }
+    let mut service = match ha {
+        Some(ha) => {
+            Service::new_with_ha_audit_config(config.data_dir, &config.audit_file, ha, config.audit)
         }
-        .map_err(str::to_owned)?,
-    ));
+        None => Service::new_with_audit_config(config.data_dir, &config.audit_file, config.audit),
+    }
+    .map_err(str::to_owned)?;
+    if let Some(dynamic_secret_config) = dynamic_secret_config {
+        service.configure_dynamic_secrets(dynamic_secret_config)?;
+    }
+    let service = Arc::new(Mutex::new(service));
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {

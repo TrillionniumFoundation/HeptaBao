@@ -1,6 +1,7 @@
 use crate::{
     auth::{AuthState, Principal},
     crypto::{self, AeadBarrier, SecretShare},
+    dynamic_secrets::{DynamicSecretConfig, DynamicSecretRuntime},
     engines::EngineState,
     ha::HaProcess,
 };
@@ -264,6 +265,8 @@ pub struct Service {
     barrier_key: Option<Zeroizing<[u8; 32]>>,
     rekey: Option<RekeyState>,
     recovery_required: bool,
+    dynamic_secret_config: Option<DynamicSecretConfig>,
+    dynamic_secrets: Option<DynamicSecretRuntime>,
     ha: Option<Arc<Mutex<HaProcess>>>,
     #[cfg(test)]
     state_capacity: usize,
@@ -301,6 +304,23 @@ impl Service {
         audit_config: AuditConfig,
     ) -> Result<Self, &'static str> {
         Self::new_inner(data_dir, audit_path, Some(ha), audit_config)
+    }
+
+    pub fn configure_dynamic_secrets(&mut self, config: DynamicSecretConfig) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("dynamic-secret runtime must be configured while sealed".into());
+        }
+        config.validate().map_err(str::to_owned)?;
+        if config.state_dir == self.data_dir
+            || config.state_dir.starts_with(&self.data_dir)
+            || self.data_dir.starts_with(&config.state_dir)
+        {
+            return Err(
+                "dynamic-secret durable state must be a separate non-overlapping directory".into(),
+            );
+        }
+        self.dynamic_secret_config = Some(config);
+        Ok(())
     }
 
     fn new_inner(
@@ -359,6 +379,8 @@ impl Service {
             barrier_key: None,
             rekey,
             recovery_required: false,
+            dynamic_secret_config: None,
+            dynamic_secrets: None,
             ha,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
@@ -655,6 +677,7 @@ impl Service {
             }
             self.state = None;
             self.durable = None;
+            self.dynamic_secrets = None;
             self.barrier_key = None;
             self.unseal_shares.clear();
             let discard_rekey = self
@@ -675,6 +698,28 @@ impl Service {
                 status: 204,
                 body: Value::Null,
             };
+        }
+        if DynamicSecretRuntime::owns_path(path) {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            if DynamicSecretRuntime::root_only(path) && !principal.is_root() {
+                return Response::error(
+                    403,
+                    "dynamic-secret reconciliation requires root authority",
+                );
+            }
+            let capability = DynamicSecretRuntime::required_capability(method, path);
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(principal, namespace, path, capability, now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            let Some(runtime) = self.dynamic_secrets.as_mut() else {
+                return Response::error(501, "dynamic-secret runtime is not configured");
+            };
+            return runtime.handle(principal.subject_id(), namespace, method, path, body, now);
         }
         let before = match serde_json::to_vec(&admitted) {
             Ok(v) => Zeroizing::new(v),
@@ -1294,6 +1339,7 @@ impl Service {
         if self.rotate_unseal_nonce().is_err() {
             self.state = None;
             self.durable = None;
+            self.dynamic_secrets = None;
             self.barrier_key = None;
             return Response::error(503, "operating system randomness unavailable");
         }
@@ -1302,6 +1348,7 @@ impl Service {
 
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
         self.durable = None;
+        self.dynamic_secrets = None;
         self.state = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
@@ -1328,7 +1375,14 @@ impl Service {
                 ));
             }
         }
+        let dynamic_secrets = match self.dynamic_secret_config.as_ref() {
+            Some(config) => Some(DynamicSecretRuntime::open(config, key).map_err(|_| {
+                Response::error(503, "dynamic-secret runtime admission or recovery failed")
+            })?),
+            None => None,
+        };
         self.durable = Some(durable);
+        self.dynamic_secrets = dynamic_secrets;
         self.state = Some(state);
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
