@@ -215,7 +215,9 @@ The HA config requires `node_id`, `cluster_id`, `raft_dir`, `listen`, `ca_file`,
 `cert_file`, `key_file`, `replication_key_file` and `peers`. Each peer supplies
 `node_name`, `address`, `server_name` and `certificate_sha256`. Optional
 `bootstrap`, `peer_timeout_ms` (default 750) and `max_inflight` (default 64) are
-validated before entry. The replication key is an owner-protected 32-byte file,
+validated before entry; `listen` must use a nonzero statically enrolled port
+because an ephemeral listener would not match the peer registry after restart.
+The replication key is an owner-protected 32-byte file,
 not a plaintext value in configuration or logs.
 
 Authority-bearing requests cross a current-leader/ReadIndex barrier. Complete
