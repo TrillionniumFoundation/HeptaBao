@@ -754,6 +754,10 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
                 | "exclude_deleted"
                 | "standbyok"
                 | "perfstandbyok"
+                | "uninitcode"
+                | "sealedcode"
+                | "standbycode"
+                | "activecode"
         ) {
             return Err(bad(
                 "unsupported query parameter; request fields belong in JSON body",
@@ -768,6 +772,16 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
                     .parse::<u64>()
                     .map_err(|_| bad("invalid numeric query"))?
             )
+        } else if matches!(
+            key.as_str(),
+            "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+        ) {
+            let status = value
+                .parse::<u16>()
+                .ok()
+                .filter(|status| (100..=999).contains(status))
+                .ok_or_else(|| bad("invalid health status code"))?;
+            json!(status)
         } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
             && matches!(value.as_str(), "true" | "1")
         {
@@ -776,6 +790,8 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             && matches!(value.as_str(), "false" | "0")
         {
             Value::Bool(false)
+        } else if matches!(value.as_str(), "true" | "false") {
+            Value::Bool(value.as_str() == "true")
         } else {
             Value::String(value.to_string())
         };
@@ -1171,5 +1187,35 @@ mod wrapping_header_tests {
         }
         let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
         assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn ordinary_boolean_queries_keep_their_boolean_shape() {
+        for (query, key) in [
+            ("list=true", "list"),
+            ("exclude_deleted=false", "exclude_deleted"),
+        ] {
+            let request =
+                format!("GET /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0[key].is_boolean())
+            );
+        }
+    }
+
+    #[test]
+    fn health_status_code_queries_are_bounded_integers() {
+        let request = b"GET /v1/sys/health?uninitcode=204&sealedcode=499&standbycode=430&activecode=201 HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
+            .expect("valid health status overrides");
+        assert_eq!(parsed.body.0["uninitcode"], json!(204));
+        assert_eq!(parsed.body.0["sealedcode"], json!(499));
+        assert_eq!(parsed.body.0["standbycode"], json!(430));
+        assert_eq!(parsed.body.0["activecode"], json!(201));
+        for query in ["activecode=99", "sealedcode=1000", "standbycode=nope"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
     }
 }

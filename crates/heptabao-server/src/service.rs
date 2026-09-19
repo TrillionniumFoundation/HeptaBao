@@ -1213,29 +1213,42 @@ impl Service {
             return Response::error(400, "invalid canonical namespace or path");
         }
         if path == "sys/health" && matches!(method, "GET" | "HEAD") {
+            let health_codes = match HealthStatusCodes::from_body(body) {
+                Ok(codes) => codes,
+                Err(message) => return Response::error(400, message),
+            };
+            let standby_ok = match body.get("standbyok") {
+                None => false,
+                Some(Value::Bool(value)) => *value,
+                Some(_) => return Response::error(400, "standbyok must be boolean"),
+            };
+            // OpenBao 2.6.2 does not use perfstandbyok when selecting the
+            // /sys/health status.  It is accepted by the HTTP query parser
+            // for clients that send the probe flag, but must not make a
+            // normal standby report active.
+            if let Some(value) = body.get("perfstandbyok")
+                && !value.is_boolean()
+            {
+                return Response::error(400, "perfstandbyok must be boolean");
+            }
             let initialized = self.initialized();
             let sealed = self.state.is_none();
             let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();
-            let mut status = health_status(
+            let status = health_status_with_codes(
                 initialized,
                 sealed,
                 self.recovery_required,
                 ha_enabled,
                 standby,
                 ha_active,
+                standby_ok,
+                health_codes,
             );
-            // OpenBao clients use these query flags for load-balancer probes.
-            // A standby remains healthy when explicitly requested, while sealed,
-            // uninitialized, and recovery-required states retain their errors.
-            if status == 429
-                && (body.get("standbyok") == Some(&Value::Bool(true))
-                    || body.get("perfstandbyok") == Some(&Value::Bool(true)))
-            {
-                status = 200;
-            }
             return Response {
                 status,
-                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"performance_standby":false,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required}),
+                // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
+                // Keep this health response aligned with that release.
+                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required}),
             };
         }
         if path == "sys/init" && method == "GET" {
@@ -4204,16 +4217,79 @@ fn health_status(
     standby: bool,
     ha_active: bool,
 ) -> u16 {
+    health_status_with_codes(
+        initialized,
+        sealed,
+        recovery_required,
+        ha_enabled,
+        standby,
+        ha_active,
+        false,
+        HealthStatusCodes {
+            uninit: 501,
+            sealed: 503,
+            standby: 429,
+            active: 200,
+        },
+    )
+}
+
+fn health_status_with_codes(
+    initialized: bool,
+    sealed: bool,
+    recovery_required: bool,
+    ha_enabled: bool,
+    standby: bool,
+    ha_active: bool,
+    standby_ok: bool,
+    codes: HealthStatusCodes,
+) -> u16 {
     if !initialized {
-        501
+        codes.uninit
     } else if sealed || recovery_required {
-        503
+        codes.sealed
     } else if ha_enabled && standby {
-        429
+        if standby_ok {
+            codes.active
+        } else {
+            codes.standby
+        }
     } else if ha_enabled && !ha_active {
         503
     } else {
-        200
+        codes.active
+    }
+}
+
+#[derive(Clone, Copy)]
+struct HealthStatusCodes {
+    uninit: u16,
+    sealed: u16,
+    standby: u16,
+    active: u16,
+}
+
+impl HealthStatusCodes {
+    fn from_body(body: &Value) -> Result<Self, &'static str> {
+        fn code(body: &Value, key: &str, default: u16) -> Result<u16, &'static str> {
+            let Some(value) = body.get(key) else {
+                return Ok(default);
+            };
+            let Some(value) = value.as_u64() else {
+                return Err("health status code must be an integer");
+            };
+            if !(100..=999).contains(&value) {
+                return Err("health status code must be between 100 and 999");
+            }
+            u16::try_from(value).map_err(|_| "health status code is too large")
+        }
+
+        Ok(Self {
+            uninit: code(body, "uninitcode", 501)?,
+            sealed: code(body, "sealedcode", 503)?,
+            standby: code(body, "standbycode", 429)?,
+            active: code(body, "activecode", 200)?,
+        })
     }
 }
 
@@ -4858,7 +4934,7 @@ mod cow_owner_tests {
 
 #[cfg(test)]
 mod ha_health_status_tests {
-    use super::health_status;
+    use super::{HealthStatusCodes, health_status, health_status_with_codes};
 
     #[test]
     fn health_never_reports_active_without_current_linearizable_authority() {
@@ -4869,6 +4945,54 @@ mod ha_health_status_tests {
         assert_eq!(health_status(true, true, false, true, false, true), 503);
         assert_eq!(health_status(true, false, true, true, false, true), 503);
         assert_eq!(health_status(false, false, false, true, false, false), 501);
+    }
+
+    #[test]
+    fn standby_probe_uses_standbyok_only_and_honors_custom_codes() {
+        let codes = HealthStatusCodes {
+            uninit: 204,
+            sealed: 499,
+            standby: 430,
+            active: 201,
+        };
+        // perfstandbyok is intentionally absent from this decision: OpenBao
+        // 2.6.2 does not treat it as permission to call an ordinary standby
+        // active. The HTTP parser may accept the flag for client tolerance,
+        // but only standbyok changes this result.
+        assert_eq!(
+            health_status_with_codes(true, false, false, true, true, false, false, codes),
+            430
+        );
+        assert_eq!(
+            health_status_with_codes(true, false, false, true, true, false, true, codes),
+            201
+        );
+        assert_eq!(
+            health_status_with_codes(false, false, false, true, false, false, false, codes),
+            204
+        );
+        assert_eq!(
+            health_status_with_codes(true, true, false, true, false, true, true, codes),
+            499
+        );
+    }
+
+    #[test]
+    fn health_status_code_body_values_are_validated() {
+        let valid = serde_json::json!({
+            "uninitcode": 204,
+            "sealedcode": 499,
+            "standbycode": 430,
+            "activecode": 201,
+        });
+        assert!(HealthStatusCodes::from_body(&valid).is_ok());
+        for invalid in [
+            serde_json::json!({"activecode": 99}),
+            serde_json::json!({"activecode": 1000}),
+            serde_json::json!({"activecode": "201"}),
+        ] {
+            assert!(HealthStatusCodes::from_body(&invalid).is_err());
+        }
     }
 }
 
