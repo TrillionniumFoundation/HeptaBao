@@ -17,8 +17,9 @@ use std::{
 };
 use x509_parser::{
     asn1_rs::{Any, FromDer},
-    extensions::GeneralName,
+    extensions::{GeneralName, ParsedExtension},
     parse_x509_certificate,
+    utils::format_serial,
 };
 use zeroize::{Zeroize, Zeroizing};
 
@@ -149,6 +150,12 @@ struct CertificateAttributes {
     uri_sans: Vec<String>,
     organizational_units: Vec<String>,
     extensions: BTreeMap<String, String>,
+    /// OpenBao exposes these stable certificate identity fields as login
+    /// metadata. Keep them derived from the presented leaf and never persist
+    /// the certificate bytes in application state.
+    serial_number: String,
+    subject_key_id: Option<String>,
+    authority_key_id: Option<String>,
 }
 
 impl CertRole {
@@ -199,7 +206,10 @@ fn parse_certificate_attributes(der: &[u8]) -> Option<CertificateAttributes> {
         return None;
     }
 
-    let mut attributes = CertificateAttributes::default();
+    let mut attributes = CertificateAttributes {
+        serial_number: certificate.tbs_certificate.serial.to_str_radix(10),
+        ..CertificateAttributes::default()
+    };
     let mut seen_extension_oids = BTreeSet::new();
     for value in certificate
         .subject()
@@ -251,6 +261,18 @@ fn parse_certificate_attributes(der: &[u8]) -> Option<CertificateAttributes> {
             && attributes.extensions.insert(oid, value).is_some()
         {
             return None;
+        }
+        match extension.parsed_extension() {
+            ParsedExtension::SubjectKeyIdentifier(key_id) => {
+                attributes.subject_key_id = Some(format_serial(key_id.0));
+            }
+            ParsedExtension::AuthorityKeyIdentifier(key_id) => {
+                attributes.authority_key_id = key_id
+                    .key_identifier
+                    .as_ref()
+                    .map(|value| format_serial(value.0));
+            }
+            _ => {}
         }
     }
     Some(attributes)
@@ -359,20 +381,32 @@ fn matches_cert_role(
 
 fn certificate_metadata(
     attributes: Option<&CertificateAttributes>,
+    role_name: &str,
     role: &CertRole,
 ) -> BTreeMap<String, String> {
     let Some(attributes) = attributes else {
         return BTreeMap::new();
     };
-    role.allowed_metadata_extensions
-        .iter()
-        .filter_map(|oid| {
-            attributes
-                .extensions
-                .get(oid)
-                .map(|value| (oid.replace('.', "-"), value.clone()))
-        })
-        .collect()
+    let mut metadata = BTreeMap::from([
+        ("cert_name".into(), role_name.into()),
+        (
+            "common_name".into(),
+            attributes.common_names.first().cloned().unwrap_or_default(),
+        ),
+        ("serial_number".into(), attributes.serial_number.clone()),
+    ]);
+    if let Some(value) = &attributes.subject_key_id {
+        metadata.insert("subject_key_id".into(), value.clone());
+    }
+    if let Some(value) = &attributes.authority_key_id {
+        metadata.insert("authority_key_id".into(), value.clone());
+    }
+    for oid in &role.allowed_metadata_extensions {
+        if let Some(value) = attributes.extensions.get(oid) {
+            metadata.insert(oid.replace('.', "-"), value.clone());
+        }
+    }
+    metadata
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -3090,14 +3124,14 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|mounts| mounts.get(mount))
                 .ok_or_else(denied)?;
-            let constrained = roles.values().any(CertRole::has_certificate_constraints);
-            let attributes = if constrained {
-                peer_certificates
-                    .and_then(|chain| chain.first())
-                    .and_then(|leaf| parse_certificate_attributes(leaf))
-            } else {
-                None
-            };
+            // Parse the leaf whenever it is a valid X.509 certificate so the
+            // login response can expose OpenBao-compatible certificate
+            // metadata. A malformed synthetic/legacy leaf remains usable for
+            // an unconstrained exact-digest role; constrained roles still
+            // fail closed through `matches_cert_role`.
+            let attributes = peer_certificates
+                .and_then(|chain| chain.first())
+                .and_then(|leaf| parse_certificate_attributes(leaf));
             let (role_name, role) = match requested_role {
                 Some(name) => roles
                     .get(name)
@@ -3130,7 +3164,7 @@ impl AuthState {
                 mount: mount.into(),
                 alias: role_name.to_owned(),
             });
-            let metadata = certificate_metadata(attributes.as_ref(), role);
+            let metadata = certificate_metadata(attributes.as_ref(), role_name, role);
             if !metadata.is_empty() {
                 response.body["auth"]["metadata"] = json!(metadata);
             }

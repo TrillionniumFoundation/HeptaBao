@@ -1648,6 +1648,19 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         .unwrap();
     assert_eq!(login.login_identity.unwrap().alias, "operator");
     assert_eq!(login.body["auth"]["metadata"]["1-2-3-4-5"], "tenant-a");
+    assert_eq!(login.body["auth"]["metadata"]["cert_name"], "operator");
+    assert_eq!(
+        login.body["auth"]["metadata"]["common_name"],
+        "client.example.test"
+    );
+    assert_eq!(
+        login.body["auth"]["metadata"]["serial_number"],
+        "604808306919950594911996544712097931612123050017"
+    );
+    assert_eq!(
+        login.body["auth"]["metadata"]["subject_key_id"],
+        "42:90:9c:3f:b0:be:cd:25:b9:7d:58:c7:f6:1e:a9:46:85:9d:66:5b"
+    );
     let raw = login.body["auth"]["client_token"]
         .as_str()
         .expect("certificate login returns a token")
