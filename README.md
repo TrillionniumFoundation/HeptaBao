@@ -85,6 +85,32 @@ Security bindings use domain-separated SHA-256, which is not a signature. Persis
 
 ## Build and current checks
 
+### Fast local feedback loop
+
+During ordinary iteration, use the server-scoped loop below before starting the
+full qualification run. It catches formatting, product compilation, server
+regressions and the repository/security Python checks without rebuilding and
+testing every workspace package on every edit:
+
+```bash
+cargo +1.98.0 fmt --all -- --check
+cargo +1.98.0 check --locked -p heptabao-server --all-targets
+cargo +1.98.0 test --locked -p heptabao-server --all-targets
+cargo +1.98.0 clippy --locked -p heptabao-server --all-targets -- -D warnings
+python -m unittest discover -s tests/repository -p 'test_*.py' -v
+python -m unittest discover -s tests/security -p 'test_*.py' -v
+python -m unittest discover -s qa/openbao-acceptance/tests -p 'test_*.py' -v
+```
+
+Keep live fixture work directories and temporary output on the development SSD
+or another private directory. This loop is feedback only: it does not emit an
+exact-head receipt or grant compatibility, release or production authority.
+The complete workspace build/test, Oracle comparison, multi-process HA and
+prospective-merge checks remain owned by the pull-request qualification and
+independent admission workflows below.
+
+### Full repository qualification
+
 ```bash
 python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
 python scripts/validate_repository_v2.py
