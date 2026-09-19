@@ -154,6 +154,8 @@ impl AuthState {
             display_name: "response-wrapping".into(),
             auth_mount: None,
             auth_origin_known: true,
+            auth_cert_role: None,
+            auth_cert_sha256: None,
         };
         let mut info = json!({"token":raw.as_str(),"accessor":accessor,"ttl":ttl,
             "creation_time":crate::engines::timestamp(now),"creation_path":path});

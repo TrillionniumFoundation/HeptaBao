@@ -239,11 +239,13 @@ The verified chain is carried to a leader only inside the authenticated,
 bounded HA forwarding frame and is cleared with the request.
 
 This is still a bounded profile, not complete OpenBao certificate parity. It
-does not implement OCSP role checks, certificate-derived renewal binding,
-browser flows or provider qualification; the certificate-auth surface remains
-outside whole-surface replacement admission. OpenBao's reference login path
-performs the corresponding connection-certificate selection and role
-validation in [`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
+does not implement OCSP role checks, re-presented-connection certificate
+checks during renewal, browser flows or provider qualification. Renewal does
+recheck the stored certificate digest, role existence and role policies before
+extending the token; the certificate-auth surface remains outside whole-surface
+replacement admission. OpenBao's reference login path performs the
+corresponding connection-certificate selection and role validation in
+[`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
 
 ## AppRole
 

@@ -1589,6 +1589,23 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         .unwrap();
     assert_eq!(login.login_identity.unwrap().alias, "operator");
     assert_eq!(login.body["auth"]["metadata"]["1-2-3-4-5"], "tenant-a");
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .expect("certificate login returns a token")
+        .to_owned();
+    let actor = state.authenticate(&raw, 101).unwrap();
+    let renewal = state
+        .handle(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/renew-self",
+            &json!({}),
+            102,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(renewal.status, 200);
 
     call(
         &mut state,
@@ -1613,6 +1630,29 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         Some(std::slice::from_ref(&leaf)),
     );
     assert!(matches!(literal_question_mark, Err(error) if error.status == 403));
+
+    assert_eq!(
+        call(
+            &mut state,
+            &root,
+            "",
+            "DELETE",
+            "auth/cert/certs/operator",
+            json!({}),
+            104,
+        )
+        .status,
+        204
+    );
+    let renewal_after_role_delete = state.handle(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        105,
+    );
+    assert!(matches!(renewal_after_role_delete, Err(error) if error.status == 403));
 }
 
 fn mount_auth(state: &mut AuthState, root: &Principal, namespace: &str, mount: &str, kind: &str) {

@@ -824,6 +824,12 @@ struct Token {
     auth_mount: Option<String>,
     #[serde(default)]
     auth_origin_known: bool,
+    /// Certificate login provenance is retained as a digest and role name so
+    /// renewal can fail closed when the role or its policies are removed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auth_cert_role: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    auth_cert_sha256: Option<String>,
 }
 
 impl Drop for Token {
@@ -1460,6 +1466,8 @@ impl AuthState {
             display_name: "root".into(),
             auth_mount: None,
             auth_origin_known: true,
+            auth_cert_role: None,
+            auth_cert_sha256: None,
         };
         let raw = random_id("hvs.")?;
         state.tokens.insert(hash(&raw), token);
@@ -3098,6 +3106,8 @@ impl AuthState {
                 now,
             )?;
             token.auth_mount = Some(mount.into());
+            token.auth_cert_role = Some(role_name.clone());
+            token.auth_cert_sha256 = Some(presented.sha256.clone());
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
                 mount: mount.into(),
@@ -3405,6 +3415,8 @@ impl AuthState {
                 display_name: format!("jwt-{display_suffix}"),
                 auth_mount: Some(mount.into()),
                 auth_origin_known: true,
+                auth_cert_role: None,
+                auth_cert_sha256: None,
             };
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
@@ -3885,6 +3897,19 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"))?
                 };
                 self.active_token(&id, now, false)?;
+                let cert_role_limits = self.cert_renewal_limits(&id)?;
+                let cert_role_limits = cert_role_limits
+                    .map(|(mount, token_ttl, token_max_ttl)| {
+                        self.auth_mount_token_limits(
+                            AuthScope {
+                                namespace,
+                                mount: &mount,
+                            },
+                            token_ttl,
+                            token_max_ttl,
+                        )
+                    })
+                    .transpose()?;
                 let mut ancestor_limit: Option<u64> = None;
                 let mut parent_id = self
                     .tokens
@@ -3909,9 +3934,10 @@ impl AuthState {
                 let ttl = if token.period > 0 {
                     token.period
                 } else if increment == 0 {
-                    DEFAULT_TTL
+                    cert_role_limits.map_or(DEFAULT_TTL, |(token_ttl, _)| token_ttl)
                 } else {
-                    increment.min(MAX_TTL)
+                    increment
+                        .min(cert_role_limits.map_or(MAX_TTL, |(_, token_max_ttl)| token_max_ttl))
                 };
                 let proposed = checked_expiry(now, ttl)?;
                 let expires_at = token
@@ -3920,6 +3946,12 @@ impl AuthState {
                     .unwrap_or(proposed);
                 let expires_at = ancestor_limit
                     .map(|limit| expires_at.min(limit))
+                    .unwrap_or(expires_at);
+                let cert_max_expiry = cert_role_limits
+                    .map(|(_, token_max_ttl)| checked_expiry(now, token_max_ttl))
+                    .transpose()?;
+                let expires_at = cert_max_expiry
+                    .map(|max| expires_at.min(max))
                     .unwrap_or(expires_at);
                 if expires_at <= now {
                     return Err(denied());
@@ -3964,6 +3996,25 @@ impl AuthState {
             return Err(denied());
         }
         Ok(id)
+    }
+
+    fn cert_renewal_limits(&self, id: &str) -> Result<Option<(String, u64, u64)>, AuthError> {
+        let token = self.tokens.get(id).ok_or_else(denied)?;
+        let Some(role_name) = token.auth_cert_role.as_deref() else {
+            return Ok(None);
+        };
+        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
+        let digest = token.auth_cert_sha256.as_deref().ok_or_else(denied)?;
+        let role = self
+            .cert_roles
+            .get(&token.namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .and_then(|roles| roles.get(role_name))
+            .ok_or_else(denied)?;
+        if role.certificate_sha256 != digest || role.policies != token.policies {
+            return Err(denied());
+        }
+        Ok(Some((mount.into(), role.token_ttl, role.token_max_ttl)))
     }
 
     fn create_token(
@@ -4088,6 +4139,8 @@ impl AuthState {
                 display_name: display_name.into(),
                 auth_mount: parent.auth_mount.clone(),
                 auth_origin_known: parent.root || parent.auth_origin_known,
+                auth_cert_role: parent.auth_cert_role.clone(),
+                auth_cert_sha256: parent.auth_cert_sha256.clone(),
             },
             now,
         )
@@ -4903,6 +4956,8 @@ fn login_token(
         display_name,
         auth_mount: None,
         auth_origin_known: true,
+        auth_cert_role: None,
+        auth_cert_sha256: None,
     })
 }
 fn token_info(token: &Token, now: u64) -> Value {

@@ -647,6 +647,8 @@ impl AuthState {
             display_name: format!("online-{}", &hash(alias)[..16]),
             auth_mount: Some(mount.into()),
             auth_origin_known: true,
+            auth_cert_role: None,
+            auth_cert_sha256: None,
         };
         let (id, token, mut issued) = Self::prepare_issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {
