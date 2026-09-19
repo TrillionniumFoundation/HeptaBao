@@ -25,6 +25,8 @@ struct Key {
     min_encryption_version: u64,
     deletion_allowed: bool,
     exportable: bool,
+    #[serde(default)]
+    auto_rotate_period: u64,
     deleted: bool,
     versions: BTreeMap<u64, KeyVersion>,
 }
@@ -109,18 +111,7 @@ impl Key {
                 ));
             }
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
-        {
-            return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
-            ));
-        }
+        let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
         let version = KeyVersion::generate(kind, now)?;
         Ok(Self {
@@ -130,6 +121,7 @@ impl Key {
             min_encryption_version: 0,
             deletion_allowed: false,
             exportable,
+            auto_rotate_period,
             deleted: false,
             versions: BTreeMap::from([(1, version)]),
         })
@@ -158,7 +150,7 @@ impl Key {
             "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
             "derived":false,"convergent_encryption":false,"supports_derivation":false,
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519",
-            "supports_hmac":true,"imported_key":false,"auto_rotate_period":0,"soft_deleted":self.deleted,"min_available_version":0}),
+            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
         )
     }
 
@@ -205,6 +197,10 @@ impl Key {
                 "auto_rotate_period",
             ],
         )?;
+        let requested_auto_rotate_period = body
+            .get("auto_rotate_period")
+            .map(|value| auto_rotate_period(Some(value)))
+            .transpose()?;
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
             self.min_decryption_version = value.max(1);
         }
@@ -232,25 +228,63 @@ impl Key {
         if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
             return Err(error(501, "plaintext backup is not implemented"));
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
-        {
-            return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
-            ));
+        if let Some(period) = requested_auto_rotate_period {
+            self.auto_rotate_period = period;
         }
         Ok(())
     }
+
+    fn auto_rotate(&mut self, now: u64) -> Result<bool> {
+        if self.deleted || self.auto_rotate_period == 0 || self.versions.len() >= 10_000 {
+            return Ok(false);
+        }
+        let created = self
+            .versions
+            .get(&self.latest_version)
+            .ok_or_else(|| error(500, "latest transit key version is missing"))?
+            .created_at;
+        let due = created
+            .checked_add(self.auto_rotate_period)
+            .ok_or_else(|| error(500, "transit rotation deadline overflow"))?;
+        if now < due {
+            return Ok(false);
+        }
+        let next = self
+            .latest_version
+            .checked_add(1)
+            .ok_or_else(|| bad("key version limit reached"))?;
+        self.versions
+            .insert(next, KeyVersion::generate(&self.kind, now)?);
+        self.latest_version = next;
+        Ok(true)
+    }
+}
+
+fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
+    let period = value.map(duration_seconds).transpose()?.unwrap_or(0);
+    if period != 0 && period < 3600 {
+        return Err(bad("auto_rotate_period must be at least 1h or 0"));
+    }
+    Ok(period)
 }
 
 impl Transit {
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
+    }
+
+    pub(super) fn has_auto_rotate_keys(&self) -> bool {
+        self.keys
+            .values()
+            .any(|key| key.auto_rotate_period != 0 && !key.deleted)
+    }
+
+    pub(super) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
+        let mut changed = false;
+        for key in self.keys.values_mut() {
+            changed |= key.auto_rotate(now)?;
+        }
+        Ok(changed)
     }
 
     pub(super) fn handle(
@@ -377,16 +411,11 @@ impl Transit {
                 {
                     return Err(bad("use the key config endpoint to change exportability"));
                 }
-                if body
-                    .get("auto_rotate_period")
-                    .map(duration_seconds)
-                    .transpose()?
-                    .unwrap_or(0)
-                    != 0
+                if let Some(value) = body.get("auto_rotate_period")
+                    && auto_rotate_period(Some(value))? != key.auto_rotate_period
                 {
-                    return Err(error(
-                        501,
-                        "automatic time-based rotation is not implemented",
+                    return Err(bad(
+                        "use the key config endpoint to change auto_rotate_period",
                     ));
                 }
                 return Ok(ok(key.descriptor(name)?, false));
@@ -1040,4 +1069,56 @@ fn hash(path: &str, body: &Value) -> Result<EngineResponse> {
         .transpose()?
         .unwrap_or("hex");
     Ok(ok(json!({"sum":encoded(hashed.as_ref(),format)?}), false))
+}
+
+#[cfg(test)]
+mod auto_rotation_tests {
+    use super::*;
+
+    #[test]
+    fn auto_rotation_uses_one_hour_minimum_and_persists_across_restart() {
+        let mut key = Key::new(
+            &json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
+            100,
+        )
+        .expect("key");
+        assert_eq!(key.auto_rotate_period, 3600);
+        assert!(!key.auto_rotate(3_699).expect("before deadline"));
+        assert!(key.auto_rotate(3_700).expect("at deadline"));
+        assert_eq!(key.latest_version, 2);
+        assert_eq!(key.versions[&2].created_at, 3_700);
+        assert!(!key.auto_rotate(7_299).expect("before reset deadline"));
+        assert!(key.auto_rotate(7_300).expect("after reset deadline"));
+
+        let restored: Key =
+            serde_json::from_value(serde_json::to_value(&key).expect("encode")).expect("decode");
+        assert_eq!(restored.auto_rotate_period, 3600);
+        assert_eq!(restored.latest_version, 3);
+    }
+
+    #[test]
+    fn zero_disables_rotation_and_soft_deleted_or_retained_keys_do_not_rotate() {
+        let mut disabled = Key::new(&json!({"auto_rotate_period":"0"}), 100).expect("key");
+        assert!(!disabled.auto_rotate(10_000).expect("disabled"));
+
+        let mut deleted = Key::new(&json!({"auto_rotate_period":"1h"}), 100).expect("key");
+        deleted.deleted = true;
+        assert!(!deleted.auto_rotate(10_000).expect("deleted"));
+
+        let mut retained = Key::new(&json!({"auto_rotate_period":"1h"}), 100).expect("key");
+        for version in 2..=10_000 {
+            retained.versions.insert(
+                version,
+                KeyVersion::generate(&retained.kind, version).expect("version"),
+            );
+        }
+        retained.latest_version = 10_000;
+        assert!(!retained.auto_rotate(20_000).expect("retention bound"));
+    }
+
+    #[test]
+    fn auto_rotation_rejects_sub_hour_periods() {
+        assert!(auto_rotate_period(Some(&json!("3599s"))).is_err());
+        assert_eq!(auto_rotate_period(Some(&json!("0"))).expect("disabled"), 0);
+    }
 }

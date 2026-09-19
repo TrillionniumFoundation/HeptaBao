@@ -31,12 +31,19 @@ impl Service {
         let Some(current) = self.state.as_ref() else {
             return Ok(false);
         };
-        if !current.auth.has_live_wrappers() && !current.engines.has_live_leases() {
+        if !current.auth.has_live_wrappers()
+            && !current.engines.has_live_leases()
+            && !current.engines.has_auto_rotate_keys()
+        {
             return Ok(false);
         }
         let mut next = current.clone();
         let changed = Self::reconcile_lease_owners(&mut next, now)
-            | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now));
+            | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now))
+            | next
+                .engines
+                .maintain_auto_rotation(now)
+                .map_err(|_| "transit auto-rotation failed")?;
         if !changed {
             return Ok(false);
         }

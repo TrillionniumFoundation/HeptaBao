@@ -760,6 +760,62 @@ fn transit_rotation_rewrap_minimum_versions_and_soft_delete() -> TestResult {
 }
 
 #[test]
+fn transit_auto_rotation_is_engine_state_maintenance_and_resets_after_manual_rotation() -> TestResult
+{
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/periodic",
+        json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
+        100,
+    )?;
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/encrypt/periodic",
+        json!({"plaintext": BASE64.encode(b"initial")}),
+        100,
+    )?;
+    assert!(state.has_auto_rotate_keys());
+    assert!(!state.maintain_auto_rotation(3_699)?);
+    assert!(state.maintain_auto_rotation(3_700)?);
+    let descriptor = request(
+        &mut state,
+        "",
+        "GET",
+        "transit/keys/periodic",
+        json!({}),
+        3_700,
+    )?;
+    assert_eq!(descriptor.body["data"]["latest_version"], 2);
+    assert_eq!(descriptor.body["data"]["auto_rotate_period"], 3600);
+
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/periodic/rotate",
+        json!({}),
+        4_000,
+    )?;
+    assert!(!state.maintain_auto_rotation(7_599)?);
+    assert!(state.maintain_auto_rotation(7_600)?);
+    let descriptor = request(
+        &mut state,
+        "",
+        "GET",
+        "transit/keys/periodic",
+        json!({}),
+        7_600,
+    )?;
+    assert_eq!(descriptor.body["data"]["latest_version"], 4);
+    Ok(())
+}
+
+#[test]
 fn transit_sign_verify_hmac_and_hash_use_real_crypto() -> TestResult {
     let mut state = EngineState::default();
     request(

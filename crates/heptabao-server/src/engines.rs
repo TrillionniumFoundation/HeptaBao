@@ -641,6 +641,26 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_auto_rotate_keys(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Transit(engine) if engine.has_auto_rotate_keys())
+            })
+        })
+    }
+
+    pub(crate) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
+        let mut changed = false;
+        for state in self.namespaces.values_mut() {
+            for mount in state.mounts.values_mut() {
+                if let Backend::Transit(engine) = &mut mount.backend {
+                    changed |= engine.maintain_auto_rotation(now)?;
+                }
+            }
+        }
+        Ok(changed)
+    }
+
     pub fn required_capability(
         &self,
         namespace: &str,
