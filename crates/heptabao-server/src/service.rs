@@ -1261,7 +1261,7 @@ impl Service {
             }
             let initialized = self.initialized();
             let sealed = self.state.is_none();
-            let (ha_enabled, standby, ha_active, _, _) = self.ha_observation();
+            let (ha_enabled, standby, ha_active, application_ready, _, _) = self.ha_observation();
             let status = health_status_with_codes(
                 HealthObservation::new(
                     initialized,
@@ -1269,7 +1269,7 @@ impl Service {
                     self.recovery_required,
                     ha_enabled,
                     standby,
-                    ha_active,
+                    ha_active && application_ready,
                 ),
                 standby_ok,
                 health_codes,
@@ -1278,7 +1278,7 @@ impl Service {
                 status,
                 // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
                 // Keep this health response aligned with that release.
-                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"recovery_required":self.recovery_required}),
+                body: json!({"initialized":initialized,"sealed":sealed,"standby":standby,"replication_performance_mode":if ha_enabled {"enabled"} else {"disabled"},"replication_dr_mode":"disabled","server_time_utc":now,"version":"HeptaBao-0.2.0","cluster_name":if ha_enabled {"heptabao-ha"} else {"heptabao-single-node"},"cluster_id":self.state.as_ref().map(|s|s.cluster_id.as_str()),"ha_enabled":ha_enabled,"ha_active":ha_active,"ha_application_ready":application_ready,"recovery_required":self.recovery_required}),
             };
         }
         if path == "sys/init" && method == "GET" {
@@ -3878,6 +3878,23 @@ impl Service {
             .latest_committed_state()
             .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
         let Some(committed) = committed else {
+            // A cluster enabled after single-node initialization has a valid
+            // local state but no application envelope yet.  The elected
+            // leader must anchor that exact state before it can advertise an
+            // application-ready authority; followers remain standby until
+            // this bootstrap publication is committed.
+            let is_leader = ha
+                .lock()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+                .is_leader()
+                .map_err(|_| Response::error(503, "HA role is unavailable"))?;
+            if is_leader {
+                let state = self
+                    .state
+                    .clone()
+                    .ok_or_else(|| Response::error(503, "server is sealed"))?;
+                self.commit_state(&state)?;
+            }
             return Ok(());
         };
         if self.current_state_digest()? == committed.digest {
@@ -3915,32 +3932,36 @@ impl Service {
         Ok(())
     }
 
-    fn ha_observation(&self) -> (bool, bool, bool, Option<u64>, Option<u64>) {
+    fn ha_observation(&self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
         let Some(ha) = self.ha.as_ref() else {
-            return (false, false, true, None, None);
+            return (false, false, true, true, None, None);
         };
         let Ok(ha) = ha.lock() else {
-            return (true, false, false, None, None);
+            return (true, false, false, false, None, None);
         };
         let local = match ha.local_id() {
             Ok(local) => Some(local),
-            Err(_) => return (true, false, false, None, None),
+            Err(_) => return (true, false, false, false, None, None),
         };
         let leader = match ha.leader() {
             Ok(leader) => leader,
-            Err(_) => return (true, false, false, None, local),
+            Err(_) => return (true, false, false, false, None, local),
         };
         let standby = leader.is_some() && leader != local;
         let active = leader.is_some() && leader == local && ha.ensure_linearizable().is_ok();
-        (true, standby, active, leader, local)
+        let application_ready = self
+            .state_digest
+            .is_some_and(|digest| ha.ensure_application_digest(digest).is_ok());
+        (true, standby, active, application_ready, leader, local)
     }
 
     fn leader_response(&self) -> Response {
-        let (ha_enabled, _, ha_active, leader, local) = self.ha_observation();
+        let (ha_enabled, _, ha_active, application_ready, leader, local) = self.ha_observation();
         if !ha_enabled {
             return Response::ok(json!({
                 "ha_enabled": false,
                 "is_self": true,
+                "ha_application_ready": true,
                 "leader_address": "",
                 "leader_cluster_address": "",
                 "performance_standby": false,
@@ -3950,6 +3971,7 @@ impl Service {
         Response::ok(json!({
             "ha_enabled": true,
             "is_self": ha_active && leader.is_some() && leader == local,
+            "ha_application_ready": application_ready,
             "leader_address": "",
             "leader_cluster_address": "",
             "performance_standby": false,

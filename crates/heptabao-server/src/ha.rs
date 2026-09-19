@@ -652,6 +652,39 @@ impl HaProcess {
             .map_err(|error| error.to_string())
     }
 
+    /// Prove that the local process is observing the committed application
+    /// generation identified by `expected_digest`.
+    ///
+    /// A successful ReadIndex only proves quorum authority; it does not prove
+    /// that this process has applied the same application state after a
+    /// restart, snapshot install, or leadership transfer.  Health and request
+    /// admission use this stronger fence so a node cannot report an active
+    /// authority while serving a stale local state image.
+    pub(crate) fn ensure_application_digest(
+        &self,
+        expected_digest: [u8; 32],
+    ) -> Result<(), String> {
+        if expected_digest == [0; 32] {
+            return Err("HA application digest is not initialized".into());
+        }
+        let node = self
+            .node
+            .as_ref()
+            .ok_or_else(|| "HA process is shut down".to_owned())?;
+        self.runtime
+            .block_on(node.ensure_linearizable())
+            .map_err(|error| error.to_string())?;
+        let committed = self
+            .runtime
+            .block_on(node.latest_envelope())
+            .map_err(|error| error.to_string())?
+            .ok_or_else(|| "HA application state has not been committed".to_owned())?;
+        if committed.digest() != expected_digest {
+            return Err("HA application state is not converged on the committed digest".into());
+        }
+        Ok(())
+    }
+
     pub fn trigger_snapshot(&self) -> Result<(), String> {
         let node = self
             .node

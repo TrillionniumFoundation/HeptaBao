@@ -258,7 +258,9 @@ class Cluster:
                 except (OSError, urllib.error.URLError, TimeoutError):
                     continue
                 if status == 200:
-                    if health.get("ha_active") is not True or health.get("standby") is not False:
+                    if (health.get("ha_active") is not True
+                            or health.get("ha_application_ready") is not True
+                            or health.get("standby") is not False):
                         raise FixtureError("health_success_without_active_authority")
                     active.append(node)
             if len(active) > 1:

@@ -70,6 +70,14 @@ class ReplayEpochCluster(Cluster):
         super().run()
 
         leader_before = self.leader()
+        status, health = leader_before.call("GET", "sys/health", timeout=10)
+        self.check(
+            "active_leader_reports_committed_application_digest_readiness",
+            status == 200
+            and health.get("ha_active") is True
+            and health.get("ha_application_ready") is True
+            and health.get("standby") is False,
+        )
         before = self.replay_capacity(leader_before)
         initial_epoch = int(before["replay_epoch"])
         self.check("replay_epoch_initial_active_leader_observed", initial_epoch >= 0)
