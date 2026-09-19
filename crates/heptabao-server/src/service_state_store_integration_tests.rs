@@ -300,18 +300,28 @@ fn large_unchanged_owner_bounds_v4_write_set_to_changed_owner()
         .map(|chunk| chunk.resource.as_str())
         .collect::<std::collections::BTreeSet<_>>();
     assert!(!added.is_empty());
-    assert!(added.iter().all(|resource| resource.starts_with("state-owners/auth/")));
-    assert!(second.deletes.iter().all(|resource| previous_auth.contains(resource)));
+    assert!(
+        added
+            .iter()
+            .all(|resource| resource.starts_with("state-owners/auth/"))
+    );
+    assert!(
+        second
+            .deletes
+            .iter()
+            .all(|resource| previous_auth.contains(resource))
+    );
     assert_eq!(second.deletes.len(), previous_auth.len());
     let reused = second
         .required_existing
         .iter()
         .collect::<std::collections::BTreeSet<_>>();
     assert!(unchanged.iter().all(|resource| reused.contains(resource)));
-    assert!(reused.iter().all(|resource| {
-        unchanged.contains(*resource)
-            || previous_auth.contains(*resource)
-    }));
+    assert!(
+        reused
+            .iter()
+            .all(|resource| { unchanged.contains(*resource) || previous_auth.contains(*resource) })
+    );
 
     let next = owner_store::decode_manifest(&second.manifest_bytes)?
         .ok_or("next owner manifest missing")?;
