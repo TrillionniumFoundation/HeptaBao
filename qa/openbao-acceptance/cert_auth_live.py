@@ -70,7 +70,7 @@ class Fixture:
         self.good_context = self._client_context(self.root / "client-chain.pem", self.root / "client.key")
         self.wrong_context = self._client_context(self.root / "wrong-client-chain.pem", self.root / "wrong-client.key")
         self.bad_eku_context = self._client_context(self.root / "bad-eku-chain.pem", self.root / "bad-eku.key")
-        self.untrusted_context = self._client_context(self.root / "untrusted-client.crt", self.root / "untrusted-client.key",
+        self.untrusted_context = self._client_context(self.root / "untrusted-client-chain.pem", self.root / "untrusted-client.key",
                                                        cafile=self.root / "root.crt")
         self.no_cert_client = self._opener(ssl.create_default_context(cafile=str(self.root / "root.crt")))
         self.good_client = self._opener(self.good_context)
@@ -128,11 +128,14 @@ class Fixture:
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
             "extendedKeyUsage=serverAuth\nsubjectAltName=DNS:server-only.example.test\n",
         )
-        untrusted_ca, untrusted_ca_key = issue_leaf(
-            root, "untrusted-ca", "/CN=HeptaBao untrusted fixture root",
-            root / "root.crt", root / "root.key",
-            "basicConstraints=critical,CA:TRUE,pathlen:0\nkeyUsage=critical,keyCertSign,cRLSign\n",
-        )
+        untrusted_ca = root / "untrusted-root.crt"
+        untrusted_ca_key = root / "untrusted-root.key"
+        run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
+             "-keyout", str(untrusted_ca_key), "-out", str(untrusted_ca),
+             "-subj", "/CN=HeptaBao unrelated fixture root",
+             "-addext", "basicConstraints=critical,CA:TRUE,pathlen:0",
+             "-addext", "keyUsage=critical,keyCertSign,cRLSign"])
+        untrusted_ca_key.chmod(0o600)
         untrusted, untrusted_key = issue_leaf(
             root, "untrusted-client", "/CN=untrusted.example.test",
             untrusted_ca, untrusted_ca_key,
@@ -144,6 +147,7 @@ class Fixture:
         write_private(root / "client-chain.pem", client.read_bytes() + intermediate.read_bytes())
         write_private(root / "wrong-client-chain.pem", wrong.read_bytes() + intermediate.read_bytes())
         write_private(root / "bad-eku-chain.pem", bad_eku.read_bytes() + intermediate.read_bytes())
+        write_private(root / "untrusted-client-chain.pem", untrusted.read_bytes() + untrusted_ca.read_bytes())
         for name in ("server.key", "client.key", "wrong-client.key", "untrusted-client.key"):
             (root / name).chmod(0o600)
 
