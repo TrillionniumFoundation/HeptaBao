@@ -1672,14 +1672,35 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         .expect("certificate login returns a token")
         .to_owned();
     let actor = state.authenticate(&raw, 101).unwrap();
+    let renewal_without_certificate = state.handle(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        102,
+    );
+    assert!(matches!(renewal_without_certificate, Err(error) if error.status == 403));
+    let wrong_leaf = vec![91_u8, 92, 93];
+    let renewal_with_wrong_certificate = state.handle_with_client_certificates(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        102,
+        Some(std::slice::from_ref(&wrong_leaf)),
+    );
+    assert!(matches!(renewal_with_wrong_certificate, Err(error) if error.status == 403));
     let renewal = state
-        .handle(
+        .handle_with_client_certificates(
             Some(&actor),
             "",
             "POST",
             "auth/token/renew-self",
             &json!({}),
             102,
+            Some(std::slice::from_ref(&leaf)),
         )
         .unwrap()
         .unwrap();
@@ -1708,6 +1729,16 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         Some(std::slice::from_ref(&leaf)),
     );
     assert!(matches!(literal_question_mark, Err(error) if error.status == 403));
+    let renewal_after_selector_change = state.handle_with_client_certificates(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        104,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(renewal_after_selector_change, Err(error) if error.status == 403));
 
     assert_eq!(
         call(

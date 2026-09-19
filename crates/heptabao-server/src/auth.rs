@@ -2427,9 +2427,15 @@ impl AuthState {
                 .ok_or_else(|| err(404, "auth mount not found"))?;
             let scope = AuthScope { namespace, mount };
             let result = match entry.kind.as_str() {
-                "token" if mount == "token" => {
-                    self.token_route(principal, namespace, method, path, body, now)
-                }
+                "token" if mount == "token" => self.token_route(
+                    principal,
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    now,
+                    peer_certificates,
+                ),
                 "userpass" if suffix.starts_with("login/") => {
                     self.login_userpass(scope, method, &suffix[6..], body, now)
                 }
@@ -3851,6 +3857,7 @@ impl AuthState {
         ))
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn token_route(
         &mut self,
         principal: Option<&Principal>,
@@ -3859,6 +3866,7 @@ impl AuthState {
         path: &str,
         body: &Value,
         now: u64,
+        peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<AuthResponse, AuthError> {
         let operation = path
             .strip_prefix("auth/token/")
@@ -3969,7 +3977,7 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"))?
                 };
                 self.active_token(&id, now, false)?;
-                let cert_role_limits = self.cert_renewal_limits(&id)?;
+                let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
                     .map(|(mount, token_ttl, token_max_ttl)| {
                         self.auth_mount_token_limits(
@@ -4070,20 +4078,34 @@ impl AuthState {
         Ok(id)
     }
 
-    fn cert_renewal_limits(&self, id: &str) -> Result<Option<(String, u64, u64)>, AuthError> {
+    fn cert_renewal_limits(
+        &self,
+        id: &str,
+        peer_certificates: Option<&[Vec<u8>]>,
+    ) -> Result<Option<(String, u64, u64)>, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         let Some(role_name) = token.auth_cert_role.as_deref() else {
             return Ok(None);
         };
         let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
         let digest = token.auth_cert_sha256.as_deref().ok_or_else(denied)?;
+        let presented = parse_presented_certificate(peer_certificates.ok_or_else(denied)?)?;
+        if presented.sha256 != digest {
+            return Err(denied());
+        }
         let role = self
             .cert_roles
             .get(&token.namespace)
             .and_then(|mounts| mounts.get(mount))
             .and_then(|roles| roles.get(role_name))
             .ok_or_else(denied)?;
-        if role.certificate_sha256 != digest || role.policies != token.policies {
+        let attributes = peer_certificates
+            .and_then(|chain| chain.first())
+            .and_then(|leaf| parse_certificate_attributes(leaf));
+        if role.certificate_sha256 != digest
+            || role.policies != token.policies
+            || !matches_cert_role(&presented, attributes.as_ref(), role)
+        {
             return Err(denied());
         }
         Ok(Some((mount.into(), role.token_ttl, role.token_max_ttl)))
