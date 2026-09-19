@@ -18,6 +18,11 @@ def main(argv=None):
     parser.add_argument("--candidate-source", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--build-log", type=Path, help="Operator-supplied build log to bind by digest")
+    parser.add_argument(
+        "--modules",
+        default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations",
+        help="Comma-separated acceptance modules; default preserves the bounded baseline",
+    )
     parser.add_argument("--oracle-port", type=int, default=28262)
     args = parser.parse_args(argv)
     root = args.work_dir.resolve()
@@ -47,8 +52,18 @@ def main(argv=None):
                           HB_ORACLE_CACERT=oracle["ca_file"], HB_ORACLE_TOKEN_FILE=oracle["token_file"])
         for key in ("HB_CANDIDATE_TOKEN", "HB_CANDIDATE_NAMESPACE", "HB_ORACLE_TOKEN", "HB_ORACLE_NAMESPACE"):
             os.environ.pop(key, None)
-        code = acceptance.main(["--compare", "--allow-test-writes", "--oracle-identity-file", oracle["identity_file"],
-                                "--output", str(root / "comparison.json")])
+        code = acceptance.main(
+            [
+                "--compare",
+                "--allow-test-writes",
+                "--modules",
+                args.modules,
+                "--oracle-identity-file",
+                oracle["identity_file"],
+                "--output",
+                str(root / "comparison.json"),
+            ]
+        )
         report = private_json(root / "comparison.json")
         report["execution_binding"] = {
             "candidate_binary_sha256": file_digest(args.binary), "candidate_source_sha": source_sha,
