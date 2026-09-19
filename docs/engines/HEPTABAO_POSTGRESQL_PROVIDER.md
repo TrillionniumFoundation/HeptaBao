@@ -193,10 +193,10 @@ This is repository-controlled execution, not independent provider qualification.
 Every changed candidate must execute the real runner again; the wire model cannot
 substitute for SQL, OID/DDL semantics, login or session-termination evidence.
 
-The latest SSD Lima guest run bound to source head `4b26baa` used PostgreSQL
+The latest SSD Lima guest run bound to source head `45c7edc` used PostgreSQL
 17.11 from the arm64 PGDG package and candidate binary SHA-256
-`35eb90d0a0164578ae4dd8816ba677d104406b793b796e298373949f8b82c626`. Its
-[54-check receipt](../../qa/openbao-acceptance/evidence/postgresql-live-4b26baa.json)
+`e389be313be0c5240a2dadd33cd866ae215e28f4c2f2ec7a95dba26de6b1e72a`. Its
+[54-check receipt](../../qa/openbao-acceptance/evidence/postgresql-live-45c7edc.json)
 covered the current provider-role profile, including exact fence blocking,
 restart/outage reconciliation, active-session termination and more than 128
 issue/revoke lifecycles. The receipt is scoped repository evidence; it does not
