@@ -77,7 +77,20 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         match = re.search(r"pub struct ServiceRequest<'a> \{(.*?)\n\}", text, re.S)
         self.assertIsNotNone(match)
         fields = set(re.findall(r"pub (\w+):", match.group(1)))
-        self.assertEqual(fields, {"method", "path", "namespace", "token", "body", "wrap_ttl_seconds"})
+        self.assertEqual(
+            fields,
+            {
+                "method",
+                "path",
+                "namespace",
+                "token",
+                "body",
+                "wrap_ttl_seconds",
+                "client_certificates",
+            },
+        )
+        # A verified TLS chain is transport evidence for certificate auth; it
+        # is never an authenticated Principal or an authorization decision.
         self.assertNotIn("Principal", match.group(1))
         self.assertNotIn("AuthState", match.group(1))
         self.assertNotRegex(text, r"#\[derive\([^]]*(?:Clone|Debug)[^]]*\)\]\s*pub struct ServiceRequest")
