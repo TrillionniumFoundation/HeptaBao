@@ -134,6 +134,9 @@ def main():
     # isolated owner-writable state below /var/tmp, while rejecting arbitrary
     # /tmp config paths, so keep the complete short-lived fixture there.
     root=Path(tempfile.mkdtemp(prefix="hb-openldap-",dir="/var/tmp"));root.chmod(0o700);ins=Instance(a.binary,root/"candidate");checks=[]
+    binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest()
+    source_head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,
+        capture_output=True,check=True).stdout.strip()
     try:
         try:d=Directory(root/"openldap",ins.root/"tls.crt",ins.root/"tls.key",ins.root/"ca.crt")
         except FileNotFoundError:return 77
@@ -178,7 +181,13 @@ def main():
             st,res=ins.call("POST","auth/ldap/login/alice",{"password":d.user_password});check("provider_success_cannot_bypass_local_revocation",st==403 and "auth" not in res)
             report={"schema":"heptabao.openldap-live.v1","status":"passed" if all(x["passed"] for x in checks) else "failed","checks":checks,
                 "actual_slapd_distribution":True,"tls_simple_bind":True,"search_and_group_mapping":True,
-                "live_group_revocation":True,"independent_qualification":False}
+                "live_group_revocation":True,"independent_qualification":False,
+                "candidate_binary_sha256":binary_sha256,"candidate_binary_source_head":source_head,
+                "execution_platform":"Linux aarch64 guest (Ubuntu Noble)",
+                "openldap_distribution":"slapd 2.6.10+dfsg-0ubuntu0.24.04.1 arm64",
+                "fixture_command":"python3 qa/openbao-acceptance/ldap_openldap_live.py --binary <linux-guest>/target-linux-guest/release/heptabao-server --output <linux-guest>/ldap-openldap-live.json",
+                "tls_verification":"CA pinning with loopback IP SAN; LDAPTLS_REQCERT=demand",
+                "apparmor_isolation":"The short-lived test slapd runs under aa-exec unconfined in the dedicated SSD Lima guest only; production OpenLDAP remains confined."}
             private(a.output,json.dumps(report,indent=2)+"\n");return 0 if report["status"]=="passed" else 1
         finally:d.stop()
     finally:ins.stop();shutil.rmtree(root,ignore_errors=True)
