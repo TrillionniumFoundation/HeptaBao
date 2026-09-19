@@ -28,6 +28,11 @@ const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_PAYLOAD_BYTES: usize = 1024 * 1024;
 const MAX_PEERS: usize = 255;
 const MAX_SNAPSHOT_CHUNKS: usize = 65_536;
+// A peer certificate chain is validated by rustls before this layer sees it.
+// Keep the chain count and aggregate bytes bounded while allowing the normal
+// leaf + one-or-more intermediate deployment shape.
+const MAX_PEER_CERT_CHAIN: usize = 8;
+const MAX_PEER_CERT_CHAIN_BYTES: usize = 4 * 1024 * 1024;
 const PEER_STATE_MAGIC: &[u8; 5] = b"HBPS1";
 const PEER_FRAME_MAGIC: &[u8; 5] = b"HBPF1";
 
@@ -803,13 +808,35 @@ where
         .conn
         .peer_certificates()
         .ok_or(HaError::PeerAuthenticationFailed)?;
-    if certificates.len() != 1 {
-        return Err(HaError::PeerAuthenticationFailed);
-    }
-    let peer = identities.identify(certificates[0].as_ref())?;
+    let peer = identify_peer_certificate_chain(identities, certificates)?;
     let request = read_bounded_frame(&mut tls)?;
     let response = handler(peer, request)?;
     write_bounded_frame(&mut tls, &response)
+}
+
+fn identify_peer_certificate_chain(
+    identities: &PinnedClientCertificateMap,
+    certificates: &[rustls::pki_types::CertificateDer<'_>],
+) -> Result<NodeId, HaError> {
+    if certificates.is_empty() || certificates.len() > MAX_PEER_CERT_CHAIN {
+        return Err(HaError::PeerAuthenticationFailed);
+    }
+    let total_bytes = certificates.iter().try_fold(0_usize, |total, cert| {
+        if cert.is_empty() {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        total
+            .checked_add(cert.len())
+            .filter(|bytes| *bytes <= MAX_PEER_CERT_CHAIN_BYTES)
+            .ok_or(HaError::PeerAuthenticationFailed)
+    })?;
+    if total_bytes > MAX_PEER_CERT_CHAIN_BYTES {
+        return Err(HaError::PeerAuthenticationFailed);
+    }
+    // rustls has already authenticated the complete chain. Identity pinning
+    // intentionally binds only the leaf; intermediates may rotate without
+    // changing the configured node identity.
+    identities.identify(certificates[0].as_ref())
 }
 
 #[derive(Clone, Debug)]
@@ -1586,6 +1613,40 @@ mod tests {
         assert_eq!(identities.identify(certificate).unwrap(), peer);
         assert_eq!(
             identities.identify(b"different-certificate"),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn tls_peer_chain_accepts_bounded_intermediates_but_pins_leaf() {
+        let leaf = b"synthetic-leaf-der".to_vec();
+        let identities =
+            PinnedClientCertificateMap::new(BTreeMap::from([(sha256(&leaf), node("n2"))])).unwrap();
+        let chain = (0..3)
+            .map(|ordinal| {
+                rustls::pki_types::CertificateDer::from(if ordinal == 0 {
+                    leaf.clone()
+                } else {
+                    format!("synthetic-intermediate-{ordinal}").into_bytes()
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &chain).unwrap(),
+            node("n2")
+        );
+
+        let too_many = (0..=MAX_PEER_CERT_CHAIN)
+            .map(|ordinal| {
+                rustls::pki_types::CertificateDer::from(if ordinal == 0 {
+                    leaf.clone()
+                } else {
+                    vec![ordinal as u8]
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &too_many),
             Err(HaError::PeerAuthenticationFailed)
         );
     }
