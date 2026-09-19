@@ -393,6 +393,7 @@ checksum = "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
 dependencies = [
  "block-buffer",
  "crypto-common",
+ "subtle",
 ]
 
 [[package]]
@@ -892,6 +893,7 @@ dependencies = [
  "heptabao-plugin-contracts",
  "heptabao-plugin-host",
  "heptabao-raft-runtime",
+ "hmac",
  "libc",
  "qrcode",
  "ring",
@@ -899,6 +901,8 @@ dependencies = [
  "rustls-pemfile",
  "serde",
  "serde_json",
+ "sha2",
+ "sha3",
  "tokio",
  "zeroize",
 ]
@@ -957,6 +961,15 @@ name = "heptabao-token"
 version = "0.1.0"
 dependencies = [
  "heptabao-domain",
+]
+
+[[package]]
+name = "hmac"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c49c37c09c17a53d937dfbb742eb3a961d65a994e6bcdcf37e7399d0cc8ab5e"
+dependencies = [
+ "digest",
 ]
 
 [[package]]
@@ -1032,6 +1045,15 @@ dependencies = [
  "cfg-if",
  "futures-util",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "keccak"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb26cec98cce3a3d96cbb7bced3c4b16e3d13f27ec56dbd62cbc8f39cfb9d653"
+dependencies = [
+ "cpufeatures 0.2.17",
 ]
 
 [[package]]
@@ -1507,6 +1529,16 @@ dependencies = [
  "cfg-if",
  "cpufeatures 0.2.17",
  "digest",
+]
+
+[[package]]
+name = "sha3"
+version = "0.10.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77fd7028345d415a4034cf8777cd4f8ab1851274233b45f84e3d955502d93874"
+dependencies = [
+ "digest",
+ "keccak",
 ]
 
 [[package]]

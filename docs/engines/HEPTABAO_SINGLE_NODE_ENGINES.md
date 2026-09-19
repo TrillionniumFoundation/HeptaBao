@@ -192,15 +192,16 @@ a persisted encryption count. Private signing material uses ring's PKCS#8 output
 
 | Key type | AEAD | Sign/verify | HMAC |
 | --- | --- | --- | --- |
-| `aes128-gcm96` | AES-128-GCM, 96-bit random nonce | No | SHA-256/384/512 |
-| `aes256-gcm96` | AES-256-GCM, 96-bit random nonce | No | SHA-256/384/512 |
-| `chacha20-poly1305` | ChaCha20-Poly1305, 96-bit random nonce | No | SHA-256/384/512 |
-| `xchacha20-poly1305` | XChaCha20-Poly1305, 192-bit random nonce | No | SHA-256/384/512 |
-| `ed25519` | No | Pure Ed25519 | SHA-256/384/512 |
-| `hmac` | No | No | SHA-256/384/512 |
+| `aes128-gcm96` | AES-128-GCM, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `aes256-gcm96` | AES-256-GCM, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `chacha20-poly1305` | ChaCha20-Poly1305, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `xchacha20-poly1305` | XChaCha20-Poly1305, 192-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `ed25519` | No | Pure Ed25519 | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `hmac` | No | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
 
-All primitives and randomness come from ring and the platform entropy source.
-There is no handwritten cipher, hash, entropy generator or signature primitive.
+AEAD, signing and entropy use ring or RustCrypto's audited implementations as
+appropriate, and all key material comes from the platform entropy source. There
+is no handwritten cipher, hash, entropy generator or signature primitive.
 
 | Method and relative path | Behavior |
 | --- | --- |
@@ -221,7 +222,7 @@ There is no handwritten cipher, hash, entropy generator or signature primitive.
 | `POST/PUT sign/:name` | Versioned Ed25519 signature over base64 input |
 | `POST/PUT verify/:name[/:algorithm]` | Verify signature or HMAC with minimum-version policy |
 | `POST/PUT random[/platform][/N]` | Platform CSPRNG bytes in base64 or hex |
-| `POST/PUT hash[/:algorithm]` | SHA-256/384/512 over base64 input, in hex or base64 |
+| `POST/PUT hash[/:algorithm]` | SHA-2-224/256/384/512 or SHA-3-224/256/384/512 over base64 input, in hex or base64 |
 | `GET export/{encryption-key,hmac-key}/:name[/:version]` | Explicitly exportable symmetric/HMAC material only |
 
 The opaque envelope is `vault:vN:BASE64(nonce || ciphertext || tag)`. Its AAD is
@@ -313,7 +314,9 @@ and minimum-version policies, Ed25519 and HMAC verification, RFC 4231 HMAC case 
 a SHA-256 known value, partial batch recovery, datakey/export behavior, required
 capabilities, explicit unsupported modes, all eighteen RFC 6238 TOTP vectors,
 RFC 4648 base32 examples, replay across restart/reimport/clock rollback, domain
-isolation, URL enrollment and durable guessing limits. The service integration
+isolation, URL enrollment and durable guessing limits. The Transit algorithm
+matrix also checks deterministic SHA-2/SHA-3 hashes, HMAC tags and verification
+for every exposed digest. The service integration
 suite and external TLS/OpenBao observer remain separate evidence; this document
 does not relabel unit tests as independent black-box acceptance.
 

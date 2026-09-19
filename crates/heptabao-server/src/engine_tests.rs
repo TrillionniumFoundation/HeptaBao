@@ -1047,6 +1047,102 @@ fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
 }
 
 #[test]
+fn transit_supports_openbao_hash_and_hmac_algorithm_matrix() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/algorithm-matrix",
+        json!({"type":"hmac"}),
+        1,
+    )?;
+    let mut serialized = serde_json::to_value(&state)?;
+    serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["algorithm-matrix"]
+        ["versions"]["1"]["hmac_material"] = json!(BASE64.encode([0x0b; 20]));
+    let mut state: EngineState = serde_json::from_value(serialized)?;
+    let input = BASE64.encode(b"Hi There");
+    let cases = [
+        (
+            "sha2-224",
+            "iW+xEoq73xloMhB81J3zP0e0sRaZErpPU2hLIg==",
+            "ea09ae9cc6768c50fcee903ed054556e5bfc8347907f12598aa24193",
+        ),
+        (
+            "sha2-256",
+            "sDRMYdjbOFNcqK/OrwvxK4gdwgDJgz2nJuk3bC4yz/c=",
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        ),
+        (
+            "sha2-384",
+            "r9A5RNhIlWJrCCX0q0aQfxX52tvkEB7GgqoDTHzrxZz66p6pB27ef0rxUuiy+py2",
+            "59e1748777448c69de6b800d7a33bbfb9ff1b463e44354c3553bcdb9c666fa90125a3c79f90397bdf5f6a13de828684f",
+        ),
+        (
+            "sha2-512",
+            "h6p83qXvYZ1P8LQkGh1ssCN59OLOTsJ4etCzBUXhfN7aqDO31rinAgOLJ06uo/Tkvp2RTuth8XAuaWwgOhJoVA==",
+            "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14b8c5da0c4663475c2e5c3adef46f73bcdec043",
+        ),
+        (
+            "sha3-224",
+            "OxZUa7x74nBqAx3K/VY3PZiENnZB2MWa88hg9w==",
+            "b87f88c72702fff1748e58b87e9141a42c0dbedc29a78cb0d4a5cd81",
+        ),
+        (
+            "sha3-256",
+            "uoUZIxDf+pbio6QOaXdDURQLtxheEgLNzJF1ifleFrs=",
+            "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392",
+        ),
+        (
+            "sha3-384",
+            "aNLc9/1N3QoiQMikNzBfYftzNM+10CJuG8J9wQoucjog03C0d0MTDiasfj1TKIa9",
+            "720aea11019ef06440fbf05d87aa24680a2153df3907b23631e7177ce620fa1330ff07c0fddee54699a4c3ee0ee9d887",
+        ),
+        (
+            "sha3-512",
+            "6z+9Sy6quPXFBL06QUZarOwVdwp8q6xTHkgvhgtex7pHzLLG8q/Oj4jSK23GE4DyOmaP04iLuAU3wKC4ZAdong==",
+            "75d527c368f2efe848ecf6b073a36767800805e9eef2b1857d5f984f036eb6df891d75f72d9b154518c1cd58835286d1da9a38deba3de98b5a53e5ed78a84976",
+        ),
+    ];
+    for (algorithm, expected_hmac, expected_hash) in cases {
+        let hmac = request(
+            &mut state,
+            "",
+            "POST",
+            &format!("transit/hmac/algorithm-matrix/{algorithm}"),
+            json!({"input":input}),
+            2,
+        )?;
+        assert_eq!(
+            hmac.body["data"]["hmac"],
+            format!("vault:v1:{}", expected_hmac)
+        );
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "POST",
+                &format!("transit/verify/algorithm-matrix/{algorithm}"),
+                json!({"input":input,"hmac":hmac.body["data"]["hmac"]}),
+                2,
+            )?
+            .body["data"]["valid"],
+            true
+        );
+        let hash = request(
+            &mut state,
+            "",
+            "POST",
+            &format!("transit/hash/{algorithm}"),
+            json!({"input":BASE64.encode(b"hello")}),
+            2,
+        )?;
+        assert_eq!(hash.body["data"]["sum"], expected_hash);
+    }
+    Ok(())
+}
+
+#[test]
 fn transit_batch_partial_success_mutates_and_failure_does_not_upsert() -> TestResult {
     let mut state = EngineState::default();
     let failure = request(

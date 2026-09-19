@@ -1,11 +1,14 @@
 use super::*;
+use ::hmac::{Hmac, Mac};
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
-    aead, digest, hmac,
+    aead,
     rand::{SecureRandom, SystemRandom},
     signature::{self, KeyPair},
 };
+use sha2::{Digest as RustDigest, Sha224, Sha256, Sha384, Sha512};
+use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
@@ -786,9 +789,9 @@ fn handle_crypto(
                     .ok_or_else(not_found)?
                     .hmac_material,
             )?;
-            let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-            let tag = hmac::sign(&mac_key, &decode_field(body, "input")?);
-            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag.as_ref()))})
+            let input = decode_field(body, "input")?;
+            let tag = hmac_tag(algorithm, &material, &input)?;
+            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
         }
         "sign" => {
             signing_options(key, body, algorithm)?;
@@ -810,8 +813,7 @@ fn handle_crypto(
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.hmac_material)?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-                let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-                hmac::verify(&mac_key, &input, &tag).is_ok()
+                hmac_verify(algorithm, &material, &input, &tag)?
             } else {
                 signing_options(key, body, algorithm)?;
                 let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
@@ -1072,11 +1074,46 @@ fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
     Ok((version, decode(data)?))
 }
 
-fn hmac_algorithm(name: &str) -> Result<hmac::Algorithm> {
+fn hmac_tag(name: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.finalize().into_bytes().to_vec())
+        }};
+    }
     match name {
-        "sha2-256" => Ok(hmac::HMAC_SHA256),
-        "sha2-384" => Ok(hmac::HMAC_SHA384),
-        "sha2-512" => Ok(hmac::HMAC_SHA512),
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "HMAC algorithm is not implemented")),
+    }
+}
+
+fn hmac_verify(name: &str, material: &[u8], input: &[u8], tag: &[u8]) -> Result<bool> {
+    macro_rules! verify {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.verify_slice(tag).is_ok())
+        }};
+    }
+    match name {
+        "sha2-224" => verify!(Sha224),
+        "sha2-256" => verify!(Sha256),
+        "sha2-384" => verify!(Sha384),
+        "sha2-512" => verify!(Sha512),
+        "sha3-224" => verify!(Sha3_224),
+        "sha3-256" => verify!(Sha3_256),
+        "sha3-384" => verify!(Sha3_384),
+        "sha3-512" => verify!(Sha3_512),
         _ => Err(error(501, "HMAC algorithm is not implemented")),
     }
 }
@@ -1133,19 +1170,36 @@ fn random(path: &str, body: &Value) -> Result<EngineResponse> {
 
 fn hash(path: &str, body: &Value) -> Result<EngineResponse> {
     reject_unknown(body, &["input", "algorithm", "format"])?;
-    let algorithm = match select_algorithm(path, body, "algorithm", "sha2-256")? {
-        "sha2-256" => &digest::SHA256,
-        "sha2-384" => &digest::SHA384,
-        "sha2-512" => &digest::SHA512,
-        _ => return Err(error(501, "hash algorithm is not implemented")),
-    };
-    let hashed = digest::digest(algorithm, &decode_field(body, "input")?);
+    let algorithm = select_algorithm(path, body, "algorithm", "sha2-256")?;
+    let input = decode_field(body, "input")?;
+    let hashed = hash_digest(algorithm, &input)?;
     let format = body
         .get("format")
         .map(|v| v.as_str().ok_or_else(|| bad("format must be a string")))
         .transpose()?
         .unwrap_or("hex");
-    Ok(ok(json!({"sum":encoded(hashed.as_ref(),format)?}), false))
+    Ok(ok(json!({"sum":encoded(&hashed,format)?}), false))
+}
+
+fn hash_digest(name: &str, input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut digest = <$digest>::new();
+            digest.update(input);
+            Ok(digest.finalize().to_vec())
+        }};
+    }
+    match name {
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "hash algorithm is not implemented")),
+    }
 }
 
 #[cfg(test)]
