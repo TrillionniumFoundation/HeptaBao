@@ -104,7 +104,7 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
-    def start(self, ha: bool = True) -> None:
+    def start(self, ha: bool = True, *, wait: bool = True) -> None:
         if self.process is not None:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
@@ -116,6 +116,19 @@ class Node:
         self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
                                         stdout=self.log, stderr=self.log, start_new_session=True)
         self.started_pids.append(self.process.pid)
+        if not wait:
+            return
+        self.wait_ready()
+
+    def wait_ready(self) -> None:
+        """Wait for the HTTPS listener after all peers have had a chance to bind.
+
+        HA bootstrap can need a peer listener while the bootstrap process is
+        starting.  Starting every process first avoids making node 1's startup
+        depend on an incidental process scheduling order.
+        """
+        if self.process is None:
+            raise FixtureError("node_not_running")
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -316,8 +329,14 @@ class Cluster:
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
         # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
+        # Bind every HA process before waiting for readiness.  The bootstrap
+        # voter may contact its peers during membership expansion, so waiting
+        # for node 1 before starting nodes 2/3 can turn a valid cluster into a
+        # startup-order failure.
         for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
-            node.start()
+            node.start(wait=False)
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.wait_ready()
         self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
         self.wait_quorum()
         status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
