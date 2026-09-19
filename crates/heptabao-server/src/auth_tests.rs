@@ -1666,6 +1666,7 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         login.body["auth"]["metadata"]["subject_key_id"],
         "42:90:9c:3f:b0:be:cd:25:b9:7d:58:c7:f6:1e:a9:46:85:9d:66:5b"
     );
+    assert_eq!(login.body["auth"]["metadata"]["authority_key_id"], "");
     let raw = login.body["auth"]["client_token"]
         .as_str()
         .expect("certificate login returns a token")

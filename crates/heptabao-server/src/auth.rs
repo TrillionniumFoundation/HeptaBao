@@ -394,13 +394,15 @@ fn certificate_metadata(
             attributes.common_names.first().cloned().unwrap_or_default(),
         ),
         ("serial_number".into(), attributes.serial_number.clone()),
+        (
+            "subject_key_id".into(),
+            attributes.subject_key_id.clone().unwrap_or_default(),
+        ),
+        (
+            "authority_key_id".into(),
+            attributes.authority_key_id.clone().unwrap_or_default(),
+        ),
     ]);
-    if let Some(value) = &attributes.subject_key_id {
-        metadata.insert("subject_key_id".into(), value.clone());
-    }
-    if let Some(value) = &attributes.authority_key_id {
-        metadata.insert("authority_key_id".into(), value.clone());
-    }
     for oid in &role.allowed_metadata_extensions {
         if let Some(value) = attributes.extensions.get(oid) {
             metadata.insert(oid.replace('.', "-"), value.clone());
