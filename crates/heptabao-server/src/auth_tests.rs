@@ -1651,7 +1651,7 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         )
         .unwrap()
         .unwrap();
-    assert_eq!(login.login_identity.unwrap().alias, "operator");
+    assert_eq!(login.login_identity.unwrap().alias, "client.example.test");
     assert_eq!(login.body["auth"]["metadata"]["1-2-3-4-5"], "tenant-a");
     assert_eq!(login.body["auth"]["metadata"]["cert_name"], "operator");
     assert_eq!(

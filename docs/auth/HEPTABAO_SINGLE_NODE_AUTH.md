@@ -242,7 +242,9 @@ closed. For a parseable leaf, `auth.metadata` includes OpenBao-compatible
 the selected custom extension values with dotted OIDs converted to dashes. A
 synthetic exact-digest role whose leaf is not parseable may still authenticate
 when it has no selectors, but receives no certificate metadata; selector roles
-fail closed when parsing is ambiguous.
+fail closed when parsing is ambiguous. Identity binding uses the leaf common
+name when it fits the bounded alias grammar; otherwise it falls back to the
+configured role name, including for non-parseable exact-digest fixtures.
 The verified chain is carried to a leader only inside the authenticated,
 bounded HA forwarding frame and is cleared with the request.
 

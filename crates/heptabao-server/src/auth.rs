@@ -411,6 +411,25 @@ fn certificate_metadata(
     metadata
 }
 
+fn certificate_identity_alias(
+    attributes: Option<&CertificateAttributes>,
+    role_name: &str,
+) -> String {
+    attributes
+        .and_then(|value| value.common_names.first())
+        .filter(|value| {
+            !value.is_empty()
+                && value.len() <= 128
+                && !value.starts_with('.')
+                && !value.ends_with('.')
+                && value.bytes().all(|byte| {
+                    byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':' | b'@')
+                })
+        })
+        .map(ToOwned::to_owned)
+        .unwrap_or_else(|| role_name.to_owned())
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct LdapMount {
     url: String,
@@ -3164,7 +3183,7 @@ impl AuthState {
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
                 mount: mount.into(),
-                alias: role_name.to_owned(),
+                alias: certificate_identity_alias(attributes.as_ref(), role_name),
             });
             let metadata = certificate_metadata(attributes.as_ref(), role_name, role);
             if !metadata.is_empty() {
