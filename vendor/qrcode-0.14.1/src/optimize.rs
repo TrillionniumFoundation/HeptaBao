@@ -102,7 +102,7 @@ impl<'a> Parser<'a> {
     ///                                Segment { mode: Numeric, begin: 3, end: 6 },
     ///                                Segment { mode: Byte, begin: 6, end: 10 }]);
     ///
-    pub fn new(data: &[u8]) -> Parser {
+    pub fn new(data: &[u8]) -> Parser<'_> {
         Parser {
             ecs_iter: EcsIter {
                 base: data.iter(),

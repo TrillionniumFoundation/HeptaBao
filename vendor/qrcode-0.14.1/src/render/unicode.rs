@@ -70,10 +70,10 @@ impl RenderCanvas for Canvas1x2 {
                         rows[0]
                             .iter()
                             .zip(rows[1])
-                            .map(|(top, bot)| (top * 2 + bot))
+                            .map(|(top, bot)| top * 2 + bot)
                             .collect::<Vec<u8>>()
                     } else {
-                        rows[0].iter().map(|top| (top * 2)).collect::<Vec<u8>>()
+                        rows[0].iter().map(|top| top * 2).collect::<Vec<u8>>()
                     }
                 }
                 .into_iter()
