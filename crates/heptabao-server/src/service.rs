@@ -2287,6 +2287,8 @@ impl Service {
             target_replay_epoch,
             options,
         )?;
+        plan.validate_write_set()
+            .map_err(|_| ServiceError::CorruptState)?;
 
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {

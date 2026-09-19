@@ -51,12 +51,91 @@ pub(crate) struct StateChunk {
     pub bytes: Vec<u8>,
 }
 
+/// The physical write set for one owner publication.
+///
+/// This is deliberately derived from the authenticated owner descriptors,
+/// rather than from the caller's reuse hint.  A caller can therefore inspect
+/// the exact changed-owner boundary before committing an atomic batch.  The
+/// write set is also useful to HA integrations: a future owner-record
+/// proposal can carry only these changed owners while retaining the manifest
+/// as the publication point.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct OwnerWriteSet {
+    pub changed_owners: Vec<String>,
+    pub reused_owners: Vec<String>,
+    pub staged_chunks: usize,
+    pub retired_chunks: usize,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct OwnerWritePlan {
     pub chunks: Vec<StateChunk>,
     pub required_existing: Vec<String>,
     pub deletes: Vec<String>,
     pub manifest_bytes: Vec<u8>,
+    write_set: OwnerWriteSet,
+}
+
+impl OwnerWritePlan {
+    pub(crate) fn write_set(&self) -> &OwnerWriteSet {
+        &self.write_set
+    }
+
+    /// Reject a plan whose physical mutations escape the changed-owner set.
+    /// This is a cheap structural check, but it prevents a future caller from
+    /// accidentally turning an owner-scoped delta back into a whole-state
+    /// rewrite by appending an unrelated resource to the batch.
+    pub(crate) fn validate_write_set(&self) -> Result<(), OwnerStoreError> {
+        let write_set = self.write_set();
+        let changed = write_set
+            .changed_owners
+            .iter()
+            .map(String::as_str)
+            .collect::<BTreeSet<_>>();
+        let reused = write_set
+            .reused_owners
+            .iter()
+            .map(String::as_str)
+            .collect::<BTreeSet<_>>();
+        if changed.len() + reused.len() != OWNER_NAMES.len()
+            || changed.intersection(&reused).next().is_some()
+            || changed
+                .iter()
+                .chain(reused.iter())
+                .any(|name| !OWNER_NAMES.contains(name))
+            || write_set.staged_chunks != self.chunks.len()
+            || write_set.retired_chunks != self.deletes.len()
+        {
+            return Err(OwnerStoreError::InvalidOwner);
+        }
+        for resource in self.chunks.iter().map(|chunk| chunk.resource.as_str()) {
+            let owner = resource
+                .strip_prefix("state-owners/")
+                .and_then(|suffix| suffix.split_once('/'))
+                .map(|(owner, _)| owner)
+                .ok_or(OwnerStoreError::InvalidChunk)?;
+            if !changed.contains(owner) {
+                return Err(OwnerStoreError::InvalidOwner);
+            }
+        }
+        // The first V4 publication may atomically retire V1/V2/V3 chunks.
+        // Those legacy resources are intentionally outside the owner prefix;
+        // they are migration cleanup, not an owner write.
+        for resource in &self.deletes {
+            if resource.starts_with("state-chunks/") {
+                continue;
+            }
+            let owner = resource
+                .strip_prefix("state-owners/")
+                .and_then(|suffix| suffix.split_once('/'))
+                .map(|(owner, _)| owner)
+                .ok_or(OwnerStoreError::InvalidChunk)?;
+            if !changed.contains(owner) {
+                return Err(OwnerStoreError::InvalidOwner);
+            }
+        }
+        Ok(())
+    }
 }
 
 /// The immutable identity that local owner publication and the HA manifest
@@ -438,8 +517,27 @@ impl OwnerWritePlan {
             owners: descriptors,
         };
         manifest.validate()?;
+        let mut changed_owners = Vec::new();
+        let mut reused_owners = Vec::new();
+        for name in OWNER_NAMES {
+            let next = manifest.owner(name)?;
+            if previous
+                .and_then(|previous| previous.owner(name).ok())
+                .is_some_and(|prior| prior.sha256 == next.sha256)
+            {
+                reused_owners.push(name.to_owned());
+            } else {
+                changed_owners.push(name.to_owned());
+            }
+        }
         let manifest_bytes =
             serde_json::to_vec(&manifest).map_err(|_| OwnerStoreError::Serialization)?;
+        let write_set = OwnerWriteSet {
+            changed_owners,
+            reused_owners,
+            staged_chunks: chunks.len(),
+            retired_chunks: deletes.len(),
+        };
         Ok(Self {
             chunks: chunks
                 .into_iter()
@@ -448,6 +546,7 @@ impl OwnerWritePlan {
             required_existing: required_existing.into_iter().collect(),
             deletes: deletes.into_iter().collect(),
             manifest_bytes,
+            write_set,
         })
     }
 
@@ -700,6 +799,53 @@ mod tests {
         )?;
         assert!(second.required_existing.len() >= 4);
         assert!(!second.chunks.is_empty());
+        assert_eq!(
+            second.write_set().changed_owners,
+            vec![String::from("engines")]
+        );
+        assert_eq!(second.write_set().staged_chunks, second.chunks.len());
+        assert_eq!(second.write_set().retired_chunks, second.deletes.len());
+        assert_eq!(second.write_set().reused_owners.len(), 4);
+        Ok(())
+    }
+
+    #[test]
+    fn identical_supplied_owner_bytes_are_classified_as_reused()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let first = OwnerWritePlan::new(
+            logical,
+            "owner-op-identical-1",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 900 * 1024]),
+            None,
+            Vec::new(),
+        )?;
+        let manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
+        // Supplying bytes is allowed when the caller cannot use a pointer
+        // reuse hint.  Content identity, not the hint, must determine the
+        // physical write set.
+        let second = OwnerWritePlan::new(
+            logical,
+            "owner-op-identical-2",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 900 * 1024]),
+            Some(&manifest),
+            Vec::new(),
+        )?;
+        assert!(second.chunks.is_empty());
+        assert!(second.deletes.is_empty());
+        assert!(second.write_set().changed_owners.is_empty());
+        assert_eq!(second.write_set().reused_owners.len(), OWNER_NAMES.len());
+        assert_eq!(
+            second.required_mutations(),
+            1,
+            "an identical owner publication must only replace the manifest"
+        );
         Ok(())
     }
 
@@ -757,6 +903,32 @@ mod tests {
         assert_eq!(
             binding.verify("owner-op-binding", &altered),
             Err(OwnerStoreError::DigestMismatch)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn write_set_rejects_a_cross_owner_physical_mutation() -> Result<(), Box<dyn std::error::Error>>
+    {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let mut plan = OwnerWritePlan::new(
+            logical,
+            "owner-op-write-set",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 128]),
+            None,
+            Vec::new(),
+        )?;
+        plan.chunks.push(StateChunk {
+            resource: "state-owners/auth/by-digest/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".into(),
+            bytes: vec![0],
+        });
+        assert_eq!(
+            plan.validate_write_set(),
+            Err(OwnerStoreError::InvalidOwner),
+            "an owner plan must not silently expand into a cross-owner rewrite"
         );
         Ok(())
     }
