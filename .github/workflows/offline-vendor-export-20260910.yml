@@ -13,58 +13,47 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SHA: 6300d63abfbffc25af12b8254882436eef15ef1c
+  PRODUCT_SHA: 676a3e68af340b2cb7439dbc99c69dee550e5db9
+  PRODUCT_TREE: cc714bf471a270caf8b9a4e26047c4caae11bb34
 
 jobs:
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
-      - name: Checkout exact controller without persisted credentials
+      - name: Checkout exporter without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Bind product source and export locked offline inputs
+      - name: Export exact locked dependencies without executing candidate code
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$PRODUCT_SHA"
-          git cat-file -e "$PRODUCT_SHA^{commit}"
-          test "$(git diff --name-only "$PRODUCT_SHA" HEAD)" = ".github/workflows/offline-vendor-export-20260910.yml"
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          test "$(git rev-parse "$PRODUCT_SHA^{tree}")" = "$PRODUCT_TREE"
+          rustup toolchain install 1.98.0 --profile minimal
           git worktree add --detach "$RUNNER_TEMP/product" "$PRODUCT_SHA"
-          cargo +1.98.0 vendor \
+          cargo +1.98.0 vendor --locked \
             --manifest-path "$RUNNER_TEMP/product/Cargo.toml" \
-            --locked "$RUNNER_TEMP/vendor" > "$RUNNER_TEMP/vendor-config.toml"
-          sysroot="$(rustc +1.98.0 --print sysroot)"
-          test -x "$sysroot/bin/cargo"
-          test -x "$sysroot/bin/rustc"
-          test -x "$sysroot/bin/rustfmt"
-          test -x "$sysroot/bin/clippy-driver"
-          printf 'source_commit=%s\nsource_tree=%s\nrustc=%s\nsysroot_name=%s\n' \
-            "$PRODUCT_SHA" \
-            "$(git rev-parse "$PRODUCT_SHA^{tree}")" \
-            "$(rustc +1.98.0 --version)" \
-            "$(basename "$sysroot")" > "$RUNNER_TEMP/source-binding.txt"
-          tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
-            vendor vendor-config.toml source-binding.txt
-          tar -C "$(dirname "$sysroot")" -czf "$RUNNER_TEMP/rust-1.98.0-linux-x86_64.tar.gz" \
-            "$(basename "$sysroot")"
-          sha256sum \
-            "$RUNNER_TEMP/heptabao-vendor-6300d63.tar.gz" \
-            "$RUNNER_TEMP/rust-1.98.0-linux-x86_64.tar.gz" \
-            > "$RUNNER_TEMP/offline-inputs.sha256"
+            "$RUNNER_TEMP/vendor" > "$RUNNER_TEMP/vendor-config.toml"
+          test -z "$(git -C "$RUNNER_TEMP/product" status --porcelain=v1 --untracked-files=all)"
+          cp "$RUNNER_TEMP/product/Cargo.lock" "$RUNNER_TEMP/Cargo.lock"
+          printf 'source_commit=%s\nsource_tree=%s\nrustc=%s\n' \
+            "$PRODUCT_SHA" "$PRODUCT_TREE" "$(rustc +1.98.0 --version)" \
+            > "$RUNNER_TEMP/source-binding.txt"
+          tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/heptabao-locked-vendor.tar.gz" \
+            vendor vendor-config.toml Cargo.lock source-binding.txt
+          (cd "$RUNNER_TEMP" && sha256sum heptabao-locked-vendor.tar.gz > offline-inputs.sha256)
 
-      - name: Upload bounded offline inputs
+      - name: Upload bounded offline dependency inputs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: heptabao-offline-inputs-6300d63
+          name: heptabao-locked-vendor-676a3e68
           path: |
-            ${{ runner.temp }}/heptabao-vendor-6300d63.tar.gz
-            ${{ runner.temp }}/rust-1.98.0-linux-x86_64.tar.gz
+            ${{ runner.temp }}/heptabao-locked-vendor.tar.gz
             ${{ runner.temp }}/offline-inputs.sha256
             ${{ runner.temp }}/source-binding.txt
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 7
