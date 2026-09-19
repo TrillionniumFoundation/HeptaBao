@@ -309,9 +309,12 @@ impl OwnerWritePlan {
             || cluster_id.is_empty()
             || cluster_id.len() > 256
             || owners.len() != OWNER_NAMES.len()
-            || owners.iter().zip(OWNER_NAMES).any(|((name, bytes), expected)| {
-                *name != expected || bytes.as_ref().is_some_and(Vec::is_empty)
-            })
+            || owners
+                .iter()
+                .zip(OWNER_NAMES)
+                .any(|((name, bytes), expected)| {
+                    *name != expected || bytes.as_ref().is_some_and(Vec::is_empty)
+                })
         {
             return Err(OwnerStoreError::InvalidOwner);
         }
@@ -591,7 +594,11 @@ mod tests {
             Some(&manifest),
             Vec::new(),
         )?;
-        let reused = second.required_existing.iter().cloned().collect::<BTreeSet<_>>();
+        let reused = second
+            .required_existing
+            .iter()
+            .cloned()
+            .collect::<BTreeSet<_>>();
         assert!(expected_auth.is_subset(&reused));
         assert!(expected_database.is_subset(&reused));
         assert!(second.chunks.iter().all(|chunk| {

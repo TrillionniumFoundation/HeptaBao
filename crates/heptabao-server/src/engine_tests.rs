@@ -6,8 +6,12 @@ type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 #[test]
 fn namespace_state_is_copy_on_write_without_changing_json_shape() -> TestResult {
     let mut state = EngineState::default();
-    state.namespaces.insert("team-a".into(), CowNamespace::default());
-    state.namespaces.insert("team-b".into(), CowNamespace::default());
+    state
+        .namespaces
+        .insert("team-a".into(), CowNamespace::default());
+    state
+        .namespaces
+        .insert("team-b".into(), CowNamespace::default());
     let before = serde_json::to_vec(&state)?;
 
     let mut clone = state.clone();
@@ -23,18 +27,22 @@ fn namespace_state_is_copy_on_write_without_changing_json_shape() -> TestResult 
         &team_b_before,
         &clone.namespaces.get("team-b").ok_or("team-b")?.0,
     ));
-    assert!(state
-        .namespaces
-        .get("team-a")
-        .ok_or("team-a")?
-        .mount_epochs
-        .is_empty());
-    assert!(!clone
-        .namespaces
-        .get("team-a")
-        .ok_or("team-a")?
-        .mount_epochs
-        .is_empty());
+    assert!(
+        state
+            .namespaces
+            .get("team-a")
+            .ok_or("team-a")?
+            .mount_epochs
+            .is_empty()
+    );
+    assert!(
+        !clone
+            .namespaces
+            .get("team-a")
+            .ok_or("team-a")?
+            .mount_epochs
+            .is_empty()
+    );
 
     let round_trip: EngineState = serde_json::from_slice(&before)?;
     assert_eq!(serde_json::to_vec(&round_trip)?, before);
