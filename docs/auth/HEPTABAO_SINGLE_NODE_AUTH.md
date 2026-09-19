@@ -214,6 +214,30 @@ through an API. Administrators must retain their enrollment handoff securely;
 regeneration invalidates the old seed immediately. There is no recovery-code,
 push, WebAuthn or external MFA-provider implementation in this bounded profile.
 
+## Certificate authentication (bounded mTLS profile)
+
+The server has a bounded certificate-authentication path. Configure an absolute,
+deployment-owned `tls_client_ca_file` outside the encrypted data directory to
+turn on mandatory client-certificate verification. An optional
+`tls_client_crl_file` is accepted only together with that CA bundle. Rustls's
+WebPKI verifier validates the presented chain and client-auth usage before the
+request reaches the service; the CRL bundle is checked when configured. A
+request cannot supply a certificate through an HTTP header or JSON body.
+
+After mounting `cert` with `POST sys/auth/cert`, an administrator can create
+`auth/cert/certs/<name>` with either a single PEM leaf certificate or its
+lowercase 64-character SHA-256 digest, plus the ordinary token policy and TTL
+limits. `POST auth/cert/login` accepts an empty body and matches the verified
+TLS leaf digest. The verified chain is carried to a leader only inside the
+authenticated, bounded HA forwarding frame and is cleared with the request.
+
+This profile deliberately binds roles to the exact leaf digest. It does not
+claim OpenBao's complete certificate-role field set, SAN/subject selectors,
+OCSP behavior, browser flows or provider qualification; the certificate-auth
+surface remains outside whole-surface replacement admission. OpenBao's
+reference login path performs the corresponding connection-certificate
+selection and role validation in [`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
+
 ## AppRole
 
 Each role has an independent random role ID, token configuration, secret-ID
@@ -231,11 +255,11 @@ destroyed by bearer or accessor. Role IDs can be changed, but duplicate role IDs
 within a namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
-Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, certificate/RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. AppRole roles support both the default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only login; the latter intentionally ignores an optional `secret_id` field. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes and LDAP each have bounded runtime profiles described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
+Not supported: custom secret IDs, CIDR binding on authentication methods, LDAP directory search/group-policy synchronization, batch tokens, cloud IAM, RADIUS/Kerberos auth, WebAuthn/push/external MFA, auth-plugin execution, complete OpenBao browser/UI semantics, and full per-method field parity. AppRole roles support both the default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only login; the latter intentionally ignores an optional `secret_id` field. Unknown security-relevant request fields are rejected. JWT/OIDC, Kubernetes, LDAP and the bounded certificate profile each have runtime limits described below; none alone is complete OpenBao compatibility. HTTP supplies a bounded per-IP rate limiter; this module has no distributed login-throttling authority.
 
 ## Authentication mount registry
 
-`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc` or bounded `ldap`; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, and an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc`, bounded `ldap` or the bounded `cert` mTLS profile; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`, and certificate mounts use `auth/<mount>/certs/...` plus `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
 
 Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
 

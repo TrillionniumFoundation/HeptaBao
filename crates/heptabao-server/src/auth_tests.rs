@@ -1491,6 +1491,64 @@ fn auth_mount_registry_requires_sudo_for_mutation() {
     assert!(state.auth_mount_enabled("", "userpass", "userpass"));
 }
 
+#[test]
+fn certificate_role_login_requires_the_verified_leaf_digest() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = vec![1_u8, 2, 3, 4];
+    let digest = certificate_sha256(&leaf);
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": digest,
+            "token_policies": ["default"],
+        }),
+        100,
+    );
+
+    let no_peer = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        101,
+        None,
+    );
+    assert!(matches!(no_peer, Err(error) if error.status == 403));
+
+    let wrong_leaf = vec![9_u8, 8, 7, 6];
+    let wrong = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        101,
+        Some(std::slice::from_ref(&wrong_leaf)),
+    );
+    assert!(matches!(wrong, Err(error) if error.status == 403));
+
+    let login = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(login.login_identity.unwrap().alias, "operator");
+}
+
 fn mount_auth(state: &mut AuthState, root: &Principal, namespace: &str, mount: &str, kind: &str) {
     assert_eq!(
         call(
