@@ -115,6 +115,15 @@ malformed IP strings containing `/` as Unix socket addresses and save them,
 whereas this profile returns 400. Such API differences are reported separately
 from numeric-CIDR comparisons.
 
+The [numeric-CIDR comparison](../../qa/openbao-acceptance/evidence/kubernetes-cidrs-d2c669d.json)
+records 179 matching observations per side against OpenBao 2.6.2 and separately
+retains 14 observations per side for the unequal Unix-address behavior. The
+[actual schema-30 upgrade](../../qa/openbao-acceptance/evidence/kubernetes-cidrs-upgrade-d2c669d.json)
+passes 110 checks, and the [three-process mTLS HA profile](../../qa/openbao-acceptance/evidence/kubernetes-cidrs-ha-d2c669d.json)
+passes 67, including forged allowed-address headers, finite-use tokens, leader
+death and no-quorum rejection before TokenReview. These use a controlled HTTPS
+TokenReview endpoint and do not establish multi-host or distribution safety.
+
 Renew-self, renew-by-token and renew-by-accessor use the current issuing role
 locally, retaining issued policies and the explicit maximum. They perform no
 TokenReview and do not recheck changed audience or ServiceAccount bindings.

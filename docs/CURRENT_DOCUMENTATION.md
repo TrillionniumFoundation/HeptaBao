@@ -132,6 +132,12 @@ missing phases, duplicate names, non-boolean results and exceptions still fail.
 AppRole renewal and child-token lifetime comparisons also require their named
 lifecycle checks. A fabricated list with the former expected row count cannot
 qualify; their request, TTL, revocation, wrapping and restart assertions remain.
+Their first runs under these gates pass [154 AppRole observations per side](../qa/openbao-acceptance/evidence/approle-renewal-d2c669d.json)
+and [202 child-token observations per side](../qa/openbao-acceptance/evidence/token-child-lifetime-d2c669d.json).
+The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
+and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
+the forged headers now carry the allowed address while the actual socket uses a
+denied address, exercising the intended boundary.
 Schema-30 regressions record [36 authentication HA checks](../qa/openbao-acceptance/evidence/online-auth-ha-5181b4c.json),
 [71 Kubernetes protocol checks](../qa/openbao-acceptance/evidence/kubernetes-online-5181b4c.json)
 and [57 native RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-renewal-ha-5181b4c.json).
