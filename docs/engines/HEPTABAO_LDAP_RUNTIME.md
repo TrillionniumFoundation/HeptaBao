@@ -5,6 +5,7 @@
 A fresh `ldap` mount accepts OpenBao-style `binddn`, `bindpass`, `userdn`,
 `userattr`, `userfilter`, `groupdn`, `groupattr`, `groupfilter`,
 `case_sensitive_names`, `username_as_alias` and token lifetime/policy fields.
+Explicit `url` and `userattr` updates are stored in lowercase, matching OpenBao.
 It uses one host-enrolled LDAPS connection for manager bind, unique user search,
 user bind, manager rebind and optional group search. `userattr` and `groupattr`
 default to `cn`; the default user filter compares the configured user attribute

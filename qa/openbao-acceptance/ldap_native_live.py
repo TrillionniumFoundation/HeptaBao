@@ -161,6 +161,16 @@ class Trace:
 
 
 def run_directory_scenarios(t):
+    # Actual Oracle 2.6.2 accepts uppercase URL scheme and user attribute,
+    # stores both lowercase, and uses the normalized endpoint on login.
+    case_mount = t.mount("config-case", userattr="UID", url=t.directory.origin.upper())
+    for phase in ("create", "partial"):
+        if phase == "partial":
+            t.update("config_case.partial", case_mount, userattr="UID", url=t.directory.origin.upper())
+        data = t.call("config_case." + phase + ".read", "auth/" + case_mount + "/config", method="GET")["data"]
+        t.check("config_case." + phase + ".normalized",
+                config_matches(data, userattr="uid", url=t.directory.origin))
+        t.login("config_case." + phase + ".login", case_mount)
     mount = t.mount("directory")
     data = t.call("config.read", "auth/" + mount + "/config", method="GET")["data"]
     t.check("config.defaults", config_matches(data, userattr="uid", userfilter=USER_FILTER,
@@ -333,6 +343,8 @@ def complete_scenarios(rows):
     if any(not isinstance(n, str) for n in names) or len(set(names)) != len(names):
         return False
     required = {"ldap_native.directory.complete", "ldap_native.mapping.complete",
+                "ldap_native.config_case.create.normalized", "ldap_native.config_case.partial.normalized",
+                "ldap_native.config_case.create.login.auth", "ldap_native.config_case.partial.login.auth",
                 "ldap_native.alias_missing.username_login.auth", "ldap_native.alias_missing.attribute_rejected",
                 "ldap_native.alias_multiple.attribute_rejected", "ldap_native.alias_multiple.username_login.auth",
                 "ldap_native.no_mapping.uppercase_login.auth", "ldap_native.multiple_user_dn",

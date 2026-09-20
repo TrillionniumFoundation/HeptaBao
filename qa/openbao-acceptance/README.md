@@ -173,6 +173,13 @@ revocation, native login without a mapping, child/orphan credential isolation,
 read-only reopen, downgrade refusal and recovery. Only safe statuses/booleans
 enter receipts; store, audit and logs are checked for plaintext credentials.
 
+`ldap_native_renewal_ha.py` holds a real OpenLDAP successful final search response
+behind a TLS relay while the leader dies, loses quorum or seals. It checks that
+the stale request publishes neither a lease extension, wrapper nor changed
+Identity membership. Recovery must reauthenticate with the live directory and
+commit the new lease and group membership together. Three local processes use
+the journal backend; this is not physical-host or PostgreSQL qualification.
+
 `provider_renewal_upgrade.py` exercises a real schema-15 → schema-17 binary/store
 round trip with OpenLDAP. It requires the fixed f31b98e legacy binary and 8f7c907
 candidate hashes, checked against their committed clean execution receipts. These

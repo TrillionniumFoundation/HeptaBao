@@ -279,7 +279,7 @@ impl AuthState {
             .and_then(|m| m.get(scope.mount));
         let mut url = current.map(|c| c.url.clone()).unwrap_or_default();
         if body.get("url").is_some() {
-            url = string_field(body, "url")?.into();
+            url = string_field(body, "url")?.to_ascii_lowercase();
         }
         crate::outbound::Target::parse(&url, "ldaps")
             .map_err(|_| bad("native LDAP requires a host-enrolled LDAPS endpoint"))?;
@@ -301,6 +301,9 @@ impl AuthState {
                 } else {
                     string_field(body, field)?.to_owned()
                 };
+                if field == "userattr" {
+                    target.make_ascii_lowercase();
+                }
             }
         }
         if let Some(value) = body.get("bindpass") {

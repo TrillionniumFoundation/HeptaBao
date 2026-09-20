@@ -72,6 +72,12 @@ class NativeLdapTests(unittest.TestCase):
         self.assertFalse(config_matches(dict(data, token_ttl=False), **expected))
         self.assertFalse(config_matches(dict(data, token_policies=["default"]), **expected))
 
+    def test_config_case_requires_actual_normalized_readback(self):
+        expected = {"userattr": "uid", "url": "ldaps://127.0.0.1:12345"}
+        self.assertTrue(config_matches(dict(expected), **expected))
+        self.assertFalse(config_matches(dict(expected, userattr="UID"), **expected))
+        self.assertFalse(config_matches(dict(expected, url="LDAPS://127.0.0.1:12345"), **expected))
+
     def test_mapping_readback_requires_native_groups_string(self):
         self.assertTrue(mapping_matches({"groups": "aux", "policies": ["direct"]}, "aux", ["direct"]))
         self.assertTrue(mapping_matches({"groups": "", "policies": []}, "", []))
@@ -80,6 +86,8 @@ class NativeLdapTests(unittest.TestCase):
 
     def test_completion_rejects_missing_provider_mapping_identity_or_lifetime_proof(self):
         names = ["ldap_native.directory.complete", "ldap_native.mapping.complete",
+                 "ldap_native.config_case.create.normalized", "ldap_native.config_case.partial.normalized",
+                 "ldap_native.config_case.create.login.auth", "ldap_native.config_case.partial.login.auth",
                  "ldap_native.alias_missing.username_login.auth", "ldap_native.alias_missing.attribute_rejected",
                  "ldap_native.alias_multiple.attribute_rejected", "ldap_native.alias_multiple.username_login.auth",
                  "ldap_native.no_mapping.uppercase_login.auth", "ldap_native.multiple_user_dn",

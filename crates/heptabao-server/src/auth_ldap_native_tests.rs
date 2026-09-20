@@ -163,6 +163,15 @@ fn native_ldap_partial_null_config_and_profile_boundary() {
         &mut state,
         &root,
         "auth/directory/config",
+        json!({"url":"LDAPS://DIRECTORY.EXAMPLE.TEST:636","userattr":"UID"}),
+    );
+    let canonical = read(&mut state, &root, "auth/directory/config");
+    assert_eq!(canonical["url"], "ldaps://directory.example.test:636");
+    assert_eq!(canonical["userattr"], "uid");
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
         json!({"token_period":30,"token_explicit_max_ttl":90,"token_num_uses":4,"token_policies":["alpha"],"case_sensitive_names":true}),
     );
     update(
