@@ -3704,3 +3704,76 @@ fn auth_mount_revision_tune_remount_and_recreate_rotate_identity() {
     assert_eq!(recreated.body["data"]["revision"], 1);
     assert_ne!(recreated.body["data"]["accessor"], accessor);
 }
+
+#[test]
+fn token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal() {
+    let (mut state, root_raw, root) = setup();
+    let root_info = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        100,
+    );
+    assert_eq!(
+        root_info.body["data"].get("expire_time"),
+        Some(&Value::Null)
+    );
+    let created = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create",
+        json!({"policies":["default"],"ttl":60}),
+        100,
+    );
+    let raw = created.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let accessor = created.body["auth"]["accessor"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    for (path, body, caller) in [
+        ("auth/token/lookup-self", json!({}), raw.as_str()),
+        ("auth/token/lookup", json!({"token":raw}), root_raw.as_str()),
+        (
+            "auth/token/lookup-accessor",
+            json!({"accessor":accessor}),
+            root_raw.as_str(),
+        ),
+    ] {
+        let actor = state.authenticate(caller, 105).unwrap();
+        let info = call(&mut state, &actor, "", "GET", path, body, 105);
+        assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:02:40Z");
+        assert_eq!(info.body["data"]["ttl"], 55);
+    }
+    let actor = state.authenticate(&raw, 110).unwrap();
+    call(
+        &mut state,
+        &actor,
+        "",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":80}),
+        110,
+    );
+    let persisted = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let mut reopened: AuthState = serde_json::from_slice(&persisted).unwrap();
+    let actor = reopened.authenticate(&raw, 111).unwrap();
+    let info = call(
+        &mut reopened,
+        &actor,
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        111,
+    );
+    assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:03:10Z");
+    assert_eq!(info.body["data"]["ttl"], 79);
+}

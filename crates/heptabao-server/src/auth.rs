@@ -5811,6 +5811,7 @@ fn login_token(
 fn token_info(token: &Token, now: u64) -> Value {
     let mut info = json!({"accessor": token.accessor, "policies": token.policies, "display_name": token.display_name,
         "creation_time": token.created_at, "ttl": token.expires_at.map(|t| t.saturating_sub(now)).unwrap_or(0),
+        "expire_time": token.expires_at.map(crate::engines::timestamp),
         "expire_time_unix": token.expires_at, "explicit_max_ttl": token.max_expires_at.map(|t| t.saturating_sub(token.created_at)).unwrap_or(0),
         "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
         "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
