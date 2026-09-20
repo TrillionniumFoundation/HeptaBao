@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 12;
+const CURRENT_STATE_SCHEMA: u32 = 13;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -1379,6 +1379,20 @@ impl Service {
                 .is_some_and(|state| state.namespace_exists(namespace))
         {
             return Response::error(404, "namespace not found");
+        }
+        let namespace_seal_control = path
+            .strip_prefix("sys/namespaces/")
+            .and_then(|suffix| suffix.rsplit_once('/').map(|(_, operation)| operation))
+            .is_some_and(|operation| matches!(operation, "seal" | "unseal" | "seal-status"));
+        if enforce_namespace
+            && !matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
+            && !namespace_seal_control
+            && self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_is_sealed(namespace))
+        {
+            return Response::error(503, "namespace is sealed");
         }
         if self.recovery_required {
             return Response::error(
