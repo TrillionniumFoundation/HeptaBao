@@ -31,7 +31,7 @@ state.
 
 The real fixture is
 `qa/openbao-acceptance/openldap_secret_live.py`; its receipt is
-`qa/openbao-acceptance/evidence/openldap-secret-live-20260920.json`.
+`qa/openbao-acceptance/evidence/openldap-secret-live-da33417.json`.
 
 ## Remaining OpenBao 2.6.2 surface
 
