@@ -338,7 +338,13 @@ The controlled `kubernetes_online.py` protocol harness is retained. A distinct
 and exercises actual kube-apiserver/etcd/RBAC, ServiceAccount TokenRequest and
 UID deletion/recreation. See `docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.md`
 for fixed input digests, prerequisites, cleanup and exact evidence boundaries.
-A wired gate does not imply it passed; current-head CI must execute it.
+[The ARM64 KIND run](../../qa/openbao-acceptance/evidence/actual-kubernetes-bede079.json)
+passed 47 checks with the schema-29 binary built from `a14a7fd`, using actual
+Kubernetes v1.35.0, etcd and RBAC. It includes authentication and secrets-engine
+TokenRequest, real UID deletion/recreation, reviewer permission revocation and
+restoration, provider-independent service-token renewal and cleanup. This is
+one disposable local cluster, not qualification of every distribution or
+production deployment; later candidate changes still need relevant regression.
 
 The schema-28 API-CA transport changes passed local Rust tests and strict Clippy.
 The [API TLS comparison](../../qa/openbao-acceptance/evidence/jwt-api-tls-856ef3d.json)

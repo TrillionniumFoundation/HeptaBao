@@ -93,6 +93,13 @@ Run in a disposable Linux amd64 or arm64 Docker environment:
 python qa/openbao-acceptance/kubernetes_cluster_live.py --binary /absolute/heptabao-server --kind /absolute/pinned-kind --output /absolute/new-0700-dir/kubernetes.json --allow-disposable-cluster
 ```
 
+The [recorded ARM64 run](../../qa/openbao-acceptance/evidence/actual-kubernetes-bede079.json)
+passed 47 checks against production source `a14a7fd` with clean harness
+`bede079`. It exercised actual Kubernetes v1.35.0 API/etcd/RBAC on a new local
+KIND node, then removed the node. Completion requires named security and
+lifecycle observations, not a fixed numeric check count. This receipt qualifies
+that selected binary and single-host scenario only.
+
 Upstream protocol references:
 https://kubernetes.io/docs/reference/access-authn-authz/authentication/ and
 https://kubernetes.io/docs/reference/access-authn-authz/rbac/ .
