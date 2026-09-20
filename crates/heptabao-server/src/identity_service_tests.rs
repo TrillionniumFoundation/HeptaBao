@@ -610,6 +610,44 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
 }
 
 #[test]
+fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult {
+    let (mut auth, raw) = AuthState::bootstrap(100)?;
+    let root = auth.authenticate(&raw, 100)?;
+    let configured = auth.handle(
+        Some(&root),
+        "",
+        "POST",
+        "sys/auth/radius",
+        &json!({"type":"radius"}),
+        100,
+    )?;
+    assert_eq!(configured.ok_or("missing mount response")?.status, 204);
+    let configured = auth.handle(
+        Some(&root),
+        "",
+        "POST",
+        "auth/radius/config",
+        &json!({"url":"radius://radius.example.test:1812","token_policies":["default"]}),
+        100,
+    )?;
+    assert_eq!(configured.ok_or("missing config response")?.status, 204);
+    let mut state = State {
+        schema: CURRENT_STATE_SCHEMA,
+        cluster_id: "radius-schema-test".into(),
+        replay_epoch: 0,
+        namespaces: namespaces::NamespaceRegistry::default().into(),
+        auth: auth.into(),
+        engines: EngineState::default().into(),
+        database: database::DatabaseState::default().into(),
+        raft_admin: raft_admin::RaftAdminState::default().into(),
+    };
+    assert!(state.validate_format().is_ok());
+    state.schema = CURRENT_STATE_SCHEMA - 1;
+    assert!(state.validate_format().is_err());
+    Ok(())
+}
+
+#[test]
 fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;

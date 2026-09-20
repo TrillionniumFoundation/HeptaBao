@@ -69,6 +69,12 @@ impl State {
                 "AppRole renewal provenance requires schema 11",
             ));
         }
+        if self.schema < 12 && self.auth.has_radius_state() {
+            return Err(Response::error(
+                503,
+                "RADIUS authentication state requires schema 12",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -89,7 +95,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

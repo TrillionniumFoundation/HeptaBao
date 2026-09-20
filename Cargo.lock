@@ -1009,6 +1009,7 @@ dependencies = [
  "heptabao-raft-runtime",
  "hmac",
  "libc",
+ "md5",
  "qrcode",
  "ring",
  "rustls",
@@ -1017,6 +1018,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sha3",
+ "subtle",
  "tokio",
  "x509-parser",
  "zeroize",
@@ -1212,6 +1214,12 @@ name = "maplit"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
+
+[[package]]
+name = "md5"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae960838283323069879657ca3de837e9f7bbb4c7bf6ea7f1b290d5e9476d2e0"
 
 [[package]]
 name = "memchr"

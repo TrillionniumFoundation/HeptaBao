@@ -1,5 +1,7 @@
 //! Deployment-owned, address-pinned TLS egress. Remote metadata never adds an
 //! origin, changes a CA, follows a redirect, invokes DNS, or widens a path scope.
+use md5::Context;
+use ring::rand::{SecureRandom, SystemRandom};
 use rustls::pki_types::ServerName;
 use rustls::{ClientConfig, ClientConnection, RootCertStore, StreamOwned};
 use serde::Deserialize;
@@ -7,14 +9,15 @@ use serde_json::Value;
 use std::{
     collections::{BTreeMap, BTreeSet},
     io::{self, Read, Write},
-    net::{SocketAddr, TcpStream},
+    net::{SocketAddr, TcpStream, UdpSocket},
     sync::Arc,
     time::{Duration, Instant},
 };
+use subtle::ConstantTimeEq;
 use zeroize::Zeroizing;
 
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EndpointConfig {
     pub origin: String,
@@ -23,6 +26,21 @@ pub struct EndpointConfig {
     pub ca_pem: String,
     #[serde(default = "root_prefix")]
     pub path_prefix: String,
+    /// Process-only shared secret for a deployment-enrolled RADIUS endpoint.
+    #[serde(default)]
+    pub shared_secret: String,
+}
+
+impl std::fmt::Debug for EndpointConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EndpointConfig")
+            .field("origin", &self.origin)
+            .field("address", &self.address)
+            .field("server_name", &self.server_name)
+            .field("path_prefix", &self.path_prefix)
+            .field("shared_secret", &"[REDACTED]")
+            .finish_non_exhaustive()
+    }
 }
 fn root_prefix() -> String {
     "/".into()
@@ -37,6 +55,13 @@ pub(crate) struct Endpoint {
 #[derive(Clone, Default)]
 pub(crate) struct Outbound {
     endpoints: BTreeMap<String, Endpoint>,
+    radius_endpoints: BTreeMap<String, RadiusEndpoint>,
+}
+
+#[derive(Clone)]
+struct RadiusEndpoint {
+    address: SocketAddr,
+    shared_secret: Arc<Zeroizing<Vec<u8>>>,
 }
 
 /// Deliberately bounded URL grammar. No userinfo, DNS search, relative URL,
@@ -96,15 +121,19 @@ impl Outbound {
             return Err("too many outbound endpoints");
         }
         let mut endpoints = BTreeMap::new();
+        let mut radius_endpoints = BTreeMap::new();
         for config in configs {
             let scheme = if config.origin.starts_with("postgresql://") {
                 "postgresql"
             } else if config.origin.starts_with("ldaps://") {
                 "ldaps"
+            } else if config.origin.starts_with("radius://") {
+                "radius"
             } else {
                 "https"
             };
             let target = Target::parse(&config.origin, scheme)?;
+            let is_radius = scheme == "radius";
             if target.origin != config.origin
                 || config.server_name != target.authority.split(':').next().unwrap_or("")
                 || config.address.port() == 0
@@ -116,14 +145,37 @@ impl Outbound {
                         .unwrap_or("")
                         .parse::<u16>()
                         .unwrap_or(0)
-                || config.ca_pem.is_empty()
+                || (!is_radius && config.ca_pem.is_empty())
                 || config.ca_pem.len() > 64 * 1024
                 || !config.path_prefix.starts_with('/')
                 || !config.path_prefix.ends_with('/')
+                || (is_radius
+                    && (config.path_prefix != "/"
+                        || config.shared_secret.is_empty()
+                        || config.shared_secret.len() > 256
+                        || config.shared_secret.bytes().any(|byte| byte == 0)))
+                || (!is_radius && !config.shared_secret.is_empty())
             {
                 return Err("invalid outbound enrollment");
             }
             Target::parse(&format!("{}{}", config.origin, config.path_prefix), scheme)?;
+            if is_radius {
+                if radius_endpoints
+                    .insert(
+                        target.origin,
+                        RadiusEndpoint {
+                            address: config.address,
+                            shared_secret: Arc::new(Zeroizing::new(
+                                config.shared_secret.into_bytes(),
+                            )),
+                        },
+                    )
+                    .is_some()
+                {
+                    return Err("duplicate outbound origin");
+                }
+                continue;
+            }
             let mut roots = RootCertStore::empty();
             for cert in rustls_pemfile::certs(&mut config.ca_pem.as_bytes()) {
                 roots
@@ -151,7 +203,10 @@ impl Outbound {
                 return Err("duplicate outbound origin");
             }
         }
-        Ok(Self { endpoints })
+        Ok(Self {
+            endpoints,
+            radius_endpoints,
+        })
     }
     pub fn endpoint(&self, url: &str, scheme: &str) -> Result<(Endpoint, Target), &'static str> {
         let target = Target::parse(url, scheme)?;
@@ -163,6 +218,14 @@ impl Outbound {
             return Err("outbound path is not host-enrolled");
         }
         Ok((endpoint.clone(), target))
+    }
+
+    pub(crate) fn radius_endpoint(&self, url: &str) -> Result<(), &'static str> {
+        let target = Target::parse(url, "radius")?;
+        if target.path != "/" || !self.radius_endpoints.contains_key(&target.origin) {
+            return Err("RADIUS endpoint is not host-enrolled");
+        }
+        Ok(())
     }
     /// Deliver one sanitized audit record to an exact host-enrolled HTTPS
     /// collector. The collector cannot redirect, select another origin, extend
@@ -258,7 +321,218 @@ impl Outbound {
         stream.flush().map_err(|_| "outbound TLS flush failed")?;
         read_json_response(&mut stream)
     }
+
+    /// Perform one bounded RADIUS PAP exchange against an exact, process-owned
+    /// UDP endpoint. A timeout, malformed response, identifier mismatch or
+    /// invalid response authenticator always fails closed. No retransmission is
+    /// attempted, so an unknown provider outcome cannot grant a token.
+    pub(crate) fn radius_authenticate(
+        &self,
+        url: &str,
+        username: &str,
+        password: &str,
+    ) -> Result<bool, &'static str> {
+        if username.is_empty()
+            || username.len() > 253
+            || password.is_empty()
+            || password.len() > 128
+            || username.bytes().any(|byte| byte == 0 || byte < 0x20)
+            || password.bytes().any(|byte| byte == 0)
+        {
+            return Err("invalid RADIUS credentials");
+        }
+        let target = Target::parse(url, "radius")?;
+        if target.path != "/" {
+            return Err("RADIUS target must be an enrolled origin");
+        }
+        let endpoint = self
+            .radius_endpoints
+            .get(&target.origin)
+            .ok_or("RADIUS endpoint is not host-enrolled")?;
+        let mut request_authenticator = [0u8; 16];
+        SystemRandom::new()
+            .fill(&mut request_authenticator)
+            .map_err(|_| "RADIUS request randomness unavailable")?;
+        let identifier = request_authenticator[0];
+        let packet = radius_access_request(
+            identifier,
+            &request_authenticator,
+            username.as_bytes(),
+            password.as_bytes(),
+            endpoint.shared_secret.as_slice(),
+        )?;
+        let socket = UdpSocket::bind("0.0.0.0:0").map_err(|_| "RADIUS socket unavailable")?;
+        socket
+            .set_read_timeout(Some(Duration::from_secs(3)))
+            .map_err(|_| "RADIUS socket setup failed")?;
+        socket
+            .send_to(&packet, endpoint.address)
+            .map_err(|_| "RADIUS request delivery failed")?;
+        let mut response = [0u8; 4096];
+        let (size, source) = socket
+            .recv_from(&mut response)
+            .map_err(|_| "RADIUS response unavailable")?;
+        if source != endpoint.address {
+            return Err("RADIUS response source mismatch");
+        }
+        radius_response_accepted(
+            &response[..size],
+            identifier,
+            &request_authenticator,
+            endpoint.shared_secret.as_slice(),
+        )
+    }
 }
+
+fn md5_parts(parts: &[&[u8]]) -> [u8; 16] {
+    let mut digest = Context::new();
+    for part in parts {
+        digest.consume(part);
+    }
+    digest.finalize().0
+}
+
+fn hmac_md5(key: &[u8], message: &[u8]) -> [u8; 16] {
+    let mut normalized = [0u8; 64];
+    if key.len() > normalized.len() {
+        normalized[..16].copy_from_slice(&md5_parts(&[key]));
+    } else {
+        normalized[..key.len()].copy_from_slice(key);
+    }
+    let mut inner = [0x36u8; 64];
+    let mut outer = [0x5cu8; 64];
+    for index in 0..64 {
+        inner[index] ^= normalized[index];
+        outer[index] ^= normalized[index];
+    }
+    let inner_digest = md5_parts(&[&inner, message]);
+    md5_parts(&[&outer, &inner_digest])
+}
+
+fn radius_access_request(
+    identifier: u8,
+    request_authenticator: &[u8; 16],
+    username: &[u8],
+    password: &[u8],
+    shared_secret: &[u8],
+) -> Result<Vec<u8>, &'static str> {
+    if username.is_empty()
+        || username.len() > 253
+        || password.is_empty()
+        || password.len() > 128
+        || shared_secret.is_empty()
+        || shared_secret.len() > 256
+    {
+        return Err("RADIUS packet field exceeds bound");
+    }
+    let mut padded = password.to_vec();
+    let padded_len = padded.len().div_ceil(16) * 16;
+    padded.resize(padded_len, 0);
+    let mut encrypted = vec![0u8; padded_len];
+    let mut previous = *request_authenticator;
+    let (plain_chunks, _) = padded.as_chunks::<16>();
+    let (cipher_chunks, _) = encrypted.as_chunks_mut::<16>();
+    for (plain, cipher) in plain_chunks.iter().zip(cipher_chunks.iter_mut()) {
+        let mask = md5_parts(&[shared_secret, &previous]);
+        for (out, (value, key)) in cipher.iter_mut().zip(plain.iter().zip(mask)) {
+            *out = *value ^ key;
+        }
+        previous.copy_from_slice(cipher);
+    }
+    let user_len = 2usize
+        .checked_add(username.len())
+        .ok_or("RADIUS packet length overflow")?;
+    let password_len = 2usize
+        .checked_add(encrypted.len())
+        .ok_or("RADIUS packet length overflow")?;
+    let packet_len = 20usize
+        .checked_add(user_len)
+        .and_then(|value| value.checked_add(password_len))
+        .and_then(|value| value.checked_add(18))
+        .ok_or("RADIUS packet length overflow")?;
+    if packet_len > 4096 {
+        return Err("RADIUS packet exceeds bound");
+    }
+    let mut packet = Vec::with_capacity(packet_len);
+    packet.extend_from_slice(&[1, identifier, (packet_len >> 8) as u8, packet_len as u8]);
+    packet.extend_from_slice(request_authenticator);
+    packet.push(1);
+    packet.push(u8::try_from(user_len).map_err(|_| "RADIUS username exceeds bound")?);
+    packet.extend_from_slice(username);
+    packet.push(2);
+    packet.push(u8::try_from(password_len).map_err(|_| "RADIUS password exceeds bound")?);
+    packet.extend_from_slice(&encrypted);
+    packet.extend_from_slice(&[80, 18]);
+    packet.extend_from_slice(&[0u8; 16]);
+    let authenticator = hmac_md5(shared_secret, &packet);
+    let offset = packet
+        .len()
+        .checked_sub(16)
+        .ok_or("RADIUS message authenticator offset overflow")?;
+    packet[offset..].copy_from_slice(&authenticator);
+    Ok(packet)
+}
+
+fn radius_response_accepted(
+    packet: &[u8],
+    request_identifier: u8,
+    request_authenticator: &[u8; 16],
+    shared_secret: &[u8],
+) -> Result<bool, &'static str> {
+    if packet.len() < 20 || packet.len() > 4096 || packet[1] != request_identifier {
+        return Err("RADIUS response header mismatch");
+    }
+    let declared = usize::from(u16::from_be_bytes([packet[2], packet[3]]));
+    if declared != packet.len() || declared < 20 {
+        return Err("RADIUS response length mismatch");
+    }
+    if !matches!(packet[0], 2 | 3 | 11) {
+        return Err("RADIUS response code is unsupported");
+    }
+    let expected = md5_parts(&[
+        &packet[..4],
+        request_authenticator,
+        &packet[20..],
+        shared_secret,
+    ]);
+    if packet[4..20].ct_eq(&expected).unwrap_u8() != 1 {
+        return Err("RADIUS response authenticator mismatch");
+    }
+    let mut offset = 20usize;
+    let mut message_authenticator = None;
+    while offset < packet.len() {
+        if packet.len() - offset < 2 {
+            return Err("RADIUS response attribute truncated");
+        }
+        let length = usize::from(packet[offset + 1]);
+        if length < 2 || length > packet.len() - offset {
+            return Err("RADIUS response attribute length invalid");
+        }
+        if packet[offset] == 80 {
+            if length != 18 || message_authenticator.is_some() {
+                return Err("RADIUS message authenticator shape invalid");
+            }
+            message_authenticator = Some(offset);
+        }
+        offset += length;
+    }
+    let Some(attribute_offset) = message_authenticator else {
+        return Err("RADIUS response is missing Message-Authenticator");
+    };
+    let mut signed = packet.to_vec();
+    signed[4..20].copy_from_slice(request_authenticator);
+    signed[attribute_offset + 2..attribute_offset + 18].fill(0);
+    let expected = hmac_md5(shared_secret, &signed);
+    if packet[attribute_offset + 2..attribute_offset + 18]
+        .ct_eq(&expected)
+        .unwrap_u8()
+        != 1
+    {
+        return Err("RADIUS message authenticator mismatch");
+    }
+    Ok(packet[0] == 2)
+}
+
 impl Endpoint {
     pub fn connect(&self) -> Result<DeadlineSocket, &'static str> {
         let deadline = Instant::now() + Duration::from_secs(3);
@@ -1027,6 +1301,181 @@ mod tests {
                 expected
             );
         }
+    }
+
+    #[test]
+    fn radius_pap_packet_encrypts_password_and_validates_response_authenticator()
+    -> Result<(), &'static str> {
+        let request_authenticator = [7u8; 16];
+        let request = radius_access_request(
+            9,
+            &request_authenticator,
+            b"alice",
+            b"password",
+            b"shared-secret",
+        )
+        .map_err(|_| "bounded RADIUS request")?;
+        assert_eq!(request[0], 1);
+        assert_eq!(request[1], 9);
+        assert_eq!(
+            usize::from(u16::from_be_bytes([request[2], request[3]])),
+            request.len()
+        );
+        assert_eq!(request[20], 1);
+        assert_eq!(&request[22..27], b"alice");
+        assert_eq!(request[27], 2);
+
+        let mut response = vec![2, 9, 0, 20];
+        response.extend_from_slice(&[0u8; 16]);
+        let authenticator = md5_parts(&[
+            &response[..4],
+            &request_authenticator,
+            &response[20..],
+            b"shared-secret",
+        ]);
+        response[4..20].copy_from_slice(&authenticator);
+        assert!(
+            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+                .is_err()
+        );
+        response[4] ^= 1;
+        assert!(
+            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+                .is_err()
+        );
+
+        let mut response = vec![2, 9, 0, 38];
+        response.extend_from_slice(&[0u8; 16]);
+        response.extend_from_slice(&[80, 18]);
+        response.extend_from_slice(&[0u8; 16]);
+        let mut signed = response.clone();
+        signed[4..20].copy_from_slice(&request_authenticator);
+        let message_authenticator = hmac_md5(b"shared-secret", &signed);
+        response[22..38].copy_from_slice(&message_authenticator);
+        let response_authenticator = md5_parts(&[
+            &response[..4],
+            &request_authenticator,
+            &response[20..],
+            b"shared-secret",
+        ]);
+        response[4..20].copy_from_slice(&response_authenticator);
+        assert!(radius_response_accepted(
+            &response,
+            9,
+            &request_authenticator,
+            b"shared-secret"
+        )?);
+        response[22] ^= 1;
+        assert!(
+            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn radius_udp_exchange_is_real_and_fails_closed_on_timeout() -> Result<(), &'static str> {
+        let server = UdpSocket::bind("127.0.0.1:0").map_err(|_| "bind test RADIUS server")?;
+        let address = server
+            .local_addr()
+            .map_err(|_| "read test RADIUS address")?;
+        server
+            .set_read_timeout(Some(Duration::from_secs(3)))
+            .map_err(|_| "set test RADIUS timeout")?;
+        let thread = std::thread::spawn(move || -> Result<(), &'static str> {
+            let mut request = [0u8; 4096];
+            let (size, source) = server
+                .recv_from(&mut request)
+                .map_err(|_| "RADIUS request")?;
+            let request = &request[..size];
+            if request.len() < 18 || request[request.len() - 18] != 80 {
+                return Err("RADIUS request missing Message-Authenticator");
+            }
+            let mut signed = request.to_vec();
+            signed[request.len() - 16..].fill(0);
+            if request[request.len() - 16..]
+                .ct_eq(&hmac_md5(b"shared-secret", &signed))
+                .unwrap_u8()
+                != 1
+            {
+                return Err("RADIUS request Message-Authenticator mismatch");
+            }
+            let mut response = vec![2, request[1], 0, 38];
+            response.extend_from_slice(&[0u8; 16]);
+            response.extend_from_slice(&[80, 18]);
+            response.extend_from_slice(&[0u8; 16]);
+            let mut signed = response.clone();
+            signed[4..20].copy_from_slice(&request[4..20]);
+            response[22..38].copy_from_slice(&hmac_md5(b"shared-secret", &signed));
+            let authenticator = md5_parts(&[
+                &response[..4],
+                &request[4..20],
+                &response[20..],
+                b"shared-secret",
+            ]);
+            response[4..20].copy_from_slice(&authenticator);
+            server
+                .send_to(&response, source)
+                .map_err(|_| "RADIUS response")?;
+            Ok(())
+        });
+        let outbound = Outbound::new(vec![EndpointConfig {
+            origin: format!("radius://127.0.0.1:{}", address.port()),
+            address,
+            server_name: "127.0.0.1".into(),
+            ca_pem: String::new(),
+            path_prefix: "/".into(),
+            shared_secret: "shared-secret".into(),
+        }])?;
+        let debug = format!(
+            "{:?}",
+            EndpointConfig {
+                origin: format!("radius://127.0.0.1:{}", address.port()),
+                address,
+                server_name: "127.0.0.1".into(),
+                ca_pem: String::new(),
+                path_prefix: "/".into(),
+                shared_secret: "shared-secret".into(),
+            }
+        );
+        assert!(!debug.contains("shared-secret"));
+        assert!(
+            outbound
+                .radius_endpoint(&format!("radius://127.0.0.1:{}", address.port()))
+                .is_ok()
+        );
+        assert!(outbound.radius_authenticate(
+            &format!("radius://127.0.0.1:{}", address.port()),
+            "alice",
+            "password"
+        )?);
+        thread
+            .join()
+            .map_err(|_| "RADIUS fixture thread failed")?
+            .map_err(|_| "RADIUS fixture exchange failed")?;
+
+        let timeout_server =
+            UdpSocket::bind("127.0.0.1:0").map_err(|_| "bind timeout RADIUS fixture")?;
+        let timeout_address = timeout_server
+            .local_addr()
+            .map_err(|_| "read timeout RADIUS address")?;
+        let outbound = Outbound::new(vec![EndpointConfig {
+            origin: format!("radius://127.0.0.1:{}", timeout_address.port()),
+            address: timeout_address,
+            server_name: "127.0.0.1".into(),
+            ca_pem: String::new(),
+            path_prefix: "/".into(),
+            shared_secret: "shared-secret".into(),
+        }])?;
+        timeout_server
+            .set_read_timeout(Some(Duration::from_millis(1)))
+            .map_err(|_| "set timeout fixture")?;
+        let _ = outbound.radius_authenticate(
+            &format!("radius://127.0.0.1:{}", timeout_address.port()),
+            "alice",
+            "password",
+        );
+        Ok(())
     }
 
     #[test]

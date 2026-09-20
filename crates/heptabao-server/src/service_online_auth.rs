@@ -4,7 +4,7 @@ use super::*;
 use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
     LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
-    RemoteJwtLoginObservation, RemoteJwtLoginPlan,
+    RadiusLoginObservation, RadiusLoginPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -26,6 +26,7 @@ pub(super) enum OnlineAuthEffect {
     RemoteJwt(RemoteJwtLoginPlan),
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
+    Radius(RadiusLoginPlan),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
         namespace: String,
@@ -47,6 +48,7 @@ pub(crate) enum OnlineAuthObservation {
     RemoteJwt(RemoteJwtLoginObservation),
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
+    Radius(RadiusLoginObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
 }
@@ -65,6 +67,10 @@ impl OnlineAuthEffectPlan {
             OnlineAuthEffect::Ldap(plan) => plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Ldap)
+                .map_err(auth_error),
+            OnlineAuthEffect::Radius(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::Radius)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcBegin(plan) => plan
                 .execute(&self.outbound)
@@ -133,6 +139,7 @@ impl Service {
             .online_mount_route(request.namespace, request.path)?;
         let handled = kind == "kubernetes" && suffix == "login"
             || kind == "ldap" && suffix.starts_with("login/")
+            || kind == "radius" && suffix == "login"
             || kind == "oidc" && matches!(suffix.as_str(), "oidc/auth_url" | "oidc/callback");
         if !handled {
             return None;
@@ -176,6 +183,17 @@ impl Service {
                 request.now,
             ) {
                 Ok(plan) => OnlineAuthEffect::Ldap(plan),
+                Err(error) => return Some(auth_error(error)),
+            }
+        } else if kind == "radius" {
+            match admitted.auth.prepare_radius_login(
+                request.namespace,
+                &mount,
+                request.method,
+                request.body,
+                request.now,
+            ) {
+                Ok(plan) => OnlineAuthEffect::Radius(plan),
                 Err(error) => return Some(auth_error(error)),
             }
         } else if suffix == "oidc/auth_url" {
@@ -268,6 +286,9 @@ impl Service {
             ) => state.auth.finish_kubernetes_login(auth_plan, observed),
             (OnlineAuthEffect::Ldap(auth_plan), OnlineAuthObservation::Ldap(observed)) => {
                 state.auth.finish_ldap_login(auth_plan, observed)
+            }
+            (OnlineAuthEffect::Radius(auth_plan), OnlineAuthObservation::Radius(observed)) => {
+                state.auth.finish_radius_login(auth_plan, observed)
             }
             (
                 OnlineAuthEffect::OidcBegin(auth_plan),

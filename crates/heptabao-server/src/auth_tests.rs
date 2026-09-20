@@ -104,6 +104,86 @@ fn ldap_bounded_profile_config_login_and_injection_rejection() {
             .is_err()
     );
 }
+
+#[test]
+fn radius_bounded_profile_config_login_and_policy_projection() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/radius",
+        json!({"type":"radius"}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/radius/config",
+        json!({
+            "url":"radius://radius.example.test:1812",
+            "token_policies":["default","operator"],
+            "token_ttl":120,
+            "token_max_ttl":240,
+            "token_num_uses":2
+        }),
+        100,
+    );
+    let cfg = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/radius/config",
+        json!({}),
+        100,
+    );
+    assert_eq!(cfg.body["data"]["url"], "radius://radius.example.test:1812");
+    let plan = state
+        .prepare_radius_login(
+            "",
+            "radius",
+            "POST",
+            &json!({"username":"alice","password":"radius-password"}),
+            101,
+        )
+        .unwrap();
+    let login = state
+        .finish_radius_login(plan, RadiusLoginObservation)
+        .unwrap();
+    assert_eq!(
+        login.body["auth"]["token_policies"],
+        json!(["default", "operator"])
+    );
+    let issued = login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(issued, 102).is_ok());
+    assert!(
+        state
+            .prepare_radius_login(
+                "",
+                "radius",
+                "POST",
+                &json!({"username":"alice","password":""}),
+                101,
+            )
+            .is_err()
+    );
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "auth/radius/config",
+                &json!({"url":"radius://radius.example.test:1812/path"}),
+                100,
+            )
+            .is_err()
+    );
+}
 fn call(
     state: &mut AuthState,
     actor: &Principal,

@@ -99,6 +99,10 @@ pub struct AuthState {
     ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    /// Bounded RADIUS PAP authentication. The endpoint and shared secret are
+    /// process-enrolled; this durable map retains only route and token policy.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    radius_mounts: BTreeMap<String, BTreeMap<String, RadiusMount>>,
     /// Deployment-enrolled authentication plugins never choose token authority.
     /// This durable map binds a mount to one admitted plugin id and server-owned
     /// policy/TTL limits. The plugin returns only an authentication decision and
@@ -445,6 +449,15 @@ struct LdapMount {
     group_name_attr: String,
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+struct RadiusMount {
+    url: String,
+    policies: BTreeSet<String>,
+    token_ttl: u64,
+    token_max_ttl: u64,
+    token_num_uses: u64,
+}
+
 impl LdapMount {
     fn group_attr(&self) -> &str {
         if self.group_attr.is_empty() {
@@ -516,6 +529,31 @@ pub(crate) struct LdapLoginPlan {
 
 pub(crate) struct LdapLoginObservation {
     groups: BTreeSet<String>,
+}
+
+pub(crate) struct RadiusLoginPlan {
+    namespace: String,
+    mount: String,
+    username: String,
+    password: Zeroizing<String>,
+    config: RadiusMount,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct RadiusLoginObservation;
+
+impl RadiusLoginPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &crate::outbound::Outbound,
+    ) -> Result<RadiusLoginObservation, AuthError> {
+        match outbound.radius_authenticate(&self.config.url, &self.username, &self.password) {
+            Ok(true) => Ok(RadiusLoginObservation),
+            Ok(false) => Err(denied()),
+            Err(_) => Err(err(503, "RADIUS provider unavailable or response invalid")),
+        }
+    }
 }
 
 impl LdapLoginPlan {
@@ -1448,6 +1486,12 @@ impl AuthState {
                 .cloned(),
         );
         namespaces.extend(
+            self.radius_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
             self.plugin_auth_mounts
                 .keys()
                 .filter(|value| !value.is_empty())
@@ -1512,6 +1556,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .radius_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .plugin_auth_mounts
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -1536,6 +1584,7 @@ impl AuthState {
             oidc_mounts: BTreeMap::new(),
             ldap_mounts: BTreeMap::new(),
             ldap_groups: BTreeMap::new(),
+            radius_mounts: BTreeMap::new(),
             plugin_auth_mounts: BTreeMap::new(),
             cert_roles: BTreeMap::new(),
         };
@@ -1912,6 +1961,9 @@ impl AuthState {
         if let Some(mounts) = self.ldap_groups.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.radius_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -2131,6 +2183,16 @@ impl AuthState {
                 .insert(to.into(), value);
         }
         if let Some(value) = self
+            .radius_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.radius_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
             .plugin_auth_mounts
             .get_mut(namespace)
             .and_then(|mounts| mounts.remove(from))
@@ -2310,6 +2372,7 @@ impl AuthState {
                         | "kubernetes"
                         | "oidc"
                         | "ldap"
+                        | "radius"
                         | "plugin"
                         | "cert"
                 ) {
@@ -2400,7 +2463,7 @@ impl AuthState {
                 };
                 match entry.kind.as_str() {
                     "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
-                    "approle" | "jwt" | "kubernetes" => suffix == "login",
+                    "approle" | "jwt" | "kubernetes" | "radius" => suffix == "login",
                     "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
                     "cert" => suffix == "login",
                     "plugin" => suffix == "login",
@@ -2505,6 +2568,13 @@ impl AuthState {
                 "oidc" => self.oidc_route(principal, scope, method, suffix, body, now),
                 "kubernetes" => self.kubernetes_route(principal, scope, method, suffix, body, now),
                 "ldap" => self.ldap_route(principal, scope, method, suffix, body, now),
+                "radius" if suffix == "config" => {
+                    self.radius_route(principal, scope, method, body, now)
+                }
+                "radius" if suffix == "login" => Err(err(
+                    503,
+                    "RADIUS login requires the Service online-auth dispatcher",
+                )),
                 "plugin" if suffix == "config" => {
                     self.plugin_auth_route(principal, scope, method, body, now)
                 }
@@ -2532,6 +2602,10 @@ impl AuthState {
         self.plugin_auth_mounts
             .values()
             .any(|mounts| !mounts.is_empty())
+    }
+
+    pub(crate) fn has_radius_state(&self) -> bool {
+        self.radius_mounts.values().any(|mounts| !mounts.is_empty())
     }
 
     pub(crate) fn validate_plugin_auth_state(&self) -> Result<(), AuthError> {
@@ -3137,6 +3211,210 @@ impl AuthState {
             enrollment.last_accepted_counter = Some(counter);
         }
         self.users_at_mut(scope).insert(plan.name, user);
+        self.tokens.insert(token_id, token);
+        Ok(response)
+    }
+
+    fn radius_route(
+        &mut self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/config", scope.mount);
+        let actor = self.permission(
+            principal,
+            scope.namespace,
+            &path,
+            route_capability(method, false)?,
+            now,
+        )?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                let config = self
+                    .radius_mounts
+                    .get(scope.namespace)
+                    .and_then(|mounts| mounts.get(scope.mount))
+                    .ok_or_else(|| err(404, "RADIUS authentication is not configured"))?;
+                Ok(response(
+                    json!({
+                        "url": config.url,
+                        "policies": config.policies,
+                        "token_policies": config.policies,
+                        "token_ttl": config.token_ttl,
+                        "token_max_ttl": config.token_max_ttl,
+                        "token_num_uses": config.token_num_uses
+                    }),
+                    false,
+                ))
+            }
+            "POST" | "PUT" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(
+                    body,
+                    &[
+                        "url",
+                        "policies",
+                        "token_policies",
+                        "token_ttl",
+                        "token_max_ttl",
+                        "token_num_uses",
+                    ],
+                )?;
+                reject_alias_pair(body, "policies", "token_policies")?;
+                let url = string_field(body, "url")?;
+                let target = crate::outbound::Target::parse(url, "radius")
+                    .map_err(|_| bad("RADIUS url must be radius://host:port"))?;
+                if target.path != "/" {
+                    return Err(bad("RADIUS url cannot contain a path"));
+                }
+                let policy_field = if body.get("token_policies").is_some() {
+                    "token_policies"
+                } else {
+                    "policies"
+                };
+                let configured_policies = policies(body, policy_field, &BTreeSet::new(), true)?;
+                if configured_policies.contains("root") {
+                    return Err(bad("RADIUS authentication cannot grant root policy"));
+                }
+                let token_ttl = duration(body, "token_ttl", 0)?;
+                let token_max_ttl = duration(body, "token_max_ttl", 0)?;
+                let token_num_uses = number(body, "token_num_uses", 0)?;
+                if token_ttl > MAX_TTL
+                    || token_max_ttl > MAX_TTL
+                    || token_ttl > 0 && token_max_ttl > 0 && token_ttl > token_max_ttl
+                {
+                    return Err(bad("invalid RADIUS token TTL limits"));
+                }
+                let next = RadiusMount {
+                    url: url.into(),
+                    policies: configured_policies,
+                    token_ttl,
+                    token_max_ttl,
+                    token_num_uses,
+                };
+                let changed = self
+                    .radius_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .insert(scope.mount.into(), next.clone())
+                    .as_ref()
+                    != Some(&next);
+                Ok(empty(changed))
+            }
+            "DELETE" => {
+                self.authorize_request(actor, scope.namespace, &path, "sudo", now)?;
+                reject_unknown(body, &[])?;
+                let removed = self
+                    .radius_mounts
+                    .entry(scope.namespace.into())
+                    .or_default()
+                    .remove(scope.mount);
+                if removed.is_some() {
+                    Ok(empty(true))
+                } else {
+                    Err(err(404, "RADIUS authentication is not configured"))
+                }
+            }
+            _ => Err(err(405, "method not allowed")),
+        }
+    }
+
+    pub(crate) fn prepare_radius_login(
+        &self,
+        namespace: &str,
+        mount: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<RadiusLoginPlan, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Err(err(405, "method not allowed"));
+        }
+        validate_namespace(namespace)?;
+        if !self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .is_some_and(|entry| entry.kind == "radius")
+        {
+            return Err(denied());
+        }
+        reject_unknown(body, &["username", "password"])?;
+        let username = string_field(body, "username")?;
+        if username.is_empty()
+            || username.len() > 253
+            || username.bytes().any(|byte| byte == 0 || byte < 0x20)
+        {
+            return Err(denied());
+        }
+        let password = string_field(body, "password")?;
+        if password.is_empty() || password.len() > 128 || password.bytes().any(|byte| byte == 0) {
+            return Err(denied());
+        }
+        let config = self
+            .radius_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "RADIUS authentication is not configured"))?;
+        Ok(RadiusLoginPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            username: username.into(),
+            password: Zeroizing::new(password.into()),
+            config,
+            now,
+            started: std::time::Instant::now(),
+        })
+    }
+
+    pub(crate) fn finish_radius_login(
+        &mut self,
+        plan: RadiusLoginPlan,
+        _observation: RadiusLoginObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        if !self
+            .effective_auth_mounts(&plan.namespace)
+            .get(&plan.mount)
+            .is_some_and(|entry| entry.kind == "radius")
+            || self
+                .radius_mounts
+                .get(&plan.namespace)
+                .and_then(|mounts| mounts.get(&plan.mount))
+                != Some(&plan.config)
+        {
+            return Err(err(409, "RADIUS configuration changed during login"));
+        }
+        let elapsed = plan.started.elapsed();
+        let now = plan.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        );
+        let (token_ttl, token_max_ttl) =
+            self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
+        let mut token = login_token(
+            &plan.namespace,
+            plan.config.policies.clone(),
+            token_ttl,
+            token_max_ttl,
+            plan.config.token_num_uses,
+            format!("radius-{}", plan.username),
+            now,
+        )?;
+        token.auth_mount = Some(plan.mount.clone());
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.login_identity = Some(LoginIdentity {
+            mount: plan.mount,
+            alias: plan.username,
+        });
         self.tokens.insert(token_id, token);
         Ok(response)
     }

@@ -231,7 +231,10 @@ impl AuthState {
         self.effective_auth_mounts(namespace)
             .into_iter()
             .find_map(|(mount, entry)| {
-                if !matches!(entry.kind.as_str(), "kubernetes" | "oidc" | "ldap") {
+                if !matches!(
+                    entry.kind.as_str(),
+                    "kubernetes" | "oidc" | "ldap" | "radius"
+                ) {
                     return None;
                 }
                 rest.strip_prefix(&format!("{mount}/"))
@@ -252,9 +255,10 @@ impl AuthState {
         self.has_oidc_state()
             || self.kubernetes_mounts.values().any(|m| !m.is_empty())
             || self.ldap_mounts.values().any(|m| !m.is_empty())
+            || self.radius_mounts.values().any(|m| !m.is_empty())
             || self.auth_mounts.values().any(|m| {
                 m.values()
-                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc" | "ldap"))
+                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc" | "ldap" | "radius"))
             })
     }
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
@@ -311,6 +315,27 @@ impl AuthState {
                 }
             }
         }
+        for (namespace, mounts) in &self.radius_mounts {
+            validate_namespace(namespace)?;
+            for (mount, config) in mounts {
+                if !self.online_mount_enabled(namespace, mount, "radius")
+                    || crate::outbound::Target::parse(&config.url, "radius")
+                        .map_or(true, |target| target.path != "/")
+                    || config.policies.len() > 128
+                    || config
+                        .policies
+                        .iter()
+                        .any(|policy| !valid_name(policy) || policy == "root")
+                    || config.token_ttl > super::MAX_TTL
+                    || config.token_max_ttl > super::MAX_TTL
+                    || config.token_ttl > 0
+                        && config.token_max_ttl > 0
+                        && config.token_ttl > config.token_max_ttl
+                {
+                    return Err(denied());
+                }
+            }
+        }
         Ok(())
     }
     fn kubernetes_at(&self, scope: AuthScope<'_>) -> Option<&KubernetesMount> {
@@ -353,6 +378,17 @@ impl AuthState {
             outbound
                 .endpoint(&config.url, "ldaps")
                 .map_err(|_| err(503, "LDAP bind target is not host-enrolled"))?;
+            return Ok(());
+        }
+        if kind == "radius" {
+            let config = self
+                .radius_mounts
+                .get(namespace)
+                .and_then(|mounts| mounts.get(&mount))
+                .ok_or_else(|| err(503, "RADIUS authentication is not configured"))?;
+            outbound
+                .radius_endpoint(&config.url)
+                .map_err(|_| err(503, "RADIUS target is not host-enrolled"))?;
             return Ok(());
         }
         if let Some(config) = self
