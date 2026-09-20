@@ -509,7 +509,7 @@ fn ldap_schema_fence_and_auth_mount_disable_revoke_external_evidence() -> TestRe
         ..
     } = fixture(&root)?;
     let state = service.state.as_ref().ok_or("missing state")?;
-    assert_eq!(state.schema, 17);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_external_group_membership());
     let mut downgraded = state.clone();
     downgraded.schema = 16;

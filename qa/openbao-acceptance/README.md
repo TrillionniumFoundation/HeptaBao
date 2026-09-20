@@ -135,3 +135,37 @@ host enrollment and DN template/local user authority versus official LDAP servic
 bind/search fields and mount TTL. Deleting `userPassword` tests simple-bind
 credential disablement, not Active Directory account flags. Receipts contain fixed
 case IDs, statuses and booleans, never directory log contents or credentials.
+
+`provider_renewal_upgrade.py` exercises a real schema-15 → schema-17 binary/store
+round trip with OpenLDAP. It requires the fixed f31b98e legacy binary and 8f7c907
+candidate hashes, checked against their committed clean execution receipts. These
+are caller-bound build identities, not inferred from the current checkout or an
+independent binary attestation. Old direct LDAP tokens and indistinguishable old
+token-API orphans retain read access but must log in again to renew; old children
+with a real parent retain ordinary token renewal. New logins acquire durable
+provider renewal. The old binary then rejects the upgraded store, and the new
+binary recovers. Application snapshots and append journals must stay unchanged
+during rejected downgrade; `ledger.hbl` is explicitly excluded across reopen
+because both binaries rebuild and re-encrypt that replay checkpoint before
+application-schema validation. Pure reads and rejected ambiguous renewals after
+unseal must leave the entire store unchanged. This selected upgrade sequence does
+not qualify rolling upgrades or arbitrary historical stores.
+
+`jwt_renewal_live.py` compares static ES256 and remote-JWKS service-token renewal
+with official 2.6.2. The JWT expires shortly after login; the issued token keeps
+its role-based TTL, and renewal consults current local role settings while keeping
+issued token policies. It checks three renewal routes, wrapping, role maximum and
+period changes, issue-time explicit maximum, deleted roles, token-API children and
+orphans, and restart. The remote issuer is unavailable during renewal and its HTTP
+request count must not increase. Static public-key configuration and remote CA
+enrollment are explicitly adapted. `--build-source-commit` may supply a caller's
+binary build identity; the current harness checkout is reported separately and
+never treated as proof of binary provenance. This is not complete JWT/OIDC API,
+browser authorization, or configuration-update parity.
+
+`jwt_login_claims_live.py` separately compares ordinary static/remote JWT login:
+optional `iat` and `jti` while `exp` is present, repeated use of the same signed
+assertion, distinct service tokens bound to the same entity, and another login
+after restart. It also rejects assertions expired beyond default clock skew and
+those missing all three time claims. This profile does not change or qualify OIDC
+authorization-code consumption, nonce checking, or state replay protection.

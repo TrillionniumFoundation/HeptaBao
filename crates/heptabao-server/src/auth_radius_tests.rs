@@ -312,7 +312,11 @@ fn token_api_children_never_copy_radius_password_and_legacy_orphans_fail_closed(
     );
     assert_eq!(state.tokens[&hash(&raw)].expires_at, parent_before);
     for (child, orphan) in children {
-        state.tokens.get_mut(&hash(&child)).unwrap().auth_provenance = None;
+        let legacy = state.tokens.get_mut(&hash(&child)).unwrap();
+        // Simulate the old inherited mount as well as the absent issuer
+        // marker; clearing only the marker on a new orphan is not old state.
+        legacy.auth_mount = Some("radius".into());
+        legacy.auth_provenance = None;
         let actor = state.authenticate(&child, 103).unwrap();
         let result = state.handle(
             Some(&actor),

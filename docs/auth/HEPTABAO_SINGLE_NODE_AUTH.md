@@ -368,11 +368,28 @@ For OpenBao API readback compatibility, JWT config GET returns both `issuer` and
 `bound_issuer`, while role GET returns both `policies` and `token_policies`; each
 pair is the same persisted value and does not create a second authorization path.
 
-Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. The service token's lifetime cannot exceed the JWT's remaining lifetime. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
+Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. As in OpenBao 2.6.2, the issued service token has its own role/mount lifetime and can outlive the login JWT. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
 
 Accepted JWT replay identity and the issued token are owned by `AuthState`; Service commits them atomically with the mount/subject alias and entity association in `EngineState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
 
-Successful JWT login creates an ordinary bounded HeptaBao token. Subsequent requests authenticate that token through the same private capability/ACL flow as other methods; JWT verifier helper types are not authorization capabilities. Mount disable removes JWT trust/replay state and revokes its issued tokens. Independent OpenBao differential fixtures must still cover this protocol's intended compatibility scope.
+Successful JWT login creates a bounded service token carrying its issuing role
+name in schema-18 Auth state. `renew-self`, `renew` and `renew-accessor` reread that
+role: deletion returns 500 without changing expiry. They do not revalidate the
+JWT, fetch JWKS, compare current claim bindings or replace issued token policies.
+Live identity, caller ACL, revocation and expiry checks still apply. A finite
+token's current role/mount maximum is measured from its original issue time;
+raising it can extend an active token beyond its previous role maximum.
+`token_period` ignores requested increments and is clipped by the current maximum;
+only `token_explicit_max_ttl` captured at issuance imposes an absolute lifetime on
+a periodic token. Later changes to that role field do not replace an existing
+token's explicit maximum. Both fields default to zero and are bounded by 32 days.
+Renewal, identity projection and optional response wrapping commit together.
+Token-API children do not inherit the JWT role. Legacy parentless JWT tokens
+without role provenance keep their existing permissions and expiry but must log
+in again to renew. Mount disable removes JWT trust/replay state and revokes its
+direct tokens and ordinary children; independent token-API orphans retain their
+own lifetime. Selected static/remote differential cases do not establish full
+JWT claim-mapping or configuration parity.
 
 ## Route inventory
 

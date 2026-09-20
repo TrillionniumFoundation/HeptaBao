@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **17**. Its source constant is
+The current Service state schema is **18**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -56,7 +56,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 14 | Adds bounded OpenLDAP dynamic-secret intents, owner/expiry fences, retained-DN tombstones, and local snapshot rollback fences. |
 | 15 | KV v2 metadata CAS requirements and independent metadata versions; RADIUS renewal and explicit token-API provenance must be absent. |
 | 16 | Direct RADIUS renewal credentials and explicit token-API provenance; LDAP renewal and external identity membership evidence must be absent. |
-| 17 | Current format, adding direct LDAP renewal credentials and provider-verified external identity membership evidence. |
+| 17 | Direct LDAP renewal credentials and provider-verified external identity membership evidence; JWT direct-role provenance and nonzero JWT periodic/explicit-max role fields must be absent. |
+| 18 | Current format, adding direct JWT role provenance and distinct periodic/explicit-max JWT role limits. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -66,8 +67,17 @@ mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
+Schema 18 is required for direct JWT role provenance or nonzero JWT role period
+and explicit maximum fields. JWT assertions expire at login admission; a new
+JWT service token is bounded independently by its role and mount. Its stored
+absolute maximum represents only the explicit maximum captured at issuance;
+ordinary role/mount maxima are reread at renewal and measured from issue time.
+Old JWT tokens keep their recorded expiry and maximum. Old parentless JWT tokens
+without provenance must log in again to renew; old children with a parent keep
+their ordinary token-API renewal. New token-API children do not inherit JWT roles.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 17. An authenticated
+it. Initialization and committed mutations use schema 18. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -81,7 +91,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-17-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-18-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -106,7 +116,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-16 binary must fail closed once LDAP renewal credentials or external membership evidence has been committed;
+A schema-17 binary must fail closed once JWT direct-role provenance or new role lifetime semantics have been committed;
+a schema-16 binary must fail closed once LDAP renewal credentials or external membership evidence has been committed;
 a schema-15 binary must fail closed once RADIUS renewal or token-API provenance has been committed;
 a schema-14 binary must fail closed once KV metadata CAS state has been committed;
 a schema-13 binary must fail closed once OpenLDAP mount or durable dynamic-secret state has been committed; a

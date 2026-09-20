@@ -15,10 +15,12 @@ pub(super) struct RemoteJwtSource {
 pub(crate) struct RemoteJwtLoginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     method: String,
-    body: Zeroizing<Vec<u8>>,
+    body: StrictJson,
     config: JwtConfig,
     now: u64,
+    started: std::time::Instant,
 }
 
 pub(crate) struct RemoteJwtLoginObservation {
@@ -144,7 +146,7 @@ impl AuthState {
         let Some(rest) = path.strip_prefix("auth/") else {
             return Ok(None);
         };
-        let Some((mount, route)) = rest.split_once('/') else {
+        let Some((mount, route)) = rest.rsplit_once('/') else {
             return Ok(None);
         };
         if route != "login" {
@@ -161,16 +163,19 @@ impl AuthState {
         if config.remote.is_none() {
             return Ok(None);
         }
-        let body = Zeroizing::new(
-            serde_json::to_vec(body).map_err(|_| bad("JWT login request encoding failed"))?,
-        );
         Ok(Some(RemoteJwtLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
+            mount_revision: self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .cloned()
+                .ok_or_else(denied)?,
             method: method.into(),
-            body,
+            body: StrictJson(body.clone()),
             config,
             now,
+            started: std::time::Instant::now(),
         }))
     }
 
@@ -187,7 +192,10 @@ impl AuthState {
             .jwt_at(scope)
             .and_then(|state| state.config.as_ref())
             .ok_or_else(|| bad("JWT configuration disappeared during refresh"))?;
-        if !same_remote_binding(current, &plan.config) {
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
+            || !same_remote_binding(current, &plan.config)
+        {
             return Err(err(
                 409,
                 "JWT configuration changed during remote key refresh",
@@ -206,11 +214,22 @@ impl AuthState {
                 .insert("configuration-shape-only".into());
         }
         validation.verifier()?;
-        let body: Value = serde_json::from_slice(&plan.body)
-            .map_err(|_| bad("JWT login request decoding failed"))?;
+        let elapsed = plan.started.elapsed();
+        let now = plan.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        );
         let path = format!("auth/{}/login", plan.mount);
-        self.handle(None, &plan.namespace, &plan.method, &path, &body, plan.now)?
-            .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
+        self.handle(
+            None,
+            &plan.namespace,
+            &plan.method,
+            &path,
+            &plan.body.0,
+            now,
+        )?
+        .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
     }
 
     pub(crate) fn has_remote_jwt_state(&self) -> bool {
@@ -240,7 +259,7 @@ impl AuthState {
         let Some(rest) = path.strip_prefix("auth/") else {
             return Ok(());
         };
-        let Some((mount, route)) = rest.split_once('/') else {
+        let Some((mount, route)) = rest.rsplit_once('/') else {
             return Ok(());
         };
         if route != if configuration { "config" } else { "login" } {
@@ -273,7 +292,134 @@ impl AuthState {
 }
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::unwrap_used, clippy::expect_used)]
     use super::*;
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+
+    fn login_fixture() -> (
+        AuthState,
+        Principal,
+        RemoteJwtLoginPlan,
+        RemoteJwtLoginObservation,
+    ) {
+        let (mut state, raw) = AuthState::bootstrap(1000).unwrap();
+        let root = state.authenticate(&raw, 1000).unwrap();
+        let pair = Ed25519KeyPair::from_seed_unchecked(&[58; 32]).unwrap();
+        for (path, body) in [
+            ("sys/auth/nested/jwt", json!({"type":"jwt"})),
+            (
+                "auth/nested/jwt/config",
+                json!({"issuer":"https://issuer.example","audiences":["service"],"clock_skew_seconds":0,"keys":[{"kid":"key","algorithm":"EdDSA","key_base64":URL_SAFE_NO_PAD.encode(pair.public_key().as_ref())}]}),
+            ),
+            (
+                "auth/nested/jwt/role/app",
+                json!({"bound_audiences":["service"],"token_ttl":60,"token_max_ttl":300}),
+            ),
+        ] {
+            state
+                .handle(Some(&root), "", "POST", path, &body, 1000)
+                .unwrap()
+                .unwrap();
+        }
+        let config = state
+            .jwt_at_mut(AuthScope {
+                namespace: "",
+                mount: "nested/jwt",
+            })
+            .config
+            .as_mut()
+            .unwrap();
+        config.remote = Some(RemoteJwtSource {
+            jwks_url: Some("https://issuer.example/keys".into()),
+            oidc_discovery_url: None,
+        });
+        let observed = RemoteJwtLoginObservation {
+            keys: config.keys.clone(),
+        };
+        let payload = format!("{}.{}", URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"key"}"#), URL_SAFE_NO_PAD.encode(br#"{"iss":"https://issuer.example","sub":"alice","aud":"service","iat":1000,"exp":1010,"jti":"remote-login"}"#));
+        let jwt = format!(
+            "{payload}.{}",
+            URL_SAFE_NO_PAD.encode(pair.sign(payload.as_bytes()).as_ref())
+        );
+        let plan = state
+            .prepare_remote_jwt_login(
+                "",
+                "auth/nested/jwt/login",
+                "POST",
+                &json!({"role":"app","jwt":jwt}),
+                1000,
+            )
+            .unwrap()
+            .unwrap();
+        (state, root, plan, observed)
+    }
+
+    #[test]
+    fn remote_login_rechecks_expiration_after_fetch_and_marks_native_role() {
+        let (mut state, _, mut plan, observed) = login_fixture();
+        plan.started = std::time::Instant::now()
+            .checked_sub(std::time::Duration::from_secs(11))
+            .unwrap();
+        let before = state.tokens.len();
+        assert_eq!(
+            state
+                .finish_remote_jwt_login(plan, observed)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        assert_eq!(state.tokens.len(), before);
+        let (mut state, _, plan, observed) = login_fixture();
+        let response = state.finish_remote_jwt_login(plan, observed).unwrap();
+        assert_eq!(response.body["auth"]["lease_duration"], 60);
+        let token = &state.tokens[&hash(response.body["auth"]["client_token"].as_str().unwrap())];
+        assert!(
+            matches!(&token.auth_provenance, Some(TokenAuthProvenance::Jwt{role_name}) if role_name=="app")
+        );
+    }
+
+    #[test]
+    fn remote_login_rejects_same_path_mount_recreation_even_with_identical_trust() {
+        let (mut state, root, plan, observed) = login_fixture();
+        let scope = AuthScope {
+            namespace: "",
+            mount: "nested/jwt",
+        };
+        let config = state.jwt_at(scope).unwrap().clone();
+        state
+            .handle(
+                Some(&root),
+                "",
+                "DELETE",
+                "sys/auth/nested/jwt",
+                &json!({}),
+                1001,
+            )
+            .unwrap();
+        state
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/auth/nested/jwt",
+                &json!({"type":"jwt"}),
+                1001,
+            )
+            .unwrap();
+        *state.jwt_at_mut(scope) = config;
+        let before = state.tokens.len();
+        assert_eq!(
+            state
+                .finish_remote_jwt_login(plan, observed)
+                .err()
+                .unwrap()
+                .status,
+            409
+        );
+        assert_eq!(state.tokens.len(), before);
+    }
+
     #[test]
     fn remote_sources_are_exclusive_and_never_implicitly_activated() {
         for body in [

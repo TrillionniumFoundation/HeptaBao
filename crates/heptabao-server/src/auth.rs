@@ -45,6 +45,8 @@ mod capabilities;
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_jwt_renewal.rs"]
+mod jwt_renewal;
 #[path = "auth_ldap_renewal.rs"]
 mod ldap_renewal;
 #[path = "auth_provider_renewal.rs"]
@@ -799,6 +801,10 @@ struct JwtRole {
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -961,6 +967,9 @@ enum TokenAuthProvenance {
     Ldap {
         username: String,
         credential: ProviderCredential,
+    },
+    Jwt {
+        role_name: String,
     },
     TokenApi,
 }
@@ -2008,6 +2017,11 @@ impl AuthState {
             .filter(|(_, token)| {
                 token.namespace == scope.namespace
                     && !token.root
+                    // Orphan tokens issued by the token API are independent
+                    // of the parent's login mount. Recognize older snapshots
+                    // that incorrectly inherited that mount as well.
+                    && !(token.parent.is_none()
+                        && matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi)))
                     && (token.auth_mount.as_deref() == Some(scope.mount)
                         || (!token.auth_origin_known
                             && matches!(scope.mount, "userpass" | "approle")))
@@ -3549,6 +3563,11 @@ impl AuthState {
             token.auth_mount = Some(mount.into());
             token.auth_cert_role = Some(role_name.to_owned());
             token.auth_cert_sha256 = Some(presented.sha256.clone());
+            // Certificate roles do not accept explicit_max_ttl in this
+            // profile. Their ordinary maximum is reread at renewal, not
+            // frozen as an absolute cap at login. Legacy persisted caps
+            // remain conservative because old orphan origins are ambiguous.
+            token.max_expires_at = None;
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
                 mount: mount.into(),
@@ -3820,13 +3839,11 @@ impl AuthState {
             {
                 return Err(denied());
             }
-            let remaining = verified.expires_at.saturating_sub(now);
-            if remaining == 0 {
-                return Err(denied());
-            }
-            let ttl = role.token_ttl.min(remaining).max(1);
-            let max_ttl = role.token_max_ttl.min(remaining).max(ttl);
-            let (ttl, max_ttl) = self.auth_mount_token_limits(scope, ttl, max_ttl)?;
+            let explicit_max_expires_at = (role.token_explicit_max_ttl > 0)
+                .then(|| checked_expiry(now, role.token_explicit_max_ttl))
+                .transpose()?;
+            let expires_at =
+                self.jwt_token_expiry(scope, &role, now, explicit_max_expires_at, 0, now)?;
             let fingerprint = verified.replay_fingerprint();
             let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
             let identity = ExternalIdentity {
@@ -3848,9 +3865,9 @@ impl AuthState {
                 root: false,
                 parent: None,
                 created_at: now,
-                expires_at: Some(checked_expiry(now, ttl)?),
-                max_expires_at: Some(checked_expiry(now, max_ttl)?),
-                period: 0,
+                expires_at: Some(expires_at),
+                max_expires_at: explicit_max_expires_at,
+                period: role.token_period,
                 renewable: true,
                 uses_remaining: unlimited_zero(role.token_num_uses),
                 display_name: format!("jwt-{display_suffix}"),
@@ -3858,7 +3875,9 @@ impl AuthState {
                 auth_origin_known: true,
                 auth_cert_role: None,
                 auth_cert_sha256: None,
-                auth_provenance: None,
+                auth_provenance: Some(TokenAuthProvenance::Jwt {
+                    role_name: role_name.into(),
+                }),
             };
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
@@ -4084,6 +4103,8 @@ impl AuthState {
                         "token_policies": role.policies,
                         "token_ttl": role.token_ttl,
                         "token_max_ttl": role.token_max_ttl,
+                        "token_period": role.token_period,
+                        "token_explicit_max_ttl": role.token_explicit_max_ttl,
                         "token_num_uses": role.token_num_uses
                     }),
                     false,
@@ -4105,6 +4126,8 @@ impl AuthState {
                         "token_ttl",
                         "token_max_ttl",
                         "token_num_uses",
+                        "token_period",
+                        "token_explicit_max_ttl",
                     ],
                 )?;
                 if body
@@ -4150,10 +4173,14 @@ impl AuthState {
                 let token_ttl = duration(body, "token_ttl", DEFAULT_TTL)?;
                 let token_max_ttl = duration(body, "token_max_ttl", token_ttl)?;
                 let token_num_uses = number(body, "token_num_uses", 0)?;
+                let token_period = duration(body, "token_period", 0)?;
+                let token_explicit_max_ttl = duration(body, "token_explicit_max_ttl", 0)?;
                 if token_ttl == 0
                     || token_ttl > MAX_TTL
                     || token_max_ttl < token_ttl
                     || token_max_ttl > MAX_TTL
+                    || token_period > MAX_TTL
+                    || token_explicit_max_ttl > MAX_TTL
                 {
                     return Err(bad("JWT role token TTL is outside bounds"));
                 }
@@ -4165,6 +4192,8 @@ impl AuthState {
                     token_ttl,
                     token_max_ttl,
                     token_num_uses,
+                    token_period,
+                    token_explicit_max_ttl,
                 };
                 let roles = &mut self.jwt_at_mut(scope).roles;
                 let mutated = roles.get(name) != Some(&role);
@@ -4347,6 +4376,9 @@ impl AuthState {
                 };
                 self.active_token(&id, now, false)?;
                 self.require_offline_renewal_origin(&id)?;
+                if let Some(response) = self.renew_jwt_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
                 let approle_limits = self.approle_renewal_limits(&id)?;
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
@@ -4377,7 +4409,15 @@ impl AuthState {
                     }
                     parent_id = ancestor.parent.as_deref();
                 }
-                let increment = duration(body, "increment", DEFAULT_TTL)?;
+                let increment = duration(
+                    body,
+                    "increment",
+                    if cert_role_limits.is_some() {
+                        0
+                    } else {
+                        DEFAULT_TTL
+                    },
+                )?;
                 let issued_at = self.tokens.get(&id).ok_or_else(denied)?.created_at;
                 let token = self.tokens.get_mut(&id).ok_or_else(denied)?;
                 if !token.renewable {
@@ -4416,7 +4456,7 @@ impl AuthState {
                     .map(|limit| expires_at.min(limit))
                     .unwrap_or(expires_at);
                 let cert_max_expiry = cert_role_limits
-                    .map(|(_, token_max_ttl)| checked_expiry(now, token_max_ttl))
+                    .map(|(_, token_max_ttl)| checked_expiry(issued_at, token_max_ttl))
                     .transpose()?;
                 let expires_at = cert_max_expiry
                     .map(|max| expires_at.min(max))
@@ -4441,6 +4481,13 @@ impl AuthState {
                     .map(|max| expires_at.min(max))
                     .unwrap_or(expires_at);
                 if expires_at <= now {
+                    if cert_max_expiry.is_some_and(|max| max <= now) {
+                        // OpenBao's certificate renewal propagates the
+                        // CalculateTTL past-current-maximum error as 500.
+                        // Already expired tokens were rejected above before
+                        // issuer limits are consulted and remain 403.
+                        return Err(err(500, "past the certificate token maximum TTL"));
+                    }
                     return Err(denied());
                 }
                 token.expires_at = Some(expires_at);
@@ -4492,21 +4539,33 @@ impl AuthState {
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<(String, u64, u64)>, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
+        // Token-API children have their own renewal authority. Older snapshots
+        // incorrectly copied certificate fields into children; a persisted
+        // TokenApi marker (including orphans), or an unmarked non-orphan child,
+        // distinguishes those from direct certificate logins. An unmarked
+        // parentless token remains ambiguous and retains the binding.
+        if matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi))
+            || (token.auth_provenance.is_none() && token.parent.is_some())
+        {
+            return Ok(None);
+        }
         let Some(role_name) = token.auth_cert_role.as_deref() else {
             return Ok(None);
         };
         let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
         let digest = token.auth_cert_sha256.as_deref().ok_or_else(denied)?;
-        let presented = parse_presented_certificate(peer_certificates.ok_or_else(denied)?)?;
-        if presented.sha256 != digest {
-            return Err(denied());
-        }
         let role = self
             .cert_roles
             .get(&token.namespace)
             .and_then(|mounts| mounts.get(mount))
             .and_then(|roles| roles.get(role_name))
             .ok_or_else(denied)?;
+        let presented = parse_presented_certificate(
+            peer_certificates.ok_or_else(|| bad("TLS client certificate required for renewal"))?,
+        )?;
+        if presented.sha256 != digest {
+            return Err(denied());
+        }
         let attributes = peer_certificates
             .and_then(|chain| chain.first())
             .and_then(|leaf| parse_certificate_attributes(leaf));
@@ -4684,10 +4743,14 @@ impl AuthState {
                 renewable: boolean(body, "renewable", true)? && expires_at.is_some(),
                 uses_remaining: unlimited_zero(number(body, "num_uses", 0)?),
                 display_name: display_name.into(),
-                auth_mount: parent.auth_mount.clone(),
-                auth_origin_known: parent.root || parent.auth_origin_known,
-                auth_cert_role: parent.auth_cert_role.clone(),
-                auth_cert_sha256: parent.auth_cert_sha256.clone(),
+                auth_mount: if no_parent {
+                    None
+                } else {
+                    parent.auth_mount.clone()
+                },
+                auth_origin_known: no_parent || parent.root || parent.auth_origin_known,
+                auth_cert_role: None,
+                auth_cert_sha256: None,
                 // Children, including orphans, have their own issuer and do
                 // not inherit a direct login's provider credential.
                 auth_provenance: Some(TokenAuthProvenance::TokenApi),

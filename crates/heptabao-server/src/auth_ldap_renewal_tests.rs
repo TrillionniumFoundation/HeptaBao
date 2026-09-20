@@ -302,7 +302,11 @@ fn ldap_children_are_credential_free_and_only_ambiguous_legacy_orphans_require_r
     }
     children.push((raw, true));
     for (child, ambiguous) in children {
-        state.tokens.get_mut(&hash(&child)).unwrap().auth_provenance = None;
+        let legacy = state.tokens.get_mut(&hash(&child)).unwrap();
+        // Historical token-API orphans inherited the provider mount. New
+        // orphans deliberately do not; recreate both legacy fields together.
+        legacy.auth_mount = Some("ldap".into());
+        legacy.auth_provenance = None;
         let actor = state.authenticate(&child, 103).unwrap();
         let response = state.handle(
             Some(&actor),

@@ -63,19 +63,30 @@ verifier. Its bounded persistent replay ledger consumes a successful assertion
 before token release. Role type is `jwt`, user_claim is `sub` in this profile;
 Identity alias/entity binding and live entity/group policy checks still apply.
 New keys with the same subject reuse the correct existing identity binding.
+After a fetch, login verifies the JWT using elapsed request time and rejects
+expiry during the fetch. The auth mount incarnation and trust configuration must
+still match; a same-path disable/recreate cannot reuse an earlier observation.
 
-Remote I/O is bounded but synchronous under the current Service transaction. A
-slow or unavailable IdP may deny or delay logins; there is no production throughput
-or offline-availability claim. Future caching must specify expiry, revocation,
-negative results, concurrency and source identity rather than silently restoring
-a stale fallback.
+Remote login I/O executes outside the Service writer. Completion rechecks the
+active seal generation, namespace, HA leadership and current mount/configuration
+before publishing the token, replay and identity state. Config-write fetches still
+run inside their configuration transaction. A slow or unavailable IdP may deny or
+delay logins; no production throughput or offline-availability claim follows.
+
+Native JWT service-token renewal uses the stored role name and current role/mount
+TTL limits locally. It neither fetches keys nor revalidates the original JWT's
+expiry/signature/claims. Removing a role blocks its direct tokens' renewal; changing
+its policies leaves their issued token policies intact. Service-token expiry is
+independent of the assertion's expiry. Schema 18 protects this provenance and the
+distinct periodic/explicit maximum semantics; see the
+[JWT role and renewal contract](HEPTABAO_SINGLE_NODE_AUTH.md#bounded-jwt-authentication).
 
 ## Explicit non-goals and compatibility limits
 
-`role_type=oidc` is rejected. Authorization URL, browser callback, OAuth code
-exchange, PKCE, state/nonce browser binding, redirect validation, client secrets,
-userinfo, external-group sync, arbitrary JSON-pointer claims and MFA remain open.
-Discovery metadata presence cannot imply these flows execute. OpenBao's remote
+`role_type=oidc` is rejected on this JWT mount. Browser authorization-code flows
+use the separate OIDC mount profile; remote JWT discovery does not activate them.
+Arbitrary JSON-pointer claim mapping, external-group sync and complete JWT/OIDC
+API parity remain open. OpenBao's remote
 key cache may retain an old key until refresh; this candidate's per-login fresh
 fetch is intentionally stricter and cannot establish full cache-semantics parity.
 

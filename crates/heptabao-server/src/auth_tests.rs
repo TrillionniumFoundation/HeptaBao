@@ -1,6 +1,12 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+#[path = "auth_cert_renewal_tests.rs"]
+mod certificate_renewal_tests;
+
+#[path = "auth_jwt_renewal_tests.rs"]
+mod jwt_renewal_tests;
+
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();
@@ -2338,7 +2344,7 @@ fn certificate_role_selectors_match_sans_subject_and_metadata() {
         &json!({}),
         102,
     );
-    assert!(matches!(renewal_without_certificate, Err(error) if error.status == 403));
+    assert!(matches!(renewal_without_certificate, Err(error) if error.status == 400));
     let wrong_leaf = vec![91_u8, 92, 93];
     let renewal_with_wrong_certificate = state.handle_with_client_certificates(
         Some(&actor),
@@ -2884,7 +2890,7 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
         )
         .unwrap()
         .unwrap();
-    assert_eq!(result.body["auth"]["lease_duration"], 250);
+    assert_eq!(result.body["auth"]["lease_duration"], 600);
     let raw = result.body["auth"]["client_token"].as_str().unwrap();
     let actor = state.authenticate(raw, 1051).unwrap();
     assert!(
@@ -2905,6 +2911,11 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
     assert!(
         state
             .authorize_request(&actor, "team", "secret/data/app", "read", 1300)
+            .is_ok()
+    );
+    assert!(
+        state
+            .authorize_request(&actor, "team", "secret/data/app", "read", 1650)
             .is_err()
     );
     let saved = serde_json::to_vec(&state).unwrap();
