@@ -1,0 +1,224 @@
+{
+  "schema": "heptabao.postgresql-physical-storage.v1",
+  "status": "passed_scoped_adapter",
+  "source_sha": "d7822841edf74cd3c5abb0ef9378381dc3d44068",
+  "source_dirty": false,
+  "candidate_probe_sha256": "299a8465754f124c22ec3755b2fd7ea1781feb6b7e3e39f2fb10e4f8a0b18471",
+  "runner_sha256": "c0121ed5c9ae8b9aa70c67d2dd95530c1ccfde617a80256de85205067714a6d0",
+  "observed_at_unix": 1789906233,
+  "checks": [
+    {
+      "case": "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+      "passed": true
+    },
+    {
+      "case": "missing_schema_rejected_before_initialization",
+      "passed": true
+    },
+    {
+      "case": "schema_initialization_and_idempotent_reopen",
+      "passed": true
+    },
+    {
+      "case": "opaque_binary_value_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "maximum_value_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "oversized_value_preserves_previous_record",
+      "passed": true
+    },
+    {
+      "case": "empty_value_distinct_from_absence",
+      "passed": true
+    },
+    {
+      "case": "shallow_ordered_hierarchical_listing",
+      "passed": true
+    },
+    {
+      "case": "keyset_pagination_after_is_exclusive",
+      "passed": true
+    },
+    {
+      "case": "percent_underscore_prefix_are_literal",
+      "passed": true
+    },
+    {
+      "case": "uncommitted_writes_are_invisible",
+      "passed": true
+    },
+    {
+      "case": "transaction_reads_its_writes",
+      "passed": true
+    },
+    {
+      "case": "multi_record_commit_publishes_together",
+      "passed": true
+    },
+    {
+      "case": "explicit_rollback_restores_all_records",
+      "passed": true
+    },
+    {
+      "case": "dropped_transaction_is_rolled_back",
+      "passed": true
+    },
+    {
+      "case": "readonly_rejects_put_and_delete",
+      "passed": true
+    },
+    {
+      "case": "separate_scope_cannot_read_first_scope",
+      "passed": true
+    },
+    {
+      "case": "same_key_in_other_scope_cannot_overwrite",
+      "passed": true
+    },
+    {
+      "case": "delete_is_idempotent",
+      "passed": true
+    },
+    {
+      "case": "transaction_initial_snapshot",
+      "passed": true
+    },
+    {
+      "case": "repeatable_read_retains_snapshot",
+      "passed": true
+    },
+    {
+      "case": "stale_snapshot_update_is_rejected",
+      "passed": true
+    },
+    {
+      "case": "failed_transaction_cannot_commit",
+      "passed": true
+    },
+    {
+      "case": "concurrent_commit_is_preserved",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_transaction_entered",
+      "passed": true
+    },
+    {
+      "case": "lost_commit/lost_commit_reply_reports_unknown_outcome",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_reply_was_dropped",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_effect_is_durable_at_postgresql",
+      "passed": true
+    },
+    {
+      "case": "unlogged_table_installed_for_durability_fault",
+      "passed": true
+    },
+    {
+      "case": "unlogged_table/altered_storage_constraints_rejected",
+      "passed": true
+    },
+    {
+      "case": "logged_table_restored_after_durability_fault",
+      "passed": true
+    },
+    {
+      "case": "primary_key_removed_for_schema_fault",
+      "passed": true
+    },
+    {
+      "case": "missing_primary_key/altered_storage_constraints_rejected",
+      "passed": true
+    },
+    {
+      "case": "primary_key_restored_after_schema_fault",
+      "passed": true
+    },
+    {
+      "case": "format_constraint_removed_for_schema_fault",
+      "passed": true
+    },
+    {
+      "case": "missing_format_check/altered_storage_constraints_rejected",
+      "passed": true
+    },
+    {
+      "case": "weakened_format_constraint_installed",
+      "passed": true
+    },
+    {
+      "case": "weakened_format_check/altered_storage_constraints_rejected",
+      "passed": true
+    },
+    {
+      "case": "format_constraint_restored_after_schema_fault",
+      "passed": true
+    },
+    {
+      "case": "wrong_password/untrusted_tls_or_credentials_rejected",
+      "passed": true
+    },
+    {
+      "case": "wrong_ca/untrusted_tls_or_credentials_rejected",
+      "passed": true
+    },
+    {
+      "case": "client-kill_transaction_entered",
+      "passed": true
+    },
+    {
+      "case": "client-kill/committed_value_survives_reopen",
+      "passed": true
+    },
+    {
+      "case": "client-kill/uncommitted_value_absent_after_crash",
+      "passed": true
+    },
+    {
+      "case": "client-kill_rolled_back_and_previous_commit_survived",
+      "passed": true
+    },
+    {
+      "case": "postgres-kill_transaction_entered",
+      "passed": true
+    },
+    {
+      "case": "postgres-kill/committed_value_survives_reopen",
+      "passed": true
+    },
+    {
+      "case": "postgres-kill/uncommitted_value_absent_after_crash",
+      "passed": true
+    },
+    {
+      "case": "postgres-kill_rolled_back_and_previous_commit_survived",
+      "passed": true
+    },
+    {
+      "case": "restart/committed_value_survives_reopen",
+      "passed": true
+    },
+    {
+      "case": "restart/uncommitted_value_absent_after_crash",
+      "passed": true
+    },
+    {
+      "case": "committed_storage_survives_postgresql_sigkill_restart",
+      "passed": true
+    }
+  ],
+  "server_storage_integrated": false,
+  "full_openbao_compatibility": false,
+  "production_qualified": false,
+  "independent_reproduction": false,
+  "postgresql_version": "postgres (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)"
+}

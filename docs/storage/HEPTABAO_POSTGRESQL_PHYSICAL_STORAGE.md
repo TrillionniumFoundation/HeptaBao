@@ -89,6 +89,12 @@ The current replacement CI lane owns this real PostgreSQL fixture alongside
 the distinct dynamic-credential provider fixture. Missing PostgreSQL is a
 blocking prerequisite failure, not a passing simulated test.
 
+The [recorded PostgreSQL 17.11 run](../../qa/openbao-acceptance/evidence/postgresql-storage-live-d782284.json)
+passed all 52 checks on clean source `d7822841edf74cd3c5abb0ef9378381dc3d44068`,
+including 1 MiB records, conflicting transactions, lost commit replies,
+schema faults and process/database crash recovery. This qualifies the component
+within the limits above; the server integration below remains open.
+
 ## Remaining integration and acceptance
 
 The next integration must adapt the journal, sealed owner records and recovery
