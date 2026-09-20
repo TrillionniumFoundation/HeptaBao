@@ -247,6 +247,61 @@ fn initialization_recovery_survives_response_loss_and_requires_root_ack()
 }
 
 #[test]
+fn unsupported_database_provider_names_fail_closed_without_mount_state()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_key, token) = bootstrap(&mut service)?;
+    let mounted = call(
+        &mut service,
+        "POST",
+        "sys/mounts/database",
+        &token,
+        json!({"type":"database"}),
+    );
+    assert!(mounted.status < 300, "{}", mounted.body);
+    let before = service.state_digest;
+    for plugin_name in [
+        "mysql-database-plugin",
+        "cassandra-database-plugin",
+        "influxdb-database-plugin",
+    ] {
+        let response = call(
+            &mut service,
+            "POST",
+            "database/config/main",
+            &token,
+            json!({
+                "plugin_name": plugin_name,
+                "connection_url": "https://127.0.0.1:8443/",
+                "username": "manager",
+                "password": "manager-password",
+                "allowed_roles": ["reader"],
+                "verify_connection": true
+            }),
+        );
+        assert_eq!(response.status, 400, "{plugin_name}: {}", response.body);
+        assert_eq!(
+            service.state_digest, before,
+            "{plugin_name} mutated durable state"
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "database/config/main",
+                &token,
+                json!({})
+            )
+            .status,
+            404,
+            "{plugin_name} left a configuration behind"
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn initialization_recovery_rejects_tampering_wrong_seal_and_invalid_secret()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
