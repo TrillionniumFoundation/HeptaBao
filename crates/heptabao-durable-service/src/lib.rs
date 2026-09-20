@@ -999,6 +999,25 @@ impl<B: Barrier> DurableService<B> {
         encode_backup(self.snapshot.generation, &snapshot, &journal, &ledger)
     }
 
+    /// Inspect the authenticated contents of an exported backup without
+    /// changing this service's durable directory. Callers receive each
+    /// decrypted logical resource only for the duration of the callback; the
+    /// durable layer does not interpret application state or retain a copy.
+    /// This lets an owner validate provider-effect fences before restore.
+    pub fn inspect_backup<F>(&self, backup: &[u8], mut visit: F) -> Result<(), ServiceError>
+    where
+        F: FnMut(&str, &str, &[u8]),
+    {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        let restored = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
+        for ((namespace, resource), value) in &restored.snapshot.entries {
+            visit(namespace, resource, value.expose());
+        }
+        Ok(())
+    }
+
     /// Restore one previously exported backup into this exclusively owned
     /// directory. Rollback is rejected unless `allow_rollback` is explicit.
     ///
@@ -3664,6 +3683,27 @@ mod tests {
             DurableService::reopen(&root.0, barrier, 16)?.generation(),
             1
         );
+        Ok(())
+    }
+
+    #[test]
+    fn backup_inspection_is_read_only_and_exposes_authenticated_resources()
+    -> Result<(), ServiceError> {
+        let _serial = serial_test();
+        let root = TestRoot::new("backup-inspect")?;
+        let barrier = TestBarrier::new();
+        let mut service = DurableService::create_new(&root.0, barrier, 16)?;
+        service.put(put_request("backup-inspect", b"value")?)?;
+        let generation = service.generation();
+        let backup = service.export_backup()?;
+        let mut observed = Vec::new();
+        service.inspect_backup(&backup, |namespace, resource, value| {
+            observed.push((namespace.to_owned(), resource.to_owned(), value.to_vec()));
+        })?;
+        assert_eq!(service.generation(), generation);
+        assert!(observed.iter().any(|(namespace, resource, value)| {
+            namespace == "root/team-a" && resource == "secret/application" && value == b"value"
+        }));
         Ok(())
     }
 

@@ -3755,6 +3755,21 @@ impl Service {
                 Ok(_) => return Response::error(413, "snapshot exceeds transfer limit"),
                 Err(_) => return Response::error(400, "invalid snapshot encoding"),
             };
+            let incoming_external_effects = {
+                let Some(durable) = self.durable.as_ref() else {
+                    return Response::error(503, "server is sealed");
+                };
+                match Self::backup_contains_external_effects(durable, &backup) {
+                    Ok(value) => value,
+                    Err(response) => return response,
+                }
+            };
+            if incoming_external_effects {
+                return Response::error(
+                    409,
+                    "snapshot contains external provider identities; reconcile them before restore",
+                );
+            }
             let allow_rollback = path == "sys/storage/raft/snapshot-force";
             let outcome = {
                 let Some(durable) = self.durable.as_mut() else {
@@ -3809,6 +3824,57 @@ impl Service {
         self.state_digest = Some(crypto::digest(&bytes));
         self.recovery_required = false;
         Ok(())
+    }
+
+    fn backup_contains_external_effects(
+        durable: &DurableService<AeadBarrier>,
+        backup: &[u8],
+    ) -> Result<bool, Response> {
+        let mut records: BTreeMap<String, Zeroizing<Vec<u8>>> = BTreeMap::new();
+        durable
+            .inspect_backup(backup, |namespace, resource, value| {
+                if namespace == "system" {
+                    records.insert(resource.to_owned(), Zeroizing::new(value.to_vec()));
+                }
+            })
+            .map_err(|_| Response::error(400, "snapshot authentication or structure failed"))?;
+        let state_record = records
+            .get("state")
+            .ok_or_else(|| Response::error(400, "snapshot does not contain server state"))?;
+        if let Some(manifest) = owner_store::decode_manifest(state_record.as_slice())
+            .map_err(|_| Response::error(400, "snapshot owner-state manifest is invalid"))?
+        {
+            let load_owner = |owner: &str| -> Result<Zeroizing<Vec<u8>>, Response> {
+                let count = manifest.chunk_count(owner).map_err(|_| {
+                    Response::error(400, "snapshot owner-state manifest is invalid")
+                })?;
+                let mut chunks = Vec::with_capacity(count);
+                for index in 0..count {
+                    let resource = manifest.chunk_resource(owner, index).map_err(|_| {
+                        Response::error(400, "snapshot owner-state manifest is invalid")
+                    })?;
+                    let bytes = records.get(&resource).ok_or_else(|| {
+                        Response::error(400, "snapshot owner-state chunk is absent")
+                    })?;
+                    chunks.push(bytes.as_slice());
+                }
+                manifest
+                    .assemble_owner(owner, &chunks)
+                    .map(Zeroizing::new)
+                    .map_err(|_| Response::error(400, "snapshot owner-state chunks are invalid"))
+            };
+            let engines = load_owner("engines")?;
+            let database = load_owner("database")?;
+            let engines: EngineState = serde_json::from_slice(&engines)
+                .map_err(|_| Response::error(400, "snapshot engine state is invalid"))?;
+            let database: database::DatabaseState = serde_json::from_slice(&database)
+                .map_err(|_| Response::error(400, "snapshot database state is invalid"))?;
+            Ok(engines.has_openldap_mount() || !database.is_empty())
+        } else {
+            let state: State = serde_json::from_slice(state_record.as_slice())
+                .map_err(|_| Response::error(400, "snapshot server state is invalid"))?;
+            Ok(state.engines.has_openldap_mount() || !state.database.is_empty())
+        }
     }
 
     fn verify_active_barrier(&self, candidate: &[u8; 32]) -> Result<(), Response> {

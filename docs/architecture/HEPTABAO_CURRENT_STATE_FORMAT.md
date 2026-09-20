@@ -101,12 +101,16 @@ A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair.
 not a schema-13 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
-Local restore is refused in HA mode. Restoring database provider records is also
-refused: a local snapshot cannot revoke or reconcile an external database role.
-Local restore is likewise refused while any OpenLDAP mount exists, because an
-older snapshot cannot revoke or tombstone a directory entry issued by the newer
-state. OpenLDAP dynamic credentials use a retained-DN tombstone profile; this is
-an explicit bounded compatibility surface, not OpenBao delete semantics.
+Local restore is refused in HA mode. Before changing durable files, the service
+authenticates and inspects the incoming backup's system records in both the
+current V4 owner-manifest format and the bounded legacy format. A backup
+containing database provider records or OpenLDAP mount/dynamic-secret state is
+rejected before restore, because a local snapshot cannot revoke or reconcile
+those external identities. The same guard applies to the current durable state:
+restoring database provider records is refused, and restore is refused while any
+OpenLDAP mount exists. OpenLDAP dynamic credentials use a retained-DN tombstone
+profile; this is an explicit bounded compatibility surface, not OpenBao delete
+semantics.
 
 ## External state and uncertainty
 
