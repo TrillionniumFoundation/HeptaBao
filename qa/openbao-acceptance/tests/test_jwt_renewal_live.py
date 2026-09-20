@@ -79,7 +79,7 @@ class JwtRenewalHarnessTests(unittest.TestCase):
         self.assertIn("jwks", candidate)
         self.assertIn("PUBLIC KEY", oracle["jwt_validation_pubkeys"][0])
         self.assertNotIn("PRIVATE KEY", json.dumps(oracle))
-        self.assertNotIn("jwks_ca_pem", configuration("candidate", "remote", issuer, private, jwk, "private-ca"))
+        self.assertEqual(configuration("candidate", "remote", issuer, private, jwk, "private-ca")["jwks_ca_pem"], "private-ca")
         self.assertIn("jwks_ca_pem", configuration("oracle", "remote", issuer, private, jwk, "private-ca"))
         self.assertIs(ADAPTATION["configuration_api_parity"], False)
 

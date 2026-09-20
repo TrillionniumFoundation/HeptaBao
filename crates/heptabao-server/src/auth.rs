@@ -32,7 +32,10 @@ mod oidc;
 mod kubernetes;
 
 pub(crate) use kubernetes::{KubernetesLoginObservation, KubernetesLoginPlan};
-pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation};
+pub(crate) use oidc::{
+    OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan, OidcExchange,
+    OidcLoginObservation,
+};
 
 #[path = "auth_remote.rs"]
 mod remote;
@@ -606,6 +609,20 @@ pub(crate) struct RadiusLoginPlan {
 pub(crate) struct RadiusLoginObservation;
 
 impl RadiusLoginPlan {
+    #[cfg(test)]
+    pub(crate) fn set_started_for_test(&mut self, started: std::time::Instant) {
+        self.started = started;
+    }
+
+    pub(crate) fn observed_now(&self) -> u64 {
+        let elapsed = self.started.elapsed();
+        self.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        )
+    }
+
     pub(crate) fn execute(
         &self,
         outbound: &crate::outbound::Outbound,
@@ -631,6 +648,15 @@ impl RadiusLoginPlan {
 }
 
 impl LdapLoginPlan {
+    pub(crate) fn observed_now(&self) -> u64 {
+        let elapsed = self.started.elapsed();
+        self.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        )
+    }
+
     pub(crate) fn execute(
         &self,
         outbound: &crate::outbound::Outbound,
@@ -3364,12 +3390,7 @@ impl AuthState {
             .and_then(|users| users.get(&plan.name))
             .cloned()
             .ok_or_else(denied)?;
-        let elapsed = plan.started.elapsed();
-        let now = plan.now.saturating_add(
-            elapsed
-                .as_secs()
-                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-        );
+        let now = plan.observed_now();
         let accepted_counter = match user.mfa.as_ref() {
             Some(enrollment) => Some(verify_totp(
                 enrollment,
@@ -3698,12 +3719,7 @@ impl AuthState {
         if plan.config.native.is_some() {
             return self.finish_native_radius_login(plan);
         }
-        let elapsed = plan.started.elapsed();
-        let now = plan.now.saturating_add(
-            elapsed
-                .as_secs()
-                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-        );
+        let now = plan.observed_now();
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
         let explicit_max_expires_at = if plan.config.token_explicit_max_ttl == 0 {
@@ -4212,6 +4228,8 @@ impl AuthState {
                 Ok(response(
                     json!({
                         "jwks_url": config.remote.as_ref().and_then(|s| s.jwks_url.as_deref()),
+                        "jwks_ca_pem": config.remote.as_ref().map_or("", |s| s.ca_pem(true)),
+                        "oidc_discovery_ca_pem": config.remote.as_ref().map_or("", |s| s.ca_pem(false)),
                         "oidc_discovery_url": config.remote.as_ref().and_then(|s| s.oidc_discovery_url.as_deref()),
                         "issuer": config.issuer,
                         // OpenBao clients use `bound_issuer` for the same
@@ -4262,6 +4280,8 @@ impl AuthState {
                 "keys",
                 "jwks",
                 "jwks_url",
+                "jwks_ca_pem",
+                "oidc_discovery_ca_pem",
                 "oidc_discovery_url",
                 "bound_issuer",
                 "jwt_supported_algs",
@@ -4319,7 +4339,12 @@ impl AuthState {
         } else {
             None
         };
-        let remote = RemoteJwtSource::parse(body)?;
+        let remote = RemoteJwtSource::parse(
+            body,
+            self.jwt_at(scope)
+                .and_then(|state| state.config.as_ref())
+                .and_then(|config| config.remote.as_ref()),
+        )?;
         let keys = if remote.is_some() {
             BTreeMap::new()
         } else if let Some(jwks) = body.get("jwks") {

@@ -24,7 +24,7 @@ from remote_jwks_live import Instance, JsonIssuer, signing_key, token, serializa
 ADAPTATION = {
     "static_candidate": "issuer/audiences and inline JWKS",
     "static_oracle": "bound_issuer and PEM jwt_validation_pubkeys with ES256",
-    "remote_candidate": "JWKS URL with process-enrolled address and CA",
+    "remote_candidate": "JWKS URL and mount-level jwks_ca_pem; no startup endpoint enrollment",
     "remote_oracle": "JWKS URL and mount-level jwks_ca_pem",
     "role_updates": "complete role payloads; partial-update parity is not asserted",
     "configuration_api_parity": False,
@@ -39,8 +39,7 @@ def configuration(side, mode, issuer, private, jwk, ca):
                                                 serialization.PublicFormat.SubjectPublicKeyInfo).decode()
         return {"bound_issuer": issuer.origin, "jwt_validation_pubkeys": [pem], "jwt_supported_algs": ["ES256"]}
     params = {"bound_issuer": issuer.origin, "jwks_url": issuer.origin + "/keys", "jwt_supported_algs": ["ES256"]}
-    if side == "oracle":
-        params["jwks_ca_pem"] = ca
+    params["jwks_ca_pem"] = ca
     return params
 
 
@@ -223,8 +222,7 @@ def main(*, scenario_runner=run_scenarios, profile="jwt-renewal", runner_path=No
         cfg_path = instance.root / "server.json"
         cfg = json.loads(cfg_path.read_text())
         cfg["lifecycle_interval_seconds"] = 0
-        cfg["outbound_endpoints"] = [{"origin": issuers[0].origin, "address": "127.0.0.1:" + str(issuers[0].port),
-                                     "server_name": "localhost", "ca_pem": ca}]
+        cfg["outbound_endpoints"] = []
         cfg_path.write_text(json.dumps(cfg))
         cfg_path.chmod(0o600)
         instance.start()

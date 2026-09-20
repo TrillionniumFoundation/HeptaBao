@@ -25,7 +25,7 @@ from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance
 
 ADAPTATION = {
-    "candidate": "process-enrolled issuer CA/address and explicit pkce_s256_enrolled; POST callback with client_nonce proof",
+    "candidate": "mount oidc_discovery_ca_pem and explicit pkce_s256_enrolled; no startup enrollment; POST callback with client_nonce proof",
     "oracle": "mount oidc_discovery_ca_pem; GET callback query with client_nonce proof",
     "issuer": "independent pinned official OpenBao 2.6.2 confidential RS256 clients, code exchange and S256 PKCE",
     "role_updates": "complete role payloads",
@@ -52,8 +52,7 @@ def configuration(side, issuer):
               "oidc_client_secret": issuer.client_secret, "jwt_supported_algs": ["RS256"]}
     if side == "candidate":
         result["pkce_s256_enrolled"] = True
-    else:
-        result["oidc_discovery_ca_pem"] = Path(issuer.server["ca_file"]).read_text()
+    result["oidc_discovery_ca_pem"] = Path(issuer.server["ca_file"]).read_text()
     return result
 
 
@@ -293,9 +292,7 @@ def main():
         config_path = instance.root / "server.json"
         config = json.loads(config_path.read_text())
         config["lifecycle_interval_seconds"] = 0
-        config["outbound_endpoints"] = [{"origin": issuers[0].server["address"],
-            "address": "127.0.0.1:" + str(urllib.parse.urlsplit(issuers[0].server["address"]).port),
-            "server_name": "127.0.0.1", "ca_pem": Path(issuers[0].server["ca_file"]).read_text()}]
+        config["outbound_endpoints"] = []
         private_write(config_path, config)
         instance.start()
         status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})

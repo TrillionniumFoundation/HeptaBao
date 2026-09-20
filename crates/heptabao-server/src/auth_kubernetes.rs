@@ -72,6 +72,15 @@ impl KubernetesLoginObservation {
 }
 
 impl KubernetesLoginPlan {
+    pub(crate) fn observed_now(&self) -> u64 {
+        let elapsed = self.started.elapsed();
+        self.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        )
+    }
+
     pub(crate) fn execute(
         &self,
         outbound: &Outbound,
@@ -837,12 +846,7 @@ impl AuthState {
                 "Kubernetes auth configuration changed during TokenReview",
             ));
         }
-        let elapsed = plan.started.elapsed();
-        let now = plan.now.saturating_add(
-            elapsed
-                .as_secs()
-                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-        );
+        let now = plan.observed_now();
         let limits = plan.role.limits();
         // The role stores only explicitly assigned policies. The default
         // policy belongs to the issued token, not the role API's readback.

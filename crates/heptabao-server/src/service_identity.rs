@@ -196,6 +196,17 @@ impl State {
                 "token source address constraints require schema 27",
             ));
         }
+        if self.schema < 28
+            && (self.auth.has_jwt_api_https_state() || self.auth.has_oidc_api_https_state())
+        {
+            return Err(Response::error(
+                503,
+                "JWT/OIDC API HTTPS authority requires schema 28",
+            ));
+        }
+        self.auth
+            .validate_jwt_api_https_state()
+            .map_err(|_| Response::error(503, "invalid JWT HTTPS authority"))?;
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -217,7 +228,7 @@ impl State {
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | 22 | 23 | 24 | 25 | 26 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 22 | 23 | 24 | 25 | 26 | 27 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

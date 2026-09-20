@@ -3,9 +3,10 @@
 use super::*;
 use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
-    LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
-    ProviderRenewalObservation, ProviderRenewalPlan, RadiusLoginObservation, RadiusLoginPlan,
-    RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan,
+    LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan,
+    OidcExchange, OidcLoginObservation, ProviderRenewalObservation, ProviderRenewalPlan,
+    RadiusLoginObservation, RadiusLoginPlan, RemoteJwtConfigPlan, RemoteJwtLoginObservation,
+    RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -26,6 +27,7 @@ fn auth_error(error: AuthError) -> Response {
 pub(super) enum OnlineAuthEffect {
     RemoteJwt(Box<RemoteJwtEffect>),
     RemoteJwtConfig(Box<RemoteJwtConfigEffect>),
+    OidcConfig(Box<OidcConfigEffect>),
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
     Radius(RadiusLoginPlan),
@@ -53,6 +55,11 @@ pub(super) struct RemoteJwtConfigEffect {
     wrap_ttl_seconds: Option<u64>,
 }
 
+pub(super) struct OidcConfigEffect {
+    plan: OidcConfigPlan,
+    actor: Principal,
+}
+
 pub(super) struct ProviderRenewalEffect {
     plan: ProviderRenewalPlan,
     actor: Principal,
@@ -67,11 +74,13 @@ pub(super) struct OnlineAuthEffectPlan {
     namespace: String,
     request_now: u64,
     effect: OnlineAuthEffect,
+    login_wrapping: Option<(String, u64)>,
 }
 
 pub(crate) enum OnlineAuthObservation {
     RemoteJwt(RemoteJwtLoginObservation),
     RemoteJwtConfig(RemoteJwtLoginObservation),
+    OidcConfig(OidcConfigObservation),
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
     Radius(RadiusLoginObservation),
@@ -82,16 +91,29 @@ pub(crate) enum OnlineAuthObservation {
 
 impl OnlineAuthEffectPlan {
     pub(super) fn execute(&self) -> Result<OnlineAuthObservation, Response> {
+        self.execute_before(crate::outbound::auth_https_deadline())
+    }
+
+    pub(super) fn execute_before(
+        &self,
+        deadline: std::time::Instant,
+    ) -> Result<OnlineAuthObservation, Response> {
+        let deadline = deadline.min(crate::outbound::auth_https_deadline());
         match &self.effect {
             OnlineAuthEffect::RemoteJwt(effect) => effect
                 .plan
-                .execute(&self.outbound)
+                .execute(&self.outbound, deadline)
                 .map(OnlineAuthObservation::RemoteJwt)
                 .map_err(auth_error),
             OnlineAuthEffect::RemoteJwtConfig(effect) => effect
                 .plan
-                .execute(&self.outbound)
+                .execute(&self.outbound, deadline)
                 .map(OnlineAuthObservation::RemoteJwtConfig)
+                .map_err(auth_error),
+            OnlineAuthEffect::OidcConfig(effect) => effect
+                .plan
+                .execute(&self.outbound, deadline)
+                .map(OnlineAuthObservation::OidcConfig)
                 .map_err(auth_error),
             OnlineAuthEffect::Kubernetes(plan) => plan
                 .execute(&self.outbound)
@@ -111,7 +133,7 @@ impl OnlineAuthEffectPlan {
                 .map(OnlineAuthObservation::ProviderRenewal)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcBegin(plan) => plan
-                .execute(&self.outbound)
+                .execute(&self.outbound, deadline)
                 .map(OnlineAuthObservation::OidcBegin)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcCallback {
@@ -121,7 +143,7 @@ impl OnlineAuthEffectPlan {
                 started,
                 ..
             } => exchange
-                .execute(namespace, *now, *started, &self.outbound)
+                .execute(namespace, *now, *started, &self.outbound, deadline)
                 .map(OnlineAuthObservation::OidcCallback)
                 .map_err(|error| consumed_oidc_error(auth_error(error))),
         }
@@ -165,6 +187,7 @@ impl Service {
             activation_nonce: self.unseal_nonce.clone(),
             namespace: request.namespace.to_owned(),
             request_now: request.now,
+            login_wrapping: None,
             effect: OnlineAuthEffect::ProviderRenewal(Box::new(ProviderRenewalEffect {
                 plan,
                 actor,
@@ -257,6 +280,43 @@ impl Service {
         principal: &mut Option<Principal>,
         request: &RequestView<'_>,
     ) -> Option<Response> {
+        match admitted.auth.prepare_oidc_config(
+            principal.as_ref(),
+            request.namespace,
+            request.path,
+            request.method,
+            request.body,
+            request.now,
+        ) {
+            Ok(Some(plan)) => {
+                if self.pending_online_auth_effect.is_some() {
+                    return Some(Response::error(
+                        503,
+                        "online authentication dispatch state is unavailable",
+                    ));
+                }
+                let Some(actor) = principal.take() else {
+                    return Some(Response::error(403, "missing client token"));
+                };
+                self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+                    outbound: self.outbound.clone(),
+                    activation_nonce: self.unseal_nonce.clone(),
+                    namespace: request.namespace.to_owned(),
+                    request_now: request.now,
+                    login_wrapping: None,
+                    effect: OnlineAuthEffect::OidcConfig(Box::new(OidcConfigEffect {
+                        plan,
+                        actor,
+                    })),
+                });
+                return Some(Response::error(
+                    500,
+                    "OIDC configuration was not dispatched",
+                ));
+            }
+            Err(error) => return Some(auth_error(error)),
+            Ok(None) => {}
+        }
         let plan = match admitted.auth.prepare_remote_jwt_config(
             principal.as_ref(),
             request.namespace,
@@ -283,6 +343,7 @@ impl Service {
             activation_nonce: self.unseal_nonce.clone(),
             namespace: request.namespace.to_owned(),
             request_now: request.now,
+            login_wrapping: None,
             effect: OnlineAuthEffect::RemoteJwtConfig(Box::new(RemoteJwtConfigEffect {
                 plan,
                 actor,
@@ -375,6 +436,7 @@ impl Service {
                     activation_nonce: self.unseal_nonce.clone(),
                     namespace: request.namespace.into(),
                     request_now: request.now,
+                    login_wrapping: None,
                     effect: OnlineAuthEffect::RemoteJwt(Box::new(RemoteJwtEffect {
                         plan,
                         path: request.path.to_owned(),
@@ -403,7 +465,7 @@ impl Service {
         if !matches!(request.method, "POST" | "PUT") {
             return Some(Response::error(405, "online login requires POST or PUT"));
         }
-        if request.wrap_ttl_seconds.is_some() {
+        if kind == "oidc" && request.wrap_ttl_seconds.is_some() {
             return Some(Response::error(
                 400,
                 "online login wrapping is not supported",
@@ -503,6 +565,9 @@ impl Service {
             activation_nonce: self.unseal_nonce.clone(),
             namespace: request.namespace.into(),
             request_now: request.now,
+            login_wrapping: request
+                .wrap_ttl_seconds
+                .map(|ttl| (request.path.to_owned(), ttl)),
             effect,
         });
         // The request wrapper consumes the pending plan before a response can
@@ -552,10 +617,6 @@ impl Service {
     ) -> Response {
         let callback = plan.callback();
         let request_namespace = plan.namespace.clone();
-        let request_now = match &plan.effect {
-            OnlineAuthEffect::RemoteJwt(effect) => effect.plan.observed_now(),
-            _ => plan.request_now,
-        };
         let observation = match result {
             Ok(observation) => observation,
             Err(response) => return response,
@@ -569,12 +630,50 @@ impl Service {
                 response
             };
         }
+        // Sample after authority synchronization, not at request entry: a short
+        // wrapping lease must not be spent while the provider is still working.
+        let request_now = match &plan.effect {
+            OnlineAuthEffect::RemoteJwt(effect) => effect.plan.observed_now(),
+            OnlineAuthEffect::Kubernetes(effect) => effect.observed_now(),
+            OnlineAuthEffect::Ldap(effect) => effect.observed_now(),
+            OnlineAuthEffect::Radius(effect) => effect.observed_now(),
+            _ => plan.request_now,
+        };
         let wrapping = match &plan.effect {
             OnlineAuthEffect::RemoteJwt(effect) => effect
                 .wrap_ttl_seconds
                 .map(|ttl| (effect.path.clone(), ttl)),
-            _ => None,
+            _ => plan.login_wrapping.clone(),
         };
+        if let OnlineAuthEffect::OidcConfig(effect) = plan.effect {
+            let OnlineAuthObservation::OidcConfig(observed) = observation else {
+                return Response::error(503, "OIDC configuration observation mismatch");
+            };
+            let OidcConfigEffect { plan, mut actor } = *effect;
+            let Some(mut state) = self.state.clone() else {
+                return Response::error(503, "OIDC configuration authority unavailable");
+            };
+            if let Err(error) =
+                Self::bind_identity_principal(&state, &mut actor, &request_namespace)
+            {
+                return error;
+            }
+            let response = match state.auth.finish_oidc_config(plan, &actor, observed) {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
+            };
+            if response.mutated {
+                state.schema = CURRENT_STATE_SCHEMA;
+                if let Err(error) = self.commit_state(&state) {
+                    return error;
+                }
+                self.state = Some(state);
+            }
+            return Response {
+                status: response.status,
+                body: response.body,
+            };
+        }
         if let OnlineAuthEffect::RemoteJwtConfig(effect) = plan.effect {
             let OnlineAuthObservation::RemoteJwtConfig(observed) = observation else {
                 return Response::error(503, "remote JWT configuration observation type mismatch");
@@ -720,6 +819,117 @@ mod tests {
             .ok_or("missing sessions")?
             .len())
     }
+    #[test]
+    fn provider_wait_does_not_spend_short_login_wrapper_lifetime()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, admin) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/auth/radius",
+                &admin,
+                json!({"type":"radius"})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/radius/config",
+                &admin,
+                json!({"host":"localhost","secret":"synthetic-shared-secret",
+                "token_ttl":120,"token_max_ttl":600})
+            )
+            .status,
+            204
+        );
+        let mut pending = match service.begin_at_mode(RequestDispatch {
+            method: "POST",
+            path: "auth/radius/login",
+            namespace: "",
+            token: "",
+            body: json!({"username":"alice","password":"synthetic-password"}),
+            now: 100,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: Some(1),
+            origin_peer: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::External(plan) => plan,
+            RequestExecution::Complete(_) => return Err("missing wrapped provider effect".into()),
+        };
+        let ExternalEffectPlan::OnlineAuth(effect) = &mut pending.effect else {
+            return Err("wrong effect".into());
+        };
+        let OnlineAuthEffect::Radius(radius) = &mut effect.effect else {
+            return Err("wrong provider".into());
+        };
+        radius.set_started_for_test(
+            std::time::Instant::now()
+                .checked_sub(std::time::Duration::from_secs(2))
+                .ok_or("clock range")?,
+        );
+        let completed_now = radius.observed_now();
+        assert!(completed_now >= 102);
+        let response = service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(
+                RadiusLoginObservation,
+            ))),
+        );
+        assert_eq!(response.status, 200);
+        assert!(response.body.get("auth").is_none_or(Value::is_null));
+        let wrapper = response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?;
+        let lookup = service.handle_at(
+            "POST",
+            "auth/token/lookup",
+            "",
+            &admin,
+            json!({"token":wrapper}),
+            completed_now,
+        );
+        assert_eq!(lookup.status, 200);
+        let created = lookup.body["data"]["creation_time"]
+            .as_u64()
+            .ok_or("created")?;
+        assert!(created >= completed_now);
+        assert_eq!(lookup.body["data"]["expire_time_unix"], created + 1);
+        let unwrapped = service.handle_at(
+            "POST",
+            "sys/wrapping/unwrap",
+            "",
+            wrapper,
+            json!({}),
+            created,
+        );
+        assert_eq!(unwrapped.status, 200);
+        let bearer = unwrapped.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("bearer")?;
+        let inner = service.handle_at(
+            "GET",
+            "auth/token/lookup-self",
+            "",
+            bearer,
+            json!({}),
+            created,
+        );
+        assert_eq!(inner.status, 200);
+        let inner_created = inner.body["data"]["creation_time"]
+            .as_u64()
+            .ok_or("inner created")?;
+        assert!(inner_created >= created && inner_created - created <= 1);
+        Ok(())
+    }
+
     #[test]
     fn oidc_service_commits_consumption_before_failed_egress_and_reopen_rejects_replay()
     -> Result<(), Box<dyn std::error::Error>> {

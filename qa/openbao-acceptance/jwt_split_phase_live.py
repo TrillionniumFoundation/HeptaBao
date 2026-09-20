@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Real HTTPS/JWKS gates exercise JWT config and wrapped-login publication.
+"""Real HTTPS gates exercise JWT/OIDC config and wrapped JWT publication.
 
-The event order proves an unrelated request finished while JWKS remained held.
+The event order proves an unrelated request finished while provider I/O was held.
 This candidate-only concurrency fixture does not measure performance, expose
-internal locks, or qualify the separate API-owned JWT transport profile.
+internal locks, or qualify an OIDC authorization-code flow.
 """
 from __future__ import annotations
 
@@ -23,10 +23,10 @@ from external_tls_fixtures import JsonIssuer
 from online_evidence import admit_output, source_identity
 from remote_jwks_live import Instance, signing_key, token
 
-GATE_SECONDS = 1.5  # Below the existing enrolled outbound request timeout (3s).
+GATE_SECONDS = 1.5  # Bounded event-order gate; not a throughput or deadline benchmark.
 PHASES = frozenset({"config_success", "config_noop", "wrapped_success",
-                    "role_changed", "config_changed", "actor_revoked"})
-EVENTS = ["jwks_entered", "concurrent_completed", "gate_released", "request_completed"]
+                    "role_changed", "config_changed", "actor_revoked", "oidc_config_success"})
+EVENTS = ["provider_entered", "concurrent_completed", "gate_released", "request_completed"]
 COUNTERS = ("state_bytes", "generation", "retained_operations", "journal_bytes")
 
 
@@ -57,35 +57,35 @@ class Work:
         return self.value
 
 
-def gate(issuer, phase, request, concurrent, observations, *, budget=GATE_SECONDS):
+def gate(issuer, phase, request, concurrent, observations, *, budget=GATE_SECONDS, path="/keys"):
     """Never release the gate to make a blocked concurrent operation pass."""
-    issuer.block_next("/keys")
+    issuer.block_next(path)
     external = Work(request)
     other = None
     row = {"phase": phase, "events": [], "held_before_release": False,
            "concurrent_completed_before_release": False,
-           "request_pending_before_release": False, "within_enrolled_deadline": False}
+           "request_pending_before_release": False, "within_gate_budget": False}
     observations.append(row)
     try:
         if not issuer.block_entered.wait(1.5):
-            raise Failure("jwks_gate_not_entered")
-        row["events"].append("jwks_entered")
+            raise Failure("provider_gate_not_entered")
+        row["events"].append("provider_entered")
         entered = time.monotonic()
         other = Work(concurrent)
         if not other.done.wait(budget):
-            raise Failure("concurrent_request_blocked_by_jwks")
+            raise Failure("concurrent_request_blocked_by_provider")
         concurrent_result = other.result()
         row["held_before_release"] = not issuer.block_release.is_set()
         row["concurrent_completed_before_release"] = True
         row["request_pending_before_release"] = not external.done.is_set()
-        row["within_enrolled_deadline"] = time.monotonic() - entered < budget
+        row["within_gate_budget"] = time.monotonic() - entered < budget
         row["events"].append("concurrent_completed")
         if not all(row[name] is True for name in row if name not in ("phase", "events")):
-            raise Failure("jwks_gate_did_not_prove_order")
+            raise Failure("provider_gate_did_not_prove_order")
         issuer.release_block()
         row["events"].append("gate_released")
         if not external.done.wait(10):
-            raise Failure("jwks_request_not_finished")
+            raise Failure("provider_request_not_finished")
         response = external.result()
         row["events"].append("request_completed")
         return response, concurrent_result
@@ -100,7 +100,7 @@ def gate(issuer, phase, request, concurrent, observations, *, budget=GATE_SECOND
 
 def valid_observations(rows):
     expected = {"phase", "events", "held_before_release", "concurrent_completed_before_release",
-                "request_pending_before_release", "within_enrolled_deadline"}
+                "request_pending_before_release", "within_gate_budget"}
     return (isinstance(rows, list) and all(isinstance(row, dict) for row in rows)
             and len(rows) == len(PHASES) and {row.get("phase") for row in rows} == PHASES
             and all(set(row) == expected and row["events"] == EVENTS
@@ -147,14 +147,13 @@ def run(binary, root, checks, observations):
         cfg_path = instance.root / "server.json"
         cfg = json.loads(cfg_path.read_text())
         cfg["lifecycle_interval_seconds"] = 0
-        cfg["outbound_endpoints"] = [{"origin": issuer.origin,
-            "address": f"127.0.0.1:{issuer.port}", "server_name": "localhost",
-            "ca_pem": (instance.root / "ca.crt").read_text()}]
+        cfg["outbound_endpoints"] = []
         cfg_path.write_text(json.dumps(cfg))
         cfg_path.chmod(0o600)
         private, jwk = signing_key("ES256", "synthetic-gated-key")
         issuer.documents["/keys"] = {"keys": [jwk]}
         params = {"bound_issuer": issuer.origin, "jwks_url": issuer.origin + "/keys",
+                  "jwks_ca_pem": (instance.root / "ca.crt").read_text(),
                   "audiences": ["heptabao-test"], "jwt_supported_algs": ["ES256", "RS256"]}
         path = "auth/gated/config"
         instance.start()
@@ -243,7 +242,7 @@ def run(binary, root, checks, observations):
 
         def config_change():
             value = write("config_changed")
-            static = {name: value for name, value in params.items() if name != "jwks_url"}
+            static = {name: value for name, value in params.items() if name not in ("jwks_url", "jwks_ca_pem")}
             static["jwks"] = {"keys": [jwk]}
             if instance.call("POST", path, static)[0] != 204:
                 raise Failure("concurrent_static_config_update_failed")
@@ -277,6 +276,36 @@ def run(binary, root, checks, observations):
         check("revoked_actor_no_configuration_publication", counters() == before and config_read() == current_config)
         visible("actor_revoked", value)
         check("revoked_actor_unusable", instance.call("GET", "auth/token/lookup-self", token=actor)[0] == 403)
+        discovery_path = "/.well-known/openid-configuration"
+        issuer.documents[discovery_path] = {
+            "issuer": issuer.origin, "authorization_endpoint": issuer.origin + "/authorize",
+            "token_endpoint": issuer.origin + "/token", "jwks_uri": issuer.origin + "/keys",
+            "response_types_supported": ["code"], "subject_types_supported": ["public"],
+            "id_token_signing_alg_values_supported": ["ES256"],
+            "token_endpoint_auth_methods_supported": ["client_secret_basic"],
+            "code_challenge_methods_supported": ["S256"],
+        }
+        check("oidc_mounted", instance.call("POST", "sys/auth/gated-oidc", {"type": "oidc"})[0] == 204)
+        oidc_path = "auth/gated-oidc/config"
+        oidc_params = {"oidc_discovery_url": issuer.origin,
+                       "oidc_discovery_ca_pem": (instance.root / "ca.crt").read_text(),
+                       "oidc_client_id": "synthetic-gated-client",
+                       "oidc_client_secret": secrets.token_urlsafe(32),
+                       "jwt_supported_algs": ["ES256"], "pkce_s256_enrolled": True}
+        response, value = gate(issuer, "oidc_config_success",
+            lambda: instance.call("POST", oidc_path, oidc_params),
+            lambda: write("oidc_config_success"), observations, path=discovery_path)
+        check("oidc_config_success_status", response[0] == 204)
+        visible("oidc_config_success", value)
+        status, body = instance.call("GET", oidc_path)
+        saved = body.get("data", {})
+        check("oidc_configuration_preserved", status == 200
+              and all(saved.get(name) == oidc_params[name] for name in (
+                  "oidc_discovery_url", "oidc_discovery_ca_pem", "oidc_client_id",
+                  "jwt_supported_algs", "pkce_s256_enrolled")))
+        check("oidc_configuration_secret_redacted", "oidc_client_secret" not in saved
+              and saved.get("oidc_client_secret_set") is True
+              and oidc_params["oidc_client_secret"] not in json.dumps(body))
         check("all_event_orders_proved", valid_observations(observations))
         check("complete", True)
     finally:
@@ -316,14 +345,14 @@ def main():
         failure = "source_binary_or_runner_changed"
     if not complete_checks(checks) or not valid_observations(observations):
         failure = failure or "incomplete_or_invalid_observations"
-    report = {"schema": "heptabao.jwt-split-phase-live.v1", **before,
+    report = {"schema": "heptabao.jwt-split-phase-live.v2", **before,
         "build_source_commit": args.build_source_commit,
         "build_source_binding_basis": "caller-supplied commit; exact binary hash recorded; no independent attestation",
         "status": "passed" if failure is None else "failed", "failure": failure,
         "checks": checks, "observations": observations,
         "source_and_binary_unchanged": unchanged, "runner_sha256": runner_hash,
         "runner_unchanged": runner_unchanged, "synthetic_only": True,
-        "transport": "real_https_with_process_enrolled_jwks", "gate_hold_budget_seconds": GATE_SECONDS,
+        "transport": "real_https_with_api_ca_without_process_enrollment", "gate_hold_budget_seconds": GATE_SECONDS,
         "internal_lock_instrumentation": False, "http_deadline_test": False,
         "performance_measurement": False, "full_openbao_compatibility": False,
         "independent_qualification": False, "production_authority": False}

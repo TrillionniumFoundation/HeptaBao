@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 27;
+const CURRENT_STATE_SCHEMA: u32 = 28;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -714,6 +714,17 @@ pub(crate) struct PendingExternalRequest {
 }
 
 impl PendingExternalRequest {
+    /// Carry the listener's original deadline into scoped auth HTTPS; the
+    /// existing finalize boundary still rejects every late external result.
+    pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
+        match &self.effect {
+            ExternalEffectPlan::OnlineAuth(plan) => {
+                ExternalEffectResult::OnlineAuth(plan.execute_before(deadline))
+            }
+            _ => self.execute(),
+        }
+    }
+
     /// Run only the bounded external side effect. The caller must not hold the
     /// global Service writer while this method is executing.
     pub(crate) fn execute(&self) -> ExternalEffectResult {
@@ -1500,13 +1511,13 @@ impl Service {
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
         }
-        // Health and seal-status are handled before the HA/read path below,
-        // so apply the same namespace resolution fence here for an already
-        // initialized service.  The root namespace remains available while
-        // initialization is still in progress.
+        // Early control routes resolve the namespace against admitted state.
+        // GET/HEAD health resolves it below, after authenticated HA catch-up.
+        // The root namespace remains available during initialization.
         if enforce_namespace
             && self.state.is_some()
             && matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
+            && !(path == "sys/health" && matches!(method, "GET" | "HEAD"))
             && !self
                 .state
                 .as_ref()
@@ -1533,9 +1544,41 @@ impl Service {
             {
                 return Response::error(400, "perfstandbyok must be boolean");
             }
+            let mut observation = self.ha_observation();
+            let (_, _, active, application_ready, _, _) = observation;
+            // A newly elected leader can have the committed Raft envelope but
+            // an older admitted application state. Health probes must be able
+            // to complete authenticated catch-up even when idle maintenance is
+            // disabled. Never sync a sealed, fenced or non-authoritative node.
+            if self.state.is_some()
+                && !self.recovery_required
+                && !self.audit_failed
+                && active
+                && !application_ready
+            {
+                if let Err(mut error) = self.sync_from_ha_with_anchor(false) {
+                    error.status = 503;
+                    return error;
+                }
+                // Leadership/quorum can change during materialization. Only a
+                // fresh observation of both authority and digest is ready.
+                observation = self.ha_observation();
+            }
+            // The namespace catalog may have changed in the committed state;
+            // resolving it before catch-up would admit deleted namespaces or
+            // reject newly created ones using the previous leader's snapshot.
+            if enforce_namespace
+                && self.state.is_some()
+                && !self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.namespace_exists(namespace))
+            {
+                return Response::error(404, "namespace not found");
+            }
             let initialized = self.initialized();
             let sealed = self.state.is_none();
-            let (ha_enabled, standby, ha_active, application_ready, _, _) = self.ha_observation();
+            let (ha_enabled, standby, ha_active, application_ready, _, _) = observation;
             let status = health_status_with_codes(
                 HealthObservation::new(
                     initialized,
@@ -4836,6 +4879,10 @@ impl Service {
     }
 
     fn sync_from_ha(&mut self) -> Result<(), Response> {
+        self.sync_from_ha_with_anchor(true)
+    }
+
+    fn sync_from_ha_with_anchor(&mut self, allow_initial_anchor: bool) -> Result<(), Response> {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(());
         };
@@ -4855,6 +4902,14 @@ impl Service {
             crate::ha::CommittedStateRead::Absent => None,
         };
         let Some(committed) = committed else {
+            // Anonymous readiness may materialize an authenticated commit, but
+            // must never create the cluster's first application publication.
+            if !allow_initial_anchor {
+                return Err(Response::error(
+                    503,
+                    "HA committed application state is absent",
+                ));
+            }
             // A cluster enabled after single-node initialization has a valid
             // local state but no application envelope yet.  The elected
             // leader must anchor that exact state before it can advertise an

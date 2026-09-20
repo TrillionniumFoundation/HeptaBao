@@ -12,7 +12,7 @@ The global OpenBao 2.6.2 denominator is unchanged. Kubernetes and JWT/OIDC remai
 | `auth_kubernetes.rs` | TokenReview configuration, exact ServiceAccount bindings, UID aliases, local token construction and shared online mount lookup. |
 | `auth_oidc.rs` | Confidential OIDC client configuration, roles, encrypted PKCE sessions, state/client-proof checks and signed ID-token verification orchestration. |
 | `service_online_auth.rs` | Actual request admission, live Identity projection, durable/HA session consumption and token publication. |
-| `outbound.rs` | Host-enrolled address/CA/path-bound HTTPS, bounded POST, Basic form exchange and strict response framing; never ambient proxies or redirects. |
+| `outbound.rs`, `outbound_auth_https.rs` | Kubernetes/legacy enrolled HTTPS and scoped JWT/OIDC API-owned HTTPS, bounded POST and strict response framing; never ambient proxies or redirects. |
 | `federated_auth.rs` | Real RS256/ES256 signatures and issuer/audience/time checks; OIDC additionally checks nonce/azp/at_hash/c_hash. Native JWT assertions are reusable and do not require jti. |
 | `clients/python/heptabao/oidc_login.py` | Actual native loopback callback receiver and descriptor-anchored private credential publication. |
 
@@ -28,28 +28,32 @@ capability **and sudo**. A `root` policy may not be assigned by either login rol
 Config reads redact reviewer/client secrets; credentials belong in protected JSON
 bodies or private files, not command-line arguments, reports or log output.
 
-## Host-owned egress enrollment
+## Transport authority
 
-The deployment enrolls `outbound_endpoints` at startup. An entry pins an explicit
-HTTPS origin and port, socket address, matching certificate server name, CA PEM
-and optional canonical path prefix. The request-side root administrator cannot
-supply a new CA, enable insecure TLS, invoke DNS or widen that enrollment.
+Kubernetes TokenReview retains startup `outbound_endpoints`: explicit origin and
+port, fixed address, matching server name, CA and optional path prefix. Its API
+cannot widen that enrollment. Old JWT/OIDC configuration without the new internal
+transport field uses the same enrolled authority. Generic outbound APIs and other
+providers are unchanged by the JWT/OIDC transport slice.
 
-Example non-secret shape (replace every illustrative host/address/CA):
+Fresh OIDC configuration uses `oidc_discovery_ca_pem` through the auth management
+API. Nonempty PEM replaces system roots; empty, null or omitted CA uses system
+roots. HTTPS supports DNS, IPv4 and bracketed IPv6 with default port 443, verified
+chain and SAN, and the shared bounded resolver. No process endpoint entry is
+required. See [the HTTPS transport contract](HEPTABAO_REMOTE_JWT_KEYS.md#administrator-configured-https-and-legacy-enrollment)
+for URL, CA, DNS and deadline bounds. OIDC metadata endpoints remain on the exact
+normalized issuer origin; no redirects, insecure TLS, ambient proxy or stale-key
+fallback are enabled.
 
-```json
-{"outbound_endpoints":[{"origin":"https://issuer.example:443",
- "address":"192.0.2.10:443","server_name":"issuer.example",
- "ca_pem":"<host-managed CA PEM>","path_prefix":"/"}]}
-```
-
-No cross-origin metadata endpoints, query-bearing metadata URLs, userinfo,
-fragments, redirects, undeclared environment credentials, TLS bypass or stale
-key-cache fallback are accepted. One connection has the existing absolute
-three-second transport deadline; response documents are bounded to 128 KiB and
-use the duplicate-key-rejecting JSON parser. Code exchange and TokenReview have
-no automatic transport retry. Provider diagnostics are replaced by fixed errors.
-This bounded enrollment does not cover every common issuer URL topology.
+Old OIDC records remain enrolled when a full configuration rewrite omits the
+active CA. Only an explicit `oidc_discovery_ca_pem` field, including empty or null,
+promotes them. Pure reads and login cannot do so. An old unchanged config/role
+keeps its serialized pending-session binding. API transport uses a 30-second
+whole-effect ceiling and 10-second connection ceiling, both capped by the caller
+HTTP deadline (normally 15 seconds). Legacy connections keep their three-second
+cap as well as the whole-effect deadline. Documents remain bounded to 128 KiB
+with duplicate-key rejection; code exchange and TokenReview have no automatic
+transport retry. Provider diagnostics are replaced by fixed errors.
 
 ## Kubernetes TokenReview profile
 
@@ -113,16 +117,34 @@ OIDC access token, and the OAuth access token never becomes a local Principal.
 
 | Route | Method | Required/optional inputs |
 |---|---|---|
-| `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`, `oidc_client_secret`; optional `jwt_supported_algs` (RS256/ES256 only). |
-| Same | GET | Public issuer/client/algorithm fields and secret-present flag. No secret echo or metadata fetch on a read. |
+| `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`, `oidc_client_secret`; optional `jwt_supported_algs` (RS256/ES256 only), `oidc_discovery_ca_pem` and `pkce_s256_enrolled`. |
+| Same | GET | Public issuer/client/algorithm/CA fields and secret-present flag. No secret echo or metadata fetch on a read. |
 | `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`. Updates preserve omitted fields. |
 | Same, and role collection | GET/DELETE, GET/LIST | Read/remove role; config or role updates invalidate affected pending sessions. |
 | `auth/<mount>/oidc/auth_url` | POST/PUT | Exactly `role`, `redirect_uri`, **client_nonce** (canonical base64url of 32 independent random bytes). |
 | `auth/<mount>/oidc/callback` | POST/PUT | Exactly `state`, `code`, and the same independent **client_nonce**. No arbitrary redirect override. |
 
+Configuration preparation validates local fields and update/sudo authority without
+DNS or network I/O. Its external effect fetches discovery metadata outside the
+Service writer, checks the issuer, and does not fetch JWKS or require auth_url
+capabilities yet. At publication, current actor identity, token authority, expiry,
+update/sudo rights, mount incarnation, prior configuration, namespace, seal
+activation and HA authority are checked again. Only the proposed config is merged
+into the latest state, preserving unrelated writes. Publication and pending-session
+clearing form one durable transaction; failed preflight or a stale result changes
+neither. An identical config with no pending sessions needs no durable append.
+The actor's finite-use admission is not charged a second time.
+
+Auth-url and callback effects carry owned config/role snapshots and reject stale
+bindings. Successful login resolves current Identity before issuing a token;
+provider observations cannot restore an old alias or authorization graph. HTTP
+finalization rejects results arriving after the request deadline, even with an
+idle writer. This does not cancel a durable commit already begun before expiry.
+
 Only code flow, the openid scope, client_secret_basic and S256 PKCE are used.
 The issuer string must exactly match verified discovery. Authorization, token
-and JWKS URLs must remain on its enrolled origin and within host path limits.
+and JWKS URLs must remain on its normalized origin. Old enrolled transport also
+enforces host path limits.
 Metadata must advertise S256, or the operator must explicitly set
 `pkce_s256_enrolled:true` for an independently checked provider that omits that
 metadata property. This flag changes no protocol behavior: the client always
@@ -216,6 +238,8 @@ Read [the current format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT
 for the current discriminator and exact upgrade boundaries. Schema 5 introduced
 encrypted Kubernetes configs/roles and OIDC config/role/session/clock maps;
 schema 20 adds native Kubernetes renewal and schema 21 adds native OIDC renewal.
+Schema 28 adds optional API-owned HTTPS authority while preserving old absent
+transport serialization and pending-session bindings until explicit promotion.
 Valid older state can be read without
 rewriting it; committed mutations promote to the current schema. Never downgrade
 the discriminator or drop new fields.
@@ -237,7 +261,7 @@ by the complete workspace, strict lint and document/source validators.
 | `qa/openbao-acceptance/kubernetes_online.py` | Actual Service and pinned-TLS TokenReview protocol responses, UID/policy/revocation/hostile behavior and restart. **Not actual kube-apiserver, etcd, Kubernetes RBAC or a distribution qualification.** |
 | `qa/openbao-acceptance/kubernetes_renewal_live.py` | Official 2.6.2 and candidate renewal with signed short-lived ServiceAccount JWTs, reviewer outage, role changes, periodic/explicit limits, wrapping, child/orphan separation and restart. Uses a controlled TokenReview endpoint, not a real cluster. |
 | `qa/openbao-acceptance/oidc_code_live.py` | Pinned official non-dev OpenBao issuer and actual Service, real user login/code/S256/Basic/ID token, native callback subprocess, replays, role/Identity changes and restart. No browser rendering/consent automation. |
-| `qa/openbao-acceptance/oidc_renewal_live.py` | Official 2.6.2 and candidate consumers with a real official OIDC issuer, short ID tokens, stopped issuer, current role lease limits, wrapping, children and restart. Callback and enrollment API differences are disclosed. |
+| `qa/openbao-acceptance/oidc_renewal_live.py` | Official 2.6.2 and candidate consumers with a real official OIDC issuer, short ID tokens, stopped issuer, current role lease limits, wrapping, children and restart. Callback and transport-profile differences are disclosed. |
 | `qa/openbao-acceptance/online_auth_ha.py` | Three real same-host service processes, official issuer, controlled reviewer, leader death, no quorum and concurrent callback consumption. Not physical multi-host or complete distributed fault coverage. |
 | `clients/python/tests/test_oidc_login.py` | Callback parsing, deadlines, issuer URL bindings and actual private file/descriptor boundary. |
 
@@ -293,3 +317,8 @@ and exercises actual kube-apiserver/etcd/RBAC, ServiceAccount TokenRequest and
 UID deletion/recreation. See `docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.md`
 for fixed input digests, prerequisites, cleanup and exact evidence boundaries.
 A wired gate does not imply it passed; current-head CI must execute it.
+
+The schema-28 API-CA transport changes passed local Rust tests and lint checks;
+real candidate TLS/upgrade execution is pending. Official CA/preflight observations alone are not
+candidate acceptance. This slice does not alter the confidential-client,
+POST callback/client-proof, S256, same-origin or role/claim limitations above.

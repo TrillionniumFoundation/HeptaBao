@@ -39,6 +39,15 @@ Run `heptabao-server --config /absolute/server.json`. Optional connection limits
 
 The listener can be ready while uninitialized or sealed. Startup does not implicitly unseal. Durable encrypted-state replay occurs when the barrier is activated on unseal; a listening socket alone does not prove successful state recovery. `GET /v1/sys/health` reports 501 when uninitialized, 503 when sealed/recovery-fenced or without required HA authority, 429 for an HA standby, and 200 for admitted active service. Audit failure can withhold the ordinary health result; consult local failure diagnostics as well.
 
+With `lifecycle_interval_seconds: 0`, anonymous `GET` or `HEAD` health polling can
+still bring a newly elected leader's local application replica up to an existing
+committed state. Probes validate their query before catch-up, do not forward to
+another node, and never initialize the Raft application state. Catch-up failure
+returns 503; successful local synchronization is followed by fresh quorum and
+state-digest checks before active readiness is reported. The probe can write the
+local encrypted replica and ordinary audit records, so a healthy listener alone
+is not evidence that its application state is ready.
+
 ## Initialization, unseal and rekey
 
 1. Verify `GET /v1/sys/init` and `GET /v1/sys/seal-status` against the intended new data directory.

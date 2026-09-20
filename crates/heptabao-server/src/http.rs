@@ -507,7 +507,7 @@ fn execute_service_request(
             service,
             pending,
             deadline,
-            |pending| pending.execute(),
+            |pending| pending.execute_before(deadline),
             |writer, pending, result| writer.finish_external_request(*pending, result),
         ),
     }

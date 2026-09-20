@@ -66,7 +66,11 @@ def prepare_legacy(instance, issuer, cases):
     mount = "browser/upgrade"
     role_path = "auth/" + mount + "/role/test"
     t.call("legacy.mount", "sys/auth/" + mount, {"type": "oidc"}, expected=204)
-    t.call("legacy.config", "auth/" + mount + "/config", configuration("candidate", issuer), expected=204)
+    legacy_config = configuration("candidate", issuer)
+    # Schema20 has only the original process-enrolled transport. Do not send
+    # a field introduced by the current shared fixture's schema28 adapter.
+    legacy_config.pop("oidc_discovery_ca_pem", None)
+    t.call("legacy.config", "auth/" + mount + "/config", legacy_config, expected=204)
     old_role = role(issuer.redirect, token_ttl=120, token_policies=["default"])
     old_role.pop("token_max_ttl")
     t.call("legacy.role", role_path, old_role, expected=204)

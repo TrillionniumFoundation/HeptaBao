@@ -55,57 +55,92 @@ impl LdapTransportConfig {
         let operation_deadline = start + Duration::from_secs(self.request_timeout);
         let connection_deadline =
             operation_deadline.min(start + Duration::from_secs(self.connection_timeout));
-        let configured_tls = if self.certificate.is_empty() {
-            None
-        } else {
-            Some(client_config(explicit_roots(&self.certificate)?)?)
-        };
-        // Explicit CA + IP literal needs neither the resolver pool nor system
-        // trust. All potentially blocking platform lookups use bounded workers.
-        let prepared = if let (Ok(address), Some(_)) =
-            (target.host.parse::<IpAddr>(), &configured_tls)
-        {
-            PreparedTarget {
-                addresses: vec![SocketAddr::new(address, target.port)],
-                system_tls: None,
-            }
-        } else {
-            preparation_pool()?.request(&target, configured_tls.is_none(), connection_deadline)?
-        };
-        let tls = configured_tls
-            .or(prepared.system_tls)
-            .ok_or("LDAP trust unavailable")?;
-        // The resolved address list is owned by this operation. Neither DNS nor
-        // a config lookup can change its peer or trust during the exchange.
-        for address in prepared.addresses {
-            let budget = remaining(connection_deadline)?;
-            let Ok(stream) = TcpStream::connect_timeout(&address, budget) else {
-                continue;
-            };
-            if stream.set_nodelay(true).is_err() {
-                continue;
-            }
-            let endpoint = Endpoint {
-                address,
-                server_name: target.host.clone(),
-                path_prefix: "/".into(),
-                tls: tls.clone(),
-            };
-            let socket = DeadlineSocket {
-                stream,
-                deadline: connection_deadline,
-            };
-            if let Ok(mut stream) = endpoint.tls(socket) {
-                remaining(connection_deadline)?;
-                remaining(operation_deadline)?;
-                // One overall budget from the original start, not a fresh
-                // request budget after each bind, search or TLS handshake.
-                stream.sock.deadline = operation_deadline;
-                return Ok(stream);
-            }
-        }
-        Err("LDAP TLS connection unavailable")
+        connect_verified_tls(
+            &target.host,
+            target.port,
+            &self.certificate,
+            connection_deadline,
+            operation_deadline,
+        )
     }
+}
+
+/// Pure CA parsing used by scoped administrator-configured TLS clients.
+pub(super) fn validate_certificate(certificate: &str) -> Result<(), &'static str> {
+    if certificate.len() > MAX_CERTIFICATE_BYTES {
+        return Err("configured CA exceeds bound");
+    }
+    if !certificate.is_empty() {
+        let _ = explicit_roots(certificate)?;
+    }
+    Ok(())
+}
+
+/// Shared verified connection preparation. Callers have already authorized the
+/// URL and own this configuration snapshot. Other outbound APIs do not use it.
+pub(super) fn connect_verified_tls(
+    host: &str,
+    port: u16,
+    certificate: &str,
+    connection_deadline: Instant,
+    operation_deadline: Instant,
+) -> Result<TlsStream, &'static str> {
+    if certificate.len() > MAX_CERTIFICATE_BYTES || port == 0 {
+        return Err("invalid TLS destination or CA bound");
+    }
+    ServerName::try_from(host.to_owned()).map_err(|_| "invalid TLS destination name")?;
+    let connection_deadline = connection_deadline.min(operation_deadline);
+    remaining(connection_deadline)?;
+    let target = LdapTarget {
+        host: host.to_owned(),
+        port,
+    };
+    let configured_tls = if certificate.is_empty() {
+        None
+    } else {
+        Some(client_config(explicit_roots(certificate)?)?)
+    };
+    // Explicit CA + IP literal bypasses both resolver and system root loading.
+    let prepared = if let (Ok(address), Some(_)) = (target.host.parse::<IpAddr>(), &configured_tls)
+    {
+        PreparedTarget {
+            addresses: vec![SocketAddr::new(address, target.port)],
+            system_tls: None,
+        }
+    } else {
+        preparation_pool()?.request(&target, configured_tls.is_none(), connection_deadline)?
+    };
+    let tls = configured_tls
+        .or(prepared.system_tls)
+        .ok_or("TLS trust unavailable")?;
+    // All address selection happens before application data is sent. The list
+    // and trust snapshot stay owned by this operation throughout the exchange.
+    for address in prepared.addresses {
+        let budget = remaining(connection_deadline)?;
+        let Ok(stream) = TcpStream::connect_timeout(&address, budget) else {
+            continue;
+        };
+        if stream.set_nodelay(true).is_err() {
+            continue;
+        }
+        let endpoint = Endpoint {
+            address,
+            server_name: target.host.clone(),
+            path_prefix: "/".into(),
+            tls: tls.clone(),
+        };
+        let socket = DeadlineSocket {
+            stream,
+            deadline: connection_deadline,
+        };
+        if let Ok(mut stream) = endpoint.tls(socket) {
+            remaining(connection_deadline)?;
+            remaining(operation_deadline)?;
+            stream.sock.deadline = operation_deadline;
+            return Ok(stream);
+        }
+    }
+    Err("TLS connection unavailable")
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

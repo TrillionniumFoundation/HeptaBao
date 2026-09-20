@@ -6,12 +6,14 @@ OpenBao auth-method compatibility or independent qualification.
 
 ## Runtime boundary and sources
 
-`auth_remote.rs` runs remote key resolution in the existing authenticated config
-transaction and login path. `outbound.rs` supplies deployment-owned verified TLS.
+`auth_remote.rs` prepares owned configuration/login effects, resolves remote keys
+outside the Service writer, and validates observations against current state.
+`outbound_auth_https.rs` supplies scoped API-owned or legacy enrolled verified TLS.
 `federated_auth.rs` and `federated_native_jwt.rs` validate signed JWTs; existing identity bindings, token
 persistence and live ACL remain authoritative. `auth.rs` owns configuration and
 identity state. Schema 4 introduced source-selection and algorithm constraints;
-schema 19 adds native reusable assertions and role time-claim leeways.
+schema 19 adds native reusable assertions and role time-claim leeways. Schema 28
+adds API-owned HTTPS trust without silently migrating older transport authority.
 
 Exactly one source is accepted: existing static keys/inline JWKS, `jwks_url`, or
 `oidc_discovery_url`. Mixed sources fail without committing a changed config.
@@ -20,38 +22,60 @@ algorithms to RS256, ES256 and EdDSA. RSA keys require 2048–4096-bit moduli an
 exponent 65537. Private key parameters, symmetric keys, duplicate key IDs,
 unsupported algorithms, malformed curves and unknown JOSE headers are rejected.
 
-## Deployment-owned TLS enrollment
+## Administrator-configured HTTPS and legacy enrollment
 
-All remote origins must appear in process `outbound_endpoints`, for example:
+Fresh remote configuration uses the standard active CA field: `jwks_ca_pem` for
+`jwks_url`, or `oidc_discovery_ca_pem` for discovery. A nonempty PEM bundle replaces
+system roots; empty, null or omitted CA uses system roots. Configuration requires
+update and sudo on its auth path before any remote work. CA readback is public;
+client credentials remain redacted. No startup `outbound_endpoints` entry or
+restart is required to configure this new transport.
 
-```json
-{
-  "origin":"https://issuer.example:443",
-  "address":"192.0.2.10:443",
-  "server_name":"issuer.example",
-  "ca_pem":"<explicit trusted PEM CA>",
-  "path_prefix":"/realm"
-}
-```
+HTTPS URLs accept DNS names, IPv4 and bracketed IPv6, with port 443 by default.
+The bounded resolver uses four fixed workers, a queue of 16 and at most 16
+addresses per resolution. Each connection fixes its resolved address list; code
+exchange is never retried after sending its POST. TLS verifies both the chain
+and server name. Explicit malformed or untrusted roots never fall back to system
+roots or a process endpoint. There is no insecure-TLS option, environment proxy,
+userinfo, fragment or redirect following. CA input is limited to 64 KiB. Strict
+PEM tail validation is narrower than OpenBao 2.6.2, which accepts a valid bundle
+followed by otherwise ignored text.
 
-The example uses documentation-only addresses. Origins require an explicit port.
-No endpoint is enrolled by default. IP, hostname and CA are operator-controlled
-startup input, not supplied by discovery or login. Paths must stay inside the
-registered prefix. There is no DNS, redirect, proxy, system trust fallback,
-userinfo, query, fragment or encoded-path interpretation. Restart with a revised
-host profile is required to change destination or CA. This differs from OpenBao's
-per-auth-mount CA configuration and is not normalized into configuration parity.
+Old stored configuration with no internal transport field keeps its original
+process-enrolled address, server name, CA and path prefix. Such origins still
+require an explicit port and cannot invoke DNS or system-root fallback. Rewriting
+a full old configuration without its active CA preserves that mode. An explicit
+active CA field, including empty or null, promotes it to API transport; supplying
+only the inactive CA field does not. Reads and logins never promote authority.
+After promotion, later full writes with omitted CA select system roots. This
+migration rule is distinct from ordinary full configuration replacement; it does
+not reissue or change existing service tokens.
 
-Discovery requests append `/.well-known/openid-configuration` to the selected
-issuer. The returned issuer must match exactly; `jwks_uri` must be HTTPS on the
-same origin and remain within host enrollment. An IdP that separates issuer and
-JWKS origins is outside this bounded profile. A page cannot widen network scope.
-HTTP input is limited to 16 KiB headers and 128 KiB body with strict JSON and
-framing; bounded chunked bodies are supported, arbitrary streaming is not.
+Discovery appends `/.well-known/openid-configuration` to the issuer. The returned
+issuer must match exactly; `jwks_uri` must use HTTPS on the same normalized origin.
+Old enrolled configurations also enforce their registered path prefix. Separate
+issuer/JWKS origins remain outside this profile. API URLs permit bounded query
+and percent-encoded request targets without decoding them into HTTP headers.
+HTTP input remains limited to 16 KiB headers and 128 KiB body, with strict JSON
+and framing; bounded chunked bodies are supported, arbitrary streaming is not.
+
+API transport has one 30-second effect budget covering DNS, TLS, discovery, keys
+and response processing, with a 10-second connection sub-budget. Both are capped
+by the caller's HTTP deadline, normally 15 seconds: this is not a promise of a
+30-second HTTP request. Legacy enrollment retains its existing three-second
+per-connection cap, additionally bounded by the whole effect/request deadline.
+A late result cannot enter finalization after that deadline. A durable commit
+already begun before expiry can still complete later; no mid-commit cancellation
+or certain outcome after a client timeout is claimed.
 
 ## Refresh and authorization semantics
 
-Config write validates a fetched document before publishing the transaction.
+Direct JWKS config preflight fetches and validates keys. Discovery-backed config
+preflight fetches verified metadata and checks its issuer and same-origin key URL,
+without fetching keys; it preserves an unchanged binding's existing key cache.
+Successful preflight publishes only after live authority is rechecked. Failed
+native API preflight returns 400 and leaves the previous configuration active;
+legacy enrolled transport retains its existing failure status.
 Every login fetches the current key set anew; saved resolved keys cannot serve as
 an offline or stale-key fallback, including after restart. Issuer unavailability,
 TLS failure, duplicate JSON, redirect, oversized document or absent algorithm-
@@ -120,9 +144,18 @@ The first Python runner uses real HTTPS and real RSA/P-256/Ed25519 signatures to
 exercise rotation, restart, live identity invalidation and hostile/failing key
 sources. The comparison runner separately starts the checksum-pinned official
 OpenBao 2.6.2 binary and performs the same selected JWT-key scenarios against both
-servers. It discloses the deployment-configuration difference and does not claim
+servers. Historical receipts retain their enrollment-profile adaptation; new
+API-CA fixtures identify their own transport explicitly. Neither claims
 browser OIDC or immediate key-cache invalidation equivalence. Empty
 results, duplicate case identities and two failing sides cannot pass admission.
 `jwt_login_claims_live.py` independently compares ordinary assertion reuse and
 native time-claim semantics with the pinned official binary; it does not exercise
 OIDC authorization codes or the strict proof API.
+
+The schema-28 API-CA implementation has passed local Rust tests and lint checks;
+candidate live execution is pending. Official 2.6.2 probes established the three modes' eager
+configuration behavior and CA rejection/readback cases; those observations do
+not establish candidate success. New `jwt_api_tls_live.py` and
+`jwt_api_tls_upgrade.py` runners are intended to verify actual no-enrollment
+TLS/CA/SAN behavior and genuine schema-27 upgrade/downgrade boundaries. Only
+completed, source-and-binary-bound receipts qualify those cases.

@@ -77,7 +77,7 @@ class OidcRenewalHarnessTests(unittest.TestCase):
             issuer.server = {"ca_file": str(path)}
             candidate, oracle = configuration("candidate", issuer), configuration("oracle", issuer)
         self.assertIs(candidate["pkce_s256_enrolled"], True)
-        self.assertNotIn("oidc_discovery_ca_pem", candidate)
+        self.assertEqual(candidate["oidc_discovery_ca_pem"], "private-test-ca")
         self.assertEqual(oracle["oidc_discovery_ca_pem"], "private-test-ca")
         self.assertNotIn("pkce_s256_enrolled", oracle)
         self.assertIs(ADAPTATION["configuration_api_parity"], False)

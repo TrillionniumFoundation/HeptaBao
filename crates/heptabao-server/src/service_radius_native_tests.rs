@@ -634,44 +634,7 @@ fn native_radius_cidr_change_during_provider_call_prevents_issuance() -> TestRes
         .status,
         204
     );
-    // RADIUS login wrapping is rejected before a provider effect is prepared.
-    // Check that boundary separately; the inflight CIDR fence below must stage
-    // an actually supported, unwrapped login rather than expect a wrapped plan.
-    let before_wrapped = service
-        .current_state_digest()
-        .map_err(|_| "missing digest")?;
-    match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path: "auth/radius/login",
-        namespace: "",
-        token: "",
-        body: json!({"username":"alice","password":"synthetic-password"}),
-        now: 100,
-        allow_forward: false,
-        enforce_namespace: true,
-        wrap_ttl_seconds: Some(60),
-        origin_peer: Some("127.0.0.1".parse()?),
-        client_certificates: None,
-    }) {
-        RequestExecution::Complete(response) => {
-            assert_eq!(response.status, 400);
-            assert!(response.body.get("auth").is_none());
-            assert!(response.body.get("wrap_info").is_none());
-        }
-        RequestExecution::External(_) => {
-            return Err("unsupported wrapped login reached provider".into());
-        }
-    }
-    assert_eq!(
-        service
-            .current_state_digest()
-            .map_err(|_| "missing digest")?,
-        before_wrapped
-    );
-    let pending = match login_from(&mut service, Some("127.0.0.1".parse()?)) {
-        RequestExecution::External(pending) => pending,
-        RequestExecution::Complete(_) => return Err("allowed peer did not stage provider".into()),
-    };
+    let pending = wrapped_radius_login(&mut service, Some("127.0.0.1".parse()?))?;
     assert_eq!(
         call(
             &mut service,
@@ -698,6 +661,195 @@ fn native_radius_cidr_change_during_provider_call_prevents_issuance() -> TestRes
             .current_state_digest()
             .map_err(|_| "missing digest")?,
         before
+    );
+    Ok(())
+}
+
+fn wrapped_radius_login(
+    service: &mut Service,
+    peer: Option<std::net::IpAddr>,
+) -> TestResult<Box<PendingExternalRequest>> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/radius/login",
+        namespace: "",
+        token: "",
+        body: json!({"username":"alice","password":"synthetic-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: peer,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => Ok(pending),
+        RequestExecution::Complete(_) => Err("expected wrapped RADIUS login effect".into()),
+    }
+}
+
+#[test]
+fn wrapped_radius_login_commits_once_and_wrapper_does_not_inherit_inner_cidrs() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, root_token, _, _) = fixture(&root)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &root_token,
+            json!({"token_bound_cidrs":["127.0.0.1"]})
+        )
+        .status,
+        204
+    );
+    let plan = wrapped_radius_login(&mut service, Some("127.0.0.1".parse()?))?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let response = service.finish_external_request(
+        *plan,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(response.status, 200);
+    assert!(response.body.get("auth").is_none_or(Value::is_null));
+    assert_eq!(
+        response.body["wrap_info"]["creation_path"],
+        "auth/radius/login"
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation + 1
+    );
+    let wrapper = response.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("wrapper")?
+        .to_owned();
+    let other = Some("127.0.0.2".parse()?);
+    let unwrapped = request_from(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &wrapper,
+        json!({}),
+        other,
+    );
+    assert_eq!(unwrapped.status, 200);
+    assert_eq!(
+        unwrapped.body["auth"]["accessor"],
+        response.body["wrap_info"]["wrapped_accessor"]
+    );
+    let bearer = unwrapped.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("inner token")?
+        .to_owned();
+    assert_eq!(
+        request_from(
+            &mut service,
+            "POST",
+            "sys/wrapping/unwrap",
+            &wrapper,
+            json!({}),
+            other
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        request_from(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &bearer,
+            json!({}),
+            other
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        request_from(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &bearer,
+            json!({}),
+            Some("127.0.0.1".parse()?)
+        )
+        .status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn wrapped_radius_login_capacity_and_commit_failure_publish_nothing() -> TestResult {
+    for failure in ["wrappers", "commit"] {
+        let root = Root::new();
+        let (mut service, _, _, _, _) = fixture(&root)?;
+        if failure == "wrappers" {
+            let mut state = service.state.clone().ok_or("state")?;
+            for _ in 0..256 {
+                state.auth.wrap_response(
+                    "",
+                    "synthetic/wrapper",
+                    3600,
+                    &json!({"synthetic":true}),
+                    100,
+                )?;
+            }
+            service
+                .commit_state(&state)
+                .map_err(|_| "wrapper fixture commit")?;
+            service.state = Some(state);
+        }
+        let pending = wrapped_radius_login(&mut service, None)?;
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        if failure == "commit" {
+            service.state_capacity = 1;
+        }
+        let response = service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(
+                RadiusLoginObservation,
+            ))),
+        );
+        assert_eq!(response.status, if failure == "commit" { 507 } else { 503 });
+        assert!(response.body.get("auth").is_none());
+        assert!(response.body.get("wrap_info").is_none());
+        assert_eq!(service.state_digest, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn wrapped_radius_login_observation_cannot_cross_seal_activation() -> TestResult {
+    let root = Root::new();
+    let (mut service, key, root_token, _, _) = fixture(&root)?;
+    let plan = wrapped_radius_login(&mut service, None)?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", &root_token, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let before = service.state_digest;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let response = service.finish_external_request(
+        *plan,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("auth").is_none());
+    assert!(response.body.get("wrap_info").is_none());
+    assert_eq!(service.state_digest, before);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
     );
     Ok(())
 }

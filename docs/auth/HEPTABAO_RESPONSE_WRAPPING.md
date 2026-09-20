@@ -2,8 +2,8 @@
 
 Owner: the existing `heptabao-server` Service transaction and AuthState writer.
 Source: `crates/heptabao-server/src/auth_wrapping.rs`, `service.rs`, `http.rs`,
-`ha_forward.rs`. This is an implementation guide, not a compatibility or release
-receipt. The canonical OpenBao denominator and external admission remain unchanged.
+`ha_forward.rs`. This guide describes the implemented runtime behavior; the
+linked acceptance runners verify selected compatibility and failure cases.
 
 ## API and supported profile
 
@@ -15,6 +15,15 @@ original creation path, creation time and TTL. It does not expose the captured
 `data` or `auth` envelope. Auth responses can also identify the wrapped accessor.
 `X-Vault-Wrap-Format: uuid` selects the supported opaque-token profile; the token
 is not a promise of UUID byte syntax. JWT-format wrapping fails explicitly.
+
+Remote JWT, Kubernetes, LDAP and RADIUS login responses support wrapping after
+provider verification and current authority checks. Identity projection, the
+issued service token and its wrapper share one candidate and durable commit.
+The wrapper lifetime starts at completion, so waiting for a provider does not
+consume a short wrapping TTL. Failure to capture or commit publishes neither
+token nor wrapper. A RADIUS token's source CIDRs constrain the inner service
+token; the wrapper itself remains usable from another source, matching the
+official selected profile. OIDC auth URL/callback wrapping remains unsupported.
 
 `POST sys/wrapping/wrap` requires positive wrapping TTL and wraps an arbitrary
 bounded JSON object. `POST sys/wrapping/unwrap` accepts either the wrapping token
@@ -42,7 +51,7 @@ The existing encrypted service snapshot stores a wrapper record inside its
 hashed bearer-token entry. Records own the response, original creation path and
 TTL, and optional wrapped accessor. The raw wrapping token is never the store
 key. At most 256 live records and 64 KiB of encoded response per record are
-allowed; the service-wide 768 KiB state ceiling can reject sooner. All bounds
+allowed; the service-wide 16 MiB state ceiling can reject sooner. All bounds
 reject, rather than evicting live credentials. Owned response values are erased
 on Drop, including unsuccessful candidates; this does not certify whole-process
 memory erasure or external swap protection.
@@ -57,8 +66,9 @@ its token only after the same authoritative transaction commits.
 An observed clock frontier and expiry invalidation persist before rejected
 wrapping operations. Previously observed expiration cannot be undone by restart
 or a later clock rollback. This is not an external trusted-time provider or a
-hardware anti-rollback anchor. Expired records are reclaimed on relevant requests,
-not by a newly claimed background scheduler.
+hardware anti-rollback anchor. Relevant requests and the existing lifecycle
+worker reclaim expired records; setting its interval to zero disables idle
+reclamation.
 
 ## Failure and recovery
 
@@ -76,13 +86,16 @@ A second unwrap must not be used as an availability probe.
 
 ## HA and versioning
 
-Normal forwarding remains `HBFQ1`. Requests with wrapping options use `HBFQ2`,
-binding TTL inside the authenticated, length-bounded peer frame. Older peers fail
-closed on that frame rather than silently dropping the option and returning raw
-content. Outbound request frames use zeroizing buffers. Same-version process
+HTTP forwarding uses `HBFQ3`, binding the original socket peer and optional TTL
+inside the authenticated, length-bounded frame. Trusted embedding without a peer
+retains `HBFQ1` or wrapped `HBFQ2`; constrained tokens reject missing source
+information. Older peers fail closed on unknown frames rather than silently
+dropping options. Outbound request frames use zeroizing buffers. Same-version process
 failover is tested separately from rolling protocol-version upgrades.
 
-Service state schema 3 protects this runtime increment. Schema 1/2 can be read
+Service state schema 3 introduced wrapping records; the
+[current state format](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md) specifies
+the latest discriminator and additional constraints. Schema 1/2 can be read
 only under their original field constraints; ordinary reads do not rewrite old
 state. An actual mutation upgrades through the existing durable commit. Schema-2
 binaries reject schema 3. Downgrading the schema number, deleting fields or
@@ -99,7 +112,7 @@ rejection. Both use isolated synthetic state and publish no live credential.
 
 HEAD/DELETE and nontransactional health/leader, initialization, seal/unseal, rekey, snapshot and
 operator recovery requests with a positive wrapping option fail explicitly before
-the effect. JWT wrapping, arbitrary duration precision, all parameter-constrained
+the effect. JWT-format wrapping, arbitrary duration precision, all parameter-constrained
 ACL/minimum-maximum wrapping policies, full upstream error equivalence, multi-host
 destructive runs and mixed-version upgrades remain unqualified. A passing local
 profile does not change independent, production, migration or release authority.

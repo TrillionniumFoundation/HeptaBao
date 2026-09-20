@@ -65,8 +65,7 @@ def run(binary: Path, root: Path, checks: list[dict]):
         issuer=oracle["address"]+"/v1/identity/oidc/provider/hepta"
         instance=Instance(binary,root/"candidate")
         config_path=instance.root/"server.json";config=json.loads(config_path.read_text())
-        config["outbound_endpoints"]=[{"origin":oracle["address"],"address":f"127.0.0.1:{port}",
-            "server_name":"127.0.0.1","ca_pem":Path(oracle["ca_file"]).read_text()}]
+        config["outbound_endpoints"]=[]
         config_path.write_text(json.dumps(config));config_path.chmod(0o600)
         instance.start()
         status,initial=instance.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1})
@@ -74,14 +73,15 @@ def run(binary: Path, root: Path, checks: list[dict]):
         check("candidate_unseal",instance.call("POST","sys/unseal",{"key":unseal})[0] == 200)
         mount="browser/external"
         check("candidate_oidc_mount",instance.call("POST",f"sys/auth/{mount}",{"type":"oidc"})[0] == 204)
-        params={"oidc_discovery_url":issuer,"oidc_client_id":client_id,"oidc_client_secret":client_secret,"jwt_supported_algs":["RS256"]}
-        # OpenBao 2.6.2 supports S256 but does not advertise its metadata
-        # property. Without explicit operator enrollment, absence must deny.
-        check("missing_pkce_discovery_does_not_enable_implicit_fallback",instance.call("POST",f"auth/{mount}/config",params)[0] == 400)
-        params["pkce_s256_enrolled"]=True
-        check("candidate_explicit_s256_enrollment",instance.call("POST",f"auth/{mount}/config",params)[0] == 204)
+        params={"oidc_discovery_url":issuer,"oidc_discovery_ca_pem":Path(oracle["ca_file"]).read_text(),"oidc_client_id":client_id,"oidc_client_secret":client_secret,"jwt_supported_algs":["RS256"]}
+        # Configuration checks discovery; S256 capability belongs to auth_url.
+        check("configuration_preflights_discovery",instance.call("POST",f"auth/{mount}/config",params)[0] == 204)
         role={"role_type":"oidc","user_claim":"sub","allowed_redirect_uris":[redirect],"token_policies":["default"],"token_ttl":300}
         check("candidate_role",instance.call("POST",f"auth/{mount}/role/app",role)[0] == 204)
+        # OpenBao2.6.2 supports S256 but omits the discovery metadata property.
+        check("missing_pkce_discovery_does_not_enable_implicit_fallback",instance.call("POST",f"auth/{mount}/oidc/auth_url",{"role":"app","redirect_uri":redirect,"client_nonce":secrets.token_urlsafe(32)},token="")[0] == 400)
+        params["pkce_s256_enrolled"]=True
+        check("candidate_explicit_s256_enrollment",instance.call("POST",f"auth/{mount}/config",params)[0] == 204)
         status,config_read=instance.call("GET",f"auth/{mount}/config")
         check("client_secret_readback_redacted",status == 200 and client_secret not in json.dumps(config_read))
         check("client_rebinding_requires_new_mount",instance.call("POST",f"auth/{mount}/config",{**params,"oidc_client_id":"different-client"})[0] == 409)

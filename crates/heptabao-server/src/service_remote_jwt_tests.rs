@@ -328,3 +328,79 @@ fn same_remote_config_and_keys_do_not_append_but_rotated_keys_do() -> TestResult
     );
     Ok(())
 }
+
+#[test]
+fn native_jwt_https_state_is_schema_fenced_and_config_preflight_is_not_a_login() -> TestResult {
+    let root = Root::new();
+    let (service, _) = fixture(&root)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    state.schema = 27;
+    assert!(state.validate_format().is_err());
+    state.schema = CURRENT_STATE_SCHEMA;
+    assert!(state.validate_format().is_ok());
+    Ok(())
+}
+
+#[test]
+fn oidc_config_stages_without_writer_io_and_failed_preflight_preserves_configuration() -> TestResult
+{
+    let root = Root::new();
+    let (mut service, root_token) = fixture(&root)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/browser",
+            &root_token,
+            json!({"type":"oidc"})
+        )
+        .status,
+        204
+    );
+    let body = json!({"oidc_discovery_url":"https://synthetic.example:443","oidc_client_id":"synthetic-client","oidc_client_secret":"synthetic-private","oidc_discovery_ca_pem":""});
+    let before = service.state_digest;
+    let request = pending(
+        &mut service,
+        "auth/browser/config",
+        &root_token,
+        body.clone(),
+        None,
+    )?;
+    assert_eq!(service.state_digest, before);
+    let failure = service.finish_external_request(
+        *request,
+        ExternalEffectResult::OnlineAuth(Err(Response::error(400, "synthetic discovery failed"))),
+    );
+    assert_eq!(failure.status, 400);
+    assert_eq!(service.state_digest, before);
+    let request = pending(
+        &mut service,
+        "auth/browser/config",
+        &root_token,
+        body.clone(),
+        None,
+    )?;
+    let response = service.finish_external_request(
+        *request,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::OidcConfig(
+            crate::auth::OidcConfigObservation,
+        ))),
+    );
+    assert_eq!(response.status, 204);
+    let digest = service.state_digest;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let request = pending(&mut service, "auth/browser/config", &root_token, body, None)?;
+    let response = service.finish_external_request(
+        *request,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::OidcConfig(
+            crate::auth::OidcConfigObservation,
+        ))),
+    );
+    assert_eq!(response.status, 204);
+    assert_eq!(service.state_digest, digest);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}

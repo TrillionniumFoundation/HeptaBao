@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **27**. Its source constant is
+The current Service state schema is **28**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -66,7 +66,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 24 | Native RADIUS host/secret/NAS/timeout configuration, optional user mappings and direct-token credentials with issued metadata. LDAP API-owned transport and extended RADIUS default-policy state must be absent. |
 | 25 | Native LDAP URL/CA/timeout transport authority and native RADIUS default-policy semantics; RADIUS API transport authority must be absent. |
 | 26 | Administrator-configured RADIUS target authority without process endpoint enrollment; token source CIDR constraints must be absent. |
-| 27 | Current format, adding native RADIUS source CIDR configuration and issued-token source constraints. |
+| 27 | Native RADIUS source CIDR configuration and issued-token source constraints; JWT/OIDC API-owned HTTPS transport and nonempty inactive JWT CA readback fields must be absent. |
+| 28 | Current format, adding administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -190,8 +191,28 @@ HBFQ3 carries the accepted client socket address inside authenticated HA frames.
 Older frames remain readable without a peer; constrained tokens reject missing
 peers, and forwarding never retries by stripping source information.
 
+Schema 28 is required for JWT or OIDC configuration containing API-owned HTTPS
+transport, or a nonempty inactive JWT CA readback field. Fresh remote configuration
+selects API transport: the active `jwks_ca_pem` or `oidc_discovery_ca_pem` field is a
+replacement trust store, while empty, null or omitted CA selects system roots.
+An older record with no internal `transport` field remains `None` and serializes
+without that field. A complete config rewrite that omits its active CA preserves
+that old enrollment authority; an inactive CA field alone cannot promote it.
+Only an explicit active CA write, including empty or null, selects API transport
+for such a record. Once promoted, later omitted CA follows full configuration
+replacement and selects system roots. Static-key JWT configuration has no remote
+transport. Pure reads and login do not perform this authority migration.
+
+The owned URL/CA snapshot participates in remote configuration and login fences.
+Successful OIDC configuration publication clears pending sessions atomically;
+failed preflight or stale authority preserves both the old config and its sessions.
+Unchanged old config/role serialization preserves a pending session's existing
+binding digest on reopen. No service token is reissued by transport migration,
+and the one-use OIDC callback protocol is unchanged. A schema-27 binary must
+reject schema-28 application state rather than ignore this authority.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 27. An authenticated
+it. Initialization and committed mutations use schema 28. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -205,7 +226,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-26-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-27 binary cannot read schema-28 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

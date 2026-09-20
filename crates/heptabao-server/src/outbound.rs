@@ -22,6 +22,12 @@ pub(crate) use ldap_native::LdapNativeOptions;
 #[path = "outbound_ldap_transport.rs"]
 mod ldap_transport;
 pub(crate) use ldap_transport::LdapTransportConfig;
+#[path = "outbound_auth_https.rs"]
+mod auth_https;
+pub(crate) use auth_https::{
+    AuthHttpsTransport, AuthOidcExchange, auth_https_deadline, parse_auth_https_target,
+};
+
 #[path = "outbound_radius_native.rs"]
 mod radius_native;
 pub(crate) use radius_native::{
@@ -394,20 +400,6 @@ impl Outbound {
             return Err("LDAP manager bind rejected by provider");
         }
         Ok(stream)
-    }
-
-    pub fn get_json(&self, url: &str) -> Result<Value, &'static str> {
-        let (endpoint, target) = self.endpoint(url, "https")?;
-        let mut stream = endpoint.tls(endpoint.connect()?)?;
-        let request = format!(
-            "GET {} HTTP/1.1\r\nHost: {}\r\nAccept: application/json, application/jwk-set+json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
-            target.path, target.authority
-        );
-        stream
-            .write_all(request.as_bytes())
-            .map_err(|_| "outbound HTTP write failed")?;
-        stream.flush().map_err(|_| "outbound TLS flush failed")?;
-        read_json_response(&mut stream)
     }
 
     /// Perform one bounded RADIUS PAP exchange against an exact, process-owned
@@ -1769,38 +1761,6 @@ pub(crate) fn form_component(value: &str) -> String {
     }
     output
 }
-impl Outbound {
-    pub(crate) fn exchange_oidc(
-        &self,
-        url: &str,
-        client_id: &str,
-        client_secret: &str,
-        code: &str,
-        redirect: &str,
-        verifier: &str,
-    ) -> Result<Value, &'static str> {
-        use base64::{Engine as _, engine::general_purpose::STANDARD};
-        let body = Zeroizing::new(format!(
-            "grant_type=authorization_code&code={}&redirect_uri={}&code_verifier={}",
-            form_component(code),
-            form_component(redirect),
-            form_component(verifier)
-        ));
-        let credentials = Zeroizing::new(format!(
-            "{}:{}",
-            form_component(client_id),
-            form_component(client_secret)
-        ));
-        let header = Zeroizing::new(format!("Basic {}", STANDARD.encode(credentials.as_bytes())));
-        self.post_body(
-            url,
-            "application/x-www-form-urlencoded",
-            &header,
-            body.as_bytes(),
-            &[200],
-        )
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -1822,7 +1782,7 @@ mod tests {
         }
         assert!(
             Outbound::default()
-                .get_json("https://issuer:443/jwks")
+                .get_auth_json("https://issuer:443/jwks", None, auth_https_deadline())
                 .is_err()
         );
     }

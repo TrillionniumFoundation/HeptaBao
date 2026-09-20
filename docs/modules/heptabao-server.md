@@ -107,7 +107,14 @@ The host starts one bounded `service_lifecycle.rs` worker for local lease expiry
 and wrapped-payload erasure, using the existing Service writer, ReadIndex, audit
 and durable commit. It cannot issue credentials or run external-provider callbacks.
 `lifecycle_interval_seconds` is default 5, enabled 1–60, explicitly disabled at 0;
-per-request expiry remains enforced. Source tests include
+per-request expiry remains enforced. HA readiness does not depend on this worker:
+valid `GET`/`HEAD sys/health` probes on an unsealed, unfenced elected leader may
+perform one authenticated ReadIndex catch-up of an already committed application
+state. Catch-up can persist the local encrypted replica; it does not create the
+first Raft application publication. Authority and logical-state digest are checked
+again afterward, and namespace existence is resolved against the synchronized
+catalog. Missing committed state, failed catch-up or lost quorum remains unavailable.
+Source tests include
 `idle_maintenance_commits_expiry_without_a_client_request_and_no_clock_revival`
 and `lifecycle_worker_is_bounded_joined_and_does_not_keep_service_alive`.
 The real Python AppRole Agent, same-UID Unix proxy and host-bound OTP helper

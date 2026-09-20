@@ -437,3 +437,92 @@ fn unknown_namespace_is_not_an_implicit_scope_or_write_target()
     );
     Ok(())
 }
+
+#[test]
+fn health_get_and_head_preserve_namespace_and_recovery_fences()
+-> Result<(), Box<dyn std::error::Error>> {
+    let health = |service: &mut Service, method: &str, namespace: &str| {
+        service.handle_at_mode(RequestDispatch {
+            method,
+            path: "sys/health",
+            namespace,
+            token: "",
+            body: json!({}),
+            now: 100,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        })
+    };
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    for method in ["GET", "HEAD"] {
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let unknown = health(&mut service, method, "absent");
+        assert_eq!(unknown.status, 404);
+        let valid = health(&mut service, method, "team");
+        assert_eq!(valid.status, 200);
+        assert_eq!(service.state_digest, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        service.recovery_required = true;
+        let fenced = health(&mut service, method, "team");
+        assert_eq!(fenced.status, 503);
+        assert!(service.recovery_required);
+        assert_eq!(service.state_digest, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        // Restore only the test-injected flag before the next independent case.
+        service.recovery_required = false;
+    }
+    Ok(())
+}
+
+#[test]
+fn malformed_health_queries_never_change_application_state()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let before = service.state_digest;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for method in ["GET", "HEAD"] {
+        for body in [
+            json!({"standbyok":"true"}),
+            json!({"perfstandbyok":1}),
+            json!({"activecode":99}),
+        ] {
+            assert_eq!(
+                service
+                    .handle_request_at(ServiceRequest::new(method, "sys/health", "", "", body), 100)
+                    .status,
+                400
+            );
+        }
+    }
+    assert_eq!(service.state_digest, before);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}

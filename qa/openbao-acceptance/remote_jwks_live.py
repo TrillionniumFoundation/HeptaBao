@@ -61,7 +61,7 @@ def run(binary, root, checks):
         checks.append({"case":name,"passed":condition is True})
         if condition is not True: raise RuntimeError(name)
     config_path=instance.root/"server.json"
-    config=json.loads(config_path.read_text());config["outbound_endpoints"]=[{"origin":issuer.origin,"address":f"127.0.0.1:{issuer.port}","server_name":"localhost","ca_pem":(instance.root/"ca.crt").read_text()}]
+    config=json.loads(config_path.read_text());config["outbound_endpoints"]=[]
     config_path.write_text(json.dumps(config));config_path.chmod(0o600)
     private,jwk=signing_key("RS256","key-a")
     issuer.documents["/keys"]={"keys":[jwk]}
@@ -72,9 +72,9 @@ def run(binary, root, checks):
         key=init["keys_base64"][0];instance.token=init["root_token"]
         check("unseal",instance.call("POST","sys/unseal",{"key":key})[0]==200)
         check("mount",instance.call("POST","sys/auth/federated",{"type":"jwt"})[0]==204)
-        params={"bound_issuer":issuer.origin,"oidc_discovery_url":issuer.origin,"jwt_supported_algs":["RS256","ES256","EdDSA"]}
+        params={"bound_issuer":issuer.origin,"oidc_discovery_url":issuer.origin,"oidc_discovery_ca_pem":(instance.root/"ca.crt").read_text(),"jwt_supported_algs":["RS256","ES256","EdDSA"]}
         check("discovery_configuration",instance.call("POST","auth/federated/config",params)[0]==204)
-        check("metadata_then_keys_fetched",issuer.calls[-2:]==["/.well-known/openid-configuration","/keys"])
+        check("configuration_fetches_discovery_without_jwks",issuer.calls==["/.well-known/openid-configuration"])
         check("role",instance.call("POST","auth/federated/role/test",{"role_type":"jwt","user_claim":"sub","bound_audiences":["heptabao-test"],"token_policies":["default"]})[0]==204)
         def login(value): return instance.call("POST","auth/federated/login",{"role":"test","jwt":value},token="")
         jwt=token(private,jwk,issuer.origin)
@@ -120,14 +120,14 @@ def run(binary, root, checks):
               and bool(repeated.get("auth",{}).get("client_token"))
               and repeated["auth"]["client_token"]!=preceding_access)
         check("not_browser_oidc",instance.call("POST","auth/federated/role/oidc",{"role_type":"oidc","user_claim":"sub","bound_audiences":["heptabao-test"]})[0]==501)
-        params={"bound_issuer":issuer.origin,"jwks_url":issuer.origin+"/keys","jwt_supported_algs":["EdDSA"]}
+        params={"bound_issuer":issuer.origin,"jwks_url":issuer.origin+"/keys","jwks_ca_pem":(instance.root/"ca.crt").read_text(),"jwt_supported_algs":["EdDSA"]}
         check("direct_jwks_configuration",instance.call("POST","auth/federated/config",params)[0]==204)
         check("direct_jwks_login",login(token(private,jwk,issuer.origin))[0]==200)
         params["jwks_url"]="https://unenrolled.invalid:443/keys"
-        check("unenrolled_configuration_not_activated",instance.call("POST","auth/federated/config",params)[0]==503)
+        check("unresolvable_configuration_not_activated",instance.call("POST","auth/federated/config",params)[0]==400)
         check("rejected_configuration_preserves_predecessor",login(token(private,jwk,issuer.origin))[0]==200)
         # A malformed CA binding fails before any auth/secret use on restart.
-        instance.stop();config["outbound_endpoints"][0]["server_name"]="mismatch.invalid"
+        instance.stop();config["outbound_endpoints"]=[{"origin":issuer.origin,"address":f"127.0.0.1:{issuer.port}","server_name":"mismatch.invalid","ca_pem":(instance.root/"ca.crt").read_text()}]
         config_path.write_text(json.dumps(config))
         try: instance.start()
         except RuntimeError: check("invalid_host_enrollment_rejected",True)

@@ -370,3 +370,91 @@ fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -
     assert!(state.auth.authenticate(&token, 110).is_ok());
     Ok(())
 }
+
+#[test]
+fn wrapped_kubernetes_login_commits_once_and_rejects_changed_role() -> TestResult {
+    for stale in [false, true] {
+        let root = Root::new();
+        let (mut service, _, admin, _) = fixture(&root)?;
+        let plan = match service.begin_at_mode(RequestDispatch {
+            method: "POST",
+            path: "auth/kubernetes/login",
+            namespace: "",
+            token: "",
+            body: json!({"role":"app","jwt":"synthetic-login-credential"}),
+            now: 100,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: Some(60),
+            origin_peer: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::External(plan) => plan,
+            RequestExecution::Complete(_) => {
+                return Err("expected wrapped TokenReview effect".into());
+            }
+        };
+        if stale {
+            assert_eq!(call(&mut service, "POST", "auth/kubernetes/role/app", &admin,
+                json!({"bound_service_account_names":["worker"],"bound_service_account_namespaces":["workload"],"audience":"heptabao","token_ttl":120,"token_max_ttl":600})).status, 204);
+        }
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let response = service.finish_external_request(
+            *plan,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Kubernetes(
+                KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+            ))),
+        );
+        if stale {
+            assert_eq!(response.status, 409);
+            assert!(response.body.get("auth").is_none());
+            assert!(response.body.get("wrap_info").is_none());
+            assert_eq!(service.state_digest, before);
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+        } else {
+            assert_eq!(response.status, 200);
+            assert!(response.body.get("auth").is_none_or(Value::is_null));
+            assert_eq!(
+                response.body["wrap_info"]["creation_path"],
+                "auth/kubernetes/login"
+            );
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation + 1
+            );
+            let wrapper = response.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("wrapper")?
+                .to_owned();
+            let unwrapped = call(
+                &mut service,
+                "POST",
+                "sys/wrapping/unwrap",
+                &wrapper,
+                json!({}),
+            );
+            assert_eq!(unwrapped.status, 200);
+            assert!(unwrapped.body["auth"]["client_token"].as_str().is_some());
+            assert_eq!(
+                unwrapped.body["auth"]["accessor"],
+                response.body["wrap_info"]["wrapped_accessor"]
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    &wrapper,
+                    json!({})
+                )
+                .status,
+                400
+            );
+        }
+    }
+    Ok(())
+}

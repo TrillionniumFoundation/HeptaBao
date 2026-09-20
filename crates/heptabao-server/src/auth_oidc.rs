@@ -2,7 +2,9 @@
 //! are encrypted Service state. Service consumes them durably BEFORE exchanging
 //! any code. Replay, restart and leader change never retry an uncertain exchange.
 use super::*;
-use crate::outbound::{Outbound, Target, form_component};
+use crate::outbound::{
+    AuthHttpsTransport, AuthOidcExchange, Outbound, Target, form_component, parse_auth_https_target,
+};
 const SESSION_TTL: u64 = 300;
 const MAX_SESSIONS: usize = 128;
 const MAX_ROLES: usize = 256;
@@ -23,7 +25,45 @@ struct OidcConfig {
     oidc_client_secret: String,
     jwt_supported_algs: BTreeSet<String>,
     pkce_s256_enrolled: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    transport: Option<AuthHttpsTransport>,
 }
+pub(crate) struct OidcConfigPlan {
+    namespace: String,
+    mount: String,
+    mount_revision: AuthMount,
+    previous: Option<OidcConfig>,
+    proposed: OidcConfig,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct OidcConfigObservation;
+
+impl OidcConfigPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &Outbound,
+        deadline: std::time::Instant,
+    ) -> Result<OidcConfigObservation, AuthError> {
+        let result = self.proposed.discovery(outbound, deadline);
+        if self.proposed.transport.is_some() {
+            result.map_err(|_| bad("OIDC discovery configuration check failed"))?;
+        } else {
+            result?;
+        }
+        Ok(OidcConfigObservation)
+    }
+    pub(crate) fn observed_now(&self) -> u64 {
+        let elapsed = self.started.elapsed();
+        self.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        )
+    }
+}
+
 impl Drop for OidcConfig {
     fn drop(&mut self) {
         self.oidc_client_secret.zeroize();
@@ -111,8 +151,13 @@ impl OidcLoginObservation {
 }
 
 impl OidcBeginPlan {
-    pub(crate) fn execute(&self, outbound: &Outbound) -> Result<OidcBeginObservation, AuthError> {
-        let (authorization_endpoint, token_endpoint, jwks_uri) = self.config.metadata(outbound)?;
+    pub(crate) fn execute(
+        &self,
+        outbound: &Outbound,
+        deadline: std::time::Instant,
+    ) -> Result<OidcBeginObservation, AuthError> {
+        let (authorization_endpoint, token_endpoint, jwks_uri) =
+            self.config.metadata(outbound, deadline)?;
         Ok(OidcBeginObservation {
             authorization_endpoint,
             token_endpoint,
@@ -128,15 +173,20 @@ impl OidcExchange {
         now: u64,
         started: std::time::Instant,
         outbound: &Outbound,
+        deadline: std::time::Instant,
     ) -> Result<OidcLoginObservation, AuthError> {
         let mut token_response = outbound
-            .exchange_oidc(
+            .exchange_auth_oidc(
                 &self.session.token_endpoint,
-                &self.config.oidc_client_id,
-                &self.config.oidc_client_secret,
-                &self.code,
-                &self.session.redirect,
-                &self.session.verifier,
+                AuthOidcExchange {
+                    client_id: &self.config.oidc_client_id,
+                    client_secret: &self.config.oidc_client_secret,
+                    code: &self.code,
+                    redirect: &self.session.redirect,
+                    verifier: &self.session.verifier,
+                },
+                self.config.transport.as_ref(),
+                deadline,
             )
             .map_err(|_| {
                 err(
@@ -162,7 +212,11 @@ impl OidcExchange {
                 return Err(denied());
             }
             let keys = outbound
-                .get_json(&self.session.jwks_uri)
+                .get_auth_json(
+                    &self.session.jwks_uri,
+                    self.config.transport.as_ref(),
+                    deadline,
+                )
                 .map_err(|_| err(503, "OIDC signing keys unavailable; session consumed"))?;
             let config = JwtConfig {
                 remote: None,
@@ -228,7 +282,12 @@ fn binding(config: &OidcConfig, role: &OidcRole) -> Result<String, AuthError> {
 }
 impl OidcConfig {
     fn validate(&self) -> Result<(), AuthError> {
-        Target::parse(&self.oidc_discovery_url, "https").map_err(bad)?;
+        parse_auth_https_target(&self.oidc_discovery_url, self.transport.as_ref()).map_err(bad)?;
+        if let Some(transport) = &self.transport {
+            transport
+                .validate_configuration(&self.oidc_discovery_url)
+                .map_err(bad)?;
+        }
         if self.oidc_discovery_url.ends_with('/')
             || !bounded_string(&self.oidc_client_id, 512)
             || !bounded_string(&self.oidc_client_secret, 4096)
@@ -244,14 +303,35 @@ impl OidcConfig {
         }
         Ok(())
     }
-    fn metadata(&self, outbound: &Outbound) -> Result<(String, String, String), AuthError> {
-        let original = Target::parse(&self.oidc_discovery_url, "https").map_err(bad)?;
+    fn discovery(
+        &self,
+        outbound: &Outbound,
+        deadline: std::time::Instant,
+    ) -> Result<Value, AuthError> {
         let doc = outbound
-            .get_json(&format!(
-                "{}/.well-known/openid-configuration",
-                self.oidc_discovery_url
-            ))
+            .get_auth_json(
+                &format!(
+                    "{}/.well-known/openid-configuration",
+                    self.oidc_discovery_url
+                ),
+                self.transport.as_ref(),
+                deadline,
+            )
             .map_err(|_| err(503, "OIDC discovery unavailable or untrusted"))?;
+        if doc.get("issuer").and_then(Value::as_str) != Some(&self.oidc_discovery_url) {
+            return Err(bad("OIDC discovery issuer mismatch"));
+        }
+        Ok(doc)
+    }
+
+    fn metadata(
+        &self,
+        outbound: &Outbound,
+        deadline: std::time::Instant,
+    ) -> Result<(String, String, String), AuthError> {
+        let original = parse_auth_https_target(&self.oidc_discovery_url, self.transport.as_ref())
+            .map_err(bad)?;
+        let doc = self.discovery(outbound, deadline)?;
         if doc.get("issuer").and_then(Value::as_str) != Some(&self.oidc_discovery_url)
             || !array_contains(&doc, "response_types_supported", "code")
             || (doc.get("code_challenge_methods_supported").is_some()
@@ -272,13 +352,15 @@ impl OidcConfig {
                 .get(field)
                 .and_then(Value::as_str)
                 .ok_or_else(|| bad("OIDC metadata endpoint missing"))?;
-            let target = Target::parse(value, "https").map_err(bad)?;
+            let target = parse_auth_https_target(value, self.transport.as_ref()).map_err(bad)?;
             if target.origin != original.origin {
                 return Err(bad("cross-origin OIDC endpoint forbidden"));
             }
-            outbound
-                .endpoint(value, "https")
-                .map_err(|_| err(503, "OIDC endpoint not host-enrolled"))?;
+            if self.transport.is_none() {
+                outbound
+                    .endpoint(value, "https")
+                    .map_err(|_| err(503, "OIDC endpoint not host-enrolled"))?;
+            }
             Ok(value.into())
         };
         Ok((
@@ -469,16 +551,22 @@ impl AuthState {
                     }
                     let config = state.config.as_ref().ok_or_else(denied)?;
                     let role = state.roles.get(&s.role).ok_or_else(denied)?;
-                    let origin = Target::parse(&config.oidc_discovery_url, "https")
-                        .map_err(bad)?
-                        .origin;
+                    let origin = parse_auth_https_target(
+                        &config.oidc_discovery_url,
+                        config.transport.as_ref(),
+                    )
+                    .map_err(bad)?
+                    .origin;
                     if binding(config, role)? != s.binding
                         || !role.allowed_redirect_uris.contains(&s.redirect)
-                        || Target::parse(&s.token_endpoint, "https")
+                        || parse_auth_https_target(&s.token_endpoint, config.transport.as_ref())
                             .map_err(bad)?
                             .origin
                             != origin
-                        || Target::parse(&s.jwks_uri, "https").map_err(bad)?.origin != origin
+                        || parse_auth_https_target(&s.jwks_uri, config.transport.as_ref())
+                            .map_err(bad)?
+                            .origin
+                            != origin
                     {
                         return Err(denied());
                     }
@@ -526,55 +614,13 @@ impl AuthState {
                         .ok_or_else(|| err(404, "OIDC configuration missing"))?;
                     Ok(response(
                         json!({"oidc_discovery_url":c.oidc_discovery_url,"oidc_client_id":c.oidc_client_id,
-                        "oidc_client_secret_set":true,"jwt_supported_algs":c.jwt_supported_algs,"pkce_s256_enrolled":c.pkce_s256_enrolled}),
+                        "oidc_client_secret_set":true,"jwt_supported_algs":c.jwt_supported_algs,"pkce_s256_enrolled":c.pkce_s256_enrolled,
+                        "oidc_discovery_ca_pem":c.transport.as_ref().map_or("",|transport|transport.certificate.as_str())}),
                         false,
                     ))
                 }
                 "POST" | "PUT" => {
-                    reject_unknown(
-                        body,
-                        &[
-                            "oidc_discovery_url",
-                            "oidc_client_id",
-                            "oidc_client_secret",
-                            "jwt_supported_algs",
-                            "pkce_s256_enrolled",
-                        ],
-                    )?;
-                    let config = OidcConfig {
-                        pkce_s256_enrolled: body
-                            .get("pkce_s256_enrolled")
-                            .map(|v| {
-                                v.as_bool()
-                                    .ok_or_else(|| bad("PKCE enrollment must be boolean"))
-                            })
-                            .transpose()?
-                            .unwrap_or(false),
-                        oidc_discovery_url: string_field(body, "oidc_discovery_url")?.into(),
-                        oidc_client_id: string_field(body, "oidc_client_id")?.into(),
-                        oidc_client_secret: string_field(body, "oidc_client_secret")?.into(),
-                        jwt_supported_algs: if body.get("jwt_supported_algs").is_some() {
-                            claim_values(body, "jwt_supported_algs")?
-                        } else {
-                            BTreeSet::from(["RS256".into()])
-                        },
-                    };
-                    config.validate()?;
-                    // A new issuer/client requires a new accessor, preventing
-                    // an equal subject in another realm inheriting old policies.
-                    if self
-                        .oidc_at(scope)
-                        .and_then(|s| s.config.as_ref())
-                        .is_some_and(|old| {
-                            old.oidc_discovery_url != config.oidc_discovery_url
-                                || old.oidc_client_id != config.oidc_client_id
-                        })
-                    {
-                        return Err(err(
-                            409,
-                            "changing OIDC issuer or client requires a new auth mount",
-                        ));
-                    }
+                    let config = self.parse_oidc_config(scope, body)?;
                     let state = self.oidc_mut(scope);
                     state.config = Some(config);
                     state.sessions.clear();
@@ -720,6 +766,144 @@ impl AuthState {
             _ => Err(err(405, "method not allowed")),
         }
     }
+    fn parse_oidc_config(
+        &self,
+        scope: AuthScope<'_>,
+        body: &Value,
+    ) -> Result<OidcConfig, AuthError> {
+        reject_unknown(
+            body,
+            &[
+                "oidc_discovery_url",
+                "oidc_discovery_ca_pem",
+                "oidc_client_id",
+                "oidc_client_secret",
+                "jwt_supported_algs",
+                "pkce_s256_enrolled",
+            ],
+        )?;
+        let previous = self.oidc_at(scope).and_then(|state| state.config.as_ref());
+        let config = OidcConfig {
+            transport: remote::parse_https_transport(
+                body,
+                "oidc_discovery_ca_pem",
+                previous.and_then(|config| config.transport.as_ref()),
+                previous.is_some(),
+            )?,
+            pkce_s256_enrolled: body
+                .get("pkce_s256_enrolled")
+                .map(|v| {
+                    v.as_bool()
+                        .ok_or_else(|| bad("PKCE enrollment must be boolean"))
+                })
+                .transpose()?
+                .unwrap_or(false),
+            oidc_discovery_url: string_field(body, "oidc_discovery_url")?.into(),
+            oidc_client_id: string_field(body, "oidc_client_id")?.into(),
+            oidc_client_secret: string_field(body, "oidc_client_secret")?.into(),
+            jwt_supported_algs: if body.get("jwt_supported_algs").is_some() {
+                claim_values(body, "jwt_supported_algs")?
+            } else {
+                BTreeSet::from(["RS256".into()])
+            },
+        };
+        config.validate()?;
+        // A new issuer/client requires a new accessor, preventing
+        // an equal subject in another realm inheriting old policies.
+        if self
+            .oidc_at(scope)
+            .and_then(|s| s.config.as_ref())
+            .is_some_and(|old| {
+                old.oidc_discovery_url != config.oidc_discovery_url
+                    || old.oidc_client_id != config.oidc_client_id
+            })
+        {
+            return Err(err(
+                409,
+                "changing OIDC issuer or client requires a new auth mount",
+            ));
+        }
+        Ok(config)
+    }
+
+    pub(crate) fn prepare_oidc_config(
+        &self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<OidcConfigPlan>, AuthError> {
+        if !matches!(method, "POST" | "PUT") {
+            return Ok(None);
+        }
+        let Some((mount, "config")) = path
+            .strip_prefix("auth/")
+            .and_then(|rest| rest.rsplit_once('/'))
+        else {
+            return Ok(None);
+        };
+        let Some(mount_revision) = self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .cloned()
+            .filter(|entry| entry.kind == "oidc")
+        else {
+            return Ok(None);
+        };
+        let actor = self.permission(principal, namespace, path, "update", now)?;
+        self.authorize_request(actor, namespace, path, "sudo", now)?;
+        let scope = AuthScope { namespace, mount };
+        let proposed = self.parse_oidc_config(scope, body)?;
+        Ok(Some(OidcConfigPlan {
+            namespace: namespace.into(),
+            mount: mount.into(),
+            mount_revision,
+            previous: self.oidc_at(scope).and_then(|state| state.config.clone()),
+            proposed,
+            now,
+            started: std::time::Instant::now(),
+        }))
+    }
+
+    pub(crate) fn finish_oidc_config(
+        &mut self,
+        plan: OidcConfigPlan,
+        actor: &Principal,
+        _observation: OidcConfigObservation,
+    ) -> Result<AuthResponse, AuthError> {
+        let path = format!("auth/{}/config", plan.mount);
+        self.authorize_sudo_request(actor, &plan.namespace, &path, "update", plan.observed_now())?;
+        let scope = AuthScope {
+            namespace: &plan.namespace,
+            mount: &plan.mount,
+        };
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
+            || self.oidc_at(scope).and_then(|state| state.config.as_ref()) != plan.previous.as_ref()
+        {
+            return Err(err(409, "OIDC configuration changed during preflight"));
+        }
+        let state = self.oidc_mut(scope);
+        let mutated = state.config.as_ref() != Some(&plan.proposed) || !state.sessions.is_empty();
+        state.config = Some(plan.proposed);
+        state.sessions.clear();
+        Ok(empty(mutated))
+    }
+
+    pub(crate) fn has_oidc_api_https_state(&self) -> bool {
+        self.oidc_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount
+                    .config
+                    .as_ref()
+                    .is_some_and(|config| config.transport.is_some())
+            })
+    }
+
     pub(crate) fn check_oidc_enrollment(
         &self,
         namespace: &str,
@@ -738,7 +922,12 @@ impl AuthState {
                 })
                 .and_then(|s| s.config.as_ref())
         {
-            c.metadata(outbound)?;
+            c.validate()?;
+            if c.transport.is_none() {
+                outbound
+                    .endpoint(&c.oidc_discovery_url, "https")
+                    .map_err(|_| err(503, "OIDC endpoint not host-enrolled"))?;
+            }
         }
         Ok(())
     }
@@ -1002,6 +1191,7 @@ mod tests {
             .unwrap()
             .unwrap();
         let config = OidcConfig {
+            transport: None,
             oidc_discovery_url: "https://issuer.example:443/realm".into(),
             oidc_client_id: "client".into(),
             oidc_client_secret: "private-client-secret".into(),
@@ -1181,5 +1371,108 @@ mod tests {
         let (mut state, _, mut body) = setup();
         body["redirect_uri"] = json!("https://other.example:443/callback");
         assert!(state.consume_oidc("", "browser", &body, 110).is_err());
+    }
+    fn config_body() -> Value {
+        json!({"oidc_discovery_url":"https://issuer.example:443/realm","oidc_client_id":"client","oidc_client_secret":"private-client-secret","jwt_supported_algs":["RS256"]})
+    }
+
+    #[test]
+    fn missing_oidc_transport_preserves_pending_session_digest_on_reopen() {
+        let (state, _, callback) = setup();
+        let encoded = serde_json::to_vec(&state).unwrap();
+        let mut reopened: AuthState = serde_json::from_slice(&encoded).unwrap();
+        assert_eq!(serde_json::to_vec(&reopened).unwrap(), encoded);
+        reopened.validate_oidc_state().unwrap();
+        assert!(!reopened.has_oidc_api_https_state());
+        assert!(
+            reopened
+                .consume_oidc("", "browser", &callback, 110)
+                .unwrap()
+                .is_some()
+        );
+    }
+
+    #[test]
+    fn oidc_config_prepare_is_pure_and_only_active_ca_promotes_legacy_transport() {
+        let (mut state, raw, _) = setup();
+        let actor = state.authenticate(&raw, 110).unwrap();
+        let before = serde_json::to_vec(&state).unwrap();
+        let plan = state
+            .prepare_oidc_config(
+                Some(&actor),
+                "",
+                "auth/browser/config",
+                "POST",
+                &config_body(),
+                110,
+            )
+            .unwrap()
+            .unwrap();
+        assert!(plan.proposed.transport.is_none());
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+        let mut body = config_body();
+        body["oidc_discovery_ca_pem"] = json!("");
+        let plan = state
+            .prepare_oidc_config(Some(&actor), "", "auth/browser/config", "POST", &body, 110)
+            .unwrap()
+            .unwrap();
+        assert!(plan.proposed.transport.is_some());
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+        state
+            .finish_oidc_config(plan, &actor, OidcConfigObservation)
+            .unwrap();
+        assert!(state.has_oidc_api_https_state());
+        assert!(
+            state
+                .oidc_at(AuthScope {
+                    namespace: "",
+                    mount: "browser"
+                })
+                .unwrap()
+                .sessions
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn oidc_configuration_preflight_rechecks_current_actor_and_ca_binding() {
+        for revoke in [false, true] {
+            let (mut state, raw, _) = setup();
+            let actor = state.authenticate(&raw, 110).unwrap();
+            let plan = state
+                .prepare_oidc_config(
+                    Some(&actor),
+                    "",
+                    "auth/browser/config",
+                    "POST",
+                    &config_body(),
+                    110,
+                )
+                .unwrap()
+                .unwrap();
+            if revoke {
+                state.tokens.remove(&actor.digest);
+            } else {
+                state
+                    .oidc_mut(AuthScope {
+                        namespace: "",
+                        mount: "browser",
+                    })
+                    .config
+                    .as_mut()
+                    .unwrap()
+                    .transport = Some(AuthHttpsTransport::default());
+            }
+            let before = serde_json::to_vec(&state).unwrap();
+            assert_eq!(
+                state
+                    .finish_oidc_config(plan, &actor, OidcConfigObservation)
+                    .err()
+                    .unwrap()
+                    .status,
+                if revoke { 403 } else { 409 }
+            );
+            assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+        }
     }
 }

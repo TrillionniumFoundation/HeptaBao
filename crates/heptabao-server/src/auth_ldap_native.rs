@@ -642,12 +642,7 @@ impl AuthState {
         }
         let (policies, groups) =
             self.native_ldap_authority(scope, &plan.name, observation.groups)?;
-        let elapsed = plan.started.elapsed();
-        let now = plan.now.saturating_add(
-            elapsed
-                .as_secs()
-                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-        );
+        let now = plan.observed_now();
         let mut response = self.issue_native_online_token(
             scope,
             &alias,

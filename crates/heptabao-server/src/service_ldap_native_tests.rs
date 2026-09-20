@@ -612,3 +612,100 @@ fn native_ldap_login_does_not_cross_missing_mapping_mount_or_activation_fences()
     }
     Ok(())
 }
+
+#[test]
+fn wrapped_native_ldap_login_binds_identity_before_single_commit_and_rejects_stale_config()
+-> TestResult {
+    for stale in [false, true] {
+        let root = Root::new();
+        let Fixture {
+            mut service,
+            root_token,
+            entity,
+            ..
+        } = fixture(&root)?;
+        let plan = pending(
+            &mut service,
+            "auth/ldap/login/alice",
+            "",
+            json!({"password":"synthetic-directory-password"}),
+            100,
+            Some(60),
+        )?;
+        if stale {
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "auth/ldap/config",
+                    &root_token,
+                    json!({"token_ttl":121})
+                )
+                .status,
+                204
+            );
+        }
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let response = service.finish_external_request(
+            *plan,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Ldap(
+                LdapLoginObservation::native("Case Person", groups(true)),
+            ))),
+        );
+        if stale {
+            assert_eq!(response.status, 409);
+            assert!(response.body.get("auth").is_none());
+            assert!(response.body.get("wrap_info").is_none());
+            assert_eq!(service.state_digest, before);
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+        } else {
+            assert_eq!(response.status, 200);
+            assert!(response.body.get("auth").is_none_or(Value::is_null));
+            assert_eq!(
+                response.body["wrap_info"]["creation_path"],
+                "auth/ldap/login/alice"
+            );
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation + 1
+            );
+            let wrapper = response.body["wrap_info"]["token"]
+                .as_str()
+                .ok_or("wrapper")?
+                .to_owned();
+            let unwrapped = call(
+                &mut service,
+                "POST",
+                "sys/wrapping/unwrap",
+                &wrapper,
+                json!({}),
+            );
+            assert_eq!(unwrapped.status, 200);
+            assert_eq!(unwrapped.body["auth"]["entity_id"], entity);
+            assert_eq!(
+                unwrapped.body["auth"]["identity_policies"],
+                json!(["directory-only"])
+            );
+            assert_eq!(
+                unwrapped.body["auth"]["accessor"],
+                response.body["wrap_info"]["wrapped_accessor"]
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/wrapping/unwrap",
+                    &wrapper,
+                    json!({})
+                )
+                .status,
+                400
+            );
+        }
+    }
+    Ok(())
+}

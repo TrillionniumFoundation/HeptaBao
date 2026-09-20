@@ -2,6 +2,8 @@
 """Trusted socket-origin CIDRs through three-process mTLS HA forwarding."""
 from __future__ import annotations
 import json
+import http.client
+import time
 from pathlib import Path
 import re
 import shutil
@@ -9,12 +11,63 @@ import tempfile
 from bao_http import SafeArgumentParser, private_write
 from core_isolation import ROOT, file_hash
 from online_evidence import admit_output, source_identity
-from ha_destructive import Cluster
+from ha_destructive import Cluster, FixtureError
 from radius_cidrs_live import SourceClient, Trace
 from radius_native_live import NativeRadius, SECRET, PASSWORD
 
 
-def run(binary,root,rows,inherited):
+SAFE_CLUSTER_FAILURES = {
+    'health_success_without_active_authority',
+    'multiple_active_health_responses',
+    'unique_active_leader_not_observed',
+    'namespaced_health_catchup_timeout',
+    'health_response_bounds',
+}
+
+def health_snapshot(cluster):
+    rows=[]
+    for node in cluster.running():
+        item={'node_id':node.node_id}
+        try:
+            status,body=node.call('GET','sys/health',timeout=2)
+            item['status']=status
+            for name in ('ha_active','ha_application_ready','standby','sealed','recovery_required'):
+                if type(body.get(name)) is bool:item[name]=body[name]
+        except Exception:item['unavailable']=True
+        rows.append(item)
+    return rows
+
+
+def namespace_health(node, method, namespace):
+    connection=http.client.HTTPSConnection('localhost',node.http_port,context=node.context,timeout=4)
+    try:
+        connection.request(method,'/v1/sys/health',headers={'X-Vault-Namespace':namespace})
+        response=connection.getresponse();raw=response.read(32769)
+        if len(raw)>32768:raise FixtureError('health_response_bounds')
+        return response.status,json.loads(raw) if raw else {}
+    finally:connection.close()
+
+def await_namespaced_health(cluster,namespace):
+    # No token-bearing or ordinary application request may heal readiness here.
+    # HEAD must first synchronize the newly elected leader before its namespace
+    # resolution; GET then proves the complete authenticated readiness flags.
+    deadline=time.monotonic()+30
+    while time.monotonic()<deadline:
+        for node in cluster.running():
+            try:
+                status,_=namespace_health(node,'HEAD',namespace)
+                if status!=200:continue
+                status,body=namespace_health(node,'GET',namespace)
+            except (OSError,http.client.HTTPException):continue
+            if status==200:
+                if body.get('ha_active') is not True or body.get('ha_application_ready') is not True or body.get('standby') is not False:
+                    raise FixtureError('health_success_without_active_authority')
+                return node
+        time.sleep(.1)
+    raise FixtureError('namespaced_health_catchup_timeout')
+
+
+def run(binary,root,rows,inherited,diagnostics):
     cluster=None;provider=NativeRadius(require_ma=True)
     try:
         cluster=Cluster(binary,root/'cluster')
@@ -47,19 +100,32 @@ def run(binary,root,rows,inherited):
         forward.call('ha.finite_second','GET','cidr-kv/item',token=finite['client_token'],source='127.0.0.2')
         forward.call('ha.finite_exhausted','GET','cidr-kv/item',token=finite['client_token'],source='127.0.0.2',status=403)
         primary.config('ha.clear_config',{'token_bound_cidrs':[],'token_num_uses':0})
-        leader.stop();replacement=cluster.leader();after=trace(replacement)
+        primary.call('ha.new_namespace','POST','sys/namespaces/health-created',{},status=204)
+        leader.stop()
+        caught_up=await_namespaced_health(cluster,'health-created')
+        replacement=cluster.leader();after=trace(replacement)
+        after.check('ha.health_only_catchup',replacement is caught_up)
+        after.check('ha.maintenance_disabled',all(json.loads((node.root/'server.json').read_text()).get('lifecycle_interval_seconds')==0 for node in cluster.nodes))
         after.check('ha.new_leader',replacement is not leader)
         after.bounds('ha.new_leader_snapshot',token,['127.0.0.2'])
         remaining=next(node for node in cluster.running() if node is not replacement);after_forward=trace(remaining)
         after_forward.call('ha.after_election_denied','GET','cidr-kv/item',token=token['client_token'],status=403)
         after_forward.renew_all('ha.after_election_renew',token,self_source='127.0.0.2',admin_source='127.0.0.1')
+        remaining.stop()
+        health=after.call('ha.no_quorum_health','GET','sys/health',status=503)
+        after.check('ha.no_quorum_not_active',health.get('ha_active') is False)
+        after.call('ha.no_quorum_head','HEAD','sys/health',status=503)
         after.check('ha.receipt_no_secrets',not any(value in json.dumps(rows) for value in [SECRET.decode(),PASSWORD.decode(),token['client_token'],finite['client_token']]))
         after.check('ha.complete',True)
+    except Exception:
+        if cluster is not None:
+            diagnostics['before_cleanup']=health_snapshot(cluster)
+        raise
     finally:
         if cluster is not None:cluster.close()
         provider.close()
 
-MILESTONES={'ha.forwarded_login','ha.forwarded_wrong_login','ha.follower.wrong_read','ha.forwarded_renew.accessor.shape','ha.finite_second','ha.finite_exhausted','ha.new_leader','ha.after_election_denied','ha.after_election_renew.self.shape','ha.receipt_no_secrets','ha.complete'}
+MILESTONES={'ha.health_only_catchup','ha.maintenance_disabled','ha.no_quorum_health','ha.no_quorum_head','ha.no_quorum_not_active','ha.forwarded_login','ha.forwarded_wrong_login','ha.follower.wrong_read','ha.forwarded_renew.accessor.shape','ha.finite_second','ha.finite_exhausted','ha.new_leader','ha.after_election_denied','ha.after_election_renew.self.shape','ha.receipt_no_secrets','ha.complete'}
 def complete(rows):
     names=[r.get('case') for r in rows]
     return bool(rows) and all(r.get('passed') is True for r in rows) and len(names)==len(set(names)) and {'radius_cidrs.'+n for n in MILESTONES}.issubset(names) and names[-1]=='radius_cidrs.ha.complete'
@@ -71,12 +137,12 @@ def main():
     if not re.fullmatch(r'[0-9a-f]{40}',args.build_source_commit):parser.error('full build source commit required')
     binary=Path(args.binary).resolve(strict=True);output=Path(args.output).absolute();parent=admit_output(output)
     before=source_identity(ROOT,binary);runner=file_hash(Path(__file__));root=Path(tempfile.mkdtemp(prefix='heptabao-cidrs-ha-'));root.chmod(0o700)
-    report={'schema':'heptabao.radius-cidrs-ha.v1','checks':[],'bootstrap_checks':[],'same_host':True,'synthetic_only':True,'physical_fault_qualification':False,'full_openbao_compatibility':False,'source_identity':before,'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','runner_sha256':runner}
+    report={'schema':'heptabao.radius-cidrs-ha.v1','checks':[],'bootstrap_checks':[],'diagnostics':{},'same_host':True,'synthetic_only':True,'physical_fault_qualification':False,'full_openbao_compatibility':False,'source_identity':before,'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','runner_sha256':runner}
     try:
-        run(binary,root,report['checks'],report['bootstrap_checks'])
+        run(binary,root,report['checks'],report['bootstrap_checks'],report['diagnostics'])
         report['status']='passed' if complete(report['checks']) and bool(report['bootstrap_checks']) else 'failed'
     except Exception as error:
-        report['status']='failed';report['safe_failure_code']=next((r['case'] for r in reversed(report['checks']) if not r['passed']),'fixture_'+type(error).__name__)
+        report['status']='failed';report['safe_failure_code']=next((r['case'] for r in reversed(report['checks']) if not r['passed']),str(error) if isinstance(error,FixtureError) and str(error) in SAFE_CLUSTER_FAILURES else 'fixture_'+type(error).__name__)
     finally:
         shutil.rmtree(root);report['source_and_binary_unchanged']=before==source_identity(ROOT,binary);report['runner_unchanged']=runner==file_hash(Path(__file__))
         if not report['source_and_binary_unchanged'] or not report['runner_unchanged']:report['status']='failed';report['safe_failure_code']='source_changed'

@@ -1,15 +1,50 @@
-//! JWT verification through a deployment-enrolled JWKS or OIDC discovery
-//! endpoint. This is discovery-backed JWT login, not browser authorization-code
+//! JWT verification through API-configured HTTPS JWKS or OIDC discovery, with
+//! deployment enrollment retained for legacy configurations lacking transport.
+//! This is discovery-backed JWT login, not browser authorization-code
 //! flow. Every login refreshes without stale fallback; a key removed remotely
 //! cannot be resurrected by a process restart or an old replicated cache.
 use super::*;
-use crate::outbound::{Outbound, Target};
+#[cfg(test)]
+use crate::outbound::auth_https_deadline;
+use crate::outbound::{AuthHttpsTransport, Outbound, parse_auth_https_target};
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RemoteJwtSource {
     pub jwks_url: Option<String>,
     pub oidc_discovery_url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transport: Option<AuthHttpsTransport>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub inactive_ca_pem: String,
+}
+
+pub(super) fn parse_https_transport(
+    body: &Value,
+    field: &str,
+    previous_transport: Option<&AuthHttpsTransport>,
+    had_previous_config: bool,
+) -> Result<Option<AuthHttpsTransport>, AuthError> {
+    if let Some(value) = body.get(field) {
+        let certificate = if value.is_null() {
+            ""
+        } else {
+            value
+                .as_str()
+                .ok_or_else(|| bad("CA PEM must be a string"))?
+        };
+        if certificate.len() > 64 * 1024 {
+            return Err(bad("CA PEM exceeds bound"));
+        }
+        return Ok(Some(AuthHttpsTransport {
+            certificate: certificate.into(),
+        }));
+    }
+    if had_previous_config && previous_transport.is_none() {
+        Ok(None)
+    } else {
+        Ok(Some(AuthHttpsTransport::default()))
+    }
 }
 
 pub(crate) struct RemoteJwtLoginPlan {
@@ -39,15 +74,28 @@ impl RemoteJwtConfigPlan {
     pub(crate) fn execute(
         &self,
         outbound: &Outbound,
+        deadline: std::time::Instant,
     ) -> Result<RemoteJwtLoginObservation, AuthError> {
         let remote = self
             .proposed
             .remote
             .as_ref()
             .ok_or_else(|| bad("remote JWT source disappeared"))?;
-        Ok(RemoteJwtLoginObservation {
-            keys: remote.load(outbound, &self.proposed.issuer)?,
-        })
+        let result = (|| {
+            let keys = if remote.oidc_discovery_url.is_some() {
+                // Official discovery config checks metadata, not a JWKS fetch.
+                let _ = remote.key_url(outbound, &self.proposed.issuer, deadline)?;
+                BTreeMap::new()
+            } else {
+                remote.load_at(outbound, &self.proposed.issuer, deadline)?
+            };
+            Ok(RemoteJwtLoginObservation { keys })
+        })();
+        if remote.transport.is_some() {
+            result.map_err(|_: AuthError| bad("JWT remote configuration check failed"))
+        } else {
+            result
+        }
     }
 
     pub(crate) fn observed_now(&self) -> u64 {
@@ -85,6 +133,7 @@ impl RemoteJwtLoginPlan {
     pub(crate) fn execute(
         &self,
         outbound: &Outbound,
+        deadline: std::time::Instant,
     ) -> Result<RemoteJwtLoginObservation, AuthError> {
         let remote = self
             .config
@@ -92,7 +141,7 @@ impl RemoteJwtLoginPlan {
             .as_ref()
             .ok_or_else(|| bad("remote JWT source disappeared"))?;
         Ok(RemoteJwtLoginObservation {
-            keys: remote.load(outbound, &self.config.issuer)?,
+            keys: remote.load_at(outbound, &self.config.issuer, deadline)?,
         })
     }
 }
@@ -107,7 +156,7 @@ fn same_remote_binding(left: &JwtConfig, right: &JwtConfig) -> bool {
         && left.maximum_token_lifetime_seconds == right.maximum_token_lifetime_seconds
 }
 impl RemoteJwtSource {
-    pub(super) fn parse(body: &Value) -> Result<Option<Self>, AuthError> {
+    pub(super) fn parse(body: &Value, previous: Option<&Self>) -> Result<Option<Self>, AuthError> {
         let jwks_url = optional(body, "jwks_url")?;
         let oidc_discovery_url = optional(body, "oidc_discovery_url")?;
         if jwks_url.is_none() && oidc_discovery_url.is_none() {
@@ -119,34 +168,89 @@ impl RemoteJwtSource {
         {
             return Err(bad("exactly one JWT key source is required"));
         }
+        let active_ca = if jwks_url.is_some() {
+            "jwks_ca_pem"
+        } else {
+            "oidc_discovery_ca_pem"
+        };
+        let inactive_ca = if jwks_url.is_some() {
+            "oidc_discovery_ca_pem"
+        } else {
+            "jwks_ca_pem"
+        };
+        let transport = parse_https_transport(
+            body,
+            active_ca,
+            previous.and_then(|old| old.transport.as_ref()),
+            previous.is_some(),
+        )?;
+        let inactive_ca_pem = match body.get(inactive_ca) {
+            None | Some(Value::Null) => String::new(),
+            Some(value) => value
+                .as_str()
+                .filter(|value| value.len() <= 64 * 1024)
+                .ok_or_else(|| bad("CA PEM must be a bounded string"))?
+                .to_owned(),
+        };
         for url in [jwks_url.as_deref(), oidc_discovery_url.as_deref()]
             .into_iter()
             .flatten()
         {
-            Target::parse(url, "https").map_err(bad)?;
+            parse_auth_https_target(url, transport.as_ref()).map_err(bad)?;
+            if let Some(transport) = &transport {
+                transport.validate_configuration(url).map_err(bad)?;
+            }
         }
         Ok(Some(Self {
             jwks_url,
             oidc_discovery_url,
+            transport,
+            inactive_ca_pem,
         }))
     }
+
+    pub(super) fn ca_pem(&self, jwks: bool) -> &str {
+        if jwks == self.jwks_url.is_some() {
+            self.transport
+                .as_ref()
+                .map_or("", |transport| transport.certificate.as_str())
+        } else {
+            &self.inactive_ca_pem
+        }
+    }
+
+    #[cfg(test)]
     fn load(
         &self,
         outbound: &Outbound,
         issuer: &str,
     ) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
-        let url = if let Some(discovery) = &self.oidc_discovery_url {
-            let target = Target::parse(discovery, "https").map_err(bad)?;
+        self.load_at(outbound, issuer, auth_https_deadline())
+    }
+
+    fn key_url(
+        &self,
+        outbound: &Outbound,
+        issuer: &str,
+        deadline: std::time::Instant,
+    ) -> Result<String, AuthError> {
+        if let Some(discovery) = &self.oidc_discovery_url {
+            let target =
+                parse_auth_https_target(discovery, self.transport.as_ref()).map_err(bad)?;
             if discovery != issuer {
                 return Err(bad(
                     "discovery URL must exactly match the configured issuer",
                 ));
             }
             let metadata = outbound
-                .get_json(&format!(
-                    "{}/.well-known/openid-configuration",
-                    discovery.trim_end_matches('/')
-                ))
+                .get_auth_json(
+                    &format!(
+                        "{}/.well-known/openid-configuration",
+                        discovery.trim_end_matches('/')
+                    ),
+                    self.transport.as_ref(),
+                    deadline,
+                )
                 .map_err(|_| err(503, "OIDC discovery is unavailable or untrusted"))?;
             if metadata.get("issuer").and_then(Value::as_str) != Some(issuer) {
                 return Err(bad("OIDC discovery issuer mismatch"));
@@ -155,23 +259,33 @@ impl RemoteJwtSource {
                 .get("jwks_uri")
                 .and_then(Value::as_str)
                 .ok_or_else(|| bad("OIDC discovery has no JWKS URI"))?;
-            let keys = Target::parse(uri, "https").map_err(bad)?;
-            // Even another enrolled origin is not silently trusted by discovery.
+            let keys = parse_auth_https_target(uri, self.transport.as_ref()).map_err(bad)?;
             if keys.origin != target.origin {
                 return Err(bad("cross-origin OIDC JWKS URI is forbidden"));
             }
-            uri.to_owned()
+            Ok(uri.to_owned())
         } else {
             self.jwks_url
                 .clone()
-                .ok_or_else(|| bad("missing JWT key source"))?
-        };
-        let document = outbound.get_json(&url).map_err(|_| {
-            err(
-                503,
-                "JWKS is unavailable or untrusted; stale fallback forbidden",
-            )
-        })?;
+                .ok_or_else(|| bad("missing JWT key source"))
+        }
+    }
+
+    fn load_at(
+        &self,
+        outbound: &Outbound,
+        issuer: &str,
+        deadline: std::time::Instant,
+    ) -> Result<BTreeMap<String, JwtKeyRecord>, AuthError> {
+        let url = self.key_url(outbound, issuer, deadline)?;
+        let document = outbound
+            .get_auth_json(&url, self.transport.as_ref(), deadline)
+            .map_err(|_| {
+                err(
+                    503,
+                    "JWKS is unavailable or untrusted; stale fallback forbidden",
+                )
+            })?;
         parse_jwks(&document)
     }
 }
@@ -297,6 +411,54 @@ impl AuthState {
         .ok_or_else(|| err(404, "JWT login route disappeared during refresh"))
     }
 
+    pub(crate) fn has_jwt_api_https_state(&self) -> bool {
+        self.jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount
+                    .config
+                    .as_ref()
+                    .and_then(|config| config.remote.as_ref())
+                    .is_some_and(|remote| {
+                        remote.transport.is_some() || !remote.inactive_ca_pem.is_empty()
+                    })
+            })
+    }
+
+    pub(crate) fn validate_jwt_api_https_state(&self) -> Result<(), AuthError> {
+        for remote in self
+            .jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .filter_map(|mount| {
+                mount
+                    .config
+                    .as_ref()
+                    .and_then(|config| config.remote.as_ref())
+            })
+        {
+            if remote.jwks_url.is_some() == remote.oidc_discovery_url.is_some()
+                || remote.inactive_ca_pem.len() > 64 * 1024
+            {
+                return Err(bad("invalid remote JWT source"));
+            }
+            for url in [
+                remote.jwks_url.as_deref(),
+                remote.oidc_discovery_url.as_deref(),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                parse_auth_https_target(url, remote.transport.as_ref()).map_err(bad)?;
+                if let Some(transport) = &remote.transport {
+                    transport.validate_configuration(url).map_err(bad)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_remote_jwt_state(&self) -> bool {
         self.jwt_mounts.values().any(|mounts| {
             mounts.values().any(|s| {
@@ -385,14 +547,28 @@ impl AuthState {
             return Err(err(409, "JWT configuration changed during preflight"));
         }
         let mut proposed = plan.proposed;
-        proposed.keys = observation.keys;
-        let mut validation = proposed.clone();
-        if validation.audiences.is_empty() {
-            validation
-                .audiences
-                .insert("configuration-shape-only".into());
+        proposed.keys = if observation.keys.is_empty() {
+            current
+                .filter(|current| same_remote_binding(current, &proposed))
+                .map(|current| current.keys.clone())
+                .unwrap_or_default()
+        } else {
+            observation.keys
+        };
+        if !proposed.keys.is_empty()
+            || proposed
+                .remote
+                .as_ref()
+                .is_none_or(|remote| remote.oidc_discovery_url.is_none())
+        {
+            let mut validation = proposed.clone();
+            if validation.audiences.is_empty() {
+                validation
+                    .audiences
+                    .insert("configuration-shape-only".into());
+            }
+            validation.verifier()?;
         }
-        validation.verifier()?;
         let mutated = current != Some(&proposed);
         self.jwt_at_mut(scope).config = Some(proposed);
         Ok(empty(mutated))
@@ -440,6 +616,8 @@ mod tests {
         config.remote = Some(RemoteJwtSource {
             jwks_url: Some("https://issuer.example/keys".into()),
             oidc_discovery_url: None,
+            transport: None,
+            inactive_ca_pem: String::new(),
         });
         let observed = RemoteJwtLoginObservation {
             keys: config.keys.clone(),
@@ -534,13 +712,15 @@ mod tests {
             json!({"jwks_url":"https://issuer:443/keys","keys":[]}),
             json!({"jwks_url":"https://issuer:443/keys","oidc_discovery_url":"https://issuer:443"}),
             json!({"jwks_url":"http://issuer:443/keys"}),
-            json!({"oidc_discovery_url":"https://issuer:443/../x"}),
+            json!({"oidc_discovery_url":"https://issuer:443/#fragment"}),
         ] {
-            assert!(RemoteJwtSource::parse(&body).is_err());
+            assert!(RemoteJwtSource::parse(&body, None).is_err());
         }
         let source = RemoteJwtSource {
             jwks_url: Some("https://issuer:443/keys".into()),
             oidc_discovery_url: None,
+            transport: None,
+            inactive_ca_pem: String::new(),
         };
         assert!(
             source
@@ -669,5 +849,106 @@ mod tests {
             );
             assert_eq!(serde_json::to_vec(&state).unwrap(), before);
         }
+    }
+
+    #[test]
+    fn native_https_is_default_only_for_fresh_or_explicit_active_ca_configuration() {
+        let body = json!({"jwks_url":"https://issuer.example:443/keys"});
+        let fresh = RemoteJwtSource::parse(&body, None).unwrap().unwrap();
+        assert!(fresh.transport.is_some());
+        let legacy = RemoteJwtSource {
+            jwks_url: Some("https://issuer.example:443/keys".into()),
+            oidc_discovery_url: None,
+            transport: None,
+            inactive_ca_pem: String::new(),
+        };
+        assert_eq!(
+            serde_json::to_value(&legacy).unwrap(),
+            json!({"jwks_url":"https://issuer.example:443/keys","oidc_discovery_url":null})
+        );
+        let rewritten = RemoteJwtSource::parse(&body, Some(&legacy))
+            .unwrap()
+            .unwrap();
+        assert!(rewritten.transport.is_none());
+        let inactive=RemoteJwtSource::parse(&json!({"jwks_url":"https://issuer.example:443/keys","oidc_discovery_ca_pem":"synthetic-inactive-field"}),Some(&legacy)).unwrap().unwrap();
+        assert!(inactive.transport.is_none());
+        assert_eq!(inactive.ca_pem(false), "synthetic-inactive-field");
+        for value in [Value::Null, json!("")] {
+            let promoted = RemoteJwtSource::parse(
+                &json!({"jwks_url":"https://issuer.example/keys","jwks_ca_pem":value}),
+                Some(&legacy),
+            )
+            .unwrap()
+            .unwrap();
+            assert_eq!(promoted.transport.unwrap().certificate, "");
+        }
+    }
+
+    #[test]
+    fn ca_authority_changes_invalidate_inflight_login() {
+        let (mut state, _, plan, observed) = login_fixture();
+        state
+            .jwt_at_mut(AuthScope {
+                namespace: "",
+                mount: "nested/jwt",
+            })
+            .config
+            .as_mut()
+            .unwrap()
+            .remote
+            .as_mut()
+            .unwrap()
+            .transport = Some(AuthHttpsTransport::default());
+        let before = serde_json::to_vec(&state).unwrap();
+        assert_eq!(
+            state
+                .finish_remote_jwt_login(plan, observed)
+                .err()
+                .unwrap()
+                .status,
+            409
+        );
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+    }
+
+    #[test]
+    fn metadata_only_preflight_keeps_equal_binding_key_cache_and_noop_result() {
+        let (mut state, root, _, _) = login_fixture();
+        let scope = AuthScope {
+            namespace: "",
+            mount: "nested/jwt",
+        };
+        let config = state.jwt_at_mut(scope).config.as_mut().unwrap();
+        config.issuer = "https://issuer.example:443".into();
+        config.remote = Some(RemoteJwtSource {
+            jwks_url: None,
+            oidc_discovery_url: Some(config.issuer.clone()),
+            transport: None,
+            inactive_ca_pem: String::new(),
+        });
+        let body = json!({"issuer":"https://issuer.example:443","oidc_discovery_url":"https://issuer.example:443","audiences":["service"],"clock_skew_seconds":0});
+        let plan = state
+            .prepare_remote_jwt_config(
+                Some(&root),
+                "",
+                "auth/nested/jwt/config",
+                "POST",
+                &body,
+                1000,
+            )
+            .unwrap()
+            .unwrap();
+        let before = serde_json::to_vec(&state).unwrap();
+        let result = state
+            .finish_remote_jwt_config(
+                plan,
+                &root,
+                RemoteJwtLoginObservation {
+                    keys: BTreeMap::new(),
+                },
+            )
+            .unwrap();
+        assert!(!result.mutated);
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
     }
 }
