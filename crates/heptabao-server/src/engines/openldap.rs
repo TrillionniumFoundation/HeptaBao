@@ -476,7 +476,14 @@ impl OpenLdap {
                     "OpenLDAP revoke intent no longer matches its role",
                 ));
             }
-            (None, entry.attributes)
+            (
+                None,
+                entry
+                    .attributes
+                    .into_iter()
+                    .filter(|(name, _)| !name.eq_ignore_ascii_case("description"))
+                    .collect(),
+            )
         };
         self.validate()?;
         Ok(EffectPlan {
@@ -925,9 +932,13 @@ impl OpenLdap {
             .clone();
         let lease = self
             .leases
+            .get(lease_id)
+            .ok_or_else(|| err(404, "OpenLDAP lease not found"))?
+            .clone();
+        self.leases
             .get_mut(lease_id)
-            .ok_or_else(|| err(404, "OpenLDAP lease not found"))?;
-        lease.phase = Phase::PendingRevoke;
+            .ok_or_else(|| err(404, "OpenLDAP lease not found"))?
+            .phase = Phase::PendingRevoke;
         let plan = EffectPlan {
             namespace: service_namespace.to_owned(),
             mount: mount.to_owned(),
@@ -958,7 +969,11 @@ impl OpenLdap {
                         "OpenLDAP revoke intent no longer matches its role",
                     ));
                 }
-                entry.attributes
+                entry
+                    .attributes
+                    .into_iter()
+                    .filter(|(name, _)| !name.eq_ignore_ascii_case("description"))
+                    .collect()
             },
             request_digest: lease.request_digest.clone(),
             config_digest: lease.config_digest.clone(),

@@ -1255,12 +1255,18 @@ fn ldap_reconcile_tombstone(
         observed = ldap_observe(stream, 4, dn)?;
     }
     let entry = observed.ok_or("LDAP tombstone readback is absent")?;
-    if entry.marker.as_deref() == Some(tombstone.as_str()) && !entry.password_present {
-        return Ok(());
-    }
-    if entry.marker.as_deref() != Some(marker.as_str()) {
+    let assertion_marker = if entry.marker.as_deref() == Some(tombstone.as_str()) {
+        if !entry.password_present {
+            return Ok(());
+        }
+        // A provider may have applied the marker before losing the password
+        // deletion. The tombstone itself now fences this retry safely.
+        tombstone.as_str()
+    } else if entry.marker.as_deref() == Some(marker.as_str()) {
+        marker.as_str()
+    } else {
         return Err("LDAP entry is not owned by this durable intent");
-    }
+    };
     let changes = vec![
         ("description".to_owned(), vec![tombstone.clone()]),
         // RFC 4511 replace with an empty set removes the entire attribute.
@@ -1268,7 +1274,7 @@ fn ldap_reconcile_tombstone(
     ];
     ldap_write(
         stream,
-        &ldap_modify_request(5, dn, &changes, Some(("description", &marker)))?,
+        &ldap_modify_request(5, dn, &changes, Some(("description", assertion_marker)))?,
     )?;
     // A concurrent replay may have already installed the exact tombstone.
     // AssertionFailed is safe only if readback proves that terminal state.
@@ -2017,6 +2023,25 @@ mod tests {
         let success = ber_value(0x30, &success)?;
         assert!(read_ldap_bind_response(&mut success.as_slice())?);
 
+        let long_diagnostic = vec![b'x'; 130];
+        let long_response = ber_value(
+            0x30,
+            &[
+                ber_value(0x02, &[0x01])?,
+                ber_value(
+                    0x61,
+                    &[
+                        ber_value(0x0a, &[0])?,
+                        ber_value(0x04, b"")?,
+                        ber_value(0x04, &long_diagnostic)?,
+                    ]
+                    .concat(),
+                )?,
+            ]
+            .concat(),
+        )?;
+        assert!(read_ldap_bind_response(&mut long_response.as_slice())?);
+
         let denied = [
             ber_value(0x02, &[0x01])?,
             ber_value(
@@ -2157,16 +2182,18 @@ mod tests {
         assert!(
             ldap_modify_request(9, "uid=x", &[("description".into(), Vec::new())], None).is_err()
         );
-        assert!(validate_ldap_effect_input(
-            "cn=manager",
-            "manager-password",
-            "uid=x,ou=people,dc=example,dc=test",
-            &[
-                ("cn".into(), vec!["alice".into()]),
-                ("CN".into(), vec!["alice".into()]),
-            ],
-        )
-        .is_err());
+        assert!(
+            validate_ldap_effect_input(
+                "cn=manager",
+                "manager-password",
+                "uid=x,ou=people,dc=example,dc=test",
+                &[
+                    ("cn".into(), vec!["alice".into()]),
+                    ("CN".into(), vec!["alice".into()]),
+                ],
+            )
+            .is_err()
+        );
         Ok(())
     }
 
