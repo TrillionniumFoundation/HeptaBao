@@ -53,6 +53,13 @@ class Trace:
         return response.body
 
 
+def legacy_configuration(reviewer, private, ca):
+    """Preserve the actual schema-19 request, which predates API CA authority."""
+    config = configuration("candidate", reviewer, private, ca)
+    config.pop("kubernetes_ca_cert", None)
+    return config
+
+
 def prepare_legacy(instance, reviewer, cases):
     """Create schema-19 state with the actual pinned binary; keep secrets in memory."""
     instance.start()
@@ -65,7 +72,7 @@ def prepare_legacy(instance, reviewer, cases):
     t.call("legacy.mount", "sys/auth/kubernetes-upgrade", {"type": "kubernetes"}, expected=204)
     private, jwk = signing_key("ES256", "upgrade-key")
     config_path, role_path, login_path = ("auth/kubernetes-upgrade/" + part for part in ("config", "role/test", "login"))
-    config = configuration("candidate", reviewer, private, (instance.root / "ca.crt").read_text())
+    config = legacy_configuration(reviewer, private, (instance.root / "ca.crt").read_text())
     t.call("legacy.config", config_path, config, expected=204)
     rules = ('path "auth/token/create" { capabilities = ["update", "sudo"] }\n'
              'path "auth/token/create-orphan" { capabilities = ["update", "sudo"] }')

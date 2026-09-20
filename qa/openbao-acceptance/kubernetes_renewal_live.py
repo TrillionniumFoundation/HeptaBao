@@ -30,7 +30,7 @@ from jwt_renewal_live import Trace as JwtTrace
 AUDIENCE = "heptabao-online"
 REVIEW_PATH = "/apis/authentication.k8s.io/v1/tokenreviews"
 ADAPTATION = {
-    "candidate": "TokenReview host and reviewer JWT; CA/address enrolled at process startup",
+    "candidate": "TokenReview HTTPS host, explicit API CA and reviewer JWT; no startup endpoint enrollment",
     "oracle": "same TokenReview host and reviewer JWT; mount CA, ES256 PEM key, issuer validation",
     "assertion": "same synthetic ES256 signed ServiceAccount JWT claims; aud is an array",
     "request": "candidate sends apiVersion/kind; official 2.6.2 omits TypeMeta; both must bind exact spec and reviewer bearer",
@@ -105,9 +105,9 @@ class Reviewer:
 
 def configuration(side, reviewer, private, ca):
     config = {"kubernetes_host": reviewer.origin, "token_reviewer_jwt": reviewer.reviewer,
-              "disable_local_ca_jwt": True}
+              "disable_local_ca_jwt": True, "kubernetes_ca_cert": ca}
     if side == "oracle":
-        config.update(kubernetes_ca_cert=ca, issuer="kubernetes/serviceaccount", disable_iss_validation=False,
+        config.update(issuer="kubernetes/serviceaccount", disable_iss_validation=False,
                       pem_keys=[private.public_key().public_bytes(serialization.Encoding.PEM,
                                 serialization.PublicFormat.SubjectPublicKeyInfo).decode()])
     return config
@@ -330,8 +330,7 @@ def main():
         cfg_path = instance.root / "server.json"
         cfg = json.loads(cfg_path.read_text())
         cfg["lifecycle_interval_seconds"] = 0
-        cfg["outbound_endpoints"] = [{"origin": issuers[0].origin, "address": "127.0.0.1:" + str(issuers[0].port),
-                                     "server_name": "localhost", "ca_pem": ca, "path_prefix": "/apis/authentication.k8s.io/v1/"}]
+        cfg["outbound_endpoints"] = []
         cfg_path.write_text(json.dumps(cfg))
         cfg_path.chmod(0o600)
         instance.start()

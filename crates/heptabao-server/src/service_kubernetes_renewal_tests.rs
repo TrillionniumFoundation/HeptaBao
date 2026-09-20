@@ -36,7 +36,7 @@ fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
         ("sys/auth/kubernetes", json!({"type":"kubernetes"})),
         (
             "auth/kubernetes/config",
-            json!({"kubernetes_host":"https://cluster.example.test:6443","token_reviewer_jwt":"synthetic-reviewer-credential","disable_local_ca_jwt":true}),
+            json!({"kubernetes_host":"https://cluster.example.test:6443","kubernetes_ca_cert":include_str!("testdata/kubernetes-api-ca.pem"),"token_reviewer_jwt":"synthetic-reviewer-credential","disable_local_ca_jwt":true}),
         ),
         (
             "auth/kubernetes/role/app",
@@ -302,6 +302,21 @@ fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -
     state.schema = 19;
     assert!(state.validate_format().is_err());
     let mut auth = serde_json::to_value(&state.auth)?;
+    // This historical format test removes the later API-transport authority
+    // before isolating schema20's role/provenance admission boundary.
+    for mounts in auth["kubernetes_mounts"]
+        .as_object_mut()
+        .ok_or("namespaces")?
+        .values_mut()
+    {
+        for mount in mounts.as_object_mut().ok_or("mounts")?.values_mut() {
+            mount["config"]
+                .as_object_mut()
+                .ok_or("config")?
+                .remove("transport");
+        }
+    }
+
     for entry in auth["tokens"].as_object_mut().ok_or("tokens")?.values_mut() {
         if entry["auth_provenance"]["kind"] == "kubernetes" {
             entry
@@ -456,5 +471,114 @@ fn wrapped_kubernetes_login_commits_once_and_rejects_changed_role() -> TestResul
             );
         }
     }
+    Ok(())
+}
+
+#[test]
+fn native_kubernetes_config_needs_no_endpoint_and_redacts_optional_reviewer() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/kubernetes",
+            &admin,
+            json!({"type":"kubernetes"})
+        )
+        .status,
+        204
+    );
+    let body = json!({"kubernetes_host":"https://unresolvable.invalid",
+        "kubernetes_ca_cert":include_str!("testdata/kubernetes-api-ca.pem"),
+        "disable_local_ca_jwt":true});
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/kubernetes/config",
+            &admin,
+            body.clone()
+        )
+        .status,
+        204
+    );
+    let read = call(
+        &mut service,
+        "GET",
+        "auth/kubernetes/config",
+        &admin,
+        json!({}),
+    );
+    assert_eq!(read.status, 200);
+    assert_eq!(read.body["data"]["token_reviewer_jwt_set"], false);
+    assert_eq!(
+        read.body["data"]["kubernetes_ca_cert"],
+        body["kubernetes_ca_cert"]
+    );
+    assert!(read.body["data"].get("token_reviewer_jwt").is_none());
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(state.auth.has_kubernetes_api_https_state());
+    let mut downgraded = state.clone();
+    downgraded.schema = 28;
+    assert!(downgraded.validate_format().is_err());
+    downgraded.schema = CURRENT_STATE_SCHEMA;
+    assert!(downgraded.validate_format().is_ok());
+    let before = service.state_digest;
+    let mut malformed = body.clone();
+    malformed["kubernetes_ca_cert"] = json!("invalid CA");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/kubernetes/config",
+            &admin,
+            malformed
+        )
+        .status,
+        400
+    );
+    assert_eq!(service.state_digest, before);
+    let mut replaced = body;
+    replaced["token_reviewer_jwt"] = json!("synthetic-stored-reviewer");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/kubernetes/config",
+            &admin,
+            replaced
+        )
+        .status,
+        204
+    );
+    let read = call(
+        &mut service,
+        "GET",
+        "auth/kubernetes/config",
+        &admin,
+        json!({}),
+    );
+    assert_eq!(read.body["data"]["token_reviewer_jwt_set"], true);
+    assert!(read.body["data"].get("token_reviewer_jwt").is_none());
+    Ok(())
+}
+
+#[test]
+fn schema_twenty_eight_admits_legacy_kubernetes_enrollment_without_api_authority() -> TestResult {
+    let root = Root::new();
+    let (service, _, _, _) = fixture(&root)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let mut auth = serde_json::to_value(&state.auth)?;
+    auth["kubernetes_mounts"][""]["kubernetes"]["config"]
+        .as_object_mut()
+        .ok_or("config")?
+        .remove("transport");
+    state.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    state.schema = 28;
+    assert!(!state.auth.has_kubernetes_api_https_state());
+    assert!(state.auth.validate_online_auth().is_ok());
+    assert!(state.validate_format().is_ok());
     Ok(())
 }

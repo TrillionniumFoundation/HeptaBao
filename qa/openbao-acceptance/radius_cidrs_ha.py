@@ -14,6 +14,8 @@ from online_evidence import admit_output, source_identity
 from ha_destructive import Cluster, FixtureError
 from radius_cidrs_live import SourceClient, Trace
 from radius_native_live import NativeRadius, SECRET, PASSWORD
+from ldap_cidrs_live import Trace as LdapTrace
+from ldap_native_live import NativeDirectory, configuration as ldap_configuration
 
 
 SAFE_CLUSTER_FAILURES = {
@@ -67,26 +69,38 @@ def await_namespaced_health(cluster,namespace):
     raise FixtureError('namespaced_health_catchup_timeout')
 
 
-def run(binary,root,rows,inherited,diagnostics):
-    cluster=None;provider=NativeRadius(require_ma=True)
+def run(binary,root,rows,inherited,diagnostics,*,ldap=False):
+    cluster=provider=None
     try:
         cluster=Cluster(binary,root/'cluster')
+        if ldap:
+            node=cluster.nodes[0]
+            provider=NativeDirectory(root/'openldap',node.root/'tls.crt',node.root/'tls.key',cluster.root/'ca.crt')
+            config=ldap_configuration('candidate',provider,(cluster.root/'ca.crt').read_text())
+            provider_secrets=[provider.admin_password,provider.user_password]
+        else:
+            provider=NativeRadius(require_ma=True)
+            config={'host':'127.0.0.1','port':provider.port,'secret':SECRET.decode()}
+            provider_secrets=[SECRET.decode(),PASSWORD.decode()]
         for node in cluster.nodes:
             path=node.root/'server.json';settings=json.loads(path.read_text());settings['outbound_endpoints']=[];settings['lifecycle_interval_seconds']=0
             private_write(path,settings,replace=True)
         cluster.bootstrap();inherited.extend(cluster.scenarios)
         leader=cluster.leader();follower=next(node for node in cluster.nodes if node is not leader)
-        def trace(node):return Trace(SourceClient(f'https://127.0.0.1:{node.http_port}',cluster.root/'ca.crt',cluster.root_token),provider,rows)
+        def trace(node):
+            client=SourceClient(f'https://127.0.0.1:{node.http_port}',cluster.root/'ca.crt',cluster.root_token)
+            return LdapTrace(client,provider,config,rows) if ldap else Trace(client,provider,rows)
         primary=trace(leader);forward=trace(follower)
-        primary.call('ha.mount','POST','sys/auth/radius',{'type':'radius'},status=204)
+        kind='ldap' if ldap else 'radius'
+        primary.call('ha.mount','POST','sys/auth/'+kind,{'type':kind},status=204)
         primary.call('ha.kv_mount','POST','sys/mounts/cidr-kv',{'type':'kv','options':{'version':'1'}},status=204)
         primary.call('ha.policy','PUT','sys/policies/acl/cidr-user',{'policy':'path "cidr-kv/*" { capabilities = ["read", "update"] }'},status=204)
         primary.call('ha.seed','POST','cidr-kv/item',{'value':'synthetic'},status=204)
-        primary.config('ha.config',{'host':'127.0.0.1','port':provider.port,'secret':SECRET.decode(),'token_ttl':120,'token_max_ttl':600,'token_policies':['cidr-user'],'token_bound_cidrs':['127.0.0.2']})
+        primary.config('ha.config',dict(config,token_ttl=120,token_max_ttl=600,token_policies=['cidr-user'],token_bound_cidrs=['127.0.0.2']))
         # Every HA node connects from 127.0.0.1; successful source .2 proves the
         # authenticated frame preserves the listener socket origin.
         token=forward.login('ha.forwarded_login',source='127.0.0.2')
-        forward.login('ha.forwarded_wrong_login',status=403,pap=0)
+        forward.login('ha.forwarded_wrong_login',status=403,**({'provider':False} if ldap else {'pap':0}))
         for phase,t in [('leader',primary),('follower',forward)]:
             t.call('ha.'+phase+'.allowed_read','GET','cidr-kv/item',token=token['client_token'],source='127.0.0.2')
             t.call('ha.'+phase+'.wrong_read','GET','cidr-kv/item',token=token['client_token'],status=403,spoof=True)
@@ -115,7 +129,7 @@ def run(binary,root,rows,inherited,diagnostics):
         health=after.call('ha.no_quorum_health','GET','sys/health',status=503)
         after.check('ha.no_quorum_not_active',health.get('ha_active') is False)
         after.call('ha.no_quorum_head','HEAD','sys/health',status=503)
-        after.check('ha.receipt_no_secrets',not any(value in json.dumps(rows) for value in [SECRET.decode(),PASSWORD.decode(),token['client_token'],finite['client_token']]))
+        after.check('ha.receipt_no_secrets',not any(value in json.dumps(rows) for value in [*provider_secrets,token['client_token'],finite['client_token']]))
         after.check('ha.complete',True)
     except Exception:
         if cluster is not None:
@@ -123,24 +137,27 @@ def run(binary,root,rows,inherited,diagnostics):
         raise
     finally:
         if cluster is not None:cluster.close()
-        provider.close()
+        if provider is not None:
+            provider.stop() if ldap else provider.close()
 
 MILESTONES={'ha.health_only_catchup','ha.maintenance_disabled','ha.no_quorum_health','ha.no_quorum_head','ha.no_quorum_not_active','ha.forwarded_login','ha.forwarded_wrong_login','ha.follower.wrong_read','ha.forwarded_renew.accessor.shape','ha.finite_second','ha.finite_exhausted','ha.new_leader','ha.after_election_denied','ha.after_election_renew.self.shape','ha.receipt_no_secrets','ha.complete'}
-def complete(rows):
+def complete(rows,*,ldap=False):
+    prefix='ldap_cidrs.' if ldap else 'radius_cidrs.'
     names=[r.get('case') for r in rows]
-    return bool(rows) and all(r.get('passed') is True for r in rows) and len(names)==len(set(names)) and {'radius_cidrs.'+n for n in MILESTONES}.issubset(names) and names[-1]=='radius_cidrs.ha.complete'
+    return bool(rows) and all(r.get('passed') is True for r in rows) and len(names)==len(set(names)) and {prefix+n for n in MILESTONES}.issubset(names) and names[-1]==prefix+'ha.complete'
 
 def main():
     parser=SafeArgumentParser(description=__doc__)
     for name in ('binary','build-source-commit','output'):parser.add_argument('--'+name,required=True)
+    parser.add_argument('--ldap',action='store_true',help='Use real native OpenLDAP Bind/Search instead of RADIUS PAP')
     args=parser.parse_args()
     if not re.fullmatch(r'[0-9a-f]{40}',args.build_source_commit):parser.error('full build source commit required')
     binary=Path(args.binary).resolve(strict=True);output=Path(args.output).absolute();parent=admit_output(output)
     before=source_identity(ROOT,binary);runner=file_hash(Path(__file__));root=Path(tempfile.mkdtemp(prefix='heptabao-cidrs-ha-'));root.chmod(0o700)
-    report={'schema':'heptabao.radius-cidrs-ha.v1','checks':[],'bootstrap_checks':[],'diagnostics':{},'same_host':True,'synthetic_only':True,'physical_fault_qualification':False,'full_openbao_compatibility':False,'source_identity':before,'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','runner_sha256':runner}
+    report={'schema':'heptabao.ldap-cidrs-ha.v1' if args.ldap else 'heptabao.radius-cidrs-ha.v1','provider_profile':'native_ldap' if args.ldap else 'native_radius','checks':[],'bootstrap_checks':[],'diagnostics':{},'same_host':True,'synthetic_only':True,'physical_fault_qualification':False,'full_openbao_compatibility':False,'source_identity':before,'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','runner_sha256':runner}
     try:
-        run(binary,root,report['checks'],report['bootstrap_checks'],report['diagnostics'])
-        report['status']='passed' if complete(report['checks']) and bool(report['bootstrap_checks']) else 'failed'
+        run(binary,root,report['checks'],report['bootstrap_checks'],report['diagnostics'],ldap=args.ldap)
+        report['status']='passed' if complete(report['checks'],ldap=args.ldap) and bool(report['bootstrap_checks']) else 'failed'
     except Exception as error:
         report['status']='failed';report['safe_failure_code']=next((r['case'] for r in reversed(report['checks']) if not r['passed']),str(error) if isinstance(error,FixtureError) and str(error) in SAFE_CLUSTER_FAILURES else 'fixture_'+type(error).__name__)
     finally:

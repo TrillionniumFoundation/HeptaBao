@@ -61,8 +61,7 @@ def run(binary, root, checks, inherited, observations):
         issuer=oracle["address"]+"/v1/identity/oidc/provider/ha"
         cluster=Cluster(binary,root/"cluster")
         reviewer=Reviewer(cluster.nodes[0].root/"tls.crt",cluster.nodes[0].root/"tls.key")
-        endpoints=[{"origin":oracle["address"],"address":f"127.0.0.1:{port}","server_name":"127.0.0.1","ca_pem":Path(oracle["ca_file"]).read_text()},
-            {"origin":reviewer.origin,"address":f"127.0.0.1:{reviewer.port}","server_name":"localhost","ca_pem":(cluster.root/"ca.crt").read_text(),"path_prefix":"/apis/authentication.k8s.io/v1/"}]
+        endpoints=[]  # Both auth methods use their explicit API CA snapshots.
         for node in cluster.nodes:
             path=node.root/"server.json";config=json.loads(path.read_text());config["outbound_endpoints"]=endpoints
             path.write_text(json.dumps(config));path.chmod(0o600)
@@ -74,7 +73,7 @@ def run(binary, root, checks, inherited, observations):
             "oidc_discovery_url":issuer,"oidc_discovery_ca_pem":Path(oracle["ca_file"]).read_text(),"oidc_client_id":configured["client_id"],"oidc_client_secret":configured["client_secret"],"pkce_s256_enrolled":True})[0] == 204)
         check("oidc_role_via_follower",admin("POST","auth/browser/role/app",{"allowed_redirect_uris":[redirect],"token_policies":["default"]})[0] == 204)
         check("kubernetes_mount_via_follower",admin("POST","sys/auth/workload",{"type":"kubernetes"})[0] == 204)
-        check("kubernetes_config_via_follower",admin("POST","auth/workload/config",{"kubernetes_host":reviewer.origin,"token_reviewer_jwt":reviewer.reviewer})[0] == 204)
+        check("kubernetes_config_via_follower",admin("POST","auth/workload/config",{"kubernetes_host":reviewer.origin,"kubernetes_ca_cert":(cluster.root/"ca.crt").read_text(),"token_reviewer_jwt":reviewer.reviewer})[0] == 204)
         check("kubernetes_role_via_follower",admin("POST","auth/workload/role/app",{
             "bound_service_account_names":["worker"],"bound_service_account_namespaces":["workload"],"audience":reviewer.audience})[0] == 204)
         def code_flow(node,label):

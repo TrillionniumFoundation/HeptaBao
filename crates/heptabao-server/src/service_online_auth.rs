@@ -116,7 +116,7 @@ impl OnlineAuthEffectPlan {
                 .map(OnlineAuthObservation::OidcConfig)
                 .map_err(auth_error),
             OnlineAuthEffect::Kubernetes(plan) => plan
-                .execute(&self.outbound)
+                .execute(&self.outbound, deadline)
                 .map(OnlineAuthObservation::Kubernetes)
                 .map_err(auth_error),
             OnlineAuthEffect::Ldap(plan) => plan
@@ -492,13 +492,14 @@ impl Service {
             let Some(name) = suffix.strip_prefix("login/") else {
                 return Some(Response::error(404, "unsupported LDAP login route"));
             };
-            match admitted.auth.prepare_ldap_login(
+            match admitted.auth.prepare_ldap_login_from(
                 request.namespace,
                 &mount,
                 name,
                 request.method,
                 request.body,
                 request.now,
+                request.origin_peer,
             ) {
                 Ok(plan) => OnlineAuthEffect::Ldap(plan),
                 Err(error) => return Some(auth_error(error)),

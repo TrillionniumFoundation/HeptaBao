@@ -30,11 +30,13 @@ bodies or private files, not command-line arguments, reports or log output.
 
 ## Transport authority
 
-Kubernetes TokenReview retains startup `outbound_endpoints`: explicit origin and
-port, fixed address, matching server name, CA and optional path prefix. Its API
-cannot widen that enrollment. Old JWT/OIDC configuration without the new internal
-transport field uses the same enrolled authority. Generic outbound APIs and other
-providers are unchanged by the JWT/OIDC transport slice.
+Fresh Kubernetes TokenReview config supplies its HTTPS host and nonempty
+`kubernetes_ca_cert` through the authentication API. No startup endpoint is
+required. Old Kubernetes records without internal transport retain their exact
+startup `outbound_endpoints` authority and required reviewer; a full rewrite
+without CA keeps that mode, while explicit valid CA promotes it. Old JWT/OIDC
+configuration without its internal transport field likewise remains enrolled.
+Generic outbound APIs and the Kubernetes secrets engine are unchanged.
 
 Fresh OIDC configuration uses `oidc_discovery_ca_pem` through the auth management
 API. Nonempty PEM replaces system roots; empty, null or omitted CA uses system
@@ -61,20 +63,27 @@ Enable `POST sys/auth/<mount>` with `{"type":"kubernetes"}`.
 
 | Route | Method | Current inputs and behavior |
 |---|---|---|
-| `auth/<mount>/config` | POST/PUT | Required `kubernetes_host` (enrolled origin only) and `token_reviewer_jwt`. Optional `disable_local_ca_jwt` must be true; omitted also has no ambient fallback. |
-| Same | GET | Host and secret-present metadata, never reviewer credential. |
+| `auth/<mount>/config` | POST/PUT | Fresh config requires HTTPS `kubernetes_host` and nonempty `kubernetes_ca_cert`. Optional `token_reviewer_jwt`; empty/null/omitted uses the login JWT for this TokenReview. `disable_local_ca_jwt` must be true if supplied; omitted also has no ambient fallback. Full replacement, not partial update. |
+| Same | GET | Host, CA and secret-present metadata, never reviewer credential. |
 | `auth/<mount>/role/<name>` | POST/PUT | Explicit `bound_service_account_names`, `bound_service_account_namespaces`, required `audience`; optional `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`, service-token/UID-alias selectors. Updates preserve omitted fields. |
 | Same | GET/DELETE | Read the bounded role or remove it. Existing issued tokens require explicit revoke/expiry or mount disable. |
 | `auth/<mount>/role` | GET/LIST | Sorted role names. |
 | `auth/<mount>/login` | POST/PUT | Exactly `role` and `jwt`; the presented token is not locally decoded into identity or authority. |
 
 The host and role are checked before egress. Each admitted login sends one
-`authentication.k8s.io/v1` TokenReview to the enrolled
+`authentication.k8s.io/v1` TokenReview to the administrator-configured
 `/apis/authentication.k8s.io/v1/tokenreviews` endpoint, with an explicit requested
-audience and a separate reviewer bearer. Only HTTP 200/201 with the correct
+audience and either its configured reviewer bearer or the presented JWT. A failed
+configured reviewer never causes fallback or a second POST. Only HTTP 200/201 with the correct
 kind/version, boolean authenticated=true, no review error, a returned audience
 intersection, a canonical ServiceAccount username and a nonempty bounded UID
 can continue. Missing audiences are not treated as a successful resource audience.
+Configuration validates URL and CA locally without contacting TokenReview.
+CA replaces all roots; empty/null/omitted CA is rejected on fresh or already
+promoted config. Strict malformed-PEM rejection is a remaining difference from
+OpenBao, which can save invalid nonempty PEM and fail at login. API transport
+provider failures deny login with 403; old enrolled transport retains 503, and
+expired request budgets or unavailable Service/HA authority still return 503.
 Names and namespaces are checked independently. Lists are bounded to 128 and
 reject duplicates; `*` is allowed only as an explicitly selected sole value.
 
@@ -100,6 +109,9 @@ requires a new mount/accessor. Repointing a deployment enrollment to a different
 cluster is an operator realm change and likewise requires a new accessor, even
 when the hostname is reused. No request may implicitly adopt an in-cluster CA,
 service-account file or external network target.
+Unlike OpenBao's default, omitted `disable_local_ca_jwt` selects this explicit
+no-local-fallback profile. In-pod CA/reviewer files and optional PEM/issuer
+verification fields remain separate compatibility work.
 
 **Revocation boundary:** TokenReview checks each login. It does not continuously
 revalidate already issued local tokens. ServiceAccount revocation immediately

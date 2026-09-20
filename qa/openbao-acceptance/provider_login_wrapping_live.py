@@ -77,7 +77,7 @@ def main():
     if not args.oracle_only and (not args.binary or not re.fullmatch(r'[0-9a-f]{40}',args.build_source_commit or '')):p.error('candidate binary and full source commit required')
     binary=Path(args.binary or os.environ['HB_ORACLE_BINARY']).resolve(strict=True);output=Path(args.output).absolute();parent=admit_output(output)
     before=source_identity(ROOT,binary);runner=file_hash(Path(__file__));root=Path(tempfile.mkdtemp(prefix='provider-login-wrapping-'));root.chmod(0o700)
-    report={'schema':'heptabao.provider-login-wrapping-comparison.v1','target_version':'2.6.2','oracle_binary_sha256':BINARY_SHA256,'candidate_binary_sha256':None if args.oracle_only else file_hash(binary),'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','source_identity':before,'runner_sha256':runner,'synthetic_only':True,'actual_openldap':True,'actual_kube_apiserver':False,'full_openbao_compatibility':False,'production_authority':False,'configuration_adaptation':'RADIUS/LDAP API-authorized egress; Kubernetes candidate still host-enrolled CA/address, official Kubernetes API CA fields','cases':{},'side_failures':{},'started_at_unix':time.time()}
+    report={'schema':'heptabao.provider-login-wrapping-comparison.v1','target_version':'2.6.2','oracle_binary_sha256':BINARY_SHA256,'candidate_binary_sha256':None if args.oracle_only else file_hash(binary),'build_source_commit':args.build_source_commit,'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation','source_identity':before,'runner_sha256':runner,'synthetic_only':True,'actual_openldap':True,'actual_kube_apiserver':False,'full_openbao_compatibility':False,'production_authority':False,'configuration_adaptation':'RADIUS/LDAP/Kubernetes auth use API-authorized egress; Kubernetes retains explicit candidate/oracle JWT-claim validation adaptation','cases':{},'side_failures':{},'started_at_unix':time.time()}
     oracle=instance=None;providers=[]
     try:
         with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
@@ -86,7 +86,7 @@ def main():
             radius=NativeRadius(require_ma=side=='candidate');directory=NativeDirectory(root/(side+'-ldap'),o/'tls.crt',o/'tls.key',o/'ca.crt');reviewer=Reviewer(o/'tls.crt',o/'tls.key',side);providers.append((radius,directory,reviewer))
             if side=='candidate':
                 instance=Instance(binary,root/'candidate');cfg=json.loads((instance.root/'server.json').read_text());cfg['lifecycle_interval_seconds']=0
-                cfg['outbound_endpoints']=[{'origin':reviewer.origin,'address':f'127.0.0.1:{reviewer.port}','server_name':'localhost','ca_pem':ca,'path_prefix':'/apis/authentication.k8s.io/v1/'}]
+                cfg['outbound_endpoints']=[]
                 private_write(instance.root/'server.json',cfg,replace=True);instance.start();status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
                 if status!=200:raise ScenarioFailure('candidate_init')
                 instance.token,key=init['root_token'],init['keys_base64'][0]

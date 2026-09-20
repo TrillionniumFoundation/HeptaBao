@@ -204,6 +204,50 @@ impl Outbound {
         Ok(value)
     }
 
+    /// Scoped authentication POST. The administrator's owned configuration
+    /// supplies the target and trust; a bearer can never redirect the request.
+    pub(crate) fn post_auth_json_bearer(
+        &self,
+        url: &str,
+        bearer: &str,
+        value: &Value,
+        transport: Option<&AuthHttpsTransport>,
+        deadline: Instant,
+    ) -> Result<Value, &'static str> {
+        if bearer.is_empty()
+            || bearer.len() > 32 * 1024
+            || !bearer.bytes().all(|byte| byte.is_ascii_graphic())
+        {
+            return Err("invalid authentication bearer");
+        }
+        let body = bounded_auth_json(value)?;
+        let (mut stream, target) = self.auth_https_connection(url, transport, deadline)?;
+        let length = body.len().to_string();
+        let mut head = Zeroizing::new(String::with_capacity(
+            256 + target.path.len() + target.authority.len() + bearer.len() + length.len(),
+        ));
+        head.push_str("POST ");
+        head.push_str(&target.path);
+        head.push_str(" HTTP/1.1\r\nHost: ");
+        head.push_str(&target.authority);
+        head.push_str("\r\nContent-Type: application/json\r\nAuthorization: Bearer ");
+        head.push_str(bearer);
+        head.push_str("\r\nContent-Length: ");
+        head.push_str(&length);
+        head.push_str("\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n");
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.write_all(&body))
+            .and_then(|()| stream.flush())
+            .map_err(|_| "authentication POST failed; no retry")?;
+        let mut response = read_json_response_status(&mut stream, &[200, 201])?;
+        if stream.sock.remaining().is_err() || remaining(deadline).is_err() {
+            crate::service::erase_json(&mut response);
+            return Err("authentication POST deadline exceeded");
+        }
+        Ok(response)
+    }
+
     pub(crate) fn exchange_auth_oidc(
         &self,
         url: &str,
@@ -283,6 +327,29 @@ pub(crate) struct AuthOidcExchange<'a> {
     pub(crate) code: &'a str,
     pub(crate) redirect: &'a str,
     pub(crate) verifier: &'a str,
+}
+
+/// Never allow the serializer to reallocate a buffer that held a credential.
+fn bounded_auth_json(value: &Value) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    struct Body(Zeroizing<Vec<u8>>);
+    impl std::io::Write for Body {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            if bytes.len() > MAX_DOCUMENT.saturating_sub(self.0.len()) {
+                return Err(std::io::Error::other(
+                    "authentication request exceeds bound",
+                ));
+            }
+            self.0.extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut body = Body(Zeroizing::new(Vec::with_capacity(MAX_DOCUMENT)));
+    serde_json::to_writer(&mut body, value)
+        .map_err(|_| "invalid or oversized authentication JSON")?;
+    Ok(body.0)
 }
 
 fn append_form(output: &mut String, value: &str) {
@@ -369,5 +436,54 @@ mod tests {
                 )
                 .is_err()
         );
+    }
+    #[test]
+    fn scoped_bearer_post_rejects_bad_header_bounds_and_elapsed_budget_before_io() {
+        let outbound = Outbound::default();
+        let deadline = auth_https_deadline();
+        for bearer in ["", "x y", "x\r\nHost: other", "x\0y"] {
+            assert_eq!(
+                outbound.post_auth_json_bearer(
+                    "https://unresolvable.invalid/",
+                    bearer,
+                    &serde_json::json!({}),
+                    None,
+                    deadline
+                ),
+                Err("invalid authentication bearer")
+            );
+        }
+        let expired = Instant::now().checked_sub(Duration::from_secs(1)).unwrap();
+        assert!(
+            outbound
+                .post_auth_json_bearer(
+                    "https://unresolvable.invalid/",
+                    "synthetic-reviewer",
+                    &serde_json::json!({"spec":{"token":"synthetic-presented"}}),
+                    Some(&AuthHttpsTransport::default()),
+                    expired
+                )
+                .is_err()
+        );
+        let oversized = serde_json::json!({"token":"x".repeat(MAX_DOCUMENT)});
+        assert_eq!(
+            outbound.post_auth_json_bearer(
+                "https://unresolvable.invalid/",
+                "synthetic-reviewer",
+                &oversized,
+                None,
+                deadline
+            ),
+            Err("invalid or oversized authentication JSON")
+        );
+    }
+
+    #[test]
+    fn scoped_json_body_retains_one_bounded_allocation() {
+        let value = serde_json::json!({"spec":{"token":"\"\\\n".repeat(1000)}});
+        let encoded = bounded_auth_json(&value).unwrap();
+        assert_eq!(serde_json::from_slice::<Value>(&encoded).unwrap(), value);
+        assert_eq!(encoded.capacity(), MAX_DOCUMENT);
+        assert!(bounded_auth_json(&serde_json::json!("x".repeat(MAX_DOCUMENT))).is_err());
     }
 }

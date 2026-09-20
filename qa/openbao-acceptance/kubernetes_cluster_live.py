@@ -271,6 +271,7 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         cfg_path = service.root/'server.json'
         cfg = json.loads(cfg_path.read_text())
         address = urllib.parse.urlsplit(cluster.origin).netloc
+        # The secrets engine retains process enrollment; auth below uses its API CA.
         cfg['outbound_endpoints'] = [{'origin':cluster.origin,'address':address,'server_name':'127.0.0.1',
                                      'ca_pem':cluster.ca.decode(),'path_prefix':'/'}]
         cfg_path.write_text(json.dumps(cfg));cfg_path.chmod(0o600)
@@ -308,7 +309,7 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
               status == 200 and reviewer_jwt not in json.dumps(secret_role_read))
         mount='platform/kubernetes'
         check('real_kubernetes_mount',service.call('POST','sys/auth/'+mount,{'type':'kubernetes'})[0] == 204)
-        config={'kubernetes_host':cluster.origin,'token_reviewer_jwt':reviewer_jwt,'disable_local_ca_jwt':True}
+        config={'kubernetes_host':cluster.origin,'kubernetes_ca_cert':cluster.ca.decode(),'token_reviewer_jwt':reviewer_jwt,'disable_local_ca_jwt':True}
         check('reviewer_enrolled',service.call('POST',f'auth/{mount}/config',config)[0] == 204)
         role={'bound_service_account_names':['worker'],'bound_service_account_namespaces':['hb-work'],
               'audience':AUDIENCE,'token_policies':['default'],'token_ttl':300}

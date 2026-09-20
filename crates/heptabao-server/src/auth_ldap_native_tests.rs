@@ -682,3 +682,238 @@ fn native_ldap_transport_validation_is_atomic_and_url_defaults_are_persisted() {
     assert_eq!(data["connection_timeout"], 4);
     assert_eq!(data["request_timeout"], 90);
 }
+
+fn cidr_login(
+    state: &mut AuthState,
+    peer: Option<std::net::IpAddr>,
+) -> Result<AuthResponse, AuthError> {
+    let plan = state.prepare_ldap_login_from(
+        "",
+        "directory",
+        "alice",
+        "POST",
+        &json!({"password":"synthetic-user-secret"}),
+        100,
+        peer,
+    )?;
+    state.finish_ldap_login(plan, LdapLoginObservation::native("alice", BTreeSet::new()))
+}
+
+#[test]
+fn native_ldap_cidr_configuration_preserves_legacy_bytes_and_partial_updates() {
+    let (mut state, root) = fixture();
+    let old = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    assert!(!state.has_ldap_token_bound_cidrs());
+    assert_eq!(
+        read(&mut state, &root, "auth/directory/config")["token_bound_cidrs"],
+        json!([])
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":"127.0.0.1/32,::1/128"}),
+    );
+    assert_eq!(
+        read(&mut state, &root, "auth/directory/config")["token_bound_cidrs"],
+        json!(["127.0.0.1", "::1"])
+    );
+    assert!(state.has_token_bound_cidrs() && state.has_ldap_token_bound_cidrs());
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_ttl":120}),
+    );
+    assert_eq!(
+        read(&mut state, &root, "auth/directory/config")["token_bound_cidrs"],
+        json!(["127.0.0.1", "::1"])
+    );
+    let actor = state.authenticate(&root, 100).unwrap();
+    assert_eq!(
+        state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/directory/config",
+                &json!({"token_bound_cidrs":["hostname.invalid"]}),
+                100
+            )
+            .err()
+            .unwrap()
+            .status,
+        400
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":null}),
+    );
+    assert!(!state.has_ldap_token_bound_cidrs());
+    assert!(
+        old.as_slice() == serde_json::to_vec(&state).unwrap(),
+        "cleared CIDRs preserve prior serialized representation"
+    );
+}
+
+#[test]
+fn native_ldap_cidrs_reject_missing_or_wrong_origin_before_issue_and_token_use() {
+    let (mut state, root) = fixture();
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":["127.0.0.1"],"token_num_uses":2}),
+    );
+    let good = Some("127.0.0.1".parse().unwrap());
+    let other = Some("127.0.0.2".parse().unwrap());
+    let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    for peer in [None, other, Some("::1".parse().unwrap())] {
+        assert_eq!(cidr_login(&mut state, peer).err().unwrap().status, 403);
+    }
+    assert!(before.as_slice() == serde_json::to_vec(&state).unwrap());
+    let raw = bearer(&cidr_login(&mut state, good).unwrap());
+    assert_eq!(state.tokens[&hash(&raw)].bound_cidrs, ["127.0.0.1"]);
+    for peer in [None, other] {
+        assert_eq!(
+            state
+                .authenticate_from(&raw, 100, peer)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        assert_eq!(
+            state
+                .authenticate_read_only_from(&raw, 100, peer)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+    }
+    assert_eq!(state.tokens[&hash(&raw)].uses_remaining, Some(2));
+    assert!(state.authenticate_from(&raw, 100, good).is_ok());
+    assert_eq!(state.tokens[&hash(&raw)].uses_remaining, Some(1));
+}
+
+#[test]
+fn native_ldap_cidr_snapshot_survives_all_renewal_entries_config_clear_and_reopen() {
+    let (mut state, root) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":["127.0.0.1"]}),
+    );
+    let raw = bearer(&cidr_login(&mut state, good).unwrap());
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":["192.0.2.0/24"]}),
+    );
+    assert_eq!(cidr_login(&mut state, good).err().unwrap().status, 403);
+    for via in ["renew-self", "renew", "renew-accessor"] {
+        let peer = if via == "renew-self" {
+            good
+        } else {
+            Some("127.0.0.2".parse().unwrap())
+        };
+        let actor = state
+            .authenticate_from(if via == "renew-self" { &raw } else { &root }, 110, peer)
+            .unwrap();
+        let body = match via {
+            "renew" => json!({"token":raw,"increment":300}),
+            "renew-accessor" => {
+                json!({"accessor":state.tokens[&hash(&raw)].accessor,"increment":300})
+            }
+            _ => json!({"increment":300}),
+        };
+        let plan = state
+            .prepare_provider_renewal(
+                Some(&actor),
+                "",
+                "POST",
+                &format!("auth/token/{via}"),
+                &body,
+                110,
+            )
+            .unwrap()
+            .unwrap();
+        accepted(&mut state, plan, &actor, &[], 110).unwrap();
+        assert_eq!(
+            token_info(&state.tokens[&hash(&raw)], 110)["bound_cidrs"],
+            json!(["127.0.0.1"])
+        );
+    }
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":[]}),
+    );
+    assert!(
+        state.has_ldap_token_bound_cidrs(),
+        "issued native LDAP token preserves the format fence"
+    );
+    let bytes = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let mut reopened: AuthState = serde_json::from_slice(&bytes).unwrap();
+    reopened.validate_online_auth().unwrap();
+    assert!(reopened.authenticate(&raw, 110).is_err());
+    assert!(reopened.authenticate_from(&raw, 110, good).is_ok());
+    let fresh = bearer(&cidr_login(&mut reopened, None).unwrap());
+    assert!(reopened.authenticate(&fresh, 110).is_ok());
+}
+
+#[test]
+fn native_ldap_child_inherits_cidr_but_orphan_does_not() {
+    let (mut state, root) = fixture();
+    update(
+        &mut state,
+        &root,
+        "sys/policies/acl/cidr-issuer",
+        json!({"policy":
+        "path \"auth/token/create\" { capabilities = [\"update\",\"sudo\"] } path \"auth/token/create-orphan\" { capabilities = [\"update\",\"sudo\"] }"}),
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_bound_cidrs":["127.0.0.1"],"token_policies":["cidr-issuer"]}),
+    );
+    let good = Some("127.0.0.1".parse().unwrap());
+    let parent = bearer(&cidr_login(&mut state, good).unwrap());
+    for (path, bound) in [
+        ("auth/token/create", true),
+        ("auth/token/create-orphan", false),
+    ] {
+        let actor = state.authenticate_from(&parent, 100, good).unwrap();
+        let response = state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                path,
+                &json!({"policies":["default"]}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        let child = bearer(&response);
+        assert_eq!(
+            state
+                .authenticate_from(&child, 101, Some("127.0.0.2".parse().unwrap()))
+                .is_err(),
+            bound
+        );
+        assert_eq!(state.tokens[&hash(&child)].bound_cidrs.is_empty(), !bound);
+        assert!(matches!(
+            state.tokens[&hash(&child)].auth_provenance,
+            Some(TokenAuthProvenance::TokenApi)
+        ));
+    }
+}

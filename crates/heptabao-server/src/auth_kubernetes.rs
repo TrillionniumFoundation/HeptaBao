@@ -1,8 +1,9 @@
 //! Online, audience-aware Kubernetes TokenReview authentication. The returned
-//! ServiceAccount identity is trusted only after verified, host-enrolled TLS.
+//! ServiceAccount identity is trusted only after verified API-configured TLS,
+//! or the unchanged process-enrolled transport of older configurations.
 //! Caller-supplied JWT claims are never treated as identity or authorization.
 use super::*;
-use crate::outbound::{Outbound, Target};
+use crate::outbound::{AuthHttpsTransport, Outbound, Target, parse_auth_https_target};
 
 const MAX_KUBERNETES_ROLES: usize = 1024;
 const MAX_LOGIN_TTL: u64 = 3600;
@@ -19,6 +20,8 @@ pub(super) struct KubernetesMount {
 struct KubernetesConfig {
     kubernetes_host: String,
     token_reviewer_jwt: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    transport: Option<AuthHttpsTransport>,
 }
 impl Drop for KubernetesConfig {
     fn drop(&mut self) {
@@ -84,20 +87,31 @@ impl KubernetesLoginPlan {
     pub(crate) fn execute(
         &self,
         outbound: &Outbound,
+        deadline: std::time::Instant,
     ) -> Result<KubernetesLoginObservation, AuthError> {
         let mut request = json!({
             "apiVersion":"authentication.k8s.io/v1",
             "kind":"TokenReview",
             "spec":{"token":self.presented.as_str(),"audiences":[self.role.audience.clone()]}
         });
-        let result = outbound.post_json_bearer(
-            &format!("{}{TOKEN_REVIEW_PATH}", self.config.kubernetes_host),
-            &self.config.token_reviewer_jwt,
+        let result = outbound.post_auth_json_bearer(
+            &self.config.token_review_url(),
+            self.config.reviewer_for(&self.presented),
             &request,
+            self.config.transport.as_ref(),
+            deadline,
         );
         crate::service::erase_json(&mut request);
-        let mut reviewed =
-            result.map_err(|_| err(503, "Kubernetes TokenReview unavailable or untrusted"))?;
+        let mut reviewed = result.map_err(|_| {
+            // OpenBao maps completed TokenReview transport/provider errors to
+            // permission denied. Retained enrolled profiles and caller deadline
+            // exhaustion keep their existing availability semantics.
+            if self.config.transport.is_some() && std::time::Instant::now() < deadline {
+                denied()
+            } else {
+                err(503, "Kubernetes TokenReview unavailable or untrusted")
+            }
+        })?;
         let identity = self.role.bind_review(&reviewed);
         crate::service::erase_json(&mut reviewed);
         let (service_account_namespace, service_account_name, service_account_uid) = identity?;
@@ -153,10 +167,44 @@ fn names(body: &Value, field: &str, namespace: bool) -> Result<BTreeSet<String>,
     Ok(result)
 }
 impl KubernetesConfig {
+    fn token_review_url(&self) -> String {
+        format!(
+            "{}{TOKEN_REVIEW_PATH}",
+            self.kubernetes_host
+                .strip_suffix('/')
+                .unwrap_or(&self.kubernetes_host)
+        )
+    }
+
+    fn reviewer_for<'a>(&'a self, presented: &'a str) -> &'a str {
+        if self.transport.is_some() && self.token_reviewer_jwt.is_empty() {
+            presented
+        } else {
+            &self.token_reviewer_jwt
+        }
+    }
+
     fn validate(&self) -> Result<(), AuthError> {
-        let target = Target::parse(&self.kubernetes_host, "https").map_err(bad)?;
-        if target.origin != self.kubernetes_host || !credential(&self.token_reviewer_jwt) {
-            return Err(bad("invalid Kubernetes host or reviewer credential"));
+        if let Some(transport) = &self.transport {
+            // Kubernetes 2.6.2's explicit no-local-fallback mode requires a CA;
+            // empty must never inherit the JWT connector's system-root meaning.
+            if transport.certificate.is_empty() || self.kubernetes_host.contains('?') {
+                return Err(bad(
+                    "explicit Kubernetes CA and a query-free HTTPS base URL required",
+                ));
+            }
+            transport
+                .validate_configuration(&self.kubernetes_host)
+                .map_err(bad)?;
+            parse_auth_https_target(&self.token_review_url(), Some(transport)).map_err(bad)?;
+            if !self.token_reviewer_jwt.is_empty() && !credential(&self.token_reviewer_jwt) {
+                return Err(bad("invalid Kubernetes reviewer credential"));
+            }
+        } else {
+            let target = Target::parse(&self.kubernetes_host, "https").map_err(bad)?;
+            if target.origin != self.kubernetes_host || !credential(&self.token_reviewer_jwt) {
+                return Err(bad("invalid Kubernetes host or reviewer credential"));
+            }
         }
         Ok(())
     }
@@ -564,15 +612,84 @@ impl AuthState {
             })
             .and_then(|s| s.config.as_ref())
         {
-            outbound
-                .endpoint(
-                    &format!("{}{TOKEN_REVIEW_PATH}", config.kubernetes_host),
-                    "https",
-                )
-                .map_err(|_| err(503, "Kubernetes TokenReview target is not host-enrolled"))?;
+            config.validate()?;
+            if config.transport.is_none() {
+                outbound
+                    .endpoint(&config.token_review_url(), "https")
+                    .map_err(|_| err(503, "Kubernetes TokenReview target is not host-enrolled"))?;
+            }
         }
         Ok(())
     }
+    pub(crate) fn has_kubernetes_api_https_state(&self) -> bool {
+        self.kubernetes_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount
+                    .config
+                    .as_ref()
+                    .is_some_and(|config| config.transport.is_some())
+            })
+    }
+
+    fn parse_kubernetes_config(
+        &self,
+        scope: AuthScope<'_>,
+        body: &Value,
+    ) -> Result<KubernetesConfig, AuthError> {
+        reject_unknown(
+            body,
+            &[
+                "kubernetes_host",
+                "token_reviewer_jwt",
+                "kubernetes_ca_cert",
+                "disable_local_ca_jwt",
+            ],
+        )?;
+        if body
+            .get("disable_local_ca_jwt")
+            .is_some_and(|value| value.as_bool() != Some(true))
+        {
+            return Err(bad(
+                "implicit in-pod trust or reviewer credentials are forbidden",
+            ));
+        }
+        let previous = self
+            .kubernetes_at(scope)
+            .and_then(|mount| mount.config.as_ref());
+        let transport = match body.get("kubernetes_ca_cert") {
+            Some(Value::String(certificate))
+                if !certificate.is_empty() && certificate.len() <= 64 * 1024 =>
+            {
+                Some(AuthHttpsTransport {
+                    certificate: certificate.clone(),
+                })
+            }
+            None if previous.is_some_and(|config| config.transport.is_none()) => None,
+            _ => return Err(bad("explicit nonempty Kubernetes CA required")),
+        };
+        let reviewer = match body.get("token_reviewer_jwt") {
+            None | Some(Value::Null) => "",
+            Some(value) => value
+                .as_str()
+                .ok_or_else(|| bad("Kubernetes reviewer must be a string"))?,
+        };
+        let config = KubernetesConfig {
+            kubernetes_host: string_field(body, "kubernetes_host")?.into(),
+            token_reviewer_jwt: reviewer.into(),
+            transport,
+        };
+        config.validate()?;
+        if previous.is_some_and(|old| old.kubernetes_host != config.kubernetes_host) {
+            return Err(err(
+                409,
+                "changing Kubernetes cluster requires a new auth mount",
+            ));
+        }
+        Ok(config)
+    }
+
     pub(super) fn kubernetes_route(
         &mut self,
         principal: Option<&Principal>,
@@ -601,43 +718,14 @@ impl AuthState {
                         .and_then(|s| s.config.as_ref())
                         .ok_or_else(|| err(404, "Kubernetes configuration missing"))?;
                     Ok(response(
-                        json!({"kubernetes_host":config.kubernetes_host,"token_reviewer_jwt_set":true,
+                        json!({"kubernetes_host":config.kubernetes_host,"token_reviewer_jwt_set":!config.token_reviewer_jwt.is_empty(),
+                        "kubernetes_ca_cert":config.transport.as_ref().map_or("", |transport| transport.certificate.as_str()),
                         "disable_local_ca_jwt":true}),
                         false,
                     ))
                 }
                 "POST" | "PUT" => {
-                    reject_unknown(
-                        body,
-                        &[
-                            "kubernetes_host",
-                            "token_reviewer_jwt",
-                            "disable_local_ca_jwt",
-                        ],
-                    )?;
-                    if body
-                        .get("disable_local_ca_jwt")
-                        .is_some_and(|v| v.as_bool() != Some(true))
-                    {
-                        return Err(bad(
-                            "implicit in-pod trust or reviewer credentials are forbidden",
-                        ));
-                    }
-                    let config = KubernetesConfig {
-                        kubernetes_host: string_field(body, "kubernetes_host")?.into(),
-                        token_reviewer_jwt: string_field(body, "token_reviewer_jwt")?.into(),
-                    };
-                    config.validate()?;
-                    if self
-                        .kubernetes_at(scope)
-                        .and_then(|s| s.config.as_ref())
-                        .is_some_and(|old| old.kubernetes_host != config.kubernetes_host)
-                    {
-                        return Err(err(
-                            409,
-                            "changing Kubernetes cluster requires a new auth mount",
-                        ));
-                    }
+                    let config = self.parse_kubernetes_config(scope, body)?;
                     self.kubernetes_mut(scope).config = Some(config);
                     Ok(empty(true))
                 }
@@ -963,7 +1051,8 @@ mod tests {
             assert!(
                 KubernetesConfig {
                     kubernetes_host: host.into(),
-                    token_reviewer_jwt: "reviewer-for-tests-only".into()
+                    token_reviewer_jwt: "reviewer-for-tests-only".into(),
+                    transport: None
                 }
                 .validate()
                 .is_err()
@@ -980,3 +1069,7 @@ mod tests {
         assert!(r.validate().is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "auth_kubernetes_transport_tests.rs"]
+mod transport_tests;

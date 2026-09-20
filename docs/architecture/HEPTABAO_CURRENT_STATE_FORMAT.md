@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **28**. Its source constant is
+The current Service state schema is **29**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -67,7 +67,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 25 | Native LDAP URL/CA/timeout transport authority and native RADIUS default-policy semantics; RADIUS API transport authority must be absent. |
 | 26 | Administrator-configured RADIUS target authority without process endpoint enrollment; token source CIDR constraints must be absent. |
 | 27 | Native RADIUS source CIDR configuration and issued-token source constraints; JWT/OIDC API-owned HTTPS transport and nonempty inactive JWT CA readback fields must be absent. |
-| 28 | Current format, adding administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields. |
+| 28 | Administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields; native LDAP CIDRs and Kubernetes API HTTPS authority must be absent. |
+| 29 | Current format, adding native LDAP source constraints and administrator-configured Kubernetes authentication HTTPS transport. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -211,8 +212,25 @@ binding digest on reopen. No service token is reissued by transport migration,
 and the one-use OIDC callback protocol is unchanged. A schema-27 binary must
 reject schema-28 application state rather than ignore this authority.
 
+Schema 29 is required for nonempty native LDAP source constraints in config or
+direct-token snapshots, and for Kubernetes authentication config with API HTTPS
+transport. The existing schema-27 gate still covers general token CIDRs and
+RADIUS config; it does not retroactively require schema 29 for valid old RADIUS
+state. LDAP config clear cannot remove the fence while a constrained direct
+LDAP token remains. Ordinary children retain their existing token-API format.
+Old LDAP records omit the empty field and preserve their serialized shape.
+
+New Kubernetes authentication config requires explicit nonempty
+`kubernetes_ca_cert`; it is a replacement trust store, never a request for system
+roots. Old records without internal `transport` retain startup enrollment and
+their required reviewer when a full config rewrite omits CA. Explicit valid CA
+promotes them; reads, login and renewal do not. Once promoted, each full rewrite
+must include CA. The optional native reviewer uses the presented JWT when empty,
+without persisting that JWT or retrying after a configured reviewer fails.
+The Kubernetes secrets engine keeps its separate transport and state contract.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 28. An authenticated
+it. Initialization and committed mutations use schema 29. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -226,7 +244,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-27 binary cannot read schema-28 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-28 binary cannot read schema-29 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

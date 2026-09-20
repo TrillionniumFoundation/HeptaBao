@@ -51,6 +51,22 @@ class KubernetesNativeUpgradeTests(unittest.TestCase):
             trace.check("application_unchanged", False)
         self.assertFalse(cases[-1]["passed"])
 
+class LegacyConfigurationShapeTests(unittest.TestCase):
+    def test_historical_configuration_never_receives_new_api_ca_field(self):
+        from kubernetes_native_upgrade import legacy_configuration
+        from kubernetes_renewal_live import configuration
+        from remote_jwks_live import signing_key
+        class Reviewer:
+            origin = "https://localhost:6443"
+            reviewer = "synthetic-reviewer"
+        private, _ = signing_key("ES256", "historical-shape")
+        current = configuration("candidate", Reviewer(), private, "synthetic-public-ca")
+        old = legacy_configuration(Reviewer(), private, "synthetic-public-ca")
+        self.assertIn("kubernetes_ca_cert", current)
+        self.assertEqual(set(old), {"kubernetes_host", "token_reviewer_jwt", "disable_local_ca_jwt"})
+        self.assertEqual(old["token_reviewer_jwt"], current["token_reviewer_jwt"])
+        self.assertTrue(old["disable_local_ca_jwt"])
+
 
 if __name__ == "__main__":
     unittest.main()

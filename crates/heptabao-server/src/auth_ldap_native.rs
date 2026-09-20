@@ -26,6 +26,7 @@ const NATIVE_FIELDS: &[&str] = &[
     "token_period",
     "token_explicit_max_ttl",
     "token_num_uses",
+    "token_bound_cidrs",
 ];
 const BOUNDED_FIELDS: &[&str] = &[
     "bind_dn",
@@ -40,6 +41,8 @@ const BOUNDED_FIELDS: &[&str] = &[
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LdapNativeConfig {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    bound_cidrs: Vec<String>,
     // Absence preserves the transport authority of persisted schema 23/24 mounts.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) transport: Option<crate::outbound::LdapTransportConfig>,
@@ -71,6 +74,7 @@ pub(super) struct LdapNativeUser {
 impl Default for LdapNativeConfig {
     fn default() -> Self {
         Self {
+            bound_cidrs: Vec::new(),
             transport: None,
             binddn: String::new(),
             bindpass: ProviderCredential::new(""),
@@ -93,6 +97,9 @@ impl Default for LdapNativeConfig {
 }
 
 impl LdapNativeConfig {
+    pub(super) fn has_bound_cidrs(&self) -> bool {
+        !self.bound_cidrs.is_empty()
+    }
     fn validate_target(&self, url: &str) -> Result<(), AuthError> {
         if let Some(transport) = &self.transport {
             transport
@@ -135,6 +142,7 @@ impl LdapNativeConfig {
         }
     }
     fn validate(&self) -> Result<(), AuthError> {
+        token_cidrs::validate(&self.bound_cidrs)?;
         if self.binddn.is_empty()
             || self.userdn.is_empty()
             || self.bindpass.0.is_empty()
@@ -177,7 +185,7 @@ impl LdapNativeConfig {
             "username_as_alias":self.username_as_alias,"starttls":false,
             "token_policies":self.token_policies,"token_ttl":self.token_ttl,"token_max_ttl":self.token_max_ttl,
             "token_period":self.token_period,"token_explicit_max_ttl":self.token_explicit_max_ttl,
-            "token_num_uses":self.token_num_uses});
+            "token_num_uses":self.token_num_uses,"token_bound_cidrs":self.bound_cidrs});
         if let Some(transport) = &self.transport {
             data["certificate"] = json!(transport.certificate);
             data["connection_timeout"] = json!(transport.connection_timeout);
@@ -378,6 +386,9 @@ impl AuthState {
                 };
             }
         }
+        if body.get("token_bound_cidrs").is_some() {
+            next.bound_cidrs = token_cidrs::field(body)?;
+        }
         if body.get("token_policies").is_some() {
             next.token_policies = names(body, "token_policies")?;
         }
@@ -569,9 +580,11 @@ impl AuthState {
         body: &Value,
         config: LdapMount,
         now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<LdapLoginPlan, AuthError> {
         reject_unknown(body, &["password"])?;
         let native = config.native.as_ref().ok_or_else(denied)?;
+        token_cidrs::check(&native.bound_cidrs, origin_peer)?;
         let username = native.canonical(name.trim());
         if !valid_name(&username) {
             return Err(bad("invalid LDAP username"));
@@ -581,6 +594,7 @@ impl AuthState {
             return Err(bad("invalid LDAP credential"));
         }
         Ok(LdapLoginPlan {
+            origin_peer,
             namespace: scope.namespace.into(),
             mount: scope.mount.into(),
             mount_revision: self
@@ -634,6 +648,7 @@ impl AuthState {
             return Err(err(409, "LDAP mapping changed during provider request"));
         }
         let config = plan.config.native.as_ref().ok_or_else(denied)?;
+        token_cidrs::check(&config.bound_cidrs, plan.origin_peer)?;
         let alias = observation
             .alias
             .ok_or_else(|| bad("native LDAP observation missing alias"))?;
@@ -647,7 +662,7 @@ impl AuthState {
             scope,
             &alias,
             NativeOnlineToken {
-                bound_cidrs: Vec::new(),
+                bound_cidrs: config.bound_cidrs.clone(),
                 policies,
                 limits: config.limits(),
                 explicit_max_ttl: config.token_explicit_max_ttl,

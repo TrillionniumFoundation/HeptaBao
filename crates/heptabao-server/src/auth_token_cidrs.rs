@@ -154,6 +154,23 @@ impl AuthState {
                         .is_some_and(|config| config.has_bound_cidrs())
                 })
             })
+            || self.has_ldap_token_bound_cidrs()
+    }
+    pub(crate) fn has_ldap_token_bound_cidrs(&self) -> bool {
+        self.ldap_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount
+                    .native
+                    .as_ref()
+                    .is_some_and(|config| config.has_bound_cidrs())
+            })
+        }) || self.tokens.values().any(|token| {
+            !token.bound_cidrs.is_empty()
+                && matches!(
+                    token.auth_provenance.as_ref(),
+                    Some(TokenAuthProvenance::LdapNative { .. })
+                )
+        })
     }
     pub(super) fn validate_token_bound_cidrs(&self) -> Result<(), AuthError> {
         for token in self.tokens.values() {

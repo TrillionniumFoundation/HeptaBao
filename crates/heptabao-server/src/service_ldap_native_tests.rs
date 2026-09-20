@@ -709,3 +709,255 @@ fn wrapped_native_ldap_login_binds_identity_before_single_commit_and_rejects_sta
     }
     Ok(())
 }
+
+fn cidr_login_plan(
+    service: &mut Service,
+    peer: Option<std::net::IpAddr>,
+    wrap: Option<u64>,
+) -> RequestExecution {
+    service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/ldap/login/alice",
+        namespace: "",
+        token: "",
+        body: json!({"password":"synthetic-directory-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: wrap,
+        origin_peer: peer,
+        client_certificates: None,
+    })
+}
+fn ldap_request_from(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    peer: Option<std::net::IpAddr>,
+) -> Response {
+    let mut request = ServiceRequest::new(method, path, "", token, body);
+    request.origin_peer = peer;
+    service.handle_request_at(request, 100)
+}
+
+#[test]
+fn native_ldap_cidr_fences_missing_source_and_changed_config_before_wrapped_publication()
+-> TestResult {
+    for wrapping in [None, Some(60)] {
+        let root = Root::new();
+        let Fixture {
+            mut service,
+            root_token,
+            ..
+        } = fixture(&root)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/ldap/config",
+                &root_token,
+                json!({"token_bound_cidrs":["127.0.0.1"]})
+            )
+            .status,
+            204
+        );
+        let good = Some("127.0.0.1".parse()?);
+        let other = Some("127.0.0.2".parse()?);
+        let before = service.state_digest;
+        for peer in [None, other] {
+            match cidr_login_plan(&mut service, peer, wrapping) {
+                RequestExecution::Complete(response) => {
+                    assert_eq!(response.status, 403);
+                    assert!(response.body.get("auth").is_none());
+                    assert!(response.body.get("wrap_info").is_none());
+                }
+                RequestExecution::External(_) => {
+                    return Err("denied LDAP origin reached provider".into());
+                }
+            }
+        }
+        assert_eq!(service.state_digest, before);
+        let pending = match cidr_login_plan(&mut service, good, wrapping) {
+            RequestExecution::External(plan) => plan,
+            RequestExecution::Complete(_) => {
+                return Err("allowed LDAP origin did not stage provider".into());
+            }
+        };
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/ldap/config",
+                &root_token,
+                json!({"token_bound_cidrs":["127.0.0.2"]})
+            )
+            .status,
+            204
+        );
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let response = service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Ldap(
+                LdapLoginObservation::native("Case Person", groups(true)),
+            ))),
+        );
+        assert_eq!(response.status, 409);
+        assert!(response.body.get("auth").is_none());
+        assert!(response.body.get("wrap_info").is_none());
+        assert_eq!(service.state_digest, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> TestResult {
+    let root = Root::new();
+    let Fixture {
+        mut service,
+        root_token,
+        key,
+        ..
+    } = fixture(&root)?;
+    let mut historical = service.state.clone().ok_or("state")?;
+    historical.schema = 28;
+    assert!(historical.validate_format().is_ok());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "secret/data/ldap-cidr",
+            &root_token,
+            json!({"data":{"synthetic":true}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/ldap/config",
+            &root_token,
+            json!({"token_bound_cidrs":["127.0.0.1"]})
+        )
+        .status,
+        204
+    );
+    let mut configured = service.state.clone().ok_or("state")?;
+    configured.schema = 28;
+    assert!(
+        configured.validate_format().is_err(),
+        "old readers cannot drop LDAP source constraints"
+    );
+    configured.schema = CURRENT_STATE_SCHEMA;
+    assert!(configured.validate_format().is_ok());
+    let good = Some("127.0.0.1".parse()?);
+    let other = Some("127.0.0.2".parse()?);
+    let plan = match cidr_login_plan(&mut service, good, Some(60)) {
+        RequestExecution::External(plan) => plan,
+        RequestExecution::Complete(_) => return Err("expected wrapped LDAP login effect".into()),
+    };
+    let response = service.finish_external_request(
+        *plan,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Ldap(
+            LdapLoginObservation::native("Case Person", groups(true)),
+        ))),
+    );
+    assert_eq!(response.status, 200);
+    let wrapper = response.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("wrapper")?
+        .to_owned();
+    let unwrapped = ldap_request_from(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &wrapper,
+        json!({}),
+        other,
+    );
+    assert_eq!(unwrapped.status, 200);
+    let bearer = unwrapped.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("inner token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/ldap/config",
+            &root_token,
+            json!({"token_bound_cidrs":[]})
+        )
+        .status,
+        204
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .has_ldap_token_bound_cidrs()
+    );
+    let mut issued = service.state.clone().ok_or("state")?;
+    issued.schema = 28;
+    assert!(
+        issued.validate_format().is_err(),
+        "clearing configuration cannot remove the issued-token fence"
+    );
+    issued.schema = CURRENT_STATE_SCHEMA;
+    assert!(issued.validate_format().is_ok());
+    for reopened in [false, true] {
+        if reopened {
+            drop(service);
+            service = root.service()?;
+            assert_eq!(
+                call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+        }
+        for peer in [None, other] {
+            assert_eq!(
+                ldap_request_from(
+                    &mut service,
+                    "GET",
+                    "secret/data/ldap-cidr",
+                    &bearer,
+                    json!({}),
+                    peer
+                )
+                .status,
+                403
+            );
+        }
+        let read = ldap_request_from(
+            &mut service,
+            "GET",
+            "secret/data/ldap-cidr",
+            &bearer,
+            json!({}),
+            good,
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"]["data"]["synthetic"], true);
+        let lookup = ldap_request_from(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &bearer,
+            json!({}),
+            good,
+        );
+        assert_eq!(lookup.status, 200);
+        assert_eq!(lookup.body["data"]["bound_cidrs"], json!(["127.0.0.1"]));
+    }
+    Ok(())
+}

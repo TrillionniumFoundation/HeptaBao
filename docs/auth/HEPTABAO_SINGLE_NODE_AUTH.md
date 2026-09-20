@@ -386,17 +386,22 @@ The process credential remains optional for these old native mounts; legacy URL
 mounts require their original process credential. Transport changes invalidate
 pending login and renewal observations through the existing revision checks.
 
-Native RADIUS accepts `token_bound_cidrs` as a list or comma-separated string;
+Native RADIUS and native LDAP accept `token_bound_cidrs` as a list or comma-separated string;
 null or an empty list clears future issuance constraints. The bounded profile
 accepts up to 128 numeric IP, CIDR or IP:port entries. Containment ignores port,
 preserves host bits in readback and normalizes IPv4-mapped IPv6 using the pinned
 upstream behavior. Unix socket strings and invalid masks are rejected rather
 than reproducing upstream's Unix-address fallback. Login checks the actual
-listener socket address before PAP. Each issued token stores its constraints;
+listener socket address before PAP or LDAP Bind/Search. Each issued token stores its constraints;
 later config changes do not rebind it. Ordinary children inherit them; orphans
 do not. Central token admission checks both immutable reads and mutations before
 consuming a finite use, and rechecks the actor after external work. Administrative
 lookup/renewal checks the caller token's constraints, not the target token's IP.
+Native LDAP partial config updates preserve omitted CIDRs; null/empty clears
+future issuance only. Direct LDAP token snapshots and constrained config require
+schema 29. Existing legacy bounded LDAP keeps its prior behavior. Wrong-source
+login rejects before contacting the directory, while administrative provider
+renewal checks the caller's source constraints and retains the target's snapshot.
 Untrusted forwarding headers cannot supply the peer. HBFQ3 preserves the original
 socket peer through authenticated HA forwarding; missing peer information denies
 a constrained token. Mixed-version forwarding to older binaries can fail closed

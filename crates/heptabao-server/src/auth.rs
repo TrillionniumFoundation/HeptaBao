@@ -559,6 +559,7 @@ fn valid_ldap_attribute_name(value: &str) -> bool {
 }
 
 pub(crate) struct LdapLoginPlan {
+    origin_peer: Option<std::net::IpAddr>,
     namespace: String,
     mount: String,
     mount_revision: AuthMount,
@@ -3285,6 +3286,7 @@ impl AuthState {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn prepare_ldap_login(
         &self,
         namespace: &str,
@@ -3293,6 +3295,20 @@ impl AuthState {
         method: &str,
         body: &Value,
         now: u64,
+    ) -> Result<LdapLoginPlan, AuthError> {
+        self.prepare_ldap_login_from(namespace, mount, name, method, body, now, None)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn prepare_ldap_login_from(
+        &self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<LdapLoginPlan, AuthError> {
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
@@ -3322,7 +3338,7 @@ impl AuthState {
             ));
         }
         if config.native.is_some() {
-            return self.prepare_native_ldap_login(scope, name, body, config, now);
+            return self.prepare_native_ldap_login(scope, name, body, config, now, origin_peer);
         }
         if password.is_empty() || password.len() > 1024 || password.contains('\0') {
             return Err(denied());
@@ -3345,6 +3361,7 @@ impl AuthState {
         // password verifier is deliberately not consulted for LDAP login.
         let _ = self.users_at(scope).and_then(|users| users.get(name));
         Ok(LdapLoginPlan {
+            origin_peer,
             namespace: namespace.into(),
             mount: mount.into(),
             mount_revision: self

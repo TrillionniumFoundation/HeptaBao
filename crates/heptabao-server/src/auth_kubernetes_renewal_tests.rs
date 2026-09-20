@@ -2,7 +2,7 @@
 use super::*;
 
 fn config() -> Value {
-    json!({"kubernetes_host":"https://cluster.example.test:6443","token_reviewer_jwt":"synthetic-reviewer-credential","disable_local_ca_jwt":true})
+    json!({"kubernetes_host":"https://cluster.example.test:6443","kubernetes_ca_cert":include_str!("testdata/kubernetes-api-ca.pem"),"token_reviewer_jwt":"synthetic-reviewer-credential","disable_local_ca_jwt":true})
 }
 fn role() -> Value {
     json!({"bound_service_account_names":["worker"],"bound_service_account_namespaces":["workload"],"audience":"heptabao","token_policies":["issuer"],"token_ttl":60,"token_max_ttl":90})

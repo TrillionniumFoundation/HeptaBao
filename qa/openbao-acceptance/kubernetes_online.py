@@ -122,11 +122,10 @@ def run(binary: Path, root: Path, checks: list[dict]):
             raise RuntimeError(name)
     config_path = instance.root / "server.json"
     config = json.loads(config_path.read_text())
-    config["outbound_endpoints"] = [{"origin":reviewer.origin,"address":f"127.0.0.1:{reviewer.port}",
-        "server_name":"localhost","ca_pem":(instance.root / "ca.crt").read_text(),"path_prefix":"/apis/authentication.k8s.io/v1/"}]
+    config["outbound_endpoints"] = []
     config_path.write_text(json.dumps(config)); config_path.chmod(0o600)
     mount = "platform/kubernetes"
-    params = {"kubernetes_host":reviewer.origin,"token_reviewer_jwt":reviewer.reviewer,"disable_local_ca_jwt":True}
+    params = {"kubernetes_host":reviewer.origin,"kubernetes_ca_cert":(instance.root / "ca.crt").read_text(),"token_reviewer_jwt":reviewer.reviewer,"disable_local_ca_jwt":True}
     role = {"bound_service_account_names":["worker"],"bound_service_account_namespaces":["workload"],
             "audience":reviewer.audience,"token_policies":["default"],"token_ttl":300}
     def login(**extra):
