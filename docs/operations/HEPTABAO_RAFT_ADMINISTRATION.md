@@ -110,7 +110,7 @@ ARM64/macOS/Windows, large-state load, physical disk faults, OpenBao binary-form
 parity, automatic arbitrary-node challenge enrollment, force restore and rolling
 mixed-version upgrade require separate evidence.
 
-The current SSD Linux receipt is [`qa/openbao-acceptance/evidence/raft-membership-e57f045.json`](../../qa/openbao-acceptance/evidence/raft-membership-e57f045.json): 38 native membership scenarios passed for binary digest `e57f04533c3beaf9560b0d5dd1af66355231df6bf8ddc09ace03598e338579b3`. It remains same-version loopback evidence and does not grant production or compatibility authority.
+The current SSD Linux receipts use the `6cc53a3` candidate binary with digest `eac7867bc9f7b0626b291bce7362eec8eba3a61b02578549e17644e18c4aaf8f`: [`raft-membership-6cc53a3.json`](../../qa/openbao-acceptance/evidence/raft-membership-6cc53a3.json) records 38 native membership scenarios; [`raft-membership-dead-cleanup-6cc53a3.json`](../../qa/openbao-acceptance/evidence/raft-membership-dead-cleanup-6cc53a3.json) records 41 scenarios including dead-voter cleanup. The companion [`ha-network-partition-6cc53a3.json`](../../qa/openbao-acceptance/evidence/ha-network-partition-6cc53a3.json), [`ha-step-down-6cc53a3.json`](../../qa/openbao-acceptance/evidence/ha-step-down-6cc53a3.json) and [`idle-lifecycle-ha-6cc53a3.json`](../../qa/openbao-acceptance/evidence/idle-lifecycle-ha-6cc53a3.json) receipts cover partition fencing, explicit leadership transfer and autonomous expiry after leader loss. They remain same-version loopback evidence and do not grant production or compatibility authority.
 
 ### Explicit linearizable read probe
 
