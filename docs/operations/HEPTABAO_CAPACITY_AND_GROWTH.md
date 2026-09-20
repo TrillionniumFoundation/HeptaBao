@@ -24,8 +24,10 @@ and caught up, but a mutation refuses to promote it implicitly and
 requires an explicit owner-manifest migration. New owner-bound service
 commits use `HBSM4`: the encrypted manifest carries a canonical owner-manifest
 digest (with operation revision removed) and a five-owner changed mask. Followers
-rebuild their local owner plan and fail closed if either value diverges before
-publishing durable state; an HBSM3 or older envelope never silently claims this
+rebuild their local owner plan and fail closed if the canonical target manifest
+identity diverges before publishing durable state. The mask is range-validated
+but is not compared to a follower's local delta: a lagging follower may span
+several leader commits. An HBSM3 or older envelope never silently claims this
 owner-delta guarantee. The manifest is still the sole authoritative publication
 point, so interrupted staging cannot expose a partial logical state. A point
 mutation still serializes the complete logical State once for its cluster binding
