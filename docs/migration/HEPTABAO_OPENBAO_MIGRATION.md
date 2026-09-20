@@ -12,6 +12,8 @@ not decrypt sealed checksums, restore a Raft store, or convert the archive into
 a HeptaBao backup. A passing inspection is format/integrity evidence only and
 does not change the snapshot migration gate or authorize cutover.
 
+The current SSD Linux receipt is [`migration-snapshot-live-6cc53a3.json`](../../qa/openbao-acceptance/evidence/migration-snapshot-live-6cc53a3.json). It used the pinned OpenBao 2.6.2 arm64 oracle and passed authentic snapshot inspection, tamper rejection, the state-size ceiling and unknown-member rejection. It remains inspection-only evidence: `restore_performed`, `conversion_performed`, `migration_authority` and `full_format_migration` are all false.
+
 ## Implemented transfer boundary
 
 `qa/openbao-acceptance/migrate_kv2.py` copies explicitly selected KV-v2 objects
