@@ -127,9 +127,14 @@ independent acceptance or production authority.
 ## Current immutable reads and shared state ownership
 
 `State` shares its Auth, Engine, Database and Raft-administration owners through
-`CowOwner`; mutating an owner isolates it using `Arc::make_mut`. This is
-owner-level copy-on-write, not a record-oriented durable store. Mutations still
-serialize the complete logical image for current local/HA publication.
+`CowOwner`; mutating an owner isolates it using `Arc::make_mut`. Engine mounts,
+KV2 entries and KV secret payloads also share immutable allocations. A small KV
+write copies the affected mount's key index and the target entry's version
+metadata while retaining other mounts, entries and historical payloads. Dropping
+the final payload reference clears its JSON; deleting from a candidate never
+clears a retained transaction snapshot. These wrappers preserve serialized bytes.
+This is in-memory copy-on-write, not a record-oriented durable store. Mutations
+still serialize the complete logical image for current local/HA publication.
 
 After HA ReadIndex/synchronization and recovery fencing, `immutable_kv_response`
 handles only eligible KV GET/LIST/SCAN requests with unlimited ordinary tokens.

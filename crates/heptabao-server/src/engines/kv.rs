@@ -46,8 +46,10 @@ impl Config {
     }
 }
 
+type Entry = CowValue<EntryState>;
+
 #[derive(Clone, Serialize, Deserialize, Default)]
-struct Entry {
+struct EntryState {
     config: Config,
     current_version: u64,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
@@ -64,18 +66,10 @@ struct Version {
     created_at: u64,
     deletion_at: Option<u64>,
     destroyed: bool,
-    data: Option<Value>,
+    data: Option<SharedJson>,
 }
 
-impl Drop for Version {
-    fn drop(&mut self) {
-        if let Some(data) = &mut self.data {
-            wipe_json(data);
-        }
-    }
-}
-
-impl Drop for Entry {
+impl Drop for EntryState {
     fn drop(&mut self) {
         if let Some(metadata) = self.custom_metadata.take() {
             for (mut key, mut value) in metadata {
@@ -100,7 +94,7 @@ impl Version {
 
 impl Entry {
     fn new(now: u64) -> Self {
-        Self {
+        Self::from(EntryState {
             config: Config::default(),
             current_version: 0,
             current_metadata_version: 0,
@@ -109,7 +103,7 @@ impl Entry {
             updated_at: now,
             custom_metadata: None,
             versions: BTreeMap::new(),
-        }
+        })
     }
     fn metadata(&self) -> Value {
         let mut metadata = self.config.json();
@@ -127,7 +121,7 @@ impl Entry {
 }
 
 pub(super) fn read_v1(
-    entries: &BTreeMap<String, Value>,
+    entries: &BTreeMap<String, SharedJson>,
     method: &str,
     path: &str,
     _body: &Value,
@@ -153,13 +147,12 @@ pub(super) fn read_v1(
     }
     entries
         .get(path)
-        .cloned()
-        .map(|data| ok(data, false))
+        .map(|data| ok(data.expose().clone(), false))
         .ok_or_else(not_found)
 }
 
 pub(super) fn handle_v1(
-    entries: &mut BTreeMap<String, Value>,
+    entries: &mut BTreeMap<String, SharedJson>,
     method: &str,
     path: &str,
     body: &Value,
@@ -173,14 +166,11 @@ pub(super) fn handle_v1(
             if !body.is_object() {
                 return Err(bad("secret data must be an object"));
             }
-            if let Some(mut previous) = entries.insert(path.into(), body.clone()) {
-                wipe_json(&mut previous);
-            }
+            entries.insert(path.into(), SharedJson::from(SecretJson(body.clone())));
             Ok(empty(true))
         }
         "DELETE" => {
-            if let Some(mut previous) = entries.remove(path) {
-                wipe_json(&mut previous);
+            if entries.remove(path).is_some() {
                 Ok(empty(true))
             } else {
                 Ok(empty(false))
@@ -415,8 +405,11 @@ impl Kv2 {
                 self.write(resource, body, now, method == "PATCH")
             }
             "data" if method == "DELETE" => {
-                if let Some(entry) = self.entries.get_mut(resource)
-                    && let Some(version) = entry.versions.get_mut(&entry.current_version)
+                let Some(entry) = self.entries.get_mut(resource) else {
+                    return Ok(empty(false));
+                };
+                let current_version = entry.current_version;
+                if let Some(version) = entry.versions.get_mut(&current_version)
                     && !version.destroyed
                     && version.deletion_at.is_none_or(|at| at > now)
                 {
@@ -456,11 +449,11 @@ impl Kv2 {
                 mutated: false,
             });
         }
-        let data = version.data.clone().ok_or_else(not_found)?;
+        let data = version.data.as_ref().ok_or_else(not_found)?.expose();
         if subkeys {
             let depth = optional_u64(body, "depth")?.unwrap_or(0);
             Ok(ok(
-                json!({"subkeys":strip_values(&data, depth, 0),"metadata":metadata}),
+                json!({"subkeys":strip_values(data, depth, 0),"metadata":metadata}),
                 false,
             ))
         } else {
@@ -502,7 +495,8 @@ impl Kv2 {
             let current_value = current
                 .and_then(|entry| entry.versions.get(&current_version))
                 .filter(|version| version.readable(now))
-                .and_then(|v| v.data.clone())
+                .and_then(|v| v.data.as_ref())
+                .map(|data| data.expose().clone())
                 .ok_or_else(not_found)?;
             let mut merged = SecretJson(current_value);
             merge_patch(&mut merged, new_data);
@@ -536,7 +530,7 @@ impl Kv2 {
                 )
             },
             destroyed: false,
-            data: Some(data),
+            data: Some(SharedJson::from(SecretJson(data))),
         };
         let metadata = version.metadata(next, &entry.custom_metadata);
         entry.versions.insert(next, version);
@@ -585,9 +579,7 @@ impl Kv2 {
                 }
                 match operation {
                     "destroy" => {
-                        if let Some(mut data) = version.data.take() {
-                            wipe_json(&mut data);
-                        }
+                        version.data = None;
                         version.destroyed = true;
                         changed = true;
                     }
@@ -775,6 +767,10 @@ fn strip_values(value: &Value, depth: u64, level: u64) -> Value {
         _ => Value::Null,
     }
 }
+
+#[cfg(test)]
+#[path = "kv_cow_tests.rs"]
+mod cow_tests;
 
 #[cfg(test)]
 mod ordered_list_tests {

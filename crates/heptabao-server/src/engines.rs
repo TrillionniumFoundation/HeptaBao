@@ -47,6 +47,53 @@ fn lease_clock_is_zero(value: &u64) -> bool {
     *value == 0
 }
 
+// Internal transaction sharing only: serde retains the pre-COW representation.
+// In particular, a rejected candidate must never mutate a retained snapshot.
+struct CowValue<T>(Arc<T>);
+
+impl<T> Clone for CowValue<T> {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl<T> From<T> for CowValue<T> {
+    fn from(value: T) -> Self {
+        Self(Arc::new(value))
+    }
+}
+
+impl<T> Deref for CowValue<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref()
+    }
+}
+
+impl<T: Clone> DerefMut for CowValue<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl<T: Serialize> Serialize for CowValue<T> {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for CowValue<T> {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        T::deserialize(deserializer).map(Self::from)
+    }
+}
+
 const fn mount_revision_one() -> u64 {
     1
 }
@@ -131,8 +178,10 @@ impl Default for NamespaceState {
     }
 }
 
+type Mount = CowValue<MountState>;
+
 #[derive(Clone, Serialize, Deserialize)]
-struct Mount {
+struct MountState {
     #[serde(default = "mount_revision_one")]
     revision: u64,
     #[serde(default = "mount_revision_one")]
@@ -151,7 +200,7 @@ enum Backend {
     PluginSecret(String),
     /// Bounded OpenLDAP dynamic credential state; network effects are Service-owned.
     OpenLdap(openldap::OpenLdap),
-    Kv1(BTreeMap<String, Value>),
+    Kv1(BTreeMap<String, SharedJson>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
     Pki(pki::Pki),
@@ -162,9 +211,9 @@ enum Backend {
 impl Drop for Backend {
     fn drop(&mut self) {
         if let Self::Kv1(entries) = self {
-            for (mut path, mut value) in std::mem::take(entries) {
+            for (mut path, value) in std::mem::take(entries) {
                 path.zeroize();
-                wipe_json(&mut value);
+                drop(value);
             }
         }
     }
@@ -185,6 +234,8 @@ fn wipe_json(value: &mut Value) {
     *value = Value::Null;
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(transparent)]
 struct SecretJson(Value);
 impl std::ops::Deref for SecretJson {
     type Target = Value;
@@ -203,18 +254,28 @@ impl Drop for SecretJson {
     }
 }
 
+// Payloads are immutable after publication. The final owning reference runs
+// SecretJson::drop; dropping a failed candidate cannot wipe an older snapshot.
+type SharedJson = CowValue<SecretJson>;
+
+impl SharedJson {
+    fn expose(&self) -> &Value {
+        &self.0.as_ref().0
+    }
+}
+
 impl Mount {
     fn new(backend: Backend, description: &str) -> Self {
         Self::with_incarnation(backend, description, 1)
     }
 
     fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
-        Self {
+        Self::from(MountState {
             revision: 1,
             incarnation: incarnation.max(1),
             description: description.into(),
             backend,
-        }
+        })
     }
 
     fn descriptor(&self) -> Value {
@@ -1478,6 +1539,10 @@ fn duration_seconds(value: &Value) -> Result<u64> {
 #[cfg(test)]
 #[path = "engine_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "engine_cow_tests.rs"]
+mod cow_tests;
 
 fn listing(keys: Vec<String>) -> Result<EngineResponse> {
     if keys.is_empty() {
