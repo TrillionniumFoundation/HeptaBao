@@ -104,13 +104,13 @@ def run_upgrade(instance, directory, candidate, legacy, cases):
     t.check("current.mode_denial_preserves_store", durable_manifest(store) == before)
     t.call("current.remove_bounded_mapping", "auth/ldap-bounded/users/alice", method="DELETE", expected=204)
     before = durable_manifest(store)
-    cursor = directory.cursor()
     t.call("current.bounded_login_still_needs_mapping", "auth/ldap-bounded/login/alice",
-           {"password": directory.user_password}, token="", expected=403)
+           {"password": directory.user_password}, token="", expected=403, provider="search")
+    cursor = directory.cursor()
     t.call("current.bounded_renew_still_needs_mapping", "auth/token/renew-self", {},
            token=tokens["bounded"]["client_token"], expected=403)
     unchanged, idle = durable_manifest(store) == before, provider_idle(directory, cursor)
-    t.check("current.bounded_mapping_denials_preserve_store_and_skip_provider",
+    t.check("current.bounded_mapping_denials_preserve_store_and_renewal_skips_provider",
             unchanged and idle, store_unchanged=unchanged, provider_idle=idle)
     t.call("current.restore_bounded_mapping", "auth/ldap-bounded/users/alice", user, method="PUT", expected=204)
     t.call("current.bounded_renew_restored", "auth/token/renew-self", {"increment": 300},
@@ -174,13 +174,13 @@ def run_upgrade(instance, directory, candidate, legacy, cases):
     directory.start()
     t.call("recovery.remove_bounded_mapping", "auth/ldap-bounded/users/alice", method="DELETE", expected=204)
     before = durable_manifest(store)
-    cursor = directory.cursor()
     t.call("recovery.bounded_login_still_needs_mapping", "auth/ldap-bounded/login/alice",
-           {"password": directory.user_password}, token="", expected=403)
+           {"password": directory.user_password}, token="", expected=403, provider="search")
+    cursor = directory.cursor()
     t.call("recovery.bounded_renew_still_needs_mapping", "auth/token/renew-self", {},
            token=tokens["bounded"]["client_token"], expected=403)
     unchanged, idle = durable_manifest(store) == before, provider_idle(directory, cursor)
-    t.check("recovery.bounded_mapping_denials_preserve_store_and_skip_provider",
+    t.check("recovery.bounded_mapping_denials_preserve_store_and_renewal_skips_provider",
             unchanged and idle, store_unchanged=unchanged, provider_idle=idle)
     t.call("recovery.restore_bounded_mapping", "auth/ldap-bounded/users/alice", user, method="PUT", expected=204)
     t.call("recovery.bounded_renew_restored", "auth/token/renew-self", {"increment": 300},
