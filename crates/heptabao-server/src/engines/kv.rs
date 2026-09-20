@@ -130,15 +130,19 @@ pub(super) fn read_v1(
     entries: &BTreeMap<String, Value>,
     method: &str,
     path: &str,
-    body: &Value,
+    _body: &Value,
 ) -> Result<EngineResponse> {
     if matches!(method, "LIST" | "SCAN") {
         if !path.is_empty() {
             valid_path(path.trim_end_matches('/'))?;
         }
-        let keys = list_map_keys(entries, path, method == "SCAN", body)?;
+        let keys = list_map_keys(entries, path, method == "SCAN", &Value::Null)?;
         return if keys.is_empty() {
-            Err(not_found())
+            if method == "SCAN" {
+                Ok(ok(json!({}), false))
+            } else {
+                Err(not_found())
+            }
         } else {
             Ok(ok(json!({"keys":keys}), false))
         };
@@ -196,22 +200,37 @@ fn list_map_keys<T>(
     body: &Value,
 ) -> Result<Vec<String>> {
     use std::ops::Bound::{Excluded, Included, Unbounded};
+    let after = match body.get("after") {
+        None | Some(Value::Null) => "",
+        Some(value) => value
+            .as_str()
+            .ok_or_else(|| bad("after must be a string"))?,
+    };
+    let limit = match body.get("limit") {
+        None | Some(Value::Null) => 0,
+        Some(Value::String(text)) if text.is_empty() => 0,
+        Some(value) => value
+            .as_i64()
+            .or_else(|| value.as_str().and_then(|text| text.parse::<i64>().ok()))
+            .ok_or_else(|| bad("limit must be a signed integer"))?,
+    };
+    if recursive {
+        return scan_map_keys(entries, prefix);
+    }
     let prefix = if prefix.is_empty() {
         String::new()
     } else {
         format!("{}/", prefix.trim_end_matches('/'))
     };
-    let after = body.get("after").and_then(Value::as_str).unwrap_or("");
-    let limit = optional_u64(body, "limit")?.unwrap_or(0);
-    let limit = if limit == 0 {
+    let limit = if limit <= 0 {
         usize::MAX
     } else {
         usize::try_from(limit).unwrap_or(usize::MAX)
     };
     let mut bound = if after.is_empty() {
         Included(prefix.clone())
-    } else if !recursive && after.ends_with('/') {
-        Included(format!("{prefix}{}0", &after[..after.len() - 1]))
+    } else if let Some(directory) = after.strip_suffix('/') {
+        Included(format!("{prefix}{directory}0"))
     } else {
         Excluded(format!("{prefix}{after}"))
     };
@@ -227,18 +246,40 @@ fn list_map_keys<T>(
         if rest.is_empty() {
             continue;
         }
-        let value = if !recursive {
-            if let Some((directory, _)) = rest.split_once('/') {
-                bound = Included(format!("{prefix}{directory}0"));
-                format!("{directory}/")
-            } else {
-                rest.to_owned()
-            }
+        let value = if let Some((directory, _)) = rest.split_once('/') {
+            bound = Included(format!("{prefix}{directory}0"));
+            format!("{directory}/")
         } else {
             rest.to_owned()
         };
         if value.as_str() > after {
             found.push(value);
+        }
+    }
+    Ok(found)
+}
+
+/// OpenBao ScanView emits each directory's leaves in sorted order, then
+/// visits child directories using a LIFO frontier. It does not paginate by the
+/// request's after/limit fields. Each shallow list seeks over subtrees so a
+/// scan reads key names only, never values or unrelated mount/prefix entries.
+fn scan_map_keys<T>(entries: &BTreeMap<String, T>, prefix: &str) -> Result<Vec<String>> {
+    let prefix = if prefix.is_empty() {
+        String::new()
+    } else {
+        format!("{}/", prefix.trim_end_matches('/'))
+    };
+    let mut frontier = vec![String::new()];
+    let mut found = Vec::new();
+    while let Some(directory) = frontier.pop() {
+        let full_prefix = format!("{prefix}{directory}");
+        for child in list_map_keys(entries, &full_prefix, false, &Value::Null)? {
+            let relative = format!("{directory}{child}");
+            if child.ends_with('/') {
+                frontier.push(relative);
+            } else {
+                found.push(relative);
+            }
         }
     }
     Ok(found)
@@ -284,7 +325,11 @@ impl Kv2 {
             }
             let keys = list_map_keys(&self.entries, resource, method == "SCAN", body)?;
             if keys.is_empty() {
-                return Err(not_found());
+                return if method == "SCAN" {
+                    Ok(ok(json!({}), false))
+                } else {
+                    Err(not_found())
+                };
             }
             let mut data = json!({"keys":keys});
             if operation == "detailed-metadata" {
@@ -295,10 +340,16 @@ impl Kv2 {
                 };
                 let info = keys
                     .iter()
-                    .filter_map(|key| {
-                        self.entries
-                            .get(&format!("{prefix}{key}"))
-                            .map(|entry| (key.clone(), entry.metadata()))
+                    .map(|key| {
+                        // OpenBao joins the relative key before looking up
+                        // metadata: "a/" resolves to the same-stem leaf "a"
+                        // when present, and pure directories carry an empty map.
+                        let path = format!("{prefix}{key}");
+                        let metadata = self
+                            .entries
+                            .get(path.trim_end_matches('/'))
+                            .map_or_else(|| json!({}), Entry::metadata);
+                        (key.clone(), metadata)
                     })
                     .collect();
                 data["key_info"] = Value::Object(info);
@@ -729,8 +780,7 @@ fn strip_values(value: &Value, depth: u64, level: u64) -> Value {
 mod ordered_list_tests {
     use super::*;
     #[test]
-    fn record_index_paging_matches_reference_for_shallow_recursive_and_unicode_keys() -> Result<()>
-    {
+    fn record_index_paging_matches_reference_for_shallow_and_unicode_keys() -> Result<()> {
         let mut entries = BTreeMap::new();
         for prefix in ["", "nested/", "é/"] {
             for key in [
@@ -740,16 +790,14 @@ mod ordered_list_tests {
             }
         }
         for prefix in ["", "a", "a/", "nested", "nested/a", "é", "missing"] {
-            for recursive in [false, true] {
-                for after in ["", "a", "a/", "a/one", "a0", "b/", "é", "é/", "深"] {
-                    for limit in [0, 1, 2, 20] {
-                        let body = json!({"after":after,"limit":limit});
-                        assert_eq!(
-                            list_map_keys(&entries, prefix, recursive, &body)?,
-                            list_keys(entries.keys(), prefix, recursive, &body)?,
-                            "prefix={prefix:?} recursive={recursive} after={after:?} limit={limit}"
-                        );
-                    }
+            for after in ["", "a", "a/", "a/one", "a0", "b/", "é", "é/", "深"] {
+                for limit in [0, 1, 2, 20] {
+                    let body = json!({"after":after,"limit":limit});
+                    assert_eq!(
+                        list_map_keys(&entries, prefix, false, &body)?,
+                        list_keys(entries.keys(), prefix, false, &body)?,
+                        "prefix={prefix:?} after={after:?} limit={limit}"
+                    );
                 }
             }
         }

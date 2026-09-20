@@ -308,16 +308,21 @@ jobs:
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
-      - name: Compare KV metadata CAS with official OpenBao 2.6.2
+      - name: Compare KV metadata CAS and enumeration with official OpenBao 2.6.2
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
           HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
         run: |
           set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-kv-comparison-evidence"
+          mkdir -m 700 "$reports"
           timeout 180 python qa/openbao-acceptance/kv_metadata_cas_live.py \
             --binary "$PWD/target/debug/heptabao-server" \
-            --output "$RUNNER_TEMP/heptabao-kv-metadata-cas.json"
+            --output "$reports/metadata-cas.json"
+          timeout 180 python qa/openbao-acceptance/kv_enumeration_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/enumeration.json"
 
       - name: Compare operational Agent and Proxy behavior with official OpenBao
         shell: bash

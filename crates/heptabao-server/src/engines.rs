@@ -705,6 +705,29 @@ impl EngineState {
         Ok(())
     }
 
+    /// Normalize only an exact, registered KV mount root for enumeration.
+    /// Other handlers have their own route syntax; do not append separators
+    /// globally or infer mounts from a first path component.
+    pub(crate) fn canonical_kv_enumeration_root(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> Option<String> {
+        if !matches!(method, "LIST" | "SCAN") || path.ends_with('/') {
+            return None;
+        }
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .find_map(|(name, mount)| {
+                (name.strip_suffix('/') == Some(path)
+                    && matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)))
+                .then(|| name.clone())
+            })
+    }
+
     pub(crate) fn is_immutable_kv_read(&self, namespace: &str, method: &str, path: &str) -> bool {
         if !matches!(method, "GET" | "LIST" | "SCAN") {
             return false;

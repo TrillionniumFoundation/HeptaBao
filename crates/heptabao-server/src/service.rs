@@ -1296,6 +1296,9 @@ impl Service {
                 "external request dispatch state is unavailable",
             ));
         }
+        // Audit binds the original client path. Canonical route resolution
+        // happens only after leader synchronization; the response retains
+        // this same fingerprint even when routing adds a KV root separator.
         let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
@@ -1560,6 +1563,17 @@ impl Service {
                 return error;
             }
         }
+        // A standby forwards the original path above. Resolve a bare KV root
+        // only against the leader's synchronized mount registry, before ACL
+        // and either immutable or ordinary dispatch. Unknown roots stay as-is.
+        let canonical_kv_root = self.state.as_ref().and_then(|state| {
+            state
+                .engines
+                .canonical_kv_enumeration_root(namespace, method, path)
+        });
+        let path = canonical_kv_root.as_deref().unwrap_or(path);
+        let request = RequestView { path, ..request };
+
         // Namespace headers resolve to an existing catalog entry before any
         // authentication or route dispatch.  Without this fence a caller
         // could address an arbitrary well-formed namespace path and create

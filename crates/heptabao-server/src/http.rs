@@ -788,7 +788,9 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     if token.len() > 16 * 1024 {
         return Err(bad("token header exceeds limit"));
     }
+    let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
     if length > 0
+        && !query_only
         && map.get("content-type").is_some_and(|v| {
             !matches!(
                 v.split(';').next(),
@@ -812,7 +814,10 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     if bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
-    let mut body = SecretJson(if length == 0 {
+    // OpenBao reads fields for these operations from the query string only.
+    // Still consume and bound the complete body above so ignored bytes cannot
+    // become a second request or evade the framing and deadline checks.
+    let mut body = SecretJson(if length == 0 || query_only {
         json!({})
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
@@ -837,6 +842,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
                 | "depth"
                 | "limit"
                 | "list"
+                | "scan"
                 | "after"
                 | "exclude_deleted"
                 | "standbyok"
@@ -853,7 +859,13 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         if object.contains_key(&key) {
             return Err(bad("duplicate body/query parameter"));
         }
-        let parsed = if matches!(key.as_str(), "version" | "depth" | "limit") {
+        let parsed = if key == "limit" {
+            // Endpoints that declare this field validate its type. KV v1
+            // ignores it entirely, including values outside the signed range.
+            value
+                .parse::<i64>()
+                .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if matches!(key.as_str(), "version" | "depth") {
             json!(
                 value
                     .parse::<u64>()
@@ -879,6 +891,14 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
             Value::Bool(false)
         } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
             return Err(bad("invalid health boolean query"));
+        } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
+            Value::Bool(match value.as_str() {
+                "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
+                "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
+                _ => return Err(bad("invalid list or scan query")),
+            })
+        } else if key == "after" {
+            Value::String(value.to_string())
         } else if matches!(value.as_str(), "true" | "false") {
             Value::Bool(value.as_str() == "true")
         } else {
@@ -886,12 +906,21 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         };
         object.insert(key, parsed);
     }
-    if method == "GET" && object.get("list").is_some_and(|v| !v.is_boolean()) {
-        return Err(bad("list parameter must be boolean"));
-    }
-    let method = if method == "GET" && object.get("list") == Some(&Value::Bool(true)) {
-        object.remove("list");
-        "LIST".to_owned()
+    let method = if method == "GET" {
+        let list = object.get("list") == Some(&Value::Bool(true));
+        let scan = object.get("scan") == Some(&Value::Bool(true));
+        if list && scan {
+            return Err(bad("list and scan are mutually exclusive"));
+        }
+        if list {
+            object.remove("list");
+            "LIST".to_owned()
+        } else if scan {
+            object.remove("scan");
+            "SCAN".to_owned()
+        } else {
+            method
+        }
     } else {
         method
     };
@@ -1292,6 +1321,72 @@ mod wrapping_header_tests {
                 read_request(&mut request.as_bytes(), Duration::from_secs(1))
                     .is_ok_and(|r| r.body.0[key].is_boolean())
             );
+        }
+    }
+
+    #[test]
+    fn list_queries_preserve_signed_limits_and_literal_cursors() {
+        for (query, expected) in [
+            ("limit=-1", json!({"limit": -1})),
+            ("limit=0", json!({"limit": 0})),
+            ("limit=9223372036854775807", json!({"limit": i64::MAX})),
+            ("limit=-9223372036854775808", json!({"limit": i64::MIN})),
+            ("after=true", json!({"after": "true"})),
+            ("after=false", json!({"after": "false"})),
+            ("limit=", json!({"limit": ""})),
+            (
+                "limit=9223372036854775808",
+                json!({"limit": "9223372036854775808"}),
+            ),
+            (
+                "limit=-9223372036854775809",
+                json!({"limit": "-9223372036854775809"}),
+            ),
+            ("limit=1.5", json!({"limit": "1.5"})),
+        ] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0 == expected)
+            );
+        }
+        for query in ["version=-1", "depth=-1"] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn query_operations_ignore_framed_bodies_and_get_selects_list_or_scan() {
+        for (method, query, selected) in [
+            ("GET", "list=1", "LIST"),
+            ("GET", "scan=True", "SCAN"),
+            ("GET", "scan=", "GET"),
+            ("LIST", "limit=-2", "LIST"),
+            ("SCAN", "limit=-2", "SCAN"),
+            ("HEAD", "limit=-2", "HEAD"),
+            ("DELETE", "limit=-2", "DELETE"),
+        ] {
+            for payload in [r#"{"limit":3,"after":"body","list":true}"#, "not JSON"] {
+                let request = format!(
+                    "{method} /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{payload}",
+                    payload.len()
+                );
+                assert!(
+                    read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| r
+                        .method
+                        == selected
+                        && r.body.0.get("after").is_none()
+                        && r.body.0.get("list").is_none())
+                );
+            }
+        }
+        for query in ["list=true&scan=true", "scan=invalid", "list=invalid"] {
+            let request =
+                format!("GET /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
         }
     }
 

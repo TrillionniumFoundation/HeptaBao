@@ -128,8 +128,11 @@ nonfunctional mount. There is no generic plugin-success route.
 KV v1 stores JSON objects at arbitrary canonical paths in its own mount. POST and
 PUT replace the complete object and return 204. GET returns the object under
 `data`; DELETE removes it permanently. LIST emits only immediate children and
-adds `/` to folder entries. SCAN emits descendant paths recursively. Missing read
-or empty list returns 404. Values are not filtered by per-key ACL during listing;
+adds `/` to folder entries. SCAN emits descendant paths recursively, returning
+each directory's sorted leaves before visiting its child directories in reverse
+sorted order, as OpenBao's directory stack does. KV v1 ignores `after` and `limit`.
+Missing read or empty LIST returns 404; empty SCAN returns 200 with empty `data`.
+Values are not filtered by per-key ACL during listing;
 authorization applies to the requested list path, so secret values must not be
 encoded in path names.
 
@@ -155,9 +158,17 @@ JSON serialization and snapshot restart.
 | `POST/PUT metadata/:path` | Set key configuration/custom metadata without a new data version |
 | `PATCH metadata/:path` | Modify metadata on an existing key; null map entries remove fields |
 | `DELETE metadata/:path` | Delete all key versions and metadata |
-| `LIST/SCAN metadata/:prefix` | Immediate/recursive key listing, with `after` and `limit` |
-| `LIST/SCAN detailed-metadata/:prefix` | Listing plus complete metadata for leaf entries |
+| `LIST metadata/:prefix` | Immediate children, with `after` and signed `limit`; zero, negative or empty limits return all remaining children |
+| `SCAN metadata/:prefix` | Recursive directory-stack traversal; validates but ignores `after` and `limit` |
+| `LIST/SCAN detailed-metadata/:prefix` | Listing plus metadata; a pure directory has `{}`, and a directory with a same-named leaf has that leaf's metadata |
 | `GET subkeys/:path` | Preserve object shape while replacing values with null; optional depth |
+
+HTTP LIST and SCAN take fields from the query string and ignore their request
+bodies. GET also accepts `?list=true` or `?scan=true`; selecting both is invalid.
+KV v2 SCAN uses the same directory-stack order as v1. Empty SCAN returns 200 with
+empty `data`; empty LIST returns 404. A literal `after=true` or `after=false` is
+a string cursor. These semantics are compared with the official 2.6.2 binary by
+`qa/openbao-acceptance/kv_enumeration_live.py`.
 
 CAS is checked before mutation. An explicit zero succeeds only when no data
 version exists. A stale number fails with 400. A soft-deleted or destroyed latest

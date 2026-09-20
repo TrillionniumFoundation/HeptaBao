@@ -2055,3 +2055,216 @@ fn kv_metadata_cas_global_policy_and_legacy_state_defaults() -> TestResult {
     assert_eq!(serde_json::to_vec(&state)?, before);
     Ok(())
 }
+
+#[test]
+fn kv_enumeration_matches_openbao_directory_scan_and_signed_list_limits() -> TestResult {
+    let mut state = EngineState::default();
+    let paths = [
+        "a",
+        "a/one",
+        "a/deep/two",
+        "b",
+        "b/one",
+        "pure/leaf",
+        "é/leaf",
+    ];
+    for path in paths {
+        request(
+            &mut state,
+            "",
+            "POST",
+            &format!("secret/data/{path}"),
+            json!({"data":{"v":"synthetic"}}),
+            20,
+        )?;
+    }
+    let before = serde_json::to_vec(&state)?;
+    let shallow = json!(["a", "a/", "b", "b/", "pure/", "é/"]);
+    for limit in [
+        json!(0),
+        json!(-1),
+        json!(i64::MIN),
+        json!("-42"),
+        json!(""),
+    ] {
+        let result = request(
+            &mut state,
+            "",
+            "LIST",
+            "secret/metadata",
+            json!({"limit":limit}),
+            20,
+        )?;
+        assert_eq!(result.body["data"]["keys"], shallow);
+    }
+    let page = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/metadata",
+        json!({"limit":1,"after":"a"}),
+        20,
+    )?;
+    assert_eq!(page.body["data"]["keys"], json!(["a/"]));
+    let after = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/metadata",
+        json!({"limit":-1,"after":"a/"}),
+        20,
+    )?;
+    assert_eq!(
+        after.body["data"]["keys"],
+        json!(["b", "b/", "pure/", "é/"])
+    );
+    for limit in [
+        json!(u64::MAX),
+        json!("9223372036854775808"),
+        json!({"invalid":true}),
+    ] {
+        for method in ["LIST", "SCAN"] {
+            assert_eq!(
+                request(
+                    &mut state,
+                    "",
+                    method,
+                    "secret/metadata",
+                    json!({"limit":limit}),
+                    20
+                )
+                .err()
+                .ok_or("invalid limit admitted")?
+                .status,
+                400
+            );
+        }
+    }
+    let scan = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/metadata",
+        json!({"after":"é/leaf","limit":1}),
+        20,
+    )?;
+    assert_eq!(
+        scan.body["data"]["keys"],
+        json!([
+            "a",
+            "b",
+            "é/leaf",
+            "pure/leaf",
+            "b/one",
+            "a/one",
+            "a/deep/two"
+        ])
+    );
+    let subtree = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/metadata/a/",
+        json!({"after":"z","limit":-1}),
+        20,
+    )?;
+    assert_eq!(subtree.body["data"]["keys"], json!(["one", "deep/two"]));
+    let detailed = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/detailed-metadata",
+        json!({}),
+        20,
+    )?;
+    assert_eq!(detailed.body["data"]["keys"], shallow);
+    let info = detailed.body["data"]["key_info"]
+        .as_object()
+        .ok_or("missing key_info")?;
+    assert_eq!(info.len(), 6);
+    assert_eq!(info["a/"], info["a"]);
+    assert_eq!(info["b/"], info["b"]);
+    assert_eq!(info["pure/"], json!({}));
+    assert_eq!(info["é/"], json!({}));
+    let scan_info = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/detailed-metadata",
+        json!({"after":"z","limit":1}),
+        20,
+    )?;
+    assert_eq!(scan_info.body["data"]["keys"], scan.body["data"]["keys"]);
+    assert_eq!(
+        scan_info.body["data"]["key_info"]
+            .as_object()
+            .ok_or("missing scan key_info")?
+            .len(),
+        paths.len()
+    );
+    for path in [
+        "secret/metadata/missing",
+        "secret/detailed-metadata/missing",
+    ] {
+        assert_eq!(
+            request(&mut state, "", "SCAN", path, json!({}), 20)?.body,
+            json!({"data":{}})
+        );
+        assert_eq!(
+            request(&mut state, "", "LIST", path, json!({}), 20)
+                .err()
+                .ok_or("empty list admitted")?
+                .status,
+            404
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn kv_v1_enumeration_ignores_undeclared_pagination_fields() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/legacy",
+        json!({"type":"kv","options":{"version":"1"}}),
+        20,
+    )?;
+    for path in ["a", "a/child", "z", "z/child"] {
+        request(
+            &mut state,
+            "",
+            "POST",
+            &format!("legacy/{path}"),
+            json!({"v":"synthetic"}),
+            20,
+        )?;
+    }
+    for body in [
+        json!({"after":"z","limit":1}),
+        json!({"after":[],"limit":{}}),
+    ] {
+        let list = request(&mut state, "", "LIST", "legacy/", body.clone(), 20)?;
+        assert_eq!(list.body["data"]["keys"], json!(["a", "a/", "z", "z/"]));
+        let scan = request(&mut state, "", "SCAN", "legacy/", body, 20)?;
+        assert_eq!(
+            scan.body["data"]["keys"],
+            json!(["a", "z", "z/child", "a/child"])
+        );
+    }
+    assert_eq!(
+        request(&mut state, "", "SCAN", "legacy/missing", json!({}), 20)?.body,
+        json!({"data":{}})
+    );
+    assert_eq!(
+        request(&mut state, "", "LIST", "legacy/missing", json!({}), 20)
+            .err()
+            .ok_or("empty v1 list admitted")?
+            .status,
+        404
+    );
+    Ok(())
+}

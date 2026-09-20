@@ -70,7 +70,9 @@ fn immutable_kv_reads_keep_generation_replay_and_state_unchanged_across_restart(
         json!({"after":"large/5","limit":2}),
     );
     assert_eq!(scanned.status, 200);
-    assert_eq!(scanned.body["data"]["keys"], json!(["large/6", "large/7"]));
+    let mut expected_scan = vec!["small".to_owned()];
+    expected_scan.extend((0..8).map(|index| format!("large/{index}")));
+    assert_eq!(scanned.body["data"]["keys"], json!(expected_scan));
     assert_eq!(service.kv_read_only_dispatches, reads + 3);
     assert_eq!(service.audit_sequence, audit + 6);
     assert_eq!(
@@ -377,5 +379,192 @@ fn immutable_read_rechecks_parent_revocation_after_restart() -> TestResult {
         403
     );
     assert_eq!(service.kv_read_only_dispatches, 1);
+    Ok(())
+}
+
+#[test]
+fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    for (mount, key) in [
+        ("legacy", "short-key"),
+        ("legacy-long", "long-key"),
+        ("team/legacy", "nested-key"),
+    ] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("sys/mounts/{mount}"),
+                &root_token,
+                json!({"type":"kv","options":{"version":"1"}})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("{mount}/{key}"),
+                &root_token,
+                json!({"v":"synthetic"})
+            )
+            .status,
+            204
+        );
+    }
+    let engines = &service.state.as_ref().ok_or("missing state")?.engines;
+    for path in [
+        "leg",
+        "legacy-lon",
+        "legacy/key",
+        "transit",
+        "auth/token/accessors",
+        "sys/auth",
+    ] {
+        assert!(
+            engines
+                .canonical_kv_enumeration_root("", "LIST", path)
+                .is_none()
+        );
+    }
+    assert!(
+        engines
+            .canonical_kv_enumeration_root("other", "LIST", "legacy")
+            .is_none()
+    );
+    assert!(
+        engines
+            .canonical_kv_enumeration_root("", "GET", "legacy")
+            .is_none()
+    );
+    assert_eq!(
+        engines
+            .canonical_kv_enumeration_root("", "SCAN", "team/legacy")
+            .as_deref(),
+        Some("team/legacy/")
+    );
+
+    // The bare spelling must receive the canonical root's list permission.
+    // Explicitly denying the bare spelling detects authorization before fixup.
+    for (policy, rules) in [
+        (
+            "root-list",
+            "path \"legacy/\" { capabilities = [\"list\"] }\npath \"legacy\" { capabilities = [\"deny\"] }",
+        ),
+        (
+            "root-read",
+            "path \"legacy/*\" { capabilities = [\"read\"] }",
+        ),
+    ] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("sys/policies/acl/{policy}"),
+                &root_token,
+                json!({"policy":rules})
+            )
+            .status,
+            204
+        );
+    }
+    let mut tokens = Vec::new();
+    for policy in ["root-list", "root-read"] {
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root_token,
+            json!({"policies":[policy],"no_default_policy":true}),
+        );
+        assert_eq!(response.status, 200);
+        tokens.push(
+            response.body["auth"]["client_token"]
+                .as_str()
+                .ok_or("missing token")?
+                .to_owned(),
+        );
+    }
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("missing state")?)?;
+    for method in ["LIST", "SCAN"] {
+        let audit_before = service.audit_sequence;
+        let bare = call(&mut service, method, "legacy", &tokens[0], json!({}));
+        let canonical = call(&mut service, method, "legacy/", &tokens[0], json!({}));
+        assert_eq!(bare.status, 200);
+        assert_eq!(bare.body, canonical.body);
+        assert_eq!(bare.body["data"]["keys"], json!(["short-key"]));
+        let audit_bytes = fs::read(root.path.join("audit.jsonl"))?;
+        let events = audit_bytes
+            .split(|byte| *byte == b'\n')
+            .filter(|line| !line.is_empty())
+            .map(serde_json::from_slice::<AuditRecord>)
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .filter(|record| record.event.sequence > audit_before)
+            .map(|record| record.event)
+            .collect::<Vec<_>>();
+        assert_eq!(events.len(), 4);
+        for (pair, client_path) in events.as_chunks::<2>().0.iter().zip(["legacy", "legacy/"]) {
+            assert_eq!(pair[0].kind, "request");
+            assert_eq!(pair[1].kind, "response");
+            let fingerprint = service.request_fingerprint(method, client_path, "", &tokens[0]);
+            assert_eq!(pair[0].path_digest, fingerprint);
+            assert_eq!(pair[1].path_digest, fingerprint);
+        }
+
+        for path in ["legacy", "legacy/"] {
+            assert_eq!(
+                call(&mut service, method, path, &tokens[1], json!({})).status,
+                403
+            );
+        }
+        assert_eq!(
+            call(&mut service, method, "legacy-long", &tokens[0], json!({})).status,
+            403
+        );
+        assert_eq!(
+            call(&mut service, method, "legacy-long", &root_token, json!({})).body["data"]["keys"],
+            json!(["long-key"])
+        );
+        assert_eq!(
+            call(&mut service, method, "team/legacy", &root_token, json!({})).body["data"]["keys"],
+            json!(["nested-key"])
+        );
+        // Exercise the shared authenticated-forwarding entry with the same
+        // deterministic clock as bootstrap and the preceding direct requests.
+        let forwarded = match service.begin_at_mode(RequestDispatch {
+            method,
+            path: "legacy",
+            namespace: "",
+            token: &root_token,
+            body: json!({}),
+            now: 100,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::Complete(response) => response,
+            RequestExecution::External(_) => return Err("unexpected external request".into()),
+        };
+        assert_eq!(forwarded.status, 200);
+        assert_eq!(forwarded.body["data"]["keys"], json!(["short-key"]));
+    }
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("missing state")?)?,
+        before
+    );
+    drop(service);
+    let mut sealed = root.service()?;
+    assert!(sealed.state.is_none());
+    for path in ["legacy", "legacy/"] {
+        assert_eq!(
+            call(&mut sealed, "LIST", path, &root_token, json!({})).status,
+            503
+        );
+    }
     Ok(())
 }
