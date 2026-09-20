@@ -285,6 +285,11 @@ struct PersistOwnerStateOptions {
     reuse: OwnerReuseHint,
 }
 
+struct OwnerBatchInput {
+    options: PersistOwnerStateOptions,
+    prepared_plan: Option<owner_store::OwnerWritePlan>,
+}
+
 fn replay_epoch_is_zero(value: &u64) -> bool {
     *value == 0
 }
@@ -2258,8 +2263,12 @@ impl Service {
         operation_id: &str,
         state_schema: u32,
         target_replay_epoch: u64,
-        options: PersistOwnerStateOptions,
+        batch: OwnerBatchInput,
     ) -> Result<MutationOutcome, ServiceError> {
+        let OwnerBatchInput {
+            options,
+            prepared_plan,
+        } = batch;
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
@@ -2278,15 +2287,22 @@ impl Service {
             }
         }
 
-        let plan = Self::prepare_owner_state_plan(
-            durable,
-            state,
-            bytes,
-            operation_id,
-            state_schema,
-            target_replay_epoch,
-            options,
-        )?;
+        let plan = match prepared_plan {
+            Some(plan) => {
+                plan.publication_binding(operation_id, bytes)
+                    .map_err(|_| ServiceError::CorruptState)?;
+                plan
+            }
+            None => Self::prepare_owner_state_plan(
+                durable,
+                state,
+                bytes,
+                operation_id,
+                state_schema,
+                target_replay_epoch,
+                options,
+            )?,
+        };
         plan.validate_write_set()
             .map_err(|_| ServiceError::CorruptState)?;
 
@@ -2564,10 +2580,13 @@ impl Service {
             &operation_id,
             state.schema,
             state.replay_epoch,
-            PersistOwnerStateOptions {
-                compact_before_entry: false,
-                allow_epoch_catchup: false,
-                reuse: OwnerReuseHint::default(),
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: false,
+                    allow_epoch_catchup: false,
+                    reuse: OwnerReuseHint::default(),
+                },
+                prepared_plan: None,
             },
         ) {
             return (
@@ -2902,10 +2921,13 @@ impl Service {
                 &operation_id,
                 state.schema,
                 state.replay_epoch,
-                PersistOwnerStateOptions {
-                    compact_before_entry: true,
-                    allow_epoch_catchup: false,
-                    reuse: OwnerReuseHint::default(),
+                OwnerBatchInput {
+                    options: PersistOwnerStateOptions {
+                        compact_before_entry: true,
+                        allow_epoch_catchup: false,
+                        reuse: OwnerReuseHint::default(),
+                    },
+                    prepared_plan: None,
                 },
             ) {
                 Ok(_) => {}
@@ -3716,7 +3738,7 @@ impl Service {
         }
         let id = crypto::random::<16>().map_err(|e| Response::error(503, e))?;
         let operation_id = hex(&id);
-        let owner_binding = if self.ha.is_some() {
+        let owner_plan = if self.ha.is_some() {
             let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
             let durable = self
                 .durable
@@ -3744,15 +3766,15 @@ impl Service {
                 }
                 _ => Response::error(503, "durable owner publication preflight failed"),
             })?;
-            Some(
-                plan.publication_binding(&operation_id, bytes)
-                    .map_err(|_| {
-                        Response::error(503, "owner and HA state publication digests diverge")
-                    })?,
-            )
+            Some(plan)
         } else {
             None
         };
+        let owner_binding = owner_plan
+            .as_ref()
+            .map(|plan| plan.publication_binding(&operation_id, bytes))
+            .transpose()
+            .map_err(|_| Response::error(503, "owner and HA state publication digests diverge"))?;
         if let Some(ha) = self.ha.as_ref() {
             let commit = ha
                 .lock()
@@ -3769,12 +3791,13 @@ impl Service {
                 return Err(Response::error(503, &error));
             }
         }
-        match self.persist_local(
+        match self.persist_local_with_prepared_plan(
             state,
             bytes,
             &operation_id,
             state_schema,
             target_replay_epoch,
+            owner_plan,
         ) {
             Ok(()) => Ok(()),
             Err(error) => {
@@ -3787,6 +3810,7 @@ impl Service {
         }
     }
 
+    #[cfg(test)]
     fn persist_local(
         &mut self,
         state: &State,
@@ -3805,6 +3829,33 @@ impl Service {
         )
     }
 
+    fn persist_local_with_prepared_plan(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        prepared_plan: Option<owner_store::OwnerWritePlan>,
+    ) -> Result<(), Response> {
+        let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+        self.persist_local_with_epoch_policy_and_plan(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: false,
+                    reuse,
+                },
+                prepared_plan,
+            },
+        )
+    }
+
     fn persist_local_with_epoch_policy(
         &mut self,
         state: &State,
@@ -3815,6 +3866,32 @@ impl Service {
         allow_epoch_catchup: bool,
     ) -> Result<(), Response> {
         let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
+        self.persist_local_with_epoch_policy_and_plan(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup,
+                    reuse,
+                },
+                prepared_plan: None,
+            },
+        )
+    }
+
+    fn persist_local_with_epoch_policy_and_plan(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        batch: OwnerBatchInput,
+    ) -> Result<(), Response> {
         let durable = self
             .durable
             .as_mut()
@@ -3827,11 +3904,7 @@ impl Service {
             operation_id,
             state_schema,
             target_replay_epoch,
-            PersistOwnerStateOptions {
-                compact_before_entry: true,
-                allow_epoch_catchup,
-                reuse,
-            },
+            batch,
         );
         // If retirement itself published but the following state batch failed,
         // application state and replay authority no longer have the same epoch.
