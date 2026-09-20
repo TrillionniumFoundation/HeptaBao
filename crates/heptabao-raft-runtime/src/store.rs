@@ -1312,6 +1312,28 @@ impl DurableStateMachine {
         self.bundle.lock().await.state.clone()
     }
 
+    /// Borrow the map under the state lock and copy only the selected status.
+    /// Decoding and authenticating the returned envelope stay with the caller,
+    /// outside the lock; unrelated retained application chunks are not copied.
+    pub(crate) async fn client_status(&self, client: &str) -> Option<String> {
+        self.bundle
+            .lock()
+            .await
+            .state
+            .client_status
+            .get(client)
+            .cloned()
+    }
+
+    pub(crate) async fn last_applied_log_index(&self) -> Option<u64> {
+        self.bundle
+            .lock()
+            .await
+            .state
+            .last_applied_log
+            .map(|log_id| log_id.index)
+    }
+
     pub async fn has_current_snapshot(&self) -> bool {
         self.bundle.lock().await.current_snapshot.is_some()
     }
@@ -1509,6 +1531,150 @@ mod tests {
             std::process::id(),
             TEST_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ))
+    }
+
+    #[tokio::test]
+    async fn point_status_reads_preserve_missing_and_independent_value_semantics() {
+        let root = root("point-status-read");
+        let store = DurableStateMachine::create(&root).expect("create state machine");
+        assert_eq!(store.client_status("selected").await, None);
+        assert_eq!(store.last_applied_log_index().await, None);
+        {
+            let mut bundle = store.bundle.lock().await;
+            bundle
+                .state
+                .client_status
+                .insert("selected".into(), "first".into());
+            bundle
+                .state
+                .client_status
+                .insert("Selected".into(), "case-sensitive".into());
+            bundle
+                .state
+                .client_status
+                .insert("empty".into(), String::new());
+            // Retained chunks can dwarf the selected manifest. They must not
+            // affect point-read results or turn absence into an empty value.
+            for index in 0..16 {
+                bundle
+                    .state
+                    .client_status
+                    .insert(format!("unrelated-{index}"), "x".repeat(256 * 1024));
+            }
+        }
+        let mut returned = store
+            .client_status("selected")
+            .await
+            .expect("selected value");
+        returned.push_str("-caller-change");
+        assert_eq!(
+            store.client_status("selected").await.as_deref(),
+            Some("first")
+        );
+        assert_eq!(
+            store.client_status("Selected").await.as_deref(),
+            Some("case-sensitive")
+        );
+        assert_eq!(store.client_status("empty").await, Some(String::new()));
+        assert_eq!(store.client_status("missing").await, None);
+        store
+            .bundle
+            .lock()
+            .await
+            .state
+            .client_status
+            .insert("selected".into(), "second".into());
+        assert_eq!(returned, "first-caller-change");
+        assert_eq!(
+            store.client_status("selected").await.as_deref(),
+            Some("second")
+        );
+        assert_eq!(
+            store.bundle.lock().await.state.client_status["unrelated-15"].len(),
+            256 * 1024
+        );
+        drop(store);
+        fs::remove_dir_all(root).expect("remove point-read fixture");
+    }
+
+    #[tokio::test]
+    async fn point_reads_follow_durable_checkpoint_and_snapshot_install() {
+        let source_root = root("point-read-source");
+        let target_root = root("point-read-target");
+        let mut source = DurableStateMachine::create(&source_root).expect("create source");
+        let mut target = DurableStateMachine::create(&target_root).expect("create target");
+        {
+            let mut bundle = source.bundle.lock().await;
+            bundle.state.last_applied_log = Some(openraft::LogId {
+                leader_id: openraft::impls::leader_id_adv::LeaderId {
+                    term: 3_u64,
+                    node_id: 2_u64,
+                },
+                index: 41,
+            });
+            bundle
+                .state
+                .client_status
+                .insert("selected".into(), "checkpoint-value".into());
+        }
+        let snapshot = source
+            .build_snapshot()
+            .await
+            .expect("publish snapshot checkpoint");
+        assert_eq!(source.last_applied_log_index().await, Some(41));
+        super::RaftStateMachine::install_snapshot(&mut target, &snapshot.meta, snapshot.snapshot)
+            .await
+            .expect("install snapshot");
+        assert_eq!(target.last_applied_log_index().await, Some(41));
+        assert_eq!(
+            target.client_status("selected").await.as_deref(),
+            Some("checkpoint-value")
+        );
+        drop(source);
+        drop(target);
+        for path in [&source_root, &target_root] {
+            let reopened = DurableStateMachine::open_existing(path).expect("reopen checkpoint");
+            assert_eq!(reopened.last_applied_log_index().await, Some(41));
+            assert_eq!(
+                reopened.client_status("selected").await.as_deref(),
+                Some("checkpoint-value")
+            );
+            assert_eq!(reopened.client_status("missing").await, None);
+        }
+        fs::remove_dir_all(source_root).expect("remove source");
+        fs::remove_dir_all(target_root).expect("remove target");
+    }
+
+    #[tokio::test]
+    async fn point_status_reads_leave_invalid_envelopes_for_fail_closed_decoding() {
+        let root = root("point-status-invalid-envelope");
+        let store = DurableStateMachine::create(&root).expect("create state machine");
+        let envelope = crate::ReplicatedEnvelope::new("test-operation", [7; 32], vec![9; 128])
+            .expect("construct envelope");
+        {
+            let mut bundle = store.bundle.lock().await;
+            bundle
+                .state
+                .client_status
+                .insert("good".into(), envelope.encoded_status());
+            bundle
+                .state
+                .client_status
+                .insert("bad".into(), "hbr3:malformed".into());
+        }
+        let encoded = store.client_status("good").await.expect("good status");
+        assert!(
+            crate::ReplicatedEnvelope::decode_status(&encoded).expect("decode envelope")
+                == envelope
+        );
+        let invalid = store
+            .client_status("bad")
+            .await
+            .expect("invalid status remains present");
+        assert!(crate::ReplicatedEnvelope::decode_status(&invalid).is_err());
+        assert_eq!(store.client_status("absent").await, None);
+        drop(store);
+        fs::remove_dir_all(root).expect("remove envelope fixture");
     }
 
     #[tokio::test]

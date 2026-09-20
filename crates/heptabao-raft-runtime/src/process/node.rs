@@ -200,10 +200,8 @@ impl ProcessRaftNode {
     /// prevents serial reuse after leader restart or failover. Membership and
     /// blank entries may create harmless gaps but cannot make the serial regress.
     pub async fn next_production_client_serial(&self) -> Result<u64, RaftRuntimeError> {
-        let state = self.state_machine.get_state_machine().await;
-        match state.last_applied_log {
-            Some(log_id) => log_id
-                .index
+        match self.state_machine.last_applied_log_index().await {
+            Some(index) => index
                 .checked_add(1)
                 .filter(|value| *value != 0)
                 .ok_or(RaftRuntimeError::InvalidSerial),
@@ -284,11 +282,10 @@ impl ProcessRaftNode {
     /// the production HA client identity. A malformed durable value is a hard
     /// recovery error rather than an empty state or best-effort fallback.
     pub async fn latest_envelope(&self) -> Result<Option<ReplicatedEnvelope>, RemoteRaftError> {
-        let state = self.state_machine.get_state_machine().await;
-        let Some(status) = state.client_status.get(PRODUCTION_CLIENT_ID) else {
+        let Some(status) = self.state_machine.client_status(PRODUCTION_CLIENT_ID).await else {
             return Ok(None);
         };
-        ReplicatedEnvelope::decode_status(status)
+        ReplicatedEnvelope::decode_status(&status)
             .map(Some)
             .map_err(|error| {
                 RemoteRaftError::Io(format!("invalid committed application envelope: {error}"))
@@ -302,11 +299,10 @@ impl ProcessRaftNode {
     ) -> Result<Option<ReplicatedEnvelope>, RemoteRaftError> {
         let client = application_chunk_client(index, slot)
             .map_err(|error| RemoteRaftError::Io(error.to_string()))?;
-        let state = self.state_machine.get_state_machine().await;
-        let Some(status) = state.client_status.get(&client) else {
+        let Some(status) = self.state_machine.client_status(&client).await else {
             return Ok(None);
         };
-        ReplicatedEnvelope::decode_status(status)
+        ReplicatedEnvelope::decode_status(&status)
             .map(Some)
             .map_err(|error| {
                 RemoteRaftError::Io(format!(
