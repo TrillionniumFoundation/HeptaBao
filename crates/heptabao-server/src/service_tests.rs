@@ -1599,6 +1599,81 @@ fn root_maintenance_routes_compact_snapshot_restore_and_reconcile()
 }
 
 #[test]
+fn snapshot_restore_rejects_incoming_openldap_mount_after_local_unmount()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ldap-old",
+            &token,
+            json!({"type":"ldap"}),
+        )
+        .status,
+        204
+    );
+    let snapshot = call(
+        &mut service,
+        "GET",
+        "sys/storage/raft/snapshot",
+        &token,
+        json!({}),
+    )
+    .body["data"]["snapshot"]
+        .as_str()
+        .ok_or("missing encrypted snapshot")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/mounts/ldap-old",
+            &token,
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("missing current state")?
+            .engines
+            .has_openldap_mount()
+    );
+    let restored = call(
+        &mut service,
+        "POST",
+        "sys/storage/raft/snapshot-force",
+        &token,
+        json!({"snapshot":snapshot}),
+    );
+    assert_eq!(restored.status, 409);
+    assert!(
+        restored.body["errors"]
+            .as_array()
+            .is_some_and(|errors| errors.iter().any(|error| {
+                error
+                    .as_str()
+                    .is_some_and(|message| message.contains("external provider identities"))
+            }))
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("missing current state after rejection")?
+            .engines
+            .has_openldap_mount()
+    );
+    Ok(())
+}
+
+#[test]
 fn legacy_unkeyed_audit_and_partial_audit_tail_are_rejected()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
