@@ -15,7 +15,6 @@ env:
 
 jobs:
   plan-and-python:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -74,7 +73,6 @@ jobs:
           retention-days: 30
 
   root-rust:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -97,7 +95,6 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
   p0-socket-smoke:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     needs: root-rust
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -182,7 +179,6 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
   openraft-exact-head:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     env:
@@ -264,7 +260,7 @@ jobs:
 
   authority-sentinel:
     needs: [plan-and-python, root-rust, p0-socket-smoke, openraft-exact-head]
-    if: ${{ ((github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2')) && (always()) }}
+    if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:

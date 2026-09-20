@@ -12,7 +12,6 @@ concurrency:
 
 jobs:
   sanitized-oracle-foundation:
-    if: ${{ (github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2') && (github.event_name != 'push' || github.ref != 'refs/heads/codex/plan-v1.3-gap-closure-v2') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
