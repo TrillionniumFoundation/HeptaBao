@@ -478,14 +478,18 @@ impl DatabaseEffectPlan {
                     .password
                     .as_ref()
                     .ok_or_else(|| failure("pending database issue lost secret material"))?;
+                let mut data = json!({
+                    "username":self.lease.username,
+                    "password":password.0
+                });
+                if self.connection.provider == DatabaseProvider::Valkey {
+                    data["key_pattern"] = json!(format!("hb:{}:*", self.lease.provider_id));
+                }
                 Ok(Response::ok(json!({
                     "lease_id":self.lease.id,
                     "lease_duration":self.lease.expires.saturating_sub(self.now),
                     "renewable":true,
-                    "data":{
-                        "username":self.lease.username,
-                        "password":password.0
-                    }
+                    "data":data
                 })))
             }
             Phase::PendingRenew => Ok(Response::ok(json!({
