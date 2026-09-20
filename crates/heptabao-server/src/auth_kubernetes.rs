@@ -396,6 +396,7 @@ impl AuthState {
     }
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
         self.validate_oidc_state()?;
+        self.validate_native_ldap_state()?;
         for (namespace, mounts) in &self.kubernetes_mounts {
             validate_namespace(namespace)?;
             for (mount, state) in mounts {
@@ -420,11 +421,12 @@ impl AuthState {
             for (mount, config) in mounts {
                 if !self.online_mount_enabled(namespace, mount, "ldap")
                     || config.url.is_empty()
-                    || config.user_dn_template.is_empty()
-                    || !valid_ldap_attribute_name(config.group_attr())
-                    || !valid_ldap_attribute_name(config.group_name_attr())
-                    || config.group_dn.len() > 1024
-                    || config.group_dn.chars().any(char::is_control)
+                    || config.native.is_none()
+                        && (config.user_dn_template.is_empty()
+                            || !valid_ldap_attribute_name(config.group_attr())
+                            || !valid_ldap_attribute_name(config.group_name_attr())
+                            || config.group_dn.len() > 1024
+                            || config.group_dn.chars().any(char::is_control))
                 {
                     return Err(denied());
                 }

@@ -9,6 +9,19 @@ pub(crate) struct IdentityProjection {
 }
 
 impl EngineState {
+    pub(crate) fn validate_identity_alias_state(&self) -> Result<()> {
+        for state in self.namespaces.values() {
+            state.identity.validate_aliases()?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_opaque_identity_aliases(&self) -> bool {
+        self.namespaces
+            .values()
+            .any(|state| state.identity.has_opaque_aliases())
+    }
+
     pub(crate) fn bind_login_identity(
         &mut self,
         namespace: &str,

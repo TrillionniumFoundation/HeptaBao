@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 22;
+const CURRENT_STATE_SCHEMA: u32 = 23;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -6512,6 +6512,10 @@ mod radius_renewal_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_ldap_renewal_tests.rs"]
 mod ldap_renewal_tests;
+
+#[cfg(test)]
+#[path = "service_ldap_native_tests.rs"]
+mod ldap_native_tests;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_jwt_renewal_tests.rs"]

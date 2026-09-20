@@ -3,7 +3,7 @@
 //! API response or an intermediate serialized plaintext allocation.
 use super::*;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(transparent)]
 pub(super) struct ProviderCredential(pub(super) String);
 
@@ -117,7 +117,7 @@ impl AuthState {
                 .prepare_radius_renewal_target(namespace, path, target, increment, now)
                 .map(ProviderRenewalPlan::Radius)
                 .map(Some),
-            Some(TokenAuthProvenance::Ldap { .. }) => self
+            Some(TokenAuthProvenance::Ldap { .. } | TokenAuthProvenance::LdapNative { .. }) => self
                 .prepare_ldap_renewal_target(namespace, path, target, increment, now)
                 .map(ProviderRenewalPlan::Ldap)
                 .map(Some),

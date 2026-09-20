@@ -162,6 +162,17 @@ bind/search fields and mount TTL. Deleting `userPassword` tests simple-bind
 credential disablement, not Active Directory account flags. Receipts contain fixed
 case IDs, statuses and booleans, never directory log contents or credentials.
 
+`ldap_native_live.py` compares native manager-search configuration, optional
+user/group mappings, case and alias behavior, filter operations, all renewal
+routes, external Identity membership, wrapping and restart with pinned OpenBao
+2.6.2 on independent real OpenLDAP stores. CA/address enrollment is explicit;
+this does not establish full LDAP API, filter or Active Directory compatibility.
+`ldap_native_upgrade.py` requires the committed schema-22 build receipt and binary
+hash, then checks the same encrypted store through schema 23, old mapping-based
+revocation, native login without a mapping, child/orphan credential isolation,
+read-only reopen, downgrade refusal and recovery. Only safe statuses/booleans
+enter receipts; store, audit and logs are checked for plaintext credentials.
+
 `provider_renewal_upgrade.py` exercises a real schema-15 → schema-17 binary/store
 round trip with OpenLDAP. It requires the fixed f31b98e legacy binary and 8f7c907
 candidate hashes, checked against their committed clean execution receipts. These

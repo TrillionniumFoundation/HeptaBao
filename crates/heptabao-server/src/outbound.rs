@@ -16,6 +16,10 @@ use std::{
 use subtle::ConstantTimeEq;
 use zeroize::Zeroizing;
 
+#[path = "outbound_ldap_native.rs"]
+mod ldap_native;
+pub(crate) use ldap_native::LdapNativeOptions;
+
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]

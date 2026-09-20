@@ -7,6 +7,9 @@ use crate::auth::{AuthError, AuthResponse};
 impl State {
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.engines
+            .validate_identity_alias_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.engines
             .validate_lease_state()
             .map_err(|e| Response::error(503, &e.message))?;
         self.auth
@@ -159,6 +162,14 @@ impl State {
                 "RADIUS native token parameters require schema 22",
             ));
         }
+        if self.schema < 23
+            && (self.auth.has_native_ldap_state() || self.engines.has_opaque_identity_aliases())
+        {
+            return Err(Response::error(
+                503,
+                "native LDAP authority and opaque identity aliases require schema 23",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -180,7 +191,7 @@ impl State {
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | CURRENT_STATE_SCHEMA => Ok(()),
+            | 22 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

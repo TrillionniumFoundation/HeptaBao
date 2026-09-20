@@ -124,7 +124,11 @@ impl AuthState {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         if matches!(
             token.auth_provenance,
-            Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::Ldap { .. })
+            Some(
+                TokenAuthProvenance::Radius { .. }
+                    | TokenAuthProvenance::Ldap { .. }
+                    | TokenAuthProvenance::LdapNative { .. }
+            )
         ) {
             return Err(err(
                 503,

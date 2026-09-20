@@ -96,6 +96,7 @@ fn ldap_bounded_profile_config_login_and_injection_rejection() {
         .finish_ldap_login(
             plan,
             LdapLoginObservation {
+                alias: None,
                 groups: BTreeSet::new(),
             },
         )

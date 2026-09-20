@@ -39,7 +39,13 @@ fn fixture() -> (AuthState, String, String) {
         )
         .unwrap();
     let response = state
-        .finish_ldap_login(plan, LdapLoginObservation { groups: groups() })
+        .finish_ldap_login(
+            plan,
+            LdapLoginObservation {
+                groups: groups(),
+                alias: None,
+            },
+        )
         .unwrap();
     let raw = response.body["auth"]["client_token"]
         .as_str()

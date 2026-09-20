@@ -308,7 +308,7 @@ Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
 **Lifecycle:** Rotate bind password and reconcile live external-group membership changes.
 
-**Remaining scope:** The scoped real OpenLDAP 2.6.10 LDAPS bind, group search/policy projection, outage/restart recovery and membership revocation receipt is qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open.
+**Remaining scope:** Native manager-search configuration, optional policy mappings and provider-checked renewal are implemented alongside the legacy bounded profile; see `docs/engines/HEPTABAO_LDAP_RUNTIME.md` and `qa/openbao-acceptance/ldap_native_live.py`. The earlier bounded receipt is `qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json`. Arbitrary filters, nested groups, StartTLS/SASL/referrals, full OpenBao field/error parity, multi-host provider faults and independent admission remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/ldap_bounded.py`, `qa/openbao-acceptance/ldap_openldap_live.py`.
 

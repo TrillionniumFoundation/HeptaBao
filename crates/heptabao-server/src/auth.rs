@@ -53,8 +53,11 @@ mod identity;
 mod jwt_login;
 #[path = "auth_jwt_renewal.rs"]
 mod jwt_renewal;
+#[path = "auth_ldap_native.rs"]
+mod ldap_native;
 #[path = "auth_ldap_renewal.rs"]
 mod ldap_renewal;
+use ldap_native::{LdapNativeConfig, LdapNativeUser};
 #[path = "auth_native_token.rs"]
 mod native_token;
 use native_token::{NativeOnlineToken, NativeTokenLimits};
@@ -119,6 +122,8 @@ pub struct AuthState {
     ldap_mounts: BTreeMap<String, BTreeMap<String, LdapMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     ldap_groups: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    ldap_native_users: BTreeMap<String, BTreeMap<String, BTreeMap<String, LdapNativeUser>>>,
     /// Bounded RADIUS PAP authentication. The endpoint and shared secret are
     /// process-enrolled; this durable map retains only route and token policy.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -454,7 +459,7 @@ fn certificate_identity_alias(
         .unwrap_or_else(|| role_name.to_owned())
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct LdapMount {
     url: String,
     bind_dn: String,
@@ -467,6 +472,8 @@ struct LdapMount {
     group_attr: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     group_name_attr: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    native: Option<Box<LdapNativeConfig>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -548,18 +555,29 @@ pub(crate) struct LdapLoginPlan {
     config: LdapMount,
     password: Zeroizing<String>,
     totp_code: Option<Zeroizing<String>>,
+    native_revision: Option<[u8; 32]>,
     now: u64,
     started: std::time::Instant,
 }
 
 pub(crate) struct LdapLoginObservation {
     groups: BTreeSet<String>,
+    alias: Option<String>,
 }
 
 #[cfg(test)]
 impl LdapLoginObservation {
     pub(crate) fn observed(groups: BTreeSet<String>) -> Self {
-        Self { groups }
+        Self {
+            groups,
+            alias: None,
+        }
+    }
+    pub(crate) fn native(alias: &str, groups: BTreeSet<String>) -> Self {
+        Self {
+            groups,
+            alias: Some(alias.to_owned()),
+        }
     }
 }
 
@@ -594,6 +612,20 @@ impl LdapLoginPlan {
         &self,
         outbound: &crate::outbound::Outbound,
     ) -> Result<LdapLoginObservation, AuthError> {
+        if let Some(config) = &self.config.native {
+            return match outbound.ldap_authenticate_native(
+                &self.config.url,
+                &config.options(),
+                &self.name,
+                &self.password,
+            ) {
+                Ok(Some(observation)) => Ok(LdapLoginObservation {
+                    groups: observation.groups,
+                    alias: Some(observation.alias),
+                }),
+                Ok(None) | Err(_) => Err(bad("LDAP login failed")),
+            };
+        }
         match outbound.ldap_bind_and_search_groups(
             &self.config.url,
             &self.dn,
@@ -602,7 +634,10 @@ impl LdapLoginPlan {
             self.config.group_attr(),
             self.config.group_name_attr(),
         ) {
-            Ok(Some(groups)) => Ok(LdapLoginObservation { groups }),
+            Ok(Some(groups)) => Ok(LdapLoginObservation {
+                groups,
+                alias: None,
+            }),
             Ok(None) => Err(denied()),
             Err(_) => Err(err(503, "LDAP provider bind or group search unavailable")),
         }
@@ -989,6 +1024,11 @@ enum TokenAuthProvenance {
     },
     Ldap {
         username: String,
+        credential: ProviderCredential,
+    },
+    LdapNative {
+        username: String,
+        alias: String,
         credential: ProviderCredential,
     },
     Jwt {
@@ -1549,6 +1589,12 @@ impl AuthState {
                 .cloned(),
         );
         namespaces.extend(
+            self.ldap_native_users
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
             self.radius_mounts
                 .keys()
                 .filter(|value| !value.is_empty())
@@ -1619,6 +1665,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .ldap_native_users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .radius_mounts
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -1647,6 +1697,7 @@ impl AuthState {
             oidc_mounts: BTreeMap::new(),
             ldap_mounts: BTreeMap::new(),
             ldap_groups: BTreeMap::new(),
+            ldap_native_users: BTreeMap::new(),
             radius_mounts: BTreeMap::new(),
             plugin_auth_mounts: BTreeMap::new(),
             cert_roles: BTreeMap::new(),
@@ -2025,6 +2076,9 @@ impl AuthState {
         if let Some(mounts) = self.ldap_groups.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.ldap_native_users.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         if let Some(mounts) = self.radius_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -2205,6 +2259,16 @@ impl AuthState {
             .and_then(|mounts| mounts.remove(from))
         {
             self.ldap_groups
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .ldap_native_users
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.ldap_native_users
                 .entry(namespace.into())
                 .or_default()
                 .insert(to.into(), value);
@@ -2569,6 +2633,12 @@ impl AuthState {
                 "ldap" if suffix.starts_with("login/") => {
                     self.login_ldap(scope, method, &suffix[6..], body, now)
                 }
+                "ldap"
+                    if self.ldap_native_at(scope).is_some()
+                        && (suffix == "users" || suffix.starts_with("users/")) =>
+                {
+                    self.ldap_native_user_route(principal, scope, method, path, body, now)
+                }
                 "userpass" | "ldap" if suffix == "users" || suffix.starts_with("users/") => {
                     self.user_route(principal, scope, method, path, body, now)
                 }
@@ -2881,6 +2951,9 @@ impl AuthState {
             route_capability(method, false)?,
             now,
         )?;
+        if suffix == "config" && self.ldap_native_config_request(scope, body)? {
+            return self.ldap_native_config_route(principal, scope, method, body, now);
+        }
         match method {
             "GET" => {
                 reject_unknown(body, &[])?;
@@ -2994,6 +3067,7 @@ impl AuthState {
                     } else {
                         group_name_attr.into()
                     },
+                    native: None,
                 };
                 let changed = self
                     .ldap_mounts
@@ -3017,6 +3091,9 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        if self.ldap_native_at(scope).is_some() {
+            return self.ldap_native_group_route(principal, scope, method, path, body, now);
+        }
         let prefix = format!("auth/{}/groups", scope.mount);
         let name = path
             .strip_prefix(&prefix)
@@ -3111,9 +3188,6 @@ impl AuthState {
         }
         reject_unknown(body, &["password", "totp_code"])?;
         let password = string_field(body, "password")?;
-        if password.is_empty() || password.len() > 1024 || password.contains('\0') {
-            return Err(denied());
-        }
         let scope = AuthScope { namespace, mount };
         let config = self
             .ldap_mounts
@@ -3126,6 +3200,12 @@ impl AuthState {
                 503,
                 "external LDAP login requires a host-enrolled LDAPS endpoint",
             ));
+        }
+        if config.native.is_some() {
+            return self.prepare_native_ldap_login(scope, name, body, config, now);
+        }
+        if password.is_empty() || password.len() > 1024 || password.contains('\0') {
+            return Err(denied());
         }
         let dn = config.user_dn_template.replace("{{username}}", name);
         if dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20) {
@@ -3157,6 +3237,7 @@ impl AuthState {
             config,
             password: Zeroizing::new(password.to_owned()),
             totp_code,
+            native_revision: None,
             now,
             started: std::time::Instant::now(),
         })
@@ -3180,6 +3261,9 @@ impl AuthState {
                 != Some(&plan.config)
         {
             return Err(err(409, "LDAP configuration changed during bind"));
+        }
+        if plan.config.native.is_some() {
+            return self.finish_native_ldap_login(plan, observation);
         }
         let mut user = self
             .users_at(scope)

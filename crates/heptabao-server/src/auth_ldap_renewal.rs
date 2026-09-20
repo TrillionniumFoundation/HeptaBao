@@ -37,6 +37,19 @@ impl LdapRenewalPlan {
         &self,
         outbound: &crate::outbound::Outbound,
     ) -> Result<LdapRenewalObservation, AuthError> {
+        if let Some(config) = &self.config.native {
+            return match outbound.ldap_authenticate_native(
+                &self.config.url,
+                &config.options(),
+                &self.username,
+                &self.credential.0,
+            ) {
+                Ok(Some(observation)) => Ok(LdapRenewalObservation {
+                    groups: observation.groups,
+                }),
+                Ok(None) | Err(_) => Err(bad("LDAP login failed during renewal")),
+            };
+        }
         match outbound.ldap_bind_and_search_groups(
             &self.config.url,
             &self.dn,
@@ -90,6 +103,12 @@ impl AuthState {
                     || token.policies.contains("root")
                     || !token.auth_mount.as_ref().is_some_and(|mount| {
                         self.online_mount_enabled(&token.namespace, mount, "ldap")
+                            && self
+                                .ldap_native_at(AuthScope {
+                                    namespace: &token.namespace,
+                                    mount,
+                                })
+                                .is_none()
                     }))
             {
                 return Err(bad("invalid LDAP renewal provenance"));
@@ -103,6 +122,9 @@ impl AuthState {
         scope: AuthScope<'_>,
         username: &str,
     ) -> Result<[u8; 32], AuthError> {
+        if self.ldap_native_at(scope).is_some() {
+            return self.ldap_native_local_revision(scope, username);
+        }
         let user = self
             .users_at(scope)
             .and_then(|users| users.get(username))
@@ -119,12 +141,17 @@ impl AuthState {
         now: u64,
     ) -> Result<LdapRenewalPlan, AuthError> {
         let token = self.active_token(&target, now, false)?;
-        let Some(TokenAuthProvenance::Ldap {
-            username,
-            credential,
-        }) = &token.auth_provenance
-        else {
-            return Err(denied());
+        let (username, credential, native) = match &token.auth_provenance {
+            Some(TokenAuthProvenance::Ldap {
+                username,
+                credential,
+            }) => (username, credential, false),
+            Some(TokenAuthProvenance::LdapNative {
+                username,
+                credential,
+                ..
+            }) => (username, credential, true),
+            _ => return Err(denied()),
         };
         if !token.renewable {
             return Err(bad("token is not renewable"));
@@ -145,8 +172,13 @@ impl AuthState {
         if !config.url.starts_with("ldaps://") || config.starttls {
             return Err(bad("LDAP renewal requires a host-enrolled LDAPS endpoint"));
         }
+        if config.native.is_some() != native {
+            return Err(denied());
+        }
         let dn = config.user_dn_template.replace("{{username}}", username);
-        if dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20) {
+        if !native
+            && (dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20))
+        {
             return Err(bad("LDAP user DN is outside bounds"));
         }
         Ok(LdapRenewalPlan {
@@ -197,6 +229,16 @@ impl AuthState {
                 409,
                 "LDAP renewal authority changed during provider request",
             ));
+        }
+        if plan.config.native.is_some() {
+            return self.finish_native_ldap_renewal(
+                scope,
+                &plan.target,
+                &plan.username,
+                observation.groups,
+                plan.increment,
+                now,
+            );
         }
         let user = self
             .users_at(scope)

@@ -650,14 +650,24 @@ atomic wrapping. `qa/openbao-acceptance/ldap_renewal_live.py` compares real LDAP
 Bind/Search, credential/group revocation, identity-only group updates and restart
 renewal against pinned OpenBao 2.6.2 with explicit configuration adaptation.
 
-The latest exact-head SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json).
+An earlier SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json).
 It is external-provider evidence only; it does not admit full OpenBao LDAP
 field/error parity or independent production qualification.
 
-The current profile still does **not** rotate/use a privileged bind-account
-credential for search, implement StartTLS/SASL/referrals, arbitrary LDAP filters,
-nested-group expansion, or establish full OpenBao LDAP API/error parity. Those
-remain product work rather than qualification paperwork.
+This legacy profile retains its DN template and required local mapping. New
+mounts can instead select native manager-search configuration using `binddn`,
+`bindpass`, `userdn` and `userattr`; see
+[`HEPTABAO_LDAP_RUNTIME.md`](../engines/HEPTABAO_LDAP_RUNTIME.md). Native users and
+groups are optional policy mappings. Native login and all three renewal routes
+perform manager bind, unique user search, user bind, manager rebind and configured
+group search. Current token limits, issued explicit caps, external Identity
+groups and wrapping use the existing atomic publication path. Native state
+requires schema 23. Mixing configuration vocabularies returns 400; switching an
+existing profile returns 409 and requires a new mount.
+
+StartTLS, SASL, referrals, arbitrary filters, nested-group expansion and full
+OpenBao LDAP API/error parity remain product work. The manager-search profile
+does not remove the deployment's explicit endpoint and CA enrollment boundary.
 
 ## Auth mount revision, tune and remount boundary
 

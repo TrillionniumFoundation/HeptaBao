@@ -4,6 +4,7 @@ use serde_json::{Map, Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 const MAX_NAME_BYTES: usize = 128;
+const MAX_ALIAS_BYTES: usize = 1024;
 const MAX_METADATA_ENTRIES: usize = 64;
 const MAX_METADATA_KEY_BYTES: usize = 128;
 const MAX_METADATA_VALUE_BYTES: usize = 1024;
@@ -669,7 +670,7 @@ fn upsert_alias(
         .get("name")
         .and_then(Value::as_str)
         .ok_or_else(|| bad("alias name is required"))?;
-    valid_name(name, "alias name")?;
+    valid_alias_name(name, "alias name")?;
     let mount_accessor = body
         .get("mount_accessor")
         .and_then(Value::as_str)
@@ -794,6 +795,8 @@ fn handle_entity_lookup(
             .get("alias_mount_accessor")
             .and_then(Value::as_str)
             .ok_or_else(|| bad("alias_mount_accessor is required with alias_name"))?;
+        valid_alias_name(alias_name, "alias name")?;
+        valid_identifier(accessor, "mount accessor")?;
         let alias_id = state
             .alias_keys
             .get(&alias_key(accessor, alias_name))
@@ -850,6 +853,8 @@ fn handle_group_lookup(
             .get("alias_mount_accessor")
             .and_then(Value::as_str)
             .ok_or_else(|| bad("alias_mount_accessor is required with alias_name"))?;
+        valid_alias_name(alias_name, "group alias name")?;
+        valid_identifier(accessor, "mount accessor")?;
         let alias_id = state
             .group_alias_keys
             .get(&alias_key(accessor, alias_name))
@@ -1265,7 +1270,7 @@ fn upsert_group_alias(
         .get("mount_accessor")
         .and_then(Value::as_str)
         .ok_or_else(|| bad("mount_accessor is required"))?;
-    valid_name(name, "group alias name")?;
+    valid_alias_name(name, "group alias name")?;
     valid_name(mount_accessor, "mount accessor")?;
     let id = match id {
         Some(id) => {
@@ -1437,6 +1442,16 @@ fn valid_name(value: &str, label: &str) -> Result<()> {
             !(byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':' | b'@'))
         })
     {
+        return Err(bad(&format!("{label} is invalid")));
+    }
+    Ok(())
+}
+
+// Provider aliases are opaque names, unlike server-owned entity/group names or
+// identifiers. NUL and all other controls are forbidden, so the existing index
+// separator remains unambiguous without changing any persisted key bytes.
+fn valid_alias_name(value: &str, label: &str) -> Result<()> {
+    if value.is_empty() || value.len() > MAX_ALIAS_BYTES || value.chars().any(char::is_control) {
         return Err(bad(&format!("{label} is invalid")));
     }
     Ok(())
@@ -1684,3 +1699,7 @@ mod tests {
 #[cfg(test)]
 #[path = "identity_external_tests.rs"]
 mod external_tests;
+
+#[cfg(test)]
+#[path = "identity_alias_tests.rs"]
+mod alias_tests;

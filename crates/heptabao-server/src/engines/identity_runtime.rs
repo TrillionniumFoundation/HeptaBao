@@ -6,6 +6,51 @@ const MAX_IDENTITY_RECORDS: usize = 4096;
 const MAX_EFFECTIVE_POLICIES: usize = 256;
 
 impl IdentityState {
+    // Restrict this validation to alias names and their existing indexes. Other
+    // identity authority retains its existing live projection validation.
+    pub(crate) fn validate_aliases(&self) -> Result<()> {
+        if self.alias_keys.len() != self.aliases.len()
+            || self.group_alias_keys.len() != self.group_aliases.len()
+        {
+            return Err(error(503, "inconsistent identity alias index"));
+        }
+        for (id, alias) in &self.aliases {
+            valid_alias_name(&alias.name, "alias name")?;
+            valid_identifier(&alias.mount_accessor, "mount accessor")?;
+            if id != &alias.id
+                || self
+                    .alias_keys
+                    .get(&alias_key(&alias.mount_accessor, &alias.name))
+                    != Some(id)
+            {
+                return Err(error(503, "inconsistent identity alias index"));
+            }
+        }
+        for (id, alias) in &self.group_aliases {
+            valid_alias_name(&alias.name, "group alias name")?;
+            valid_identifier(&alias.mount_accessor, "mount accessor")?;
+            if id != &alias.id
+                || self
+                    .group_alias_keys
+                    .get(&alias_key(&alias.mount_accessor, &alias.name))
+                    != Some(id)
+            {
+                return Err(error(503, "inconsistent identity group alias index"));
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_opaque_aliases(&self) -> bool {
+        self.aliases
+            .values()
+            .any(|alias| valid_name(&alias.name, "alias name").is_err())
+            || self
+                .group_aliases
+                .values()
+                .any(|alias| valid_name(&alias.name, "group alias name").is_err())
+    }
+
     pub(crate) fn bind_login(
         &mut self,
         accessor: &str,
@@ -13,7 +58,7 @@ impl IdentityState {
         now: u64,
     ) -> Result<IdentityProjection> {
         valid_identifier(accessor, "mount accessor")?;
-        valid_name(name, "login alias")?;
+        valid_alias_name(name, "login alias")?;
         let key = alias_key(accessor, name);
         if let Some(alias_id) = self.alias_keys.get(&key) {
             let alias = self
@@ -87,6 +132,8 @@ impl IdentityState {
         accessor: &str,
         username: &str,
     ) -> Result<()> {
+        valid_identifier(accessor, "mount accessor")?;
+        valid_alias_name(username, "login alias")?;
         let projected = self.project(id)?;
         if projected.disabled {
             return Err(error(403, "identity unavailable"));
