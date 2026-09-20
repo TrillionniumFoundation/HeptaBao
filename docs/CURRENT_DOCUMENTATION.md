@@ -125,11 +125,12 @@ for both exact head and prospective merge. `scripts/validate_delivery_gate_owner
 guards that separation so removing duplicate execution cannot silently remove a
 native product gate.
 
-Historical H01/H02, V1.3, V2.4 and V2.5 diagnostic workflows remain in the
-repository for reproducible evidence, but their obsolete branch push triggers
-and duplicate nightly schedules are retired. They are manual-only lanes. Pull
-requests use the current replacement qualification and workflow-trust lanes;
-an operator can still dispatch a historical lane when its evidence is required.
+Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
+manual-only for reproducible evidence. Their obsolete branch push triggers and
+the duplicate V2 Linux assurance schedule are retired. Pull requests use the
+current replacement qualification and workflow-trust lanes. The V2.5
+multi-platform workflow retains its nightly schedule because ARM64 and macOS
+coverage differs from the Linux PR gate; its obsolete branch trigger is retired.
 
 ## Current scalability, cutover and release-candidate evidence
 

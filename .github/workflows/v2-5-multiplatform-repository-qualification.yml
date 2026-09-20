@@ -1,8 +1,11 @@
 name: HeptaBao V2.5 multi-platform repository qualification
 
 on:
-  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
+  # Current cross-platform coverage is distinct from the Linux PR gate.
+  schedule:
+    - cron: "17 2 * * *"
   workflow_dispatch:
+
 permissions:
   contents: read
 
