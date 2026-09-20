@@ -314,21 +314,21 @@ Existing bounded profiles: `qa/openbao-acceptance/ldap_bounded.py`, `qa/openbao-
 
 ### HB-SURFACE-AUTH-RADIUS
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H16-WP08`, `H16-WP10`.
-API families: `auth/{mount}/config`; `auth/{mount}/users/*`; `auth/{mount}/login/*`.
-Runtime source: none claimed.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP08`, `H16-WP10`.
+API families: `auth/{mount}/config`; `auth/{mount}/login`.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/service_online_auth.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
-**Positive:** Authenticate against real RADIUS with response authenticator validation.
+**Positive:** A real local UDP responder accepts bounded PAP and returns a token only after strict request/response Message-Authenticator and Response Authenticator checks.
 
-**Hostile:** Reject replay, bad shared-secret response and response/request mismatches.
+**Hostile:** Bad Message-Authenticator, bad Response Authenticator, provider rejection and packet loss fail closed without issuing a token.
 
-**Lifecycle:** Handle packet loss and credential rotation without granting on timeout.
+**Lifecycle:** The one-shot three-second exchange never retries an unknown provider outcome; route and token policy survive the schema-12 persistence fence.
 
-**Remaining scope:** Shared-secret handling, replay, timeout and fail-closed behavior.
+**Remaining scope:** This is IPv4 UDP PAP only. CHAP, EAP, Access-Challenge workflows, IPv6, host/port/secret OpenBao API parity, full field/error parity, independent qualification, HA provider faults and production operation remain open. The bounded receipt is qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/radius_bounded.py`.
 
 ### HB-SURFACE-AUTH-KERBEROS
 

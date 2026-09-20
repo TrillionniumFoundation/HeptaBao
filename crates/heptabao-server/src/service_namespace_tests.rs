@@ -235,3 +235,106 @@ fn namespace_catalog_refuses_seal_and_nonempty_silent_delete()
     assert!(downgraded.validate_format().is_err());
     Ok(())
 }
+
+#[test]
+fn unknown_namespace_is_not_an_implicit_scope_or_write_target()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let generation = service
+        .durable
+        .as_ref()
+        .ok_or("missing durable store")?
+        .generation();
+    let network_call = |service: &mut Service,
+                        method: &str,
+                        path: &str,
+                        namespace: &str,
+                        token: &str,
+                        body: Value|
+     -> Response {
+        match service.begin_request(ServiceRequest {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::Complete(response) => response,
+            RequestExecution::External(_) => Response::error(
+                500,
+                "namespace fixture unexpectedly staged an external effect",
+            ),
+        }
+    };
+
+    for (method, path) in [
+        ("GET", "sys/health"),
+        ("GET", "sys/seal-status"),
+        ("GET", "secret/data/ghost-item"),
+        ("POST", "secret/data/ghost-item"),
+        ("POST", "auth/token/create"),
+    ] {
+        assert_eq!(
+            network_call(&mut service, method, path, "ghost", &token, json!({})).status,
+            404,
+            "unknown namespace must fail before {method} {path}"
+        );
+    }
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("missing durable store")?
+            .generation(),
+        generation,
+        "unknown namespace requests must not publish owner state"
+    );
+
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/ghost",
+            &token,
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/ghost",
+            &token,
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        network_call(
+            &mut service,
+            "POST",
+            "secret/data/ghost-item",
+            "ghost",
+            &token,
+            json!({"data":{"v":"must-not-resurrect"}}),
+        )
+        .status,
+        404,
+        "deleted namespace must not reappear through an owner map"
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("missing state")?
+            .namespace_exists("ghost")
+    );
+    Ok(())
+}

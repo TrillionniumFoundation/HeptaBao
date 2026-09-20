@@ -281,6 +281,7 @@ fn wrapping_read_uses_transactional_capture_not_immutable_dispatch() -> TestResu
         body: json!({}),
         now: 100,
         allow_forward: true,
+        enforce_namespace: true,
         wrap_ttl_seconds: Some(30),
         client_certificates: None,
     });

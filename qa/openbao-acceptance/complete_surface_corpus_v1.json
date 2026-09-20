@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 46,
-    "defined_not_implemented_surface_count": 14,
-    "fixture_case_count": 273,
+    "implemented_surface_count": 47,
+    "defined_not_implemented_surface_count": 13,
+    "fixture_case_count": 278,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -237,9 +237,15 @@
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 5,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "radius_bounded.config_roundtrip",
+        "radius_bounded.pap_accept_with_message_authenticator",
+        "radius_bounded.reject_bad_authenticator",
+        "radius_bounded.reject_bad_response_authenticator",
+        "radius_bounded.timeout_fails_closed"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

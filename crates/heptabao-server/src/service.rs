@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 11;
+const CURRENT_STATE_SCHEMA: u32 = 12;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -503,6 +503,7 @@ struct RequestDispatch<'a> {
     body: Value,
     now: u64,
     allow_forward: bool,
+    enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
     client_certificates: Option<Vec<Vec<u8>>>,
 }
@@ -515,6 +516,7 @@ struct RequestView<'a> {
     body: &'a Value,
     now: u64,
     allow_forward: bool,
+    enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
     client_certificates: Option<&'a [Vec<u8>]>,
 }
@@ -942,6 +944,7 @@ impl Service {
             body,
             now,
             allow_forward: true,
+            enforce_namespace: false,
             wrap_ttl_seconds,
             client_certificates,
         })
@@ -971,6 +974,7 @@ impl Service {
             body,
             now,
             allow_forward: true,
+            enforce_namespace: true,
             wrap_ttl_seconds,
             client_certificates,
         })
@@ -997,6 +1001,7 @@ impl Service {
             body,
             now,
             allow_forward: false,
+            enforce_namespace: true,
             wrap_ttl_seconds,
             client_certificates,
         })
@@ -1078,6 +1083,7 @@ impl Service {
             mut body,
             now,
             allow_forward,
+            enforce_namespace,
             wrap_ttl_seconds,
             client_certificates,
         } = request;
@@ -1186,6 +1192,7 @@ impl Service {
             body: &body,
             now,
             allow_forward,
+            enforce_namespace,
             wrap_ttl_seconds,
             client_certificates: client_certificates.as_deref(),
         });
@@ -1239,11 +1246,26 @@ impl Service {
             body,
             now,
             allow_forward,
+            enforce_namespace,
             wrap_ttl_seconds,
             client_certificates,
         } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
+        }
+        // Health and seal-status are handled before the HA/read path below,
+        // so apply the same namespace resolution fence here for an already
+        // initialized service.  The root namespace remains available while
+        // initialization is still in progress.
+        if enforce_namespace
+            && self.state.is_some()
+            && matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
+            && !self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_exists(namespace))
+        {
+            return Response::error(404, "namespace not found");
         }
         if path == "sys/health" && matches!(method, "GET" | "HEAD") {
             let health_codes = match HealthStatusCodes::from_body(body) {
@@ -1338,6 +1360,25 @@ impl Service {
             if let Err(error) = self.sync_from_ha() {
                 return error;
             }
+        }
+        // Namespace headers resolve to an existing catalog entry before any
+        // authentication or route dispatch.  Without this fence a caller
+        // could address an arbitrary well-formed namespace path and create
+        // state in an implicit owner map, even though OpenBao returns 404 for
+        // a namespace that is absent from the namespace store.  Legacy states
+        // are adopted into the explicit catalog during unseal, so this check
+        // also remains compatible with pre-catalog state.
+        if enforce_namespace
+            && !matches!(
+                path,
+                "sys/internal/capacity" | "sys/internal/storage/capacity"
+            )
+            && !self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.namespace_exists(namespace))
+        {
+            return Response::error(404, "namespace not found");
         }
         if self.recovery_required {
             return Response::error(

@@ -625,22 +625,27 @@
       "public_baseline_reference": "public-source-surface://builtin/credential/radius",
       "api_families": [
         "auth/{mount}/config",
-        "auth/{mount}/users/*",
-        "auth/{mount}/login/*"
+        "auth/{mount}/login"
       ],
-      "positive": "Authenticate against real RADIUS with response authenticator validation",
-      "hostile": "Reject replay, bad shared-secret response and response/request mismatches",
-      "lifecycle": "Handle packet loss and credential rotation without granting on timeout",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "A real local UDP responder accepts bounded PAP and returns a token only after strict request/response Message-Authenticator and Response Authenticator checks",
+      "hostile": "Bad Message-Authenticator, bad Response Authenticator, provider rejection and packet loss fail closed without issuing a token",
+      "lifecycle": "The one-shot three-second exchange never retries an unknown provider outcome; route and token policy survive the schema-12 persistence fence",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/service_online_auth.rs"
+      ],
       "contract_sources": [],
       "guides": [
-        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/radius_bounded.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Shared-secret handling, replay, timeout and fail-closed behavior."
+      "remaining_scope": "This is IPv4 UDP PAP only. CHAP, EAP, Access-Challenge workflows, IPv6, host/port/secret OpenBao API parity, full field/error parity, independent qualification, HA provider faults and production operation remain open. The bounded receipt is qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KERBEROS",

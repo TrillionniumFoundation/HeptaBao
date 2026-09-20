@@ -290,7 +290,7 @@ limits. The value is returned only in the successful creation response and is
 stored as a SHA-256 digest; duplicate values are rejected rather than replacing
 an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
 on authentication methods, LDAP directory search/group-policy synchronization,
-batch tokens, cloud IAM, RADIUS/Kerberos auth, WebAuthn/push/external MFA,
+batch tokens, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
 auth-plugin execution, complete OpenBao browser/UI semantics, and full
 per-method field parity remain unsupported. AppRole roles support both the
 default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only
@@ -308,11 +308,11 @@ captured at issue remains an absolute issue-time cap even if the role is later
 expanded. Tokens created through `auth/token/create` deliberately do not inherit
 AppRole issuer provenance and therefore use ordinary token renewal semantics.
 This persisted field requires service state schema 11; older binaries reject it
-instead of silently dropping renewal authority.
+instead of silently dropping renewal authority. Bounded RADIUS PAP mounts add durable route and token policy in schema 12; the process-enrolled `radius://` UDP endpoint and shared secret stay outside `AuthState`, and schema-11 readers reject the state. The profile supports one-shot IPv4 UDP PAP with strict Message-Authenticator and Response Authenticator checks; CHAP, EAP, IPv6, challenge flows and full OpenBao field parity remain outside this slice.
 
 ## Authentication mount registry
 
-`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc`, bounded `ldap` or the bounded `cert` mTLS profile; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`, and certificate mounts use `auth/<mount>/certs/...` plus `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
+`sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc`, bounded `ldap`, bounded RADIUS PAP or the bounded `cert` mTLS profile; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`, and certificate mounts use `auth/<mount>/certs/...` plus `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.
 
 Credentials are isolated by namespace and mount. Equal user names, role IDs or secret IDs in different mounts do not share authority. Existing legacy `users`/`roles` maps remain the default `userpass`/`approle` storage so upgrades preserve those credentials; new custom methods use separate mounted maps. Disabling a mount erases its credentials/configuration and revokes tokens issued there plus their descendants. Legacy tokens missing origin provenance are conservatively revoked within the namespace when disabling the legacy default method; newly issued token-API credentials carry known provenance and are not mistaken for those historical login tokens.
 

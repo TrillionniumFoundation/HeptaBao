@@ -341,6 +341,16 @@
         "digest_fence",
         "issued_token_revoked_on_disable"
       ]
+    },
+    "radius_bounded": {
+      "script": "qa/openbao-acceptance/radius_bounded.py",
+      "case_ids": [
+        "config_roundtrip",
+        "pap_accept_with_message_authenticator",
+        "reject_bad_authenticator",
+        "reject_bad_response_authenticator",
+        "timeout_fails_closed"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **11**. Its source constant is
+The current Service state schema is **12**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -47,18 +47,19 @@ schema 1; the application schema must never be inferred from that number.
 | 8 | Kubernetes TokenRequest secrets-engine state is admitted; the explicit namespace catalog must still be absent. |
 | 9 | Explicit namespace IDs/incarnations and custom metadata; authentication-plugin state must still be absent. |
 | 10 | Durable server-owned authentication-plugin mount bindings; AppRole renewal provenance must be absent. |
-| 11 | Current format, adding structured direct AppRole renewal provenance. |
+| 11 | Structured direct AppRole renewal provenance; RADIUS state must be absent. |
+| 12 | Current format, adding bounded RADIUS PAP mount state with a schema fence. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
 schemas below 6 reject a nonzero database provider fence. Schemas below 7 reject LDAP group-search configuration or group-to-policy
-mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Fields omitted from
+mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Fields omitted from
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 11. An authenticated
+it. Initialization and committed mutations use schema 12. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -72,7 +73,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-11-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-12-capable rollback binary with compatible HA and provider formats.
 
 V4 owner publication derives an authenticated write set from the next manifest:
 changed and reused owners are classified by content digest, and staged or retired
@@ -81,6 +82,7 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
+A schema-11 binary must fail closed once bounded RADIUS mount state has been committed;
 A schema-9 binary must fail closed once authentication-plugin mount state has been committed;
 A schema-8 binary must fail closed once explicit namespace catalog state has been committed;
 a schema-7 binary must fail closed once Kubernetes secrets-engine state has been
@@ -89,7 +91,7 @@ state has been committed. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-11 rolling upgrade receipt. Mixed-version cluster operation, source
+not a schema-12 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Restoring database provider records is also
