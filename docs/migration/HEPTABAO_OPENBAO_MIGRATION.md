@@ -68,8 +68,12 @@ injection and percent-encoded escape attempts are rejected.
 
 Provision the key allowlist and tokens through an approved credential source.
 Files must be regular and effective-user-owned with no group/other access, normally
-`0600`; symlinks are rejected. Put checkpoint/export files in an existing private
-directory, normally `0700`. Do not put these files or their values in Git or CI.
+`0600`; symlinks are rejected. Reads are anchored to an already-open parent
+directory, which must also be effective-user-owned and mode `0700` (no
+group/other bits), so a writable or symlinked parent cannot swap a token,
+allowlist, export or checkpoint between validation and use. Put checkpoint/export
+files in an existing private directory, normally `0700`. Do not put these files
+or their values in Git or CI.
 
 ```sh
 export HB_SOURCE_ADDR=https://openbao-source.example:8200

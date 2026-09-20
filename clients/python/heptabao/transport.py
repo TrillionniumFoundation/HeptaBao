@@ -63,11 +63,25 @@ def decode_json(raw: bytes):
 
 
 def private_read(path: str | Path, limit: int = MAX_BODY) -> bytes:
-    """Open once, reject symlinks, then validate actual descriptor ownership/mode."""
+    """Open from an owner-only parent, reject symlinks, then validate the file.
+
+    Checking only the leaf mode is insufficient: a same-user or group-writable
+    parent could replace the leaf between validation and the next migration
+    attempt.  Holding the parent directory descriptor and opening the basename
+    relative to it binds the read to the directory that was checked.
+    """
     if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "geteuid"):
         raise BaoError("private_files_require_posix")
+    directory = None
     try:
-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+        path = Path(path).absolute()
+        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        parent_info = os.fstat(directory)
+        if (not stat.S_ISDIR(parent_info.st_mode) or parent_info.st_uid != os.geteuid()
+                or parent_info.st_mode & 0o077):
+            raise BaoError("private_parent_directory_required")
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+                     dir_fd=directory)
         with os.fdopen(fd, "rb") as handle:
             info = os.fstat(handle.fileno())
             if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
@@ -76,8 +90,13 @@ def private_read(path: str | Path, limit: int = MAX_BODY) -> bytes:
             if len(value) > limit:
                 raise BaoError("file_size_limit")
             return value
+    except BaoError:
+        raise
     except OSError:
         raise BaoError("private_file_open_failed") from None
+    finally:
+        if directory is not None:
+            os.close(directory)
 
 
 def private_json(path: str | Path):
