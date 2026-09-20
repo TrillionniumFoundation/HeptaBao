@@ -71,7 +71,7 @@ def run(binary, root, checks, inherited, observations):
         def admin(method,path,body=None):return follower.call(method,path,body,token=cluster.root_token)
         check("oidc_mount_via_follower",admin("POST","sys/auth/browser",{"type":"oidc"})[0] == 204)
         check("oidc_config_via_follower",admin("POST","auth/browser/config",{
-            "oidc_discovery_url":issuer,"oidc_client_id":configured["client_id"],"oidc_client_secret":configured["client_secret"],"pkce_s256_enrolled":True})[0] == 204)
+            "oidc_discovery_url":issuer,"oidc_discovery_ca_pem":Path(oracle["ca_file"]).read_text(),"oidc_client_id":configured["client_id"],"oidc_client_secret":configured["client_secret"],"pkce_s256_enrolled":True})[0] == 204)
         check("oidc_role_via_follower",admin("POST","auth/browser/role/app",{"allowed_redirect_uris":[redirect],"token_policies":["default"]})[0] == 204)
         check("kubernetes_mount_via_follower",admin("POST","sys/auth/workload",{"type":"kubernetes"})[0] == 204)
         check("kubernetes_config_via_follower",admin("POST","auth/workload/config",{"kubernetes_host":reviewer.origin,"token_reviewer_jwt":reviewer.reviewer})[0] == 204)

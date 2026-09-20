@@ -1,8 +1,9 @@
+import base64
 from types import SimpleNamespace
 import unittest
 
 from jwt_api_tls_upgrade import (LEGACY_HARNESS_SOURCE, LEGACY_SHA256, LEGACY_SOURCE, MODES,
-                                  admit_legacy_receipt, complete, legacy_configuration)
+                                  admit_legacy_receipt, complete, legacy_configuration, retained_oidc_auth_url_body)
 
 
 class JwtApiTlsUpgradeGuards(unittest.TestCase):
@@ -14,6 +15,18 @@ class JwtApiTlsUpgradeGuards(unittest.TestCase):
             self.assertFalse({"jwks_ca_pem", "oidc_discovery_ca_pem", "transport"}.intersection(config))
             if mode == "oidc":
                 self.assertIs(config["pkce_s256_enrolled"], True)
+
+    def test_unenrolled_oidc_request_has_canonical_32_byte_nonce(self):
+        redirect = "http://127.0.0.1:8443/oidc/callback"
+        body = retained_oidc_auth_url_body(redirect)
+        self.assertEqual(set(body), {"role", "redirect_uri", "client_nonce"})
+        self.assertEqual(body["role"], "app")
+        self.assertEqual(body["redirect_uri"], redirect)
+        nonce = body["client_nonce"]
+        self.assertRegex(nonce, r"^[A-Za-z0-9_-]{43}$")
+        decoded = base64.urlsafe_b64decode(nonce + "=")
+        self.assertEqual(len(decoded), 32)
+        self.assertEqual(base64.urlsafe_b64encode(decoded).decode().rstrip("="), nonce)
 
     def test_historical_receipt_requires_exact_binary_build_and_clean_evidence(self):
         receipt = {"status": "passed", "source_and_binary_unchanged": True, "runner_unchanged": True,

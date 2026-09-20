@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import re
+import secrets
 import shutil
 import tempfile
 import urllib.parse
@@ -106,6 +107,12 @@ def restart(instance, binary, settings, key, t, phase):
     t.call(phase + ".unseal", "sys/unseal", {"key": key})
 
 
+def retained_oidc_auth_url_body(redirect):
+    # A valid 32-byte proof must pass the request parser so the test reaches
+    # the old configuration's missing outbound enrollment boundary.
+    return {"role": "app", "redirect_uri": redirect, "client_nonce": secrets.token_urlsafe(32)}
+
+
 def run_upgrade(instance, issuer, oidc, private, jwk, candidate, legacy, settings, rows):
     t, key, configs, tokens, pending = prepare_legacy(instance, issuer, oidc, private, jwk, rows)
     store = instance.root / "data"
@@ -131,7 +138,7 @@ def run_upgrade(instance, issuer, oidc, private, jwk, candidate, legacy, setting
     for mode in MODES:
         before = durable_manifest(store)
         if mode == "oidc":
-            body = {"role": "app", "redirect_uri": oidc.redirect, "client_nonce": "synthetic-upgrade-client-nonce-1234567890"}
+            body = retained_oidc_auth_url_body(oidc.redirect)
             path = "auth/" + mounted(mode) + "/oidc/auth_url"
         else:
             body = {"role": "app", "jwt": token(private, jwk, issuer.origin)}

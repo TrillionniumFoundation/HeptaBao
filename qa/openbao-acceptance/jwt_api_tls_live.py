@@ -116,6 +116,13 @@ def ca_variant(config, field, value, wrong):
     return body
 
 
+def same_trust_configuration(initial, observed):
+    """A signed login may refresh public keys, but no other config field."""
+    return (isinstance(initial, dict) and isinstance(observed, dict)
+            and {key: value for key, value in initial.items() if key != "keys"}
+            == {key: value for key, value in observed.items() if key != "keys"})
+
+
 def run_side(client, side, issuer, oidc, mismatch, private, jwk, ca, wrong, restart, rows):
     for mode in MODES:
         t = Trace(client, rows, mode)
@@ -169,10 +176,17 @@ def run_side(client, side, issuer, oidc, mismatch, private, jwk, ca, wrong, rest
         t.check("issued_service_token", isinstance(auth.get("client_token"), str) and bool(auth["client_token"]))
         bearer = auth["client_token"]
         t.call("issued_token_usable", "auth/token/lookup-self", method="GET", bearer=bearer)
+        # Discovery preflight fetches metadata only; the first signed login can
+        # populate the public-key cache exposed by candidate config readback.
+        # Snapshot after that legitimate write, preserving every field at restart.
+        before_restart = t.call("before_restart.config", path, method="GET").get("data", {})
+        t.check("login.trust_configuration_preserved", same_trust_configuration(current, before_restart)
+                and before_restart.get(field) == ca)
         restart()
         t.check("restart", True)
         reopened = t.call("restart.config", path, method="GET").get("data", {})
-        t.check("restart.ca_preserved", reopened == current)
+        t.check("restart.configuration_preserved", reopened == before_restart)
+        t.check("restart.ca_preserved", reopened.get(field) == current.get(field) == ca)
         t.call("restart.existing_token", "auth/token/lookup-self", method="GET", bearer=bearer)
         if mode == "oidc":
             again = oidc.login(t, side, "restart.real_code", mount, "app")

@@ -2,7 +2,8 @@ import copy
 from types import SimpleNamespace
 import unittest
 
-from jwt_api_tls_live import MODES, Failure, Trace, ca_variant, configuration, discovery, successful
+from jwt_api_tls_live import (MODES, Failure, Trace, ca_variant, configuration, discovery,
+                              same_trust_configuration, successful)
 
 
 class JwtApiTlsGuards(unittest.TestCase):
@@ -26,6 +27,23 @@ class JwtApiTlsGuards(unittest.TestCase):
         self.assertEqual(ca_variant(original, "jwks_ca_pem", "", "wrong-pem")["jwks_ca_pem"], "")
         self.assertEqual(ca_variant(original, "jwks_ca_pem", "wrong", "wrong-pem")["jwks_ca_pem"], "wrong-pem")
         self.assertEqual(original, before)
+
+    def test_login_cache_refresh_does_not_mask_any_trust_configuration_change(self):
+        initial = {"oidc_discovery_ca_pem": "correct", "oidc_discovery_url": "https://issuer",
+                   "jwt_supported_algs": ["ES256"], "keys": []}
+        observed = dict(initial, keys=[{"kid": "public-key", "algorithm": "ES256"}])
+        before = copy.deepcopy(initial)
+        self.assertTrue(same_trust_configuration(initial, observed))
+        self.assertNotEqual(initial, observed)
+        self.assertEqual(initial, before)
+        for field, value in (("oidc_discovery_ca_pem", ""),
+                             ("oidc_discovery_url", "https://changed"),
+                             ("jwt_supported_algs", ["RS256"]), ("unexpected", True)):
+            self.assertFalse(same_trust_configuration(initial, dict(observed, **{field: value})))
+        missing = dict(observed)
+        missing.pop("oidc_discovery_ca_pem")
+        self.assertFalse(same_trust_configuration(initial, missing))
+        self.assertFalse(same_trust_configuration(initial, None))
 
     def test_trace_never_accepts_arbitrary_response_or_credentials(self):
         rows = []
