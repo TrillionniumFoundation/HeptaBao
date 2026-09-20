@@ -481,8 +481,8 @@ enum JournalEvent {
     },
 }
 
-pub struct DurableService<B: Barrier> {
-    backend: FileBackend,
+pub struct DurableService<B: Barrier, P: DurableBackend = FileBackend> {
+    backend: P,
     barrier: B,
     snapshot: Snapshot,
     snapshot_plaintext_bytes: usize,
@@ -508,11 +508,11 @@ struct BackupComponents {
     journal_sequence: u64,
 }
 
-impl<B: Barrier> fmt::Debug for DurableService<B> {
+impl<B: Barrier, P: DurableBackend> fmt::Debug for DurableService<B, P> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("DurableService")
-            .field("root", &"[REDACTED]")
+            .field("backend", &"[REDACTED]")
             .field("generation", &self.snapshot.generation)
             .field("entry_count", &self.snapshot.entries.len())
             .field("retained_request_count", &self.ledger.len())
@@ -528,7 +528,31 @@ impl<B: Barrier> DurableService<B> {
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let mut backend = FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?;
+        let backend = FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?;
+        Self::create_new_with_backend(backend, barrier, max_retained_requests)
+    }
+
+    pub fn reopen(
+        root: impl AsRef<Path>,
+        barrier: B,
+        max_retained_requests: usize,
+    ) -> Result<Self, ServiceError> {
+        validate_capacity(max_retained_requests)?;
+        let backend = FileBackend::open(root.as_ref()).map_err(map_backend_error)?;
+        Self::reopen_with_backend(backend, barrier, max_retained_requests)
+    }
+}
+
+impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
+    /// Initialize an empty, exclusively owned backend with sealed artifacts.
+    /// The backend must have acquired its writer fence before this call.
+    pub fn create_new_with_backend(
+        mut backend: P,
+        barrier: B,
+        max_retained_requests: usize,
+    ) -> Result<Self, ServiceError> {
+        validate_capacity(max_retained_requests)?;
+        backend.verify().map_err(map_backend_error)?;
         let snapshot = Snapshot {
             generation: 0,
             entries: BTreeMap::new(),
@@ -562,13 +586,15 @@ impl<B: Barrier> DurableService<B> {
         })
     }
 
-    pub fn reopen(
-        root: impl AsRef<Path>,
+    /// Reopen an exclusively owned backend and reconcile its sealed journal.
+    /// Recovery finishes before the service accepts any mutation.
+    pub fn reopen_with_backend(
+        mut backend: P,
         barrier: B,
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let mut backend = FileBackend::open(root.as_ref()).map_err(map_backend_error)?;
+        backend.verify().map_err(map_backend_error)?;
         let bundle = backend.load().map_err(map_backend_error)?;
         let snapshot = decode_snapshot_frame(&bundle.snapshot, &barrier)?;
         let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
@@ -599,6 +625,13 @@ impl<B: Barrier> DurableService<B> {
             physical_journal_bytes,
         )?;
         Ok(service)
+    }
+
+    /// Release the backend writer fence and report any close failure.
+    /// Dropping the service also drops the backend; remote backends must make
+    /// that path release ownership without acknowledging an unknown write.
+    pub fn close(self) -> Result<(), ServiceError> {
+        self.backend.close().map_err(map_backend_error)
     }
 
     pub fn put(&mut self, request: PutRequest) -> Result<MutationOutcome, ServiceError> {
@@ -3820,3 +3853,6 @@ mod tests {
 #[cfg(test)]
 #[path = "capacity_tests.rs"]
 mod capacity_tests;
+
+#[cfg(test)]
+mod injected_backend_tests;

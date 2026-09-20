@@ -1,11 +1,9 @@
 # HeptaBao durable backend contract
 
-`heptabao-durable-service` currently implements the replay protocol and the
-physical files in one type.  The protocol is useful beyond a local directory,
-but replacing the files with a database by editing individual `read` and
-`write` calls would weaken its crash semantics.  This document fixes the
-smallest boundary that lets the existing protocol use a second physical
-backend while keeping the filesystem implementation as the default.
+`heptabao-durable-service` separates the replay protocol from physical
+persistence through `DurableBackend`. The filesystem backend remains the
+default; callers can inject another backend without changing journal,
+recovery, capacity, or backup semantics.
 
 ## Boundary
 
@@ -96,14 +94,10 @@ cross-check remains authoritative after a crash.
 
 ## Smallest integration change
 
-Keep the current protocol code and add a defaulted second type parameter:
-
-This stage has already moved the default service's create, reopen, append,
-truncate, compaction, retirement, and restore paths behind `FileBackend`.
-The service still uses the concrete filesystem backend in its public
-constructor; the defaulted backend type and injected constructors below are
-the next step required before a PostgreSQL backend can be selected by server
-configuration.
+The service exposes a defaulted second type parameter. All create, reopen,
+append, truncate, compaction, retirement, restore, and capacity operations use
+the injected backend. Existing callers still select `FileBackend` through the
+path-based constructors.
 
 ```rust
 pub struct DurableService<B: Barrier, S: DurableBackend = FileBackend> {
@@ -125,13 +119,21 @@ retained:
 
 ```rust
 DurableService::create_new(root, barrier, max_requests) // FileBackend
-DurableService::create_new_with_backend(FileBackend::new(root), barrier, ...)
+DurableService::create_new_with_backend(backend, barrier, max_requests)
 DurableService::reopen_with_backend(backend, barrier, ...)
 ```
 
-This keeps all existing server call sites on the filesystem during the first
-refactor.  A later server configuration can select `PostgresBackend` only
-after the same contract tests and crash receipts pass.
+Both injected constructors require a backend that already owns its writer
+fence. `DurableService::close(self)` calls the backend's explicit close method;
+ordinary drop also drops the backend, whose RAII implementation must release
+ownership. Neither path may turn an unknown write result into an acknowledgement.
+
+The injected-backend tests run the real service protocol against a non-file
+backend: batch mutation, checkpoint, backup restore, reopen, and a persisted
+Apply frame whose acknowledgement is lost. The latter must fence the live
+service and replay exactly once after reopen. All existing server call sites
+still use the filesystem. A server configuration can select `PostgresBackend`
+only after its contract tests and crash receipts pass.
 
 ## PostgreSQL mapping
 

@@ -22,7 +22,7 @@ struct AtomicBatchRequest {
     mutations: Vec<(String, Option<Secret>)>,
 }
 
-impl<B: Barrier> DurableService<B> {
+impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Atomically apply several mutations under one replay identity and one
     /// durable generation. `Some(secret)` is a put and `None` is a delete.
     ///
