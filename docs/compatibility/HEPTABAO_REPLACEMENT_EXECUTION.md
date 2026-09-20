@@ -1016,21 +1016,21 @@ Existing bounded profiles: `qa/openbao-acceptance/namespace_tree_live.py`.
 
 ### HB-SURFACE-NAMESPACE-SEAL
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H14-WP07`, `H14-WP08`, `H14-WP09`, `H14-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H14-WP07`, `H14-WP08`, `H14-WP09`, `H14-WP10`.
 API families: `namespace seal/unseal and key lifecycle`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_namespaces.rs`, `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/service_identity.rs`.
 Separate contracts: `crates/heptabao-namespace/src/lib.rs`.
 Guides: `docs/modules/heptabao-namespace.md`.
 
-**Positive:** Seal namespace independently with separate authenticated key custody.
+**Positive:** Persist a namespace seal flag under the authenticated global barrier and fence sealed ancestors before request dispatch.
 
-**Hostile:** Reject parent/sibling key use and unauthorized recovery.
+**Hostile:** Reject sealed descendant access, unauthorized seal control and stale namespace routing.
 
-**Lifecycle:** Synchronize seal state under HA, key rotation and delete/recreate/restore.
+**Lifecycle:** Persist seal state across restart and support parent-controlled seal/unseal; full HA/key lifecycle remains open.
 
-**Remaining scope:** Delete/recreate/restore and standby synchronization require dedicated state models.
+**Remaining scope:** Bounded durable seal flag uses the authenticated global barrier and ancestor routing fence. Independent per-namespace key custody, key rotation, parent/sibling key separation, delete-sealed recovery, HA/standby synchronization and independent qualification remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/namespace_seal_live.py`.
 
 ### HB-SURFACE-PROFILES-WORKFLOWS
 

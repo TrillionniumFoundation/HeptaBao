@@ -177,8 +177,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
 }
 
 #[test]
-fn namespace_catalog_refuses_seal_and_nonempty_silent_delete()
--> Result<(), Box<dyn std::error::Error>> {
+fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (_, token) = bootstrap(&mut service)?;
@@ -188,11 +187,31 @@ fn namespace_catalog_refuses_seal_and_nonempty_silent_delete()
             "POST",
             "sys/namespaces/sealed",
             &token,
-            json!({"seal":"seal \"shamir\" {}"})
+            json!({"seal":"invalid"})
         )
         .status,
-        501
+        400
     );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/sealed",
+            &token,
+            json!({"seal":true})
+        )
+        .status,
+        204
+    );
+    let sealed = call(
+        &mut service,
+        "GET",
+        "sys/namespaces/sealed",
+        &token,
+        json!({}),
+    );
+    assert_eq!(sealed.status, 200);
+    assert_eq!(sealed.body["sealed"], true);
     assert_eq!(
         call(
             &mut service,
@@ -233,6 +252,84 @@ fn namespace_catalog_refuses_seal_and_nonempty_silent_delete()
     let mut downgraded = state.clone();
     downgraded.schema = 8;
     assert!(downgraded.validate_format().is_err());
+    Ok(())
+}
+
+#[test]
+fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let network_call = |service: &mut Service,
+                        method: &str,
+                        path: &str,
+                        namespace: &str,
+                        body: Value|
+     -> Response {
+        match service.begin_request(ServiceRequest {
+            method,
+            path,
+            namespace,
+            token: &token,
+            body,
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::Complete(response) => response,
+            RequestExecution::External(_) => Response::error(500, "unexpected external effect"),
+        }
+    };
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &token,
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        network_call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            "",
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,
+        503
+    );
+    let status = network_call(
+        &mut service,
+        "GET",
+        "sys/namespaces/team/seal-status",
+        "",
+        json!({}),
+    );
+    assert_eq!(status.status, 200);
+    assert_eq!(status.body["sealed"], true);
+    assert_eq!(
+        network_call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/unseal",
+            "",
+            json!({}),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,
+        404
+    );
     Ok(())
 }
 

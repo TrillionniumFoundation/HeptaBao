@@ -351,6 +351,19 @@
         "reject_bad_response_authenticator",
         "timeout_fails_closed"
       ]
+    },
+    "namespace_seal_live": {
+      "script": "qa/openbao-acceptance/namespace_seal_live.py",
+      "case_ids": [
+        "create_namespace",
+        "seal_status",
+        "sealed_child_fails_closed",
+        "sealed_descendant_inherits_parent_fence",
+        "unauthorized_seal_control_denied",
+        "parent_unseal",
+        "namespace_seal_survives_restart",
+        "post_restart_fence"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

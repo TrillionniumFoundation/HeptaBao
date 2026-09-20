@@ -642,7 +642,10 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
         raft_admin: raft_admin::RaftAdminState::default().into(),
     };
     assert!(state.validate_format().is_ok());
-    state.schema = CURRENT_STATE_SCHEMA - 1;
+    // Schema 12 admits the bounded RADIUS state; schema 11 is the last
+    // reader that must reject it. Schema 13 is now current for namespace
+    // sealing, so subtract two here to keep the RADIUS fence assertion exact.
+    state.schema = CURRENT_STATE_SCHEMA - 2;
     assert!(state.validate_format().is_err());
     Ok(())
 }

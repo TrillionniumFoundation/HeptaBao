@@ -18,7 +18,13 @@ This package owns hierarchical namespaces and the mapping from namespace identif
 
 `disable(id)` forbids root and repeated disable, and changes only that record. `seal_subtree(id)` is the explicit subtree operation: it atomically marks the selected child and all descendants disabled, returns their sorted IDs, and rejects root/replay. `resolve_strict(path)` selects the longest matching namespace and then verifies every ancestor is active, so a sealed subtree cannot fall back to an active ancestor. The legacy `resolve(path)` behavior remains available for callers that intentionally need active-ancestor fallback. The current API provides no deletion, reparenting, enabling or per-namespace keyring.
 
-This model feeds qualified-resource policy evaluation in `heptabao-service-core` and is outside the current server dependency closure. It does not prove OpenBao namespace isolation, delegated administration or namespace sealing in the native server.
+This model feeds qualified-resource policy evaluation in `heptabao-service-core`. The
+native server now has a bounded integration profile in
+`crates/heptabao-server/src/service_namespaces.rs`: a durable `sealed` flag is
+stored in the authenticated global state, parent-controlled seal/unseal/status
+routes are available, and sealed ancestors fence HTTP/HA request routing. This
+profile does not provide independent per-namespace key custody, key rotation or
+full OpenBao namespace workflow compatibility.
 
 ### Historical V1.4.7 lexical snapshot
 
@@ -92,7 +98,12 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 
 ## Evolution and open boundaries
 
-Deletion, reparenting, namespace quotas, namespace administration routes and HA replication remain open. Subtree sealing is an in-memory bounded primitive; durable namespace seal state, delegated policy administration and restart/replication evidence require a server integration and qualification before any compatibility claim.
+Deletion, reparenting, namespace quotas, delegated policy administration, key
+hierarchy and full HA replication semantics remain open. The server's bounded
+seal flag has restart evidence in
+`qa/openbao-acceptance/namespace_seal_live.py`; independent qualification and
+separate namespace key custody are still required before a full compatibility
+claim.
 
 ## Machine-verified source truth
 

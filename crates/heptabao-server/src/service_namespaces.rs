@@ -20,8 +20,19 @@ pub(super) struct NamespaceRegistry {
 struct NamespaceEntry {
     id: String,
     incarnation: u64,
+    /// Operational namespace seal state. The namespace owner remains encrypted
+    /// by the server barrier; this flag fences request routing until an
+    /// authorized ancestor explicitly unseals it. A separate per-namespace
+    /// custody key hierarchy is intentionally not claimed by this bounded
+    /// profile.
+    #[serde(default, skip_serializing_if = "is_false")]
+    sealed: bool,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     custom_metadata: BTreeMap<String, String>,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 pub(super) fn owns(path: &str) -> bool {
@@ -98,7 +109,7 @@ fn validate_metadata_value(key: &str, value: &str) -> Result<(), Response> {
     Ok(())
 }
 
-fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
+fn create_metadata(body: &Value) -> Result<(BTreeMap<String, String>, bool), Response> {
     let object = body
         .as_object()
         .ok_or_else(|| Response::error(400, "namespace request body must be an object"))?;
@@ -108,14 +119,14 @@ fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
     {
         return Err(Response::error(400, "unsupported namespace parameter"));
     }
-    if object.contains_key("seal") {
-        return Err(Response::error(
-            501,
-            "sealable namespaces are a separate unimplemented compatibility surface",
-        ));
+    if let Some(value) = object.get("seal")
+        && !value.is_boolean()
+    {
+        return Err(Response::error(400, "seal must be boolean"));
     }
+    let sealed = object.get("seal").and_then(Value::as_bool).unwrap_or(false);
     let Some(metadata) = object.get("custom_metadata") else {
-        return Ok(BTreeMap::new());
+        return Ok((BTreeMap::new(), sealed));
     };
     let metadata = metadata
         .as_object()
@@ -131,7 +142,7 @@ fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
         validate_metadata_value(key, value)?;
         out.insert(key.clone(), value.to_owned());
     }
-    Ok(out)
+    Ok((out, sealed))
 }
 
 fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Result<(), Response> {
@@ -175,6 +186,26 @@ impl NamespaceRegistry {
 
     pub(super) fn contains(&self, path: &str) -> bool {
         path.is_empty() || self.entries.contains_key(path)
+    }
+
+    pub(super) fn is_sealed(&self, path: &str) -> bool {
+        if path.is_empty() {
+            return false;
+        }
+        let mut current = path;
+        loop {
+            if self.entries.get(current).is_some_and(|entry| entry.sealed) {
+                return true;
+            }
+            let Some(parent) = current.rsplit_once('/').map(|(parent, _)| parent) else {
+                return false;
+            };
+            current = parent;
+        }
+    }
+
+    pub(super) fn has_sealed_state(&self) -> bool {
+        self.entries.values().any(|entry| entry.sealed)
     }
 
     pub(super) fn validate(&self, cluster_id: &str) -> Result<(), Response> {
@@ -250,6 +281,7 @@ impl NamespaceRegistry {
             NamespaceEntry {
                 id: namespace_id(cluster_id, &path, incarnation),
                 incarnation,
+                sealed: false,
                 custom_metadata: BTreeMap::new(),
             },
         );
@@ -289,6 +321,7 @@ impl NamespaceRegistry {
         cluster_id: &str,
         path: &str,
         metadata: BTreeMap<String, String>,
+        sealed: bool,
     ) -> Result<(), Response> {
         let path = canonical_path(path)?;
         if self.entries.contains_key(&path) {
@@ -311,6 +344,7 @@ impl NamespaceRegistry {
             NamespaceEntry {
                 id: namespace_id(cluster_id, &path, incarnation),
                 incarnation,
+                sealed,
                 custom_metadata: metadata,
             },
         );
@@ -327,6 +361,16 @@ impl NamespaceRegistry {
             .get_mut(&path)
             .ok_or_else(|| Response::error(404, "namespace not found"))?;
         patch_metadata(&mut entry.custom_metadata, body)
+    }
+
+    fn set_sealed(&mut self, path: &str, sealed: bool) -> Result<(), Response> {
+        let path = canonical_path(path)?;
+        let entry = self
+            .entries
+            .get_mut(&path)
+            .ok_or_else(|| Response::error(404, "namespace not found"))?;
+        entry.sealed = sealed;
+        Ok(())
     }
 
     fn remove(&mut self, path: &str) -> Result<(), Response> {
@@ -361,6 +405,7 @@ impl NamespaceRegistry {
         Ok(Response::ok(json!({
             "id": entry.id,
             "path": format!("{relative}/"),
+            "sealed": entry.sealed,
             "custom_metadata": entry.custom_metadata,
         })))
     }
@@ -394,6 +439,7 @@ impl NamespaceRegistry {
                     json!({
                         "id": entry.id,
                         "path": key,
+                        "sealed": entry.sealed,
                         "custom_metadata": entry.custom_metadata,
                     }),
                 );
@@ -412,6 +458,10 @@ impl State {
             && (self.auth.known_namespaces().contains(path)
                 || self.engines.known_namespaces().contains(path)
                 || self.database.known_namespaces().contains(path))
+    }
+
+    pub(super) fn namespace_is_sealed(&self, path: &str) -> bool {
+        self.namespaces.is_sealed(path)
     }
 
     pub(super) fn adopt_legacy_namespaces(&mut self) -> Result<bool, Response> {
@@ -480,13 +530,76 @@ impl Service {
                 _ => Response::error(405, "namespace path is required"),
             };
         }
-        for operation in ["seal", "unseal", "seal-status", "delete-sealed"] {
-            if suffix == operation || suffix.ends_with(&format!("/{operation}")) {
+        for operation in ["seal", "unseal", "seal-status"] {
+            let Some(target) = suffix.strip_suffix(&format!("/{operation}")) else {
+                continue;
+            };
+            let target = match join_path(request.namespace, target) {
+                Ok(path) => path,
+                Err(error) => return error,
+            };
+            if target.is_empty() {
+                return Response::error(400, "root namespace cannot be sealed");
+            }
+            let Some(current) = state
+                .namespaces
+                .entries
+                .get(&target)
+                .map(|entry| entry.sealed)
+            else {
+                return Response::error(404, "namespace not found");
+            };
+            if operation == "seal-status" {
+                if request.method != "GET" && request.method != "HEAD" {
+                    return Response::error(405, "namespace seal-status requires GET");
+                }
+                if request.body.as_object().is_none_or(|body| !body.is_empty()) {
+                    return Response::error(
+                        400,
+                        "namespace seal-status accepts an empty request body",
+                    );
+                }
+                return Response::ok(json!({
+                    "id": state.namespaces.entries[&target].id,
+                    "path": format!("{target}/"),
+                    "sealed": current,
+                    "effective_sealed": state.namespaces.is_sealed(&target),
+                }));
+            }
+            if !matches!(request.method, "POST" | "PUT") {
+                return Response::error(405, "namespace seal operations require POST or PUT");
+            }
+            if request.body.as_object().is_none_or(|body| !body.is_empty()) {
                 return Response::error(
-                    501,
-                    "namespace sealing is a separate unimplemented compatibility surface",
+                    400,
+                    "namespace seal operations accept an empty request body",
                 );
             }
+            let sealed = operation == "seal";
+            if current == sealed {
+                return Response::ok(json!({"sealed": current}));
+            }
+            if let Err(error) = state.namespaces.set_sealed(&target, sealed) {
+                return error;
+            }
+            state.schema = CURRENT_STATE_SCHEMA;
+            if let Err(error) = state.validate_format() {
+                return error;
+            }
+            if let Err(error) = self.commit_state(&state) {
+                return error;
+            }
+            self.state = Some(state);
+            return Response {
+                status: 204,
+                body: Value::Null,
+            };
+        }
+        if suffix == "delete-sealed" || suffix.ends_with("/delete-sealed") {
+            return Response::error(
+                501,
+                "namespace delete-sealed recovery requires a dedicated key custody profile",
+            );
         }
         let target = match join_path(request.namespace, suffix) {
             Ok(path) => path,
@@ -507,13 +620,14 @@ impl Service {
                 if !state.namespace_exists(&parent) {
                     return Response::error(404, "parent namespace not found");
                 }
-                let metadata = match create_metadata(request.body) {
+                let (metadata, sealed) = match create_metadata(request.body) {
                     Ok(metadata) => metadata,
                     Err(error) => return error,
                 };
-                if let Err(error) = state
-                    .namespaces
-                    .create(&state.cluster_id, &target, metadata)
+                if let Err(error) =
+                    state
+                        .namespaces
+                        .create(&state.cluster_id, &target, metadata, sealed)
                 {
                     return error;
                 }

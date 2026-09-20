@@ -76,6 +76,12 @@ wrapping/OTP mutation, old-reader rejection and recovery. Use absolute binaries,
 new output names and an existing mode-0700 evidence directory. All fixture secrets
 remain in temporary private directories and are removed by these launchers.
 
+`namespace_seal_live.py` exercises the native server's bounded namespace-seal
+profile: durable seal flags, ancestor request fences, parent-controlled unseal,
+unauthorized-control rejection and restart persistence. It is bound to the
+authenticated global barrier and does not qualify independent namespace key
+custody, key rotation or complete OpenBao namespace workflow compatibility.
+
 Capacity saturation/reopen and real metadata preflight use `capacity_live.py` and
 `migration_preflight_live.py`. Both create only new synthetic TLS instances;
 preflight fixture success never authorizes a full-instance migration. See

@@ -210,6 +210,8 @@ impl Drop for PeerListener {
 pub(crate) struct CommittedApplicationState {
     pub digest: [u8; 32],
     pub bytes: Zeroizing<Vec<u8>>,
+    pub owner_manifest_digest: Option<[u8; 32]>,
+    pub changed_owner_mask: Option<u8>,
 }
 
 pub struct HaProcess {
@@ -700,8 +702,11 @@ impl HaProcess {
     /// the sole publication point. HBSM3 separates logical chunk order from the
     /// bounded physical Raft chunk index so content-defined boundaries can reuse
     /// authenticated chunks after insertions/deletions instead of shifting every
-    /// later fixed chunk. New chunks are staged into an unreferenced index/slot;
-    /// the production manifest remains the only publication point.
+    /// later fixed chunk. HBSM4 additionally carries the authenticated local
+    /// owner-plan digest and changed-owner mask, so the record-oriented local
+    /// delta cannot be replaced by an opaque whole-state fallback at the HA
+    /// boundary. New chunks are staged into an unreferenced index/slot; the
+    /// production manifest remains the only publication point.
     pub(crate) fn commit_state_with_owner_binding(
         &self,
         operation_id: &str,
@@ -710,7 +715,15 @@ impl HaProcess {
         binding: OwnerPublicationBinding,
     ) -> Result<CommitReceipt, String> {
         validate_owner_binding(operation_id, bytes, binding)?;
-        self.commit_state(operation_id, expected_base_digest, bytes)
+        self.commit_state_inner(
+            operation_id,
+            expected_base_digest,
+            bytes,
+            Some((
+                binding.owner_manifest_digest(),
+                binding.changed_owner_mask(),
+            )),
+        )
     }
 
     pub fn commit_state(
@@ -718,6 +731,16 @@ impl HaProcess {
         operation_id: &str,
         expected_base_digest: [u8; 32],
         bytes: &[u8],
+    ) -> Result<CommitReceipt, String> {
+        self.commit_state_inner(operation_id, expected_base_digest, bytes, None)
+    }
+
+    fn commit_state_inner(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        owner_binding: Option<([u8; 32], u8)>,
     ) -> Result<CommitReceipt, String> {
         if bytes.is_empty() || bytes.len() > crate::MAX_APPLICATION_STATE_BYTES {
             return Err("HA application state is empty or exceeds the shared bound".into());
@@ -749,23 +772,26 @@ impl HaProcess {
 
         let previous_manifest = match latest.as_ref() {
             None => None,
-            Some(envelope) => match self
-                .codec
-                .open_committed_descriptor(
-                    envelope.operation_id(),
-                    envelope.digest(),
-                    envelope.sealed(),
-                )
-                .map_err(|error| error.to_string())?
-            {
-                CommittedStateDescriptor::Legacy(state) => {
-                    if sha256(&state) != envelope.digest() {
-                        return Err("legacy HA state digest readback failed".into());
+            Some(envelope) => {
+                let descriptor = self
+                    .codec
+                    .open_committed_descriptor(
+                        envelope.operation_id(),
+                        envelope.digest(),
+                        envelope.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                reject_legacy_mutation_fallback(&descriptor)?;
+                match descriptor {
+                    CommittedStateDescriptor::Legacy(state) => {
+                        if sha256(&state) != envelope.digest() {
+                            return Err("legacy HA state digest readback failed".into());
+                        }
+                        None
                     }
-                    None
+                    CommittedStateDescriptor::Chunked(manifest) => Some(manifest),
                 }
-                CommittedStateDescriptor::Chunked(manifest) => Some(manifest),
-            },
+            }
         };
 
         let plans = plan_replicated_chunks(bytes, previous_manifest.as_ref())?;
@@ -835,10 +861,23 @@ impl HaProcess {
             refs.push(reference);
         }
 
-        let proposal = self
-            .codec
-            .seal_manifest(operation_id.to_owned(), expected_base_digest, bytes, refs)
-            .map_err(|error| error.to_string())?;
+        let proposal = match owner_binding {
+            Some((owner_manifest_digest, changed_owner_mask)) => self
+                .codec
+                .seal_manifest_with_owner_binding(
+                    operation_id.to_owned(),
+                    expected_base_digest,
+                    bytes,
+                    refs,
+                    owner_manifest_digest,
+                    changed_owner_mask,
+                )
+                .map_err(|error| error.to_string())?,
+            None => self
+                .codec
+                .seal_manifest(operation_id.to_owned(), expected_base_digest, bytes, refs)
+                .map_err(|error| error.to_string())?,
+        };
         let envelope = ReplicatedEnvelope::new(
             proposal.operation_id().to_owned(),
             proposal.digest(),
@@ -861,8 +900,10 @@ impl HaProcess {
 
     /// Return the newest complete application state after a linearizable
     /// ReadIndex. HBSR1 whole-state envelopes and HBSM2 fixed-position manifests
-    /// remain readable for online upgrade; HBSM3 resolves ordered logical chunks
-    /// through authenticated position-independent physical index/slot references.
+    /// remain readable for online upgrade; HBSM3/HBSM4 resolve ordered logical
+    /// chunks through authenticated position-independent physical index/slot
+    /// references. HBSM4 also validates the owner-delta identity carried by the
+    /// service publication binding.
     pub(crate) fn latest_committed_state(
         &self,
     ) -> Result<Option<CommittedApplicationState>, String> {
@@ -888,8 +929,8 @@ impl HaProcess {
                 envelope.sealed(),
             )
             .map_err(|error| error.to_string())?;
-        let bytes = match descriptor {
-            CommittedStateDescriptor::Legacy(bytes) => bytes,
+        let (bytes, owner_manifest_digest, changed_owner_mask) = match descriptor {
+            CommittedStateDescriptor::Legacy(bytes) => (bytes, None, None),
             CommittedStateDescriptor::Chunked(manifest) => {
                 if manifest.state_digest != envelope.digest() {
                     return Err("HA manifest digest does not match production envelope".into());
@@ -932,7 +973,11 @@ impl HaProcess {
                 if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
                     return Err("HA committed chunk set does not reconstruct manifest state".into());
                 }
-                assembled
+                (
+                    assembled,
+                    manifest.owner_manifest_digest,
+                    manifest.changed_owner_mask,
+                )
             }
         };
         if sha256(&bytes) != envelope.digest() {
@@ -941,6 +986,8 @@ impl HaProcess {
         Ok(Some(CommittedApplicationState {
             digest: envelope.digest(),
             bytes,
+            owner_manifest_digest,
+            changed_owner_mask,
         }))
     }
 }
@@ -1322,6 +1369,15 @@ fn validate_owner_binding(
         .map_err(|_| "local owner publication does not bind the HA state".to_owned())
 }
 
+fn reject_legacy_mutation_fallback(descriptor: &CommittedStateDescriptor) -> Result<(), String> {
+    if matches!(descriptor, CommittedStateDescriptor::Legacy(_)) {
+        return Err(
+            "legacy HA state requires explicit owner-manifest migration before mutation".into(),
+        );
+    }
+    Ok(())
+}
+
 fn plan_replicated_chunks<'a>(
     bytes: &'a [u8],
     previous: Option<&ReplicatedStateManifest>,
@@ -1598,6 +1654,15 @@ mod tests {
     }
 
     #[test]
+    fn ha_commit_rejects_legacy_whole_state_fallback() -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = CommittedStateDescriptor::Legacy(Zeroizing::new(b"legacy-state".to_vec()));
+        let error = reject_legacy_mutation_fallback(&legacy)
+            .expect_err("mutation must not promote HBSR1 implicitly");
+        assert!(error.contains("explicit owner-manifest migration"));
+        Ok(())
+    }
+
+    #[test]
     fn raft_wire_frame_rejects_direction_and_length_drift() -> Result<(), Box<dyn std::error::Error>>
     {
         let mut encoded = encode_raft_frame(RaftWireFrame {
@@ -1669,6 +1734,8 @@ mod tests {
             state_digest: sha256(&state),
             total_bytes: u64::try_from(state.len())?,
             chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
         };
 
         let insertion = b"ha-prefix-insertion-".repeat(7);
@@ -1703,6 +1770,8 @@ mod tests {
             state_digest: sha256(&state),
             total_bytes: u64::try_from(state.len())?,
             chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
         };
         let mut changed = state.clone();
         changed[0] ^= 1;

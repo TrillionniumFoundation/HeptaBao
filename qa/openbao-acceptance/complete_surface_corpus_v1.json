@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 47,
-    "defined_not_implemented_surface_count": 13,
-    "fixture_case_count": 278,
+    "implemented_surface_count": 48,
+    "defined_not_implemented_surface_count": 12,
+    "fixture_case_count": 286,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -788,9 +788,18 @@
       "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
       "category": "namespace_workflow",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "namespace_seal_live.create_namespace",
+        "namespace_seal_live.seal_status",
+        "namespace_seal_live.sealed_child_fails_closed",
+        "namespace_seal_live.sealed_descendant_inherits_parent_fence",
+        "namespace_seal_live.unauthorized_seal_control_denied",
+        "namespace_seal_live.parent_unseal",
+        "namespace_seal_live.namespace_seal_survives_restart",
+        "namespace_seal_live.post_restart_fence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

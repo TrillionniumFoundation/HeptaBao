@@ -19,14 +19,21 @@ one durable atomic batch. The shared serialized-state admission bound is
 order independently of physical index. A prefix/middle insertion can therefore
 resynchronize and reuse authenticated later chunks without shifting every
 subsequent Raft chunk key. Historical whole-state `HBSR1` and fixed-position
-`HBSM2` manifests remain readable for online upgrade. The manifest is still the
-sole authoritative publication point, so interrupted staging cannot expose a
-partial logical state. A point mutation still serializes the complete logical State
-once for its cluster binding and HA-compatible digest. Local V4 persistence then
-uses copy-on-write owner identity to carry unchanged authenticated owner descriptors
-and chunks forward without a second serialization/hash/chunk pass; changed owners
-alone are rechunked locally. HA still consumes the complete logical image, so this
-reduces local physical/CPU amplification but is **not** record-oriented scalability.
+`HBSM2` manifests remain readable for online upgrade. `HBSR1` can be inspected
+and caught up, but a mutation refuses to promote it implicitly and
+requires an explicit owner-manifest migration. New owner-bound service
+commits use `HBSM4`: the encrypted manifest carries a canonical owner-manifest
+digest (with operation revision removed) and a five-owner changed mask. Followers
+rebuild their local owner plan and fail closed if either value diverges before
+publishing durable state; an HBSM3 or older envelope never silently claims this
+owner-delta guarantee. The manifest is still the sole authoritative publication
+point, so interrupted staging cannot expose a partial logical state. A point
+mutation still serializes the complete logical State once for its cluster binding
+and HA-compatible digest. Local V4 persistence then uses copy-on-write owner
+identity to carry unchanged authenticated owner descriptors and chunks forward
+without a second serialization/hash/chunk pass; changed owners alone are
+rechunked locally. HA still consumes the complete logical image, so this reduces
+local physical/CPU amplification but is **not** record-oriented scalability.
 
 The active replay ledger admits at most **32,000 identities per epoch**. A
 root-authorized replay retirement operation creates a durable authenticated

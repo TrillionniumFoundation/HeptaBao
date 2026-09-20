@@ -146,6 +146,14 @@ pub(crate) struct OwnerPublicationBinding {
     operation_digest: [u8; 32],
     logical_digest: [u8; 32],
     logical_bytes: usize,
+    /// Digest of the canonical local owner manifest.  The operation-specific
+    /// revision is excluded so an HA follower can reproduce the identity with
+    /// its `hasync-*` local operation while still binding the same owner bytes.
+    owner_manifest_digest: [u8; 32],
+    /// Bit mask in OWNER_NAMES order identifying owners whose bytes changed.
+    /// A zero mask is a valid no-op state publication (the manifest revision
+    /// still advances with the operation identity).
+    changed_owner_mask: u8,
 }
 
 impl OwnerPublicationBinding {
@@ -162,10 +170,20 @@ impl OwnerPublicationBinding {
             || self.logical_bytes != logical_bytes.len()
             || self.operation_digest != crypto::digest(operation_id.as_bytes())
             || self.logical_digest != crypto::digest(logical_bytes)
+            || self.owner_manifest_digest == [0; 32]
+            || self.changed_owner_mask & !0x1f != 0
         {
             return Err(OwnerStoreError::DigestMismatch);
         }
         Ok(())
+    }
+
+    pub(crate) fn owner_manifest_digest(self) -> [u8; 32] {
+        self.owner_manifest_digest
+    }
+
+    pub(crate) fn changed_owner_mask(self) -> u8 {
+        self.changed_owner_mask
     }
 }
 
@@ -585,6 +603,12 @@ impl OwnerWritePlan {
             operation_digest,
             logical_digest: crypto::digest(logical_bytes),
             logical_bytes: logical_bytes.len(),
+            owner_manifest_digest: canonical_manifest_digest(&manifest)?,
+            changed_owner_mask: self
+                .write_set
+                .changed_owners
+                .iter()
+                .fold(0_u8, |mask, owner| mask | owner_mask(owner)),
         })
     }
 }
@@ -634,6 +658,27 @@ fn owner_chunk_resource(owner: &str, digest: &str) -> Result<String, OwnerStoreE
         return Err(OwnerStoreError::InvalidOwner);
     }
     Ok(format!("state-owners/{owner}/by-digest/{digest}"))
+}
+
+fn canonical_manifest_digest(manifest: &OwnerStateManifest) -> Result<[u8; 32], OwnerStoreError> {
+    // `revision` is the operation identity and intentionally differs between
+    // the leader's publication and a follower's durable catch-up operation.
+    // Every state, owner chunk, cluster and replay field remains covered.
+    let mut canonical = manifest.clone();
+    canonical.revision.clear();
+    let bytes = serde_json::to_vec(&canonical).map_err(|_| OwnerStoreError::Serialization)?;
+    Ok(crypto::digest(&bytes))
+}
+
+fn owner_mask(owner: &str) -> u8 {
+    match owner {
+        "namespaces" => 1 << 0,
+        "auth" => 1 << 1,
+        "engines" => 1 << 2,
+        "database" => 1 << 3,
+        "raft_admin" => 1 << 4,
+        _ => 0,
+    }
 }
 
 fn content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
@@ -904,6 +949,43 @@ mod tests {
             binding.verify("owner-op-binding", &altered),
             Err(OwnerStoreError::DigestMismatch)
         );
+        Ok(())
+    }
+
+    #[test]
+    fn owner_binding_canonical_digest_survives_follower_operation_identity()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let first = OwnerWritePlan::new(
+            logical,
+            "leader-op",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 128]),
+            None,
+            Vec::new(),
+        )?;
+        let first_manifest = decode_manifest(&first.manifest_bytes)?.ok_or("manifest missing")?;
+        let second = OwnerWritePlan::new(
+            logical,
+            "hasync-follower-op",
+            9,
+            "cluster",
+            0,
+            owners(vec![b'e'; 128]),
+            Some(&first_manifest),
+            Vec::new(),
+        )?;
+        let first_binding = first.publication_binding("leader-op", logical)?;
+        let second_binding = second.publication_binding("hasync-follower-op", logical)?;
+        assert_eq!(
+            first_binding.owner_manifest_digest(),
+            second_binding.owner_manifest_digest(),
+            "follower operation identity must not change owner-delta binding"
+        );
+        assert_eq!(first_binding.changed_owner_mask(), 0x1f);
+        assert_eq!(second_binding.changed_owner_mask(), 0);
         Ok(())
     }
 

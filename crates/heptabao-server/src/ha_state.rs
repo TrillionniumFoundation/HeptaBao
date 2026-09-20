@@ -18,6 +18,10 @@ use zeroize::{Zeroize, Zeroizing};
 const MAGIC: &[u8; 5] = b"HBSR1";
 const MANIFEST_MAGIC_V2: &[u8; 5] = b"HBSM2";
 const MANIFEST_MAGIC: &[u8; 5] = b"HBSM3";
+/// HBSM4 carries the authenticated local owner-plan identity across the HA
+/// state-machine boundary.  HBSM3 remains readable for mixed-version upgrade,
+/// but new service commits with an owner binding use this framing.
+const MANIFEST_MAGIC_V4: &[u8; 5] = b"HBSM4";
 const CHUNK_MAGIC: &[u8; 5] = b"HBSC2";
 const NONCE_BYTES: usize = 12;
 const DIGEST_BYTES: usize = 32;
@@ -54,6 +58,17 @@ pub(crate) struct ReplicatedStateManifest {
     pub state_digest: [u8; 32],
     pub total_bytes: u64,
     pub chunks: Vec<ReplicatedChunkRef>,
+    /// Present only for HBSM4.  This binds the HA manifest to the local
+    /// record-oriented owner publication that will be committed after Raft.
+    pub owner_manifest_digest: Option<[u8; 32]>,
+    pub changed_owner_mask: Option<u8>,
+}
+
+struct DecodedManifestBody {
+    total_bytes: u64,
+    chunks: Vec<ReplicatedChunkRef>,
+    owner_manifest_digest: Option<[u8; 32]>,
+    changed_owner_mask: Option<u8>,
 }
 
 pub(crate) enum CommittedStateDescriptor {
@@ -71,8 +86,17 @@ impl ReplicatedStateProposal {
         let valid_sealed_size = if sealed.starts_with(MAGIC) {
             (HEADER_BYTES + TAG_BYTES..=HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES)
                 .contains(&sealed.len())
-        } else if sealed.starts_with(MANIFEST_MAGIC) || sealed.starts_with(MANIFEST_MAGIC_V2) {
+        } else if sealed.starts_with(MANIFEST_MAGIC)
+            || sealed.starts_with(MANIFEST_MAGIC_V2)
+            || sealed.starts_with(MANIFEST_MAGIC_V4)
+        {
             let max_manifest_body = 10 + MAX_REPLICATED_STATE_CHUNKS * (2 + 1 + 4 + DIGEST_BYTES);
+            let max_manifest_body_v4 = max_manifest_body + 1 + DIGEST_BYTES;
+            let max_manifest_body = if sealed.starts_with(MANIFEST_MAGIC_V4) {
+                max_manifest_body_v4
+            } else {
+                max_manifest_body
+            };
             (MANIFEST_HEADER_BYTES + TAG_BYTES
                 ..=MANIFEST_HEADER_BYTES + max_manifest_body + TAG_BYTES)
                 .contains(&sealed.len())
@@ -326,7 +350,51 @@ impl ClusterStateCodec {
         plaintext_state: &[u8],
         chunks: Vec<ReplicatedChunkRef>,
     ) -> Result<ReplicatedStateProposal, ReplicatedStateError> {
-        let operation_id = operation_id.into();
+        self.seal_manifest_with_magic(
+            MANIFEST_MAGIC,
+            operation_id.into(),
+            base_digest,
+            plaintext_state,
+            chunks,
+            None,
+        )
+    }
+
+    /// Seal a manifest with the local owner publication identity.  The owner
+    /// digest and changed-owner mask are encrypted and authenticated as part
+    /// of the same manifest body, so a follower cannot accept a logical state
+    /// whose local record plan was silently replaced or widened.
+    pub(crate) fn seal_manifest_with_owner_binding(
+        &self,
+        operation_id: impl Into<String>,
+        base_digest: [u8; 32],
+        plaintext_state: &[u8],
+        chunks: Vec<ReplicatedChunkRef>,
+        owner_manifest_digest: [u8; 32],
+        changed_owner_mask: u8,
+    ) -> Result<ReplicatedStateProposal, ReplicatedStateError> {
+        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x1f != 0 {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        self.seal_manifest_with_magic(
+            MANIFEST_MAGIC_V4,
+            operation_id.into(),
+            base_digest,
+            plaintext_state,
+            chunks,
+            Some((owner_manifest_digest, changed_owner_mask)),
+        )
+    }
+
+    fn seal_manifest_with_magic(
+        &self,
+        magic: &'static [u8; 5],
+        operation_id: String,
+        base_digest: [u8; 32],
+        plaintext_state: &[u8],
+        chunks: Vec<ReplicatedChunkRef>,
+        owner_binding: Option<([u8; 32], u8)>,
+    ) -> Result<ReplicatedStateProposal, ReplicatedStateError> {
         validate_operation_id(&operation_id)?;
         if plaintext_state.is_empty() || plaintext_state.len() > MAX_STATE_BYTES {
             return Err(ReplicatedStateError::InvalidState);
@@ -335,8 +403,14 @@ impl ClusterStateCodec {
         let total_bytes =
             u64::try_from(plaintext_state.len()).map_err(|_| ReplicatedStateError::InvalidState)?;
         validate_manifest_parts(total_bytes, &chunks)?;
-        let body = encode_manifest_body(total_bytes, &chunks)?;
-        let aad = self.manifest_aad(&operation_id, base_digest, state_digest)?;
+        if magic != MANIFEST_MAGIC && magic != MANIFEST_MAGIC_V4 {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        if magic == MANIFEST_MAGIC_V4 && owner_binding.is_none() {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        let body = encode_manifest_body(total_bytes, &chunks, owner_binding)?;
+        let aad = self.manifest_aad_with_magic(magic, &operation_id, base_digest, state_digest)?;
         let mut nonce = [0_u8; NONCE_BYTES];
         SystemRandom::new()
             .fill(&mut nonce)
@@ -350,7 +424,7 @@ impl ClusterStateCodec {
             )
             .map_err(|_| ReplicatedStateError::AuthenticationFailed)?;
         let mut sealed = Vec::with_capacity(MANIFEST_HEADER_BYTES + ciphertext.len());
-        sealed.extend_from_slice(MANIFEST_MAGIC);
+        sealed.extend_from_slice(magic);
         sealed.extend_from_slice(&base_digest);
         sealed.extend_from_slice(&nonce);
         sealed.extend_from_slice(&ciphertext);
@@ -372,7 +446,9 @@ impl ClusterStateCodec {
         if sealed.len() < MANIFEST_HEADER_BYTES + TAG_BYTES {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
-        let manifest_magic = if sealed.starts_with(MANIFEST_MAGIC) {
+        let manifest_magic = if sealed.starts_with(MANIFEST_MAGIC_V4) {
+            MANIFEST_MAGIC_V4
+        } else if sealed.starts_with(MANIFEST_MAGIC) {
             MANIFEST_MAGIC
         } else if sealed.starts_with(MANIFEST_MAGIC_V2) {
             MANIFEST_MAGIC_V2
@@ -400,17 +476,30 @@ impl ClusterStateCodec {
                 ciphertext.as_mut_slice(),
             )
             .map_err(|_| ReplicatedStateError::AuthenticationFailed)?;
-        let (total_bytes, chunks) = decode_manifest_body(plaintext)?;
+        let decoded = decode_manifest_body(plaintext, manifest_magic == MANIFEST_MAGIC_V4)?;
+        let DecodedManifestBody {
+            total_bytes,
+            chunks,
+            owner_manifest_digest,
+            changed_owner_mask,
+        } = decoded;
         if manifest_magic == MANIFEST_MAGIC_V2 {
             validate_manifest_parts_v2(total_bytes, &chunks)?;
         } else {
             validate_manifest_parts(total_bytes, &chunks)?;
+        }
+        if manifest_magic == MANIFEST_MAGIC_V4
+            && (owner_manifest_digest.is_none() || changed_owner_mask.is_none())
+        {
+            return Err(ReplicatedStateError::InvalidEnvelope);
         }
         Ok(CommittedStateDescriptor::Chunked(ReplicatedStateManifest {
             base_digest,
             state_digest: digest,
             total_bytes,
             chunks,
+            owner_manifest_digest,
+            changed_owner_mask,
         }))
     }
 
@@ -513,15 +602,6 @@ impl ClusterStateCodec {
         Ok(aad)
     }
 
-    fn manifest_aad(
-        &self,
-        operation_id: &str,
-        base_digest: [u8; 32],
-        next_digest: [u8; 32],
-    ) -> Result<Vec<u8>, ReplicatedStateError> {
-        self.manifest_aad_with_magic(MANIFEST_MAGIC, operation_id, base_digest, next_digest)
-    }
-
     fn manifest_aad_with_magic(
         &self,
         magic: &[u8; 5],
@@ -530,7 +610,7 @@ impl ClusterStateCodec {
         next_digest: [u8; 32],
     ) -> Result<Vec<u8>, ReplicatedStateError> {
         validate_operation_id(operation_id)?;
-        if magic != MANIFEST_MAGIC && magic != MANIFEST_MAGIC_V2 {
+        if magic != MANIFEST_MAGIC && magic != MANIFEST_MAGIC_V2 && magic != MANIFEST_MAGIC_V4 {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         let cluster_len = u16::try_from(self.cluster_id.len())
@@ -674,15 +754,25 @@ fn validate_manifest_parts_v2(
 fn encode_manifest_body(
     total_bytes: u64,
     chunks: &[ReplicatedChunkRef],
+    owner_binding: Option<([u8; 32], u8)>,
 ) -> Result<Vec<u8>, ReplicatedStateError> {
     validate_manifest_parts(total_bytes, chunks)?;
-    let mut body = Vec::with_capacity(8 + 2 + chunks.len() * (2 + 1 + 4 + DIGEST_BYTES));
+    let metadata_bytes = owner_binding.map_or(0, |_| 1 + DIGEST_BYTES);
+    let mut body =
+        Vec::with_capacity(8 + 2 + metadata_bytes + chunks.len() * (2 + 1 + 4 + DIGEST_BYTES));
     body.extend_from_slice(&total_bytes.to_be_bytes());
     body.extend_from_slice(
         &u16::try_from(chunks.len())
             .map_err(|_| ReplicatedStateError::InvalidState)?
             .to_be_bytes(),
     );
+    if let Some((owner_manifest_digest, changed_owner_mask)) = owner_binding {
+        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x1f != 0 {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        body.push(changed_owner_mask);
+        body.extend_from_slice(&owner_manifest_digest);
+    }
     for chunk in chunks {
         body.extend_from_slice(&chunk.index.to_be_bytes());
         body.push(chunk.slot);
@@ -694,7 +784,8 @@ fn encode_manifest_body(
 
 fn decode_manifest_body(
     bytes: &[u8],
-) -> Result<(u64, Vec<ReplicatedChunkRef>), ReplicatedStateError> {
+    require_owner_binding: bool,
+) -> Result<DecodedManifestBody, ReplicatedStateError> {
     if bytes.len() < 10 {
         return Err(ReplicatedStateError::InvalidEnvelope);
     }
@@ -708,8 +799,15 @@ fn decode_manifest_body(
             .try_into()
             .map_err(|_| ReplicatedStateError::InvalidEnvelope)?,
     ));
+    let metadata_bytes = if require_owner_binding {
+        1 + DIGEST_BYTES
+    } else {
+        0
+    };
     let record_bytes = 2 + 1 + 4 + DIGEST_BYTES;
     let expected = 10_usize
+        .checked_add(metadata_bytes)
+        .ok_or(ReplicatedStateError::InvalidEnvelope)?
         .checked_add(
             count
                 .checked_mul(record_bytes)
@@ -719,8 +817,26 @@ fn decode_manifest_body(
     if bytes.len() != expected {
         return Err(ReplicatedStateError::InvalidEnvelope);
     }
+    let (changed_owner_mask, owner_manifest_digest, mut offset) = if require_owner_binding {
+        let changed_owner_mask = bytes[10];
+        if changed_owner_mask & !0x1f != 0 {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        let owner_manifest_digest = bytes[11..11 + DIGEST_BYTES]
+            .try_into()
+            .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
+        if owner_manifest_digest == [0; DIGEST_BYTES] {
+            return Err(ReplicatedStateError::InvalidEnvelope);
+        }
+        (
+            Some(changed_owner_mask),
+            Some(owner_manifest_digest),
+            11 + DIGEST_BYTES,
+        )
+    } else {
+        (None, None, 10)
+    };
     let mut chunks = Vec::with_capacity(count);
-    let mut offset = 10;
     for _ in 0..count {
         let index = u16::from_be_bytes(
             bytes[offset..offset + 2]
@@ -747,7 +863,12 @@ fn decode_manifest_body(
             digest,
         });
     }
-    Ok((total_bytes, chunks))
+    Ok(DecodedManifestBody {
+        total_bytes,
+        chunks,
+        owner_manifest_digest,
+        changed_owner_mask,
+    })
 }
 
 fn validate_envelope(
@@ -895,7 +1016,7 @@ mod tests {
             })
             .collect::<Result<Vec<_>, _>>()?;
         validate_manifest_parts_v2(u64::try_from(state.len())?, &refs)?;
-        let body = encode_manifest_body(u64::try_from(state.len())?, &refs)?;
+        let body = encode_manifest_body(u64::try_from(state.len())?, &refs, None)?;
         let digest = sha256(&state);
         let operation = "legacy-hbsm2";
         let aad = codec.manifest_aad_with_magic(MANIFEST_MAGIC_V2, operation, base, digest)?;
@@ -965,6 +1086,65 @@ mod tests {
             CommittedStateDescriptor::Chunked(manifest) => assert_eq!(manifest.chunks, refs),
             CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM3 manifest".into()),
         }
+        Ok(())
+    }
+
+    #[test]
+    fn hbsm4_manifest_binds_owner_delta_identity_across_ha_boundary()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let codec = ClusterStateCodec::new("cluster-hbsm4", [23; 32])?;
+        let base = [9; 32];
+        let state = b"owner-delta-state";
+        let chunk = ReplicatedChunkRef {
+            index: 4,
+            slot: 1,
+            bytes: u32::try_from(state.len())?,
+            digest: sha256(state),
+        };
+        let owner_manifest_digest = [0xabu8; 32];
+        let proposal = codec.seal_manifest_with_owner_binding(
+            "hbsm4-owner-delta",
+            base,
+            state,
+            vec![chunk.clone()],
+            owner_manifest_digest,
+            0b0010,
+        )?;
+        assert!(proposal.sealed().starts_with(MANIFEST_MAGIC_V4));
+        let descriptor = codec.open_committed_descriptor(
+            proposal.operation_id(),
+            proposal.digest(),
+            proposal.sealed(),
+        )?;
+        match descriptor {
+            CommittedStateDescriptor::Chunked(manifest) => {
+                assert_eq!(manifest.base_digest, base);
+                assert_eq!(manifest.chunks, vec![chunk.clone()]);
+                assert_eq!(manifest.owner_manifest_digest, Some(owner_manifest_digest));
+                assert_eq!(manifest.changed_owner_mask, Some(0b0010));
+            }
+            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM4 manifest".into()),
+        }
+
+        // Owner metadata is encrypted within the manifest body.  A stale or
+        // widened owner mask cannot be edited after Raft admission.
+        let mut tampered = proposal.sealed().to_vec();
+        *tampered.last_mut().ok_or("empty HBSM4 envelope")? ^= 1;
+        assert!(matches!(
+            codec.open_committed_descriptor(proposal.operation_id(), proposal.digest(), &tampered,),
+            Err(ReplicatedStateError::AuthenticationFailed)
+        ));
+        assert!(matches!(
+            codec.seal_manifest_with_owner_binding(
+                "hbsm4-invalid-mask",
+                base,
+                state,
+                vec![chunk],
+                owner_manifest_digest,
+                0x80,
+            ),
+            Err(ReplicatedStateError::InvalidEnvelope)
+        ));
         Ok(())
     }
 

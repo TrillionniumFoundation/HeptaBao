@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **12**. Its source constant is
+The current Service state schema is **13**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -22,7 +22,7 @@ schema-5 Kubernetes **authentication method** state. Old binaries must refuse ne
 state rather than authenticate or issue credentials while silently dropping live
 authorization/provider semantics. Schema 9 adds the explicit namespace catalog: durable
 namespace IDs/incarnations and custom metadata are bound into application state while
-namespace sealing remains a separate, still-open surface. Schema 10 adds durable
+namespace state. Schema 10 adds durable
 authentication-plugin mount bindings: the deployment plugin id is paired with
 server-owned policy and token-lifetime limits. The external plugin can return only
 an authentication decision plus a bounded alias; token authority and Identity
@@ -31,7 +31,10 @@ AppRole renewal provenance. It binds a token to its issuing namespace, mount and
 role name so renewal re-reads live role and mount limits; token-API children do
 not inherit this issuer authority. Old binaries must reject this state rather
 than use display names or stale issuance limits. Separate seal metadata uses
-schema 1; the application schema must never be inferred from that number.
+schema 1; the application schema must never be inferred from that number. Schema
+13 adds bounded namespace seal flags and ancestor request-routing fences. The flag
+is encrypted by the existing global barrier; independent per-namespace key
+custody, rotation and parent/sibling key separation remain open.
 
 ## Read admission and mutation promotion
 
@@ -49,17 +52,18 @@ schema 1; the application schema must never be inferred from that number.
 | 10 | Durable server-owned authentication-plugin mount bindings; AppRole renewal provenance must be absent. |
 | 11 | Structured direct AppRole renewal provenance; RADIUS state must be absent. |
 | 12 | Current format, adding bounded RADIUS PAP mount state with a schema fence. |
+| 13 | Current format, adding bounded namespace seal flags and routing fences; independent per-namespace key custody remains open. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
 schemas below 6 reject a nonzero database provider fence. Schemas below 7 reject LDAP group-search configuration or group-to-policy
-mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Fields omitted from
+mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Schema 13 is required when any namespace seal flag is present. Fields omitted from
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 12. An authenticated
+it. Initialization and committed mutations use schema 13. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -82,7 +86,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-11 binary must fail closed once bounded RADIUS mount state has been committed;
+A schema-12 binary must fail closed once namespace seal state has been committed; a
+schema-11 binary must fail closed once bounded RADIUS mount state has been committed;
 A schema-9 binary must fail closed once authentication-plugin mount state has been committed;
 A schema-8 binary must fail closed once explicit namespace catalog state has been committed;
 a schema-7 binary must fail closed once Kubernetes secrets-engine state has been
@@ -91,7 +96,7 @@ state has been committed. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-12 rolling upgrade receipt. Mixed-version cluster operation, source
+not a schema-13 rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Restoring database provider records is also

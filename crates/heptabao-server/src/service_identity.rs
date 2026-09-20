@@ -75,6 +75,12 @@ impl State {
                 "RADIUS authentication state requires schema 12",
             ));
         }
+        if self.schema < 13 && self.namespaces.has_sealed_state() {
+            return Err(Response::error(
+                503,
+                "namespace seal state requires schema 13",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -95,7 +101,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
