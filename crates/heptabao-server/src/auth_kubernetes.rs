@@ -849,51 +849,6 @@ impl AuthState {
         });
         Ok(issued)
     }
-
-    pub(super) fn issue_online_token(
-        &mut self,
-        scope: AuthScope<'_>,
-        alias: &str,
-        policies: BTreeSet<String>,
-        ttl: u64,
-        uses: u64,
-        now: u64,
-    ) -> Result<AuthResponse, AuthError> {
-        let AuthScope { namespace, mount } = scope;
-        let (ttl, _) = self.auth_mount_token_limits(scope, ttl, ttl)?;
-        if policies.contains("root") || ttl == 0 || ttl > MAX_LOGIN_TTL {
-            return Err(denied());
-        }
-        let token = Token {
-            wrapping: None,
-            entity_id: None,
-            cubbyhole: cubbyhole::TokenCubbyhole::default(),
-            accessor: random_id("a.")?,
-            namespace: namespace.into(),
-            policies,
-            root: false,
-            parent: None,
-            created_at: now,
-            expires_at: Some(checked_expiry(now, ttl)?),
-            max_expires_at: Some(checked_expiry(now, ttl)?),
-            period: 0,
-            renewable: false,
-            uses_remaining: unlimited_zero(uses),
-            display_name: format!("online-{}", &hash(alias)[..16]),
-            auth_mount: Some(mount.into()),
-            auth_origin_known: true,
-            auth_cert_role: None,
-            auth_cert_sha256: None,
-            auth_provenance: None,
-        };
-        let (id, token, mut issued) = Self::prepare_issue(token, now)?;
-        issued.login_identity = Some(LoginIdentity {
-            mount: mount.into(),
-            alias: alias.into(),
-        });
-        self.tokens.insert(id, token);
-        Ok(issued)
-    }
 }
 
 #[cfg(test)]

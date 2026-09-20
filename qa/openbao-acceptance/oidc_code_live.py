@@ -112,7 +112,7 @@ def run(binary: Path, root: Path, checks: list[dict]):
         status,result=callback(values,proof,code)
         check("real_code_exchange_to_signed_id_token_to_candidate_login",status == 200 and bool(result.get("auth",{}).get("entity_id")))
         auth=result["auth"];entity=auth["entity_id"];token=auth["client_token"]
-        check("no_root_or_unbounded_renewal", "root" not in auth["policies"] and auth["renewable"] is False and 0 < auth["lease_duration"] <= 300)
+        check("native_renewable_token_uses_role_lease", "root" not in auth["policies"] and auth["renewable"] is True and auth["lease_duration"] == 300)
         check("new_token_enters_actual_service",instance.call("GET","auth/token/lookup-self",token=token)[0] == 200)
         check("one_use_session_denies_callback_replay",callback(values,proof,code)[0] == 403)
         check("online_identity_has_no_administrative_authority",instance.call("POST",f"auth/{mount}/config",params,token=token)[0] == 403)

@@ -115,7 +115,7 @@ OIDC access token, and the OAuth access token never becomes a local Principal.
 |---|---|---|
 | `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`, `oidc_client_secret`; optional `jwt_supported_algs` (RS256/ES256 only). |
 | Same | GET | Public issuer/client/algorithm fields and secret-present flag. No secret echo or metadata fetch on a read. |
-| `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `token_policies`, `token_ttl`, `token_num_uses`. |
+| `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`. Updates preserve omitted fields. |
 | Same, and role collection | GET/DELETE, GET/LIST | Read/remove role; config or role updates invalidate affected pending sessions. |
 | `auth/<mount>/oidc/auth_url` | POST/PUT | Exactly `role`, `redirect_uri`, **client_nonce** (canonical base64url of 32 independent random bytes). |
 | `auth/<mount>/oidc/callback` | POST/PUT | Exactly `state`, `code`, and the same independent **client_nonce**. No arbitrary redirect override. |
@@ -165,10 +165,26 @@ The ID token must have a trusted current kid/algorithm/signature, exact issuer,
 client audience, valid iat/exp/nbf and exact nonce. A multi-audience token requires
 matching azp; a supplied azp must always match. Optional at_hash/c_hash are
 verified according to the allowed SHA-256 signature algorithms. ID tokens need
-not contain jti because replay admission belongs to the one-use session. **This
-does not remove jti or durable replay requirements from the separate JWT method.**
-The local token lifetime cannot exceed the remaining ID-token lifetime. Provider
-refresh tokens and access tokens are never persisted as local session authority.
+not contain jti because replay admission belongs to the one-use session. The
+separate native JWT method also accepts assertions without jti and permits reuse;
+OIDC still consumes each code-flow session once.
+
+New OIDC service tokens use the issuing role and mount lease limits independently
+of the ID token's remaining lifetime. Zero or omitted role TTL uses the mount
+default. All three token-renewal routes reread current role TTL, maximum and
+period locally, preserving issued policies and the issue-time explicit maximum.
+Renewal does not require discovery, another ID token or an available issuer.
+Missing roles and a passed current maximum reject renewal; ordinary token,
+Identity, wrapping and mount-revocation checks still apply. Old tokens without
+OIDC role provenance remain nonrenewable and require a fresh login. Token-API
+children and orphans do not inherit the role. Provider refresh tokens and access
+tokens are never persisted as local session authority.
+
+Discovery and code-exchange completion both compare the captured auth mount
+incarnation before publication, preventing a response from the old mount from
+issuing authority after deletion and recreation at the same path. Old pending
+sessions retain their exact role/config binding when read across an upgrade;
+new zero-valued role fields do not rewrite that binding.
 
 ### Native callback client
 
@@ -199,7 +215,8 @@ native login command, not a complete bao CLI, web UI or Agent auto-auth method.
 Read [the current format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md)
 for the current discriminator and exact upgrade boundaries. Schema 5 introduced
 encrypted Kubernetes configs/roles and OIDC config/role/session/clock maps;
-schema 20 adds native Kubernetes renewal. Valid older state can be read without
+schema 20 adds native Kubernetes renewal and schema 21 adds native OIDC renewal.
+Valid older state can be read without
 rewriting it; committed mutations promote to the current schema. Never downgrade
 the discriminator or drop new fields.
 
@@ -220,6 +237,7 @@ by the complete workspace, strict lint and document/source validators.
 | `qa/openbao-acceptance/kubernetes_online.py` | Actual Service and pinned-TLS TokenReview protocol responses, UID/policy/revocation/hostile behavior and restart. **Not actual kube-apiserver, etcd, Kubernetes RBAC or a distribution qualification.** |
 | `qa/openbao-acceptance/kubernetes_renewal_live.py` | Official 2.6.2 and candidate renewal with signed short-lived ServiceAccount JWTs, reviewer outage, role changes, periodic/explicit limits, wrapping, child/orphan separation and restart. Uses a controlled TokenReview endpoint, not a real cluster. |
 | `qa/openbao-acceptance/oidc_code_live.py` | Pinned official non-dev OpenBao issuer and actual Service, real user login/code/S256/Basic/ID token, native callback subprocess, replays, role/Identity changes and restart. No browser rendering/consent automation. |
+| `qa/openbao-acceptance/oidc_renewal_live.py` | Official 2.6.2 and candidate consumers with a real official OIDC issuer, short ID tokens, stopped issuer, current role lease limits, wrapping, children and restart. Callback and enrollment API differences are disclosed. |
 | `qa/openbao-acceptance/online_auth_ha.py` | Three real same-host service processes, official issuer, controlled reviewer, leader death, no quorum and concurrent callback consumption. Not physical multi-host or complete distributed fault coverage. |
 | `clients/python/tests/test_oidc_login.py` | Callback parsing, deadlines, issuer URL bindings and actual private file/descriptor boundary. |
 

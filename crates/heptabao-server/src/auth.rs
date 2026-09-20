@@ -993,6 +993,9 @@ enum TokenAuthProvenance {
     Kubernetes {
         role_name: String,
     },
+    Oidc {
+        role_name: String,
+    },
     TokenApi,
 }
 
@@ -3221,6 +3224,9 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(plan.mount.clone());
+        // Ordinary provider maxima are read live during renewal. Retain stored
+        // caps on legacy tokens, but do not manufacture an explicit cap at login.
+        token.max_expires_at = None;
         token.auth_provenance = Some(TokenAuthProvenance::Ldap {
             username: plan.name.clone(),
             credential: ProviderCredential::new(&plan.password),
@@ -3440,6 +3446,9 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(plan.mount.clone());
+        // Ordinary provider maxima are read live during renewal. Retain stored
+        // caps on legacy tokens, but do not manufacture an explicit cap at login.
+        token.max_expires_at = None;
         token.auth_provenance = Some(TokenAuthProvenance::Radius {
             username: plan.username.clone(),
             credential: ProviderCredential::new(plan.password.as_str()),
@@ -4428,6 +4437,9 @@ impl AuthState {
                     return Ok(response);
                 }
                 if let Some(response) = self.renew_kubernetes_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
+                if let Some(response) = self.renew_oidc_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;

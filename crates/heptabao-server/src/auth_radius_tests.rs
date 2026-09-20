@@ -411,3 +411,170 @@ fn radius_provenance_rejects_malformed_or_transplanted_credentials() {
         assert!(state.validate_radius_renewal_state().is_err(), "{mutation}");
     }
 }
+
+#[test]
+fn radius_fresh_maximum_can_increase_across_all_renewal_routes_after_reopen() {
+    for operation in ["renew-self", "renew", "renew-accessor"] {
+        let (mut state, root, raw) = fixture();
+        let id = hash(&raw);
+        let issued_at = state.tokens[&id].created_at;
+        assert_eq!(state.tokens[&id].max_expires_at, None);
+        let config = state
+            .radius_mounts
+            .get_mut("")
+            .unwrap()
+            .get_mut("radius")
+            .unwrap();
+        config.token_ttl = 90;
+        config.token_max_ttl = 1200;
+        let encoded = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+        let mut state: AuthState = serde_json::from_slice(&encoded).unwrap();
+        let actor = state
+            .authenticate(
+                if operation == "renew-self" {
+                    &raw
+                } else {
+                    &root
+                },
+                110,
+            )
+            .unwrap();
+        let body = match operation {
+            "renew-self" => json!({"increment": 900}),
+            "renew" => json!({"token": raw, "increment": 900}),
+            _ => json!({"accessor": state.tokens[&id].accessor, "increment": 900}),
+        };
+        let plan = state
+            .prepare_provider_renewal(
+                Some(&actor),
+                "",
+                "POST",
+                &format!("auth/token/{operation}"),
+                &body,
+                110,
+            )
+            .unwrap()
+            .unwrap();
+        let response = state
+            .finish_provider_renewal(
+                plan,
+                &actor,
+                ProviderRenewalObservation::Radius(RadiusRenewalObservation),
+                111,
+            )
+            .unwrap();
+        assert_eq!(response.body["auth"]["lease_duration"], 900);
+        assert_eq!(state.tokens[&id].expires_at, Some(1011));
+        assert!(state.tokens[&id].expires_at.unwrap() > issued_at + 600);
+        assert_eq!(state.tokens[&id].max_expires_at, None);
+
+        let actor = state.authenticate(&raw, 112).unwrap();
+        let plan = state
+            .prepare_provider_renewal(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/token/renew-self",
+                &json!({}),
+                112,
+            )
+            .unwrap()
+            .unwrap();
+        let response = state
+            .finish_provider_renewal(
+                plan,
+                &actor,
+                ProviderRenewalObservation::Radius(RadiusRenewalObservation),
+                113,
+            )
+            .unwrap();
+        assert_eq!(response.body["auth"]["lease_duration"], 90);
+        assert_eq!(state.tokens[&id].expires_at, Some(203));
+    }
+}
+
+#[test]
+fn radius_legacy_absolute_cap_survives_raised_maximum_and_reopen() {
+    let (mut state, _, raw) = fixture();
+    let id = hash(&raw);
+    let legacy_cap = state.tokens[&id].created_at + 600;
+    state.tokens.get_mut(&id).unwrap().max_expires_at = Some(legacy_cap);
+    let config = state
+        .radius_mounts
+        .get_mut("")
+        .unwrap()
+        .get_mut("radius")
+        .unwrap();
+    config.token_ttl = 90;
+    config.token_max_ttl = 1200;
+    let encoded = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let mut state: AuthState = serde_json::from_slice(&encoded).unwrap();
+    let actor = state.authenticate(&raw, 110).unwrap();
+    let plan = state
+        .prepare_provider_renewal(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/renew-self",
+            &json!({"increment":900}),
+            110,
+        )
+        .unwrap()
+        .unwrap();
+    let response = state
+        .finish_provider_renewal(
+            plan,
+            &actor,
+            ProviderRenewalObservation::Radius(RadiusRenewalObservation),
+            111,
+        )
+        .unwrap();
+    assert_eq!(response.body["auth"]["lease_duration"], legacy_cap - 111);
+    assert_eq!(state.tokens[&id].expires_at, Some(legacy_cap));
+    assert_eq!(state.tokens[&id].max_expires_at, Some(legacy_cap));
+}
+
+#[test]
+fn radius_past_current_maximum_returns_500_without_revoking_live_lease() {
+    let (mut state, _, raw) = fixture();
+    let id = hash(&raw);
+    let config = state
+        .radius_mounts
+        .get_mut("")
+        .unwrap()
+        .get_mut("radius")
+        .unwrap();
+    config.token_ttl = 1;
+    config.token_max_ttl = 1;
+    let actor = state.authenticate(&raw, 110).unwrap();
+    let plan = state
+        .prepare_provider_renewal(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/renew-self",
+            &json!({}),
+            110,
+        )
+        .unwrap()
+        .unwrap();
+    let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let expiry = state.tokens[&id].expires_at.unwrap();
+    assert_eq!(
+        state
+            .finish_provider_renewal(
+                plan,
+                &actor,
+                ProviderRenewalObservation::Radius(RadiusRenewalObservation),
+                111
+            )
+            .err()
+            .unwrap()
+            .status,
+        500
+    );
+    let after = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    assert!(before.as_slice() == after.as_slice());
+    assert!(state.authenticate_read_only(&raw, 111).is_ok());
+    assert!(state.authenticate_read_only(&raw, expiry).is_err());
+}

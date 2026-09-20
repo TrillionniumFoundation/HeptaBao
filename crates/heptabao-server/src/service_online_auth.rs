@@ -33,7 +33,7 @@ pub(super) enum OnlineAuthEffect {
     OidcCallback {
         namespace: String,
         mount: String,
-        exchange: OidcExchange,
+        exchange: Box<OidcExchange>,
         now: u64,
         started: std::time::Instant,
     },
@@ -369,7 +369,7 @@ impl Service {
             OnlineAuthEffect::OidcCallback {
                 namespace: request.namespace.into(),
                 mount,
-                exchange,
+                exchange: Box::new(exchange),
                 now: request.now,
                 started: entered,
             }
@@ -491,7 +491,7 @@ impl Service {
                 OnlineAuthObservation::OidcCallback(observed),
             ) => state
                 .auth
-                .finish_oidc_observation(&namespace, &mount, exchange, observed),
+                .finish_oidc_observation(&namespace, &mount, *exchange, observed),
             _ => {
                 self.recovery_required = true;
                 return Response::error(503, "online authentication observation type mismatch");

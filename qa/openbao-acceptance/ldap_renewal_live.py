@@ -17,6 +17,7 @@ import time
 
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
+from online_evidence import source_identity
 from ldap_openldap_live import Directory, private, ssha, Instance
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
@@ -279,6 +280,81 @@ def run_identity_scenarios(client, directory, config, user_config, restart, resu
     directory.replace_engineering_member(USER_DN)
 
 
+
+def run_finite_lifetime_scenarios(client, provider, configure, update_limits, restart, results):
+    """Finite service lifetime only; no period/explicit configuration adaptation."""
+    mount = 'ldap' + "-finite-lifetime"
+    def check(name, passed, **observed):
+        case = 'ldap' + "_renewal.finite." + name
+        results.append({"case": case, **observed, "passed": bool(passed)})
+        if not passed:
+            raise ScenarioFailure(case)
+    def call(name, method, path, payload=None, *, token=None, expected=200, contact=False):
+        cursor = provider.cursor()
+        response = client.request(method, "/v1/" + path, payload, token=token)
+        safe = {"status": response.status}
+        passed = response.status == expected
+        if contact:
+            safe["provider_checked"] = provider.observed(cursor, search=True)
+            passed &= safe["provider_checked"]
+        check(name, passed, **safe)
+        return response.body
+    call("mount", "POST", "sys/auth/" + mount, {"type": 'ldap'}, expected=204)
+    configure(mount, 60, 120)
+    check("initial_config", True)
+    issued = call("login", "POST", "auth/" + mount + '/login/alice',
+                  {"password": provider.user_password}, token="", contact=True)["auth"]
+    raw, accessor = issued["client_token"], issued["accessor"]
+    check("initial_ttl60", issued.get("lease_duration") == 60)
+    data = call("lookup_initial", "GET", "auth/token/lookup-self", token=raw)["data"]
+    check("ordinary_max_is_not_explicit", data.get("explicit_max_ttl") == 0)
+    update_limits(mount, 120, 600)
+    check("raised_current_max", True)
+    routes = [("self", "auth/token/renew-self", {}, raw),
+              ("token", "auth/token/renew", {"token": raw}, None),
+              ("accessor", "auth/token/renew-accessor", {"accessor": accessor}, None)]
+    for name, path, payload, actor in routes:
+        renewed = call(name + ".raised_renew", "POST", path, dict(payload, increment=300),
+                       token=actor, contact=True)["auth"]
+        check(name + ".full300_beyond_issue_max", renewed.get("lease_duration") == 300)
+    restart()
+    check("same_store_restart", True)
+    data = call("lookup_reopened", "GET", "auth/token/lookup-self", token=raw)["data"]
+    check("no_explicit_cap_after_reopen", data.get("explicit_max_ttl") == 0)
+    for name, payload in [("omitted", {}), ("zero", {"increment": 0})]:
+        renewed = call(name + ".renew", "POST", "auth/token/renew-self", payload,
+                       token=raw, contact=True)["auth"]
+        check(name + ".current_ttl120", renewed.get("lease_duration") == 120)
+    time.sleep(2)
+    update_limits(mount, 1, 1)
+    check("shrink_max_past_issue_age", True)
+    for name, path, payload, actor in routes:
+        before = call(name + ".before_past_max", "GET", "auth/token/lookup-self", token=raw)["data"]["ttl"]
+        call(name + ".past_max500", "POST", path, payload, token=actor, expected=500, contact=True)
+        after = call(name + ".lease_still_active", "GET", "auth/token/lookup-self", token=raw)["data"]["ttl"]
+        check(name + ".failed_renewal_did_not_extend", type(after) is int and 0 < after <= before)
+    check("complete", True)
+
+
+def run_finite_scenarios(client, directory, config, user_config, restart, results):
+    candidate = "user_dn_template" in config
+    def checked(path, payload):
+        response = client.request("POST", "/v1/" + path, payload)
+        if response.status != 204:
+            raise ScenarioFailure("ldap_renewal.finite.config_failed")
+    def settings(mount, ttl, maximum):
+        if candidate:
+            checked("auth/" + mount + "/users/alice",
+                    dict(user_config(["default"]), token_ttl=ttl, token_max_ttl=maximum))
+        else:
+            checked("auth/" + mount + "/config", dict(config, token_ttl=ttl, token_max_ttl=maximum))
+    def configure(mount, ttl, maximum):
+        checked("auth/" + mount + "/config", config if candidate else dict(config, token_ttl=ttl, token_max_ttl=maximum))
+        checked("auth/" + mount + "/users/alice", user_config(["default"]))
+        settings(mount, ttl, maximum)
+    run_finite_lifetime_scenarios(client, directory, configure, settings, restart, results)
+
+
 def main():
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
@@ -291,6 +367,7 @@ def main():
         parser.error("private unused output required")
     root = Path(tempfile.mkdtemp(prefix="heptabao-ldap-renewal-"))
     root.chmod(0o700)
+    source_before = source_identity(ROOT, binary)
     instance = None
     oracle = None
     directories = []
@@ -346,7 +423,7 @@ def main():
         for side, client, directory, restart in [("candidate", candidate, candidate_directory, restart_candidate),
                                                  ("oracle", reference, oracle_directory, restart_reference)]:
             result["cases"][side] = []
-            for profile, runner in [("provider", run_provider_scenarios), ("identity", run_identity_scenarios)]:
+            for profile, runner in [("provider", run_provider_scenarios), ("identity", run_identity_scenarios), ("finite", run_finite_scenarios)]:
                 try:
                     directory.start()
                     directory.password(directory.user_password)
@@ -358,7 +435,10 @@ def main():
                 except Exception as error:
                     result["side_failures"][side + "." + profile] = "unexpected_" + type(error).__name__
         result["cases_match"] = result["cases"].get("candidate") == result["cases"].get("oracle")
-        result["status"] = "passed" if successful_comparison(result["cases"], result["side_failures"]) else "mismatch"
+        complete = all(len(rows) == 201 and len({row["case"] for row in rows}) == 201
+                       and rows[-1].get("case") == "ldap_renewal.finite.complete"
+                       for rows in result["cases"].values()) and len(result["cases"]) == 2
+        result["status"] = "passed" if complete and successful_comparison(result["cases"], result["side_failures"]) else "mismatch"
     except ScenarioFailure as error:
         result["status"] = "failed"
         result["safe_failure_code"] = str(error)
@@ -375,6 +455,11 @@ def main():
             directory.stop()
         shutil.rmtree(root)
         result["candidate_binary_unchanged"] = file_hash(binary) == result["candidate_binary_sha256"]
+        result["source_identity"] = source_before
+        result["source_and_binary_unchanged"] = source_before == source_identity(ROOT, binary)
+        if not result["source_and_binary_unchanged"]:
+            result["status"] = "failed"
+            result["safe_failure_code"] = "source_or_binary_changed_during_execution"
         result["finished_at_unix"] = time.time()
         private_write(output, result)
     print(json.dumps({"status": result["status"], "checks_per_side": {side: len(rows) for side, rows in result["cases"].items()},

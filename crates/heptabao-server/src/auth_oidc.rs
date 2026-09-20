@@ -37,6 +37,12 @@ struct OidcRole {
     bound_groups: BTreeSet<String>,
     token_policies: BTreeSet<String>,
     token_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
     token_num_uses: u64,
 }
 #[derive(Clone, Serialize, Deserialize)]
@@ -64,6 +70,7 @@ impl Drop for Session {
 /// has removed the exact session in its candidate; Service must commit that
 /// candidate before calling exchange. Not an application authorization token.
 pub(crate) struct OidcExchange {
+    mount_revision: AuthMount,
     config: OidcConfig,
     role: OidcRole,
     session: Session,
@@ -73,6 +80,7 @@ pub(crate) struct OidcExchange {
 pub(crate) struct OidcBeginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     role_name: String,
     redirect_uri: String,
     client_proof_hash: String,
@@ -89,8 +97,17 @@ pub(crate) struct OidcBeginObservation {
 
 pub(crate) struct OidcLoginObservation {
     subject: String,
-    ttl: u64,
     now: u64,
+}
+
+#[cfg(test)]
+impl OidcLoginObservation {
+    pub(crate) fn observed(subject: &str, now: u64) -> Self {
+        Self {
+            subject: subject.into(),
+            now,
+        }
+    }
 }
 
 impl OidcBeginPlan {
@@ -182,10 +199,6 @@ impl OidcExchange {
             }
             Ok(OidcLoginObservation {
                 subject: verified.subject,
-                ttl: self
-                    .role
-                    .token_ttl
-                    .min(verified.expires_at.saturating_sub(now)),
                 now,
             })
         })();
@@ -209,11 +222,9 @@ fn redirect(value: &str) -> bool {
     }
 }
 fn binding(config: &OidcConfig, role: &OidcRole) -> Result<String, AuthError> {
-    let bytes = Zeroizing::new(
-        serde_json::to_vec(&(config, role))
-            .map_err(|_| err(500, "OIDC binding encoding failed"))?,
-    );
-    Ok(URL_SAFE_NO_PAD.encode(digest::digest(&digest::SHA256, &bytes).as_ref()))
+    // Preserve the exact JSON digest, including old roles with absent zero
+    // limits, without allocating a serialized copy of the client secret.
+    Ok(URL_SAFE_NO_PAD.encode(provider_renewal::state_revision(&(config, role))?))
 }
 impl OidcConfig {
     fn validate(&self) -> Result<(), AuthError> {
@@ -295,22 +306,135 @@ impl OidcRole {
                 .is_some_and(|v| !bounded_string(v, 1024))
             || self.bound_groups.len() > 128
             || self.bound_groups.iter().any(|v| !bounded_string(v, 1024))
-            || self.token_policies.is_empty()
             || self.token_policies.len() > 128
             || self
                 .token_policies
                 .iter()
                 .any(|v| !valid_name(v) || v == "root")
-            || self.token_ttl == 0
-            || self.token_ttl > 3600
+            || self.token_ttl > MAX_TTL
+            || self.token_max_ttl > MAX_TTL
+            || self.token_period > MAX_TTL
+            || self.token_explicit_max_ttl > MAX_TTL
+            || self.token_max_ttl > 0 && self.token_ttl > self.token_max_ttl
         {
             return Err(bad("invalid OIDC role bindings"));
         }
         Ok(())
     }
+    fn limits(&self) -> NativeTokenLimits {
+        NativeTokenLimits {
+            ttl: self.token_ttl,
+            max_ttl: self.token_max_ttl,
+            period: self.token_period,
+        }
+    }
 }
 
 impl AuthState {
+    pub(crate) fn has_oidc_renewal_state(&self) -> bool {
+        self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::Oidc { .. })
+            )
+        }) || self
+            .oidc_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.roles.values())
+            .any(|role| {
+                role.token_policies.is_empty()
+                    || role.token_ttl == 0
+                    || role.token_ttl > 3600
+                    || role.token_max_ttl > 0
+                    || role.token_period > 0
+                    || role.token_explicit_max_ttl > 0
+            })
+    }
+
+    pub(crate) fn validate_oidc_renewal_state(&self) -> Result<(), AuthError> {
+        for token in self.tokens.values() {
+            if let Some(TokenAuthProvenance::Oidc { role_name }) = &token.auth_provenance
+                && (token.root
+                    || token.parent.is_some()
+                    || !token.auth_origin_known
+                    || token.wrapping.is_some()
+                    || !valid_name(role_name)
+                    || token.period > MAX_TTL
+                    || token.policies.contains("root")
+                    || token.auth_cert_role.is_some()
+                    || token.auth_cert_sha256.is_some()
+                    || !token.auth_mount.as_ref().is_some_and(|mount| {
+                        self.online_mount_enabled(&token.namespace, mount, "oidc")
+                    }))
+            {
+                return Err(bad("invalid OIDC renewal provenance"));
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn renew_oidc_token(
+        &mut self,
+        namespace: &str,
+        target: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<AuthResponse>, AuthError> {
+        let token = self.tokens.get(target).ok_or_else(denied)?;
+        let Some(TokenAuthProvenance::Oidc { role_name }) = token.auth_provenance.as_ref() else {
+            if token.auth_provenance.is_none()
+                && token.parent.is_none()
+                && token
+                    .auth_mount
+                    .as_ref()
+                    .is_some_and(|mount| self.online_mount_enabled(&token.namespace, mount, "oidc"))
+            {
+                return Err(bad(
+                    "legacy OIDC token has no issuing role provenance; log in again",
+                ));
+            }
+            return Ok(None);
+        };
+        if token.namespace != namespace || token.parent.is_some() {
+            return Err(denied());
+        }
+        if !token.renewable {
+            return Err(bad("token is not renewable"));
+        }
+        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
+        let scope = AuthScope { namespace, mount };
+        if !self.online_mount_enabled(namespace, mount, "oidc") {
+            return Err(denied());
+        }
+        // The authorization code and ID token authenticate login only. Native
+        // OIDC service renewal never refreshes the IdP or rechecks role claims,
+        // issuer/client configuration, groups or the issued policy snapshot.
+        let role = self
+            .oidc_at(scope)
+            .and_then(|state| state.roles.get(role_name))
+            .ok_or_else(|| err(500, "OIDC role does not exist during renewal"))?;
+        let expires_at = self.native_token_expiry(
+            scope,
+            role.limits(),
+            token.created_at,
+            token.max_expires_at,
+            duration(body, "increment", 0)?,
+            now,
+        )?;
+        let token = self.tokens.get_mut(target).ok_or_else(denied)?;
+        token.expires_at = Some(expires_at);
+        Ok(Some(AuthResponse {
+            login_identity: None,
+            external_groups: None,
+            status: 200,
+            mutated: true,
+            body: json!({"auth":{"accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
+                "entity_id":token.entity_id.as_deref().unwrap_or(""),"lease_duration":expires_at-now,
+                "renewable":true,"token_type":"service"}}),
+        }))
+    }
+
     pub(super) fn has_oidc_state(&self) -> bool {
         self.oidc_mounts.values().any(|m| !m.is_empty())
     }
@@ -481,6 +605,9 @@ impl AuthState {
                 let mut data = serde_json::to_value(role).map_err(|_| bad("invalid OIDC role"))?;
                 data["role_type"] = json!("oidc");
                 data["user_claim"] = json!("sub");
+                data["token_max_ttl"] = json!(role.token_max_ttl);
+                data["token_period"] = json!(role.token_period);
+                data["token_explicit_max_ttl"] = json!(role.token_explicit_max_ttl);
                 Ok(response(data, false))
             }
             "POST" | "PUT" => {
@@ -494,6 +621,9 @@ impl AuthState {
                         "bound_groups",
                         "token_policies",
                         "token_ttl",
+                        "token_max_ttl",
+                        "token_period",
+                        "token_explicit_max_ttl",
                         "token_num_uses",
                     ],
                 )?;
@@ -506,39 +636,71 @@ impl AuthState {
                 {
                     return Err(bad("OIDC sub-based code flow required"));
                 }
-                let redirects = body
-                    .get("allowed_redirect_uris")
-                    .and_then(Value::as_array)
-                    .ok_or_else(|| bad("redirect URI array required"))?;
-                if redirects.len() > 16 {
-                    return Err(bad("too many redirect URIs"));
-                }
-                let redirect_values: BTreeSet<_> = redirects
-                    .iter()
-                    .map(|v| {
-                        v.as_str()
-                            .map(str::to_owned)
-                            .ok_or_else(|| bad("redirect URI must be string"))
-                    })
-                    .collect::<Result<_, _>>()?;
-                if redirect_values.len() != redirects.len() {
-                    return Err(bad("duplicate redirect URI"));
-                }
-                let role = OidcRole {
-                    allowed_redirect_uris: redirect_values,
-                    bound_subject: body
-                        .get("bound_subject")
+                let mut role = self
+                    .oidc_at(scope)
+                    .and_then(|state| state.roles.get(name))
+                    .cloned()
+                    .unwrap_or(OidcRole {
+                        allowed_redirect_uris: BTreeSet::new(),
+                        bound_subject: None,
+                        bound_groups: BTreeSet::new(),
+                        token_policies: BTreeSet::new(),
+                        token_ttl: 0,
+                        token_max_ttl: 0,
+                        token_period: 0,
+                        token_explicit_max_ttl: 0,
+                        token_num_uses: 0,
+                    });
+                if let Some(value) = body.get("allowed_redirect_uris").filter(|v| !v.is_null()) {
+                    let redirects = value
+                        .as_array()
+                        .ok_or_else(|| bad("redirect URI array required"))?;
+                    if redirects.len() > 16 {
+                        return Err(bad("too many redirect URIs"));
+                    }
+                    let values: BTreeSet<_> = redirects
+                        .iter()
                         .map(|v| {
                             v.as_str()
                                 .map(str::to_owned)
-                                .ok_or_else(|| bad("invalid subject binding"))
+                                .ok_or_else(|| bad("redirect URI must be string"))
                         })
-                        .transpose()?,
-                    bound_groups: claim_values(body, "bound_groups")?,
-                    token_policies: policies(body, "token_policies", &BTreeSet::new(), true)?,
-                    token_ttl: duration(body, "token_ttl", 300)?,
-                    token_num_uses: number(body, "token_num_uses", 0)?,
-                };
+                        .collect::<Result<_, _>>()?;
+                    if values.len() != redirects.len() {
+                        return Err(bad("duplicate redirect URI"));
+                    }
+                    role.allowed_redirect_uris = values;
+                }
+                if let Some(value) = body.get("bound_subject").filter(|v| !v.is_null()) {
+                    let subject = value
+                        .as_str()
+                        .ok_or_else(|| bad("invalid subject binding"))?;
+                    role.bound_subject = if subject.is_empty() {
+                        None
+                    } else {
+                        Some(subject.into())
+                    };
+                }
+                if body.get("bound_groups").is_some_and(|v| !v.is_null()) {
+                    role.bound_groups = claim_values(body, "bound_groups")?;
+                }
+                if body.get("token_policies").is_some_and(|v| !v.is_null()) {
+                    role.token_policies =
+                        policies(body, "token_policies", &role.token_policies, false)?;
+                }
+                for (field, target) in [
+                    ("token_ttl", &mut role.token_ttl),
+                    ("token_max_ttl", &mut role.token_max_ttl),
+                    ("token_period", &mut role.token_period),
+                    ("token_explicit_max_ttl", &mut role.token_explicit_max_ttl),
+                ] {
+                    if body.get(field).is_some_and(|v| !v.is_null()) {
+                        *target = duration(body, field, *target)?;
+                    }
+                }
+                if body.get("token_num_uses").is_some_and(|v| !v.is_null()) {
+                    role.token_num_uses = number(body, "token_num_uses", role.token_num_uses)?;
+                }
                 role.validate()?;
                 self.validate_assignment(actor, &role.token_policies)?;
                 let state = self.oidc_mut(scope);
@@ -623,6 +785,11 @@ impl AuthState {
         Ok(OidcBeginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
+            mount_revision: self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .cloned()
+                .ok_or_else(denied)?,
             role_name: role_name.into(),
             redirect_uri: redirect_uri.into(),
             client_proof_hash: hash(client_nonce),
@@ -637,8 +804,10 @@ impl AuthState {
         plan: OidcBeginPlan,
         observation: OidcBeginObservation,
     ) -> Result<AuthResponse, AuthError> {
-        if !self.online_mount_enabled(&plan.namespace, &plan.mount, "oidc") {
-            return Err(denied());
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
+        {
+            return Err(err(409, "OIDC auth mount changed during discovery"));
         }
         let scope = AuthScope {
             namespace: &plan.namespace,
@@ -709,6 +878,11 @@ impl AuthState {
         if !self.online_mount_enabled(namespace, mount, "oidc") {
             return Err(denied());
         }
+        let mount_revision = self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .cloned()
+            .ok_or_else(denied)?;
         let scope = AuthScope { namespace, mount };
         let state = self.oidc_at(scope).ok_or_else(denied)?;
         let session = state
@@ -742,6 +916,7 @@ impl AuthState {
         state.clock = now;
         state.sessions.remove(&hash(state_id));
         Ok(Some(OidcExchange {
+            mount_revision,
             config,
             role,
             session,
@@ -755,8 +930,11 @@ impl AuthState {
         exchange: OidcExchange,
         observation: OidcLoginObservation,
     ) -> Result<AuthResponse, AuthError> {
-        if !self.online_mount_enabled(namespace, mount, "oidc") {
-            return Err(denied());
+        if self.effective_auth_mounts(namespace).get(mount) != Some(&exchange.mount_revision) {
+            return Err(err(
+                409,
+                "OIDC auth mount changed after authorization session consumption",
+            ));
         }
         let current = self
             .oidc_at(AuthScope { namespace, mount })
@@ -770,12 +948,24 @@ impl AuthState {
                 "OIDC configuration changed after authorization session consumption",
             ));
         }
-        self.issue_online_token(
+        let limits = exchange.role.limits();
+        // Role readback preserves only configured policies. Old stored roles
+        // may already contain default; leaving them unchanged also preserves
+        // pending-session bindings. Add the implicit policy only at issuance.
+        let mut policies = exchange.role.token_policies;
+        policies.insert("default".into());
+        self.issue_native_online_token(
             AuthScope { namespace, mount },
             &observation.subject,
-            exchange.role.token_policies,
-            observation.ttl,
-            exchange.role.token_num_uses,
+            NativeOnlineToken {
+                policies,
+                limits,
+                explicit_max_ttl: exchange.role.token_explicit_max_ttl,
+                uses: exchange.role.token_num_uses,
+                provenance: TokenAuthProvenance::Oidc {
+                    role_name: exchange.session.role.clone(),
+                },
+            },
             observation.now,
         )
     }
@@ -787,6 +977,10 @@ impl AuthState {
         tests::setup()
     }
 }
+
+#[cfg(test)]
+#[path = "auth_oidc_renewal_tests.rs"]
+mod renewal_tests;
 
 #[cfg(test)]
 #[allow(clippy::unwrap_used, clippy::expect_used)]
@@ -819,6 +1013,9 @@ mod tests {
             bound_groups: BTreeSet::new(),
             token_policies: BTreeSet::from(["default".into()]),
             token_ttl: 300,
+            token_max_ttl: 0,
+            token_period: 0,
+            token_explicit_max_ttl: 0,
             token_num_uses: 0,
         };
         let state_id = random_id("").unwrap();

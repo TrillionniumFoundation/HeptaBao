@@ -407,6 +407,9 @@ New Kubernetes tokens renew locally against their current issuing role; online
 TokenReview is per login, not continuous revocation of issued service tokens.
 Legacy tokens without role provenance remain nonrenewable. OIDC sessions are at most 128 per mount and
 live for 300 seconds; client proof is independent of browser-visible state.
+New OIDC tokens use native role/mount leases and local renewal independently of
+ID-token expiry; legacy OIDC tokens remain nonrenewable. In-flight discovery and
+code exchange retain the auth mount incarnation through publication.
 Config/role changes invalidate the affected sessions, and realm/client changes
 require remount. Current HA uses the same durable state and ReadIndex path.
 

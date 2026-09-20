@@ -202,3 +202,28 @@ leeway used only to synthesize missing claims. It rejects assertions expired
 beyond grace and those missing all time claims. Configuration is the native
 profile without candidate-only clock/lifetime extensions. This profile does not
 change or qualify OIDC code consumption, nonce checking, or state replay rules.
+
+`oidc_renewal_live.py` compares native service-token renewal after real RS256
+OIDC code exchange through separate pinned official OpenBao 2.6.2 issuers.
+It uses two-second ID tokens, waits beyond their configured lifetime, stops
+both issuer processes, and checks three renewal routes, bearer response shape,
+current role TTL/max/period, issued explicit caps, policy snapshots, wrapping,
+rejected renewals without extension, child/orphan tokens, role deletion and
+restart. Role readback preserves explicit policies and partial updates; omitted
+or empty policies stay empty in the role and add `default` only at login.
+Candidate process CA/S256 enrollment and POST callback are explicitly
+adapted to the oracle's mount CA and GET callback query. Issuer termination is
+observed; absence of outbound connection attempts is not claimed. This profile
+does not qualify browser UI, third-party IdPs, refresh-token exchange or full
+OIDC API compatibility. Reports bind observed binary hashes separately from the
+caller-supplied build commit and current harness source.
+
+`oidc_native_upgrade.py` creates old nonrenewable tokens and an actual pending
+code session using the receipt-pinned schema-20 binary. The current binary must
+read the store without changing application artifacts, complete that unchanged
+session with its persisted PKCE/proof binding, and issue a new renewable token.
+Old tokens remain nonrenewable even after role updates. Downgrade rejection,
+recovery, consumed-session replay rejection and credential scans use the same
+fresh encrypted store. Only the root replay ledger is excluded from reopen
+byte comparisons; live reads and rejected old renewals compare the whole store.
+This is bounded upgrade evidence, not rolling or full-instance migration.

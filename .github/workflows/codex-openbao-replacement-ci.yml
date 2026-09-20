@@ -394,6 +394,7 @@ jobs:
           timeout 240 python qa/openbao-acceptance/approle_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/approle-renewal.json"
           timeout 240 python qa/openbao-acceptance/token_child_lifetime_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/token-child-lifetime.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
+          timeout 240 python qa/openbao-acceptance/oidc_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/oidc-renewal.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.
           # No secret-bearing service/issuer/client directories are uploaded.

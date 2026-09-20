@@ -213,21 +213,18 @@ impl AuthState {
         if !same_policies(&effective_policies, &token.policies) {
             return Err(err(500, "policies have changed, not renewing"));
         }
-        let (default_ttl, maximum_ttl) =
-            self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
-        let ttl = if plan.increment == 0 {
-            default_ttl
-        } else {
-            plan.increment.min(maximum_ttl)
-        };
-        let mut expires_at =
-            checked_expiry(now, ttl)?.min(checked_expiry(token.created_at, maximum_ttl)?);
-        if let Some(limit) = token.max_expires_at {
-            expires_at = expires_at.min(limit);
-        }
-        if expires_at <= now {
-            return Err(denied());
-        }
+        let expires_at = self.native_token_expiry(
+            scope,
+            NativeTokenLimits {
+                ttl: user.token_ttl,
+                max_ttl: user.token_max_ttl,
+                period: 0,
+            },
+            token.created_at,
+            token.max_expires_at,
+            plan.increment,
+            now,
+        )?;
         let token = self
             .tokens
             .get_mut(plan.target.as_str())

@@ -336,7 +336,13 @@ Identity checks, target token/accessor/expiry checks, and mount/configuration an
 token revision comparisons. A concurrent change rejects the stale observation;
 only a successful durable commit extends the token. Current policies, excluding
 implicit `default`, must equal the token's issue-time token policies. Current
-TTL/max settings apply without extending the captured issue-time maximum.
+TTL and maximum settings are reread on renewal; the ordinary maximum bounds total
+lifetime from the original issue time. Raising it can extend a still-active new
+token beyond its former maximum. Omitted or zero increment uses the current TTL.
+A live token past a shortened current maximum returns 500 without changing its
+existing lease; an expired token remains 403. New logins do not persist an ordinary
+maximum as an explicit cap. Legacy stored absolute caps remain enforced; a fresh
+login is required to benefit from a raised limit.
 Response wrapping remains available on these renewal endpoints: the token
 extension and its single-use response wrapper publish in one durable transaction.
 Provider rejection, wrapper capacity failure or a rejected commit cannot publish
@@ -351,7 +357,8 @@ token without provenance might be a direct login or an orphan child, so renewal
 is refused with a request to log in again; its existing expiration and other
 permissions remain unchanged. This is a bounded PAP renewal profile, not full
 RADIUS compatibility: OpenBao host/port/secret configuration, user mappings,
-NAS options, the complete token parameter set and default-TTL parity remain open.
+NAS options and the complete token parameter set remain open. Finite-token renewal
+defaults follow the current TTL as described above.
 
 ## Authentication mount registry
 
@@ -597,9 +604,14 @@ Every `auth/token/renew-self`, `renew` and `renew-accessor` request rebinds that
 credential and repeats the live group search outside the Service writer. Bind,
 search or transport failure returns 400. The observed groups and current local
 user/group mappings must yield the same token policy set (ignoring implicit
-`default`); a policy change returns 500 and requires a new login. Current local
-user and mount TTL limits apply after authentication. The bounded profile has
-no LDAP token-period configuration.
+`default`); a policy change returns 500 and requires a new login. After provider
+authentication, renewal reads the current local-user TTL and local-user/mount
+maximum. The ordinary maximum is measured from issue time and can be raised for
+a still-active new token. Omitted or zero increment uses the current TTL. A live
+token past a shortened current maximum returns 500 without extending or revoking
+its existing lease; an expired token remains 403. Legacy stored absolute caps
+remain enforced, so a fresh login is required to use raised limits. LDAP
+token-period and explicit-maximum configuration remain unimplemented.
 
 LDAP directory group names also refresh external Identity groups selected by
 `identity/group-alias` name plus the issuing mount accessor. Login and successful
