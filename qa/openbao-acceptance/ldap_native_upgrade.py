@@ -41,6 +41,15 @@ class Trace(LdapTrace):
             raise ScenarioFailure(case)
 
 
+def provider_idle(directory, cursor):
+    # slapd can log a previous connection's close after the client has received
+    # its final reply. Only Bind/Search operations imply new authentication I/O.
+    with (directory.root / "slapd.log").open("rb") as stream:
+        stream.seek(cursor)
+        suffix = stream.read()
+    return b"do_bind" not in suffix and b"do_search" not in suffix
+
+
 def prepare_legacy(instance, directory, cases):
     instance.start()
     status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -100,8 +109,9 @@ def run_upgrade(instance, directory, candidate, legacy, cases):
            {"password": directory.user_password}, token="", expected=403)
     t.call("current.bounded_renew_still_needs_mapping", "auth/token/renew-self", {},
            token=tokens["bounded"]["client_token"], expected=403)
+    unchanged, idle = durable_manifest(store) == before, provider_idle(directory, cursor)
     t.check("current.bounded_mapping_denials_preserve_store_and_skip_provider",
-            durable_manifest(store) == before and directory.unchanged(cursor))
+            unchanged and idle, store_unchanged=unchanged, provider_idle=idle)
     t.call("current.restore_bounded_mapping", "auth/ldap-bounded/users/alice", user, method="PUT", expected=204)
     t.call("current.bounded_renew_restored", "auth/token/renew-self", {"increment": 300},
            token=tokens["bounded"]["client_token"], provider="search")
@@ -169,8 +179,9 @@ def run_upgrade(instance, directory, candidate, legacy, cases):
            {"password": directory.user_password}, token="", expected=403)
     t.call("recovery.bounded_renew_still_needs_mapping", "auth/token/renew-self", {},
            token=tokens["bounded"]["client_token"], expected=403)
+    unchanged, idle = durable_manifest(store) == before, provider_idle(directory, cursor)
     t.check("recovery.bounded_mapping_denials_preserve_store_and_skip_provider",
-            durable_manifest(store) == before and directory.unchanged(cursor))
+            unchanged and idle, store_unchanged=unchanged, provider_idle=idle)
     t.call("recovery.restore_bounded_mapping", "auth/ldap-bounded/users/alice", user, method="PUT", expected=204)
     t.call("recovery.bounded_renew_restored", "auth/token/renew-self", {"increment": 300},
            token=tokens["bounded"]["client_token"], provider="search")

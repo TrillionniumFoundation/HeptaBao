@@ -2,13 +2,14 @@
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bao_http import Response
 from core_isolation import ScenarioFailure
-from ldap_native_upgrade import LEGACY_SHA256, LEGACY_SOURCE, Trace, admit_legacy
+from ldap_native_upgrade import LEGACY_SHA256, LEGACY_SOURCE, Trace, admit_legacy, provider_idle
 
 
 class DirectoryStub:
@@ -22,6 +23,18 @@ class ClientStub:
 
 
 class LdapNativeUpgradeTests(unittest.TestCase):
+    def test_connection_close_is_not_authentication_but_bind_or_search_is(self):
+        with tempfile.TemporaryDirectory() as path:
+            directory = DirectoryStub()
+            directory.root = Path(path)
+            log = directory.root / "slapd.log"
+            prior = b"do_bind\ndo_search\n"
+            log.write_bytes(prior + b"connection_close: conn=1\n")
+            self.assertTrue(provider_idle(directory, len(prior)))
+            for operation in (b"do_bind", b"do_search"):
+                log.write_bytes(prior + b"connection_close: conn=1\n" + operation)
+                self.assertFalse(provider_idle(directory, len(prior)))
+
     def receipt(self):
         return {"build_source_commit": LEGACY_SOURCE, "harness_source_commit": LEGACY_SOURCE,
                 "harness_source_dirty": False, "harness_source_unchanged": True,
