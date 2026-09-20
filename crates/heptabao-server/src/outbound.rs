@@ -127,6 +127,8 @@ impl Outbound {
                 "postgresql"
             } else if config.origin.starts_with("ldaps://") {
                 "ldaps"
+            } else if config.origin.starts_with("valkeys://") {
+                "valkeys"
             } else if config.origin.starts_with("radius://") {
                 "radius"
             } else {

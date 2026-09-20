@@ -28,6 +28,7 @@ pub mod http;
 pub mod outbound;
 mod postgres_wire;
 mod service;
+mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
 pub use service::{PluginAuthConfig, PluginSecretConfig};

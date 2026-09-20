@@ -2,7 +2,12 @@
 //! bound readback BEFORE completion. A remote error never erases an intent.
 //! Provider-side monotonically sequenced tombstones fence delayed old leaders.
 use super::*;
-use crate::{auth::LeaseIssuer, outbound::Target, postgres_wire::PgSession};
+use crate::{
+    auth::LeaseIssuer,
+    outbound::Target,
+    postgres_wire::PgSession,
+    valkey_wire::{RespValue, ValkeySession},
+};
 use std::collections::BTreeSet;
 use std::sync::Weak;
 
@@ -41,9 +46,18 @@ struct DatabaseMount {
     roles: BTreeMap<String, DatabaseRole>,
     leases: BTreeMap<String, DatabaseLease>,
 }
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "kebab-case")]
+enum DatabaseProvider {
+    #[default]
+    Postgresql,
+    Valkey,
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Connection {
+    #[serde(default)]
+    provider: DatabaseProvider,
     connection_url: String,
     username: String,
     password: PrivateString,
@@ -174,21 +188,38 @@ pub(super) struct DatabaseConfigPlan {
 
 impl DatabaseConfigPlan {
     pub(super) fn execute(&self) -> Result<(), Response> {
-        let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
-        let response = pg
-            .scalar("SELECT current_user::text", &[])
-            .map_err(failure)?;
-        if response != self.connection.username {
-            return Err(failure("PostgreSQL manager identity mismatch"));
-        }
-        if pg
-            .scalar("SELECT heptabao_provider.protocol()", &[])
-            .map_err(failure)?
-            != "heptabao-postgresql-provider-v2"
-        {
-            return Err(failure(
-                "PostgreSQL provider contract is not installed or mismatched",
-            ));
+        match self.connection.provider {
+            DatabaseProvider::Postgresql => {
+                let mut pg = self.connection.session(&self.outbound).map_err(failure)?;
+                let response = pg
+                    .scalar("SELECT current_user::text", &[])
+                    .map_err(failure)?;
+                if response != self.connection.username {
+                    return Err(failure("PostgreSQL manager identity mismatch"));
+                }
+                if pg
+                    .scalar("SELECT heptabao_provider.protocol()", &[])
+                    .map_err(failure)?
+                    != "heptabao-postgresql-provider-v2"
+                {
+                    return Err(failure(
+                        "PostgreSQL provider contract is not installed or mismatched",
+                    ));
+                }
+            }
+            DatabaseProvider::Valkey => {
+                let mut valkey = self
+                    .connection
+                    .valkey_session(&self.outbound)
+                    .map_err(failure)?;
+                if !valkey.command(&["PING"]).map_err(failure)?.is_ok() {
+                    return Err(failure("Valkey provider did not acknowledge PING"));
+                }
+                let whoami = valkey.command(&["ACL", "WHOAMI"]).map_err(failure)?;
+                if !resp_text_equals(&whoami, &self.connection.username) {
+                    return Err(failure("Valkey manager identity mismatch"));
+                }
+            }
         }
         Ok(())
     }
@@ -240,6 +271,9 @@ impl DatabaseEffectPlan {
                 .map_err(|_| failure("HA provider fence unavailable"))?
                 .ensure_linearizable()
                 .map_err(|_| failure("HA provider fence unavailable"))?;
+        }
+        if self.connection.provider == DatabaseProvider::Valkey {
+            return self.execute_valkey();
         }
         let mut pg = self
             .connection
@@ -359,6 +393,83 @@ impl DatabaseEffectPlan {
         Ok(())
     }
 
+    fn execute_valkey(&self) -> Result<(), Response> {
+        let indeterminate = || Response {
+            status: 503,
+            body: json!({
+                "errors":["Valkey provider outcome indeterminate; durable intent retained"],
+                "lease_id":self.lease.id,
+                "reconcile_required":true
+            }),
+        };
+        let mut valkey = self
+            .connection
+            .valkey_session(&self.outbound)
+            .map_err(|_| indeterminate())?;
+        if self.lease.phase == Phase::PendingRevoke {
+            let _ = valkey
+                .command(&["ACL", "DELUSER", &self.lease.username])
+                .map_err(|_| indeterminate())?;
+            if !valkey
+                .command(&["ACL", "GETUSER", &self.lease.username])
+                .map_err(|_| indeterminate())?
+                .is_null()
+            {
+                return Err(Response {
+                    status: 503,
+                    body: json!({
+                        "errors":["Valkey ACL user remains after revocation; pending intent retained"],
+                        "lease_id":self.lease.id,
+                        "reconcile_required":true
+                    }),
+                });
+            }
+            return Ok(());
+        }
+
+        let permissions = valkey_permissions(&self.lease.provider_role)
+            .ok_or_else(|| failure("unsupported Valkey ACL role profile"))?;
+        let key_pattern = format!("~hb:{}:*", self.lease.provider_id);
+        let mut args = vec![
+            "ACL".to_owned(),
+            "SETUSER".to_owned(),
+            self.lease.username.clone(),
+            "on".to_owned(),
+            "-@all".to_owned(),
+            "resetkeys".to_owned(),
+            "resetchannels".to_owned(),
+            key_pattern.clone(),
+        ];
+        if self.lease.phase == Phase::PendingIssue {
+            let password = self
+                .lease
+                .password
+                .as_ref()
+                .ok_or_else(|| failure("Valkey issue lost secret material"))?;
+            args.push("resetpass".to_owned());
+            args.push(format!(">{}", password.0));
+        }
+        args.extend(
+            permissions
+                .iter()
+                .map(|permission| (*permission).to_owned()),
+        );
+        let refs = args.iter().map(String::as_str).collect::<Vec<_>>();
+        if !valkey.command(&refs).map_err(|_| indeterminate())?.is_ok() {
+            return Err(indeterminate());
+        }
+        let observed = valkey
+            .command(&["ACL", "GETUSER", &self.lease.username])
+            .map_err(|_| indeterminate())?;
+        if !valkey_acl_readback_matches(&observed, &key_pattern, permissions) {
+            return Err(Response {
+                status: 503,
+                body: json!({"errors":["Valkey ACL readback did not prove the bounded user policy"],"lease_id":self.lease.id,"reconcile_required":true}),
+            });
+        }
+        Ok(())
+    }
+
     fn success_response(&self) -> Result<Response, Response> {
         match self.lease.phase {
             Phase::PendingIssue => {
@@ -471,7 +582,19 @@ impl DatabaseState {
                         || connection.allowed_roles.is_empty()
                         || connection.allowed_roles.len() > 64
                         || connection.allowed_roles.iter().any(|s| !name(s))
-                        || Target::parse(&connection.connection_url, "postgresql").is_err()
+                        || match connection.provider {
+                            DatabaseProvider::Postgresql => {
+                                Target::parse(&connection.connection_url, "postgresql").is_err()
+                            }
+                            DatabaseProvider::Valkey => {
+                                Target::parse(&connection.connection_url, "valkeys").is_err()
+                                    || connection
+                                        .connection_url
+                                        .rsplit_once('/')
+                                        .and_then(|(_, value)| value.parse::<u8>().ok())
+                                        .is_none_or(|db| db > 15)
+                            }
+                        }
                     {
                         return Err(failure("invalid persisted provider configuration"));
                     }
@@ -480,6 +603,13 @@ impl DatabaseState {
                     if !name(role_name)
                         || !name(&role.provider_role)
                         || !state.connections.contains_key(&role.db_name)
+                        || state
+                            .connections
+                            .get(&role.db_name)
+                            .is_some_and(|connection| {
+                                connection.provider == DatabaseProvider::Valkey
+                                    && valkey_permissions(&role.provider_role).is_none()
+                            })
                         || role.default_ttl == 0
                         || role.default_ttl > role.max_ttl
                         || role.max_ttl > 86400
@@ -584,6 +714,14 @@ impl Connection {
         }
         PgSession::connect(&endpoint, database, &self.username, &self.password.0)
     }
+
+    fn valkey_session(
+        &self,
+        outbound: &crate::outbound::Outbound,
+    ) -> Result<ValkeySession, &'static str> {
+        let (endpoint, target) = outbound.endpoint(&self.connection_url, "valkeys")?;
+        ValkeySession::connect(&endpoint, &target, &self.username, &self.password.0)
+    }
 }
 fn failure(message: &str) -> Response {
     Response::error(503, message)
@@ -653,6 +791,72 @@ fn provider_fence_identity(cluster: &str) -> Result<String, Response> {
     let binding = serde_json::to_vec(&("heptabao.postgresql.fence.v2", cluster))
         .map_err(|_| failure("provider fence binding failed"))?;
     Ok(format!("hbf1:{}", hex(&crypto::digest(&binding))))
+}
+
+fn valkey_permissions(role: &str) -> Option<&'static [&'static str]> {
+    match role {
+        "readonly" => Some(&["+@read"]),
+        "readwrite" => Some(&["+@read", "+@write"]),
+        _ => None,
+    }
+}
+
+fn resp_text_equals(value: &RespValue, expected: &str) -> bool {
+    match value {
+        RespValue::Simple(text) => text == expected,
+        RespValue::Bulk(bytes) => bytes.as_slice() == expected.as_bytes(),
+        _ => false,
+    }
+}
+
+fn resp_text(value: &RespValue) -> Option<&str> {
+    match value {
+        RespValue::Simple(value) => Some(value.as_str()),
+        RespValue::Bulk(value) => std::str::from_utf8(value).ok(),
+        _ => None,
+    }
+}
+
+fn resp_text_list(value: &RespValue) -> Option<Vec<&str>> {
+    let RespValue::Array(values) = value else {
+        return None;
+    };
+    values.iter().map(resp_text).collect()
+}
+
+fn valkey_acl_readback_matches(value: &RespValue, key_pattern: &str, permissions: &[&str]) -> bool {
+    let RespValue::Array(fields) = value else {
+        return false;
+    };
+    let mut flags = None;
+    let mut commands = None;
+    let mut keys = None;
+    let mut channels = None;
+    for pair in fields.as_chunks::<2>().0 {
+        match resp_text(&pair[0]) {
+            Some("flags") => flags = resp_text_list(&pair[1]),
+            Some("commands") => commands = resp_text(&pair[1]),
+            Some("keys") => keys = resp_text_list(&pair[1]),
+            Some("channels") => channels = resp_text_list(&pair[1]),
+            _ => {}
+        }
+    }
+    let Some(flags) = flags else { return false };
+    let Some(commands) = commands else {
+        return false;
+    };
+    let Some(keys) = keys else { return false };
+    let Some(channels) = channels else {
+        return false;
+    };
+    flags.contains(&"on")
+        && !commands.contains("+@all")
+        && permissions
+            .iter()
+            .all(|permission| commands.contains(permission))
+        && keys.len() == 1
+        && keys[0] == key_pattern
+        && channels.is_empty()
 }
 fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
     let bytes = Zeroizing::new(
@@ -785,19 +989,42 @@ impl Service {
                                 "verify_connection",
                             ],
                         )?;
-                        if text(body, "plugin_name")? != "postgresql-database-plugin"
-                            || body
-                                .get("verify_connection")
-                                .is_some_and(|v| v != &Value::Bool(true))
+                        let plugin_name = text(body, "plugin_name")?;
+                        let provider = match plugin_name {
+                            "postgresql-database-plugin" => DatabaseProvider::Postgresql,
+                            "valkey-database-plugin" => DatabaseProvider::Valkey,
+                            _ => {
+                                return Err(invalid(
+                                    "only verified PostgreSQL or Valkey provider configuration is supported",
+                                ));
+                            }
+                        };
+                        if body
+                            .get("verify_connection")
+                            .is_some_and(|v| v != &Value::Bool(true))
                         {
-                            return Err(invalid(
-                                "only verified PostgreSQL provider configuration is supported",
-                            ));
+                            return Err(invalid("provider configuration verification is required"));
                         }
                         let url = text(body, "connection_url")?.to_owned();
-                        let target = Target::parse(&url, "postgresql").map_err(invalid)?;
-                        if !name(target.path.trim_start_matches('/')) {
-                            return Err(invalid("single explicit PostgreSQL database required"));
+                        let target = Target::parse(
+                            &url,
+                            match provider {
+                                DatabaseProvider::Postgresql => "postgresql",
+                                DatabaseProvider::Valkey => "valkeys",
+                            },
+                        )
+                        .map_err(invalid)?;
+                        if !name(target.path.trim_start_matches('/'))
+                            || (provider == DatabaseProvider::Valkey
+                                && target
+                                    .path
+                                    .trim_start_matches('/')
+                                    .parse::<u8>()
+                                    .map_or(true, |db| db > 15))
+                        {
+                            return Err(invalid(
+                                "single explicit bounded provider database required",
+                            ));
                         }
                         let username = text(body, "username")?.to_owned();
                         if !name(&username) {
@@ -836,6 +1063,7 @@ impl Service {
                             ));
                         }
                         let connection = Connection {
+                            provider,
                             connection_url: url,
                             username,
                             password: PrivateString(password),
@@ -872,7 +1100,7 @@ impl Service {
                                 Response::error(404, "database configuration not found")
                             })?;
                         Ok(Response::ok(
-                            json!({"data":{"plugin_name":"postgresql-database-plugin","connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
+                            json!({"data":{"plugin_name":match c.provider { DatabaseProvider::Postgresql => "postgresql-database-plugin", DatabaseProvider::Valkey => "valkey-database-plugin" },"connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
                         ))
                     }
                     ("config", "LIST") => {
@@ -934,6 +1162,13 @@ impl Service {
                             .connections
                             .get(&db_name)
                             .ok_or_else(|| invalid("unknown database configuration"))?;
+                        if c.provider == DatabaseProvider::Valkey
+                            && valkey_permissions(&provider_role).is_none()
+                        {
+                            return Err(invalid(
+                                "Valkey provider_role must be readonly or readwrite",
+                            ));
+                        }
                         if !c.allowed_roles.contains(key) {
                             return Err(Response::error(
                                 403,
@@ -1797,6 +2032,7 @@ mod tests {
         m.connections.insert(
             "local".into(),
             Connection {
+                provider: DatabaseProvider::Postgresql,
                 connection_url: "postgresql://localhost:5432/app".into(),
                 username: "hb_manager".into(),
                 password: PrivateString("synthetic-password".into()),
@@ -1974,5 +2210,26 @@ mod tests {
         assert!(ttl(&json!({"ttl":false}), "ttl", 1).is_err());
         assert!(!name("bad; DROP ROLE manager"));
         assert!(fields(&json!({"creation_statements":[]}), &["provider_role"]).is_err());
+        assert_eq!(valkey_permissions("readonly"), Some(&["+@read"][..]));
+        assert!(valkey_permissions("+@all").is_none());
+    }
+
+    #[test]
+    fn valkey_readback_requires_bounded_acl_policy() {
+        let pattern = "~hb:hb1:abcd:*";
+        let value = RespValue::Array(vec![
+            RespValue::Bulk(Zeroizing::new(b"flags".to_vec())),
+            RespValue::Array(vec![RespValue::Bulk(Zeroizing::new(b"on".to_vec()))]),
+            RespValue::Bulk(Zeroizing::new(b"commands".to_vec())),
+            RespValue::Bulk(Zeroizing::new(b"-@all+@read".to_vec())),
+            RespValue::Bulk(Zeroizing::new(b"keys".to_vec())),
+            RespValue::Array(vec![RespValue::Bulk(Zeroizing::new(
+                pattern.as_bytes().to_vec(),
+            ))]),
+            RespValue::Bulk(Zeroizing::new(b"channels".to_vec())),
+            RespValue::Array(Vec::new()),
+        ]);
+        assert!(valkey_acl_readback_matches(&value, pattern, &["+@read"]));
+        assert!(!valkey_acl_readback_matches(&value, "~*", &["+@read"]));
     }
 }
