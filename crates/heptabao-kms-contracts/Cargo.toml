@@ -8,7 +8,6 @@ publish = false
 [dependencies]
 zeroize = "=1.8.1"
 heptabao-domain = { path = "../heptabao-domain" }
-ring = "=0.17.14"
 
 [lib]
 path = "src/lib.rs"
