@@ -692,11 +692,11 @@ Existing bounded profiles: `qa/openbao-acceptance/audit_syslog_live.py`.
 
 ### HB-SURFACE-STORAGE-POSTGRESQL
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H04-WP04`, `H04-WP05`, `H04-WP06`, `H04-WP07`, `H04-WP08`, `H04-WP09`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H04-WP04`, `H04-WP05`, `H04-WP06`, `H04-WP07`, `H04-WP08`, `H04-WP09`.
 API families: `storage configuration`; `physical CRUD/list/transaction`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/postgres_storage.rs`, `crates/heptabao-server/src/postgres_wire.rs`.
 Separate contracts: `crates/heptabao-storage-api/src/lib.rs`.
-Guides: `docs/modules/heptabao-storage-api.md`.
+Guides: `docs/modules/heptabao-storage-api.md`, `docs/storage/HEPTABAO_POSTGRESQL_PHYSICAL_STORAGE.md`.
 
 **Positive:** Persist actual encrypted physical records with transactions, locks and paginated lists.
 
@@ -704,9 +704,9 @@ Guides: `docs/modules/heptabao-storage-api.md`.
 
 **Lifecycle:** Prove crash durability, lock recovery, schema upgrade and storage migration.
 
-**Remaining scope:** Transactions, locks, consistency, migration and durability.
+**Remaining scope:** The Rust physical adapter implements scoped opaque records, shallow ordered pages, Repeatable Read transactions and explicit unknown commit outcomes. Its real PostgreSQL 17 fixture covers concurrency, schema faults, TLS/SCRAM rejection and client/database crash recovery. Server durable-storage selection, barrier/journal/replay integration, HA lock renewal and write fencing, records above 1 MiB, source-format migration, multi-host/disk/power faults and independent qualification remain required.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_storage_live.py`.
 
 ### HB-SURFACE-STORAGE-RAFT
 

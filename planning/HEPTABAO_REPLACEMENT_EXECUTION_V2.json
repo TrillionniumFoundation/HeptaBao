@@ -1315,18 +1315,24 @@
       "positive": "Persist actual encrypted physical records with transactions, locks and paginated lists",
       "hostile": "Reject stale writer, torn record and foreign namespace access",
       "lifecycle": "Prove crash durability, lock recovery, schema upgrade and storage migration",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/postgres_storage.rs",
+        "crates/heptabao-server/src/postgres_wire.rs"
+      ],
       "contract_sources": [
         "crates/heptabao-storage-api/src/lib.rs"
       ],
       "guides": [
-        "docs/modules/heptabao-storage-api.md"
+        "docs/modules/heptabao-storage-api.md",
+        "docs/storage/HEPTABAO_POSTGRESQL_PHYSICAL_STORAGE.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/postgres_storage_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Transactions, locks, consistency, migration and durability."
+      "remaining_scope": "The Rust physical adapter implements scoped opaque records, shallow ordered pages, Repeatable Read transactions and explicit unknown commit outcomes. Its real PostgreSQL 17 fixture covers concurrency, schema faults, TLS/SCRAM rejection and client/database crash recovery. Server durable-storage selection, barrier/journal/replay integration, HA lock renewal and write fencing, records above 1 MiB, source-format migration, multi-host/disk/power faults and independent qualification remain required."
     },
     {
       "surface_id": "HB-SURFACE-STORAGE-RAFT",

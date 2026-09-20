@@ -257,6 +257,17 @@ jobs:
           slapd -VV 2>&1 | head -n 2
           dpkg-query -W postgresql-17 postgresql-client-17
 
+      - name: Exercise PostgreSQL physical storage transactions and crash recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 build --locked -p heptabao-server --example postgres_storage_probe
+          timeout 180 python qa/openbao-acceptance/postgres_storage_live.py \
+            --probe "$PWD/target/debug/examples/postgres_storage_probe" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --work-dir "$RUNNER_TEMP/heptabao-postgresql-storage" \
+            --output "$RUNNER_TEMP/heptabao-postgresql-storage.json"
+
       - name: Exercise actual PostgreSQL SQL and active-session revocation
         shell: bash
         run: |
