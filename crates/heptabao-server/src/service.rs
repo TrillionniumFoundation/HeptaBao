@@ -1409,10 +1409,15 @@ impl Service {
         let Some(mut admitted) = self.state.clone() else {
             return Response::error(503, "server is sealed");
         };
+        // Legacy HA owner-manifest migration must reach its dedicated route
+        // without an unrelated lease or wrapping-clock mutation first. Those
+        // maintenance writes intentionally reject HBSR1; a root, unlimited
+        // migration request must be the only state transition in this call.
+        let owner_manifest_migration = path == "sys/storage/raft/migrate-owner-state";
         // A trusted wall-clock observation is persisted before a wrapping
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
-        if Self::reconcile_lease_owners(&mut admitted, now) {
+        if !owner_manifest_migration && Self::reconcile_lease_owners(&mut admitted, now) {
             admitted.schema = CURRENT_STATE_SCHEMA;
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
@@ -1422,9 +1427,10 @@ impl Service {
         let public_otp_verify = admitted
             .engines
             .is_ssh_verification(namespace, method, path);
-        if (wrap_ttl_seconds.is_some()
-            || path.starts_with("sys/wrapping/")
-            || admitted.auth.is_wrapping_token(token))
+        if !owner_manifest_migration
+            && (wrap_ttl_seconds.is_some()
+                || path.starts_with("sys/wrapping/")
+                || admitted.auth.is_wrapping_token(token))
             && admitted.auth.advance_wrapping_clock(now)
         {
             admitted.schema = CURRENT_STATE_SCHEMA;
@@ -2415,6 +2421,25 @@ impl Service {
         target_replay_epoch: u64,
         next_digest: [u8; 32],
     ) -> Result<(), Response> {
+        self.commit_state_bytes_with_mode(
+            state,
+            bytes,
+            state_schema,
+            target_replay_epoch,
+            next_digest,
+            false,
+        )
+    }
+
+    fn commit_state_bytes_with_mode(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        next_digest: [u8; 32],
+        allow_legacy_migration: bool,
+    ) -> Result<(), Response> {
         #[cfg(not(test))]
         let capacity = MAX_STATE_BYTES;
         #[cfg(test)]
@@ -2423,7 +2448,18 @@ impl Service {
             return Err(Response::error(507, "state capacity exhausted"));
         }
         let base_digest = self.current_state_digest()?;
-        self.persist(state, bytes, base_digest, state_schema, target_replay_epoch)?;
+        if allow_legacy_migration {
+            self.persist_with_mode(
+                state,
+                bytes,
+                base_digest,
+                state_schema,
+                target_replay_epoch,
+                true,
+            )?;
+        } else {
+            self.persist(state, bytes, base_digest, state_schema, target_replay_epoch)?;
+        }
         self.state_digest = Some(next_digest);
         Ok(())
     }
@@ -3765,6 +3801,25 @@ impl Service {
         state_schema: u32,
         target_replay_epoch: u64,
     ) -> Result<(), Response> {
+        self.persist_with_mode(
+            state,
+            bytes,
+            base_digest,
+            state_schema,
+            target_replay_epoch,
+            false,
+        )
+    }
+
+    fn persist_with_mode(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        base_digest: [u8; 32],
+        state_schema: u32,
+        target_replay_epoch: u64,
+        allow_legacy_migration: bool,
+    ) -> Result<(), Response> {
         let durable = self
             .durable
             .as_ref()
@@ -3831,17 +3886,21 @@ impl Service {
             .transpose()
             .map_err(|_| Response::error(503, "owner and HA state publication digests diverge"))?;
         if let Some(ha) = self.ha.as_ref() {
-            let commit = ha
+            let owner_binding = owner_binding
+                .ok_or_else(|| Response::error(503, "owner publication binding is unavailable"))?;
+            let ha = ha
                 .lock()
-                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
-                .commit_state_with_owner_binding(
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
+            let commit = if allow_legacy_migration {
+                ha.commit_legacy_owner_migration_with_binding(
                     &operation_id,
                     base_digest,
                     bytes,
-                    owner_binding.ok_or_else(|| {
-                        Response::error(503, "owner publication binding is unavailable")
-                    })?,
-                );
+                    owner_binding,
+                )
+            } else {
+                ha.commit_state_with_owner_binding(&operation_id, base_digest, bytes, owner_binding)
+            };
             if let Err(error) = commit {
                 return Err(Response::error(503, &error));
             }
@@ -4046,14 +4105,24 @@ impl Service {
         let operation_id = format!("hasync-{}", hex(&committed.digest));
         // HBSM4 carries the canonical owner-plan identity from the leader.
         // Rebuild the follower's local plan before publication and compare the
-        // identity and changed-owner mask.  A mismatch means the HA state and
-        // local record-oriented state would diverge, so fail closed rather
-        // than silently falling back to a whole-state local rewrite.
+        // canonical manifest identity.  The changed-owner mask is a delta from
+        // the leader's immediately preceding manifest; a follower may be
+        // several committed states behind, so its local delta can legitimately
+        // be wider.  HBSM4 currently does not carry that predecessor identity;
+        // comparing masks here would reject valid catch-up rather than prevent
+        // divergence.  The canonical target manifest remains the fail-closed
+        // binding, and the mask is still range-validated on decode.
         let prepared_plan = match (
             committed.owner_manifest_digest,
             committed.changed_owner_mask,
         ) {
             (Some(expected_digest), Some(expected_mask)) => {
+                if expected_mask & !0x1f != 0 {
+                    return Err(Response::error(
+                        503,
+                        "HA owner publication changed-owner mask is invalid",
+                    ));
+                }
                 let durable = self
                     .durable
                     .as_ref()
@@ -4076,9 +4145,7 @@ impl Service {
                 let binding = plan
                     .publication_binding(&operation_id, &committed.bytes)
                     .map_err(|_| Response::error(503, "HA owner binding is invalid"))?;
-                if binding.owner_manifest_digest() != expected_digest
-                    || binding.changed_owner_mask() != expected_mask
-                {
+                if binding.owner_manifest_digest() != expected_digest {
                     return Err(Response::error(
                         503,
                         "HA owner publication identity diverges from committed manifest",

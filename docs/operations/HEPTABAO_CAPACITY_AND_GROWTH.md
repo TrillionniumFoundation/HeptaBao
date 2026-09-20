@@ -35,6 +35,16 @@ without a second serialization/hash/chunk pass; changed owners alone are
 rechunked locally. HA still consumes the complete logical image, so this reduces
 local physical/CPU amplification but is **not** record-oriented scalability.
 
+The explicit HA migration endpoint is
+`POST` or `PUT /v1/sys/storage/raft/migrate-owner-state` (an empty JSON object
+is required). It is root-namespace and root-token only, requires the current
+leader, and is idempotent after the committed envelope is already HBSM4. The
+route suppresses unrelated lease and wrapping-clock maintenance for that one
+request so an HBSR1 image is not rejected before the migration gate runs.
+Migration preserves the exact logical bytes and binds the new owner manifest to
+the committed HBSR1 digest; it does not upgrade application schema or grant
+mixed-version, rolling-upgrade, or production migration authority.
+
 The active replay ledger admits at most **32,000 identities per epoch**. A
 root-authorized replay retirement operation creates a durable authenticated
 generation frontier, advances the replay epoch, checkpoints the journal and

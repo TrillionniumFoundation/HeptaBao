@@ -134,6 +134,7 @@ impl Service {
                 | "sys/storage/raft/linearizable-read"
                 | "sys/storage/raft/autopilot/state"
                 | "sys/storage/raft/autopilot/configuration"
+                | "sys/storage/raft/migrate-owner-state"
         )
     }
     pub(super) fn raft_admin_route(
@@ -188,6 +189,34 @@ impl Service {
             let object = body
                 .as_object()
                 .ok_or_else(|| Response::error(400, "object required"))?;
+            if *path == "sys/storage/raft/migrate-owner-state" {
+                if !p.is_root() {
+                    return Err(Response::error(
+                        403,
+                        "owner-manifest migration requires the root token",
+                    ));
+                }
+                if !matches!(*method, "POST" | "PUT") {
+                    return Err(Response::error(
+                        405,
+                        "owner-manifest migration requires POST or PUT",
+                    ));
+                }
+                if !object.is_empty() {
+                    return Err(Response::error(
+                        400,
+                        "owner-manifest migration does not accept body fields",
+                    ));
+                }
+                if o.leader != Some(o.local_id) {
+                    return Err(Response::error(
+                        503,
+                        "owner-manifest migration requires the current HA leader",
+                    ));
+                }
+                drop(ha);
+                return self.migrate_legacy_owner_state();
+            }
             if *method == "GET" {
                 if !object.is_empty() {
                     return Err(Response::error(400, "read operation has no body fields"));
@@ -379,6 +408,58 @@ impl Service {
         Ok(())
     }
 
+    /// Promote the currently committed HBSR1 image to an owner-bound HBSM4
+    /// manifest.  The route is deliberately idempotent: after a local
+    /// publication failure the next retry first catches up from the committed
+    /// envelope, then reports the already-manifested state instead of issuing a
+    /// second Raft mutation against a different base.
+    fn migrate_legacy_owner_state(&mut self) -> Result<Response, Response> {
+        self.sync_from_ha()?;
+        let ha = self
+            .ha
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "HA is not enabled"))?
+            .clone();
+        let committed = ha
+            .lock()
+            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+            .latest_committed_state()
+            .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?
+            .ok_or_else(|| Response::error(409, "HA application state has not been committed"))?;
+        if !committed.legacy_whole_state {
+            return Ok(Response::ok(json!({
+                "data": {
+                    "migrated": false,
+                    "already_migrated": true,
+                    "format": "HBSM",
+                    "digest": hex(&committed.digest),
+                }
+            })));
+        }
+        let state: State = serde_json::from_slice(&committed.bytes)
+            .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
+        state.validate_format()?;
+        let next_digest = crypto::digest(&committed.bytes);
+        debug_assert_eq!(next_digest, committed.digest);
+        self.commit_state_bytes_with_mode(
+            &state,
+            &committed.bytes,
+            state.schema,
+            state.replay_epoch,
+            next_digest,
+            true,
+        )?;
+        self.state = Some(state);
+        Ok(Response::ok(json!({
+            "data": {
+                "migrated": true,
+                "already_migrated": false,
+                "format": "HBSM4",
+                "digest": hex(&committed.digest),
+            }
+        })))
+    }
+
     fn linearizable_read_body(o: &MembershipObservation) -> Response {
         Response::ok(json!({"data": {
             "linearizable": true,
@@ -537,6 +618,13 @@ mod tests {
     fn linearizable_read_route_is_admitted_as_admin_path() {
         assert!(Service::is_raft_admin_path(
             "sys/storage/raft/linearizable-read"
+        ));
+    }
+
+    #[test]
+    fn owner_manifest_migration_route_is_admitted_as_admin_path() {
+        assert!(Service::is_raft_admin_path(
+            "sys/storage/raft/migrate-owner-state"
         ));
     }
 

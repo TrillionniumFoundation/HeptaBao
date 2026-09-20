@@ -210,6 +210,11 @@ impl Drop for PeerListener {
 pub(crate) struct CommittedApplicationState {
     pub digest: [u8; 32],
     pub bytes: Zeroizing<Vec<u8>>,
+    /// True only for the pre-manifest HBSR1 whole-state envelope.  HBSM2-
+    /// HBSM4 are all manifest-backed, even when older manifests do not carry
+    /// owner publication metadata, so callers must not infer this from the
+    /// optional owner fields.
+    pub legacy_whole_state: bool,
     pub owner_manifest_digest: Option<[u8; 32]>,
     pub changed_owner_mask: Option<u8>,
 }
@@ -723,6 +728,31 @@ impl HaProcess {
                 binding.owner_manifest_digest(),
                 binding.changed_owner_mask(),
             )),
+            false,
+        )
+    }
+
+    /// Explicitly promote an HBSR1 whole-state envelope to an owner-bound
+    /// HBSM4 manifest.  This is intentionally separate from ordinary state
+    /// mutation: the latter must remain fail-closed until an operator invokes
+    /// the authenticated migration route.
+    pub(crate) fn commit_legacy_owner_migration_with_binding(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        binding: OwnerPublicationBinding,
+    ) -> Result<CommitReceipt, String> {
+        validate_owner_binding(operation_id, bytes, binding)?;
+        self.commit_state_inner(
+            operation_id,
+            expected_base_digest,
+            bytes,
+            Some((
+                binding.owner_manifest_digest(),
+                binding.changed_owner_mask(),
+            )),
+            true,
         )
     }
 
@@ -732,7 +762,7 @@ impl HaProcess {
         expected_base_digest: [u8; 32],
         bytes: &[u8],
     ) -> Result<CommitReceipt, String> {
-        self.commit_state_inner(operation_id, expected_base_digest, bytes, None)
+        self.commit_state_inner(operation_id, expected_base_digest, bytes, None, false)
     }
 
     fn commit_state_inner(
@@ -741,6 +771,7 @@ impl HaProcess {
         expected_base_digest: [u8; 32],
         bytes: &[u8],
         owner_binding: Option<([u8; 32], u8)>,
+        allow_legacy_migration: bool,
     ) -> Result<CommitReceipt, String> {
         if bytes.is_empty() || bytes.len() > crate::MAX_APPLICATION_STATE_BYTES {
             return Err("HA application state is empty or exceeds the shared bound".into());
@@ -769,6 +800,9 @@ impl HaProcess {
         {
             return Err("HA application base conflicts with latest committed state".into());
         }
+        if allow_legacy_migration && latest.is_none() {
+            return Err("legacy owner-manifest migration requires an HBSR1 base state".into());
+        }
 
         let previous_manifest = match latest.as_ref() {
             None => None,
@@ -781,7 +815,11 @@ impl HaProcess {
                         envelope.sealed(),
                     )
                     .map_err(|error| error.to_string())?;
-                reject_legacy_mutation_fallback(&descriptor)?;
+                if allow_legacy_migration {
+                    validate_legacy_migration_base(&descriptor, owner_binding.is_some())?;
+                } else {
+                    reject_legacy_mutation_fallback(&descriptor)?;
+                }
                 match descriptor {
                     CommittedStateDescriptor::Legacy(state) => {
                         if sha256(&state) != envelope.digest() {
@@ -929,63 +967,68 @@ impl HaProcess {
                 envelope.sealed(),
             )
             .map_err(|error| error.to_string())?;
-        let (bytes, owner_manifest_digest, changed_owner_mask) = match descriptor {
-            CommittedStateDescriptor::Legacy(bytes) => (bytes, None, None),
-            CommittedStateDescriptor::Chunked(manifest) => {
-                if manifest.state_digest != envelope.digest() {
-                    return Err("HA manifest digest does not match production envelope".into());
-                }
-                let total = usize::try_from(manifest.total_bytes)
-                    .map_err(|_| "HA manifest total length overflow".to_owned())?;
-                let mut assembled = Zeroizing::new(Vec::with_capacity(total));
-                for chunk in &manifest.chunks {
-                    let staged = self
-                        .runtime
-                        .block_on(node.application_chunk_envelope(chunk.index, chunk.slot))
-                        .map_err(|error| error.to_string())?
-                        .ok_or_else(|| {
-                            "HA manifest references an unavailable committed chunk".to_owned()
-                        })?;
-                    if staged.digest() != chunk.digest {
-                        return Err("HA manifest/chunk digest binding mismatch".into());
+        let (bytes, legacy_whole_state, owner_manifest_digest, changed_owner_mask) =
+            match descriptor {
+                CommittedStateDescriptor::Legacy(bytes) => (bytes, true, None, None),
+                CommittedStateDescriptor::Chunked(manifest) => {
+                    if manifest.state_digest != envelope.digest() {
+                        return Err("HA manifest digest does not match production envelope".into());
                     }
-                    let opened = self
-                        .codec
-                        .open_chunk_parts(
-                            chunk.index,
-                            chunk.slot,
-                            staged.operation_id(),
-                            staged.digest(),
-                            staged.sealed(),
-                        )
-                        .map_err(|error| error.to_string())?;
-                    if opened.len()
-                        != usize::try_from(chunk.bytes)
-                            .map_err(|_| "HA chunk length overflow".to_owned())?
-                    {
-                        return Err("HA committed chunk length mismatch".into());
+                    let total = usize::try_from(manifest.total_bytes)
+                        .map_err(|_| "HA manifest total length overflow".to_owned())?;
+                    let mut assembled = Zeroizing::new(Vec::with_capacity(total));
+                    for chunk in &manifest.chunks {
+                        let staged = self
+                            .runtime
+                            .block_on(node.application_chunk_envelope(chunk.index, chunk.slot))
+                            .map_err(|error| error.to_string())?
+                            .ok_or_else(|| {
+                                "HA manifest references an unavailable committed chunk".to_owned()
+                            })?;
+                        if staged.digest() != chunk.digest {
+                            return Err("HA manifest/chunk digest binding mismatch".into());
+                        }
+                        let opened = self
+                            .codec
+                            .open_chunk_parts(
+                                chunk.index,
+                                chunk.slot,
+                                staged.operation_id(),
+                                staged.digest(),
+                                staged.sealed(),
+                            )
+                            .map_err(|error| error.to_string())?;
+                        if opened.len()
+                            != usize::try_from(chunk.bytes)
+                                .map_err(|_| "HA chunk length overflow".to_owned())?
+                        {
+                            return Err("HA committed chunk length mismatch".into());
+                        }
+                        assembled.extend_from_slice(&opened);
+                        if assembled.len() > total {
+                            return Err("HA committed chunk set exceeds manifest length".into());
+                        }
                     }
-                    assembled.extend_from_slice(&opened);
-                    if assembled.len() > total {
-                        return Err("HA committed chunk set exceeds manifest length".into());
+                    if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
+                        return Err(
+                            "HA committed chunk set does not reconstruct manifest state".into()
+                        );
                     }
+                    (
+                        assembled,
+                        false,
+                        manifest.owner_manifest_digest,
+                        manifest.changed_owner_mask,
+                    )
                 }
-                if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
-                    return Err("HA committed chunk set does not reconstruct manifest state".into());
-                }
-                (
-                    assembled,
-                    manifest.owner_manifest_digest,
-                    manifest.changed_owner_mask,
-                )
-            }
-        };
+            };
         if sha256(&bytes) != envelope.digest() {
             return Err("HA committed application digest readback failed".into());
         }
         Ok(Some(CommittedApplicationState {
             digest: envelope.digest(),
             bytes,
+            legacy_whole_state,
             owner_manifest_digest,
             changed_owner_mask,
         }))
@@ -1378,6 +1421,19 @@ fn reject_legacy_mutation_fallback(descriptor: &CommittedStateDescriptor) -> Res
     Ok(())
 }
 
+fn validate_legacy_migration_base(
+    descriptor: &CommittedStateDescriptor,
+    owner_bound: bool,
+) -> Result<(), String> {
+    if !owner_bound {
+        return Err("legacy owner-manifest migration requires an owner publication binding".into());
+    }
+    if !matches!(descriptor, CommittedStateDescriptor::Legacy(_)) {
+        return Err("legacy owner-manifest migration requires an HBSR1 base state".into());
+    }
+    Ok(())
+}
+
 fn plan_replicated_chunks<'a>(
     bytes: &'a [u8],
     previous: Option<&ReplicatedStateManifest>,
@@ -1662,6 +1718,23 @@ mod tests {
         };
         assert!(error.contains("explicit owner-manifest migration"));
         Ok(())
+    }
+
+    #[test]
+    fn legacy_migration_requires_owner_binding_and_hbsr1_base() {
+        let legacy = CommittedStateDescriptor::Legacy(Zeroizing::new(b"legacy-state".to_vec()));
+        assert!(validate_legacy_migration_base(&legacy, false).is_err());
+        assert!(validate_legacy_migration_base(&legacy, true).is_ok());
+
+        let manifest = CommittedStateDescriptor::Chunked(ReplicatedStateManifest {
+            base_digest: [0; 32],
+            state_digest: [7; 32],
+            total_bytes: 0,
+            chunks: Vec::new(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
+        });
+        assert!(validate_legacy_migration_base(&manifest, true).is_err());
     }
 
     #[test]
