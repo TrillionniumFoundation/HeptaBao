@@ -1,11 +1,11 @@
 {
   "schema": "heptabao.postgresql-durable-backend.v1",
   "status": "passed_scoped_backend",
-  "source_sha": "2985fe9d3a1cd1b413b43a0cfa37f95d23b4eca5",
-  "source_dirty": true,
-  "candidate_probe_sha256": "f01d5bb5f210b2eb749e318100e4e55b56bec042ce8742df9d5eb0dc5e88e11e",
-  "runner_sha256": "2fa645397488dd1ed6680b646fa165ac7dd8436ab36baaa06c2480a6942a52e6",
-  "observed_at_unix": 1789912713,
+  "source_sha": "318cf8862d5c88eb24f6747457e6b579a55d8614",
+  "source_dirty": false,
+  "candidate_probe_sha256": "13b7e35a76ac4ed1bae1825b09edf6ed948ceda0da44d30e5b3a3a7ea9820729",
+  "runner_sha256": "5cbdacaad31bbbd0fad1ea566b0a637f8d7c28fbee1b4ec53ce52976cfd0ded6",
+  "observed_at_unix": 1789913828,
   "checks": [
     {
       "case": "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
@@ -45,6 +45,34 @@
     },
     {
       "case": "durable_reopen_probe",
+      "passed": true
+    },
+    {
+      "case": "deferred_commit_gate_installed",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_started",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_commit_reached_and_blocked",
+      "passed": true
+    },
+    {
+      "case": "lost_commit/lost_commit_fences_unknown_outcome",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_exited_cleanly",
+      "passed": true
+    },
+    {
+      "case": "durable_lost_commit_replayed_exactly_once",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_reopen_exactly_once",
       "passed": true
     },
     {
