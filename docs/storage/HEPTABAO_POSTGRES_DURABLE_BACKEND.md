@@ -34,7 +34,17 @@ closed.
 The backend currently rewrites the journal chunks for an append inside its
 single transaction. This preserves the crash and stale-writer contract but is
 an O(n) physical path; an optimization can update only the final chunk and
-append new chunks after production profiling. Server configuration still has
-to select this backend through `DurableService::create_new_with_backend` or
-`reopen_with_backend`; the default remains the descriptor-bound filesystem
-backend until HA, migration, and OpenBao compatibility qualification pass.
+append new chunks after profiling. The optional `postgres_durable` object in
+the server JSON configuration selects this backend for initialization and
+reopen through `Service::install_postgres_durable_storage`. Its fields are
+`endpoint`, `connection_url`, `username`, `password`, and `scope`, matching
+`PgStorageConfig`. The enrolled endpoint contains the pinned address, TLS
+server name, CA PEM and allowed path prefix; it cannot be changed through HTTP.
+Omitting the configuration selects filesystem storage only for a new or
+existing filesystem deployment. A PostgreSQL profile refuses unseal when its
+matching configuration is absent or changed, as described in
+[the profile contract](HEPTABAO_DURABLE_BACKEND_PROFILE.md).
+
+The server integration does not establish HA, migration, full OpenBao
+compatibility or production qualification. Local seal metadata and audit files
+remain required even when encrypted application artifacts reside in PostgreSQL.

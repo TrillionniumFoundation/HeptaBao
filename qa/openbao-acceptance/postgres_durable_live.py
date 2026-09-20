@@ -165,6 +165,26 @@ def main() -> int:
         check("durable_basic_probe", invoke("basic") == 0)
         check("durable_reopen_probe", invoke("reopen") == 0)
 
+        orphan = pg.sql(
+            "INSERT INTO heptabao_durable_v1.chunks_v1 "
+            "(format_version,scope,artifact,chunk_no,revision,bytes) "
+            "VALUES (1,'durable-orphan','snapshot',0,1,decode('cafe','hex'))"
+        )
+        check("orphan_chunk_fixture_created", orphan.returncode == 0)
+        check(
+            "orphan_scope_initialization_rejected",
+            invoke("reject-orphan", override=dict(config, scope="durable-orphan")) == 0,
+        )
+        preserved = pg.sql(
+            "SELECT encode(bytes,'hex') FROM heptabao_durable_v1.chunks_v1 "
+            "WHERE scope='durable-orphan'"
+        )
+        check("orphan_chunk_bytes_preserved", preserved.returncode == 0 and preserved.stdout.strip() == "cafe")
+        absent = pg.sql(
+            "SELECT count(*) FROM heptabao_durable_v1.manifest_v1 WHERE scope='durable-orphan'"
+        )
+        check("orphan_scope_manifest_not_created", absent.returncode == 0 and absent.stdout.strip() == "0")
+
         # Make COMMIT observable without adding a production failpoint. A
         # deferred constraint trigger waits on a test-only advisory lock, so
         # the fixture can prove that the backend's write reached COMMIT before

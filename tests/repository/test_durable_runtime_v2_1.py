@@ -122,17 +122,12 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             self.assertIn("barrier", body)
             self.assertIn(".seal(", body)
 
-        # File loaders deliberately delegate authenticated decoding to frame
-        # decoders. Verify the call graph plus the actual cryptographic operation
-        # instead of requiring `.open(` to stay textually inside thin wrappers.
-        for loader, decoder in (
-            ("load_snapshot", "decode_snapshot_frame"),
-            ("load_journal", "decode_journal_frames"),
-            ("load_ledger", "decode_ledger_frame"),
-        ):
-            loader_body = function_body(source, loader)
-            self.assertIn("barrier", loader_body)
-            self.assertIn(f"{decoder}(", loader_body)
+        # Physical backends return sealed bytes; authenticated decoding stays
+        # in the service. Do not require obsolete file-specific loader wrappers.
+        reopen = source[source.index("pub fn reopen_with_backend(") : source.index("pub fn close(")]
+        self.assertIn("backend.load()", reopen)
+        for decoder in ("decode_snapshot_frame", "decode_journal_frames", "decode_ledger_frame"):
+            self.assertIn(f"{decoder}(", reopen)
             decoder_body = function_body(source, decoder)
             self.assertIn("barrier", decoder_body)
             self.assertIn(".open(", decoder_body)
@@ -166,7 +161,8 @@ class DurableRuntimeV21Tests(unittest.TestCase):
             self.assertRegex(source, rf"\bfn\s+{re.escape(regression)}\s*\(\s*\)")
         self.assertIn("child.kill()", source)
         self.assertIn("ulimit -f 1", source)
-        self.assertIn("ExclusiveDirectory::open(root)", source)
+        backend = (CRATE / "src" / "backend.rs").read_text(encoding="utf-8")
+        self.assertIn("ExclusiveDirectory::open(", backend)
         self.assertIn('b"HBS2"', source)
         self.assertNotIn('format!("{namespace}/{resource}")', source)
 

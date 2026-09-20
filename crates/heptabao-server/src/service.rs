@@ -8,9 +8,10 @@ use base64::{Engine as _, engine::general_purpose::STANDARD};
 #[cfg(test)]
 use heptabao_durable_service::PutRequest;
 use heptabao_durable_service::{
-    Barrier, DurableBackend, DurableService, MutationOutcome, ReconciliationStatus, Secret,
-    ServiceError,
+    BackendBundle, BackendError, Barrier, DurableBackend, DurableService, FileBackend,
+    MutationOutcome, ReconciliationStatus, Secret, ServiceError,
 };
+use heptabao_filesystem_guard::ExclusiveDirectory;
 use ring::hmac;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -77,6 +78,7 @@ const SEAL_METADATA_LIMIT: u64 = 64 * 1024;
 const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
 const INIT_RECOVERY_FILE: &str = "init-recovery.hbe";
 const INIT_RECOVERY_LIMIT: u64 = 16 * 1024;
+const PG_INIT_BINDING_FILE: &str = "pg-init-binding.hbe";
 const MAX_BACKUP_TRANSFER_BYTES: usize = 20 * 1024 * 1024;
 const DURABLE_PROFILE_FILE: &str = "durable-backend.json";
 const DURABLE_PROFILE_LIMIT: u64 = 16 * 1024;
@@ -507,7 +509,7 @@ impl WireRejection {
 
 struct InitializationStage {
     path: PathBuf,
-    published: bool,
+    retain_on_drop: bool,
 }
 
 impl InitializationStage {
@@ -536,34 +538,72 @@ impl InitializationStage {
         builder.create(&path)?;
         Ok(Self {
             path,
-            published: false,
+            retain_on_drop: false,
         })
     }
 
-    fn publish(&mut self, final_path: &Path) -> Result<bool, io::Error> {
+    /// Publish the complete prepared candidate before any remote operation.
+    /// Once the rename succeeds even a failed parent sync must retain it: a
+    /// restart can resync and retry this exact candidate, never mint new keys.
+    fn retain_postgres_pending(
+        &mut self,
+        final_path: &Path,
+        parent: &ExclusiveDirectory,
+    ) -> Result<(), io::Error> {
+        verify_initialization_parent(parent)?;
+        let pending = postgres_pending_path(final_path)?;
+        if path_present(&pending).map_err(io::Error::other)? {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "pending initialization exists",
+            ));
+        }
+        File::open(&self.path)?.sync_all()?;
+        fs::rename(
+            anchored_initialization_leaf(parent, &self.path)?,
+            anchored_initialization_leaf(parent, &pending)?,
+        )?;
+        self.path = pending;
+        self.retain_on_drop = true;
+        parent.sync_all().map_err(io::Error::other)
+    }
+
+    fn publish(
+        &mut self,
+        final_path: &Path,
+        parent: &ExclusiveDirectory,
+    ) -> Result<bool, io::Error> {
+        verify_initialization_parent(parent)?;
         if final_path.exists() {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
                 "initialization target appeared before publication",
             ));
         }
-        fs::rename(&self.path, final_path)?;
-        self.published = true;
-        let parent = final_path
-            .parent()
-            .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
-        Ok(File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .is_ok())
+        fs::rename(
+            anchored_initialization_leaf(parent, &self.path)?,
+            anchored_initialization_leaf(parent, final_path)?,
+        )?;
+        self.retain_on_drop = true;
+        Ok(parent.sync_all().is_ok() && verify_initialization_parent(parent).is_ok())
     }
 }
 
 impl Drop for InitializationStage {
     fn drop(&mut self) {
-        if !self.published {
+        if !self.retain_on_drop {
             let _ = fs::remove_dir_all(&self.path);
         }
     }
+}
+
+struct PendingPostgresInitialization {
+    path: PathBuf,
+    local_fence: FileBackend,
+    seal: SealMetadata,
+    profile: DurableProfile,
+    bundle: BackendBundle,
+    response: Response,
 }
 
 /// One bounded request. The token and body are secret-bearing; deliberately no
@@ -864,6 +904,18 @@ impl Service {
                 "initialized filesystem durable storage cannot be replaced in place".into(),
             );
         }
+        if postgres_pending_exists(&self.data_dir).map_err(str::to_owned)? {
+            let pending = postgres_pending_path(&self.data_dir)
+                .map_err(|_| "invalid PostgreSQL initialization path".to_owned())?;
+            let profile = load_durable_profile(&pending)
+                .map_err(str::to_owned)?
+                .ok_or_else(|| "pending PostgreSQL initialization profile is missing".to_owned())?;
+            if profile != DurableProfile::postgresql(&config) {
+                return Err(
+                    "PostgreSQL configuration does not match pending initialization".into(),
+                );
+            }
+        }
         self.postgres_durable = Some(config);
         Ok(())
     }
@@ -918,7 +970,9 @@ impl Service {
                 return Err("legacy initialization escrow requires explicit offline migration");
             }
         }
-        if ha.is_some() && initialization_recovery_pending(&data_dir)? {
+        if ha.is_some()
+            && (initialization_recovery_pending(&data_dir)? || postgres_pending_exists(&data_dir)?)
+        {
             return Err("acknowledge initialization recovery before enabling HA");
         }
         let (mut audit_rotation, mut audit) = AuditRotation::open(audit_path, audit_config)
@@ -940,6 +994,7 @@ impl Service {
             verification_provided: BTreeMap::new(),
         });
         let unseal_nonce = hex(&crypto::random::<16>()?);
+        let recovery_required = postgres_pending_exists(&data_dir)?;
         Ok(Self {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
@@ -981,7 +1036,7 @@ impl Service {
             unseal_nonce,
             barrier_key: None,
             rekey,
-            recovery_required: false,
+            recovery_required,
             ha,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
@@ -1316,7 +1371,8 @@ impl Service {
                     .audit_event("response", &fingerprint, now, Some(response.status))
                     .is_err()
             {
-                self.recovery_required = self.initialized();
+                self.recovery_required =
+                    self.initialized() || postgres_pending_exists(&self.data_dir).unwrap_or(true);
                 return RequestExecution::Complete(Response::error(
                     503,
                     "initialization response audit unavailable",
@@ -2666,6 +2722,23 @@ impl Service {
         now: u64,
         response_fingerprint: &str,
     ) -> (Response, bool) {
+        self.initialize_with_postgres_import(body, now, response_fingerprint, |config, bundle| {
+            let mut backend = PostgresDurableBackend::initialize(clone_pg_storage_config(config))?;
+            backend.initialize_or_match(bundle)?;
+            Ok(Box::new(backend))
+        })
+    }
+
+    fn initialize_with_postgres_import(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+        mut import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+    ) -> (Response, bool) {
         if self.ha.is_some() {
             return (
                 Response::error(
@@ -2712,12 +2785,108 @@ impl Service {
                 Err(error) => return (Response::error(400, error), false),
             },
         };
+        // Serialize candidate creation and final publication across processes,
+        // including a filesystem-configured process racing a PostgreSQL one.
+        let parent = match self.data_dir.parent().map(ExclusiveDirectory::open) {
+            Some(Ok(parent)) => parent,
+            _ => {
+                return (
+                    Response::error(503, "initialization parent is unsafe or busy"),
+                    false,
+                );
+            }
+        };
+        if verify_initialization_parent(&parent).is_err() {
+            return (
+                Response::error(503, "initialization parent identity changed"),
+                false,
+            );
+        }
+        let pending_exists = match postgres_pending_exists(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot inspect pending PostgreSQL initialization"),
+                    false,
+                );
+            }
+        };
+        if pending_exists {
+            self.recovery_required = true;
+        }
         if self.initialized() {
+            // Another Service may have published initialization after this
+            // sealed process was constructed. Admit its metadata under the
+            // parent lock only when this process has never admitted a seal;
+            // an already known seal must still detect on-disk replacement.
+            if self.seal.is_none() && self.durable_profile.is_none() && self.state.is_none() {
+                match (
+                    load_seal_metadata(&self.data_dir),
+                    load_durable_profile(&self.data_dir),
+                ) {
+                    (Ok(seal), Ok(profile)) => {
+                        self.seal = seal;
+                        self.durable_profile = profile;
+                    }
+                    _ => {
+                        return (
+                            Response::error(
+                                503,
+                                "published initialization metadata is unavailable",
+                            ),
+                            false,
+                        );
+                    }
+                }
+            }
+            if pending_exists {
+                return (
+                    self.recover_published_postgres_initialization(
+                        recovery_secret.as_deref(),
+                        shares,
+                        threshold,
+                        &parent,
+                    ),
+                    false,
+                );
+            }
             return (
                 match recovery_secret.as_ref() {
                     Some(secret) => self.recover_initialization(secret, shares, threshold),
                     None => Response::error(400, "already initialized"),
                 },
+                false,
+            );
+        }
+        if pending_exists {
+            let Some(secret) = recovery_secret.as_ref() else {
+                return (
+                    Response::error(
+                        400,
+                        "recovery_nonce is required for pending PostgreSQL initialization",
+                    ),
+                    false,
+                );
+            };
+            let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+                Ok(value) => value,
+                Err(error) => return (error, false),
+            };
+            return self.finish_postgres_initialization(
+                pending,
+                secret,
+                now,
+                response_fingerprint,
+                &parent,
+                &mut import,
+            );
+        }
+        if self.postgres_durable.is_some() && recovery_secret.is_none() {
+            return (
+                Response::error(
+                    400,
+                    "recovery_nonce is required for PostgreSQL initialization",
+                ),
                 false,
             );
         }
@@ -2787,41 +2956,22 @@ impl Service {
                 );
             }
         };
-        let (mut durable, durable_profile) = match self.postgres_durable.as_ref() {
-            Some(config) => {
-                let backend =
-                    match PostgresDurableBackend::initialize(clone_pg_storage_config(config)) {
-                        Ok(value) => Box::new(value) as Box<dyn DurableBackend>,
-                        Err(_) => {
-                            return (
-                                Response::error(
-                                    503,
-                                    "cannot initialize PostgreSQL durable backend",
-                                ),
-                                false,
-                            );
-                        }
-                    };
-                match DurableService::create_new_with_backend(backend, barrier, MAX_OPERATIONS) {
-                    Ok(value) => (value, Some(DurableProfile::postgresql(config))),
-                    Err(_) => {
-                        return (
-                            Response::error(503, "cannot prepare durable initialization state"),
-                            false,
-                        );
-                    }
-                }
+        // Always build the entire initial state locally first. PostgreSQL is
+        // untouched until the complete candidate and recovery material are
+        // published durably under a discoverable pending name.
+        let mut durable = match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot prepare durable initialization state"),
+                    false,
+                );
             }
-            None => match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
-                Ok(value) => (value, None),
-                Err(_) => {
-                    return (
-                        Response::error(503, "cannot prepare durable initialization state"),
-                        false,
-                    );
-                }
-            },
         };
+        let durable_profile = self
+            .postgres_durable
+            .as_ref()
+            .map(DurableProfile::postgresql);
         let bytes = match serde_json::to_vec(&state) {
             Ok(value) => Zeroizing::new(value),
             Err(_) => return (Response::error(500, "state serialization failed"), false),
@@ -2905,6 +3055,57 @@ impl Service {
                 );
             }
         }
+        if let (Some(profile), Some(secret)) = (durable_profile.as_ref(), recovery_secret.as_ref())
+        {
+            let bundle = match FileBackend::open(&stage.path).and_then(|mut backend| backend.load())
+            {
+                Ok(value) => value,
+                Err(_) => {
+                    return (
+                        Response::error(
+                            503,
+                            "cannot read prepared PostgreSQL initialization bundle",
+                        ),
+                        false,
+                    );
+                }
+            };
+            if write_postgres_pending_binding(
+                &stage.path,
+                &self.data_dir,
+                secret,
+                &seal,
+                profile,
+                &bundle,
+            )
+            .is_err()
+                || stage
+                    .retain_postgres_pending(&self.data_dir, &parent)
+                    .is_err()
+            {
+                self.recovery_required = postgres_pending_exists(&self.data_dir).unwrap_or(true);
+                return (
+                    Response::error(
+                        503,
+                        "cannot durably prepare PostgreSQL initialization; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+            self.recovery_required = true;
+            let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+                Ok(value) => value,
+                Err(error) => return (error, false),
+            };
+            return self.finish_postgres_initialization(
+                pending,
+                secret,
+                now,
+                response_fingerprint,
+                &parent,
+                &mut import,
+            );
+        }
         if self
             .audit_event(
                 "initialization-response-prepared",
@@ -2922,7 +3123,7 @@ impl Service {
                 true,
             );
         }
-        let parent_synced = match stage.publish(&self.data_dir) {
+        let parent_synced = match stage.publish(&self.data_dir, &parent) {
             Ok(value) => value,
             Err(_) => {
                 return (
@@ -2957,6 +3158,220 @@ impl Service {
             }
         }
         (response, true)
+    }
+
+    fn finish_postgres_initialization(
+        &mut self,
+        pending: PendingPostgresInitialization,
+        secret: &[u8; 32],
+        now: u64,
+        response_fingerprint: &str,
+        parent: &ExclusiveDirectory,
+        import: &mut impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+    ) -> (Response, bool) {
+        let Some(config) = self.postgres_durable.as_ref() else {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL durable backend configuration is required for initialization recovery",
+                ),
+                false,
+            );
+        };
+        if pending.profile != DurableProfile::postgresql(config) {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization target does not match the prepared profile",
+                ),
+                false,
+            );
+        }
+        if verify_initialization_parent(parent).is_err() || pending.local_fence.verify().is_err() {
+            return (
+                Response::error(503, "PostgreSQL initialization ownership changed"),
+                false,
+            );
+        }
+        // Prepare all fallible local metadata work before the remote commit.
+        // This second stage intentionally contains no snapshot/ledger/journal.
+        let mut metadata = match InitializationStage::create(&self.data_dir) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(503, "cannot prepare PostgreSQL initialization metadata"),
+                    false,
+                );
+            }
+        };
+        if persist_seal_metadata(&metadata.path, &pending.seal).is_err()
+            || persist_durable_profile(&metadata.path, &pending.profile).is_err()
+            || write_initialization_recovery(
+                &metadata.path,
+                &pending.seal,
+                secret,
+                &pending.response.body,
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "cannot durably prepare PostgreSQL initialization metadata",
+                ),
+                false,
+            );
+        }
+        if self
+            .audit_event(
+                "initialization-response-prepared",
+                response_fingerprint,
+                now,
+                Some(200),
+            )
+            .is_err()
+        {
+            return (
+                Response::error(
+                    503,
+                    "initialization response audit unavailable; PostgreSQL initialization remains pending",
+                ),
+                true,
+            );
+        }
+        let Some(config) = self.postgres_durable.as_ref() else {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL durable backend configuration is unavailable",
+                ),
+                false,
+            );
+        };
+        // The returned backend owns the remote writer fence. Keep it alive
+        // until local publication and pending cleanup have completed.
+        let remote_fence = match import(config, &pending.bundle) {
+            Ok(value) => value,
+            Err(BackendError::RootNotEmpty) => {
+                return (
+                    Response::error(
+                        409,
+                        "PostgreSQL initialization conflicts with existing durable state",
+                    ),
+                    false,
+                );
+            }
+            Err(_) => {
+                return (
+                    Response::error(
+                        503,
+                        "PostgreSQL initialization outcome is unconfirmed; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+        };
+        if verify_initialization_parent(parent).is_err() || pending.local_fence.verify().is_err() {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization ownership changed; retry with the same recovery nonce",
+                ),
+                false,
+            );
+        }
+        let parent_synced = match metadata.publish(&self.data_dir, parent) {
+            Ok(value) => value,
+            Err(_) => {
+                return (
+                    Response::error(
+                        503,
+                        "PostgreSQL initialization metadata publication failed; retry with the same recovery nonce",
+                    ),
+                    false,
+                );
+            }
+        };
+        self.seal = Some(pending.seal);
+        self.durable_profile = Some(pending.profile);
+        self.state = None;
+        self.durable = None;
+        self.barrier_key = None;
+        self.unseal_shares.clear();
+        self.rekey = None;
+        if !parent_synced {
+            self.recovery_required = true;
+            return (
+                Response::error(
+                    503,
+                    "initialization publication outcome unknown; retry with the same recovery nonce",
+                ),
+                true,
+            );
+        }
+        drop(pending.local_fence);
+        let cleaned = cleanup_postgres_pending(&pending.path, parent);
+        drop(remote_fence);
+        if cleaned.is_err() {
+            return (
+                Response::error(
+                    503,
+                    "PostgreSQL initialization cleanup requires recovery; retry with the same recovery nonce",
+                ),
+                true,
+            );
+        }
+        self.recovery_required = false;
+        (pending.response, true)
+    }
+
+    fn recover_published_postgres_initialization(
+        &mut self,
+        secret: Option<&[u8; 32]>,
+        shares: u8,
+        threshold: u8,
+        parent: &ExclusiveDirectory,
+    ) -> Response {
+        let Some(secret) = secret else {
+            return Response::error(
+                400,
+                "recovery_nonce is required for pending PostgreSQL initialization",
+            );
+        };
+        let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        if self.seal.as_ref() != Some(&pending.seal)
+            || self.durable_profile.as_ref() != Some(&pending.profile)
+            || load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(&pending.seal)
+            || load_durable_profile(&self.data_dir).ok().flatten().as_ref()
+                != Some(&pending.profile)
+        {
+            return Response::error(
+                503,
+                "published initialization does not match the pending candidate",
+            );
+        }
+        let response = self.recover_initialization(secret, shares, threshold);
+        if response.status != 200 {
+            return response;
+        }
+        if response.body != pending.response.body {
+            return Response::error(
+                503,
+                "published initialization response does not match the pending candidate",
+            );
+        }
+        drop(pending.local_fence);
+        if cleanup_postgres_pending(&pending.path, parent).is_err() {
+            return Response::error(503, "PostgreSQL initialization cleanup requires recovery");
+        }
+        self.recovery_required = false;
+        response
     }
 
     fn recover_initialization(&self, secret: &[u8; 32], shares: u8, threshold: u8) -> Response {
@@ -3040,6 +3455,18 @@ impl Service {
     fn unseal(&mut self, body: &Value) -> Response {
         if self.state.is_some() && !self.recovery_required {
             return self.seal_status();
+        }
+        match postgres_pending_exists(&self.data_dir) {
+            Ok(false) => {}
+            Ok(true) => {
+                return Response::error(
+                    503,
+                    "complete PostgreSQL initialization recovery before unseal",
+                );
+            }
+            Err(_) => {
+                return Response::error(503, "cannot inspect PostgreSQL initialization recovery");
+            }
         }
         if !self.initialized() {
             return Response::error(400, "not initialized");
@@ -5031,6 +5458,208 @@ fn initialization_recovery_pending(data_dir: &Path) -> Result<bool, &'static str
     path_present(&data_dir.join(INIT_RECOVERY_FILE))
 }
 
+fn postgres_pending_path(data_dir: &Path) -> io::Result<PathBuf> {
+    let parent = data_dir
+        .parent()
+        .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+    let mut identity = b"heptabao.postgresql-pending-path.v1\0".to_vec();
+    identity.extend_from_slice(data_dir.as_os_str().as_encoded_bytes());
+    Ok(parent.join(format!(
+        ".heptabao-pg-init-{}",
+        hex(&crypto::digest(&identity))
+    )))
+}
+
+fn sync_initialization_parent(data_dir: &Path) -> io::Result<()> {
+    let parent = data_dir
+        .parent()
+        .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
+    let metadata = fs::symlink_metadata(parent)?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(io::Error::other("initialization parent is unsafe"));
+    }
+    File::open(parent)?.sync_all()
+}
+
+fn anchored_initialization_leaf(parent: &ExclusiveDirectory, path: &Path) -> io::Result<PathBuf> {
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| io::Error::other("invalid initialization leaf"))?;
+    parent.leaf_path(name).map_err(io::Error::other)
+}
+
+fn verify_initialization_parent(parent: &ExclusiveDirectory) -> io::Result<()> {
+    parent.verify().map_err(io::Error::other)?;
+    let metadata = fs::symlink_metadata(parent.original_path())?;
+    if !metadata.is_dir() || metadata.file_type().is_symlink() {
+        return Err(io::Error::other("initialization parent changed"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if metadata.dev() != parent.identity().device()
+            || metadata.ino() != parent.identity().inode()
+        {
+            return Err(io::Error::other("initialization parent identity changed"));
+        }
+    }
+    Ok(())
+}
+
+fn postgres_pending_exists(data_dir: &Path) -> Result<bool, &'static str> {
+    let pending =
+        postgres_pending_path(data_dir).map_err(|_| "invalid PostgreSQL initialization path")?;
+    path_present(&pending)
+}
+
+fn cleanup_postgres_pending(path: &Path, parent: &ExclusiveDirectory) -> io::Result<()> {
+    retire_postgres_pending(path, parent, |retired| fs::remove_dir_all(retired))
+}
+
+fn retire_postgres_pending(
+    path: &Path,
+    parent: &ExclusiveDirectory,
+    cleanup: impl FnOnce(&Path) -> io::Result<()>,
+) -> io::Result<()> {
+    verify_initialization_parent(parent)?;
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| io::Error::other("invalid pending initialization leaf"))?;
+    let suffix = hex(&crypto::random::<8>().map_err(io::Error::other)?);
+    let retired = parent
+        .leaf_path(&format!("{name}.retired-{suffix}"))
+        .map_err(io::Error::other)?;
+    fs::rename(anchored_initialization_leaf(parent, path)?, &retired)?;
+    // Do not touch any retired artifact before the removal from the active
+    // pending namespace is durable. A crash may then retain encrypted debris,
+    // but can never make recovery require a half-deleted active candidate.
+    parent.sync_all().map_err(io::Error::other)?;
+    let _ = cleanup(&retired);
+    Ok(())
+}
+
+fn postgres_pending_context(
+    data_dir: &Path,
+    seal: &SealMetadata,
+    profile: &DurableProfile,
+    bundle: &BackendBundle,
+    recovery: &[u8],
+) -> io::Result<Vec<u8>> {
+    let mut context = b"heptabao.postgresql-initialization.v1\0".to_vec();
+    for bytes in [
+        data_dir.as_os_str().as_encoded_bytes(),
+        &serde_json::to_vec(seal).map_err(io::Error::other)?,
+        &serde_json::to_vec(profile).map_err(io::Error::other)?,
+        &bundle.snapshot,
+        &bundle.ledger,
+        &bundle.journal,
+        recovery,
+    ] {
+        context.extend_from_slice(&crypto::digest(bytes));
+    }
+    Ok(context)
+}
+
+fn write_postgres_pending_binding(
+    stage: &Path,
+    data_dir: &Path,
+    secret: &[u8; 32],
+    seal: &SealMetadata,
+    profile: &DurableProfile,
+    bundle: &BackendBundle,
+) -> io::Result<()> {
+    let recovery = read_initialization_recovery(stage)?
+        .ok_or_else(|| io::Error::other("initialization recovery is missing"))?;
+    let context = postgres_pending_context(data_dir, seal, profile, bundle, &recovery)?;
+    let (barrier, _) = initialization_recovery_barrier(secret, seal)?;
+    let protected = barrier
+        .seal(&context, b"prepared")
+        .map_err(|_| io::Error::other("cannot authenticate pending initialization"))?;
+    write_private_initialization_file(stage, PG_INIT_BINDING_FILE, &protected)
+}
+
+fn load_postgres_pending(
+    data_dir: &Path,
+    secret: &[u8; 32],
+    shares: u8,
+    threshold: u8,
+) -> Result<PendingPostgresInitialization, Response> {
+    let path = postgres_pending_path(data_dir)
+        .map_err(|_| Response::error(503, "invalid PostgreSQL initialization path"))?;
+    if !path_present(&path)
+        .map_err(|_| Response::error(503, "cannot inspect PostgreSQL initialization"))?
+    {
+        return Err(Response::error(
+            409,
+            "PostgreSQL initialization is not pending",
+        ));
+    }
+    private_directory(&path)
+        .map_err(|_| Response::error(503, "unsafe PostgreSQL initialization directory"))?;
+    let mut local_fence = FileBackend::open(&path)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization is unavailable or busy"))?;
+    let bundle = local_fence
+        .load()
+        .map_err(|_| Response::error(503, "PostgreSQL initialization bundle is incomplete"))?;
+    let seal = load_seal_metadata(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization seal is unavailable"))?;
+    if seal.secret_shares != shares || seal.secret_threshold != threshold {
+        return Err(Response::error(
+            400,
+            "initialization recovery parameters do not match",
+        ));
+    }
+    let profile = load_durable_profile(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization profile is unavailable"))?;
+    let recovery = read_initialization_recovery(&path)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization response is unavailable"))?;
+    let protected = read_private_initialization_file(&path, PG_INIT_BINDING_FILE)
+        .ok()
+        .flatten()
+        .ok_or_else(|| Response::error(503, "PostgreSQL initialization binding is unavailable"))?;
+    let context = postgres_pending_context(data_dir, &seal, &profile, &bundle, &recovery)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization binding is invalid"))?;
+    let (barrier, recovery_context) = initialization_recovery_barrier(secret, &seal)
+        .map_err(|_| Response::error(503, "initialization recovery provider unavailable"))?;
+    let proof = barrier
+        .open(&context, &protected)
+        .map_err(|_| Response::error(403, "PostgreSQL initialization authentication failed"))?;
+    if proof != b"prepared" {
+        return Err(Response::error(
+            403,
+            "PostgreSQL initialization authentication failed",
+        ));
+    }
+    let plaintext = Zeroizing::new(
+        barrier
+            .open(&recovery_context, &recovery)
+            .map_err(|_| Response::error(403, "initialization recovery authentication failed"))?,
+    );
+    let body = serde_json::from_slice(&plaintext)
+        .map_err(|_| Response::error(503, "initialization recovery response is corrupt"))?;
+    local_fence
+        .verify()
+        .map_err(|_| Response::error(503, "PostgreSQL initialization ownership changed"))?;
+    sync_initialization_parent(data_dir)
+        .map_err(|_| Response::error(503, "PostgreSQL initialization durability is unknown"))?;
+    Ok(PendingPostgresInitialization {
+        path,
+        local_fence,
+        seal,
+        profile,
+        bundle,
+        response: Response::ok(body),
+    })
+}
+
 fn decode_initialization_secret(value: &Value) -> Result<Zeroizing<[u8; 32]>, &'static str> {
     let encoded = value.as_str().ok_or("recovery_nonce must be a string")?;
     if encoded.len() != 44 && encoded.len() != 64 {
@@ -5098,6 +5727,10 @@ fn write_initialization_recovery(
     if protected.len() as u64 > INIT_RECOVERY_LIMIT {
         return Err(io::Error::other("initialization recovery exceeds bound"));
     }
+    write_private_initialization_file(stage, INIT_RECOVERY_FILE, &protected)
+}
+
+fn write_private_initialization_file(stage: &Path, name: &str, protected: &[u8]) -> io::Result<()> {
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]
@@ -5110,15 +5743,22 @@ fn write_initialization_recovery(
         use std::os::unix::fs::OpenOptionsExt;
         options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
-    let mut file = options.open(stage.join(INIT_RECOVERY_FILE))?;
+    let mut file = options.open(stage.join(name))?;
     check_private_file(&file)?;
-    file.write_all(&protected)?;
+    file.write_all(protected)?;
     file.sync_all()?;
     File::open(stage)?.sync_all()
 }
 
 fn read_initialization_recovery(data_dir: &Path) -> Result<Option<Zeroizing<Vec<u8>>>, io::Error> {
-    let path = data_dir.join(INIT_RECOVERY_FILE);
+    read_private_initialization_file(data_dir, INIT_RECOVERY_FILE)
+}
+
+fn read_private_initialization_file(
+    data_dir: &Path,
+    name: &str,
+) -> Result<Option<Zeroizing<Vec<u8>>>, io::Error> {
+    let path = data_dir.join(name);
     match fs::symlink_metadata(&path) {
         Ok(metadata) if metadata.file_type().is_symlink() => {
             return Err(io::Error::other(

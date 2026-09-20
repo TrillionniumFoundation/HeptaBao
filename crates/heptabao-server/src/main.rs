@@ -4,6 +4,7 @@ use std::{
     path::Path,
     sync::{Arc, Mutex},
 };
+use zeroize::Zeroizing;
 
 fn main() -> std::process::ExitCode {
     match run() {
@@ -44,7 +45,7 @@ fn run() -> Result<(), String> {
     heptabao_server::http::serve_with_ha(config, ha)
 }
 
-fn read_bounded_config(path: &Path) -> Result<Vec<u8>, String> {
+fn read_bounded_config(path: &Path) -> Result<Zeroizing<Vec<u8>>, String> {
     if !path.is_absolute() {
         return Err("config path must be absolute".into());
     }
@@ -64,7 +65,7 @@ fn read_bounded_config(path: &Path) -> Result<Vec<u8>, String> {
     if !metadata.is_file() || metadata.len() > 65_536 {
         return Err("configuration must be a bounded regular file".into());
     }
-    let mut bytes = Vec::new();
+    let mut bytes = Zeroizing::new(Vec::new());
     file.take(65_537)
         .read_to_end(&mut bytes)
         .map_err(|_| "cannot read configuration")?;

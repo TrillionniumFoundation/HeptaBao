@@ -1003,6 +1003,7 @@ dependencies = [
  "futures",
  "heptabao-domain",
  "heptabao-durable-service",
+ "heptabao-filesystem-guard",
  "heptabao-ha-service",
  "heptabao-plugin-contracts",
  "heptabao-plugin-host",

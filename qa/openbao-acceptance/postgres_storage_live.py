@@ -31,11 +31,11 @@ class DropServerReplyProxy:
     continue, allowing COMMIT to reach and finish at the real server.
     """
 
-    def __init__(self, target_port):
+    def __init__(self, target_port, *, listen_port=0):
         self.target = ("127.0.0.1", target_port)
         self.listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.listener.bind(("127.0.0.1", 0))
+        self.listener.bind(("127.0.0.1", listen_port))
         self.listener.listen(1)
         self.listener.settimeout(0.5)
         self.port = self.listener.getsockname()[1]

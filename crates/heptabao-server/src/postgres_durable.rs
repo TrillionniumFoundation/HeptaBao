@@ -31,6 +31,8 @@ const CONSTRAINTS: &str = "SELECT conname, pg_get_expr(conbin, conrelid) FROM pg
 const LOCK: &str = "SELECT pg_try_advisory_lock(hashtextextended($1, 0))";
 const LOCK_HELD: &str = "SELECT count(*)::text FROM pg_locks WHERE pid = pg_backend_pid() AND locktype = 'advisory' AND granted AND classid = ((hashtextextended($1, 0) >> 32) & 4294967295)::oid AND objid = (hashtextextended($1, 0) & 4294967295)::oid";
 const MANIFEST_GET: &str = "SELECT revision::text, snapshot_len::text, ledger_len::text, journal_len::text FROM heptabao_durable_v1.manifest_v1 WHERE format_version = 1 AND scope = $1";
+const SCOPE_CHUNK_COUNT: &str =
+    "SELECT count(*)::text FROM heptabao_durable_v1.chunks_v1 WHERE scope = $1";
 const CHUNK_LIST: &str = "SELECT chunk_no::text, encode(bytes, 'hex') FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2 ORDER BY chunk_no";
 const CHUNK_DELETE: &str = "DELETE FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2";
 const CHUNK_INSERT: &str = "INSERT INTO heptabao_durable_v1.chunks_v1 (format_version, scope, artifact, chunk_no, revision, bytes) VALUES (1, $1, $2, $3, $4, decode($5, 'hex'))";
@@ -112,6 +114,90 @@ impl PostgresDurableBackend {
         }
         backend.session = Some(session);
         Ok(backend)
+    }
+
+    /// Reconcile a previously prepared initialization bundle while holding the
+    /// same session writer fence. An existing store is admitted only if every
+    /// artifact exactly matches; no existing bytes are replaced or removed.
+    /// After an unknown outcome the caller must reopen a new backend and retry
+    /// with the same durably staged bundle, never generate a new identity.
+    pub fn initialize_or_match(&mut self, initial: &BackendBundle) -> Result<(), BackendError> {
+        self.initialize_bundle(initial, true)
+    }
+
+    fn initialize_bundle(
+        &mut self,
+        initial: &BackendBundle,
+        accept_identical: bool,
+    ) -> Result<(), BackendError> {
+        initial.validate_backend()?;
+        let mut session = self.transaction(false)?;
+        match Self::manifest(&mut session, &self.scope) {
+            Ok(Some(_)) => {
+                if !accept_identical {
+                    self.rollback_and_retain(session);
+                    return Err(BackendError::RootNotEmpty);
+                }
+                let existing = match Self::bundle_in(&mut session, &self.scope) {
+                    Ok(bundle) => bundle,
+                    Err(error) => {
+                        self.rollback_and_retain(session);
+                        return Err(error);
+                    }
+                };
+                if existing != *initial {
+                    self.rollback_and_retain(session);
+                    return Err(BackendError::RootNotEmpty);
+                }
+                return self.finish(session);
+            }
+            Ok(None) => {}
+            Err(error) => {
+                self.rollback_and_retain(session);
+                return Err(error);
+            }
+        }
+        // A missing manifest does not prove the scope is empty. In particular,
+        // never let write_artifact's replacement DELETE erase orphan chunks.
+        let empty = match session.query(SCOPE_CHUNK_COUNT, &[&self.scope]) {
+            Ok(rows) => rows.len() == 1 && rows[0].len() == 1 && rows[0][0].as_deref() == Some("0"),
+            Err(_) => {
+                self.rollback_and_retain(session);
+                return Err(BackendError::Unavailable);
+            }
+        };
+        if !empty {
+            self.rollback_and_retain(session);
+            return Err(BackendError::Corrupt);
+        }
+        let revision = "1";
+        for (name, bytes) in [
+            ("snapshot", initial.snapshot.as_slice()),
+            ("ledger", initial.ledger.as_slice()),
+            ("journal", initial.journal.as_slice()),
+        ] {
+            if let Err(e) = Self::write_artifact(&mut session, &self.scope, name, 1, bytes) {
+                self.rollback_and_retain(session);
+                return Err(e);
+            }
+        }
+        let lengths = [
+            initial.snapshot.len(),
+            initial.ledger.len(),
+            initial.journal.len(),
+        ]
+        .map(|v| v.to_string());
+        if session
+            .execute(
+                MANIFEST_INSERT,
+                &[&self.scope, revision, &lengths[0], &lengths[1], &lengths[2]],
+            )
+            .is_err()
+        {
+            self.put_poisoned(session);
+            return Err(BackendError::Unavailable);
+        }
+        self.finish(session)
     }
 
     fn from_storage(storage: PostgresStorage, scope: String) -> Result<Self, BackendError> {
@@ -427,47 +513,7 @@ impl DurableBackend for PostgresDurableBackend {
     }
 
     fn initialize_empty(&mut self, initial: &BackendBundle) -> Result<(), BackendError> {
-        initial.validate_backend()?;
-        let mut session = self.transaction(false)?;
-        match Self::manifest(&mut session, &self.scope) {
-            Ok(Some(_)) => {
-                self.rollback_and_retain(session);
-                return Err(BackendError::RootNotEmpty);
-            }
-            Ok(None) => {}
-            Err(error) => {
-                self.rollback_and_retain(session);
-                return Err(error);
-            }
-        }
-        let revision = "1";
-        for (name, bytes) in [
-            ("snapshot", initial.snapshot.as_slice()),
-            ("ledger", initial.ledger.as_slice()),
-            ("journal", initial.journal.as_slice()),
-        ] {
-            if let Err(e) = Self::write_artifact(&mut session, &self.scope, name, 1, bytes) {
-                self.rollback_and_retain(session);
-                return Err(e);
-            }
-        }
-        let lengths = [
-            initial.snapshot.len(),
-            initial.ledger.len(),
-            initial.journal.len(),
-        ]
-        .map(|v| v.to_string());
-        if session
-            .execute(
-                MANIFEST_INSERT,
-                &[&self.scope, revision, &lengths[0], &lengths[1], &lengths[2]],
-            )
-            .is_err()
-        {
-            self.put_poisoned(session);
-            return Err(BackendError::Unavailable);
-        }
-        self.finish(session)
+        self.initialize_bundle(initial, false)
     }
 
     fn append_journal(&mut self, expected_len: usize, frame: &[u8]) -> Result<usize, BackendError> {

@@ -127,6 +127,437 @@ fn postgres_profile_marks_initialized_store_without_allowing_filesystem_fallback
 }
 
 static ROOT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+fn postgres_initialization_body() -> Value {
+    json!({"secret_shares": 1, "secret_threshold": 1, "recovery_nonce": STANDARD.encode([93_u8; 32])})
+}
+
+fn mock_postgres_initialization_import(
+    root: &Path,
+    bundle: &BackendBundle,
+) -> Result<Box<dyn DurableBackend>, BackendError> {
+    let mut backend = if root.exists() {
+        let mut backend = FileBackend::open(root)?;
+        if backend.load()? != *bundle {
+            return Err(BackendError::RootNotEmpty);
+        }
+        backend
+    } else {
+        let mut backend = FileBackend::create_new(root)?;
+        backend.initialize_empty(bundle)?;
+        backend
+    };
+    assert_eq!(backend.load()?, *bundle);
+    Ok(Box::new(backend))
+}
+
+#[test]
+fn postgres_initialization_requires_nonce_before_local_or_remote_work()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let mut imports = 0;
+    let (response, _) = service.initialize_with_postgres_import(
+        &json!({"secret_shares": 1, "secret_threshold": 1}),
+        100,
+        "test",
+        |_, _| {
+            imports += 1;
+            Err(BackendError::Unavailable)
+        },
+    );
+    assert_eq!(response.status, 400);
+    assert_eq!(imports, 0);
+    assert!(!service.data_dir.exists());
+    assert!(!postgres_pending_exists(&service.data_dir)?);
+    Ok(())
+}
+
+#[test]
+fn postgres_prepared_initialization_survives_restart_and_authenticates_every_binding()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let body = postgres_initialization_body();
+    let mut expected = None;
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 100, "prepare", |_, bundle| {
+            expected = Some(bundle.clone());
+            Err(BackendError::Unavailable)
+        });
+    assert_eq!(response.status, 503);
+    assert!(!service.initialized());
+    assert!(service.recovery_required);
+    assert!(!service.data_dir.exists());
+    let pending_path = postgres_pending_path(&service.data_dir)?;
+    assert!(pending_path.is_dir());
+    let bundle = expected.ok_or("missing prepared bundle")?;
+    let original_journal = fs::read(pending_path.join("journal.hbj"))?;
+    let original_binding = fs::read(pending_path.join(PG_INIT_BINDING_FILE))?;
+    drop(service);
+
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let mut imports = 0;
+    for (body, expected_status) in [
+        (json!({"secret_shares": 1, "secret_threshold": 1}), 400),
+        (
+            json!({"secret_shares": 1, "secret_threshold": 1, "recovery_nonce": STANDARD.encode([94_u8;32])}),
+            403,
+        ),
+        (
+            json!({"secret_shares": 2, "secret_threshold": 2, "recovery_nonce": STANDARD.encode([93_u8;32])}),
+            400,
+        ),
+    ] {
+        let (response, _) =
+            service.initialize_with_postgres_import(&body, 101, "rejected", |_, _| {
+                imports += 1;
+                Err(BackendError::Unavailable)
+            });
+        assert_eq!(response.status, expected_status);
+    }
+    assert_eq!(imports, 0);
+    let mut changed_config = invalid_postgres_config();
+    changed_config.connection_url = "postgresql://db.invalid/other".into();
+    service.postgres_durable = Some(changed_config);
+    let (response, _) = service.initialize_with_postgres_import(&body, 101, "target", |_, _| {
+        imports += 1;
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 503);
+    assert_eq!(imports, 0);
+    service.postgres_durable = Some(invalid_postgres_config());
+    let mut tampered = original_journal.clone();
+    tampered[0] ^= 1;
+    fs::write(pending_path.join("journal.hbj"), &tampered)?;
+    let (response, _) = service.initialize_with_postgres_import(&body, 101, "tampered", |_, _| {
+        imports += 1;
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 403);
+    assert_eq!(imports, 0);
+    fs::write(pending_path.join("journal.hbj"), &original_journal)?;
+    assert_eq!(
+        fs::read(pending_path.join(PG_INIT_BINDING_FILE))?,
+        original_binding
+    );
+
+    let remote = root.path.join("remote");
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 102, "recovery", |_, candidate| {
+            assert_eq!(candidate, &bundle);
+            mock_postgres_initialization_import(&remote, candidate)
+        });
+    assert_eq!(response.status, 200);
+    assert!(service.initialized());
+    assert!(!postgres_pending_exists(&service.data_dir)?);
+    for artifact in ["state.hbs", "journal.hbj", "ledger.hbl"] {
+        assert!(!service.data_dir.join(artifact).exists());
+    }
+    let expected_response = response.body.clone();
+    for path in [
+        remote.join("state.hbs"),
+        remote.join("journal.hbj"),
+        service.data_dir.join(INIT_RECOVERY_FILE),
+    ] {
+        let ciphertext = fs::read(path)?;
+        for secret in [
+            expected_response["root_token"].as_str(),
+            expected_response["keys_base64"][0].as_str(),
+            body["recovery_nonce"].as_str(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            assert!(
+                !ciphertext
+                    .windows(secret.len())
+                    .any(|window| window == secret.as_bytes())
+            );
+        }
+    }
+    drop(service);
+    let mut service = root.service()?;
+    let (retried, _) =
+        service.initialize_with_postgres_import(&body, 103, "response-loss", |_, _| {
+            imports += 1;
+            Err(BackendError::Unavailable)
+        });
+    assert_eq!(retried.status, 200);
+    assert_eq!(retried.body, expected_response);
+    assert_eq!(imports, 0);
+    Ok(())
+}
+
+#[test]
+fn postgres_unknown_import_reconciles_exact_candidate_and_conflicts_never_overwrite()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let body = postgres_initialization_body();
+    let remote = root.path.join("remote");
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 100, "lost-ack", |_, candidate| {
+            drop(mock_postgres_initialization_import(&remote, candidate)?);
+            Err(BackendError::OutcomeUnknown)
+        });
+    assert_eq!(response.status, 503);
+    assert!(!service.initialized());
+    assert!(postgres_pending_exists(&service.data_dir)?);
+    let committed = FileBackend::open(&remote)?.load()?;
+    let (conflict, _) = service.initialize_with_postgres_import(&body, 101, "conflict", |_, _| {
+        Err(BackendError::RootNotEmpty)
+    });
+    assert_eq!(conflict.status, 409);
+    assert_eq!(FileBackend::open(&remote)?.load()?, committed);
+    assert!(postgres_pending_exists(&service.data_dir)?);
+    drop(service);
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 102, "retry", |_, candidate| {
+            assert_eq!(candidate, &committed);
+            mock_postgres_initialization_import(&remote, candidate)
+        });
+    assert_eq!(response.status, 200);
+    assert_eq!(FileBackend::open(&remote)?.load()?, committed);
+    Ok(())
+}
+
+#[test]
+fn postgres_pending_candidate_survives_audit_and_publication_failure_without_releasing_fences()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    service.audit_capacity = 0;
+    let body = postgres_initialization_body();
+    let mut imports = 0;
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 100, "audit-full", |_, _| {
+            imports += 1;
+            Err(BackendError::Unavailable)
+        });
+    assert_eq!(response.status, 503);
+    assert_eq!(imports, 0);
+    assert!(postgres_pending_exists(&service.data_dir)?);
+    let pending = postgres_pending_path(&service.data_dir)?;
+    let prepared = FileBackend::open(&pending)?.load()?;
+    drop(service);
+
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let data_dir = service.data_dir.clone();
+    let remote = root.path.join("remote");
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 101, "publish-fault", |_, candidate| {
+            assert!(ExclusiveDirectory::open(&root.path).is_err());
+            assert!(matches!(
+                FileBackend::open(&pending),
+                Err(BackendError::WriterLocked)
+            ));
+            let remote_fence = mock_postgres_initialization_import(&remote, candidate)?;
+            // A non-cooperating filesystem fault prevents publication. It must
+            // not delete the committed remote candidate or overwrite this path.
+            private_directory(&data_dir).map_err(|_| BackendError::Io)?;
+            fs::write(data_dir.join("foreign"), b"retain").map_err(|_| BackendError::Io)?;
+            Ok(remote_fence)
+        });
+    assert_eq!(response.status, 503);
+    assert_eq!(fs::read(data_dir.join("foreign"))?, b"retain");
+    assert_eq!(FileBackend::open(&remote)?.load()?, prepared);
+    assert_eq!(FileBackend::open(&pending)?.load()?, prepared);
+    // Remove only the explicit fault fixture, then retry the same candidate.
+    fs::remove_dir_all(&data_dir)?;
+    drop(service);
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 102, "retry", |_, candidate| {
+            mock_postgres_initialization_import(&remote, candidate)
+        });
+    assert_eq!(response.status, 200);
+    assert!(!postgres_pending_exists(&data_dir)?);
+    Ok(())
+}
+
+#[test]
+fn postgres_published_metadata_with_pending_residue_requires_matching_identity_on_restart()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let body = postgres_initialization_body();
+    let data_dir = service.data_dir.clone();
+    let pending = postgres_pending_path(&data_dir)?;
+    let remote = root.path.join("remote");
+    let (response, _) = service.initialize_with_postgres_import(
+        &body,
+        100,
+        "published-before-crash",
+        |_, candidate| {
+            drop(mock_postgres_initialization_import(&remote, candidate)?);
+            // Model a crash after the atomic metadata rename, before pending
+            // cleanup. The metadata is copied byte-for-byte from the candidate.
+            private_directory(&data_dir).map_err(|_| BackendError::Io)?;
+            for name in [SEAL_METADATA_FILE, DURABLE_PROFILE_FILE, INIT_RECOVERY_FILE] {
+                fs::copy(pending.join(name), data_dir.join(name)).map_err(|_| BackendError::Io)?;
+            }
+            File::open(&data_dir)
+                .and_then(|directory| directory.sync_all())
+                .map_err(|_| BackendError::Io)?;
+            Err(BackendError::OutcomeUnknown)
+        },
+    );
+    assert_eq!(response.status, 503);
+    drop(service);
+    let original_profile = fs::read(data_dir.join(DURABLE_PROFILE_FILE))?;
+    let mut profile = load_durable_profile(&data_dir)?.ok_or("missing profile")?;
+    profile.binding = "0".repeat(64);
+    persist_durable_profile(&data_dir, &profile)?;
+    let mut service = root.service()?;
+    let mut imports = 0;
+    let (response, _) =
+        service.initialize_with_postgres_import(&body, 101, "wrong-published-target", |_, _| {
+            imports += 1;
+            Err(BackendError::Unavailable)
+        });
+    assert_eq!(response.status, 503);
+    assert_eq!(imports, 0);
+    assert!(pending.exists());
+    drop(service);
+    fs::write(data_dir.join(DURABLE_PROFILE_FILE), &original_profile)?;
+    let mut service = root.service()?;
+    assert!(service.recovery_required);
+    assert_eq!(service.unseal(&json!({"key": "unused"})).status, 503);
+    let (response, _) = service.initialize_with_postgres_import(&body, 102, "cleanup", |_, _| {
+        imports += 1;
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 200);
+    assert_eq!(imports, 0);
+    assert!(!service.recovery_required);
+    assert!(!pending.exists());
+    Ok(())
+}
+
+#[test]
+fn postgres_pending_candidate_cannot_be_relocated_to_another_data_directory()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let body = postgres_initialization_body();
+    let (response, _) = service.initialize_with_postgres_import(&body, 100, "prepare", |_, _| {
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 503);
+    let source = postgres_pending_path(&service.data_dir)?;
+    let other = Root::new();
+    let mut relocated = other.service()?;
+    relocated.postgres_durable = Some(invalid_postgres_config());
+    let target = postgres_pending_path(&relocated.data_dir)?;
+    private_directory(&target)?;
+    for entry in fs::read_dir(&source)? {
+        let entry = entry?;
+        fs::copy(entry.path(), target.join(entry.file_name()))?;
+    }
+    let mut imports = 0;
+    let (response, _) =
+        relocated.initialize_with_postgres_import(&body, 101, "relocated", |_, _| {
+            imports += 1;
+            Err(BackendError::Unavailable)
+        });
+    assert_eq!(response.status, 403);
+    assert_eq!(imports, 0);
+    assert!(source.exists());
+    assert!(target.exists());
+    assert!(!relocated.initialized());
+    Ok(())
+}
+
+#[test]
+fn postgres_partial_retired_cleanup_cannot_recreate_an_active_pending_initialization()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    service.postgres_durable = Some(invalid_postgres_config());
+    let body = postgres_initialization_body();
+    let (response, _) = service.initialize_with_postgres_import(&body, 100, "prepare", |_, _| {
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 503);
+    let data_dir = service.data_dir.clone();
+    let pending = postgres_pending_path(&data_dir)?;
+    // Model the final metadata already durably published after remote ack.
+    private_directory(&data_dir)?;
+    for name in [SEAL_METADATA_FILE, DURABLE_PROFILE_FILE, INIT_RECOVERY_FILE] {
+        fs::copy(pending.join(name), data_dir.join(name))?;
+    }
+    File::open(&data_dir)?.sync_all()?;
+    let parent = ExclusiveDirectory::open(&root.path)?;
+    parent.sync_all()?;
+    let mut retired_name = None;
+    retire_postgres_pending(&pending, &parent, |retired| {
+        retired_name = retired.file_name().map(|name| name.to_os_string());
+        fs::remove_file(retired.join("state.hbs"))?;
+        Err(io::Error::other("injected recursive cleanup failure"))
+    })?;
+    assert!(!pending.exists());
+    let retired = root.path.join(retired_name.ok_or("missing retired path")?);
+    assert!(retired.exists());
+    assert!(!retired.join("state.hbs").exists());
+    assert!(retired.join("journal.hbj").exists());
+    drop(parent);
+    drop(service);
+    let mut service = root.service()?;
+    assert!(!service.recovery_required);
+    let mut imports = 0;
+    let (response, _) = service.initialize_with_postgres_import(&body, 101, "retry", |_, _| {
+        imports += 1;
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(response.status, 200);
+    assert_eq!(imports, 0);
+    assert!(service.initialized());
+    Ok(())
+}
+
+#[test]
+fn postgres_service_constructed_before_peer_publication_recovers_same_response()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut first = root.service()?;
+    let mut second = Service::new(
+        root.path.join("data"),
+        &root.path.join("second-audit.jsonl"),
+    )?;
+    first.postgres_durable = Some(invalid_postgres_config());
+    second.postgres_durable = Some(invalid_postgres_config());
+    let remote = root.path.join("remote");
+    let body = postgres_initialization_body();
+    let (response, _) =
+        first.initialize_with_postgres_import(&body, 100, "first", |_, candidate| {
+            mock_postgres_initialization_import(&remote, candidate)
+        });
+    assert_eq!(response.status, 200);
+    assert!(second.seal.is_none());
+    let mut imports = 0;
+    let (recovered, _) = second.initialize_with_postgres_import(&body, 101, "second", |_, _| {
+        imports += 1;
+        Err(BackendError::Unavailable)
+    });
+    assert_eq!(recovered.status, 200);
+    assert_eq!(recovered.body, response.body);
+    assert_eq!(imports, 0);
+    assert!(second.seal.is_some());
+    assert!(second.durable_profile.is_some());
+    Ok(())
+}
 pub(super) struct Root {
     pub(super) path: PathBuf,
 }

@@ -55,11 +55,36 @@ fn basic(input: &Input, checks: &mut Vec<Value>) -> Result<(), Box<dyn std::erro
         b"sealed-ledger".to_vec(),
         b"HBJ2".to_vec(),
     )?;
-    match backend.initialize_empty(&initial) {
-        Ok(()) => check(checks, "durable_initialize_empty", true)?,
-        Err(BackendError::RootNotEmpty) => check(checks, "durable_initialize_empty", true)?,
-        Err(error) => return Err(format!("initialize_empty failed: {error}").into()),
-    }
+    backend.initialize_or_match(&initial)?;
+    check(checks, "durable_initialize_empty", true)?;
+    check(
+        checks,
+        "durable_initialize_empty_rejects_existing_scope",
+        backend.initialize_empty(&initial) == Err(BackendError::RootNotEmpty),
+    )?;
+    backend.close()?;
+    let mut backend = PostgresDurableBackend::open(config(input))?;
+    backend.initialize_or_match(&initial)?;
+    check(
+        checks,
+        "durable_initialization_retry_matches_exact_bundle",
+        true,
+    )?;
+    let conflicting = BackendBundle::new(
+        b"different-initialization-snapshot".to_vec(),
+        initial.ledger.clone(),
+        initial.journal.clone(),
+    )?;
+    check(
+        checks,
+        "durable_initialization_retry_rejects_different_bundle",
+        backend.initialize_or_match(&conflicting) == Err(BackendError::RootNotEmpty),
+    )?;
+    check(
+        checks,
+        "durable_initialization_conflict_preserves_bundle",
+        backend.load()? == initial,
+    )?;
     let loaded = backend.load()?;
     check(checks, "durable_bundle_roundtrip", loaded == initial)?;
     let next_len = backend.append_journal(loaded.journal.len(), b"frame-one")?;
@@ -100,6 +125,17 @@ fn run(input: Input, checks: &mut Vec<Value>) -> Result<(), Box<dyn std::error::
     }
     match input.mode.as_str() {
         "basic" => basic(&input, checks),
+        "reject-orphan" => {
+            let mut backend = PostgresDurableBackend::open(config(&input))?;
+            let initial = BackendBundle::new(vec![1], vec![2], vec![3])?;
+            check(
+                checks,
+                "durable_initialization_rejects_orphan_chunks",
+                backend.initialize_or_match(&initial) == Err(BackendError::Corrupt),
+            )?;
+            backend.close()?;
+            Ok(())
+        }
         "reopen" => {
             let mut backend = PostgresDurableBackend::open(config(&input))?;
             let bundle = backend.load()?;

@@ -100,7 +100,7 @@ the injected backend. Existing callers still select `FileBackend` through the
 path-based constructors.
 
 ```rust
-pub struct DurableService<B: Barrier, S: DurableBackend = FileBackend> {
+pub struct DurableService<B: Barrier, S: DurableBackend = Box<dyn DurableBackend>> {
     backend: S,
     // barrier, decoded snapshot/ledger, replay state, and limits stay here
 }
@@ -131,9 +131,11 @@ ownership. Neither path may turn an unknown write result into an acknowledgement
 The injected-backend tests run the real service protocol against a non-file
 backend: batch mutation, checkpoint, backup restore, reopen, and a persisted
 Apply frame whose acknowledgement is lost. The latter must fence the live
-service and replay exactly once after reopen. All existing server call sites
-still use the filesystem. A server configuration can select `PostgresBackend`
-only after its contract tests and crash receipts pass.
+service and replay exactly once after reopen. Server process configuration can
+select `PostgresDurableBackend`; the default path-based constructors still
+select filesystem storage. PostgreSQL initialization uses a
+[recoverable prepared bundle](HEPTABAO_POSTGRES_INITIALIZATION_RECOVERY.md)
+before remote publication.
 
 ## PostgreSQL mapping
 
