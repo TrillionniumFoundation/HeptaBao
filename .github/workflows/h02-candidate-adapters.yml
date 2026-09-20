@@ -1,10 +1,8 @@
 name: h02-candidate-adapters
 
 on:
-  push:
-    branches: ["codex/h02-candidate-adapters-v1"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

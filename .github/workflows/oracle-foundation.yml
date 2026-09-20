@@ -1,10 +1,8 @@
 name: oracle-foundation
 
 on:
-  push:
-    branches: ["codex/h01-oracle-foundation"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

@@ -1,10 +1,8 @@
 name: plan-v1.3-foundation
 
 on:
-  push:
-    branches: ["codex/plan-v1.3-foundation-closure-v1"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

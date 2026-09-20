@@ -1,14 +1,8 @@
 name: HeptaBao V2 continuous assurance
 
 on:
-  push:
-    branches:
-      - codex/v2.0-product-closure-20260907
-  schedule:
-    # Full assurance remains available nightly without duplicating PR checks.
-    - cron: "47 2 * * *"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

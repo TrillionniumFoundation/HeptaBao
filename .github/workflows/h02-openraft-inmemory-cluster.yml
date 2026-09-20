@@ -1,12 +1,8 @@
 name: h02-openraft-inmemory-cluster
 
 on:
-  push:
-    branches:
-      - "codex/h02-openraft-inmemory-cluster-v1"
-      - "codex/h02-os-durable-clock-supplychain-v1"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

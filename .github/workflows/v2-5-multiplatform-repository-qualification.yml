@@ -1,14 +1,8 @@
 name: HeptaBao V2.5 multi-platform repository qualification
 
 on:
-  push:
-    branches:
-      - codex/openbao-replacement-v2.4-authoritative-closure-20260909
-  schedule:
-    # Expensive cross-platform qualification is a nightly signal.
-    - cron: "17 2 * * *"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

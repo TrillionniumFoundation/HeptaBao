@@ -1,10 +1,8 @@
 name: h01-h02-next-foundation
 
 on:
-  push:
-    branches: ["codex/h01-h02-next-foundation"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

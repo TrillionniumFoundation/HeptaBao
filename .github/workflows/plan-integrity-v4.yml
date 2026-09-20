@@ -1,12 +1,8 @@
 name: plan-integrity-v4
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.2-execution-contracts-gap-closure-v1"
-      - "codex/plan-v1.2.2-unified-gap-closure-v1"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 
