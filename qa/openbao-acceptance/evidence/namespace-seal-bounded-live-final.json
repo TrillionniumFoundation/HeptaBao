@@ -80,8 +80,8 @@
   "independent_namespace_key_hierarchy": false,
   "full_openbao_namespace_seal_compatibility": false,
   "independent_qualification": false,
-  "candidate_binary_sha256": "907c4e745b0544e2680f2b01fb29203192df8626ee064246f8b593d1b5aaa192",
-  "candidate_binary_source_head": "ac0f0f1a868cd73947ac519bf8120c1d69e4428c",
+  "candidate_binary_sha256": "cb0f2b3e52b4818781ef301a28a93feafc4485670be74e13adb2e25cfc433169",
+  "candidate_binary_source_head": "4fa64476e24d3b9ed260c6b3ea897ce5a300ce74",
   "source_worktree_dirty": false,
   "execution_platform": "Linux aarch64 guest (Ubuntu Noble)"
 }
