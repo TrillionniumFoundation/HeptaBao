@@ -3,7 +3,7 @@
 use super::online_auth::OnlineAuthObservation;
 use super::tests::{Root, bootstrap, call};
 use super::*;
-use crate::auth::{RadiusLoginObservation, RadiusRenewalObservation};
+use crate::auth::{ProviderRenewalObservation, RadiusLoginObservation, RadiusRenewalObservation};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
@@ -57,8 +57,8 @@ fn pending_with_wrapping(
 fn accepted(service: &mut Service, plan: PendingExternalRequest) -> Response {
     service.finish_external_request(
         plan,
-        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::RadiusRenewal(
-            RadiusRenewalObservation,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::ProviderRenewal(
+            ProviderRenewalObservation::Radius(RadiusRenewalObservation),
         ))),
     )
 }
@@ -239,7 +239,7 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     let root = Root::new();
     let (service, _, _, _, _) = fixture(&root)?;
     let state = service.state.as_ref().ok_or("missing state")?;
-    assert_eq!(state.schema, 16);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     downgraded.schema = 15;
     assert!(downgraded.validate_format().is_err());

@@ -75,8 +75,20 @@ struct Group {
     policies: BTreeSet<String>,
     member_entity_ids: BTreeSet<String>,
     member_group_ids: BTreeSet<String>,
+    // Only provider observations may populate this authority, never HTTP members.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    external_memberships: BTreeMap<String, BTreeMap<String, ExternalMembership>>,
     created_at: u64,
     updated_at: u64,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExternalMembership {
+    mount_accessor: String,
+    entity_alias_id: String,
+    entity_alias_name: String,
+    group_alias_name: String,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -172,6 +184,7 @@ fn handle_entity_id(
             let Some(entity) = state.entities.remove(id) else {
                 return Ok(empty(false));
             };
+            state.retain_external_memberships(|entity_id, _, _| entity_id != id, now);
             state.entity_names.remove(&entity.name);
             for alias_id in entity.aliases {
                 if let Some(alias) = state.aliases.remove(&alias_id) {
@@ -393,6 +406,12 @@ fn handle_entity_merge(
     }
 
     let mut candidate = state.clone();
+    // A merge changes provider identity bindings. Require a fresh observation
+    // for both sides rather than transferring an old external grant.
+    candidate.retain_external_memberships(
+        |entity_id, _, _| entity_id != destination_id && !sources.contains(entity_id),
+        now,
+    );
     let mut destination = candidate
         .entities
         .get(destination_id)
@@ -614,6 +633,7 @@ fn handle_alias_id(
             state
                 .alias_keys
                 .remove(&alias_key(&alias.mount_accessor, &alias.name));
+            state.retain_external_memberships(|_, _, proof| proof.entity_alias_id != id, now);
             if let Some(entity) = state.entities.get_mut(&alias.canonical_id) {
                 entity.aliases.remove(id);
                 entity.updated_at = now;
@@ -675,6 +695,11 @@ fn upsert_alias(
             && alias.mount_accessor == mount_accessor
     }) {
         return Err(error(409, "entity already has an alias for this mount"));
+    }
+    if state.aliases.get(&id).is_some_and(|old| {
+        old.canonical_id != canonical_id || old.name != name || old.mount_accessor != mount_accessor
+    }) {
+        state.retain_external_memberships(|_, _, proof| proof.entity_alias_id != id, now);
     }
     if let Some(old) = state.aliases.get(&id) {
         state
@@ -1020,6 +1045,13 @@ fn upsert_group(
     if !matches!(kind, "internal" | "external") {
         return Err(bad("group type must be internal or external"));
     }
+    if kind == "external"
+        && (body.get("member_entity_ids").is_some() || body.get("member_group_ids").is_some())
+    {
+        return Err(bad(
+            "external group membership is managed by the authentication provider",
+        ));
+    }
     let policies = if body.get("policies").is_some() {
         optional_set(body, "policies", MAX_POLICIES, "policy")?
     } else {
@@ -1086,6 +1118,10 @@ fn upsert_group(
         policies,
         member_entity_ids: members.clone(),
         member_group_ids: child_groups,
+        external_memberships: old
+            .as_ref()
+            .map(|group| group.external_memberships.clone())
+            .unwrap_or_default(),
         created_at,
         updated_at: now,
     };
@@ -1193,6 +1229,7 @@ fn handle_group_alias_id(
             state
                 .group_alias_keys
                 .remove(&alias_key(&alias.mount_accessor, &alias.name));
+            state.retain_external_memberships(|_, alias_id, _| alias_id != id, now);
             Ok(empty(true))
         }
         "POST" | "PUT" | "PATCH" => {
@@ -1242,6 +1279,11 @@ fn upsert_group_alias(
         && other != &id
     {
         return Err(error(409, "group alias already exists for this mount"));
+    }
+    if state.group_aliases.get(&id).is_some_and(|old| {
+        old.canonical_id != canonical_id || old.name != name || old.mount_accessor != mount_accessor
+    }) {
+        state.retain_external_memberships(|_, alias_id, _| alias_id != id, now);
     }
     if let Some(old) = state.group_aliases.get(&id) {
         state
@@ -1638,3 +1680,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "identity_external_tests.rs"]
+mod external_tests;

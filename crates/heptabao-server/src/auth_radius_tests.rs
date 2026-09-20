@@ -1,6 +1,25 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+impl AuthState {
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_radius_renewal(
+        &self,
+        actor: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<RadiusRenewalPlan>, AuthError> {
+        match self.prepare_provider_renewal(actor, namespace, method, path, body, now)? {
+            Some(ProviderRenewalPlan::Radius(plan)) => Ok(Some(plan)),
+            None => Ok(None),
+            _ => Err(denied()),
+        }
+    }
+}
+
 fn fixture() -> (AuthState, String, String) {
     let (mut state, root) = AuthState::bootstrap(100).unwrap();
     let actor = state.authenticate(&root, 100).unwrap();

@@ -81,6 +81,244 @@ impl IdentityState {
         Ok(projection)
     }
 
+    pub(crate) fn verify_external_identity(
+        &self,
+        id: &str,
+        accessor: &str,
+        username: &str,
+    ) -> Result<()> {
+        let projected = self.project(id)?;
+        if projected.disabled {
+            return Err(error(403, "identity unavailable"));
+        }
+        let alias_id = self
+            .alias_keys
+            .get(&alias_key(accessor, username))
+            .ok_or_else(|| error(403, "provider identity alias unavailable"))?;
+        let alias = self
+            .aliases
+            .get(alias_id)
+            .ok_or_else(|| error(503, "identity alias missing"))?;
+        if alias.canonical_id != projected.entity_id
+            || alias.mount_accessor != accessor
+            || alias.name != username
+        {
+            return Err(error(403, "provider identity alias changed"));
+        }
+        Ok(())
+    }
+
+    /// Apply only a successfully authenticated provider observation. Service
+    /// validates the live auth mount/accessor before entering this transaction.
+    pub(crate) fn refresh_external_groups(
+        &mut self,
+        id: &str,
+        accessor: &str,
+        names: &BTreeSet<String>,
+        now: u64,
+    ) -> Result<IdentityProjection> {
+        valid_identifier(accessor, "mount accessor")?;
+        if names.len() > MAX_MEMBERS
+            || names.iter().any(|name| {
+                name.is_empty() || name.len() > 256 || name.chars().any(char::is_control)
+            })
+        {
+            return Err(bad("external group observation exceeds bound"));
+        }
+        let projection = self.project(id)?;
+        if projection.disabled {
+            return Err(error(403, "identity unavailable"));
+        }
+        let entity_id = projection.entity_id;
+        let mut aliases = self
+            .aliases
+            .values()
+            .filter(|alias| alias.canonical_id == entity_id && alias.mount_accessor == accessor);
+        let entity_alias = aliases
+            .next()
+            .ok_or_else(|| error(403, "provider identity alias unavailable"))?;
+        if aliases.next().is_some()
+            || self
+                .alias_keys
+                .get(&alias_key(accessor, &entity_alias.name))
+                != Some(&entity_alias.id)
+            || !self
+                .entities
+                .get(&entity_id)
+                .is_some_and(|entity| entity.aliases.contains(&entity_alias.id))
+        {
+            return Err(error(503, "inconsistent provider identity alias"));
+        }
+        let entity_alias = entity_alias.clone();
+        let mut observed = Vec::new();
+        for name in names {
+            let key = alias_key(accessor, name);
+            let Some(alias_id) = self.group_alias_keys.get(&key) else {
+                if self
+                    .group_aliases
+                    .values()
+                    .any(|alias| alias.mount_accessor == accessor && alias.name == *name)
+                {
+                    return Err(error(503, "identity group alias index is missing"));
+                }
+                continue; // Unmapped provider groups carry no local authority.
+            };
+            let alias = self
+                .group_aliases
+                .get(alias_id)
+                .ok_or_else(|| error(503, "identity group alias missing"))?;
+            if alias.id != *alias_id
+                || alias.mount_accessor != accessor
+                || alias.name != *name
+                || !self
+                    .groups
+                    .get(&alias.canonical_id)
+                    .is_some_and(|group| group.kind == "external")
+            {
+                return Err(error(503, "inconsistent external group alias"));
+            }
+            observed.push(alias.clone());
+        }
+        let mut candidate = self.clone();
+        candidate.retain_external_memberships(
+            |member, _, proof| member != entity_id || proof.mount_accessor != accessor,
+            now,
+        );
+        // Legacy/manual member indexes are not evidence. Reconcile those too
+        // for this accessor, while preserving evidence from another accessor.
+        let scoped_groups = candidate
+            .group_aliases
+            .values()
+            .filter(|alias| alias.mount_accessor == accessor)
+            .map(|alias| alias.canonical_id.clone())
+            .collect::<BTreeSet<_>>();
+        for group_id in scoped_groups {
+            let group = candidate.groups.get_mut(&group_id).ok_or_else(not_found)?;
+            if !group.external_memberships.contains_key(&entity_id)
+                && group.member_entity_ids.remove(&entity_id)
+            {
+                group.updated_at = now;
+                if let Some(entity) = candidate.entities.get_mut(&entity_id) {
+                    entity.group_ids.remove(&group_id);
+                    entity.updated_at = now;
+                }
+            }
+        }
+        for alias in observed {
+            let group = candidate
+                .groups
+                .get_mut(&alias.canonical_id)
+                .ok_or_else(not_found)?;
+            if group.member_entity_ids.len() >= MAX_MEMBERS
+                && !group.member_entity_ids.contains(&entity_id)
+            {
+                return Err(error(507, "external group membership exceeds bound"));
+            }
+            let evidence = group
+                .external_memberships
+                .entry(entity_id.clone())
+                .or_default();
+            if evidence.len() >= MAX_MEMBERS && !evidence.contains_key(&alias.id) {
+                return Err(error(507, "external group evidence exceeds bound"));
+            }
+            evidence.insert(
+                alias.id,
+                ExternalMembership {
+                    mount_accessor: accessor.to_owned(),
+                    entity_alias_id: entity_alias.id.clone(),
+                    entity_alias_name: entity_alias.name.clone(),
+                    group_alias_name: alias.name,
+                },
+            );
+            group.member_entity_ids.insert(entity_id.clone());
+            group.updated_at = now;
+            let entity = candidate
+                .entities
+                .get_mut(&entity_id)
+                .ok_or_else(not_found)?;
+            entity.group_ids.insert(group.id.clone());
+            entity.updated_at = now;
+        }
+        let projection = candidate.project(&entity_id)?;
+        *self = candidate;
+        Ok(projection)
+    }
+
+    /// Remove evidence and its forward/reverse membership together. Alias
+    /// mutation and mount retirement use this to prevent stale/ABA grants.
+    pub(super) fn retain_external_memberships(
+        &mut self,
+        keep: impl Fn(&str, &str, &ExternalMembership) -> bool,
+        now: u64,
+    ) {
+        for group in self.groups.values_mut() {
+            let previous = group
+                .external_memberships
+                .keys()
+                .cloned()
+                .collect::<Vec<_>>();
+            group.external_memberships.retain(|entity_id, proofs| {
+                proofs.retain(|alias_id, proof| keep(entity_id, alias_id, proof));
+                !proofs.is_empty()
+            });
+            for entity_id in previous {
+                if !group.external_memberships.contains_key(&entity_id) {
+                    group.member_entity_ids.remove(&entity_id);
+                    group.updated_at = now;
+                    if let Some(entity) = self.entities.get_mut(&entity_id) {
+                        entity.group_ids.remove(&group.id);
+                        entity.updated_at = now;
+                    }
+                }
+            }
+        }
+    }
+
+    pub(crate) fn revoke_external_groups(&mut self, accessor: &str, now: u64) -> Result<()> {
+        valid_identifier(accessor, "mount accessor")?;
+        self.retain_external_memberships(|_, _, proof| proof.mount_accessor != accessor, now);
+        Ok(())
+    }
+
+    pub(crate) fn has_external_groups(&self) -> bool {
+        self.groups
+            .values()
+            .any(|group| !group.external_memberships.is_empty())
+    }
+
+    fn external_member(&self, group: &Group, entity: &Entity) -> bool {
+        group.member_entity_ids.contains(&entity.id)
+            && group
+                .external_memberships
+                .get(&entity.id)
+                .is_some_and(|proofs| {
+                    proofs.len() <= MAX_MEMBERS
+                        && proofs.iter().any(|(alias_id, proof)| {
+                            self.group_aliases.get(alias_id).is_some_and(|alias| {
+                                alias.canonical_id == group.id
+                                    && alias.mount_accessor == proof.mount_accessor
+                                    && alias.name == proof.group_alias_name
+                                    && self
+                                        .group_alias_keys
+                                        .get(&alias_key(&alias.mount_accessor, &alias.name))
+                                        == Some(alias_id)
+                            }) && self
+                                .aliases
+                                .get(&proof.entity_alias_id)
+                                .is_some_and(|alias| {
+                                    alias.canonical_id == entity.id
+                                        && alias.mount_accessor == proof.mount_accessor
+                                        && alias.name == proof.entity_alias_name
+                                        && entity.aliases.contains(&alias.id)
+                                        && self
+                                            .alias_keys
+                                            .get(&alias_key(&alias.mount_accessor, &alias.name))
+                                            == Some(&alias.id)
+                                })
+                        })
+                })
+    }
+
     pub(crate) fn project(&self, id: &str) -> Result<IdentityProjection> {
         valid_identifier(id, "entity id")?;
         let entity = if let Some(entity) = self.entities.get(id) {
@@ -102,25 +340,27 @@ impl IdentityState {
         if self.groups.len() > MAX_IDENTITY_RECORDS {
             return Err(error(507, "identity group capacity exceeded"));
         }
-        // Derive membership from authoritative group records, not the entity's
-        // reverse-index convenience field. External-group login sync is separate.
+        // Internal members are administrator-owned. External members require
+        // provider evidence still bound to both current aliases; HTTP members
+        // and reverse indexes alone never grant external-group authority.
         let mut parents: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
         let mut direct = Vec::new();
         for (id, group) in &self.groups {
-            if group.kind != "internal" {
-                continue;
-            }
-            if group.member_entity_ids.contains(&entity.id) {
-                direct.push(id.as_str());
-            }
-            for child in &group.member_group_ids {
-                if self
-                    .groups
-                    .get(child)
-                    .is_some_and(|group| group.kind == "internal")
-                {
-                    parents.entry(child).or_default().insert(id);
+            match group.kind.as_str() {
+                "internal" => {
+                    if group.member_entity_ids.contains(&entity.id) {
+                        direct.push(id.as_str());
+                    }
+                    for child in &group.member_group_ids {
+                        if self.groups.get(child).is_some_and(|group| {
+                            matches!(group.kind.as_str(), "internal" | "external")
+                        }) {
+                            parents.entry(child).or_default().insert(id);
+                        }
+                    }
                 }
+                "external" if self.external_member(group, entity) => direct.push(id.as_str()),
+                _ => {}
             }
         }
         let mut expansion = Expansion {

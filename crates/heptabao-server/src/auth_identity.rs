@@ -7,6 +7,12 @@ pub(crate) struct LoginIdentity {
     pub(crate) alias: String,
 }
 
+pub(crate) struct ExternalGroups {
+    pub(crate) mount: String,
+    pub(crate) alias: String,
+    pub(crate) names: BTreeSet<String>,
+}
+
 impl Principal {
     pub(crate) fn entity_id(&self) -> Option<&str> {
         self.token.entity_id.as_deref()

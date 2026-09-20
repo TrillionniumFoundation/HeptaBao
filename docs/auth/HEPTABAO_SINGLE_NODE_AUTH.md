@@ -346,7 +346,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports host-enrolled `jwks_url` and OIDC Discovery over verified HTTPS; see [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks and full OpenBao claim-mapping semantics remain unimplemented. Static and remote trust sources are mutually exclusive.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports host-enrolled `jwks_url` and OIDC Discovery over verified HTTPS; see [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks use the separate OIDC mount profile; full OpenBao JWT claim-mapping parity remains open. Static and remote trust sources are mutually exclusive.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 
@@ -551,6 +551,45 @@ token policies. Membership is observed on every login, so removal from the
 directory removes those policies from the next token without waiting for a local
 cache expiry. Search is capped at 128 groups and rejects referrals, controls,
 arbitrary filter syntax and paging.
+
+Direct LDAP tokens retain their bounded original password only inside encrypted
+Auth state, with a zeroizing credential owner and schema-17 issuer provenance.
+Every `auth/token/renew-self`, `renew` and `renew-accessor` request rebinds that
+credential and repeats the live group search outside the Service writer. Bind,
+search or transport failure returns 400. The observed groups and current local
+user/group mappings must yield the same token policy set (ignoring implicit
+`default`); a policy change returns 500 and requires a new login. Current local
+user and mount TTL limits apply after authentication. The bounded profile has
+no LDAP token-period configuration.
+
+LDAP directory group names also refresh external Identity groups selected by
+`identity/group-alias` name plus the issuing mount accessor. Login and successful
+renewal add/remove that entity's membership for this accessor only; a second
+mount's evidence remains independent. Identity-only policy changes therefore
+allow renewal and appear immediately in `identity_policies`, effective request
+permissions and group membership. Internal ancestor-group policy projection uses
+the refreshed membership. Manually supplied or legacy external member indexes do
+not substitute for provider evidence. Disabling a mount removes its evidence;
+renaming, deleting or rebinding an identity alias invalidates its grants.
+
+The shared provider renewal finalizer rechecks the live actor, target token and
+accessor, username/entity alias binding, enabled mount/configuration, local
+user/group mapping revisions, namespace, expiry, activation and HA leadership
+before publication. The token, membership and optional response wrapper share
+one commit. Pre-publication failure cannot publish a partial extension or group
+update. A successful remote commit with an unknown local outcome follows the
+existing recovery protocol. Bearer echo is limited to the credential supplied
+on `renew-self` or `renew`; accessor renewal cannot reconstruct a bearer.
+
+Token-API children and new orphan tokens never inherit LDAP passwords. Legacy
+children with a parent keep their ordinary renewal behavior. A legacy parentless
+LDAP-associated token without direct-issuer provenance must log in again to
+renew, because older direct logins and token-API orphans are indistinguishable;
+its existing permissions and expiry are not otherwise changed. Auth and Service
+state tests cover persistence, concurrency fences, group synchronization and
+atomic wrapping. `qa/openbao-acceptance/ldap_renewal_live.py` compares real LDAPS
+Bind/Search, credential/group revocation, identity-only group updates and restart
+renewal against pinned OpenBao 2.6.2 with explicit configuration adaptation.
 
 The latest exact-head SSD Linux arm64 run is recorded in the [scoped OpenLDAP receipt](../../qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json).
 It is external-provider evidence only; it does not admit full OpenBao LDAP

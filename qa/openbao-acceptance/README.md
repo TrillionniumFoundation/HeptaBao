@@ -116,3 +116,22 @@ secret versus official host/port/secret fields. The official request may omit
 Message-Authenticator; the candidate responder still requires it, and both
 responders sign reply authenticators. Only fixed case IDs, statuses and boolean
 observations enter the report. This does not establish RADIUS API parity.
+
+`radius_renewal_ha.py` uses three real server processes and gates signed UDP
+acceptance across leader SIGKILL, quorum loss and sealing. It reads absolute
+token expiry back to detect stale-authority renewal. This is a process-level HA
+fixture, not evidence from independent physical hosts.
+
+`ldap_renewal_live.py` compares two independent real OpenLDAP stores with pinned
+LDAPS certificates and the official 2.6.2 binary. Its provider trace checks fresh
+Bind/Search on all three token renewal routes, changed/deleted LDAP passwords,
+directory outages, token-policy changes, revocation, wrapping and service restart.
+A separate identity trace keeps token policies fixed while external group aliases
+add/remove live identity policies. Two auth accessors share one entity and the same
+directory group name, so renewal must update only the observed accessor's group
+membership; read access, token lookup, renewal output and group membership are
+checked together and after restart. Configuration is explicitly adapted: candidate
+host enrollment and DN template/local user authority versus official LDAP service
+bind/search fields and mount TTL. Deleting `userPassword` tests simple-bind
+credential disablement, not Active Directory account flags. Receipts contain fixed
+case IDs, statuses and booleans, never directory log contents or credentials.

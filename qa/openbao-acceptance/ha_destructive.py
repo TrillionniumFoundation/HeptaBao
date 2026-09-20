@@ -309,7 +309,8 @@ class Cluster:
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError("restart_unseal_failed")
 
-    def run(self) -> None:
+    def bootstrap(self) -> None:
+        """Start the synthetic three-voter cluster without unrelated fault cases."""
         seed = self.nodes[0]
         seed.start(ha=False)
         self.check("fresh_seed_uninitialized", seed.call("GET", "sys/health")[0] == 501)
@@ -337,6 +338,8 @@ class Cluster:
         for node in self.nodes:
             self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
 
+    def run(self) -> None:
+        self.bootstrap()
         # Test that a legitimate peer cannot unseal a different application
         # cluster after it has already joined the committed three-voter set.
         wrong = self.nodes[2]

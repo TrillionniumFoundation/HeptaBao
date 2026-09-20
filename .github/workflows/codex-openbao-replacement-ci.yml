@@ -336,6 +336,9 @@ jobs:
           timeout 180 python qa/openbao-acceptance/radius_renewal_live.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --output "$reports/radius-renewal.json"
+          timeout 240 python qa/openbao-acceptance/radius_renewal_ha.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/radius-renewal-ha.json"
 
       - name: Compare operational Agent and Proxy behavior with official OpenBao
         shell: bash
@@ -383,6 +386,7 @@ jobs:
           timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
           timeout 180 python qa/openbao-acceptance/ldap_bounded.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap.json"
           timeout 240 python qa/openbao-acceptance/ldap_openldap_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/openldap.json"
+          timeout 240 python qa/openbao-acceptance/ldap_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-renewal.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.

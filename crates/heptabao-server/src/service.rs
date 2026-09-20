@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 16;
+const CURRENT_STATE_SCHEMA: u32 = 17;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -1854,7 +1854,7 @@ impl Service {
         if let Some(response) = self.plugin_auth_login(&admitted, &request) {
             return response;
         }
-        if let Some(response) = self.online_radius_renewal(&admitted, &mut principal, &request) {
+        if let Some(response) = self.online_provider_renewal(&admitted, &mut principal, &request) {
             return response;
         }
         if let Some(response) = self.online_login(&admitted, &request) {
@@ -2178,6 +2178,19 @@ impl Service {
         ) {
             Ok(Some(mut response)) => {
                 let mut engines = state.engines.clone();
+                if response.mutated
+                    && method == "DELETE"
+                    && let Some(mount) = path.strip_prefix("sys/auth/")
+                    && let Ok(accessor) = state
+                        .auth
+                        .mount_accessor(namespace, mount.trim_end_matches('/'))
+                    && !auth.has_mount_accessor(namespace, &accessor)
+                    && let Err(error) =
+                        engines.revoke_external_group_membership(namespace, &accessor, now)
+                {
+                    erase_json(&mut response.body);
+                    return Response::error(error.status, &error.message);
+                }
                 if !path.starts_with("sys/wrapping/")
                     && let Err(error) = Self::finish_identity_response(
                         &mut auth,
@@ -6495,6 +6508,10 @@ mod auth_mount_ttl_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_radius_renewal_tests.rs"]
 mod radius_renewal_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_ldap_renewal_tests.rs"]
+mod ldap_renewal_tests;
 
 #[cfg(test)]
 #[path = "service_state_store_integration_tests.rs"]

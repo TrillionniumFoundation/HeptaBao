@@ -23,6 +23,9 @@ impl State {
         self.auth
             .validate_radius_renewal_state()
             .map_err(|_| Response::error(503, "invalid RADIUS renewal state"))?;
+        self.auth
+            .validate_ldap_renewal_state()
+            .map_err(|_| Response::error(503, "invalid LDAP renewal state"))?;
         if self.schema < 5 && self.auth.has_online_auth_state() {
             return Err(Response::error(
                 503,
@@ -105,6 +108,15 @@ impl State {
                 "RADIUS renewal and token API provenance require schema 16",
             ));
         }
+        if self.schema < 17
+            && (self.auth.has_ldap_renewal_provenance()
+                || self.engines.has_external_group_membership())
+        {
+            return Err(Response::error(
+                503,
+                "LDAP renewal and external group evidence require schema 17",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -125,7 +137,9 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | CURRENT_STATE_SCHEMA => {
+                Ok(())
+            }
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -181,8 +195,25 @@ impl Service {
             .as_str()
             .filter(|id| !id.is_empty())
         else {
+            if response.external_groups.is_some() {
+                return Err(Response::error(
+                    503,
+                    "provider identity binding is unavailable",
+                ));
+            }
             return Ok(());
         };
+        if let Some(groups) = response.external_groups.take() {
+            let accessor = auth
+                .mount_accessor(namespace, &groups.mount)
+                .map_err(auth_error)?;
+            engines
+                .verify_external_group_identity(namespace, id, &accessor, &groups.alias)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+            engines
+                .refresh_external_group_membership(namespace, id, &accessor, &groups.names, now)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
         let projection = engines
             .identity_projection(namespace, id)
             .map_err(|error| Response::error(error.status, &error.message))?;

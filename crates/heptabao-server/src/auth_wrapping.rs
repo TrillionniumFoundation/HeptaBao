@@ -177,6 +177,7 @@ impl AuthState {
         }
         let result = AuthResponse {
             login_identity: None,
+            external_groups: None,
             status: 200,
             mutated: true,
             body: json!({"request_id":"","lease_id":"","lease_duration":0,"renewable":false,
@@ -304,6 +305,7 @@ impl AuthState {
         }
         Ok(AuthResponse {
             login_identity: None,
+            external_groups: None,
             status: 200,
             mutated: true,
             body: wrapped.response.clone(),

@@ -4,7 +4,7 @@ use super::*;
 use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
     LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
-    RadiusLoginObservation, RadiusLoginPlan, RadiusRenewalObservation, RadiusRenewalPlan,
+    ProviderRenewalObservation, ProviderRenewalPlan, RadiusLoginObservation, RadiusLoginPlan,
     RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
@@ -28,7 +28,7 @@ pub(super) enum OnlineAuthEffect {
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
     Radius(RadiusLoginPlan),
-    RadiusRenewal(Box<RadiusRenewalEffect>),
+    ProviderRenewal(Box<ProviderRenewalEffect>),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
         namespace: String,
@@ -39,10 +39,9 @@ pub(super) enum OnlineAuthEffect {
     },
 }
 
-pub(super) struct RadiusRenewalEffect {
-    plan: RadiusRenewalPlan,
+pub(super) struct ProviderRenewalEffect {
+    plan: ProviderRenewalPlan,
     actor: Principal,
-    activation_nonce: String,
     echo_token: Option<Zeroizing<String>>,
     path: String,
     wrap_ttl_seconds: Option<u64>,
@@ -50,6 +49,7 @@ pub(super) struct RadiusRenewalEffect {
 
 pub(super) struct OnlineAuthEffectPlan {
     outbound: crate::outbound::Outbound,
+    activation_nonce: String,
     namespace: String,
     request_now: u64,
     effect: OnlineAuthEffect,
@@ -60,7 +60,7 @@ pub(crate) enum OnlineAuthObservation {
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
     Radius(RadiusLoginObservation),
-    RadiusRenewal(RadiusRenewalObservation),
+    ProviderRenewal(ProviderRenewalObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
 }
@@ -84,10 +84,10 @@ impl OnlineAuthEffectPlan {
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Radius)
                 .map_err(auth_error),
-            OnlineAuthEffect::RadiusRenewal(plan) => plan
+            OnlineAuthEffect::ProviderRenewal(plan) => plan
                 .plan
                 .execute(&self.outbound)
-                .map(OnlineAuthObservation::RadiusRenewal)
+                .map(OnlineAuthObservation::ProviderRenewal)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcBegin(plan) => plan
                 .execute(&self.outbound)
@@ -112,13 +112,13 @@ impl OnlineAuthEffectPlan {
 }
 
 impl Service {
-    pub(super) fn online_radius_renewal(
+    pub(super) fn online_provider_renewal(
         &mut self,
         admitted: &State,
         principal: &mut Option<Principal>,
         request: &RequestView<'_>,
     ) -> Option<Response> {
-        let plan = match admitted.auth.prepare_radius_renewal(
+        let plan = match admitted.auth.prepare_provider_renewal(
             principal.as_ref(),
             request.namespace,
             request.method,
@@ -141,12 +141,12 @@ impl Service {
         };
         self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
             outbound: self.outbound.clone(),
+            activation_nonce: self.unseal_nonce.clone(),
             namespace: request.namespace.to_owned(),
             request_now: request.now,
-            effect: OnlineAuthEffect::RadiusRenewal(Box::new(RadiusRenewalEffect {
+            effect: OnlineAuthEffect::ProviderRenewal(Box::new(ProviderRenewalEffect {
                 plan,
                 actor,
-                activation_nonce: self.unseal_nonce.clone(),
                 echo_token: match request.path {
                     "auth/token/renew-self" => Some(Zeroizing::new(request.token.to_owned())),
                     "auth/token/renew" => request
@@ -162,49 +162,33 @@ impl Service {
         });
         Some(Response::error(
             500,
-            "RADIUS renewal provider effect was not dispatched",
+            "provider renewal provider effect was not dispatched",
         ))
     }
 
-    fn finalize_radius_renewal_effect(
+    fn finalize_provider_renewal_effect(
         &mut self,
         namespace: &str,
-        renewal: RadiusRenewalEffect,
-        observation: RadiusRenewalObservation,
+        renewal: ProviderRenewalEffect,
+        observation: ProviderRenewalObservation,
     ) -> Response {
-        let RadiusRenewalEffect {
+        let ProviderRenewalEffect {
             plan,
             mut actor,
-            activation_nonce,
             echo_token,
             path,
             wrap_ttl_seconds,
         } = renewal;
-        if self.recovery_required || self.state.is_none() || self.unseal_nonce != activation_nonce {
-            return Response::error(503, "RADIUS renewal authority is unavailable");
-        }
-        if let Some(ha) = self.ha.as_ref() {
-            match ha.lock() {
-                Ok(ha) if ha.is_leader().unwrap_or(false) => {}
-                _ => return Response::error(503, "RADIUS renewal leader changed"),
-            }
-        }
-        if let Err(error) = self.sync_from_ha() {
-            return error;
-        }
         let Some(mut state) = self.state.clone() else {
-            return Response::error(503, "server sealed during RADIUS renewal");
+            return Response::error(503, "provider renewal authority is unavailable");
         };
-        if !state.namespace_exists(namespace) || state.namespace_is_sealed(namespace) {
-            return Response::error(503, "RADIUS renewal namespace is unavailable");
-        }
         let now = plan.observed_now();
         if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
             return error;
         }
         let mut response = match state
             .auth
-            .finish_radius_renewal(plan, &actor, observation, now)
+            .finish_provider_renewal(plan, &actor, observation, now)
         {
             Ok(response) => response,
             Err(error) => return auth_error(error),
@@ -271,6 +255,7 @@ impl Service {
                     }
                     self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
                         outbound: self.outbound.clone(),
+                        activation_nonce: self.unseal_nonce.clone(),
                         namespace: request.namespace.into(),
                         request_now: request.now,
                         effect: OnlineAuthEffect::RemoteJwt(plan),
@@ -392,6 +377,7 @@ impl Service {
 
         self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
             outbound: self.outbound.clone(),
+            activation_nonce: self.unseal_nonce.clone(),
             namespace: request.namespace.into(),
             request_now: request.now,
             effect,
@@ -403,6 +389,37 @@ impl Service {
             500,
             "online authentication external effect was not dispatched",
         ))
+    }
+
+    fn revalidate_online_authority(
+        &mut self,
+        namespace: &str,
+        activation_nonce: &str,
+    ) -> Result<(), Response> {
+        if self.recovery_required || self.state.is_none() || self.unseal_nonce != activation_nonce {
+            return Err(Response::error(
+                503,
+                "online authentication authority changed",
+            ));
+        }
+        if let Some(ha) = self.ha.as_ref() {
+            match ha.lock() {
+                Ok(ha) if ha.is_leader().unwrap_or(false) => {}
+                _ => return Err(Response::error(503, "online authentication leader changed")),
+            }
+        }
+        self.sync_from_ha()?;
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "online authentication authority unavailable"))?;
+        if !state.namespace_exists(namespace) || state.namespace_is_sealed(namespace) {
+            return Err(Response::error(
+                503,
+                "online authentication namespace unavailable",
+            ));
+        }
+        Ok(())
     }
 
     pub(super) fn finalize_online_auth_effect(
@@ -417,11 +434,24 @@ impl Service {
             Ok(observation) => observation,
             Err(response) => return response,
         };
-        if let OnlineAuthEffect::RadiusRenewal(renewal) = plan.effect {
-            let OnlineAuthObservation::RadiusRenewal(observation) = observation else {
-                return Response::error(503, "RADIUS renewal observation type mismatch");
+        if let Err(response) =
+            self.revalidate_online_authority(&request_namespace, &plan.activation_nonce)
+        {
+            return if callback {
+                consumed_oidc_error(response)
+            } else {
+                response
             };
-            return self.finalize_radius_renewal_effect(&request_namespace, *renewal, observation);
+        }
+        if let OnlineAuthEffect::ProviderRenewal(renewal) = plan.effect {
+            let OnlineAuthObservation::ProviderRenewal(observation) = observation else {
+                return Response::error(503, "provider renewal observation type mismatch");
+            };
+            return self.finalize_provider_renewal_effect(
+                &request_namespace,
+                *renewal,
+                observation,
+            );
         }
         let Some(mut state) = self.state.clone() else {
             let response = Response::error(503, "server sealed after online authentication entry");

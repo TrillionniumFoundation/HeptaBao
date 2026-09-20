@@ -45,12 +45,19 @@ mod capabilities;
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_ldap_renewal.rs"]
+mod ldap_renewal;
+#[path = "auth_provider_renewal.rs"]
+mod provider_renewal;
 #[path = "auth_radius.rs"]
 mod radius;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
 use identity::LoginIdentity;
+pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
+use provider_renewal::ProviderCredential;
+pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 
 const DEFAULT_TTL: u64 = 3600;
@@ -521,6 +528,7 @@ fn valid_ldap_attribute_name(value: &str) -> bool {
 pub(crate) struct LdapLoginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     name: String,
     dn: String,
     config: LdapMount,
@@ -532,6 +540,13 @@ pub(crate) struct LdapLoginPlan {
 
 pub(crate) struct LdapLoginObservation {
     groups: BTreeSet<String>,
+}
+
+#[cfg(test)]
+impl LdapLoginObservation {
+    pub(crate) fn observed(groups: BTreeSet<String>) -> Self {
+        Self { groups }
+    }
 }
 
 pub(crate) struct RadiusLoginPlan {
@@ -928,7 +943,7 @@ struct Token {
     auth_cert_sha256: Option<String>,
     /// Direct issuer authority is not inherited by token-API children. A
     /// distinct token-API marker disambiguates new orphan children from old
-    /// RADIUS login tokens which lack renewable provider credentials.
+    /// provider login tokens which lack renewable provider credentials.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     auth_provenance: Option<TokenAuthProvenance>,
 }
@@ -941,7 +956,11 @@ enum TokenAuthProvenance {
     },
     Radius {
         username: String,
-        credential: radius::RadiusCredential,
+        credential: ProviderCredential,
+    },
+    Ldap {
+        username: String,
+        credential: ProviderCredential,
     },
     TokenApi,
 }
@@ -1076,6 +1095,7 @@ struct SecretId {
 
 pub struct AuthResponse {
     pub(super) login_identity: Option<LoginIdentity>,
+    pub(super) external_groups: Option<identity::ExternalGroups>,
     pub status: u16,
     pub body: Value,
     pub mutated: bool,
@@ -1109,6 +1129,7 @@ fn denied() -> AuthError {
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
         login_identity: None,
+        external_groups: None,
         status: 200,
         body: json!({"data": data}),
         mutated,
@@ -1117,6 +1138,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
         login_identity: None,
+        external_groups: None,
         status: 204,
         body: Value::Null,
         mutated,
@@ -1835,6 +1857,7 @@ impl AuthState {
         let token_id = hash(&raw);
         let result = AuthResponse {
             login_identity: None,
+            external_groups: None,
             status: 200,
             mutated: true,
             body: json!({"auth": {
@@ -3129,6 +3152,11 @@ impl AuthState {
         Ok(LdapLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
+            mount_revision: self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .cloned()
+                .ok_or_else(denied)?,
             name: name.into(),
             dn,
             config,
@@ -3148,10 +3176,8 @@ impl AuthState {
             namespace: &plan.namespace,
             mount: &plan.mount,
         };
-        if !self
-            .effective_auth_mounts(&plan.namespace)
-            .get(&plan.mount)
-            .is_some_and(|entry| entry.kind == "ldap")
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
             || self
                 .ldap_mounts
                 .get(&plan.namespace)
@@ -3207,10 +3233,19 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(plan.mount.clone());
+        token.auth_provenance = Some(TokenAuthProvenance::Ldap {
+            username: plan.name.clone(),
+            credential: ProviderCredential::new(&plan.password),
+        });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
             mount: plan.mount.clone(),
             alias: plan.name.clone(),
+        });
+        response.external_groups = Some(identity::ExternalGroups {
+            mount: plan.mount.clone(),
+            alias: plan.name.clone(),
+            names: observation.groups,
         });
         if let Some(counter) = accepted_counter {
             let enrollment = user
@@ -3421,7 +3456,7 @@ impl AuthState {
         token.auth_mount = Some(plan.mount.clone());
         token.auth_provenance = Some(TokenAuthProvenance::Radius {
             username: plan.username.clone(),
-            credential: radius::RadiusCredential::new(plan.password.as_str()),
+            credential: ProviderCredential::new(plan.password.as_str()),
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
@@ -4411,6 +4446,7 @@ impl AuthState {
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
                     login_identity: None,
+                    external_groups: None,
                     status: 200,
                     mutated: true,
                     body: json!({"auth": {
