@@ -158,7 +158,6 @@ impl KubernetesRole {
         names(&shape, "bound_service_account_names", false)?;
         names(&shape, "bound_service_account_namespaces", true)?;
         if !audience(&self.audience)
-            || self.token_policies.is_empty()
             || self.token_policies.len() > 128
             || self
                 .token_policies
@@ -257,7 +256,8 @@ impl AuthState {
             .flat_map(|mounts| mounts.values())
             .flat_map(|mount| mount.roles.values())
             .any(|role| {
-                role.token_ttl == 0
+                role.token_policies.is_empty()
+                    || role.token_ttl == 0
                     || role.token_ttl > MAX_LOGIN_TTL
                     || role.token_max_ttl > 0
                     || role.token_period > 0
@@ -680,7 +680,7 @@ impl AuthState {
                         bound_service_account_names: BTreeSet::new(),
                         bound_service_account_namespaces: BTreeSet::new(),
                         audience: String::new(),
-                        token_policies: BTreeSet::from(["default".into()]),
+                        token_policies: BTreeSet::new(),
                         token_ttl: 0,
                         token_max_ttl: 0,
                         token_period: 0,
@@ -706,7 +706,7 @@ impl AuthState {
                 }
                 if body.get("token_policies").is_some_and(|v| !v.is_null()) {
                     role.token_policies =
-                        policies(body, "token_policies", &role.token_policies, true)?;
+                        policies(body, "token_policies", &role.token_policies, false)?;
                 }
                 for (field, target) in [
                     ("token_ttl", &mut role.token_ttl),
@@ -820,6 +820,10 @@ impl AuthState {
                 .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
         );
         let limits = plan.role.limits();
+        // The role stores only explicitly assigned policies. The default
+        // policy belongs to the issued token, not the role API's readback.
+        let mut token_policies = plan.role.token_policies;
+        token_policies.insert("default".into());
         let mut issued = self.issue_native_online_token(
             AuthScope {
                 namespace: &plan.namespace,
@@ -827,7 +831,7 @@ impl AuthState {
             },
             &observation.service_account_uid,
             NativeOnlineToken {
-                policies: plan.role.token_policies,
+                policies: token_policies,
                 limits,
                 explicit_max_ttl: plan.role.token_explicit_max_ttl,
                 uses: plan.role.token_num_uses,

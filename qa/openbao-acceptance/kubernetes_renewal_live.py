@@ -278,6 +278,19 @@ def run_scenarios(client, issuer, private, jwk, config, restart, mode, results):
     issuer.mode = "unavailable"
     body = t.call("defaults.renew", "auth/token/renew-self", {}, bearer=default_token, no_provider=True)
     t.check("defaults.renew_uses_mount_default", body.get("auth", {}).get("lease_duration") == 45)
+    for label, path, payload in [
+            ("empty", default_path, {"token_policies": []}),
+            ("omitted", "auth/" + mount + "/role/no-policies",
+             {key: value for key, value in role(token_ttl=0, token_max_ttl=0).items() if key != "token_policies"})]:
+        t.call("policies." + label + ".configure", path, payload, expected=204, no_provider=True)
+        readback = t.call("policies." + label + ".read", path, method="GET", no_provider=True).get("data", {})
+        t.check("policies." + label + ".role_has_no_implicit_default", readback.get("token_policies") == [])
+        issuer.mode = "normal"
+        issuer.presented = assertion(private, jwk)
+        body = t.call("policies." + label + ".login", "auth/" + mount + "/login",
+                      {"role": path.rsplit("/", 1)[1], "jwt": issuer.presented})
+        t.check("policies." + label + ".token_has_default", body.get("auth", {}).get("token_policies") == ["default"])
+        issuer.mode = "unavailable"
     t.check("all_tokenreview_requests_bound", issuer.request_valid)
 
 def main():

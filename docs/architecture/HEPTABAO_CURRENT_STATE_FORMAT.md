@@ -88,7 +88,8 @@ Old AppRole absolute maxima remain conservative because the stored value cannot
 distinguish a former ordinary maximum from a true explicit maximum; a fresh login
 uses current role/mount maxima and freezes only the true explicit cap.
 
-Schema 20 is required for direct Kubernetes renewal provenance, zero/default or
+Schema 20 is required for direct Kubernetes renewal provenance, empty configured
+Kubernetes role policy sets, zero/default or
 greater-than-one-hour Kubernetes role TTLs, and nonzero role maximum, period or
 explicit maximum fields. New Kubernetes tokens renew locally against the current
 issuing role without another TokenReview. Policies and the explicit maximum remain

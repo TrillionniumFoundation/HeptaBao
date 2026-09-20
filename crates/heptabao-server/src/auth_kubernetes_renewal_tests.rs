@@ -284,9 +284,32 @@ fn kubernetes_role_zero_defaults_and_partial_updates_are_durable() {
         assert_eq!(data[field], 0);
     }
     assert_eq!(data["bound_service_account_names"], json!(["worker"]));
+    assert_eq!(data["token_policies"], json!(["changed"]));
     let encoded = Zeroizing::new(serde_json::to_vec(&state).unwrap());
     let mut state: AuthState = serde_json::from_slice(&encoded).unwrap();
     assert_eq!(login(&mut state, now).body["auth"]["lease_duration"], 45);
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_policies":[]}),
+        now,
+    );
+    assert!(
+        state
+            .kubernetes_at(AuthScope {
+                namespace: "",
+                mount: "kubernetes"
+            })
+            .unwrap()
+            .roles["app"]
+            .token_policies
+            .is_empty()
+    );
+    assert_eq!(
+        login(&mut state, now).body["auth"]["token_policies"],
+        json!(["default"])
+    );
     for field in [
         "token_ttl",
         "token_max_ttl",

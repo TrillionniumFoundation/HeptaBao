@@ -328,6 +328,23 @@ fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -
             }
         }
     }
+    state.auth = serde_json::from_value::<AuthState>(auth.clone())?.into();
+    assert!(
+        state.validate_format().is_err(),
+        "empty configured policies require schema 20"
+    );
+    for mounts in auth["kubernetes_mounts"]
+        .as_object_mut()
+        .ok_or("namespaces")?
+        .values_mut()
+    {
+        for mount in mounts.as_object_mut().ok_or("mounts")?.values_mut() {
+            for role in mount["roles"].as_object_mut().ok_or("roles")?.values_mut() {
+                // Schema 19 stored the implicit default in every role.
+                role["token_policies"] = json!(["default"]);
+            }
+        }
+    }
     state.auth = serde_json::from_value::<AuthState>(auth)?.into();
     assert!(state.validate_format().is_ok());
     let mut actor = state.auth.authenticate(&token, 110)?;
