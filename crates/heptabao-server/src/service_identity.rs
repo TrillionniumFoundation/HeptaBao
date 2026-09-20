@@ -153,6 +153,12 @@ impl State {
                 "OIDC renewal provenance and role limits require schema 21",
             ));
         }
+        if self.schema < 22 && self.auth.has_radius_native_parameters() {
+            return Err(Response::error(
+                503,
+                "RADIUS native token parameters require schema 22",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -173,7 +179,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,

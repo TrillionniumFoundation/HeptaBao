@@ -128,7 +128,15 @@ never a claim of complete OpenBao auth compatibility or independent admission.
 OpenBao 2.6.2 binary using real TLS servers and local UDP PAP responders. It
 checks provider acceptance/rejection on self/token/accessor renewal, target-token
 echo without accessor bearer leakage, opaque wrapping/one-use unwrap, policy
-changes, revocation, and provider revalidation after SIGKILL/reopen. The receipt
+changes, revocation, and provider revalidation after SIGKILL/reopen. Finite and
+periodic cases cover current maximum increases, omitted/zero increments,
+mount-default TTLs, config partial updates and null handling, issued explicit
+caps, and the period snapshot retained by token lookup. Duration-null updates
+preserve settings; a null or empty policy list clears configured policies while
+issuance still adds the default policy. Every renewal still requires a fresh
+provider decision. Completion requires the provider, lifetime, configuration,
+period and explicit-cap milestones; case counts are reported without a fixed
+count gate. The receipt
 explicitly records the configuration adaptation: candidate URL and host-enrolled
 secret versus official host/port/secret fields. The official request may omit
 Message-Authenticator; the candidate responder still requires it, and both
@@ -227,3 +235,15 @@ recovery, consumed-session replay rejection and credential scans use the same
 fresh encrypted store. Only the root replay ledger is excluded from reopen
 byte comparisons; live reads and rejected old renewals compare the whole store.
 This is bounded upgrade evidence, not rolling or full-instance migration.
+
+`radius_native_upgrade.py` creates finite provider tokens and ordinary
+child/orphan tokens with the receipt-pinned schema-21 binary, then checks the
+schema-22 configuration update against the same encrypted store. Old finite
+tokens reauthenticate through signed UDP PAP and use the current period without
+rewriting their original lookup parameters. New periodic tokens retain their
+issued period and absolute explicit cap when configuration limits increase.
+The profile checks pure reads and provider rejection without store mutation,
+rejected downgrade and recovery, generic child/orphan renewal without PAP, and
+credential absence from encrypted state and diagnostics. Reopen comparisons
+exclude only the rebuilt root replay ledger. Only fresh fixture stores are
+accepted; this is not full-instance or rolling-upgrade qualification.

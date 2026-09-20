@@ -696,12 +696,20 @@ fn ber_value(tag: u8, value: &[u8]) -> Result<Vec<u8>, &'static str> {
 }
 
 fn ldap_bind_request(dn: &[u8], password: &[u8]) -> Result<Zeroizing<Vec<u8>>, &'static str> {
-    let mut bind = Vec::new();
+    // Every intermediate containing the password must be wiped. Reserve the
+    // complete bound before copying it so growth cannot leave old secret bytes
+    // behind in a freed allocation.
+    if dn.len() > 1024 || password.len() > 1024 {
+        return Err("LDAP bind input exceeds bound");
+    }
+    let capacity = dn.len() + password.len() + 32;
+    let mut bind = Zeroizing::new(Vec::with_capacity(capacity));
     bind.extend_from_slice(&ber_value(0x02, &[0x03])?);
     bind.extend_from_slice(&ber_value(0x04, dn)?);
-    bind.extend_from_slice(&ber_value(0x80, password)?);
-    let bind = ber_value(0x60, &bind)?;
-    let mut message = Vec::new();
+    let encoded_password = Zeroizing::new(ber_value(0x80, password)?);
+    bind.extend_from_slice(&encoded_password);
+    let bind = Zeroizing::new(ber_value(0x60, &bind)?);
+    let mut message = Zeroizing::new(Vec::with_capacity(bind.len() + 3));
     message.extend_from_slice(&ber_value(0x02, &[0x01])?);
     message.extend_from_slice(&bind);
     Ok(Zeroizing::new(ber_value(0x30, &message)?))
@@ -2010,6 +2018,9 @@ mod tests {
             b"synthetic-password",
         )?;
         assert_eq!(request.first().copied(), Some(0x30));
+        assert!(ldap_bind_request(b"uid=synthetic", &[b'p'; 1024]).is_ok());
+        assert!(ldap_bind_request(b"uid=synthetic", &[b'p'; 1025]).is_err());
+        assert!(ldap_bind_request(&[b'd'; 1025], b"synthetic-password").is_err());
         assert!(request.windows(3).any(|window| window == b"\x02\x01\x03"));
         assert!(
             request

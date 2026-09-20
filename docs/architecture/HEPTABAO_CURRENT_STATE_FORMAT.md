@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **21**. Its source constant is
+The current Service state schema is **22**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -60,7 +60,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 18 | Direct JWT role provenance and distinct periodic/explicit-max JWT role limits; native-claim marker, optional trust extensions and role leeways must be absent. |
 | 19 | Native reusable JWT assertions, optional explicit trust extensions, role time leeways and retired legacy JWT replay enforcement. New AppRole tokens also persist only their issue-time explicit maximum. Kubernetes renewal provenance and extended role limits must be absent. |
 | 20 | Direct Kubernetes role provenance and native role/mount TTL, periodic and explicit-maximum limits. OIDC renewal provenance and extended role limits must be absent. |
-| 21 | Current format, adding direct OIDC role provenance and native role/mount TTL, periodic and explicit-maximum limits. |
+| 21 | Direct OIDC role provenance and native role/mount TTL, periodic and explicit-maximum limits. Nonzero RADIUS period/explicit-maximum configuration and direct periodic RADIUS tokens must be absent. |
+| 22 | Current format, adding RADIUS periodic and explicit-maximum configuration, direct periodic token snapshots and empty configured RADIUS policy sets. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -113,8 +114,17 @@ absolute caps remain conservative; a fresh login is required to benefit from a
 raised maximum. Their existing credential provenance and provider-revalidation
 requirements are unchanged.
 
+Schema 22 is required for nonzero RADIUS configuration period or explicit maximum,
+empty configured policy sets, and direct RADIUS tokens carrying an issued period.
+The token marker remains required even if configuration is subsequently reset.
+New logins capture only the explicit maximum as an absolute cap. Provider-checked
+renewal uses the current period and ordinary maximum while token lookup retains
+the period recorded at issuance. Configured policy readback contains only the
+configured list; login adds the implicit default policy. Legacy nonempty policy
+lists and existing absolute caps are preserved when omitted from an update.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 21. An authenticated
+it. Initialization and committed mutations use schema 22. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -128,7 +138,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-21-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-22-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -153,7 +163,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-20 binary must fail closed once current OIDC renewal or role lifetime semantics have been committed;
+A schema-21 binary must fail closed once current RADIUS periodic or explicit-maximum semantics have been committed;
+a schema-20 binary must fail closed once current OIDC renewal or role lifetime semantics have been committed;
 a schema-19 binary must fail closed once current Kubernetes renewal or role lifetime semantics have been committed;
 a schema-18 binary must fail closed once native JWT or current AppRole lifetime semantics have been committed;
 a schema-17 binary must fail closed once JWT direct-role provenance or new role lifetime semantics have been committed;

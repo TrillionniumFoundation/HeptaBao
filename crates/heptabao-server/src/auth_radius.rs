@@ -45,6 +45,24 @@ impl RadiusRenewalPlan {
 }
 
 impl AuthState {
+    pub(crate) fn has_radius_native_parameters(&self) -> bool {
+        self.radius_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|config| {
+                config.token_period > 0
+                    || config.token_explicit_max_ttl > 0
+                    || config.policies.is_empty()
+            })
+            || self.tokens.values().any(|token| {
+                token.period > 0
+                    && matches!(
+                        token.auth_provenance,
+                        Some(TokenAuthProvenance::Radius { .. })
+                    )
+            })
+    }
+
     pub(crate) fn has_v16_token_provenance(&self) -> bool {
         self.tokens.values().any(|token| {
             matches!(
@@ -65,7 +83,7 @@ impl AuthState {
                         || token.parent.is_some()
                         || !token.auth_origin_known
                         || token.wrapping.is_some()
-                        || token.period != 0
+                        || token.period > MAX_TTL
                         || username.is_empty()
                         || username.len() > 253
                         || username.bytes().any(|byte| byte == 0 || byte < 0x20)
@@ -205,7 +223,7 @@ impl AuthState {
             NativeTokenLimits {
                 ttl: plan.config.token_ttl,
                 max_ttl: plan.config.token_max_ttl,
-                period: 0,
+                period: plan.config.token_period,
             },
             token.created_at,
             token.max_expires_at,

@@ -475,6 +475,10 @@ struct RadiusMount {
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
     token_num_uses: u64,
 }
 
@@ -3284,6 +3288,8 @@ impl AuthState {
                         "token_policies": config.policies,
                         "token_ttl": config.token_ttl,
                         "token_max_ttl": config.token_max_ttl,
+                        "token_period": config.token_period,
+                        "token_explicit_max_ttl": config.token_explicit_max_ttl,
                         "token_num_uses": config.token_num_uses
                     }),
                     false,
@@ -3299,12 +3305,30 @@ impl AuthState {
                         "token_policies",
                         "token_ttl",
                         "token_max_ttl",
+                        "token_period",
+                        "token_explicit_max_ttl",
                         "token_num_uses",
                     ],
                 )?;
                 reject_alias_pair(body, "policies", "token_policies")?;
-                let url = string_field(body, "url")?;
-                let target = crate::outbound::Target::parse(url, "radius")
+                let mut next = self
+                    .radius_mounts
+                    .get(scope.namespace)
+                    .and_then(|mounts| mounts.get(scope.mount))
+                    .cloned()
+                    .unwrap_or(RadiusMount {
+                        url: String::new(),
+                        policies: BTreeSet::new(),
+                        token_ttl: 0,
+                        token_max_ttl: 0,
+                        token_period: 0,
+                        token_explicit_max_ttl: 0,
+                        token_num_uses: 0,
+                    });
+                if body.get("url").is_some() {
+                    next.url = string_field(body, "url")?.into();
+                }
+                let target = crate::outbound::Target::parse(&next.url, "radius")
                     .map_err(|_| bad("RADIUS url must be radius://host:port"))?;
                 if target.path != "/" {
                     return Err(bad("RADIUS url cannot contain a path"));
@@ -3314,26 +3338,43 @@ impl AuthState {
                 } else {
                     "policies"
                 };
-                let configured_policies = policies(body, policy_field, &BTreeSet::new(), true)?;
-                if configured_policies.contains("root") {
+                if let Some(value) = body.get(policy_field) {
+                    next.policies = if value.is_null() {
+                        BTreeSet::new()
+                    } else {
+                        policies(body, policy_field, &next.policies, false)?
+                    };
+                }
+                if next.policies.contains("root") || next.policies.len() > 128 {
                     return Err(bad("RADIUS authentication cannot grant root policy"));
                 }
-                let token_ttl = duration(body, "token_ttl", 0)?;
-                let token_max_ttl = duration(body, "token_max_ttl", 0)?;
-                let token_num_uses = number(body, "token_num_uses", 0)?;
-                if token_ttl > MAX_TTL
-                    || token_max_ttl > MAX_TTL
-                    || token_ttl > 0 && token_max_ttl > 0 && token_ttl > token_max_ttl
+                for (field, target) in [
+                    ("token_ttl", &mut next.token_ttl),
+                    ("token_max_ttl", &mut next.token_max_ttl),
+                    ("token_period", &mut next.token_period),
+                    ("token_explicit_max_ttl", &mut next.token_explicit_max_ttl),
+                ] {
+                    if body.get(field).is_some_and(|v| !v.is_null()) {
+                        *target = duration(body, field, *target)?;
+                    }
+                }
+                if let Some(value) = body.get("token_num_uses") {
+                    next.token_num_uses = if value.is_null() {
+                        0
+                    } else {
+                        number(body, "token_num_uses", next.token_num_uses)?
+                    };
+                }
+                if next.token_ttl > MAX_TTL
+                    || next.token_max_ttl > MAX_TTL
+                    || next.token_period > MAX_TTL
+                    || next.token_explicit_max_ttl > MAX_TTL
+                    || next.token_ttl > 0
+                        && next.token_max_ttl > 0
+                        && next.token_ttl > next.token_max_ttl
                 {
                     return Err(bad("invalid RADIUS token TTL limits"));
                 }
-                let next = RadiusMount {
-                    url: url.into(),
-                    policies: configured_policies,
-                    token_ttl,
-                    token_max_ttl,
-                    token_num_uses,
-                };
                 let changed = self
                     .radius_mounts
                     .entry(scope.namespace.into())
@@ -3436,9 +3477,28 @@ impl AuthState {
         );
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
+        let explicit_max_expires_at = if plan.config.token_explicit_max_ttl == 0 {
+            None
+        } else {
+            Some(checked_expiry(now, plan.config.token_explicit_max_ttl)?)
+        };
+        let expires_at = self.native_token_expiry(
+            scope,
+            NativeTokenLimits {
+                ttl: plan.config.token_ttl,
+                max_ttl: plan.config.token_max_ttl,
+                period: plan.config.token_period,
+            },
+            now,
+            explicit_max_expires_at,
+            0,
+            now,
+        )?;
+        let mut configured_policies = plan.config.policies.clone();
+        configured_policies.insert("default".into());
         let mut token = login_token(
             &plan.namespace,
-            plan.config.policies.clone(),
+            configured_policies,
             token_ttl,
             token_max_ttl,
             plan.config.token_num_uses,
@@ -3447,8 +3507,10 @@ impl AuthState {
         )?;
         token.auth_mount = Some(plan.mount.clone());
         // Ordinary provider maxima are read live during renewal. Retain stored
-        // caps on legacy tokens, but do not manufacture an explicit cap at login.
-        token.max_expires_at = None;
+        // caps on legacy tokens; capture only an explicitly configured cap at login.
+        token.expires_at = Some(expires_at);
+        token.max_expires_at = explicit_max_expires_at;
+        token.period = plan.config.token_period;
         token.auth_provenance = Some(TokenAuthProvenance::Radius {
             username: plan.username.clone(),
             credential: ProviderCredential::new(plan.password.as_str()),

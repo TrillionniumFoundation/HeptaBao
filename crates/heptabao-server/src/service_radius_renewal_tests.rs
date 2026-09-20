@@ -385,3 +385,321 @@ fn radius_wrapping_or_commit_failure_never_publishes_partial_renewal() -> TestRe
     }
     Ok(())
 }
+
+#[test]
+fn radius_periodic_renewal_all_entries_keep_provider_checks_wrapping_and_issue_snapshot()
+-> TestResult {
+    for operation in ["renew-self", "renew", "renew-accessor"] {
+        let root = Root::new();
+        let (mut service, key, admin, _, _) = fixture(&root)?;
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    "auth/radius/config",
+                    "",
+                    &admin,
+                    json!({"token_period":30,"token_explicit_max_ttl":120}),
+                    105
+                )
+                .status,
+            204
+        );
+        let login = pending(
+            &mut service,
+            "auth/radius/login",
+            "",
+            json!({"username":"alice","password":"synthetic-radius-password"}),
+            110,
+        )?;
+        let response = service.finish_external_request(
+            *login,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(
+                RadiusLoginObservation,
+            ))),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["auth"]["lease_duration"], 30);
+        let token = response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("periodic token")?
+            .to_owned();
+        let accessor = response.body["auth"]["accessor"]
+            .as_str()
+            .ok_or("accessor")?
+            .to_owned();
+        let body = match operation {
+            "renew" => json!({"token":token,"increment":300}),
+            "renew-accessor" => json!({"accessor":accessor,"increment":300}),
+            _ => json!({"increment":300}),
+        };
+        let path = format!("auth/token/{operation}");
+        let actor = if operation == "renew-self" {
+            &token
+        } else {
+            &admin
+        };
+        let plan = pending_with_wrapping(&mut service, &path, actor, body.clone(), 120, Some(60))?;
+        let response = accepted(&mut service, *plan);
+        assert_eq!(response.status, 200);
+        assert!(response.body["auth"].is_null());
+        assert!(!response.body.to_string().contains(&token));
+        let wrapper = response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?
+            .to_owned();
+        let response =
+            service.handle_at("POST", "sys/wrapping/unwrap", "", &wrapper, json!({}), 121);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["auth"]["lease_duration"], 30);
+        if operation == "renew-accessor" {
+            assert!(response.body["auth"].get("client_token").is_none());
+        } else {
+            assert_eq!(response.body["auth"]["client_token"], token);
+        }
+        assert!(
+            service
+                .handle_at("POST", "sys/wrapping/unwrap", "", &wrapper, json!({}), 121)
+                .status
+                >= 400
+        );
+        let before = service
+            .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 122)
+            .body["data"]["expire_time_unix"]
+            .clone();
+        let plan = pending_with_wrapping(&mut service, &path, actor, body.clone(), 122, Some(60))?;
+        let before_digest = service.state_digest;
+        let denied = service.finish_external_request(
+            *plan,
+            ExternalEffectResult::OnlineAuth(Err(Response::error(
+                400,
+                "access denied by provider",
+            ))),
+        );
+        assert_eq!(denied.status, 400);
+        assert!(denied.body.get("auth").is_none());
+        assert!(denied.body.get("wrap_info").is_none());
+        assert_eq!(service.state_digest, before_digest);
+        assert_eq!(
+            service
+                .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 123)
+                .body["data"]["expire_time_unix"],
+            before
+        );
+        drop(service);
+        let mut service = root.service()?;
+        enroll(&mut service)?;
+        assert_eq!(
+            service
+                .handle_at("POST", "sys/unseal", "", "", json!({"key":key}), 124)
+                .status,
+            200
+        );
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    "auth/radius/config",
+                    "",
+                    &admin,
+                    json!({"token_period":45,"token_explicit_max_ttl":1}),
+                    125
+                )
+                .status,
+            204
+        );
+        let plan = pending(&mut service, &path, actor, body, 126)?;
+        let response = accepted(&mut service, *plan);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["auth"]["lease_duration"], 45);
+        let info = service.handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 127);
+        assert_eq!(info.body["data"]["period"], 30);
+        assert_eq!(info.body["data"]["explicit_max_ttl"], 120);
+    }
+    Ok(())
+}
+
+#[test]
+fn radius_periodic_provider_success_cannot_publish_after_config_or_identity_changes() -> TestResult
+{
+    for mutation in ["period", "explicit", "identity"] {
+        let root = Root::new();
+        let (mut service, _, admin, token, entity) = fixture(&root)?;
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    "auth/radius/config",
+                    "",
+                    &admin,
+                    json!({"token_period":30}),
+                    105
+                )
+                .status,
+            204
+        );
+        let before = service
+            .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 110)
+            .body["data"]["expire_time_unix"]
+            .clone();
+        let plan = pending_with_wrapping(
+            &mut service,
+            "auth/token/renew-self",
+            &token,
+            json!({"increment":300}),
+            110,
+            Some(60),
+        )?;
+        let update = match mutation {
+            "period" => service.handle_at(
+                "POST",
+                "auth/radius/config",
+                "",
+                &admin,
+                json!({"token_period":45}),
+                111,
+            ),
+            "explicit" => service.handle_at(
+                "POST",
+                "auth/radius/config",
+                "",
+                &admin,
+                json!({"token_explicit_max_ttl":90}),
+                111,
+            ),
+            _ => service.handle_at(
+                "POST",
+                &format!("identity/entity/id/{entity}"),
+                "",
+                &admin,
+                json!({"disabled":true}),
+                111,
+            ),
+        };
+        assert_eq!(update.status, 204);
+        let before_digest = service.state_digest;
+        let response = accepted(&mut service, *plan);
+        assert_eq!(
+            response.status,
+            if mutation == "identity" { 403 } else { 409 }
+        );
+        assert!(response.body.get("auth").is_none());
+        assert!(response.body.get("wrap_info").is_none());
+        assert_eq!(service.state_digest, before_digest);
+        if mutation == "identity" {
+            assert_eq!(
+                service
+                    .handle_at(
+                        "POST",
+                        &format!("identity/entity/id/{entity}"),
+                        "",
+                        &admin,
+                        json!({"disabled":false}),
+                        112
+                    )
+                    .status,
+                204
+            );
+        }
+        assert_eq!(
+            service
+                .handle_at("GET", "auth/token/lookup-self", "", &token, json!({}), 113)
+                .body["data"]["expire_time_unix"],
+            before
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shape() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, admin, _, _) = fixture(&root)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    state.schema = 21;
+    assert!(
+        state.validate_format().is_err(),
+        "new empty configured policy list requires schema 22"
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/radius/config",
+                "",
+                &admin,
+                json!({"token_policies":["default"]}),
+                105
+            )
+            .status,
+        204
+    );
+    state = service.state.clone().ok_or("state")?;
+    state.schema = 21;
+    assert!(state.validate_format().is_ok());
+    let encoded = serde_json::to_value(&state.auth)?;
+    for field in ["token_period", "token_explicit_max_ttl"] {
+        assert!(
+            encoded["radius_mounts"][""]["radius"].get(field).is_none(),
+            "zero fields must preserve historical serialized shape"
+        );
+        let mut changed = state.clone();
+        let actor = changed.auth.authenticate(&admin, 105)?;
+        let mut body = json!({});
+        body[field] = json!(30);
+        changed
+            .auth
+            .handle(Some(&actor), "", "POST", "auth/radius/config", &body, 105)?;
+        assert!(changed.validate_format().is_err());
+        changed.schema = CURRENT_STATE_SCHEMA;
+        assert!(changed.validate_format().is_ok());
+    }
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/radius/config",
+                "",
+                &admin,
+                json!({"token_period":30}),
+                106
+            )
+            .status,
+        204
+    );
+    let login = pending(
+        &mut service,
+        "auth/radius/login",
+        "",
+        json!({"username":"alice","password":"synthetic-radius-password"}),
+        107,
+    )?;
+    let response = service.finish_external_request(
+        *login,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/radius/config",
+                "",
+                &admin,
+                json!({"token_period":0}),
+                108
+            )
+            .status,
+        204
+    );
+    let mut state = service.state.clone().ok_or("state")?;
+    state.schema = 21;
+    assert!(
+        state.validate_format().is_err(),
+        "issued periodic provenance must remain fenced after config resets"
+    );
+    state.schema = CURRENT_STATE_SCHEMA;
+    assert!(state.validate_format().is_ok());
+    Ok(())
+}

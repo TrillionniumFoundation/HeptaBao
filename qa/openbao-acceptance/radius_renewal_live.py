@@ -320,6 +320,186 @@ def run_finite_scenarios(client, responder, configure, restart, results):
     run_finite_lifetime_scenarios(client, responder, settings, settings, restart, results)
 
 
+def native_period_matches(data, issued_period):
+    return ("period" not in data if issued_period == 0 else
+            type(data.get("period")) is int and data["period"] == issued_period)
+
+
+def native_config_matches(data, *, ttl, maximum, period, explicit, policies):
+    wanted = {"token_ttl": ttl, "token_max_ttl": maximum,
+              "token_period": period, "token_explicit_max_ttl": explicit}
+    return (all(type(data.get(key)) is int and data[key] == value for key, value in wanted.items())
+            and data.get("token_policies") == policies)
+
+
+def run_native_parameter_scenarios(client, responder, configure, restart, results):
+    """RADIUS token fields; transport remains explicitly adapted."""
+    def check(name, passed, **safe):
+        case = "radius_renewal.native." + name
+        results.append({"case": case, **safe, "passed": bool(passed)})
+        if not passed:
+            raise ScenarioFailure(case)
+
+    def call(name, path, body=None, *, method="POST", token=None, expected=200, provider=False):
+        before = responder.count()
+        response = client.request(method, "/v1/" + path, body, token=token)
+        safe = {"status": response.status}
+        passed = response.status == expected
+        if provider:
+            safe["provider_checked"] = responder.observed(before, accepted=True)
+            passed &= safe["provider_checked"]
+        check(name, passed, **safe)
+        return response.body
+
+    def mount(name, *, ttl=60, maximum=600, period=0, explicit=0, policies=None):
+        path = "radius-native-" + name
+        call(name + ".mount", "sys/auth/" + path, {"type": "radius"}, expected=204)
+        config = dict(configure(["default"] if policies is None else policies), token_ttl=ttl,
+                      token_max_ttl=maximum, token_period=period, token_explicit_max_ttl=explicit)
+        call(name + ".configure", "auth/" + path + "/config", config, expected=204)
+        return path
+
+    def update(name, path, body):
+        call(name, "auth/" + path + "/config", body, expected=204)
+
+    def read(name, path, **wanted):
+        data = call(name, "auth/" + path + "/config", method="GET")["data"]
+        check(name + ".fields", native_config_matches(data, **wanted))
+        return data
+
+    def login(name, path, expected_ttl):
+        auth = call(name, "auth/" + path + "/login",
+                    {"username": USERNAME.decode(), "password": PASSWORD.decode()},
+                    token="", provider=True)["auth"]
+        check(name + ".ttl", auth.get("lease_duration") == expected_ttl)
+        return auth
+
+    def lookup(name, raw, *, period, explicit=None):
+        data = call(name, "auth/token/lookup-self", method="GET", token=raw)["data"]
+        check(name + ".period_snapshot", native_period_matches(data, period))
+        if explicit is not None:
+            check(name + ".explicit_snapshot", data.get("explicit_max_ttl") == explicit)
+        return data
+
+    def renew(name, auth, expected_ttl, *, payload=None, via="self", expected=200):
+        raw = auth["client_token"]
+        path, body, actor = {
+            "self": ("auth/token/renew-self", {}, raw),
+            "token": ("auth/token/renew", {"token": raw}, None),
+            "accessor": ("auth/token/renew-accessor", {"accessor": auth["accessor"]}, None),
+        }[via]
+        response = call(name, path, dict(body, **({} if payload is None else payload)),
+                        token=actor, provider=True, expected=expected)
+        if expected == 200:
+            renewed = response["auth"]
+            ttl = renewed.get("lease_duration")
+            valid = (type(ttl) is int and expected_ttl[0] <= ttl <= expected_ttl[1]
+                     if isinstance(expected_ttl, tuple) else ttl == expected_ttl)
+            check(name + ".ttl", valid)
+            check(name + ".bearer", renewal_token_shape(renewed, raw, via_accessor=via == "accessor"))
+        return response
+
+    call("policy", "sys/policies/acl/radius-native-policy",
+         {"policy": 'path "cubbyhole/*" { capabilities = ["read"] }'}, expected=204)
+    path = mount("partial", ttl=40, maximum=300, period=30, explicit=240,
+                 policies=["radius-native-policy"])
+    call("partial.tune", "sys/auth/" + path + "/tune",
+         {"default_lease_ttl": 75, "max_lease_ttl": 600}, expected=204)
+    update("partial.uses4", path, {"token_num_uses": 4})
+    update("partial.max_only", path, {"token_max_ttl": 500})
+    data = read("partial.preserved", path, ttl=40, maximum=500, period=30, explicit=240,
+                policies=["radius-native-policy"])
+    check("partial.omitted_uses_preserved", data.get("token_num_uses") == 4)
+    update("partial.null_durations", path, {key: None for key in
+           ("token_ttl", "token_max_ttl", "token_period", "token_explicit_max_ttl")})
+    read("partial.null_preserved", path, ttl=40, maximum=500, period=30, explicit=240,
+         policies=["radius-native-policy"])
+    update("partial.null_uses", path, {"token_num_uses": None})
+    data = read("partial.null_uses_readback", path, ttl=40, maximum=500, period=30, explicit=240,
+                policies=["radius-native-policy"])
+    check("partial.null_uses_cleared", data.get("token_num_uses") == 0)
+    issued = login("partial.credentials_and_policy_preserved", path, 30)
+    check("partial.issued_policy", set(issued.get("token_policies", [])) == {"default", "radius-native-policy"})
+    update("partial.null_policy", path, {"token_policies": None})
+    read("partial.null_policy_cleared", path, ttl=40, maximum=500, period=30, explicit=240, policies=[])
+    before = lookup("partial.before_policy_denial", issued["client_token"], period=30)["ttl"]
+    renew("partial.policy_change_rechecked", issued, None, expected=500)
+    after = lookup("partial.after_policy_denial", issued["client_token"], period=30)["ttl"]
+    check("partial.policy_failure_no_extension", 0 < after <= before)
+    update("partial.policy_restore", path, {"token_policies": ["radius-native-policy"]})
+    renew("partial.policy_restored", issued, 30)
+    update("partial.empty_policy", path, {"token_policies": []})
+    read("partial.empty_policy_cleared", path, ttl=40, maximum=500, period=30, explicit=240, policies=[])
+    update("zero.clear_limits", path, {"token_ttl": 0, "token_period": 0, "token_explicit_max_ttl": 0})
+    read("zero.readback", path, ttl=0, maximum=500, period=0, explicit=0, policies=[])
+    zero = login("zero.mount_default_login", path, 75)
+    check("zero.default_policy_at_issue", zero.get("token_policies") == ["default"])
+    lookup("zero.lookup", zero["client_token"], period=0, explicit=0)
+    renew("zero.omitted_increment", zero, 75)
+    renew("zero.zero_increment", zero, 75, payload={"increment": 0})
+    call("zero.retune_default", "sys/auth/" + path + "/tune", {"default_lease_ttl": 90}, expected=204)
+    renew("zero.current_mount_default", zero, 90)
+
+    for initial, current, label in [(0, 30, "finite_to_periodic"), (30, 45, "period_changed"),
+                                    (30, 0, "periodic_to_finite")]:
+        path = mount(label, period=initial)
+        issued = login(label + ".login", path, initial or 60)
+        lookup(label + ".before", issued["client_token"], period=initial, explicit=0)
+        update(label + ".set_current_period", path, {"token_period": current})
+        for via in ("self", "token", "accessor"):
+            renew(label + ".renew_" + via, issued, current or 300, payload={"increment": 300}, via=via)
+        lookup(label + ".after", issued["client_token"], period=initial, explicit=0)
+    path = mount("period_clamped", ttl=40, maximum=120, period=80)
+    call("period_clamped.tune", "sys/auth/" + path + "/tune",
+         {"default_lease_ttl": 40, "max_lease_ttl": 50}, expected=204)
+    periodic = login("period_clamped.login", path, 50)
+    lookup("period_clamped.lookup", periodic["client_token"], period=80, explicit=0)
+    update("period_clamped.change", path, {"token_period": 90})
+    renew("period_clamped.renew", periodic, 50, payload={"increment": 300})
+    lookup("period_clamped.original_snapshot", periodic["client_token"], period=80)
+
+    path = mount("explicit")
+    uncapped = login("explicit.uncapped_login", path, 60)
+    update("explicit.set90", path, {"token_explicit_max_ttl": 90})
+    renew("explicit.old_zero_unaffected", uncapped, 300, payload={"increment": 300})
+    capped = login("explicit.capped_login", path, 60)
+    update("explicit.raise600", path, {"token_explicit_max_ttl": 600})
+    renew("explicit.captured90", capped, (75, 90), payload={"increment": 300})
+    lookup("explicit.original_snapshot", capped["client_token"], period=0, explicit=90)
+    restart()
+    check("explicit.same_store_restart", True)
+    renew("explicit.captured_after_restart", capped, (70, 90), payload={"increment": 300})
+    update("explicit.clear_current", path, {"token_explicit_max_ttl": 0})
+    renew("explicit.captured_after_clear", capped, (70, 90), payload={"increment": 300})
+    renew("explicit.uncapped_after_clear", uncapped, 300, payload={"increment": 300})
+    path = mount("period_explicit", period=30, explicit=90)
+    capped_period = login("period_explicit.login", path, 30)
+    update("period_explicit.raise_both", path, {"token_period": 120, "token_explicit_max_ttl": 600})
+    renew("period_explicit.original_absolute_cap", capped_period, (80, 90), payload={"increment": 300})
+    lookup("period_explicit.lookup", capped_period["client_token"], period=30, explicit=90)
+    check("complete", True)
+
+
+def complete_scenarios(rows):
+    if not rows or any(row.get("passed") is not True for row in rows):
+        return False
+    names = [row.get("case") for row in rows]
+    if any(not isinstance(name, str) for name in names) or len(names) != len(set(names)):
+        return False
+    required = {"radius_renewal.restart_provider_accepted", "radius_renewal.finite.complete",
+                "radius_renewal.native.partial.policy_change_rechecked",
+                "radius_renewal.native.zero.current_mount_default.ttl",
+                "radius_renewal.native.finite_to_periodic.after.period_snapshot",
+                "radius_renewal.native.period_changed.after.period_snapshot",
+                "radius_renewal.native.periodic_to_finite.after.period_snapshot",
+                "radius_renewal.native.period_clamped.renew.ttl",
+                "radius_renewal.native.explicit.captured_after_restart.ttl",
+                "radius_renewal.native.explicit.uncapped_after_clear.ttl",
+                "radius_renewal.native.period_explicit.original_absolute_cap.ttl",
+                "radius_renewal.native.complete"}
+    return required.issubset(names) and names[-1] == "radius_renewal.native.complete"
+
+
 def main():
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
@@ -392,14 +572,13 @@ def main():
             try:
                 run_scenarios(client, responder, lambda policies: configuration(side, responder, policies), restart, result["cases"][side])
                 run_finite_scenarios(client, responder, lambda policies: configuration(side, responder, policies), restart, result["cases"][side])
+                run_native_parameter_scenarios(client, responder, lambda policies: configuration(side, responder, policies), restart, result["cases"][side])
             except ScenarioFailure as error:
                 result["side_failures"][side] = str(error)
             except Exception as error:
                 result["side_failures"][side] = "unexpected_" + type(error).__name__
         result["cases_match"] = result["cases"].get("candidate") == result["cases"].get("oracle")
-        complete = all(len(rows) == 90 and len({row["case"] for row in rows}) == 90
-                       and rows[-1].get("case") == "radius_renewal.finite.complete"
-                       for rows in result["cases"].values()) and len(result["cases"]) == 2
+        complete = len(result["cases"]) == 2 and all(complete_scenarios(rows) for rows in result["cases"].values())
         result["status"] = "passed" if complete and successful_comparison(result["cases"], result["side_failures"]) else "mismatch"
     except ScenarioFailure as error:
         result["status"] = "failed"

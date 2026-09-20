@@ -1,6 +1,66 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+fn native_config(state: &mut AuthState, root: &str, body: Value, now: u64) {
+    let actor = state.authenticate(root, now).unwrap();
+    assert_eq!(
+        state
+            .handle(Some(&actor), "", "POST", "auth/radius/config", &body, now)
+            .unwrap()
+            .unwrap()
+            .status,
+        204
+    );
+}
+
+fn native_login(state: &mut AuthState, now: u64) -> String {
+    let plan = state
+        .prepare_radius_login(
+            "",
+            "radius",
+            "POST",
+            &json!({"username":"alice","password":"synthetic-radius-password"}),
+            now,
+        )
+        .unwrap();
+    state
+        .finish_radius_login(plan, RadiusLoginObservation)
+        .unwrap()
+        .body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .into()
+}
+
+fn native_renew(
+    state: &mut AuthState,
+    root: &str,
+    raw: &str,
+    operation: &str,
+    increment: u64,
+    now: u64,
+) -> Result<AuthResponse, AuthError> {
+    let actor = state.authenticate(if operation == "renew-self" { raw } else { root }, now)?;
+    let body = match operation {
+        "renew" => json!({"token":raw,"increment":increment}),
+        "renew-accessor" => {
+            json!({"accessor":state.tokens[&hash(raw)].accessor,"increment":increment})
+        }
+        _ => json!({"increment":increment}),
+    };
+    let plan = state
+        .prepare_radius_renewal(
+            Some(&actor),
+            "",
+            "POST",
+            &format!("auth/token/{operation}"),
+            &body,
+            now,
+        )?
+        .ok_or_else(denied)?;
+    state.finish_radius_renewal(plan, &actor, RadiusRenewalObservation, now)
+}
+
 impl AuthState {
     #[allow(clippy::too_many_arguments)]
     fn prepare_radius_renewal(
@@ -577,4 +637,262 @@ fn radius_past_current_maximum_returns_500_without_revoking_live_lease() {
     assert!(before.as_slice() == after.as_slice());
     assert!(state.authenticate_read_only(&raw, 111).is_ok());
     assert!(state.authenticate_read_only(&raw, expiry).is_err());
+}
+
+#[test]
+fn radius_native_period_and_issued_explicit_cap_apply_to_all_provider_checked_renewals() {
+    for operation in ["renew-self", "renew", "renew-accessor"] {
+        let (mut state, root, _) = fixture();
+        native_config(
+            &mut state,
+            &root,
+            json!({"token_ttl":40,"token_max_ttl":600,"token_period":30,"token_explicit_max_ttl":90}),
+            102,
+        );
+        let raw = native_login(&mut state, 103);
+        let id = hash(&raw);
+        let issued = state.tokens[&id].created_at;
+        assert_eq!(state.tokens[&id].expires_at, Some(issued + 30));
+        assert_eq!(state.tokens[&id].max_expires_at, Some(issued + 90));
+        assert_eq!(state.tokens[&id].period, 30);
+        let encoded = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+        let mut state: AuthState = serde_json::from_slice(&encoded).unwrap();
+        assert_eq!(
+            native_renew(&mut state, &root, &raw, operation, 300, issued + 1)
+                .unwrap()
+                .body["auth"]["lease_duration"],
+            30
+        );
+        native_config(
+            &mut state,
+            &root,
+            json!({"token_ttl":3,"token_max_ttl":3,"token_explicit_max_ttl":1}),
+            issued + 4,
+        );
+        assert_eq!(
+            native_renew(&mut state, &root, &raw, operation, 300, issued + 4)
+                .unwrap()
+                .body["auth"]["lease_duration"],
+            3
+        );
+        native_config(
+            &mut state,
+            &root,
+            json!({"token_ttl":40,"token_max_ttl":600,"token_period":45,"token_explicit_max_ttl":0}),
+            issued + 5,
+        );
+        assert_eq!(
+            native_renew(&mut state, &root, &raw, operation, 300, issued + 5)
+                .unwrap()
+                .body["auth"]["lease_duration"],
+            45
+        );
+        assert_eq!(token_info(&state.tokens[&id], issued + 5)["period"], 30);
+        native_config(&mut state, &root, json!({"token_period":0}), issued + 6);
+        assert_eq!(
+            native_renew(&mut state, &root, &raw, operation, 300, issued + 6)
+                .unwrap()
+                .body["auth"]["lease_duration"],
+            84
+        );
+        assert_eq!(state.tokens[&id].max_expires_at, Some(issued + 90));
+        assert_eq!(token_info(&state.tokens[&id], issued + 6)["period"], 30);
+    }
+}
+
+#[test]
+fn radius_current_period_does_not_replace_issue_snapshot_or_retroactively_add_explicit_cap() {
+    let (mut state, root, raw) = fixture();
+    let id = hash(&raw);
+    let issued = state.tokens[&id].created_at;
+    native_config(
+        &mut state,
+        &root,
+        json!({"token_period":30,"token_explicit_max_ttl":90}),
+        issued + 1,
+    );
+    assert_eq!(
+        native_renew(&mut state, &root, &raw, "renew-self", 300, issued + 1)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        30
+    );
+    assert!(
+        token_info(&state.tokens[&id], issued + 1)
+            .get("period")
+            .is_none()
+    );
+    assert_eq!(state.tokens[&id].max_expires_at, None);
+    native_config(&mut state, &root, json!({"token_period":0}), issued + 2);
+    assert_eq!(
+        native_renew(&mut state, &root, &raw, "renew-self", 300, issued + 2)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        300
+    );
+    let fresh = native_login(&mut state, issued + 3);
+    let fresh_id = hash(&fresh);
+    let fresh_issue = state.tokens[&fresh_id].created_at;
+    assert_eq!(state.tokens[&fresh_id].expires_at, Some(fresh_issue + 90));
+    assert_eq!(
+        state.tokens[&fresh_id].max_expires_at,
+        Some(fresh_issue + 90)
+    );
+}
+
+#[test]
+fn radius_partial_configuration_preserves_routes_and_limits_but_policy_null_clears() {
+    let (mut state, root, _) = fixture();
+    native_config(
+        &mut state,
+        &root,
+        json!({"token_ttl":40,"token_max_ttl":600,"token_period":30,"token_explicit_max_ttl":240,"token_num_uses":4}),
+        102,
+    );
+    native_config(&mut state, &root, json!({"token_max_ttl":500}), 103);
+    native_config(
+        &mut state,
+        &root,
+        json!({"token_ttl":null,"token_max_ttl":null,"token_period":null,"token_explicit_max_ttl":null}),
+        104,
+    );
+    let actor = state.authenticate(&root, 104).unwrap();
+    let data = state
+        .handle(
+            Some(&actor),
+            "",
+            "GET",
+            "auth/radius/config",
+            &json!({}),
+            104,
+        )
+        .unwrap()
+        .unwrap()
+        .body["data"]
+        .clone();
+    assert_eq!(data["url"], "radius://radius.example.test:1812");
+    for (field, value) in [
+        ("token_ttl", 40),
+        ("token_max_ttl", 500),
+        ("token_period", 30),
+        ("token_explicit_max_ttl", 240),
+    ] {
+        assert_eq!(data[field], value);
+    }
+    assert_eq!(data["token_policies"], json!(["issuer"]));
+    assert_eq!(data["token_num_uses"], 4);
+    native_config(&mut state, &root, json!({"token_num_uses":null}), 105);
+    assert_eq!(state.radius_mounts[""]["radius"].token_num_uses, 0);
+    for value in [Value::Null, json!([])] {
+        native_config(&mut state, &root, json!({"token_policies":["issuer"]}), 105);
+        native_config(&mut state, &root, json!({"token_policies":value}), 106);
+        assert!(state.radius_mounts[""]["radius"].policies.is_empty());
+        let raw = native_login(&mut state, 107);
+        assert_eq!(
+            state.tokens[&hash(&raw)].policies,
+            BTreeSet::from(["default".into()])
+        );
+    }
+    for body in [
+        json!({"url":null}),
+        json!({"token_period":MAX_TTL+1}),
+        json!({"token_explicit_max_ttl":MAX_TTL+1}),
+        json!({"token_period":-1}),
+        json!({"token_explicit_max_ttl":-1}),
+        json!({"policies":["default"],"token_policies":[]}),
+    ] {
+        let before = state_revision(&state).unwrap();
+        assert_eq!(
+            state
+                .handle(Some(&actor), "", "POST", "auth/radius/config", &body, 108)
+                .err()
+                .unwrap()
+                .status,
+            400
+        );
+        assert_eq!(state_revision(&state).unwrap(), before);
+    }
+}
+
+#[test]
+fn radius_zero_ttl_uses_mount_defaults_and_old_caps_remain_conservative() {
+    let (mut state, root, raw) = fixture();
+    let id = hash(&raw);
+    let issued = state.tokens[&id].created_at;
+    let actor = state.authenticate(&root, issued).unwrap();
+    state
+        .handle(
+            Some(&actor),
+            "",
+            "POST",
+            "sys/auth/radius/tune",
+            &json!({"default_lease_ttl":75,"max_lease_ttl":600}),
+            issued,
+        )
+        .unwrap()
+        .unwrap();
+    native_config(
+        &mut state,
+        &root,
+        json!({"token_ttl":0,"token_max_ttl":500}),
+        issued,
+    );
+    let fresh = native_login(&mut state, issued + 1);
+    let fresh_id = hash(&fresh);
+    let fresh_issue = state.tokens[&fresh_id].created_at;
+    assert_eq!(state.tokens[&fresh_id].expires_at, Some(fresh_issue + 75));
+    assert_eq!(
+        native_renew(&mut state, &root, &fresh, "renew-self", 0, fresh_issue + 1)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        75
+    );
+    state.tokens.get_mut(&id).unwrap().max_expires_at = Some(issued + 50);
+    native_config(&mut state, &root, json!({"token_period":30}), issued + 40);
+    assert_eq!(
+        native_renew(&mut state, &root, &raw, "renew-self", 300, issued + 40)
+            .unwrap()
+            .body["auth"]["lease_duration"],
+        10
+    );
+    assert_eq!(state.tokens[&id].max_expires_at, Some(issued + 50));
+}
+
+#[test]
+fn radius_native_config_changes_during_provider_roundtrip_reject_atomically() {
+    for field in ["token_period", "token_explicit_max_ttl"] {
+        let (mut state, root, raw) = fixture();
+        let (actor, plan) = prepare(&mut state, &raw, 110);
+        let mut body = json!({});
+        body[field] = json!(30);
+        native_config(&mut state, &root, body, 110);
+        let before = state_revision(&state).unwrap();
+        assert_eq!(
+            state
+                .finish_radius_renewal(plan, &actor, RadiusRenewalObservation, 111)
+                .err()
+                .unwrap()
+                .status,
+            409
+        );
+        assert_eq!(state_revision(&state).unwrap(), before);
+    }
+    let (mut state, root, raw) = fixture();
+    native_config(
+        &mut state,
+        &root,
+        json!({"token_policies":["changed"]}),
+        110,
+    );
+    let (actor, plan) = prepare(&mut state, &raw, 110);
+    let before = state_revision(&state).unwrap();
+    assert_eq!(
+        state
+            .finish_radius_renewal(plan, &actor, RadiusRenewalObservation, 111)
+            .err()
+            .unwrap()
+            .status,
+        500
+    );
+    assert_eq!(state_revision(&state).unwrap(), before);
 }

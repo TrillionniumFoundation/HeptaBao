@@ -10,6 +10,8 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bao_http import Response
 from core_isolation import ScenarioFailure, successful_comparison
+from radius_renewal_live import (native_config_matches, native_period_matches,
+    run_native_parameter_scenarios, complete_scenarios)
 from radius_renewal_live import (ADAPTATION, PASSWORD, SECRET, USERNAME,
     md5, message_authenticator, pap_packet_response, renewal_token_shape, wrapped_renewal_shape, run_scenarios)
 
@@ -165,6 +167,76 @@ class RadiusRenewalTests(unittest.TestCase):
         self.assertIs(ADAPTATION["configuration_api_parity"], False)
         self.assertIn("enrolled", ADAPTATION["candidate"])
         self.assertIn("host, port", ADAPTATION["oracle"])
+
+
+class NativeParameterGuards(unittest.TestCase):
+    def test_native_config_readback_detects_reset_or_implicit_policy_injection(self):
+        expected = dict(ttl=40, maximum=500, period=30, explicit=240, policies=["radius-native-policy"])
+        data = {"token_ttl":40, "token_max_ttl":500, "token_period":30,
+                "token_explicit_max_ttl":240, "token_policies":["radius-native-policy"]}
+        self.assertTrue(native_config_matches(data, **expected))
+        for key in ("token_ttl", "token_max_ttl", "token_period", "token_explicit_max_ttl"):
+            self.assertFalse(native_config_matches(dict(data, **{key:0}), **expected))
+            self.assertFalse(native_config_matches(dict(data, **{key:True}), **expected))
+        for policies in ([], ["default", "radius-native-policy"], None):
+            self.assertFalse(native_config_matches(dict(data, token_policies=policies), **expected))
+
+    def test_lookup_preserves_issued_period_and_omits_zero(self):
+        self.assertTrue(native_period_matches({}, 0))
+        for value in (0, None, False, "0"):
+            self.assertFalse(native_period_matches({"period":value}, 0))
+        self.assertTrue(native_period_matches({"period":30}, 30))
+        for value in (45, None, True, "30"):
+            self.assertFalse(native_period_matches({"period":value}, 30))
+
+    def test_native_failure_does_not_reflect_secret_response(self):
+        rows = []
+        with self.assertRaisesRegex(ScenarioFailure, "^radius_renewal.native.policy$"):
+            run_native_parameter_scenarios(FailedClient(), EmptyResponder(), lambda _: {}, lambda: None, rows)
+        self.assertFalse(complete_scenarios(rows))
+        self.assertNotIn("private", json.dumps(rows))
+
+    def test_native_login_still_requires_actual_pap_observation(self):
+        class LocalSuccess:
+            uses = 4
+
+            def request(self, method, path, payload=None, **kwargs):
+                if payload and "token_num_uses" in payload and payload["token_num_uses"] is None:
+                    self.uses = 0
+                if method == "GET":
+                    return Response(200, {"data":{"token_ttl":40, "token_max_ttl":500,
+                        "token_period":30, "token_explicit_max_ttl":240,
+                        "token_policies":["radius-native-policy"], "token_num_uses":self.uses}})
+                if path.endswith("/login"):
+                    return Response(200, {"auth":{"client_token":"private-target",
+                        "accessor":"private-accessor", "lease_duration":30}})
+                return Response(204, {})
+        rows = []
+        with self.assertRaisesRegex(ScenarioFailure, "^radius_renewal.native.partial.credentials_and_policy_preserved$"):
+            run_native_parameter_scenarios(LocalSuccess(), EmptyResponder(), lambda _: {}, lambda: None, rows)
+        self.assertFalse(rows[-1]["provider_checked"])
+        self.assertNotIn("private", json.dumps(rows))
+
+    def test_incomplete_or_duplicate_milestones_never_pass(self):
+        names = ["radius_renewal.restart_provider_accepted", "radius_renewal.finite.complete",
+            "radius_renewal.native.partial.policy_change_rechecked",
+            "radius_renewal.native.zero.current_mount_default.ttl",
+            "radius_renewal.native.finite_to_periodic.after.period_snapshot",
+            "radius_renewal.native.period_changed.after.period_snapshot",
+            "radius_renewal.native.periodic_to_finite.after.period_snapshot",
+            "radius_renewal.native.period_clamped.renew.ttl",
+            "radius_renewal.native.explicit.captured_after_restart.ttl",
+            "radius_renewal.native.explicit.uncapped_after_clear.ttl",
+            "radius_renewal.native.period_explicit.original_absolute_cap.ttl",
+            "radius_renewal.native.complete"]
+        rows = [{"case":name, "passed":True} for name in names]
+        self.assertTrue(complete_scenarios(rows))
+        # Adding a real observation does not require updating an unrelated count.
+        self.assertTrue(complete_scenarios([{"case":"new_real_observation", "passed":True}] + rows))
+        self.assertFalse(complete_scenarios(rows[:-1]))
+        self.assertFalse(complete_scenarios(rows[:3] + rows[4:]))
+        self.assertFalse(complete_scenarios(rows[:3] + [rows[2]] + rows[3:]))
+        self.assertFalse(complete_scenarios([dict(rows[0], passed=False)] + rows[1:]))
 
 
 if __name__ == "__main__":

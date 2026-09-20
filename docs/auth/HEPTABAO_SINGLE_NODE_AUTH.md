@@ -343,6 +343,14 @@ A live token past a shortened current maximum returns 500 without changing its
 existing lease; an expired token remains 403. New logins do not persist an ordinary
 maximum as an explicit cap. Legacy stored absolute caps remain enforced; a fresh
 login is required to benefit from a raised limit.
+RADIUS configuration also accepts `token_period` and `token_explicit_max_ttl`.
+Periodic renewal uses the current period and maximum after provider verification;
+the explicit maximum stays fixed at token issuance. Token lookup retains its
+issued period even when configuration changes. A zero TTL uses the mount default.
+Partial configuration updates preserve omitted fields; null duration fields keep
+their values, while `token_policies:null` or `[]` clears the configured policy
+list. Login still attaches the default policy. These fields require schema 22;
+the existing host-enrolled UDP destination and shared-secret profile remain.
 Response wrapping remains available on these renewal endpoints: the token
 extension and its single-use response wrapper publish in one durable transaction.
 Provider rejection, wrapper capacity failure or a rejected commit cannot publish

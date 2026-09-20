@@ -461,6 +461,8 @@ impl AuthState {
                         .any(|policy| !valid_name(policy) || policy == "root")
                     || config.token_ttl > super::MAX_TTL
                     || config.token_max_ttl > super::MAX_TTL
+                    || config.token_period > super::MAX_TTL
+                    || config.token_explicit_max_ttl > super::MAX_TTL
                     || config.token_ttl > 0
                         && config.token_max_ttl > 0
                         && config.token_ttl > config.token_max_ttl
