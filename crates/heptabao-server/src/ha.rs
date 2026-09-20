@@ -1656,8 +1656,10 @@ mod tests {
     #[test]
     fn ha_commit_rejects_legacy_whole_state_fallback() -> Result<(), Box<dyn std::error::Error>> {
         let legacy = CommittedStateDescriptor::Legacy(Zeroizing::new(b"legacy-state".to_vec()));
-        let error = reject_legacy_mutation_fallback(&legacy)
-            .expect_err("mutation must not promote HBSR1 implicitly");
+        let error = match reject_legacy_mutation_fallback(&legacy) {
+            Ok(()) => return Err("mutation must not promote HBSR1 implicitly".into()),
+            Err(error) => error,
+        };
         assert!(error.contains("explicit owner-manifest migration"));
         Ok(())
     }

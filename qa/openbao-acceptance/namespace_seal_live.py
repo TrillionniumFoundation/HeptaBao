@@ -33,6 +33,11 @@ def main() -> int:
     source_head = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=True
     ).stdout.strip()
+    source_worktree_dirty = bool(
+        subprocess.run(
+            ["git", "status", "--porcelain"], cwd=ROOT, text=True, capture_output=True, check=True
+        ).stdout.strip()
+    )
     root = Path(tempfile.mkdtemp(prefix="heptabao-namespace-seal-"))
     root.chmod(0o700)
     instance = Instance(Path(args.binary), root / "candidate")
@@ -121,6 +126,7 @@ def main() -> int:
             "independent_qualification": False,
             "candidate_binary_sha256": binary_sha256,
             "candidate_binary_source_head": source_head,
+            "source_worktree_dirty": source_worktree_dirty,
             "execution_platform": "Linux aarch64 guest (Ubuntu Noble)",
         }
         output = Path(args.output)
