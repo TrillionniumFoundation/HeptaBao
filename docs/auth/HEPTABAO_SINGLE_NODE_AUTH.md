@@ -372,11 +372,19 @@ Schema 24 adds native `host`, `port`, `secret`, `unregistered_user_policies`,
 `dial_timeout`, `read_timeout`, `nas_port` and `nas_identifier` configuration.
 The host is stored lowercase, port defaults to 1812, both timeouts to 10 seconds,
 NAS-Port to 10 and NAS-Identifier to empty. Configuration stores the encrypted
-shared secret and omits it from readback. It does not register a network route:
-login and renewal still require the exact enrolled origin and fixed socket
-address. The process credential is optional for native requests; the legacy
-profile refuses an endpoint without its process credential. Native requests
-always use the current configured secret.
+shared secret and omits it from readback. Schema 26 lets fresh native
+configuration authorize its own host and port without process enrollment.
+DNS uses a fixed worker pool and a bounded address list; IP literals bypass DNS.
+The selected peer is fixed before the sole PAP request is sent. No provider
+response authorizes a new address or credential fallback. Native requests always
+use the configured secret.
+
+Old native records retain the enrolled origin and fixed socket until an explicit
+host or port write promotes them, even if that field's value is unchanged.
+Secret, policy and timeout-only updates preserve the old network authority.
+The process credential remains optional for these old native mounts; legacy URL
+mounts require their original process credential. Transport changes invalidate
+pending login and renewal observations through the existing revision checks.
 
 `users/:name` stores optional policies and may be written before configuration.
 The last mapping's deletion leaves a native-profile mount entry. User writes and
@@ -406,12 +414,12 @@ nonempty NAS-Identifier. There is one request and no retry. Read timeout zero
 fails before sending; dial timeout zero has no separate connect limit but remains
 bounded by the overall read deadline. Supported timeouts are 0–60 seconds,
 shared secrets 1–256 bytes, passwords 1–128 bytes and usernames/NAS identifiers at
-most 253 bytes. Host configuration supports ASCII DNS names and IPv4 literals;
-the registered socket may use IPv6. Signed ports can be stored for faithful
+most 253 bytes. New native host configuration supports ASCII DNS names and bare
+IPv4/IPv6 literals. Read timeouts cover DNS, connect, request and authenticated
+response; nonzero dial timeouts additionally bound DNS and local connect. Signed ports can be stored for faithful
 readback, but invalid destination ports fail before I/O. The profile requires
 strict response and Message-Authenticator verification; CHAP, EAP, challenges,
-arbitrary timeout ranges, IPv6 literal host configuration and the full TokenParams
-surface remain open. Native/legacy configuration mixing returns 400, changing an
+arbitrary timeout ranges and the full TokenParams surface remain open. Native/legacy configuration mixing returns 400, changing an
 existing profile returns 409, and native configuration DELETE returns 405.
 
 ## Authentication mount registry

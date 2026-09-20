@@ -182,7 +182,7 @@ def run(binary, root, checks, observations, inherited, *, native=False):
         for node in cluster.nodes:
             path = node.root / "server.json"
             config = json.loads(path.read_text())
-            config["outbound_endpoints"] = [endpoint]
+            config["outbound_endpoints"] = [] if native else [endpoint]
             path.write_text(json.dumps(config))
             path.chmod(0o600)
         cluster.bootstrap()

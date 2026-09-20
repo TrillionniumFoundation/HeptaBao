@@ -346,6 +346,11 @@ impl OwnerStateManifest {
         self.replay_epoch
     }
 
+    pub(crate) fn canonical_digest(&self) -> Result<[u8; 32], OwnerStoreError> {
+        self.validate()?;
+        canonical_manifest_digest(self)
+    }
+
     #[cfg(test)]
     pub(crate) fn storage_format(&self) -> &str {
         &self.storage_format

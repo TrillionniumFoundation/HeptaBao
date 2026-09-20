@@ -1,5 +1,5 @@
 //! Direct RADIUS tokens require a fresh provider decision for each renewal.
-//! Plans contain only an enrolled route and bounded, zeroized PAP credentials;
+//! Plans contain an authorized route and bounded, zeroized PAP credentials;
 //! a provider observation is not permission to bypass current local authority.
 use super::*;
 
@@ -32,6 +32,7 @@ impl RadiusRenewalPlan {
             return match outbound.radius_authenticate_native(
                 &self.config.url,
                 &config.options(),
+                config.api_transport(),
                 &self.username,
                 &self.credential.0,
             ) {

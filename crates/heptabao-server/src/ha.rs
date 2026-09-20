@@ -207,6 +207,20 @@ impl Drop for PeerListener {
     }
 }
 
+/// Opaque evidence issued only after complete chunk authentication and hashing.
+/// It is process-local, contains no plaintext state and is never serialized.
+#[derive(Clone)]
+pub(crate) struct ValidatedReadCursor {
+    generation: u64,
+    envelope_identity: [u8; 32],
+}
+
+pub(crate) enum CommittedStateRead {
+    Absent,
+    Unchanged,
+    Materialized(CommittedApplicationState),
+}
+
 pub(crate) struct CommittedApplicationState {
     pub digest: [u8; 32],
     pub bytes: Zeroizing<Vec<u8>>,
@@ -215,6 +229,7 @@ pub(crate) struct CommittedApplicationState {
     /// owner publication metadata, so callers must not infer this from the
     /// optional owner fields.
     pub legacy_whole_state: bool,
+    pub read_cursor: Option<ValidatedReadCursor>,
     pub owner_manifest_digest: Option<[u8; 32]>,
     pub changed_owner_mask: Option<u8>,
 }
@@ -945,94 +960,159 @@ impl HaProcess {
     pub(crate) fn latest_committed_state(
         &self,
     ) -> Result<Option<CommittedApplicationState>, String> {
+        match self.latest_committed_state_if_changed(None)? {
+            CommittedStateRead::Absent => Ok(None),
+            CommittedStateRead::Materialized(state) => Ok(Some(state)),
+            CommittedStateRead::Unchanged => {
+                Err("HA read reused an absent verification cursor".into())
+            }
+        }
+    }
+
+    pub(crate) fn latest_committed_state_if_changed(
+        &self,
+        known: Option<&ValidatedReadCursor>,
+    ) -> Result<CommittedStateRead, String> {
         let node = self
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.ensure_linearizable())
-            .map_err(|error| error.to_string())?;
-        let Some(envelope) = self
-            .runtime
-            .block_on(node.latest_envelope())
-            .map_err(|error| error.to_string())?
-        else {
-            return Ok(None);
-        };
-        let descriptor = self
-            .codec
-            .open_committed_descriptor(
-                envelope.operation_id(),
-                envelope.digest(),
-                envelope.sealed(),
-            )
-            .map_err(|error| error.to_string())?;
-        let (bytes, legacy_whole_state, owner_manifest_digest, changed_owner_mask) =
-            match descriptor {
-                CommittedStateDescriptor::Legacy(bytes) => (bytes, true, None, None),
-                CommittedStateDescriptor::Chunked(manifest) => {
-                    if manifest.state_digest != envelope.digest() {
-                        return Err("HA manifest digest does not match production envelope".into());
-                    }
-                    let total = usize::try_from(manifest.total_bytes)
-                        .map_err(|_| "HA manifest total length overflow".to_owned())?;
-                    let mut assembled = Zeroizing::new(Vec::with_capacity(total));
-                    for chunk in &manifest.chunks {
-                        let staged = self
-                            .runtime
-                            .block_on(node.application_chunk_envelope(chunk.index, chunk.slot))
-                            .map_err(|error| error.to_string())?
-                            .ok_or_else(|| {
-                                "HA manifest references an unavailable committed chunk".to_owned()
-                            })?;
-                        if staged.digest() != chunk.digest {
-                            return Err("HA manifest/chunk digest binding mismatch".into());
-                        }
-                        let opened = self
-                            .codec
-                            .open_chunk_parts(
-                                chunk.index,
-                                chunk.slot,
-                                staged.operation_id(),
-                                staged.digest(),
-                                staged.sealed(),
-                            )
-                            .map_err(|error| error.to_string())?;
-                        if opened.len()
-                            != usize::try_from(chunk.bytes)
-                                .map_err(|_| "HA chunk length overflow".to_owned())?
-                        {
-                            return Err("HA committed chunk length mismatch".into());
-                        }
-                        assembled.extend_from_slice(&opened);
-                        if assembled.len() > total {
-                            return Err("HA committed chunk set exceeds manifest length".into());
-                        }
-                    }
-                    if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
-                        return Err(
-                            "HA committed chunk set does not reconstruct manifest state".into()
-                        );
-                    }
-                    (
-                        assembled,
-                        false,
-                        manifest.owner_manifest_digest,
-                        manifest.changed_owner_mask,
-                    )
+        read_committed_application(
+            &self.codec,
+            known,
+            || {
+                self.runtime
+                    .block_on(node.ensure_linearizable())
+                    .map_err(|error| error.to_string())
+            },
+            || {
+                self.runtime
+                    .block_on(node.latest_envelope_at_generation())
+                    .map_err(|error| error.to_string())
+            },
+            |index, slot| {
+                self.runtime
+                    .block_on(node.application_chunk_envelope(index, slot))
+                    .map_err(|error| error.to_string())
+            },
+            || self.runtime.block_on(node.application_state_generation()),
+        )
+    }
+}
+
+/// Keep ReadIndex and manifest authentication ahead of every reuse decision.
+/// The narrow callbacks also let tests prove that a warm read never loads chunks
+/// and that authority loss or a changed mutable slot still fails closed.
+fn read_committed_application(
+    codec: &ClusterStateCodec,
+    known: Option<&ValidatedReadCursor>,
+    read_index: impl FnOnce() -> Result<(), String>,
+    latest: impl FnOnce() -> Result<(u64, Option<ReplicatedEnvelope>), String>,
+    mut load_chunk: impl FnMut(u16, u8) -> Result<Option<ReplicatedEnvelope>, String>,
+    current_generation: impl FnOnce() -> u64,
+) -> Result<CommittedStateRead, String> {
+    read_index()?;
+    let (generation, Some(envelope)) = latest()? else {
+        return Ok(CommittedStateRead::Absent);
+    };
+    let descriptor = codec
+        .open_committed_descriptor(
+            envelope.operation_id(),
+            envelope.digest(),
+            envelope.sealed(),
+        )
+        .map_err(|error| error.to_string())?;
+    let identity = manifest_envelope_identity(&envelope);
+    let (bytes, legacy_whole_state, owner_manifest_digest, changed_owner_mask) = match descriptor {
+        CommittedStateDescriptor::Legacy(bytes) => (bytes, true, None, None),
+        CommittedStateDescriptor::Chunked(manifest) => {
+            if manifest.state_digest != envelope.digest() {
+                return Err("HA manifest digest does not match production envelope".into());
+            }
+            // Only owner-bound HBSM4 has a local canonical publication identity
+            // that Service can bind to admitted durable state before reusing.
+            if manifest.owner_manifest_digest.is_some()
+                && known.is_some_and(|cursor| {
+                    cursor.generation == generation && cursor.envelope_identity == identity
+                })
+            {
+                return Ok(CommittedStateRead::Unchanged);
+            }
+            let total = usize::try_from(manifest.total_bytes)
+                .map_err(|_| "HA manifest total length overflow".to_owned())?;
+            let mut assembled = Zeroizing::new(Vec::with_capacity(total));
+            for chunk in &manifest.chunks {
+                let staged = load_chunk(chunk.index, chunk.slot)?.ok_or_else(|| {
+                    "HA manifest references an unavailable committed chunk".to_owned()
+                })?;
+                if staged.digest() != chunk.digest {
+                    return Err("HA manifest/chunk digest binding mismatch".into());
                 }
-            };
-        if sha256(&bytes) != envelope.digest() {
-            return Err("HA committed application digest readback failed".into());
+                let opened = codec
+                    .open_chunk_parts(
+                        chunk.index,
+                        chunk.slot,
+                        staged.operation_id(),
+                        staged.digest(),
+                        staged.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                if opened.len()
+                    != usize::try_from(chunk.bytes)
+                        .map_err(|_| "HA chunk length overflow".to_owned())?
+                {
+                    return Err("HA committed chunk length mismatch".into());
+                }
+                assembled.extend_from_slice(&opened);
+                if assembled.len() > total {
+                    return Err("HA committed chunk set exceeds manifest length".into());
+                }
+            }
+            if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
+                return Err("HA committed chunk set does not reconstruct manifest state".into());
+            }
+            (
+                assembled,
+                false,
+                manifest.owner_manifest_digest,
+                manifest.changed_owner_mask,
+            )
         }
-        Ok(Some(CommittedApplicationState {
+    };
+    if sha256(&bytes) != envelope.digest() {
+        return Err("HA committed application digest readback failed".into());
+    }
+    // An apply or snapshot during materialization invalidates the observation,
+    // even if it left the publication envelope itself untouched. Do not issue
+    // evidence spanning that mutation; the next read can validate it afresh.
+    let read_cursor = (owner_manifest_digest.is_some() && current_generation() == generation)
+        .then_some(ValidatedReadCursor {
+            generation,
+            envelope_identity: identity,
+        });
+    Ok(CommittedStateRead::Materialized(
+        CommittedApplicationState {
             digest: envelope.digest(),
             bytes,
             legacy_whole_state,
             owner_manifest_digest,
             changed_owner_mask,
-        }))
-    }
+            read_cursor,
+        },
+    ))
+}
+
+fn manifest_envelope_identity(envelope: &ReplicatedEnvelope) -> [u8; 32] {
+    let mut context = digest::Context::new(&digest::SHA256);
+    context.update(b"heptabao-verified-ha-manifest-v1");
+    context.update(&(envelope.operation_id().len() as u64).to_be_bytes());
+    context.update(envelope.operation_id().as_bytes());
+    context.update(&envelope.digest());
+    context.update(&(envelope.sealed().len() as u64).to_be_bytes());
+    context.update(envelope.sealed());
+    let mut result = [0; 32];
+    result.copy_from_slice(context.finish().as_ref());
+    result
 }
 
 impl Drop for HaProcess {
@@ -1574,6 +1654,10 @@ fn sha256(bytes: &[u8]) -> [u8; 32] {
     output.copy_from_slice(value.as_ref());
     output
 }
+
+#[cfg(test)]
+#[path = "ha_read_tests.rs"]
+pub(crate) mod read_tests;
 
 #[cfg(test)]
 mod tests {

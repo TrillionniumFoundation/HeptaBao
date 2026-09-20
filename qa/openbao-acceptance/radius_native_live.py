@@ -2,11 +2,12 @@
 """Selected native RADIUS configuration/users behavior over real HTTPS and UDP.
 
 Compares a candidate with pinned OpenBao 2.6.2 using synthetic PAP accounts.
-The candidate still requires a process-enrolled address and strict response MA.
+The candidate uses administrator-authorized targets and strict response MA.
 """
 from __future__ import annotations
 import hashlib
 import hmac
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -26,13 +27,13 @@ from radius_renewal_live import SECRET, PASSWORD, md5, renewal_token_shape, wrap
 from remote_jwks_live import Instance
 
 ADAPTATION = {
-    'candidate': 'same native host/port/secret API; UDP address must be process-enrolled, with no process secret or ambient DNS',
+    'candidate': 'native host/port/secret API authorizes bounded DNS/IP UDP egress; no process endpoint or secret enrollment',
     'oracle': 'native API host/port/secret without process address enrollment',
     'request_message_authenticator': 'candidate mandatory; official 2.6.2 PAP omits it',
     'response': 'both receive signed Response-Authenticator and Message-Authenticator',
     'bounds': 'candidate timeouts 0..60 seconds, secret 1..256 bytes, PAP username 1..253 and password 1..128 bytes, NAS-Identifier <=253 bytes',
     'numeric': 'common stored i64 NAS-Port behavior tested; invalid port transport failures and numeric overflow are not full API parity claims',
-    'excluded': 'arbitrary DNS/destinations, CIDR/strict-IP/batch token parameters, non-PAP authentication, independent production RADIUS server qualification',
+    'excluded': 'arbitrary resolver/network deployment qualification, CIDR/strict-IP/batch token parameters, non-PAP authentication, independent production RADIUS server qualification',
     'configuration_api_parity': False,
 }
 
@@ -70,17 +71,21 @@ def pap_response(packet, *, require_ma, secret, username, password, allow, nas_p
 
 
 class NativeRadius:
-    def __init__(self, *, require_ma):
+    def __init__(self, *, require_ma, dual_stack=False):
         self.require_ma=require_ma;self.secret=SECRET;self.username=b'alice';self.nas_port=10;self.nas_identifier=None;self.allow=True
-        self.requests=[];self.lock=threading.Lock();self.stopped=threading.Event()
-        self.socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);self.socket.bind(('127.0.0.1',0));self.socket.settimeout(.2)
+        self.requests=[];self.peers=[];self.lock=threading.Lock();self.stopped=threading.Event()
+        self.socket=socket.socket(socket.AF_INET6 if dual_stack else socket.AF_INET,socket.SOCK_DGRAM)
+        if dual_stack:self.socket.setsockopt(socket.IPPROTO_IPV6,socket.IPV6_V6ONLY,0)
+        self.socket.bind(('::' if dual_stack else '127.0.0.1',0));self.socket.settimeout(.2)
         self.port=self.socket.getsockname()[1];self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
     def run(self):
         while not self.stopped.is_set():
             try:
                 packet,source=self.socket.recvfrom(4097)
                 response,observed=pap_response(packet,require_ma=self.require_ma,secret=self.secret,username=self.username,password=PASSWORD,allow=self.allow,nas_port=self.nas_port,nas_identifier=self.nas_identifier)
-                with self.lock:self.requests.append(observed)
+                peer=ipaddress.ip_address(source[0]);peer=peer.ipv4_mapped if isinstance(peer,ipaddress.IPv6Address) and peer.ipv4_mapped else peer
+                with self.lock:
+                    self.requests.append(observed);self.peers.append({'family':peer.version,'loopback':peer.is_loopback})
                 self.socket.sendto(response,source)
             except TimeoutError:continue
             except ValueError:continue
@@ -91,6 +96,11 @@ class NativeRadius:
         with self.lock:
             rows=self.requests[start:]
             return bool(rows) and all(row=={'credentials_valid':True,'message_authenticator_present':self.require_ma,'accepted':accepted,'nas_valid':True} for row in rows)
+    def peer_observation(self,start):
+        with self.lock:
+            peers=self.peers[start:]
+            return {'request_count':len(peers),'peer_family':peers[0]['family'] if len(peers)==1 else 0,
+                    'peer_loopback':len(peers)==1 and peers[0]['loopback']}
     def close(self):
         self.stopped.set();self.socket.close();self.thread.join(timeout=5)
         if self.thread.is_alive():raise ScenarioFailure('radius_native.provider_shutdown')
@@ -101,7 +111,7 @@ def config_matches(data, **fields):
 
 
 class Trace:
-    def __init__(self,client,provider,rows):self.client,self.provider,self.rows=client,provider,rows;self.tokens=[]
+    def __init__(self,client,provider,rows):self.client,self.provider,self.rows=client,provider,rows;self.tokens=[];self.transport_observations=[]
     def check(self,name,passed,**safe):
         if not re.fullmatch(r'[a-z0-9_.]{1,140}',name) or any(type(v) not in (bool,int) for v in safe.values()):
             raise ValueError('unsafe_trace_field')
@@ -222,6 +232,41 @@ def run_no_default_scenarios(trace,restart):
              {'token':auth['client_token'],'increment':240},contact=True)
         check('nodefault.nil_'+label+'.empty_snapshot',token_policy_shape(body.get('auth'),[]))
     check('nodefault.complete',True)
+
+
+def run_api_transport_scenarios(trace):
+    provider=NativeRadius(require_ma=trace.provider.require_ma,dual_stack=True)
+    try:
+        t=Trace(trace.client,provider,trace.rows)
+        t.call('transport.mount','POST','sys/auth/radius-transport',{'type':'radius'},expected=204)
+        for label,host,family in [('dns','localhost',None),('ipv6','::1',6)]:
+            prefix='transport.'+label
+            t.call(prefix+'.config','POST','auth/radius-transport/config',{
+                'host':host,'port':provider.port,'secret':SECRET.decode(),'token_ttl':120,'token_max_ttl':600},expected=204)
+            data=t.call(prefix+'.read','GET','auth/radius-transport/config').get('data',{})
+            t.check(prefix+'.readback',config_matches(data,host=host,port=provider.port) and 'api_transport' not in data)
+            def peer(name,cursor):
+                observed=provider.peer_observation(cursor)
+                t.check(name+'.actual_peer',observed['request_count']==1 and observed['peer_loopback']
+                        and observed['peer_family'] in (4,6) and (family is None or observed['peer_family']==family))
+                trace.transport_observations.append({'case':'radius_native.'+name,**observed})
+            cursor=provider.count()
+            auth=t.login(prefix+'.login',path='auth/radius-transport/login',policies=['default'])
+            peer(prefix+'.login',cursor)
+            for via,path,body,actor in [
+                ('self','renew-self',{},auth['client_token']),
+                ('token','renew',{'token':auth['client_token']},None),
+                ('accessor','renew-accessor',{'accessor':auth['accessor']},None),
+            ]:
+                cursor=provider.count()
+                result=t.call(prefix+'.renew_'+via,'POST','auth/token/'+path,dict(body,increment=240),token=actor,contact=True)
+                renewed=result.get('auth',{})
+                t.check(prefix+'.renew_'+via+'.shape',renewed.get('lease_duration')==240
+                        and renewal_token_shape(renewed,auth['client_token'],via_accessor=via=='accessor'))
+                peer(prefix+'.renew_'+via,cursor)
+        trace.tokens.extend(t.tokens)
+        t.check('transport.complete',True)
+    finally:provider.close()
 
 
 def run_scenarios(trace,restart):
@@ -348,11 +393,14 @@ def run_scenarios(trace,restart):
     entity=call('identity.read','GET','identity/entity/id/'+rotated['entity_id']).get('data',{})
     check('identity.alias',any(alias.get('name')=='alice' for alias in entity.get('aliases',[])))
     run_no_default_scenarios(trace,restart)
+    run_api_transport_scenarios(trace)
     check('receipt.no_sensitive_values',not any(secret in json.dumps(trace.rows) for secret in [SECRET.decode(),PASSWORD.decode(),provider.secret.decode(),*trace.tokens]))
     check('complete',True)
 
 
 MILESTONES={
+    'transport.dns.login.actual_peer','transport.dns.renew_accessor.actual_peer',
+    'transport.ipv6.login.actual_peer','transport.ipv6.renew_accessor.actual_peer','transport.complete',
     'preconfig.complete','preconfig.login.token','configuration_users.complete','defaults_host_lower_port1812',
     'fallback_raw_renew','map_reset_omitted_empty','upper_delete_keeps_lower','list_query_after_limit',
     'deleted_map_renew','deleted_map_same_policy_renew','nas_attributes','nas_null_packet',
@@ -392,7 +440,7 @@ def main():
             'build_source_commit':None if args.oracle_only else args.build_source_commit,
             'build_source_binding_basis':'caller-supplied commit and observed binary hash; not independent attestation',
             'harness_source_commit':before['source_commit'],'harness_source_dirty':before['source_dirty'],
-            'source_identity':before,'runner_sha256':runner_hash,'started_at_unix':time.time(),'cases':{},'side_failures':{}}
+            'source_identity':before,'runner_sha256':runner_hash,'started_at_unix':time.time(),'cases':{},'side_failures':{},'transport_observations':{}}
     try:
         with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
         oracle=start_oracle(port);reference=Client(oracle['address'],oracle['ca_file'],private_read(oracle['token_file']).decode().strip())
@@ -402,7 +450,7 @@ def main():
         if not args.oracle_only:
             instance=Instance(binary,root/'candidate');provider=NativeRadius(require_ma=True);providers.append(provider)
             cfg=json.loads((instance.root/'server.json').read_text());cfg['lifecycle_interval_seconds']=0
-            cfg['outbound_endpoints']=[{'origin':f'radius://127.0.0.1:{provider.port}','address':f'127.0.0.1:{provider.port}','server_name':'127.0.0.1','ca_pem':'','path_prefix':'/'}]
+            cfg['outbound_endpoints']=[]
             private_write(instance.root/'server.json',cfg,replace=True)
             instance.start();status,initialized=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
             if status!=200:raise ScenarioFailure('radius_native.candidate_init')
@@ -416,7 +464,9 @@ def main():
         provider=NativeRadius(require_ma=False);providers.append(provider);sides.append(('oracle',reference,provider,restart_reference))
         for side,client,provider,restart in sides:
             rows=report['cases'][side]=[]
-            try:run_scenarios(Trace(client,provider,rows),restart)
+            trace=Trace(client,provider,rows)
+            report['transport_observations'][side]=trace.transport_observations
+            try:run_scenarios(trace,restart)
             except ScenarioFailure as e:report['side_failures'][side]=str(e)
             except Exception as e:report['side_failures'][side]='unexpected_'+type(e).__name__
         expected_sides={'oracle'} if args.oracle_only else {'candidate','oracle'}

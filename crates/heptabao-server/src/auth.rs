@@ -611,6 +611,7 @@ impl RadiusLoginPlan {
             return match outbound.radius_authenticate_native(
                 &self.config.url,
                 &config.options(),
+                config.api_transport(),
                 &self.username,
                 &self.password,
             ) {

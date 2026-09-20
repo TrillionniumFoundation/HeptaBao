@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 25;
+const CURRENT_STATE_SCHEMA: u32 = 26;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -39,6 +39,8 @@ mod audit_rotation;
 mod capabilities;
 #[path = "service_database.rs"]
 mod database;
+#[path = "service_ha_read.rs"]
+mod ha_read;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
@@ -777,6 +779,7 @@ pub struct Service {
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
+    ha_read_cache: Option<ha_read::HaReadCache>,
     kv_read_only_dispatches: u64,
     seal: Option<SealMetadata>,
     unseal_shares: BTreeMap<u8, SecretShare>,
@@ -1030,6 +1033,7 @@ impl Service {
             durable: None,
             state: None,
             state_digest: None,
+            ha_read_cache: None,
             kv_read_only_dispatches: 0,
             seal,
             unseal_shares: BTreeMap::new(),
@@ -1829,6 +1833,7 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             self.state = None;
+            self.ha_read_cache = None;
             self.durable = None;
             self.barrier_key = None;
             self.unseal_shares.clear();
@@ -3154,6 +3159,7 @@ impl Service {
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
         self.state = None;
+        self.ha_read_cache = None;
         self.durable = None;
         self.barrier_key = None;
         self.unseal_shares.clear();
@@ -3317,6 +3323,7 @@ impl Service {
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
         self.state = None;
+        self.ha_read_cache = None;
         self.durable = None;
         self.barrier_key = None;
         self.unseal_shares.clear();
@@ -3552,6 +3559,7 @@ impl Service {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
                     self.state = None;
+                    self.ha_read_cache = None;
                     self.durable = None;
                     self.barrier_key = None;
                     return Response::error(503, "legacy seal metadata migration failed");
@@ -3560,6 +3568,7 @@ impl Service {
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
                 self.state = None;
+                self.ha_read_cache = None;
                 self.durable = None;
                 self.barrier_key = None;
                 return Response::error(503, "legacy seal metadata migration failed");
@@ -3601,6 +3610,7 @@ impl Service {
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
             self.state = None;
+            self.ha_read_cache = None;
             self.durable = None;
             self.barrier_key = None;
             return Response::error(503, "operating system randomness unavailable");
@@ -3611,6 +3621,7 @@ impl Service {
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
         self.durable = None;
         self.state = None;
+        self.ha_read_cache = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
         let mut durable = match self.durable_profile.as_ref() {
@@ -3738,6 +3749,7 @@ impl Service {
     }
 
     fn rotate_unseal_nonce(&mut self) -> Result<(), &'static str> {
+        self.ha_read_cache = None;
         self.unseal_nonce = hex(&crypto::random::<16>()?);
         Ok(())
     }
@@ -4796,11 +4808,21 @@ impl Service {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(());
         };
-        let committed = ha
+        let known = self.reusable_ha_cursor().cloned();
+        let previous_cache = self.ha_read_cache.take();
+        let observed = ha
             .lock()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
-            .latest_committed_state()
+            .latest_committed_state_if_changed(known.as_ref())
             .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
+        let committed = match observed {
+            crate::ha::CommittedStateRead::Unchanged => {
+                self.ha_read_cache = previous_cache;
+                return Ok(());
+            }
+            crate::ha::CommittedStateRead::Materialized(state) => Some(state),
+            crate::ha::CommittedStateRead::Absent => None,
+        };
         let Some(committed) = committed else {
             // A cluster enabled after single-node initialization has a valid
             // local state but no application envelope yet.  The elected
@@ -4822,6 +4844,7 @@ impl Service {
             return Ok(());
         };
         if self.current_state_digest()? == committed.digest {
+            self.cache_verified_ha_state(&committed)?;
             return Ok(());
         }
         let state: State = serde_json::from_slice(&committed.bytes)
@@ -4919,6 +4942,10 @@ impl Service {
         self.state = Some(state);
         self.state_digest = Some(committed.digest);
         self.recovery_required = false;
+        if let Err(error) = self.cache_verified_ha_state(&committed) {
+            self.recovery_required = true;
+            return Err(error);
+        }
         Ok(())
     }
 

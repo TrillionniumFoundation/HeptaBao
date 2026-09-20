@@ -1,5 +1,5 @@
 //! Deployment-enrolled, address-pinned egress and a separate administrator-owned
-//! LDAP transport. Remote metadata never widens either transport authority.
+//! LDAP/RADIUS transports. Remote metadata never widens transport authority.
 use md5::Context;
 use ring::rand::{SecureRandom, SystemRandom};
 use rustls::pki_types::ServerName;
@@ -24,7 +24,9 @@ mod ldap_transport;
 pub(crate) use ldap_transport::LdapTransportConfig;
 #[path = "outbound_radius_native.rs"]
 mod radius_native;
-pub(crate) use radius_native::RadiusNativeOptions;
+pub(crate) use radius_native::{
+    RadiusNativeOptions, validate_radius_native_host, validate_radius_target,
+};
 
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
 #[derive(Clone, Deserialize)]

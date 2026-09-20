@@ -1,5 +1,6 @@
-//! Native RADIUS API authority. A configured host never enrolls an egress route;
-//! PAP still uses the process-owned fixed socket address outside the writer.
+//! Native RADIUS API authority. New administrator-configured targets authorize
+//! bounded PAP egress; old records retain their process-enrolled route until an
+//! explicit host or port write promotes them.
 use super::provider_renewal::{same_policies, state_revision};
 use super::*;
 
@@ -23,6 +24,9 @@ const MAX_NATIVE_TIMEOUT: u64 = 60;
 pub(super) struct RadiusNativeConfig {
     host: String,
     port: i64,
+    // Missing on old records: preserve process enrollment until target reconfiguration.
+    #[serde(default, skip_serializing_if = "is_false")]
+    api_transport: bool,
     secret: ProviderCredential,
     unregistered_user_policies: Vec<String>,
     dial_timeout: u64,
@@ -40,6 +44,7 @@ impl Default for RadiusNativeConfig {
         Self {
             host: String::new(),
             port: 1812,
+            api_transport: true,
             secret: ProviderCredential::new(""),
             unregistered_user_policies: Vec::new(),
             dial_timeout: 10,
@@ -53,7 +58,14 @@ impl Default for RadiusNativeConfig {
 }
 impl RadiusNativeConfig {
     fn url(&self) -> String {
-        format!("radius://{}:{}", self.host, self.port)
+        if self.host.contains(':') {
+            format!("radius://[{}]:{}", self.host, self.port)
+        } else {
+            format!("radius://{}:{}", self.host, self.port)
+        }
+    }
+    pub(super) fn api_transport(&self) -> bool {
+        self.api_transport
     }
     pub(super) fn options(&self) -> crate::outbound::RadiusNativeOptions<'_> {
         crate::outbound::RadiusNativeOptions {
@@ -65,14 +77,20 @@ impl RadiusNativeConfig {
         }
     }
     fn validate(&self) -> Result<(), AuthError> {
-        // Keep the exact signed port for API readback, including unusable ports.
-        // Target::parse checks the effective 1..65535 port before any PAP I/O.
-        let target =
-            crate::outbound::Target::parse(&format!("radius://{}:1812", self.host), "radius")
+        // Keep signed ports for API readback; the transport rejects unusable ports
+        // before DNS or PAP I/O. Legacy records keep their original host grammar.
+        if self.api_transport {
+            crate::outbound::validate_radius_native_host(&self.host)
                 .map_err(|_| bad("invalid native RADIUS host"))?;
-        if target.path != "/"
-            || target.authority != format!("{}:1812", self.host)
-            || self.secret.0.is_empty()
+        } else {
+            let target =
+                crate::outbound::Target::parse(&format!("radius://{}:1812", self.host), "radius")
+                    .map_err(|_| bad("invalid native RADIUS host"))?;
+            if target.path != "/" || target.authority != format!("{}:1812", self.host) {
+                return Err(bad("invalid native RADIUS host"));
+            }
+        }
+        if self.secret.0.is_empty()
             || self.secret.0.len() > 256
             || self.secret.0.contains('\0')
             || self.dial_timeout > MAX_NATIVE_TIMEOUT
@@ -269,6 +287,9 @@ impl AuthState {
                 native: None,
             });
         let mut config = mount.native.take().map(|c| *c).unwrap_or_default();
+        if body.get("host").is_some() || body.get("port").is_some() {
+            config.api_transport = true;
+        }
         if body.get("host").is_some() {
             config.host = string_field(body, "host")?.to_lowercase();
         }
@@ -646,6 +667,16 @@ impl AuthState {
                 .remove("token_policies");
         }
         Ok(response)
+    }
+    pub(crate) fn has_radius_api_transport(&self) -> bool {
+        self.radius_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount
+                    .native
+                    .as_ref()
+                    .is_some_and(|config| config.api_transport)
+            })
+        })
     }
     pub(crate) fn has_radius_no_default_policy(&self) -> bool {
         self.radius_mounts.values().any(|mounts| {

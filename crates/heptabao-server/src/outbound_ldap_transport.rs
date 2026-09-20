@@ -151,10 +151,14 @@ impl LdapTarget {
             } else {
                 (authority, 636)
             };
-            let host = host.strip_suffix('.').unwrap_or(host).to_ascii_lowercase();
-            if host.is_empty()
-                || host.len() > 253
-                || host.split('.').any(|label| {
+            // Keep an absolute DNS name absolute through resolution. Rustls
+            // accepts the final dot for verification and removes it only when
+            // encoding SNI. Never trim before IP-vs-DNS name classification.
+            let host = host.to_ascii_lowercase();
+            let labels = host.strip_suffix('.').unwrap_or(&host);
+            if labels.is_empty()
+                || labels.len() > 253
+                || labels.split('.').any(|label| {
                     label.is_empty()
                         || label.len() > 63
                         || label.starts_with('-')
@@ -329,6 +333,49 @@ impl PreparationPool {
     }
 }
 
+/// Resolve only an administrator-authorized hostname. This shares LDAP's
+/// bounded workers, but never reads or constructs a TLS root store. Literal IPs
+/// bypass the pool entirely. Callers own and pin the returned list per operation.
+pub(super) fn resolve_addresses(
+    host: &str,
+    port: u16,
+    deadline: Instant,
+) -> Result<Vec<SocketAddr>, &'static str> {
+    remaining(deadline)?;
+    if port == 0 {
+        return Err("invalid outbound destination port");
+    }
+    if let Ok(address) = host.parse::<IpAddr>() {
+        return Ok(vec![SocketAddr::new(address, port)]);
+    }
+    // Bare DNS grammar only, not TLS ServerName rules. Preserve a final DNS
+    // root dot: removing it would allow search-domain expansion of an explicitly
+    // absolute configured name. URL brackets are invalid at this boundary.
+    let name = host.strip_suffix('.').unwrap_or(host);
+    if name.is_empty()
+        || name.len() > 253
+        || !name.is_ascii()
+        || name.split('.').any(|label| {
+            label.is_empty()
+                || label.len() > 63
+                || label.starts_with('-')
+                || label.ends_with('-')
+                || !label
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+        })
+    {
+        return Err("invalid outbound destination host");
+    }
+    let target = LdapTarget {
+        host: host.to_ascii_lowercase(),
+        port,
+    };
+    let prepared = preparation_pool()?.request(&target, false, deadline)?;
+    remaining(deadline)?;
+    Ok(prepared.addresses)
+}
+
 fn preparation_pool() -> Result<&'static PreparationPool, &'static str> {
     static POOL: OnceLock<Result<PreparationPool, &'static str>> = OnceLock::new();
     POOL.get_or_init(|| PreparationPool::start(DNS_WORKERS, DNS_QUEUE, prepare_target))
@@ -420,7 +467,7 @@ mod tests {
     fn standard_ldaps_targets_have_default_port_and_typed_ip_names() {
         for (url, host, port) in [
             ("ldaps://ldap.example", "ldap.example", 636),
-            ("LDAPS://LDAP.EXAMPLE./", "ldap.example", 636),
+            ("LDAPS://LDAP.EXAMPLE./", "ldap.example.", 636),
             ("ldaps://localhost:1636", "localhost", 1636),
             ("ldaps://127.0.0.1/", "127.0.0.1", 636),
             ("ldaps://[::1]", "::1", 636),
@@ -674,5 +721,113 @@ mod tests {
             .unwrap();
         target.port = 2636;
         assert_eq!(prepared.addresses[0].port(), 1636);
+    }
+
+    #[test]
+    fn shared_address_resolution_accepts_bare_ips_without_tls_or_pool() {
+        for host in ["127.0.0.1", "::1", "2001:db8::1"] {
+            let result =
+                resolve_addresses(host, 1812, Instant::now() + Duration::from_secs(1)).unwrap();
+            assert_eq!(result, vec![SocketAddr::new(host.parse().unwrap(), 1812)]);
+        }
+    }
+
+    #[test]
+    fn shared_resolution_rejects_expired_budget_or_invalid_authority_before_io() {
+        assert!(
+            resolve_addresses("127.0.0.1", 1812, Instant::now() - Duration::from_secs(1)).is_err()
+        );
+        assert!(
+            resolve_addresses("127.0.0.1", 0, Instant::now() + Duration::from_secs(1)).is_err()
+        );
+        for host in [
+            "[::1]",
+            "host/path",
+            "user@host",
+            "host:1812",
+            "host%2fother",
+        ] {
+            assert!(
+                resolve_addresses(host, 1812, Instant::now() + Duration::from_secs(1)).is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn absolute_dns_name_stays_absolute_in_resolution_job_and_tls_reference() {
+        let target = LdapTarget::parse("ldaps://LDAP.EXAMPLE.:636").unwrap();
+        assert_eq!(target.host, "ldap.example.");
+        assert!(target.host.parse::<IpAddr>().is_err());
+        let name = ServerName::try_from(target.host.clone()).unwrap();
+        assert!(matches!(&name, ServerName::DnsName(dns) if dns.as_ref() == "ldap.example."));
+        let pool = PreparationPool::start(1, 1, |target, _, _| {
+            assert_eq!(target.host, "ldap.example.");
+            Ok(PreparedTarget {
+                addresses: vec!["127.0.0.1:636".parse().unwrap()],
+                system_tls: None,
+            })
+        })
+        .unwrap();
+        let prepared = pool
+            .request(&target, false, Instant::now() + Duration::from_secs(2))
+            .unwrap();
+        assert_eq!(
+            prepared.addresses,
+            vec!["127.0.0.1:636".parse::<SocketAddr>().unwrap()]
+        );
+    }
+
+    #[test]
+    fn pinned_rustls_omits_only_sni_dot_and_verifies_absolute_dns_against_relative_san() {
+        // A fixed synthetic certificate is only used for pure subject-name
+        // verification here; this test does not claim chain/time validation.
+        const CERTIFICATE: &str = "-----BEGIN CERTIFICATE-----\nMIIDLjCCAhagAwIBAgIULaQ+X+oFMAvnum7RuPFzxP6s9JYwDQYJKoZIhvcNAQEL\nBQAwFzEVMBMGA1UEAwwMbGRhcC5leGFtcGxlMB4XDTI2MDkyMDIxMDMwOFoXDTI2\nMDkyMjIxMDMwOFowFzEVMBMGA1UEAwwMbGRhcC5leGFtcGxlMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7QxXRAObazntYssQPHAmsJsjFVZAlyDZiQcv\nGdYcaP3GJCejh1oDEK42npu3hAIqzNYh5ukD2f+PQXKu47c+sFY62DPQbrXsfbJe\nZwf5pGvs6KiO6RsVDexNRJLW3G3Mc4M0UF/9V11+3mk9O0loZghdJlkPa5qHj0ry\nzj928VgoCNfSZPFgYguJ6tL4JJuJC9t3ty6plCcBNEDydkjZp7q/peg6s0X/joql\nQl03l/fT1jai1nfKhsM5ZQrhlnqpQeHzFRwAxA+uENi6uldbv6q6KU6im4tvifha\nPaN4i3ndV0+uNK5uehU+yMNij2WnXz0aOfR21i/JZArQIgiDDwIDAQABo3IwcDAd\nBgNVHQ4EFgQUi+bXEUMxoUzBgrZXKsNE78zaONswHwYDVR0jBBgwFoAUi+bXEUMx\noUzBgrZXKsNE78zaONswDwYDVR0TAQH/BAUwAwEB/zAdBgNVHREEFjAUggxsZGFw\nLmV4YW1wbGWHBH8AAAEwDQYJKoZIhvcNAQELBQADggEBAF/QUUjTL9p7AnxGarbP\noAI++BSIaApv6Y/Pkx/G661la3UDQiE2zTuEK+zPlwBJlGGOU+cWOIydbU+4gT76\nl3CCFKrBPdlxRhTH4n5xIPIXU5Dd0RQTMu4qREhW5t0bamRFe/ChPG6EqwrSpEdH\nMCb3MXQqVaH31Aeoq+EOtjiq8h3RHg2b6OE9p3yLlrLGjNOnqF6QCD1JP6Iy5GCT\nGXtW/TnrDtX5bnMEu4uEv7dMhSGFYdv6mH/Unb6MMzCcWb8tUFJbqs6On0SwUDeG\nCKk9JFYdRv3B29n1F+EcKqLefuGvgUZp8lSs1FGkUqdLXctd/QA46Q7TEnQn83lP\nwe0=\n-----END CERTIFICATE-----\n";
+        let der = rustls_pemfile::certs(&mut CERTIFICATE.as_bytes())
+            .next()
+            .unwrap()
+            .unwrap();
+        let certificate = rustls::server::ParsedCertificate::try_from(&der).unwrap();
+        let name = ServerName::try_from("ldap.example.").unwrap();
+        assert!(rustls::client::verify_server_name(&certificate, &name).is_ok());
+        assert!(
+            rustls::client::verify_server_name(
+                &certificate,
+                &ServerName::try_from("other.example.").unwrap()
+            )
+            .is_err()
+        );
+        assert!(
+            rustls::client::verify_server_name(
+                &certificate,
+                &ServerName::try_from("127.0.0.1").unwrap()
+            )
+            .is_ok()
+        );
+
+        let config = client_config(explicit_roots(CA).unwrap()).unwrap();
+        let mut client = ClientConnection::new(config, name).unwrap();
+        let mut client_hello = Vec::new();
+        client.write_tls(&mut client_hello).unwrap();
+        let mut acceptor = rustls::server::Acceptor::default();
+        acceptor
+            .read_tls(&mut std::io::Cursor::new(client_hello))
+            .unwrap();
+        let accepted = acceptor.accept().ok().flatten().unwrap();
+        assert_eq!(accepted.client_hello().server_name(), Some("ldap.example"));
+    }
+
+    #[test]
+    fn trailing_dot_must_not_turn_a_numeric_dns_reference_into_an_ip_san() {
+        assert!(matches!(
+            ServerName::try_from("127.0.0.1"),
+            Ok(ServerName::IpAddress(_))
+        ));
+        for reference in ["127.0.0.1.", "1.", "example.1."] {
+            // The pinned pki-types rejects numeric final DNS labels. Keep that
+            // fail-closed distinction instead of normalizing the input to an IP.
+            assert!(ServerName::try_from(reference).is_err());
+            assert!(LdapTarget::parse(&format!("ldaps://{reference}:636")).is_err());
+        }
+        assert!(LdapTarget::parse("ldaps://ldap.example..").is_err());
     }
 }

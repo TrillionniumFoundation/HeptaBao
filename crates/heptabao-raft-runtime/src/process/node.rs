@@ -292,6 +292,28 @@ impl ProcessRaftNode {
             })
     }
 
+    /// Observe the publication envelope and state-machine generation atomically.
+    pub async fn latest_envelope_at_generation(
+        &self,
+    ) -> Result<(u64, Option<ReplicatedEnvelope>), RemoteRaftError> {
+        let (generation, status) = self
+            .state_machine
+            .client_status_at_generation(PRODUCTION_CLIENT_ID)
+            .await;
+        let envelope = status
+            .as_deref()
+            .map(ReplicatedEnvelope::decode_status)
+            .transpose()
+            .map_err(|error| {
+                RemoteRaftError::Io(format!("invalid committed application envelope: {error}"))
+            })?;
+        Ok((generation, envelope))
+    }
+
+    pub async fn application_state_generation(&self) -> u64 {
+        self.state_machine.generation().await
+    }
+
     pub async fn application_chunk_envelope(
         &self,
         index: u16,

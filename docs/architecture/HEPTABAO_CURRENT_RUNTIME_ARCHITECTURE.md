@@ -141,6 +141,18 @@ Finite-use tokens, wrapping requests/tokens and live local lease cleanup retain
 the durable transaction path. Outer request and result audit are unchanged;
 result-audit failure still withholds the secret and fences the Service.
 
+HA synchronization can reuse a previously authenticated HBSM4 publication after
+another successful ReadIndex and manifest authentication. The process-local
+cursor binds the complete envelope and the atomically observed state-machine
+generation; every apply and snapshot advances that generation. Reuse also
+requires unchanged local state digest, durable generation, replay epoch and
+unseal activation, with no pending recovery. Initial cache admission verifies
+the complete chunk set and the local canonical owner manifest. Seal, recovery,
+changed publication or any synchronization failure invalidates reuse. Older
+publication formats continue to take the full verification path. This avoids
+reassembling an unchanged logical image on each eligible read; it does not
+remove ReadIndex, the logical-state size limit or whole-image write costs.
+
 KV listing seeks its ordered record index from the cursor and skips already
 emitted shallow subtrees rather than collecting every key. Idle lifecycle ticks
 check for relevant work before cloning owners. See the capacity guide for the

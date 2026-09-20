@@ -191,6 +191,11 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     );
     let state = service.state.as_ref().ok_or("missing configured state")?;
     let mut downgraded = state.clone();
+    downgraded.schema = 25;
+    assert!(
+        downgraded.validate_format().is_err(),
+        "API-authorized targets need schema 26"
+    );
     downgraded.schema = 24;
     assert!(
         downgraded.validate_format().is_err(),

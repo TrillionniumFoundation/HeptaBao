@@ -227,7 +227,7 @@ fn native_uses_durable_secret_without_process_secret_fallback() {
         config.dial_timeout = 0;
         assert!(
             outbound
-                .radius_authenticate_native(&origin(address), &config, "alice", "synthetic")
+                .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
                 .unwrap()
         );
         worker.join().unwrap();
@@ -244,7 +244,7 @@ fn native_read_zero_and_invalid_configuration_never_send() {
     let start = Instant::now();
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
             .is_err()
     );
     assert!(start.elapsed() < Duration::from_millis(500));
@@ -252,7 +252,7 @@ fn native_read_zero_and_invalid_configuration_never_send() {
     config.secret = "";
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
             .is_err()
     );
     socket
@@ -271,7 +271,7 @@ fn native_deadline_is_configured_and_never_retries_unknown_outcome() {
     let start = Instant::now();
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
             .is_err()
     );
     assert!(start.elapsed() >= Duration::from_millis(900));
@@ -301,7 +301,7 @@ fn default_ten_second_budget_accepts_a_response_after_legacy_three_seconds() {
     });
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &options(), "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &options(), false, "alice", "synthetic")
             .unwrap()
     );
     worker.join().unwrap();
@@ -354,8 +354,13 @@ fn native_response_validation_remains_strict_and_reject_is_not_transport_success
             }
             socket.send_to(&reply, peer).unwrap();
         });
-        let result =
-            outbound.radius_authenticate_native(&origin(address), &options(), "alice", "synthetic");
+        let result = outbound.radius_authenticate_native(
+            &origin(address),
+            &options(),
+            false,
+            "alice",
+            "synthetic",
+        );
         if mode == "reject" {
             assert!(!result.unwrap());
         } else {
@@ -375,6 +380,7 @@ fn native_cannot_discover_or_redirect_to_an_unenrolled_origin() {
             .radius_authenticate_native(
                 "radius://unregistered.example:1812",
                 &options(),
+                false,
                 "alice",
                 "synthetic"
             )
@@ -385,6 +391,7 @@ fn native_cannot_discover_or_redirect_to_an_unenrolled_origin() {
             .radius_authenticate_native(
                 &format!("{}/other", origin(address)),
                 &options(),
+                false,
                 "alice",
                 "synthetic"
             )
@@ -394,4 +401,251 @@ fn native_cannot_discover_or_redirect_to_an_unenrolled_origin() {
         .set_read_timeout(Some(Duration::from_millis(20)))
         .unwrap();
     assert!(socket.recv_from(&mut [0; 4096]).is_err());
+}
+
+#[test]
+fn api_host_and_target_validation_are_pure_and_support_ip_families() {
+    for host in [
+        "radius.example",
+        "RADIUS.EXAMPLE.",
+        "localhost",
+        "127.0.0.1",
+        "::1",
+        "2001:db8::1",
+    ] {
+        assert!(validate_radius_native_host(host).is_ok(), "{host}");
+    }
+    for host in [
+        "",
+        "radius://host",
+        "host:1812",
+        "[::1]",
+        "user@host",
+        "host/path",
+        "host%2f",
+        "host?x",
+        "host#x",
+        "host name",
+        "host\n",
+        "a..b",
+        "-host",
+        "host-",
+        "host_name",
+        "fe80::1%lo0",
+        "例子.test",
+    ] {
+        assert!(validate_radius_native_host(host).is_err(), "{host:?}");
+    }
+    for (url, host, port) in [
+        ("radius://127.0.0.1:1812", "127.0.0.1", 1812),
+        ("RADIUS://RADIUS.EXAMPLE.:1/", "radius.example.", 1),
+        ("radius://[::1]:1812", "::1", 1812),
+        ("radius://[2001:db8::1]:65535/", "2001:db8::1", 65535),
+    ] {
+        let target = validate_radius_target(url).unwrap();
+        assert_eq!(target.host, host);
+        assert_eq!(target.port, port);
+    }
+    for url in [
+        "",
+        "radius://host",
+        "radius://host:0",
+        "radius://host:-1",
+        "radius://host:65536",
+        "radius://host:+1",
+        "radius://host:1/path",
+        "radius://host:1//",
+        "radius://host:1?x",
+        "radius://a@host:1",
+        "radius://[::1]",
+        "radius://[::1]junk:1",
+        "radius://[127.0.0.1]:1",
+        "radius://::1:1812",
+        "ldaps://host:1812",
+    ] {
+        assert!(validate_radius_target(url).is_err(), "{url:?}");
+    }
+}
+
+fn assert_api_accepts(socket: UdpSocket, url: String) {
+    socket
+        .set_read_timeout(Some(Duration::from_secs(2)))
+        .unwrap();
+    let worker = std::thread::spawn(move || {
+        let mut request = [0; 4096];
+        let (size, peer) = socket.recv_from(&mut request).unwrap();
+        verify_request(&request[..size], b"synthetic-durable-secret");
+        socket
+            .send_to(
+                &signed_response(&request[..size], b"synthetic-durable-secret", 2),
+                peer,
+            )
+            .unwrap();
+    });
+    assert!(
+        Outbound::default()
+            .radius_authenticate_native(&url, &options(), true, "alice", "synthetic")
+            .unwrap()
+    );
+    worker.join().unwrap();
+}
+
+#[test]
+fn api_ipv4_uses_durable_secret_without_process_enrollment() {
+    let socket = server();
+    let address = socket.local_addr().unwrap();
+    assert_eq!(
+        Outbound::default().radius_authenticate_native(
+            &origin(address),
+            &options(),
+            false,
+            "alice",
+            "synthetic"
+        ),
+        Err("RADIUS endpoint is not host-enrolled")
+    );
+    assert_api_accepts(socket, origin(address));
+}
+
+#[test]
+fn api_ipv6_uses_durable_secret_without_process_enrollment() {
+    let socket = UdpSocket::bind("[::1]:0").unwrap();
+    let port = socket.local_addr().unwrap().port();
+    assert_api_accepts(socket, format!("radius://[::1]:{port}"));
+}
+
+#[test]
+fn api_dns_selects_one_owned_peer_without_process_enrollment_or_tls_roots() {
+    // UDP cannot try another family after a PAP timeout. Listen on the first
+    // family returned by this platform's real localhost resolution.
+    let resolved = super::super::ldap_transport::resolve_addresses(
+        "localhost",
+        1812,
+        Instant::now() + Duration::from_secs(2),
+    )
+    .unwrap();
+    let socket = UdpSocket::bind(SocketAddr::new(resolved[0].ip(), 0)).unwrap();
+    let port = socket.local_addr().unwrap().port();
+    assert_api_accepts(socket, format!("radius://localhost:{port}"));
+}
+
+#[test]
+fn api_read_zero_does_not_parse_target_or_send_packets() {
+    let mut config = options();
+    config.read_timeout = 0;
+    // The deadline check precedes target parsing and thus all DNS/socket work.
+    assert_eq!(
+        Outbound::default().radius_authenticate_native(
+            "not-a-target",
+            &config,
+            true,
+            "alice",
+            "synthetic"
+        ),
+        Err("RADIUS operation deadline exceeded")
+    );
+    let socket = server();
+    let address = socket.local_addr().unwrap();
+    assert!(
+        Outbound::default()
+            .radius_authenticate_native(&origin(address), &config, true, "alice", "synthetic")
+            .is_err()
+    );
+    socket
+        .set_read_timeout(Some(Duration::from_millis(20)))
+        .unwrap();
+    assert!(socket.recv_from(&mut [0; 4096]).is_err());
+}
+
+#[test]
+fn post_send_timeout_never_selects_a_second_resolved_address() {
+    let first = server();
+    let second = server();
+    let addresses = [first.local_addr().unwrap(), second.local_addr().unwrap()];
+    let deadline = Instant::now() + Duration::from_secs(1);
+    assert!(
+        authenticate_resolved(
+            &addresses,
+            &options(),
+            "alice",
+            "synthetic",
+            deadline,
+            deadline
+        )
+        .is_err()
+    );
+    let mut packet = [0; 4096];
+    let (size, _) = first.recv_from(&mut packet).unwrap();
+    verify_request(&packet[..size], b"synthetic-durable-secret");
+    for socket in [first, second] {
+        socket
+            .set_read_timeout(Some(Duration::from_millis(20)))
+            .unwrap();
+        assert!(socket.recv_from(&mut packet).is_err());
+    }
+}
+
+#[test]
+fn expired_dial_budget_is_not_replaced_with_remaining_read_budget() {
+    let socket = server();
+    let addresses = [socket.local_addr().unwrap()];
+    let deadline = Instant::now() + Duration::from_secs(1);
+    let dial_deadline = Instant::now() - Duration::from_secs(1);
+    assert_eq!(
+        authenticate_resolved(
+            &addresses,
+            &options(),
+            "alice",
+            "synthetic",
+            deadline,
+            dial_deadline
+        ),
+        Err("RADIUS operation deadline exceeded")
+    );
+    socket
+        .set_read_timeout(Some(Duration::from_millis(20)))
+        .unwrap();
+    assert!(socket.recv_from(&mut [0; 4096]).is_err());
+}
+
+#[test]
+fn api_reject_and_invalid_message_authenticator_keep_strict_response_contract() {
+    for reject in [true, false] {
+        let socket = server();
+        let address = socket.local_addr().unwrap();
+        let worker = std::thread::spawn(move || {
+            let mut request = [0; 4096];
+            let (size, peer) = socket.recv_from(&mut request).unwrap();
+            let request = &request[..size];
+            let mut reply = signed_response(
+                request,
+                b"synthetic-durable-secret",
+                if reject { 3 } else { 2 },
+            );
+            if !reject {
+                reply[22] ^= 1;
+                let signature = md5_parts(&[
+                    &reply[..4],
+                    &request[4..20],
+                    &reply[20..],
+                    b"synthetic-durable-secret",
+                ]);
+                reply[4..20].copy_from_slice(&signature);
+            }
+            socket.send_to(&reply, peer).unwrap();
+        });
+        let result = Outbound::default().radius_authenticate_native(
+            &origin(address),
+            &options(),
+            true,
+            "alice",
+            "synthetic",
+        );
+        if reject {
+            assert_eq!(result, Ok(false));
+        } else {
+            assert!(result.is_err());
+        }
+        worker.join().unwrap();
+    }
 }

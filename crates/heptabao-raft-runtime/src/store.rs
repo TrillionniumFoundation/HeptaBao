@@ -1334,6 +1334,16 @@ impl DurableStateMachine {
             .map(|log_id| log_id.index)
     }
 
+    /// The generation and value belong to one locked observation. Every apply,
+    /// checkpoint and snapshot install advances this local generation.
+    pub(crate) async fn client_status_at_generation(&self, client: &str) -> (u64, Option<String>) {
+        let bundle = self.bundle.lock().await;
+        (
+            bundle.generation,
+            bundle.state.client_status.get(client).cloned(),
+        )
+    }
+
     pub async fn has_current_snapshot(&self) -> bool {
         self.bundle.lock().await.current_snapshot.is_some()
     }
@@ -1531,6 +1541,106 @@ mod tests {
             std::process::id(),
             TEST_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ))
+    }
+
+    #[tokio::test]
+    async fn read_generation_advances_for_apply_membership_blank_snapshot_and_reopen() {
+        let root = root("read-generation");
+        let mut store = DurableStateMachine::create(&root).expect("create state machine");
+        assert_eq!(
+            store.client_status_at_generation("selected").await,
+            (1, None)
+        );
+        let payloads = [
+            openraft::EntryPayload::Blank,
+            openraft::EntryPayload::Normal(openraft_memstore::ClientRequest {
+                client: "selected".into(),
+                serial: 1,
+                status: "same-manifest".into(),
+            }),
+            openraft::EntryPayload::Membership(
+                openraft::Membership::new(
+                    vec![std::collections::BTreeSet::from([1_u64])],
+                    BTreeMap::from([(1_u64, ())]),
+                )
+                .expect("valid membership"),
+            ),
+        ];
+        for (offset, payload) in payloads.into_iter().enumerate() {
+            let index = offset as u64 + 1;
+            let entry = openraft::alias::EntryOf::<openraft_memstore::TypeConfig> {
+                log_id: openraft::LogId {
+                    leader_id: openraft::impls::leader_id_adv::LeaderId {
+                        term: 1_u64,
+                        node_id: 1_u64,
+                    },
+                    index,
+                },
+                payload,
+            };
+            super::RaftStateMachine::apply(
+                &mut store,
+                futures::stream::iter([Ok::<_, io::Error>((entry, None))]),
+            )
+            .await
+            .expect("apply advances generation");
+            let (generation, status) = store.client_status_at_generation("selected").await;
+            assert_eq!(generation, index + 1);
+            assert_eq!(status.as_deref(), (index >= 2).then_some("same-manifest"));
+        }
+        let snapshot = store.build_snapshot().await.expect("checkpoint");
+        assert_eq!(store.generation().await, 5);
+        super::RaftStateMachine::install_snapshot(&mut store, &snapshot.meta, snapshot.snapshot)
+            .await
+            .expect("install snapshot advances local generation");
+        assert_eq!(
+            store.client_status_at_generation("selected").await,
+            (6, Some("same-manifest".into()))
+        );
+        drop(store);
+        let reopened = DurableStateMachine::open_existing(&root).expect("reopen");
+        assert_eq!(
+            reopened.client_status_at_generation("selected").await,
+            (6, Some("same-manifest".into()))
+        );
+        drop(reopened);
+        fs::remove_dir_all(root).expect("remove generation fixture");
+    }
+
+    #[tokio::test]
+    async fn read_generation_never_wraps_or_reuses_a_value() {
+        let root = root("read-generation-overflow");
+        let mut store = DurableStateMachine::create(&root).expect("create state machine");
+        store.bundle.lock().await.generation = u64::MAX;
+        let before = fs::read(root.join("state-machine.journal")).expect("journal before");
+        let entry = openraft::alias::EntryOf::<openraft_memstore::TypeConfig> {
+            log_id: openraft::LogId {
+                leader_id: openraft::impls::leader_id_adv::LeaderId {
+                    term: 1_u64,
+                    node_id: 1_u64,
+                },
+                index: 1,
+            },
+            payload: openraft::EntryPayload::Blank,
+        };
+        assert!(
+            super::RaftStateMachine::apply(
+                &mut store,
+                futures::stream::iter([Ok::<_, io::Error>((entry, None))])
+            )
+            .await
+            .is_err()
+        );
+        assert_eq!(store.generation().await, u64::MAX);
+        assert_eq!(store.last_applied_log_index().await, None);
+        assert_eq!(
+            fs::read(root.join("state-machine.journal")).expect("journal after"),
+            before
+        );
+        assert!(store.build_snapshot().await.is_err());
+        assert_eq!(store.generation().await, u64::MAX);
+        drop(store);
+        fs::remove_dir_all(root).expect("remove overflow fixture");
     }
 
     #[tokio::test]

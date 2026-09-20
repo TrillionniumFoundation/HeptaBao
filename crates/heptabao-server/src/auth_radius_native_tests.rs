@@ -840,3 +840,222 @@ fn native_radius_nil_empty_policy_distinction_and_legacy_normalization() {
         "old normalized empty policies must not be guessed to have been nil"
     );
 }
+
+fn restore_enrolled_native_transport(s: &mut AuthState) {
+    let mount = s
+        .radius_mounts
+        .get_mut("")
+        .unwrap()
+        .get_mut("radius")
+        .unwrap();
+    let mut stored = serde_json::to_value(mount.native.as_ref().unwrap()).unwrap();
+    stored.as_object_mut().unwrap().remove("api_transport");
+    mount.native = Some(Box::new(serde_json::from_value(stored).unwrap()));
+    s.validate_online_auth().unwrap();
+}
+
+#[test]
+fn native_radius_api_transport_legacy_serde_and_partial_updates_preserve_enrollment() {
+    let (mut s, r) = fixture();
+    assert!(s.has_radius_api_transport());
+    restore_enrolled_native_transport(&mut s);
+    let scope = AuthScope {
+        namespace: "",
+        mount: "radius",
+    };
+    let original = Zeroizing::new(serde_json::to_vec(s.radius_native_at(scope).unwrap()).unwrap());
+    assert!(!s.radius_native_at(scope).unwrap().api_transport());
+    assert!(!String::from_utf8_lossy(&original).contains("api_transport"));
+    let legacy: RadiusNativeConfig = serde_json::from_slice(&original).unwrap();
+    assert_eq!(*original, serde_json::to_vec(&legacy).unwrap());
+    for body in [
+        json!({"secret":"rotated-secret"}),
+        json!({"token_ttl":60,"token_max_ttl":300}),
+        json!({"token_policies":["default"],"token_no_default_policy":true}),
+        json!({"nas_port":11,"nas_identifier":"nas","read_timeout":2}),
+        json!({"unregistered_user_policies":"default"}),
+    ] {
+        write(&mut s, &r, "auth/radius/config", body);
+        assert!(!s.has_radius_api_transport());
+        assert!(!s.radius_native_at(scope).unwrap().api_transport());
+    }
+    let saved = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+    let mut s: AuthState = serde_json::from_slice(&saved).unwrap();
+    s.validate_online_auth().unwrap();
+    assert!(!s.has_radius_api_transport());
+    assert!(
+        read(&mut s, &r, "auth/radius/config")
+            .get("api_transport")
+            .is_none()
+    );
+    let actor = s.authenticate(&r, 100).unwrap();
+    let before = state_revision(&s).unwrap();
+    assert_eq!(
+        s.handle(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/radius/config",
+            &json!({"api_transport":true}),
+            100
+        )
+        .err()
+        .unwrap()
+        .status,
+        400
+    );
+    assert_eq!(state_revision(&s).unwrap(), before);
+}
+
+#[test]
+fn native_radius_explicit_target_write_promotes_even_unchanged_target_and_survives_reopen() {
+    for body in [json!({"host":"RADIUS.EXAMPLE.TEST"}), json!({"port":1812})] {
+        let (mut s, r) = fixture();
+        restore_enrolled_native_transport(&mut s);
+        let raw = bearer(&login(&mut s, "alice"));
+        let before = read(&mut s, &r, "auth/radius/config");
+        write(&mut s, &r, "auth/radius/config", body);
+        assert!(s.has_radius_api_transport());
+        assert_eq!(read(&mut s, &r, "auth/radius/config"), before);
+        let saved = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+        let mut s: AuthState = serde_json::from_slice(&saved).unwrap();
+        s.validate_online_auth().unwrap();
+        assert!(s.has_radius_api_transport());
+        let (actor, plan) = renew(&mut s, &r, &raw, "renew", 110);
+        accept(&mut s, &actor, plan, 110).unwrap();
+        let actor = s.authenticate(&r, 110).unwrap();
+        s.handle(
+            Some(&actor),
+            "",
+            "DELETE",
+            "sys/auth/radius",
+            &json!({}),
+            110,
+        )
+        .unwrap();
+        assert!(!s.has_radius_api_transport());
+        assert!(s.authenticate(&raw, 110).is_err());
+    }
+}
+
+#[test]
+fn native_radius_api_target_accepts_dns_and_bare_ips_but_rejects_url_ambiguity() {
+    let (mut s, r) = fixture();
+    for (host, stored, url) in [
+        (
+            "RADIUS.EXAMPLE.TEST",
+            "radius.example.test",
+            "radius://radius.example.test:1812",
+        ),
+        (
+            "radius.example.test.",
+            "radius.example.test.",
+            "radius://radius.example.test.:1812",
+        ),
+        ("127.0.0.1", "127.0.0.1", "radius://127.0.0.1:1812"),
+        ("2001:DB8::1", "2001:db8::1", "radius://[2001:db8::1]:1812"),
+        ("::1", "::1", "radius://[::1]:1812"),
+    ] {
+        write(&mut s, &r, "auth/radius/config", json!({"host":host}));
+        assert_eq!(read(&mut s, &r, "auth/radius/config")["host"], stored);
+        assert_eq!(s.radius_mounts[""]["radius"].url, url);
+        s.validate_online_auth().unwrap();
+    }
+    let actor = s.authenticate(&r, 100).unwrap();
+    for host in [
+        "",
+        "radius://example.test",
+        "example.test:1812",
+        "[::1]",
+        "fe80::1%lo0",
+        "a/b",
+        "a@b",
+        " a",
+        "a b",
+        "a\nb",
+        "é.test",
+        "a..b",
+        "-a.test",
+        "a-.test",
+    ] {
+        let before = state_revision(&s).unwrap();
+        assert_eq!(
+            s.handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/radius/config",
+                &json!({"host":host}),
+                100
+            )
+            .err()
+            .unwrap()
+            .status,
+            400,
+            "host {host:?}"
+        );
+        assert_eq!(state_revision(&s).unwrap(), before);
+    }
+    for port in [-1, 0, 65536, i64::MAX] {
+        write(&mut s, &r, "auth/radius/config", json!({"port":port}));
+        assert_eq!(read(&mut s, &r, "auth/radius/config")["port"], port);
+        s.validate_online_auth().unwrap();
+    }
+}
+
+#[test]
+fn native_radius_transport_promotion_fences_inflight_login_and_all_renew_routes() {
+    for via in ["renew-self", "renew", "renew-accessor"] {
+        let (mut s, r) = fixture();
+        restore_enrolled_native_transport(&mut s);
+        let raw = bearer(&login(&mut s, "alice"));
+        let login_plan = s
+            .prepare_radius_login(
+                "",
+                "radius",
+                "POST",
+                &json!({"username":"alice","password":"pw"}),
+                100,
+            )
+            .unwrap();
+        assert!(!login_plan.config.native.as_ref().unwrap().api_transport());
+        let (actor, renewal_plan) = renew(&mut s, &r, &raw, via, 110);
+        write(
+            &mut s,
+            &r,
+            "auth/radius/config",
+            json!({"host":"radius.example.test"}),
+        );
+        let before = state_revision(&s).unwrap();
+        assert_eq!(
+            s.finish_radius_login(login_plan, RadiusLoginObservation)
+                .err()
+                .unwrap()
+                .status,
+            409
+        );
+        assert_eq!(state_revision(&s).unwrap(), before);
+        assert_eq!(
+            accept(&mut s, &actor, renewal_plan, 110)
+                .err()
+                .unwrap()
+                .status,
+            409
+        );
+        assert_eq!(state_revision(&s).unwrap(), before);
+        let fresh = s
+            .prepare_radius_login(
+                "",
+                "radius",
+                "POST",
+                &json!({"username":"alice","password":"pw"}),
+                110,
+            )
+            .unwrap();
+        assert!(fresh.config.native.as_ref().unwrap().api_transport());
+        s.finish_radius_login(fresh, RadiusLoginObservation)
+            .unwrap();
+        let (actor, fresh) = renew(&mut s, &r, &raw, via, 110);
+        accept(&mut s, &actor, fresh, 110).unwrap();
+    }
+}

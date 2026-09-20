@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 import json
+import socket
 from pathlib import Path
 import struct
 import sys
@@ -9,7 +10,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from bao_http import Response
 from core_isolation import ScenarioFailure
-from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5,token_policy_shape
+from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5,token_policy_shape,NativeRadius,PASSWORD
 
 class Provider:
     def count(self):return 0
@@ -19,8 +20,8 @@ class Client:
     def request(self,*args,**kwargs):
         return Response(self.status,{'errors':['private-provider-error'],'auth':{'client_token':'private-token','entity_id':'private-entity'},'data':{'secret':'private-shared-secret'}})
 
-def packet(with_ma=True,nas_port=10):
-    secret=b'synthetic-key';password=b'synthetic-password';auth=bytes(range(16))
+def packet(with_ma=True,nas_port=10,password=b'synthetic-password'):
+    secret=b'synthetic-key';auth=bytes(range(16))
     padded=password+b'\0'*((-len(password))%16);encrypted=bytearray();previous=auth
     for offset in range(0,len(padded),16):
         block=bytes(a^b for a,b in zip(padded[offset:offset+16],md5(secret,previous)));encrypted.extend(block);previous=block
@@ -77,6 +78,22 @@ class NativeRadiusTests(unittest.TestCase):
             self.assertFalse(token_policy_shape(auth,[]))
         self.assertTrue(token_policy_shape({'policies':['default'],'token_policies':['default']},['default']))
         self.assertFalse(token_policy_shape({'policies':['default']},['default']))
+    def test_dual_stack_listener_records_actual_signed_pap_peer_family(self):
+        provider=NativeRadius(require_ma=True,dual_stack=True)
+        provider.secret=b'synthetic-key'
+        try:
+            for family,address,version in [(socket.AF_INET,('127.0.0.1',provider.port),4),
+                                           (socket.AF_INET6,('::1',provider.port),6)]:
+                cursor=provider.count()
+                self.assertEqual(provider.peer_observation(cursor),{'request_count':0,'peer_family':0,'peer_loopback':False})
+                with socket.socket(family,socket.SOCK_DGRAM) as client:
+                    client.settimeout(2);client.sendto(packet(password=PASSWORD),address);reply,_=client.recvfrom(4097)
+                self.assertEqual(reply[0],2)
+                self.assertTrue(provider.observed(cursor,accepted=True))
+                self.assertEqual(provider.peer_observation(cursor),{'request_count':1,'peer_family':version,'peer_loopback':True})
+        finally:
+            provider.close()
+
     def test_completion_requires_all_milestones_without_duplicates(self):
         names=sorted(MILESTONES-{'complete'})+['complete'];rows=[{'case':'radius_native.'+n,'passed':True} for n in names]
         self.assertTrue(complete_scenarios(rows))

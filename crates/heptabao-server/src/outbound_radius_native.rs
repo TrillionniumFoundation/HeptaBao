@@ -1,7 +1,8 @@
-//! Native PAP parameters over a deployment-enrolled, fixed UDP address.
-//! One request, no retries; the configured read deadline bounds the entire
-//! exchange and never refreshes. No DNS, credential fallback or address discovery.
+//! Native PAP parameters over either legacy process enrollment or explicit API
+//! target authority. One request, no retries after sending; the read deadline
+//! covers DNS, connect and the entire authenticated exchange without refreshing.
 use super::*;
+use std::net::{IpAddr, Ipv6Addr};
 
 pub(crate) const MAX_RADIUS_TIMEOUT_SECONDS: u64 = 60;
 
@@ -30,11 +31,96 @@ impl RadiusNativeOptions<'_> {
     }
 }
 
+/// Validate the standard configuration's bare host without DNS, sockets or TLS.
+/// The API owns case normalization and keeps the signed configured port intact;
+/// only an effective URL at execution must have a usable positive u16 port.
+pub(crate) fn validate_radius_native_host(host: &str) -> Result<(), &'static str> {
+    if host.parse::<IpAddr>().is_ok() {
+        return Ok(());
+    }
+    let host = host.strip_suffix('.').unwrap_or(host);
+    if host.is_empty()
+        || host.len() > 253
+        || !host.is_ascii()
+        || host.split('.').any(|label| {
+            label.is_empty()
+                || label.len() > 63
+                || label.starts_with('-')
+                || label.ends_with('-')
+                || !label
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+        })
+    {
+        return Err("invalid native RADIUS host");
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_radius_target(url: &str) -> Result<RadiusTarget, &'static str> {
+    RadiusTarget::parse(url)
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub(crate) struct RadiusTarget {
+    pub(crate) host: String,
+    pub(crate) port: u16,
+}
+
+impl RadiusTarget {
+    fn parse(url: &str) -> Result<Self, &'static str> {
+        if url.len() > 2048
+            || !url.is_ascii()
+            || url
+                .bytes()
+                .any(|byte| byte.is_ascii_whitespace() || byte.is_ascii_control())
+            || url
+                .bytes()
+                .any(|byte| matches!(byte, b'@' | b'\\' | b'?' | b'#' | b'%'))
+            || !url
+                .get(..9)
+                .is_some_and(|value| value.eq_ignore_ascii_case("radius://"))
+        {
+            return Err("invalid native RADIUS target");
+        }
+        let authority = url[9..].strip_suffix('/').unwrap_or(&url[9..]);
+        if authority.contains('/') {
+            return Err("RADIUS target must be an origin");
+        }
+        let (host, port) = if let Some(bracketed) = authority.strip_prefix('[') {
+            let (host, suffix) = bracketed
+                .split_once(']')
+                .ok_or("invalid RADIUS IPv6 target")?;
+            let address = host
+                .parse::<Ipv6Addr>()
+                .map_err(|_| "invalid RADIUS IPv6 target")?;
+            (
+                address.to_string(),
+                suffix.strip_prefix(':').ok_or("missing RADIUS port")?,
+            )
+        } else {
+            let (host, port) = authority.split_once(':').ok_or("missing RADIUS port")?;
+            validate_radius_native_host(host)?;
+            (host.to_ascii_lowercase(), port)
+        };
+        if port.is_empty() || !port.bytes().all(|byte| byte.is_ascii_digit()) {
+            return Err("invalid RADIUS port");
+        }
+        let port = port
+            .parse::<u16>()
+            .ok()
+            .filter(|port| *port != 0)
+            .ok_or("invalid RADIUS port")?;
+        Ok(Self { host, port })
+    }
+}
+
 impl Outbound {
     pub(crate) fn radius_authenticate_native(
         &self,
         url: &str,
         options: &RadiusNativeOptions<'_>,
+        api_transport: bool,
         username: &str,
         password: &str,
     ) -> Result<bool, &'static str> {
@@ -48,15 +134,8 @@ impl Outbound {
         {
             return Err("invalid RADIUS credentials");
         }
-        let target = Target::parse(url, "radius")?;
-        if target.path != "/" {
-            return Err("RADIUS target must be an enrolled origin");
-        }
-        let endpoint = self
-            .radius_endpoints
-            .get(&target.origin)
-            .ok_or("RADIUS endpoint is not host-enrolled")?;
-        // OpenBao WithTimeout(ctx, 0) expires before sending any request.
+        // OpenBao WithTimeout(ctx, 0) expires before sending any request. Keep
+        // this before resolution so the zero case cannot consume DNS capacity.
         if options.read_timeout == 0 {
             return Err("RADIUS operation deadline exceeded");
         }
@@ -72,64 +151,116 @@ impl Outbound {
                 .ok_or("RADIUS connect deadline exceeds bounds")?
                 .min(deadline)
         };
-        let mut authenticator = [0u8; 16];
-        SystemRandom::new()
-            .fill(&mut authenticator)
-            .map_err(|_| "RADIUS request randomness unavailable")?;
-        let identifier = authenticator[0];
-        let packet = Zeroizing::new(radius_access_request_with_nas(
-            identifier,
-            &authenticator,
-            username.as_bytes(),
-            password.as_bytes(),
-            options.secret.as_bytes(),
-            Some((options.nas_port, options.nas_identifier)),
-        )?);
-        // UDP connect has no remote handshake or DNS. Binding the fixed peer
-        // also lets the kernel reject packets from any other source address.
-        let local = if endpoint.address.is_ipv4() {
+        let addresses = if api_transport {
+            let target = super::validate_radius_target(url)?;
+            super::ldap_transport::resolve_addresses(&target.host, target.port, dial_deadline)
+                .map_err(|_| "RADIUS DNS resolution unavailable")?
+        } else {
+            // No DNS or additional authority for persisted legacy native mounts.
+            let target = Target::parse(url, "radius")?;
+            if target.path != "/" {
+                return Err("RADIUS target must be an enrolled origin");
+            }
+            let endpoint = self
+                .radius_endpoints
+                .get(&target.origin)
+                .ok_or("RADIUS endpoint is not host-enrolled")?;
+            vec![endpoint.address]
+        };
+        authenticate_resolved(
+            &addresses,
+            options,
+            username,
+            password,
+            deadline,
+            dial_deadline,
+        )
+    }
+}
+
+fn authenticate_resolved(
+    addresses: &[SocketAddr],
+    options: &RadiusNativeOptions<'_>,
+    username: &str,
+    password: &str,
+    deadline: Instant,
+    dial_deadline: Instant,
+) -> Result<bool, &'static str> {
+    let (socket, address) = connect_peer(addresses, dial_deadline)?;
+    let mut authenticator = [0u8; 16];
+    SystemRandom::new()
+        .fill(&mut authenticator)
+        .map_err(|_| "RADIUS request randomness unavailable")?;
+    let identifier = authenticator[0];
+    let packet = Zeroizing::new(radius_access_request_with_nas(
+        identifier,
+        &authenticator,
+        username.as_bytes(),
+        password.as_bytes(),
+        options.secret.as_bytes(),
+        Some((options.nas_port, options.nas_identifier)),
+    )?);
+    // Once the first PAP is sent its outcome may be unknown. Never select a
+    // second resolved address or retry this packet after any send/receive error.
+    socket
+        .set_write_timeout(Some(remaining(deadline)?))
+        .map_err(|_| "RADIUS socket setup failed")?;
+    if socket
+        .send(&packet)
+        .map_err(|_| "RADIUS request delivery failed")?
+        != packet.len()
+    {
+        return Err("RADIUS request delivery was incomplete");
+    }
+    socket
+        .set_read_timeout(Some(remaining(deadline)?))
+        .map_err(|_| "RADIUS socket setup failed")?;
+    // One extra byte detects truncation of an overlong UDP datagram whose first
+    // 4096 bytes would otherwise look like a complete valid packet.
+    let mut response = Zeroizing::new([0u8; 4097]);
+    let (size, source) = socket
+        .recv_from(response.as_mut())
+        .map_err(|_| "RADIUS response unavailable")?;
+    remaining(deadline)?;
+    if size > 4096 || source != address {
+        return Err("RADIUS response source or length mismatch");
+    }
+    let accepted = radius_response_accepted(
+        &response[..size],
+        identifier,
+        &authenticator,
+        options.secret.as_bytes(),
+    )?;
+    remaining(deadline)?;
+    Ok(accepted)
+}
+
+fn connect_peer(
+    addresses: &[SocketAddr],
+    deadline: Instant,
+) -> Result<(UdpSocket, SocketAddr), &'static str> {
+    for address in addresses {
+        remaining(deadline)?;
+        let local = if address.is_ipv4() {
             "0.0.0.0:0"
         } else {
             "[::]:0"
         };
-        let socket = UdpSocket::bind(local).map_err(|_| "RADIUS socket unavailable")?;
-        socket
-            .set_write_timeout(Some(remaining(dial_deadline)?))
-            .map_err(|_| "RADIUS socket setup failed")?;
-        socket
-            .connect(endpoint.address)
-            .map_err(|_| "RADIUS connect failed")?;
-        let _ = remaining(dial_deadline)?;
+        let Ok(socket) = UdpSocket::bind(local) else {
+            continue;
+        };
         socket
             .set_write_timeout(Some(remaining(deadline)?))
             .map_err(|_| "RADIUS socket setup failed")?;
-        if socket
-            .send(&packet)
-            .map_err(|_| "RADIUS request delivery failed")?
-            != packet.len()
-        {
-            return Err("RADIUS request delivery was incomplete");
+        if socket.connect(address).is_err() {
+            continue;
         }
-        socket
-            .set_read_timeout(Some(remaining(deadline)?))
-            .map_err(|_| "RADIUS socket setup failed")?;
-        // One extra byte detects truncation of an overlong UDP datagram whose
-        // first 4096 bytes would otherwise look like a complete valid packet.
-        let mut response = Zeroizing::new([0u8; 4097]);
-        let (size, source) = socket
-            .recv_from(response.as_mut())
-            .map_err(|_| "RADIUS response unavailable")?;
-        let _ = remaining(deadline)?;
-        if size > 4096 || source != endpoint.address {
-            return Err("RADIUS response source or length mismatch");
-        }
-        radius_response_accepted(
-            &response[..size],
-            identifier,
-            &authenticator,
-            options.secret.as_bytes(),
-        )
+        remaining(deadline)?;
+        // UDP connect does not verify provider availability. The first locally
+        // connected peer stays selected even if it never answers the request.
+        return Ok((socket, *address));
     }
+    Err("RADIUS connect failed")
 }
 
 fn remaining(deadline: Instant) -> Result<Duration, &'static str> {
