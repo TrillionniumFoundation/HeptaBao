@@ -224,7 +224,7 @@
   "independent_qualification": false,
   "production_authority": false,
   "candidate_binary_sha256": "9b06272534e22175f7838e9b4c4f4f3ac8468399390ea6efff52bc1e3181b1e5",
-  "candidate_binary_source_head": "bc30af89a959de2e98bb0d174fbef97d93848086",
+  "candidate_binary_source_head": "6cda99b4a53fdca7677460d21315143fa9d22e22",
   "source_worktree_dirty": false,
   "execution_platform": "Linux aarch64 guest (Ubuntu Noble)"
 }
