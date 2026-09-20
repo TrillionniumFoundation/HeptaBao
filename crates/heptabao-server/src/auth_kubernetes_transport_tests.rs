@@ -143,6 +143,7 @@ fn native_ca_reviewer_and_role_mutations_fence_pending_tokenreview() {
         mount.roles.insert(
             "app".into(),
             KubernetesRole {
+                token_bound_cidrs: Vec::new(),
                 bound_service_account_names: BTreeSet::from(["worker".into()]),
                 bound_service_account_namespaces: BTreeSet::from(["workload".into()]),
                 audience: "heptabao".into(),
@@ -210,6 +211,7 @@ fn native_provider_failure_is_denied_but_legacy_and_expired_operations_stay_unav
     state.kubernetes_mut(scope()).roles.insert(
         "app".into(),
         KubernetesRole {
+            token_bound_cidrs: Vec::new(),
             bound_service_account_names: BTreeSet::from(["worker".into()]),
             bound_service_account_namespaces: BTreeSet::from(["workload".into()]),
             audience: "heptabao".into(),

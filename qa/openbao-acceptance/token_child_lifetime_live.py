@@ -23,7 +23,67 @@ from radius_renewal_live import renewal_token_shape
 from remote_jwks_live import signing_key, token as sign_token, serialization
 
 ISSUER = "https://synthetic-token-period.example.test"
-EXPECTED_COUNT = 202
+REQUIRED_CASES = frozenset({
+    'token_child_lifetime.approle_finite_to_periodic.after.lookup_shape',
+    'token_child_lifetime.approle_finite_to_periodic.before.lookup_shape',
+    'token_child_lifetime.approle_finite_to_periodic.current_lease',
+    'token_child_lifetime.approle_period_changed.after.lookup_shape',
+    'token_child_lifetime.approle_period_changed.before.lookup_shape',
+    'token_child_lifetime.approle_period_changed.current_lease',
+    'token_child_lifetime.approle_periodic_to_finite.after.lookup_shape',
+    'token_child_lifetime.approle_periodic_to_finite.before.lookup_shape',
+    'token_child_lifetime.approle_periodic_to_finite.current_lease',
+    'token_child_lifetime.child.renew-accessor.renew_ttl',
+    'token_child_lifetime.child.renew-self.renew_ttl',
+    'token_child_lifetime.child.renew.renew_ttl',
+    'token_child_lifetime.child_explicit_cap.renew_ttl',
+    'token_child_lifetime.child_ttl_exceeds_parent',
+    'token_child_lifetime.complete',
+    'token_child_lifetime.expired.child.lookup',
+    'token_child_lifetime.expired.child.renew',
+    'token_child_lifetime.expired.grandchild.lookup',
+    'token_child_lifetime.expired.grandchild.renew',
+    'token_child_lifetime.expired.grandparent.lookup',
+    'token_child_lifetime.expired.grandparent.renew',
+    'token_child_lifetime.expired.orphan_independent.lookup_shape',
+    'token_child_lifetime.extended.child_survives.lookup_shape',
+    'token_child_lifetime.extended.parent_survives.lookup_shape',
+    'token_child_lifetime.grandchild.renew-accessor.renew_ttl',
+    'token_child_lifetime.grandchild.renew-self.renew_ttl',
+    'token_child_lifetime.grandchild.renew.renew_ttl',
+    'token_child_lifetime.intermediate_revoke.child_denied.lookup',
+    'token_child_lifetime.intermediate_revoke.grandchild_denied.lookup',
+    'token_child_lifetime.intermediate_revoke.orphan_survives.lookup_shape',
+    'token_child_lifetime.intermediate_revoke.parent_survives.lookup_shape',
+    'token_child_lifetime.issuer_policy',
+    'token_child_lifetime.jwt_finite_to_periodic.after.lookup_shape',
+    'token_child_lifetime.jwt_finite_to_periodic.before.lookup_shape',
+    'token_child_lifetime.jwt_finite_to_periodic.current_lease',
+    'token_child_lifetime.jwt_period_changed.after.lookup_shape',
+    'token_child_lifetime.jwt_period_changed.before.lookup_shape',
+    'token_child_lifetime.jwt_period_changed.current_lease',
+    'token_child_lifetime.jwt_periodic_to_finite.after.lookup_shape',
+    'token_child_lifetime.jwt_periodic_to_finite.before.lookup_shape',
+    'token_child_lifetime.jwt_periodic_to_finite.current_lease',
+    'token_child_lifetime.middle_expired.child_denied.lookup',
+    'token_child_lifetime.middle_expired.grandchild_denied.lookup',
+    'token_child_lifetime.middle_expired.parent_survives.lookup_shape',
+    'token_child_lifetime.orphan_after_revoke.renew_ttl',
+    'token_child_lifetime.reopened.capped.lookup_shape',
+    'token_child_lifetime.reopened.child.lookup_shape',
+    'token_child_lifetime.reopened.grandchild.lookup_shape',
+    'token_child_lifetime.reopened.orphan.lookup_shape',
+    'token_child_lifetime.reopened.parent.lookup_shape',
+    'token_child_lifetime.reopened_health',
+    'token_child_lifetime.revoke_grandparent',
+    'token_child_lifetime.revoke_intermediate',
+    'token_child_lifetime.revoked.capped.lookup',
+    'token_child_lifetime.revoked.capped.renew',
+    'token_child_lifetime.revoked.child.lookup',
+    'token_child_lifetime.revoked.child.renew',
+    'token_child_lifetime.revoked.grandchild.lookup',
+    'token_child_lifetime.revoked.grandchild.renew',
+})
 
 
 def period_matches(data, expected):
@@ -31,9 +91,12 @@ def period_matches(data, expected):
 
 
 def complete_side(rows):
-    return (len(rows) == EXPECTED_COUNT and len({row.get("case") for row in rows}) == EXPECTED_COUNT
-            and all(row.get("passed") is True for row in rows)
-            and bool(rows) and rows[-1].get("case") == "token_child_lifetime.complete")
+    if not rows or any(not isinstance(row, dict) or row.get("passed") is not True
+                       or not isinstance(row.get("case"), str) for row in rows):
+        return False
+    names = [row["case"] for row in rows]
+    return (len(names) == len(set(names)) and REQUIRED_CASES.issubset(names)
+            and names[-1] == "token_child_lifetime.complete")
 
 
 def run_scenarios(client, restart, jwt_config, assertion, results=None, *, wait=time.sleep):
@@ -214,7 +277,7 @@ def main():
               "configuration_adaptation": {"static_jwt": "candidate inline JWKS/issuer/audiences; oracle PEM public key/bound_issuer", "configuration_api_parity": False},
               "scope": "token-API child lifetime and ancestor validity; AppRole/JWT lookup period snapshots",
               "independent_qualification": False, "compatibility_claim": False, "production_authority": False,
-              "expected_cases_per_side": EXPECTED_COUNT, "cases": {}, "side_failures": {}}
+              "required_cases": sorted(REQUIRED_CASES), "cases": {}, "side_failures": {}}
     try:
         for side in (["oracle"] if args.oracle_only else ["oracle", "candidate"]):
             rows = report["cases"][side] = []

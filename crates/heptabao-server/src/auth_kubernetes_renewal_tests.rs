@@ -444,3 +444,275 @@ fn kubernetes_tokenreview_cannot_issue_into_recreated_mount() {
     );
     assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
 }
+
+fn cidr_login(
+    state: &mut AuthState,
+    peer: Option<std::net::IpAddr>,
+    now: u64,
+) -> Result<AuthResponse, AuthError> {
+    let plan = state.prepare_kubernetes_login_from(
+        "",
+        "kubernetes",
+        &json!({"role":"app","jwt":"synthetic-login-credential"}),
+        now,
+        peer,
+    )?;
+    state.finish_kubernetes_login(
+        plan,
+        KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+    )
+}
+
+#[test]
+fn kubernetes_cidr_role_partial_null_and_empty_preserve_old_canonical_bytes() {
+    let (mut state, root, _, now) = fixture();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "kubernetes",
+    };
+    let old = serde_json::to_vec(&state.kubernetes_at(scope).unwrap().roles["app"]).unwrap();
+    assert!(!state.has_kube_role_bound_cidrs());
+    assert!(!String::from_utf8_lossy(&old).contains("token_bound_cidrs"));
+    for clear in [Value::Null, json!([])] {
+        update(
+            &mut state,
+            &root,
+            "auth/kubernetes/role/app",
+            json!({"token_bound_cidrs":"127.0.0.1/32,::1/128"}),
+            now,
+        );
+        assert!(state.has_kube_role_bound_cidrs() && state.has_token_bound_cidrs());
+        update(
+            &mut state,
+            &root,
+            "auth/kubernetes/role/app",
+            json!({"token_ttl":60}),
+            now,
+        );
+        let read = state
+            .handle(
+                Some(&root),
+                "",
+                "GET",
+                "auth/kubernetes/role/app",
+                &json!({}),
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            read.body["data"]["token_bound_cidrs"],
+            json!(["127.0.0.1", "::1"])
+        );
+        let before = provider_renewal::state_revision(&state).unwrap();
+        assert_eq!(
+            state
+                .handle(
+                    Some(&root),
+                    "",
+                    "POST",
+                    "auth/kubernetes/role/app",
+                    &json!({"token_bound_cidrs":["host.invalid"]}),
+                    now
+                )
+                .err()
+                .unwrap()
+                .status,
+            400
+        );
+        assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
+        update(
+            &mut state,
+            &root,
+            "auth/kubernetes/role/app",
+            json!({"token_bound_cidrs":clear}),
+            now,
+        );
+        assert!(!state.has_kube_role_bound_cidrs());
+        assert_eq!(
+            serde_json::to_vec(&state.kubernetes_at(scope).unwrap().roles["app"]).unwrap(),
+            old
+        );
+        let read = state
+            .handle(
+                Some(&root),
+                "",
+                "GET",
+                "auth/kubernetes/role/app",
+                &json!({}),
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(read.body["data"]["token_bound_cidrs"], json!([]));
+    }
+}
+
+#[test]
+fn kubernetes_cidr_denies_missing_wrong_and_cross_family_origin_before_issuance_or_use() {
+    let (mut state, root, _, now) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    let bad = Some("127.0.0.2".parse().unwrap());
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_bound_cidrs":["::ffff:127.0.0.1/128"],"token_num_uses":2}),
+        now,
+    );
+    let before = provider_renewal::state_revision(&state).unwrap();
+    for peer in [None, bad, Some("::1".parse().unwrap())] {
+        assert_eq!(cidr_login(&mut state, peer, now).err().unwrap().status, 403);
+        assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
+    }
+    let issued = cidr_login(&mut state, good, now).unwrap();
+    let raw = issued.body["auth"]["client_token"].as_str().unwrap();
+    assert_eq!(state.tokens[&hash(raw)].bound_cidrs, ["127.0.0.1"]);
+    for peer in [None, bad] {
+        assert_eq!(
+            state
+                .authenticate_read_only_from(raw, now, peer)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        assert_eq!(
+            state
+                .authenticate_from(raw, now, peer)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+    }
+    assert_eq!(state.tokens[&hash(raw)].uses_remaining, Some(2));
+    assert!(state.authenticate_from(raw, now, good).is_ok());
+    assert_eq!(state.tokens[&hash(raw)].uses_remaining, Some(1));
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_bound_cidrs":["::/0"]}),
+        now,
+    );
+    assert_eq!(cidr_login(&mut state, good, now).err().unwrap().status, 403);
+    assert!(cidr_login(&mut state, Some("::1".parse().unwrap()), now).is_ok());
+}
+
+#[test]
+fn kubernetes_cidr_issued_snapshot_survives_role_clear_reopen_and_admin_renewal() {
+    let (mut state, root, old, now) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    let other = Some("127.0.0.2".parse().unwrap());
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_bound_cidrs":["127.0.0.1"]}),
+        now,
+    );
+    let issued = cidr_login(&mut state, good, now).unwrap();
+    let raw = issued.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert!(state.authenticate_read_only_from(&old, now, other).is_ok());
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_bound_cidrs":[]}),
+        now,
+    );
+    let bytes = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let mut state: AuthState = serde_json::from_slice(&bytes).unwrap();
+    state.validate_online_auth().unwrap();
+    assert!(state.has_kube_role_bound_cidrs());
+    assert_eq!(
+        state
+            .authenticate_from(&raw, now, other)
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    let mut admin = root;
+    admin.origin_peer = other;
+    for via in ["renew-self", "renew", "renew-accessor"] {
+        let actor = state.authenticate_from(&raw, now, good).unwrap();
+        let body = match via {
+            "renew" => json!({"token":raw,"increment":60}),
+            "renew-accessor" => {
+                json!({"accessor":state.tokens[&hash(&raw)].accessor,"increment":60})
+            }
+            _ => json!({"increment":60}),
+        };
+        let response = state
+            .handle(
+                Some(if via == "renew-self" { &actor } else { &admin }),
+                "",
+                "POST",
+                &format!("auth/token/{via}"),
+                &body,
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(response.status, 200);
+        assert_eq!(state.tokens[&hash(&raw)].bound_cidrs, ["127.0.0.1"]);
+    }
+    state
+        .kubernetes_mut(AuthScope {
+            namespace: "",
+            mount: "kubernetes",
+        })
+        .roles
+        .remove("app");
+    assert!(state.has_kube_role_bound_cidrs());
+    assert_eq!(
+        state
+            .authenticate_read_only_from(&raw, now, other)
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    assert!(state.authenticate_read_only_from(&raw, now, good).is_ok());
+}
+
+#[test]
+fn kubernetes_cidr_token_api_child_inherits_while_orphan_does_not() {
+    let (mut state, root, _, now) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    let other = Some("127.0.0.2".parse().unwrap());
+    update(
+        &mut state,
+        &root,
+        "auth/kubernetes/role/app",
+        json!({"token_bound_cidrs":["127.0.0.1"]}),
+        now,
+    );
+    let issued = cidr_login(&mut state, good, now).unwrap();
+    let raw = issued.body["auth"]["client_token"].as_str().unwrap();
+    let actor = state.authenticate_from(raw, now, good).unwrap();
+    for (route, inherits) in [("create", true), ("create-orphan", false)] {
+        let response = state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                &format!("auth/token/{route}"),
+                &json!({"policies":["default"],"ttl":60}),
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        let child = response.body["auth"]["client_token"].as_str().unwrap();
+        assert_eq!(state.tokens[&hash(child)].bound_cidrs.is_empty(), !inherits);
+        assert_eq!(
+            state.authenticate_read_only_from(child, now, other).is_ok(),
+            !inherits
+        );
+    }
+}

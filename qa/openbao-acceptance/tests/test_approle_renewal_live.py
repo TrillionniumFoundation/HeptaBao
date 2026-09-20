@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from approle_renewal_live import EXPECTED_COUNT, complete_side, run_scenarios, ttl_matches
+from approle_renewal_live import REQUIRED_CASES, complete_side, run_scenarios, ttl_matches
 from bao_http import Response
 from core_isolation import ScenarioFailure, successful_comparison
 
@@ -24,13 +24,21 @@ class AppRoleRenewalTests(unittest.TestCase):
         self.assertFalse(successful_comparison({"candidate": rows, "oracle": rows}, {}))
         self.assertNotIn("private", json.dumps(rows))
 
-    def test_count_failed_rows_duplicates_and_missing_final_case_do_not_qualify(self):
-        complete = [{"case": "case." + str(i), "passed": True} for i in range(EXPECTED_COUNT)]
-        complete[-1]["case"] = "approle_renewal.orphan_after_unmount.ttl"
-        self.assertTrue(complete_side(complete))
-        for rows in ([], complete[:-1], complete[:-2] + complete[-1:], complete[:-1] + [complete[0]]):
-            self.assertFalse(complete_side(rows))
-        self.assertFalse(complete_side([{**row, "passed": False} for row in complete]))
+    def test_required_phases_replace_count_and_allow_new_observations(self):
+        terminal = "approle_renewal.complete"
+        rows = [{"case": name, "passed": True} for name in sorted(REQUIRED_CASES - {terminal})]
+        rows.append({"case": terminal, "passed": True})
+        self.assertTrue(complete_side(rows))
+        self.assertTrue(complete_side(rows[:-1] + [{"case": "approle_renewal.new_check", "passed": True}, rows[-1]]))
+        for missing in REQUIRED_CASES:
+            self.assertFalse(complete_side([row for row in rows if row["case"] != missing]))
+        fabricated = [{"case": "approle_renewal.case_" + str(i), "passed": True} for i in range(153)]
+        fabricated[-1]["case"] = terminal
+        self.assertFalse(complete_side(fabricated))
+        for invalid in ([], rows + [rows[-1]], rows[:-1], rows[:-1] + [None],
+                        rows[:-1] + [{"case": terminal, "passed": 1}],
+                        rows[:-1] + [{"case": terminal, "passed": False}]):
+            self.assertFalse(complete_side(invalid))
 
     def test_role_default_and_period_need_exact_ttl(self):
         self.assertTrue(ttl_matches(120, exact=120))

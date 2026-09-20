@@ -582,3 +582,316 @@ fn schema_twenty_eight_admits_legacy_kubernetes_enrollment_without_api_authority
     assert!(state.validate_format().is_ok());
     Ok(())
 }
+
+fn cidr_dispatch(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    peer: Option<std::net::IpAddr>,
+    wrap_ttl_seconds: Option<u64>,
+) -> RequestExecution {
+    service.begin_at_mode(RequestDispatch {
+        method,
+        path,
+        namespace: "",
+        token,
+        body,
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds,
+        origin_peer: peer,
+        client_certificates: None,
+    })
+}
+
+fn cidr_local(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    peer: Option<std::net::IpAddr>,
+) -> TestResult<Response> {
+    match cidr_dispatch(service, method, path, token, body, peer, None) {
+        RequestExecution::Complete(response) => Ok(response),
+        _ => Err("local token operation unexpectedly staged TokenReview or forwarding".into()),
+    }
+}
+
+#[test]
+fn kubernetes_cidr_checks_source_before_tokenreview_and_stale_role_cannot_wrap() -> TestResult {
+    for wrap in [None, Some(60)] {
+        let root = Root::new();
+        let (mut service, _, admin, _) = fixture(&root)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/kubernetes/role/app",
+                &admin,
+                json!({"token_bound_cidrs":["127.0.0.1"]})
+            )
+            .status,
+            204
+        );
+        let login_body = json!({"role":"app","jwt":"synthetic-login-credential"});
+        for peer in [None, Some("127.0.0.2".parse()?)] {
+            let before = service.state_digest;
+            let response = match cidr_dispatch(
+                &mut service,
+                "POST",
+                "auth/kubernetes/login",
+                "",
+                login_body.clone(),
+                peer,
+                wrap,
+            ) {
+                RequestExecution::Complete(response) => response,
+                _ => return Err("denied source staged TokenReview".into()),
+            };
+            assert_eq!(response.status, 403);
+            assert_eq!(service.state_digest, before);
+        }
+        let pending = match cidr_dispatch(
+            &mut service,
+            "POST",
+            "auth/kubernetes/login",
+            "",
+            login_body,
+            Some("127.0.0.1".parse()?),
+            wrap,
+        ) {
+            RequestExecution::External(pending) => pending,
+            _ => return Err("allowed source did not stage TokenReview".into()),
+        };
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/kubernetes/role/app",
+                &admin,
+                json!({"token_bound_cidrs":["127.0.0.2"]})
+            )
+            .status,
+            204
+        );
+        let before = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let response = service.finish_external_request(
+            *pending,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Kubernetes(
+                KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+            ))),
+        );
+        assert_eq!(response.status, 409);
+        assert!(response.body.get("auth").is_none_or(Value::is_null));
+        assert!(response.body.get("wrap_info").is_none_or(Value::is_null));
+        assert_eq!(service.state_digest, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_renew() -> TestResult
+{
+    let root = Root::new();
+    let (mut service, key, admin, old) = fixture(&root)?;
+    let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    admission.schema = 30;
+    assert!(admission.validate_format().is_ok());
+    let good = Some("127.0.0.1".parse()?);
+    let other = Some("127.0.0.2".parse()?);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/kubernetes/role/app",
+            &admin,
+            json!({"token_bound_cidrs":["127.0.0.1"]})
+        )
+        .status,
+        204
+    );
+    let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    admission.schema = 30;
+    assert_eq!(
+        admission
+            .validate_format()
+            .err()
+            .ok_or("missing role schema fence")?
+            .status,
+        503
+    );
+    admission.schema = CURRENT_STATE_SCHEMA;
+    assert!(admission.validate_format().is_ok());
+    assert_eq!(
+        cidr_local(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &old,
+            json!({}),
+            other
+        )?
+        .status,
+        200
+    );
+    let pending = match cidr_dispatch(
+        &mut service,
+        "POST",
+        "auth/kubernetes/login",
+        "",
+        json!({"role":"app","jwt":"synthetic-login-credential"}),
+        good,
+        Some(60),
+    ) {
+        RequestExecution::External(pending) => pending,
+        _ => return Err("expected wrapped TokenReview".into()),
+    };
+    let wrapped = service.finish_external_request(
+        *pending,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Kubernetes(
+            KubernetesLoginObservation::observed("workload", "worker", "uid-1"),
+        ))),
+    );
+    assert_eq!(wrapped.status, 200);
+    let wrapper = wrapped.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("wrapper")?
+        .to_owned();
+    let inner = cidr_local(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &wrapper,
+        json!({}),
+        other,
+    )?;
+    assert_eq!(inner.status, 200);
+    let raw = inner.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("inner token")?
+        .to_owned();
+    let accessor = inner.body["auth"]["accessor"]
+        .as_str()
+        .ok_or("accessor")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/kubernetes/role/app",
+            &admin,
+            json!({"token_bound_cidrs":null})
+        )
+        .status,
+        204
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .has_kube_role_bound_cidrs()
+    );
+    let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    admission.schema = 30;
+    assert_eq!(
+        admission
+            .validate_format()
+            .err()
+            .ok_or("missing issued-token schema fence")?
+            .status,
+        503
+    );
+    admission.schema = CURRENT_STATE_SCHEMA;
+    assert!(admission.validate_format().is_ok());
+    for peer in [None, other] {
+        assert_eq!(
+            cidr_local(
+                &mut service,
+                "GET",
+                "auth/token/lookup-self",
+                &raw,
+                json!({}),
+                peer
+            )?
+            .status,
+            403
+        );
+        assert_eq!(
+            cidr_local(
+                &mut service,
+                "POST",
+                "auth/token/renew-self",
+                &raw,
+                json!({"increment":60}),
+                peer
+            )?
+            .status,
+            403
+        );
+    }
+    assert_eq!(
+        cidr_local(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &raw,
+            json!({}),
+            good
+        )?
+        .status,
+        200
+    );
+    for (path, actor, body, peer) in [
+        (
+            "auth/token/renew-self",
+            raw.as_str(),
+            json!({"increment":60}),
+            good,
+        ),
+        (
+            "auth/token/renew",
+            admin.as_str(),
+            json!({"token":raw,"increment":60}),
+            other,
+        ),
+        (
+            "auth/token/renew-accessor",
+            admin.as_str(),
+            json!({"accessor":accessor,"increment":60}),
+            other,
+        ),
+    ] {
+        assert_eq!(
+            cidr_local(&mut service, "POST", path, actor, body, peer)?.status,
+            200
+        );
+    }
+    let lookup = cidr_local(
+        &mut service,
+        "POST",
+        "auth/token/lookup",
+        &admin,
+        json!({"token":raw}),
+        other,
+    )?;
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["bound_cidrs"], json!(["127.0.0.1"]));
+    Ok(())
+}

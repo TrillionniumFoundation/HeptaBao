@@ -31,6 +31,8 @@ impl Drop for KubernetesConfig {
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 struct KubernetesRole {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    token_bound_cidrs: Vec<String>,
     bound_service_account_names: BTreeSet<String>,
     bound_service_account_namespaces: BTreeSet<String>,
     audience: String,
@@ -53,6 +55,7 @@ pub(crate) struct KubernetesLoginPlan {
     presented: Zeroizing<String>,
     config: KubernetesConfig,
     role: KubernetesRole,
+    origin_peer: Option<std::net::IpAddr>,
     now: u64,
     started: std::time::Instant,
 }
@@ -211,6 +214,7 @@ impl KubernetesConfig {
 }
 impl KubernetesRole {
     fn validate(&self) -> Result<(), AuthError> {
+        token_cidrs::validate(&self.token_bound_cidrs)?;
         let shape = serde_json::to_value(self).map_err(|_| bad("invalid role"))?;
         names(&shape, "bound_service_account_names", false)?;
         names(&shape, "bound_service_account_namespaces", true)?;
@@ -320,6 +324,23 @@ impl AuthState {
                     || role.token_period > 0
                     || role.token_explicit_max_ttl > 0
             })
+    }
+
+    pub(crate) fn has_kube_role_bound_cidrs(&self) -> bool {
+        self.kubernetes_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount
+                    .roles
+                    .values()
+                    .any(|role| !role.token_bound_cidrs.is_empty())
+            })
+        }) || self.tokens.values().any(|token| {
+            !token.bound_cidrs.is_empty()
+                && matches!(
+                    token.auth_provenance,
+                    Some(TokenAuthProvenance::Kubernetes { .. })
+                )
+        })
     }
 
     pub(crate) fn validate_kubernetes_renewal_state(&self) -> Result<(), AuthError> {
@@ -761,6 +782,7 @@ impl AuthState {
                 data["token_type"] = json!("service");
                 data["token_max_ttl"] = json!(role.token_max_ttl);
                 data["token_period"] = json!(role.token_period);
+                data["token_bound_cidrs"] = json!(role.token_bound_cidrs);
                 data["token_explicit_max_ttl"] = json!(role.token_explicit_max_ttl);
                 data["token_renewable"] = json!(true);
                 Ok(response(data, false))
@@ -778,6 +800,7 @@ impl AuthState {
                         "token_period",
                         "token_explicit_max_ttl",
                         "token_num_uses",
+                        "token_bound_cidrs",
                         "alias_name_source",
                         "token_type",
                     ],
@@ -798,6 +821,7 @@ impl AuthState {
                     .and_then(|state| state.roles.get(name))
                     .cloned()
                     .unwrap_or(KubernetesRole {
+                        token_bound_cidrs: Vec::new(),
                         bound_service_account_names: BTreeSet::new(),
                         bound_service_account_namespaces: BTreeSet::new(),
                         audience: String::new(),
@@ -821,6 +845,9 @@ impl AuthState {
                 {
                     role.bound_service_account_namespaces =
                         names(body, "bound_service_account_namespaces", true)?;
+                }
+                if body.get("token_bound_cidrs").is_some() {
+                    role.token_bound_cidrs = token_cidrs::field(body)?;
                 }
                 if body.get("audience").is_some_and(|v| !v.is_null()) {
                     role.audience = string_field(body, "audience")?.into();
@@ -864,12 +891,23 @@ impl AuthState {
             _ => Err(err(405, "method not allowed")),
         }
     }
+    #[cfg(test)]
     pub(crate) fn prepare_kubernetes_login(
         &self,
         namespace: &str,
         mount: &str,
         body: &Value,
         now: u64,
+    ) -> Result<KubernetesLoginPlan, AuthError> {
+        self.prepare_kubernetes_login_from(namespace, mount, body, now, None)
+    }
+    pub(crate) fn prepare_kubernetes_login_from(
+        &self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<KubernetesLoginPlan, AuthError> {
         validate_namespace(namespace)?;
         if !self.online_mount_enabled(namespace, mount, "kubernetes") {
@@ -888,6 +926,7 @@ impl AuthState {
             .kubernetes_at(AuthScope { namespace, mount })
             .ok_or_else(denied)?;
         let role = state.roles.get(role_name).cloned().ok_or_else(denied)?;
+        token_cidrs::check(&role.token_bound_cidrs, origin_peer)?;
         let config = state
             .config
             .as_ref()
@@ -905,6 +944,7 @@ impl AuthState {
             presented: Zeroizing::new(presented.into()),
             config,
             role,
+            origin_peer,
             now,
             started: std::time::Instant::now(),
         })
@@ -934,6 +974,7 @@ impl AuthState {
                 "Kubernetes auth configuration changed during TokenReview",
             ));
         }
+        token_cidrs::check(&plan.role.token_bound_cidrs, plan.origin_peer)?;
         let now = plan.observed_now();
         let limits = plan.role.limits();
         // The role stores only explicitly assigned policies. The default
@@ -947,7 +988,7 @@ impl AuthState {
             },
             &observation.service_account_uid,
             NativeOnlineToken {
-                bound_cidrs: Vec::new(),
+                bound_cidrs: plan.role.token_bound_cidrs,
                 policies: token_policies,
                 limits,
                 explicit_max_ttl: plan.role.token_explicit_max_ttl,
@@ -977,6 +1018,7 @@ mod tests {
     use super::*;
     fn role() -> KubernetesRole {
         KubernetesRole {
+            token_bound_cidrs: Vec::new(),
             bound_service_account_names: BTreeSet::from(["worker".into()]),
             bound_service_account_namespaces: BTreeSet::from(["application".into()]),
             audience: "heptabao".into(),

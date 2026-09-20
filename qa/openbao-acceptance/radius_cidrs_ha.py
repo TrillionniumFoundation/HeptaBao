@@ -88,7 +88,8 @@ def run(binary,root,rows,inherited,diagnostics,*,ldap=False):
         cluster.bootstrap();inherited.extend(cluster.scenarios)
         leader=cluster.leader();follower=next(node for node in cluster.nodes if node is not leader)
         def trace(node):
-            client=SourceClient(f'https://127.0.0.1:{node.http_port}',cluster.root/'ca.crt',cluster.root_token)
+            # Spoof the allowed .2 while the actual denied socket connects from .1.
+            client=SourceClient(f'https://127.0.0.1:{node.http_port}',cluster.root/'ca.crt',cluster.root_token,spoof_source='127.0.0.2')
             return LdapTrace(client,provider,config,rows) if ldap else Trace(client,provider,rows)
         primary=trace(leader);forward=trace(follower)
         kind='ldap' if ldap else 'radius'

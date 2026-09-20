@@ -479,11 +479,12 @@ impl Service {
         }
 
         let effect = if kind == "kubernetes" {
-            match admitted.auth.prepare_kubernetes_login(
+            match admitted.auth.prepare_kubernetes_login_from(
                 request.namespace,
                 &mount,
                 request.body,
                 request.now,
+                request.origin_peer,
             ) {
                 Ok(plan) => OnlineAuthEffect::Kubernetes(plan),
                 Err(error) => return Some(auth_error(error)),

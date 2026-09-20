@@ -28,7 +28,8 @@ from remote_jwks_live import Instance
 
 class SourceClient:
     """Verified TLS with a chosen real local IP, never an asserted HTTP origin."""
-    def __init__(self,address,ca,root_token):
+    def __init__(self,address,ca,root_token,*,spoof_source='127.0.0.1'):
+        self.spoof_source=str(ipaddress.ip_address(spoof_source))
         self.port=urlsplit(address).port;self.context=ssl.create_default_context(cafile=str(ca));self.root_token=root_token
         self.last_family=None
     def request(self,method,path,body=None,*,token=None,source='127.0.0.1',wrap_ttl=None,spoof=False):
@@ -42,7 +43,7 @@ class SourceClient:
             if actual!=ipaddress.ip_address(source):raise ScenarioFailure('radius_cidrs.socket_origin')
             headers={'X-Vault-Token':self.root_token if token is None else token,'Content-Type':'application/json'}
             if wrap_ttl:headers['X-Vault-Wrap-TTL']=wrap_ttl
-            if spoof:headers.update({'X-Forwarded-For':'127.0.0.1','X-Real-IP':'127.0.0.1','Forwarded':'for=127.0.0.1'})
+            if spoof:headers.update({'X-Forwarded-For':self.spoof_source,'X-Real-IP':self.spoof_source,'Forwarded':'for='+self.spoof_source})
             connection.request(method,'/v1/'+path,body=None if body is None else json.dumps(body).encode(),headers=headers)
             response=connection.getresponse();raw=response.read(1024*1024+1)
             if len(raw)>1024*1024:raise ScenarioFailure('radius_cidrs.response_bound')

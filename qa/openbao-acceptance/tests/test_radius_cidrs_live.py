@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import radius_cidrs_live as fixture
 
 class CompletionTests(unittest.TestCase):
@@ -25,5 +25,38 @@ class CompletionTests(unittest.TestCase):
         trace=fixture.Trace(None,None,[])
         with self.assertRaises(ValueError):trace.check('safe',True,token='synthetic-token')
         with self.assertRaises(ValueError):trace.check('contains space',True)
+
+
+class SpoofedOriginTests(unittest.TestCase):
+    def test_forged_allowed_headers_do_not_change_the_real_denied_socket_origin(self):
+        for forged in ['127.0.0.1', '127.0.0.2']:
+            raw = MagicMock()
+            tls = MagicMock()
+            tls.getsockname.return_value = ('127.0.0.1', 43210)
+            context = MagicMock()
+            context.wrap_socket.return_value = tls
+            connection = MagicMock()
+            connection.getresponse.return_value.status = 403
+            connection.getresponse.return_value.read.return_value = b'{}'
+            with patch.object(fixture.ssl, 'create_default_context', return_value=context), \
+                 patch.object(fixture.socket, 'create_connection', return_value=raw) as connect, \
+                 patch.object(fixture.http.client, 'HTTPSConnection', return_value=connection):
+                client = fixture.SourceClient('https://localhost:12345', 'synthetic-ca', 'synthetic-token', spoof_source=forged)
+                response = client.request('GET', 'auth/token/lookup-self', source='127.0.0.1', spoof=True)
+            self.assertEqual(response.status, 403)
+            self.assertEqual(connect.call_args.kwargs['source_address'], ('127.0.0.1', 0))
+            headers = connection.request.call_args.kwargs['headers']
+            self.assertEqual(headers['X-Forwarded-For'], forged)
+            self.assertEqual(headers['X-Real-IP'], forged)
+            self.assertEqual(headers['Forwarded'], 'for=' + forged)
+            self.assertEqual(client.last_family, 4)
+            connection.close.assert_called_once()
+
+    def test_spoof_address_rejects_header_injection_and_non_numeric_names(self):
+        for value in ['localhost', '127.0.0.1:123', '127.0.0.1\r\nX-Vault-Token: sentinel', '']:
+            with patch.object(fixture.ssl, 'create_default_context') as context:
+                with self.assertRaises(ValueError):
+                    fixture.SourceClient('https://localhost:12345', 'synthetic-ca', 'synthetic-token', spoof_source=value)
+                context.assert_not_called()
 
 if __name__=='__main__':unittest.main()

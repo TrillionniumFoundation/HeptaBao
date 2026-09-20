@@ -65,7 +65,7 @@ Enable `POST sys/auth/<mount>` with `{"type":"kubernetes"}`.
 |---|---|---|
 | `auth/<mount>/config` | POST/PUT | Fresh config requires HTTPS `kubernetes_host` and nonempty `kubernetes_ca_cert`. Optional `token_reviewer_jwt`; empty/null/omitted uses the login JWT for this TokenReview. `disable_local_ca_jwt` must be true if supplied; omitted also has no ambient fallback. Full replacement, not partial update. |
 | Same | GET | Host, CA and secret-present metadata, never reviewer credential. |
-| `auth/<mount>/role/<name>` | POST/PUT | Explicit `bound_service_account_names`, `bound_service_account_namespaces`, required `audience`; optional `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`, service-token/UID-alias selectors. Updates preserve omitted fields. |
+| `auth/<mount>/role/<name>` | POST/PUT | Explicit `bound_service_account_names`, `bound_service_account_namespaces`, required `audience`; optional `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`, `token_bound_cidrs`, service-token/UID-alias selectors. Updates preserve omitted fields. |
 | Same | GET/DELETE | Read the bounded role or remove it. Existing issued tokens require explicit revoke/expiry or mount disable. |
 | `auth/<mount>/role` | GET/LIST | Sorted role names. |
 | `auth/<mount>/login` | POST/PUT | Exactly `role` and `jwt`; the presented token is not locally decoded into identity or authority. |
@@ -96,6 +96,24 @@ use the current role period, while an explicit maximum is fixed at issuance.
 Tokens may have a finite use count. Their token and
 live Identity association publish atomically. Disabling the auth mount revokes
 its issued tokens and descendants under the existing mount provenance rules.
+
+`token_bound_cidrs` accepts numeric IP/network entries as a list or comma-separated
+string. Omission preserves the role value; null or an empty list clears it.
+The actual client socket address is checked before TokenReview. Authenticated
+HA forwarding retains that original address; caller-supplied forwarding headers
+cannot replace it. Role/configuration changes during provider I/O invalidate the
+pending result before token or wrapper publication.
+
+Tokens retain their issued source constraints after role changes or restart.
+Children inherit those constraints; orphan tokens do not. A response wrapper can
+be unwrapped from another source, but its inner token still enforces the issued
+constraint. Self-renew checks the caller's source; root renewal of another token
+uses the root caller's authority and preserves the target's constraints. Schema
+31 fences both nonempty role values and direct-token snapshots after role clear.
+The current parser remains restricted to numeric addresses: upstream can treat
+malformed IP strings containing `/` as Unix socket addresses and save them,
+whereas this profile returns 400. Such API differences are reported separately
+from numeric-CIDR comparisons.
 
 Renew-self, renew-by-token and renew-by-accessor use the current issuing role
 locally, retaining issued policies and the explicit maximum. They perform no

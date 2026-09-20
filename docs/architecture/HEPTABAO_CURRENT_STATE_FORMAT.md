@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **30**. Its source constant is
+The current Service state schema is **31**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -69,7 +69,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 27 | Native RADIUS source CIDR configuration and issued-token source constraints; JWT/OIDC API-owned HTTPS transport and nonempty inactive JWT CA readback fields must be absent. |
 | 28 | Administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields; native LDAP CIDRs and Kubernetes API HTTPS authority must be absent. |
 | 29 | Native LDAP source constraints and administrator-configured Kubernetes authentication HTTPS transport; JWT bound-claim predicates and native LDAP default-policy metadata must be absent. |
-| 30 | Current format, adding native JWT bound-claim rules and native LDAP default-policy and policy-list-presence semantics. |
+| 30 | Native JWT bound-claim rules and native LDAP default-policy and policy-list-presence semantics; Kubernetes role and direct-token source constraints must be absent. |
+| 31 | Current format, adding Kubernetes role source constraints and their issued-token snapshots. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -243,8 +244,14 @@ historical behavior because the original input cannot be recovered. Non-default
 direct LDAP token snapshots retain the format fence even after config changes.
 Issued policies remain fixed; config toggles affect future logins only.
 
+Schema 31 is required for nonempty Kubernetes role `token_bound_cidrs` or direct
+Kubernetes tokens with issued source constraints. Empty fields remain omitted
+from old serialized roles. Clearing a role's constraint changes future logins;
+it cannot remove issued token constraints or their format fence. Token-API
+children retain inherited source constraints under the existing token format.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 30. An authenticated
+it. Initialization and committed mutations use schema 31. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -258,7 +265,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-29 binary cannot read schema-30 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-30 binary cannot read schema-31 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

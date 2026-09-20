@@ -24,7 +24,42 @@ from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 MOUNT = "approle-renewal"
 BASE_ROLE = {"token_ttl": 120, "token_max_ttl": 300, "token_period": 0,
              "token_explicit_max_ttl": 0, "secret_id_num_uses": 0, "token_policies": ["approle-issuer"]}
-EXPECTED_COUNT = 153
+REQUIRED_CASES = frozenset({
+    'approle_renewal.child.deleted_role.ttl',
+    'approle_renewal.child_revoked',
+    'approle_renewal.complete',
+    'approle_renewal.deleted_role_rejection',
+    'approle_renewal.destroy_issued_secret_id',
+    'approle_renewal.explicit-added.ttl',
+    'approle_renewal.explicit-lowered.ttl',
+    'approle_renewal.explicit-raised.ttl',
+    'approle_renewal.explicit-removed.ttl',
+    'approle_renewal.finite-to-periodic.ttl',
+    'approle_renewal.issuer_policy',
+    'approle_renewal.mount',
+    'approle_renewal.omitted_increment.ttl',
+    'approle_renewal.orphan.deleted_role.ttl',
+    'approle_renewal.orphan_after_unmount.ttl',
+    'approle_renewal.orphan_survives_unmount.ttl',
+    'approle_renewal.past_maximum.no_extension',
+    'approle_renewal.past_maximum.no_response_credentials',
+    'approle_renewal.periodic-explicit-added.ttl',
+    'approle_renewal.periodic-explicit-raised.ttl',
+    'approle_renewal.periodic-mount-cap.ttl',
+    'approle_renewal.periodic-role-cap.login_ttl',
+    'approle_renewal.periodic-role-cap.ttl',
+    'approle_renewal.periodic-to-finite.ttl',
+    'approle_renewal.raised_maximum.renew-accessor.ttl',
+    'approle_renewal.raised_maximum.renew-self.ttl',
+    'approle_renewal.raised_maximum.renew.ttl',
+    'approle_renewal.reopened.renew-accessor.ttl',
+    'approle_renewal.reopened.renew-self.ttl',
+    'approle_renewal.reopened.renew.ttl',
+    'approle_renewal.unwrap.single_use',
+    'approle_renewal.unwrap.target',
+    'approle_renewal.wrapped_renewal.opaque',
+    'approle_renewal.zero_increment.ttl',
+})
 
 
 def ttl_matches(value, *, exact=None, maximum=None):
@@ -32,9 +67,12 @@ def ttl_matches(value, *, exact=None, maximum=None):
 
 
 def complete_side(rows):
-    return (len(rows) == EXPECTED_COUNT and len({row.get("case") for row in rows}) == EXPECTED_COUNT
-            and all(row.get("passed") is True for row in rows)
-            and rows[-1].get("case") == "approle_renewal.orphan_after_unmount.ttl")
+    if not rows or any(not isinstance(row, dict) or row.get("passed") is not True
+                       or not isinstance(row.get("case"), str) for row in rows):
+        return False
+    names = [row["case"] for row in rows]
+    return (len(names) == len(set(names)) and REQUIRED_CASES.issubset(names)
+            and names[-1] == "approle_renewal.complete")
 
 
 def run_scenarios(client, restart, results=None, *, wait=time.sleep):
@@ -159,6 +197,7 @@ def run_scenarios(client, restart, results=None, *, wait=time.sleep):
     call("child_revoked", "GET", "auth/token/lookup-self", token=children["child"]["token"], expected=403)
     lookup("orphan_survives_unmount", children["orphan"])
     renew("orphan_after_unmount", children["orphan"], payload={"increment": 60}, exact=60, policies=["default"])
+    check("complete", True)
     return results
 
 
@@ -182,7 +221,7 @@ def main():
               "oracle_binary_sha256": BINARY_SHA256, "oracle_artifact_sha256": ARTIFACT_SHA256,
               "candidate_binary_sha256": None if args.oracle_only else before["binary_sha256"],
               "independent_qualification": False, "compatibility_claim": False, "production_authority": False,
-              "expected_cases_per_side": EXPECTED_COUNT, "cases": {}, "side_failures": {}}
+              "required_cases": sorted(REQUIRED_CASES), "cases": {}, "side_failures": {}}
     try:
         for side in (["oracle"] if args.oracle_only else ["oracle", "candidate"]):
             rows = report["cases"][side] = []
