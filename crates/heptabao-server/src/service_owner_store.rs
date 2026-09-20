@@ -1,14 +1,69 @@
-//! Record-oriented local persistence for authoritative Service owners.
+//! Owner-scoped local persistence for authoritative Service state.
 //!
 //! V4 keeps the existing logical State and HA digest contract, but local durable
 //! publication no longer treats that logical State as one chunk stream. Each
 //! independently owned domain is serialized and content-addressed separately;
 //! one small manifest is the sole publication point. The existing
 //! DurableService atomic batch remains the transaction and replay boundary.
+//! Serialized owner buffers and staged chunks remain secret-bearing until
+//! encryption: they are cleared on release and chunk diagnostics are redacted.
 
 use crate::crypto;
+use heptabao_durable_service::Secret;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
+use zeroize::Zeroizing;
+
+/// A growing serializer must wipe the old allocation before releasing it;
+/// ordinary Vec reallocation is not covered by Zeroizing's final Drop.
+pub(crate) fn serialize_owner(
+    value: &impl Serialize,
+) -> Result<Zeroizing<Vec<u8>>, OwnerStoreError> {
+    struct Writer {
+        bytes: Zeroizing<Vec<u8>>,
+        overflowed: bool,
+    }
+    impl std::io::Write for Writer {
+        fn write(&mut self, input: &[u8]) -> std::io::Result<usize> {
+            let Some(next_len) = self
+                .bytes
+                .len()
+                .checked_add(input.len())
+                .filter(|size| *size <= MAX_SERIALIZED_STATE_BYTES)
+            else {
+                self.overflowed = true;
+                return Err(std::io::Error::other(
+                    "serialized owner exceeds state limit",
+                ));
+            };
+            if next_len > self.bytes.capacity() {
+                let capacity = next_len
+                    .max(self.bytes.capacity().saturating_mul(2))
+                    .min(MAX_SERIALIZED_STATE_BYTES);
+                let mut grown = Zeroizing::new(Vec::with_capacity(capacity));
+                grown.extend_from_slice(&self.bytes);
+                self.bytes = grown; // wipes the previous allocation before freeing it
+            }
+            self.bytes.extend_from_slice(input);
+            Ok(input.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut writer = Writer {
+        bytes: Zeroizing::new(Vec::new()),
+        overflowed: false,
+    };
+    if serde_json::to_writer(&mut writer, value).is_err() {
+        return Err(if writer.overflowed {
+            OwnerStoreError::StateTooLarge
+        } else {
+            OwnerStoreError::Serialization
+        });
+    }
+    Ok(writer.bytes)
+}
 
 pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-owners-v4";
 pub(crate) const STATE_CHUNK_BYTES: usize = 512 * 1024;
@@ -48,7 +103,7 @@ pub(crate) struct OwnerStateManifest {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct StateChunk {
     pub resource: String,
-    pub bytes: Vec<u8>,
+    pub bytes: Secret,
 }
 
 /// The physical write set for one owner publication.
@@ -346,7 +401,7 @@ impl OwnerStateManifest {
         &self,
         owner: &str,
         chunks: &[&[u8]],
-    ) -> Result<Vec<u8>, OwnerStoreError> {
+    ) -> Result<Zeroizing<Vec<u8>>, OwnerStoreError> {
         self.validate()?;
         let descriptor = self.owner(owner)?;
         if chunks.len() != descriptor.chunks.len() {
@@ -354,7 +409,7 @@ impl OwnerStateManifest {
         }
         let total = usize::try_from(descriptor.total_bytes)
             .map_err(|_| OwnerStoreError::InvalidManifest)?;
-        let mut bytes = Vec::with_capacity(total);
+        let mut bytes = Zeroizing::new(Vec::with_capacity(total));
         for (index, chunk) in chunks.iter().enumerate() {
             let expected_size = descriptor
                 .chunk_sizes
@@ -403,7 +458,7 @@ impl OwnerWritePlan {
             replay_epoch,
             owners
                 .into_iter()
-                .map(|(name, bytes)| (name, Some(bytes)))
+                .map(|(name, bytes)| (name, Some(Zeroizing::new(bytes))))
                 .collect(),
             previous,
             legacy_deletes,
@@ -417,7 +472,7 @@ impl OwnerWritePlan {
         state_schema: u32,
         cluster_id: &str,
         replay_epoch: u64,
-        owners: Vec<(&'static str, Option<Vec<u8>>)>,
+        owners: Vec<(&'static str, Option<Zeroizing<Vec<u8>>>)>,
         previous: Option<&OwnerStateManifest>,
         legacy_deletes: Vec<String>,
     ) -> Result<Self, OwnerStoreError> {
@@ -443,7 +498,7 @@ impl OwnerWritePlan {
                 .iter()
                 .zip(OWNER_NAMES)
                 .any(|((name, bytes), expected)| {
-                    *name != expected || bytes.as_ref().is_some_and(Vec::is_empty)
+                    *name != expected || bytes.as_ref().is_some_and(|bytes| bytes.is_empty())
                 })
         {
             return Err(OwnerStoreError::InvalidOwner);
@@ -458,7 +513,7 @@ impl OwnerWritePlan {
             .unwrap_or_default();
         let mut next_resources = BTreeSet::new();
         let mut required_existing = BTreeSet::new();
-        let mut chunks = BTreeMap::<String, Vec<u8>>::new();
+        let mut chunks = BTreeMap::<String, Secret>::new();
         let mut descriptors = Vec::with_capacity(OWNER_NAMES.len());
         let mut owner_total = 0_usize;
 
@@ -496,7 +551,14 @@ impl OwnerWritePlan {
                 if previous_resources.contains(&resource) {
                     required_existing.insert(resource);
                 } else {
-                    chunks.entry(resource).or_insert_with(|| chunk.to_vec());
+                    if let std::collections::btree_map::Entry::Vacant(entry) =
+                        chunks.entry(resource)
+                    {
+                        entry.insert(
+                            Secret::new(chunk.to_vec())
+                                .map_err(|_| OwnerStoreError::InvalidChunk)?,
+                        );
+                    }
                 }
             }
             descriptors.push(OwnerDescriptor {
@@ -614,22 +676,15 @@ impl OwnerWritePlan {
 }
 
 pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<OwnerStateManifest>, OwnerStoreError> {
-    let value: serde_json::Value = match serde_json::from_slice(bytes) {
-        Ok(value) => value,
-        Err(_) => return Ok(None),
-    };
-    let Some(object) = value.as_object() else {
-        return Ok(None);
-    };
-    if object
-        .get("storage_format")
-        .and_then(serde_json::Value::as_str)
+    if super::state_store::probe_storage_format(bytes)
+        .map_err(|_| OwnerStoreError::InvalidManifest)?
+        .as_deref()
         != Some(STATE_STORAGE_FORMAT)
     {
         return Ok(None);
     }
     let manifest: OwnerStateManifest =
-        serde_json::from_value(value).map_err(|_| OwnerStoreError::InvalidManifest)?;
+        serde_json::from_slice(bytes).map_err(|_| OwnerStoreError::InvalidManifest)?;
     manifest.validate()?;
     Ok(Some(manifest))
 }
@@ -744,6 +799,46 @@ mod tests {
     }
 
     #[test]
+    fn owner_chunks_redact_secret_bytes_and_restore_exact_plaintext()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let sentinel = b"synthetic-reusable-credential";
+        let plan = OwnerWritePlan::new(
+            br#"{"schema":15}"#,
+            "secret-owner-roundtrip",
+            15,
+            "cluster",
+            0,
+            owners(sentinel.to_vec()),
+            None,
+            Vec::new(),
+        )?;
+        let diagnostic = format!("{plan:?}");
+        assert!(diagnostic.contains("[REDACTED]"));
+        assert!(!diagnostic.contains(std::str::from_utf8(sentinel)?));
+        assert!(!diagnostic.contains(&format!("{:?}", sentinel.as_slice())));
+        let manifest = decode_manifest(&plan.manifest_bytes)?.ok_or("missing manifest")?;
+        let resource = manifest.chunk_resource("engines", 0)?;
+        let chunk = plan
+            .chunks
+            .iter()
+            .find(|chunk| chunk.resource == resource)
+            .ok_or("missing chunk")?;
+        let restored = manifest.assemble_owner("engines", &[chunk.bytes.expose()])?;
+        assert_eq!(restored.as_slice(), sentinel);
+        Ok(())
+    }
+
+    #[test]
+    fn protected_owner_serialization_preserves_json_encoding()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let value = serde_json::json!({"credential": "\\\"\nsynthetic".repeat(400),
+            "nested": [true, false, 42, null, {"unicode": "密钥"}]});
+        let serialized = serialize_owner(&value)?;
+        assert_eq!(serialized.as_slice(), serde_json::to_vec(&value)?);
+        Ok(())
+    }
+
+    #[test]
     fn owner_manifest_round_trips_and_binds_logical_state() -> Result<(), Box<dyn std::error::Error>>
     {
         let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
@@ -793,11 +888,17 @@ mod tests {
             "cluster",
             0,
             vec![
-                ("namespaces", Some(br#"{"next_incarnation":2}"#.to_vec())),
+                (
+                    "namespaces",
+                    Some(Zeroizing::new(br#"{"next_incarnation":2}"#.to_vec())),
+                ),
                 ("auth", None),
-                ("engines", Some(vec![b'f'; 900 * 1024])),
+                ("engines", Some(Zeroizing::new(vec![b'f'; 900 * 1024]))),
                 ("database", None),
-                ("raft_admin", Some(br#"{"policy":null}"#.to_vec())),
+                (
+                    "raft_admin",
+                    Some(Zeroizing::new(br#"{"policy":null}"#.to_vec())),
+                ),
             ],
             Some(&manifest),
             Vec::new(),
@@ -914,7 +1015,7 @@ mod tests {
             .iter()
             .find(|chunk| chunk.resource == resource)
             .ok_or("chunk missing")?;
-        let mut tampered = chunk.bytes.clone();
+        let mut tampered = Zeroizing::new(chunk.bytes.expose().to_vec());
         tampered[0] ^= 1;
         assert_eq!(
             validate_content_addressed_chunk(&resource, &tampered),
@@ -1005,7 +1106,7 @@ mod tests {
         )?;
         plan.chunks.push(StateChunk {
             resource: "state-owners/auth/by-digest/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".into(),
-            bytes: vec![0],
+            bytes: Secret::new(vec![0])?,
         });
         assert_eq!(
             plan.validate_write_set(),

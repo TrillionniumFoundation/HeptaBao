@@ -45,10 +45,13 @@ mod capabilities;
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_radius.rs"]
+mod radius;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
 use identity::LoginIdentity;
+pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 
 const DEFAULT_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
@@ -923,10 +926,9 @@ struct Token {
     auth_cert_role: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     auth_cert_sha256: Option<String>,
-    /// Structured authentication origin for renewals that must consult the
-    /// live issuer configuration. This is intentionally set only on a direct
-    /// AppRole login; token-API children retain mount revocation provenance
-    /// but never inherit this issuer authority.
+    /// Direct issuer authority is not inherited by token-API children. A
+    /// distinct token-API marker disambiguates new orphan children from old
+    /// RADIUS login tokens which lack renewable provider credentials.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     auth_provenance: Option<TokenAuthProvenance>,
 }
@@ -934,7 +936,14 @@ struct Token {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
-    AppRole { role_name: String },
+    AppRole {
+        role_name: String,
+    },
+    Radius {
+        username: String,
+        credential: radius::RadiusCredential,
+    },
+    TokenApi,
 }
 
 #[derive(Clone, Copy)]
@@ -3410,6 +3419,10 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(plan.mount.clone());
+        token.auth_provenance = Some(TokenAuthProvenance::Radius {
+            username: plan.username.clone(),
+            credential: radius::RadiusCredential::new(plan.password.as_str()),
+        });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
             mount: plan.mount,
@@ -4298,6 +4311,7 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"))?
                 };
                 self.active_token(&id, now, false)?;
+                self.require_offline_renewal_origin(&id)?;
                 let approle_limits = self.approle_renewal_limits(&id)?;
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
@@ -4638,10 +4652,9 @@ impl AuthState {
                 auth_origin_known: parent.root || parent.auth_origin_known,
                 auth_cert_role: parent.auth_cert_role.clone(),
                 auth_cert_sha256: parent.auth_cert_sha256.clone(),
-                // A token created through auth/token/create has its own
-                // authority. Do not let it masquerade as a direct AppRole
-                // login during later renewal.
-                auth_provenance: None,
+                // Children, including orphans, have their own issuer and do
+                // not inherit a direct login's provider credential.
+                auth_provenance: Some(TokenAuthProvenance::TokenApi),
             },
             now,
         )

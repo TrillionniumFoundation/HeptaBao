@@ -1,0 +1,309 @@
+//! Direct RADIUS tokens require a fresh provider decision for each renewal.
+//! Plans contain only an enrolled route and bounded, zeroized PAP credentials;
+//! a provider observation is not permission to bypass current local authority.
+use super::*;
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(transparent)]
+pub(super) struct RadiusCredential(String);
+
+impl RadiusCredential {
+    pub(super) fn new(value: &str) -> Self {
+        Self(value.to_owned())
+    }
+}
+
+impl Drop for RadiusCredential {
+    fn drop(&mut self) {
+        self.0.zeroize();
+    }
+}
+
+pub(crate) struct RadiusRenewalPlan {
+    namespace: String,
+    mount: String,
+    mount_revision: AuthMount,
+    config: RadiusMount,
+    target: Zeroizing<String>,
+    target_revision: [u8; 32],
+    username: String,
+    credential: RadiusCredential,
+    path: String,
+    increment: u64,
+    now: u64,
+    started: std::time::Instant,
+}
+
+pub(crate) struct RadiusRenewalObservation;
+
+impl RadiusRenewalPlan {
+    pub(crate) fn execute(
+        &self,
+        outbound: &crate::outbound::Outbound,
+    ) -> Result<RadiusRenewalObservation, AuthError> {
+        match outbound.radius_authenticate(&self.config.url, &self.username, &self.credential.0) {
+            Ok(true) => Ok(RadiusRenewalObservation),
+            Ok(false) => Err(bad("access denied by the authentication server")),
+            Err(_) => Err(err(503, "RADIUS provider unavailable or response invalid")),
+        }
+    }
+
+    pub(crate) fn observed_now(&self) -> u64 {
+        let elapsed = self.started.elapsed();
+        self.now.saturating_add(
+            elapsed
+                .as_secs()
+                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
+        )
+    }
+}
+
+fn token_revision(token: &Token) -> Result<[u8; 32], AuthError> {
+    struct DigestWriter(digest::Context);
+    impl std::io::Write for DigestWriter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.0.update(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut writer = DigestWriter(digest::Context::new(&digest::SHA256));
+    serde_json::to_writer(&mut writer, token)
+        .map_err(|_| err(500, "token revision unavailable"))?;
+    let mut revision = [0; 32];
+    revision.copy_from_slice(writer.0.finish().as_ref());
+    Ok(revision)
+}
+
+fn same_policies(left: &BTreeSet<String>, right: &BTreeSet<String>) -> bool {
+    left.iter()
+        .filter(|name| name.as_str() != "default")
+        .eq(right.iter().filter(|name| name.as_str() != "default"))
+}
+
+impl AuthState {
+    pub(crate) fn has_v16_token_provenance(&self) -> bool {
+        self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::TokenApi)
+            )
+        })
+    }
+
+    pub(crate) fn validate_radius_renewal_state(&self) -> Result<(), AuthError> {
+        for token in self.tokens.values() {
+            match &token.auth_provenance {
+                Some(TokenAuthProvenance::Radius {
+                    username,
+                    credential,
+                }) => {
+                    if token.root
+                        || token.parent.is_some()
+                        || !token.auth_origin_known
+                        || token.wrapping.is_some()
+                        || token.period != 0
+                        || username.is_empty()
+                        || username.len() > 253
+                        || username.bytes().any(|byte| byte == 0 || byte < 0x20)
+                        || credential.0.is_empty()
+                        || credential.0.len() > 128
+                        || credential.0.bytes().any(|byte| byte == 0)
+                        || token.policies.contains("root")
+                        || !token.auth_mount.as_ref().is_some_and(|mount| {
+                            self.online_mount_enabled(&token.namespace, mount, "radius")
+                        })
+                    {
+                        return Err(bad("invalid RADIUS renewal provenance"));
+                    }
+                }
+                Some(TokenAuthProvenance::TokenApi) if token.wrapping.is_some() => {
+                    return Err(bad("invalid token API provenance"));
+                }
+                _ => {}
+            }
+        }
+        Ok(())
+    }
+
+    fn legacy_radius_renewal_is_ambiguous(&self, token: &Token) -> bool {
+        // Old children with a real parent were issued by the token API. Old
+        // orphans and direct logins cannot be distinguished by display_name,
+        // which callers were free to choose. Only that ambiguous population
+        // must log in again; ordinary existing permissions remain intact.
+        token.auth_provenance.is_none()
+            && token.parent.is_none()
+            && token
+                .auth_mount
+                .as_ref()
+                .is_some_and(|mount| self.online_mount_enabled(&token.namespace, mount, "radius"))
+    }
+
+    pub(super) fn require_offline_renewal_origin(&self, id: &str) -> Result<(), AuthError> {
+        let token = self.tokens.get(id).ok_or_else(denied)?;
+        if matches!(
+            token.auth_provenance,
+            Some(TokenAuthProvenance::Radius { .. })
+        ) {
+            return Err(err(
+                503,
+                "RADIUS renewal requires the Service online-auth dispatcher",
+            ));
+        }
+        if self.legacy_radius_renewal_is_ambiguous(token) {
+            return Err(bad(
+                "legacy RADIUS token has no renewable provider credential; log in again",
+            ));
+        }
+        Ok(())
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn prepare_radius_renewal(
+        &self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<RadiusRenewalPlan>, AuthError> {
+        if !matches!(method, "POST" | "PUT")
+            || !matches!(
+                path,
+                "auth/token/renew-self" | "auth/token/renew" | "auth/token/renew-accessor"
+            )
+        {
+            return Ok(None);
+        }
+        let actor = self.permission(principal, namespace, path, "update", now)?;
+        let target = match path {
+            "auth/token/renew-self" => {
+                reject_unknown(body, &["increment"])?;
+                actor.digest.clone()
+            }
+            "auth/token/renew" => {
+                reject_unknown(body, &["token", "increment"])?;
+                self.target_token(namespace, body, false)?
+            }
+            _ => {
+                reject_unknown(body, &["accessor", "increment"])?;
+                self.target_token(namespace, body, true)?
+            }
+        };
+        let target = Zeroizing::new(target);
+        let token = self.active_token(&target, now, false)?;
+        let Some(TokenAuthProvenance::Radius {
+            username,
+            credential,
+        }) = &token.auth_provenance
+        else {
+            self.require_offline_renewal_origin(&target)?;
+            return Ok(None);
+        };
+        if !token.renewable {
+            return Err(bad("token is not renewable"));
+        }
+        let mount = token.auth_mount.as_ref().ok_or_else(denied)?;
+        let mount_revision = self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .cloned()
+            .filter(|entry| entry.kind == "radius")
+            .ok_or_else(denied)?;
+        let config = self
+            .radius_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .cloned()
+            .ok_or_else(|| bad("radius backend not configured"))?;
+        Ok(Some(RadiusRenewalPlan {
+            namespace: namespace.to_owned(),
+            mount: mount.clone(),
+            mount_revision,
+            config,
+            target_revision: token_revision(token)?,
+            target,
+            username: username.clone(),
+            credential: credential.clone(),
+            path: path.to_owned(),
+            increment: duration(body, "increment", 0)?,
+            now,
+            started: std::time::Instant::now(),
+        }))
+    }
+
+    pub(crate) fn finish_radius_renewal(
+        &mut self,
+        plan: RadiusRenewalPlan,
+        actor: &Principal,
+        _observation: RadiusRenewalObservation,
+        now: u64,
+    ) -> Result<AuthResponse, AuthError> {
+        self.authorize_request(actor, &plan.namespace, &plan.path, "update", now)?;
+        let token = self.active_token(&plan.target, now, false)?;
+        if token.namespace != plan.namespace
+            || !token.renewable
+            || token_revision(token)? != plan.target_revision
+            || self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+                != Some(&plan.mount_revision)
+            || self
+                .radius_mounts
+                .get(&plan.namespace)
+                .and_then(|mounts| mounts.get(&plan.mount))
+                != Some(&plan.config)
+        {
+            return Err(err(
+                409,
+                "RADIUS renewal authority changed during provider request",
+            ));
+        }
+        if !same_policies(&plan.config.policies, &token.policies) {
+            return Err(err(500, "policies have changed, not renewing"));
+        }
+        let (default_ttl, maximum_ttl) = self.auth_mount_token_limits(
+            AuthScope {
+                namespace: &plan.namespace,
+                mount: &plan.mount,
+            },
+            plan.config.token_ttl,
+            plan.config.token_max_ttl,
+        )?;
+        let ttl = if plan.increment == 0 {
+            default_ttl
+        } else {
+            plan.increment.min(maximum_ttl)
+        };
+        let mut expires_at = checked_expiry(now, ttl)?;
+        // The issue-time cap can only shrink. A later config maximum also
+        // bounds total lifetime from issue, never a fresh lifetime per renewal.
+        expires_at = expires_at.min(checked_expiry(token.created_at, maximum_ttl)?);
+        if let Some(limit) = token.max_expires_at {
+            expires_at = expires_at.min(limit);
+        }
+        if expires_at <= now {
+            return Err(denied());
+        }
+        let token = self
+            .tokens
+            .get_mut(plan.target.as_str())
+            .ok_or_else(denied)?;
+        token.expires_at = Some(expires_at);
+        Ok(AuthResponse {
+            login_identity: None,
+            status: 200,
+            mutated: true,
+            body: json!({"auth": {
+                "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
+                "entity_id": token.entity_id.as_deref().unwrap_or(""),
+                "lease_duration": expires_at - now, "renewable": true, "token_type": "service"
+            }}),
+        })
+    }
+}
+
+#[cfg(test)]
+#[path = "auth_radius_tests.rs"]
+mod tests;

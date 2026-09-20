@@ -285,7 +285,10 @@ fn large_unchanged_owner_bounds_v4_write_set_to_changed_owner()
         0,
         vec![
             ("namespaces", None),
-            ("auth", Some(large_owner(b'z', 2 * 1024 * 1024))),
+            (
+                "auth",
+                Some(Zeroizing::new(large_owner(b'z', 2 * 1024 * 1024))),
+            ),
             ("engines", None),
             ("database", None),
             ("raft_admin", None),

@@ -1330,7 +1330,10 @@ fn approle_periodic_renewal_uses_current_mount_bound_and_children_are_ordinary()
         json!({"policies": ["default"]}),
         101,
     );
-    assert!(state.tokens[&hash(&child)].auth_provenance.is_none());
+    assert!(matches!(
+        state.tokens[&hash(&child)].auth_provenance,
+        Some(TokenAuthProvenance::TokenApi)
+    ));
 
     // The role's period is 50, but tuning the issuing mount to 20 clamps the
     // next renewal without changing the already-issued token's policies.

@@ -106,10 +106,11 @@ impl Drop for Secret {
 
 impl Secret {
     pub fn new(bytes: Vec<u8>) -> Result<Self, ServiceError> {
-        if bytes.is_empty() || bytes.len() > MAX_SECRET_BYTES {
+        let secret = Self(bytes);
+        if secret.0.is_empty() || secret.0.len() > MAX_SECRET_BYTES {
             return Err(ServiceError::InvalidSecret);
         }
-        Ok(Self(bytes))
+        Ok(secret)
     }
 
     #[must_use]

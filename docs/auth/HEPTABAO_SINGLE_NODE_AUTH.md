@@ -310,6 +310,32 @@ AppRole issuer provenance and therefore use ordinary token renewal semantics.
 This persisted field requires service state schema 11; older binaries reject it
 instead of silently dropping renewal authority. Bounded RADIUS PAP mounts add durable route and token policy in schema 12; the process-enrolled `radius://` UDP endpoint and shared secret stay outside `AuthState`, and schema-11 readers reject the state. The profile supports one-shot IPv4 UDP PAP with strict Message-Authenticator and Response Authenticator checks; CHAP, EAP, IPv6, challenge flows and full OpenBao field parity remain outside this slice.
 
+Schema 16 adds direct RADIUS token provenance and a bounded PAP credential inside
+encrypted Auth state. `auth/token/renew-self`, `renew`, and `renew-accessor` stage a
+fresh exchange with the current enrolled provider without holding the Service
+writer. Access-Reject returns 400; unavailable or unauthenticated provider replies
+fail closed with 503. A successful reply is followed by current actor ACL and
+Identity checks, target token/accessor/expiry checks, and mount/configuration and
+token revision comparisons. A concurrent change rejects the stale observation;
+only a successful durable commit extends the token. Current policies, excluding
+implicit `default`, must equal the token's issue-time token policies. Current
+TTL/max settings apply without extending the captured issue-time maximum.
+Response wrapping remains available on these renewal endpoints: the token
+extension and its single-use response wrapper publish in one durable transaction.
+Provider rejection, wrapper capacity failure or a rejected commit cannot publish
+the extension separately from the wrapper. Only `renew-self` and `renew` echo
+the bearer already supplied on the request; accessor renewal cannot recover it.
+
+The credential is never included in token lookup, response metadata, audit
+records or token-API children, and its owned buffers are zeroized on drop. New
+token-API children and orphans carry a separate issuer marker. Legacy tokens
+with a parent remain ordinary children. A legacy parentless RADIUS-associated
+token without provenance might be a direct login or an orphan child, so renewal
+is refused with a request to log in again; its existing expiration and other
+permissions remain unchanged. This is a bounded PAP renewal profile, not full
+RADIUS compatibility: OpenBao host/port/secret configuration, user mappings,
+NAS options, the complete token parameter set and default-TTL parity remain open.
+
 ## Authentication mount registry
 
 `sys/auth` lists the namespace's enabled methods. `sys/auth/<mount>` manages `userpass`, `approle`, `jwt`, `kubernetes`, `oidc`, bounded `ldap`, bounded RADIUS PAP or the bounded `cert` mTLS profile; administrative mutation requires the operation's capability and `sudo`. Mount paths are canonical and may contain multiple identifier segments. Overlapping routes and replacement of an existing method without disable are rejected. The registry determines dispatch: a configured custom userpass mount uses `auth/<mount>/users/...` and `auth/<mount>/login/<name>`, an AppRole mount uses `auth/<mount>/role/...` and `auth/<mount>/login`, and certificate mounts use `auth/<mount>/certs/...` plus `auth/<mount>/login`. ACL checks use the actual custom path, not a rewrite into a privileged default path.

@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 15;
+const CURRENT_STATE_SCHEMA: u32 = 16;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -1854,6 +1854,9 @@ impl Service {
         if let Some(response) = self.plugin_auth_login(&admitted, &request) {
             return response;
         }
+        if let Some(response) = self.online_radius_renewal(&admitted, &mut principal, &request) {
+            return response;
+        }
         if let Some(response) = self.online_login(&admitted, &request) {
             return response;
         }
@@ -1964,9 +1967,9 @@ impl Service {
         } else {
             admitted = transaction;
         }
-        let mut serialized = match serde_json::to_vec(&admitted) {
-            Ok(v) => Zeroizing::new(v),
-            Err(_) => return Response::error(500, "state serialization failed"),
+        let mut serialized = match owner_store::serialize_owner(&admitted) {
+            Ok(v) => v,
+            Err(error) => return state_serialization_error(error),
         };
         let mut serialized_digest = crypto::digest(&serialized);
         match classify_request_effect(method, before_digest, serialized_digest) {
@@ -1974,9 +1977,9 @@ impl Service {
             RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
                 if admitted.schema != CURRENT_STATE_SCHEMA {
                     admitted.schema = CURRENT_STATE_SCHEMA;
-                    serialized = match serde_json::to_vec(&admitted) {
-                        Ok(value) => Zeroizing::new(value),
-                        Err(_) => return Response::error(500, "state serialization failed"),
+                    serialized = match owner_store::serialize_owner(&admitted) {
+                        Ok(value) => value,
+                        Err(error) => return state_serialization_error(error),
                     };
                     serialized_digest = crypto::digest(&serialized);
                 }
@@ -2290,7 +2293,7 @@ impl Service {
         let bytes = manifest
             .assemble_owner(owner, &refs)
             .map_err(|_| Response::error(503, "owner-state chunk set is invalid"))?;
-        Ok(Zeroizing::new(bytes))
+        Ok(bytes)
     }
 
     fn load_state_from_durable(
@@ -2326,10 +2329,7 @@ impl Service {
                     .map_err(|_| Response::error(503, "raft-admin owner state is invalid"))?,
             };
             state.validate_format()?;
-            let bytes = Zeroizing::new(
-                serde_json::to_vec(&state)
-                    .map_err(|_| Response::error(500, "state serialization failed"))?,
-            );
+            let bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
             manifest
                 .verify_logical(&bytes)
                 .map_err(|_| Response::error(503, "owner-state logical digest is invalid"))?;
@@ -2352,7 +2352,7 @@ impl Service {
                 let chunk_refs = chunk_values.iter().map(Secret::expose).collect::<Vec<_>>();
                 let assembled = state_store::assemble_state(manifest, &chunk_refs)
                     .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
-                (Zeroizing::new(assembled), false)
+                (assembled, false)
             } else {
                 if record.expose().len() > MAX_STATE_BYTES {
                     return Err(Response::error(
@@ -2394,10 +2394,7 @@ impl Service {
         if logical_rewrite {
             state.schema = CURRENT_STATE_SCHEMA;
             state.validate_format()?;
-            bytes = Zeroizing::new(
-                serde_json::to_vec(&state)
-                    .map_err(|_| Response::error(500, "state serialization failed"))?,
-            );
+            bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
             needs_rewrite = true;
         }
         Ok((state, bytes, needs_rewrite))
@@ -2452,16 +2449,23 @@ impl Service {
         // forward directly when the request did not mutate them. This keeps
         // the local plan deterministic with the state digest sent to HA.
         let may_reuse = previous_owner.is_some();
+        // Owners contain reusable credentials and other secret state. Keep
+        // partially serialized buffers protected on every error path too.
+        fn serialize_owner(value: &impl Serialize) -> Result<Zeroizing<Vec<u8>>, ServiceError> {
+            owner_store::serialize_owner(value).map_err(|error| match error {
+                owner_store::OwnerStoreError::StateTooLarge => {
+                    ServiceError::RequestCapacityExhausted
+                }
+                _ => ServiceError::CorruptState,
+            })
+        }
         let owners = vec![
             (
                 "namespaces",
                 if may_reuse && options.reuse.namespaces {
                     None
                 } else {
-                    Some(
-                        serde_json::to_vec(&state.namespaces)
-                            .map_err(|_| ServiceError::CorruptState)?,
-                    )
+                    Some(serialize_owner(&state.namespaces)?)
                 },
             ),
             (
@@ -2469,7 +2473,7 @@ impl Service {
                 if may_reuse && options.reuse.auth {
                     None
                 } else {
-                    Some(serde_json::to_vec(&state.auth).map_err(|_| ServiceError::CorruptState)?)
+                    Some(serialize_owner(&state.auth)?)
                 },
             ),
             (
@@ -2477,10 +2481,7 @@ impl Service {
                 if may_reuse && options.reuse.engines {
                     None
                 } else {
-                    Some(
-                        serde_json::to_vec(&state.engines)
-                            .map_err(|_| ServiceError::CorruptState)?,
-                    )
+                    Some(serialize_owner(&state.engines)?)
                 },
             ),
             (
@@ -2488,10 +2489,7 @@ impl Service {
                 if may_reuse && options.reuse.database {
                     None
                 } else {
-                    Some(
-                        serde_json::to_vec(&state.database)
-                            .map_err(|_| ServiceError::CorruptState)?,
-                    )
+                    Some(serialize_owner(&state.database)?)
                 },
             ),
             (
@@ -2499,10 +2497,7 @@ impl Service {
                 if may_reuse && options.reuse.raft_admin {
                     None
                 } else {
-                    Some(
-                        serde_json::to_vec(&state.raft_admin)
-                            .map_err(|_| ServiceError::CorruptState)?,
-                    )
+                    Some(serialize_owner(&state.raft_admin)?)
                 },
             ),
         ];
@@ -2585,9 +2580,9 @@ impl Service {
 
         let mut mutations = Vec::with_capacity(plan.required_mutations());
         for chunk in plan.chunks {
-            owner_store::validate_content_addressed_chunk(&chunk.resource, &chunk.bytes)
+            owner_store::validate_content_addressed_chunk(&chunk.resource, chunk.bytes.expose())
                 .map_err(|_| ServiceError::CorruptState)?;
-            mutations.push((chunk.resource, Some(Secret::new(chunk.bytes)?)));
+            mutations.push((chunk.resource, Some(chunk.bytes)));
         }
         for resource in plan.deletes {
             mutations.push((resource, None));
@@ -2621,10 +2616,7 @@ impl Service {
 
     fn commit_state(&mut self, state: &State) -> Result<(), Response> {
         state.validate_format()?;
-        let bytes = Zeroizing::new(
-            serde_json::to_vec(state)
-                .map_err(|_| Response::error(500, "state serialization failed"))?,
-        );
+        let bytes = owner_store::serialize_owner(state).map_err(state_serialization_error)?;
         let next_digest = crypto::digest(&bytes);
         self.commit_state_bytes(state, &bytes, state.schema, state.replay_epoch, next_digest)
     }
@@ -2986,9 +2978,9 @@ impl Service {
             .postgres_durable
             .as_ref()
             .map(DurableProfile::postgresql);
-        let bytes = match serde_json::to_vec(&state) {
-            Ok(value) => Zeroizing::new(value),
-            Err(_) => return (Response::error(500, "state serialization failed"), false),
+        let bytes = match owner_store::serialize_owner(&state) {
+            Ok(value) => value,
+            Err(error) => return (state_serialization_error(error), false),
         };
         if bytes.len() > MAX_STATE_BYTES {
             return (
@@ -4493,7 +4485,6 @@ impl Service {
                 }
                 manifest
                     .assemble_owner(owner, &chunks)
-                    .map(Zeroizing::new)
                     .map_err(|_| Response::error(400, "snapshot owner-state chunks are invalid"))
             };
             let engines = load_owner("engines")?;
@@ -5731,7 +5722,7 @@ fn write_initialization_recovery(
     secret: &[u8; 32],
     response: &Value,
 ) -> Result<(), io::Error> {
-    let plaintext = Zeroizing::new(serde_json::to_vec(response).map_err(io::Error::other)?);
+    let plaintext = owner_store::serialize_owner(response).map_err(io::Error::other)?;
     let (barrier, context) = initialization_recovery_barrier(secret, seal)?;
     let protected = Zeroizing::new(
         barrier
@@ -6045,10 +6036,8 @@ fn persist_pending_rekey(
 ) -> Result<(), std::io::Error> {
     pending.validate_shape().map_err(std::io::Error::other)?;
     private_directory(data_dir)?;
-    let encoded = Zeroizing::new(
-        serde_json::to_vec(pending)
-            .map_err(|_| std::io::Error::other("cannot encode pending rekey metadata"))?,
-    );
+    let encoded = owner_store::serialize_owner(pending)
+        .map_err(|_| std::io::Error::other("cannot encode pending rekey metadata"))?;
     if encoded.len() as u64 > REKEY_METADATA_LIMIT {
         return Err(std::io::Error::other(
             "pending rekey metadata exceeds supported bound",
@@ -6099,10 +6088,8 @@ fn valid_recovery_reference(value: &str) -> bool {
 fn persist_seal_metadata(data_dir: &Path, seal: &SealMetadata) -> Result<(), std::io::Error> {
     seal.validate().map_err(std::io::Error::other)?;
     private_directory(data_dir)?;
-    let encoded = Zeroizing::new(
-        serde_json::to_vec(seal)
-            .map_err(|_| std::io::Error::other("cannot encode seal metadata"))?,
-    );
+    let encoded = owner_store::serialize_owner(seal)
+        .map_err(|_| std::io::Error::other("cannot encode seal metadata"))?;
     if encoded.len() as u64 > SEAL_METADATA_LIMIT {
         return Err(std::io::Error::other(
             "seal metadata exceeds supported bound",
@@ -6344,6 +6331,15 @@ fn verify_audit_from(
     Ok((sequence, previous))
 }
 
+fn state_serialization_error(error: owner_store::OwnerStoreError) -> Response {
+    match error {
+        owner_store::OwnerStoreError::StateTooLarge => {
+            Response::error(507, "server state exceeds configured capacity")
+        }
+        _ => Response::error(500, "state serialization failed"),
+    }
+}
+
 pub(crate) fn erase_json(value: &mut Value) {
     match value {
         Value::String(value) => value.zeroize(),
@@ -6495,6 +6491,10 @@ mod openapi_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "auth_mount_ttl_tests.rs"]
 mod auth_mount_ttl_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_radius_renewal_tests.rs"]
+mod radius_renewal_tests;
 
 #[cfg(test)]
 #[path = "service_state_store_integration_tests.rs"]

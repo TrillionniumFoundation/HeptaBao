@@ -324,6 +324,19 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" \
             --output "$reports/enumeration.json"
 
+      - name: Compare live RADIUS token renewal with official OpenBao 2.6.2
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-radius-renewal-evidence"
+          mkdir -m 700 "$reports"
+          timeout 180 python qa/openbao-acceptance/radius_renewal_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/radius-renewal.json"
+
       - name: Compare operational Agent and Proxy behavior with official OpenBao
         shell: bash
         env:

@@ -501,17 +501,17 @@ fn radius_access_request(
     {
         return Err("RADIUS packet field exceeds bound");
     }
-    let mut padded = password.to_vec();
-    let padded_len = padded.len().div_ceil(16) * 16;
-    padded.resize(padded_len, 0);
+    let padded_len = password.len().div_ceil(16) * 16;
+    let mut padded = Zeroizing::new([0u8; 128]);
+    padded[..password.len()].copy_from_slice(password);
     let mut encrypted = vec![0u8; padded_len];
     let mut previous = *request_authenticator;
-    let (plain_chunks, _) = padded.as_chunks::<16>();
+    let (plain_chunks, _) = padded[..padded_len].as_chunks::<16>();
     let (cipher_chunks, _) = encrypted.as_chunks_mut::<16>();
     for (plain, cipher) in plain_chunks.iter().zip(cipher_chunks.iter_mut()) {
-        let mask = md5_parts(&[shared_secret, &previous]);
-        for (out, (value, key)) in cipher.iter_mut().zip(plain.iter().zip(mask)) {
-            *out = *value ^ key;
+        let mask = Zeroizing::new(md5_parts(&[shared_secret, &previous]));
+        for (out, (value, key)) in cipher.iter_mut().zip(plain.iter().zip(mask.iter())) {
+            *out = *value ^ *key;
         }
         previous.copy_from_slice(cipher);
     }

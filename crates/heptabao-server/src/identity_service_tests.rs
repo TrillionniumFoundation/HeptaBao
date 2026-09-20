@@ -735,6 +735,20 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     assert_eq!(issued.status, 200);
     let token = text(&issued.body, "/auth/client_token")?;
     let mut legacy = s.state.clone().ok_or("state")?;
+    // Model a token actually issued by the schema-1 API, before the explicit
+    // token-API issuer marker existed; do not relabel new content as legacy.
+    let mut encoded_auth = serde_json::to_value(&legacy.auth)?;
+    for token in encoded_auth["tokens"]
+        .as_object_mut()
+        .ok_or("missing tokens")?
+        .values_mut()
+    {
+        token
+            .as_object_mut()
+            .ok_or("invalid token")?
+            .remove("auth_provenance");
+    }
+    legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
     legacy.schema = 1;
     assert!(legacy.validate_format().is_ok());
     s.commit_state(&legacy).map_err(|_| "fixture persistence")?;

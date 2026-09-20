@@ -5,6 +5,26 @@ use super::*;
 const MAX_WRAPPED_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_LIVE_WRAPPERS: usize = 256;
 
+fn bounded_wrapped_response(response: &Value) -> bool {
+    // Both issuance and durable admission count encoded bytes without a
+    // second plaintext JSON buffer containing bearer tokens or secrets.
+    struct BoundedCount(usize);
+    impl std::io::Write for BoundedCount {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.0 = self
+                .0
+                .checked_add(bytes.len())
+                .filter(|size| *size <= MAX_WRAPPED_RESPONSE_BYTES)
+                .ok_or_else(|| std::io::Error::other("wrapped response exceeds bound"))?;
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    response.is_object() && serde_json::to_writer(&mut BoundedCount(0), response).is_ok()
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct WrappedResponse {
@@ -59,10 +79,6 @@ impl AuthState {
                 continue;
             };
             count += 1;
-            let bytes = Zeroizing::new(
-                serde_json::to_vec(&wrapped.response)
-                    .map_err(|_| bad("invalid wrapped response"))?,
-            );
             if token.root
                 || token.parent.is_some()
                 || token.entity_id.is_some()
@@ -75,8 +91,7 @@ impl AuthState {
                 || token.created_at > self.wrapping_clock
                 || token.created_at.checked_add(wrapped.creation_ttl) != token.expires_at
                 || token.expires_at != token.max_expires_at
-                || bytes.len() > MAX_WRAPPED_RESPONSE_BYTES
-                || !wrapped.response.is_object()
+                || !bounded_wrapped_response(&wrapped.response)
             {
                 return Err(bad("invalid authoritative wrapping state"));
             }
@@ -104,10 +119,7 @@ impl AuthState {
         }
         let now = now.max(self.wrapping_clock);
         let expiry = checked_expiry(now, ttl)?;
-        let bytes = Zeroizing::new(
-            serde_json::to_vec(response).map_err(|_| bad("cannot encode wrapped response"))?,
-        );
-        if !response.is_object() || bytes.len() > MAX_WRAPPED_RESPONSE_BYTES {
+        if !bounded_wrapped_response(response) {
             return Err(err(413, "wrapped response exceeds supported bounds"));
         }
         if self

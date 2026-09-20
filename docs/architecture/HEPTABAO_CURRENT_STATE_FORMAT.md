@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **15**. Its source constant is
+The current Service state schema is **16**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -54,18 +54,19 @@ custody, rotation and parent/sibling key separation remain open.
 | 12 | Adds bounded RADIUS PAP mount state with a schema fence. |
 | 13 | Bounded namespace seal flags and routing fences; independent per-namespace key custody remains open. |
 | 14 | Adds bounded OpenLDAP dynamic-secret intents, owner/expiry fences, retained-DN tombstones, and local snapshot rollback fences. |
-| 15 | Current format, adding KV v2 metadata CAS requirements and independent metadata versions. |
+| 15 | KV v2 metadata CAS requirements and independent metadata versions; RADIUS renewal and explicit token-API provenance must be absent. |
+| 16 | Current format, adding direct RADIUS renewal credentials and explicit token-API provenance. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
 schemas below 6 reject a nonzero database provider fence. Schemas below 7 reject LDAP group-search configuration or group-to-policy
-mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Schema 13 is required when any namespace seal flag is present. Schema 14 is required when any OpenLDAP secrets-engine mount or durable dynamic-secret intent is present. Schema 15 is required when KV v2 has a metadata CAS requirement or a nonzero metadata version. Fields omitted from
+mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Schema 13 is required when any namespace seal flag is present. Schema 14 is required when any OpenLDAP secrets-engine mount or durable dynamic-secret intent is present. Schema 15 is required when KV v2 has a metadata CAS requirement or a nonzero metadata version. Schema 16 is required for direct RADIUS renewal credentials or explicit token-API provenance. Fields omitted from
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 15. An authenticated
+it. Initialization and committed mutations use schema 16. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -79,7 +80,15 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-15-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-16-capable rollback binary with compatible HA and provider formats.
+
+Direct RADIUS tokens now retain bounded PAP credentials inside encrypted Auth
+state for provider-checked renewal. Credentials are zeroized on drop and are not
+copied into token-API children. Old RADIUS-associated tokens with a parent remain
+ordinary token-API children. Old parentless tokens without issuer provenance
+cannot be distinguished from old orphan children: only their renewal is rejected
+with a request to log in again, leaving their existing permissions and expiration
+unchanged. New token-API provenance removes this ambiguity for new orphan tokens.
 
 V4 owner publication derives an authenticated write set from the next manifest:
 changed and reused owners are classified by content digest, and staged or retired
@@ -88,7 +97,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-14 binary must fail closed once KV metadata CAS state has been committed;
+A schema-15 binary must fail closed once RADIUS renewal or token-API provenance has been committed;
+a schema-14 binary must fail closed once KV metadata CAS state has been committed;
 a schema-13 binary must fail closed once OpenLDAP mount or durable dynamic-secret state has been committed; a
 schema-12 binary must fail closed once namespace seal state has been committed; a
 schema-11 binary must fail closed once bounded RADIUS mount state has been committed;

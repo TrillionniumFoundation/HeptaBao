@@ -49,8 +49,8 @@ impl Service {
         // storage-amplification counter; derive them from the exact in-memory
         // State that would be passed to commit_state_bytes().
         let state_bytes = match self.state.as_ref() {
-            Some(state) => match serde_json::to_vec(state) {
-                Ok(bytes) => Zeroizing::new(bytes).len(),
+            Some(state) => match owner_store::serialize_owner(state) {
+                Ok(bytes) => bytes.len(),
                 Err(_) => return Response::error(503, "server state serialization unavailable"),
             },
             None => return Response::error(503, "server is sealed"),

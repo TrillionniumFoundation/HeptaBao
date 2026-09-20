@@ -11,6 +11,7 @@
 use crate::crypto;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use zeroize::Zeroizing;
 
 const STATE_STORAGE_FORMAT_V1: &str = "heptabao-state-chunks-v1";
 const STATE_STORAGE_FORMAT_V2: &str = "heptabao-state-chunks-v2";
@@ -326,20 +327,32 @@ impl StateWritePlan {
 /// for one. Once the storage-format discriminator is present, malformed or
 /// unsupported content fails closed instead of falling back to legacy parsing.
 pub(crate) fn decode_manifest(bytes: &[u8]) -> Result<Option<StateManifest>, StateStoreError> {
-    let value: serde_json::Value = match serde_json::from_slice(bytes) {
-        Ok(value) => value,
-        Err(_) => return Ok(None),
-    };
-    let Some(object) = value.as_object() else {
-        return Ok(None);
-    };
-    if !object.contains_key("storage_format") {
+    if probe_storage_format(bytes)?.is_none() {
         return Ok(None);
     }
     let manifest: StateManifest =
-        serde_json::from_value(value).map_err(|_| StateStoreError::InvalidManifest)?;
+        serde_json::from_slice(bytes).map_err(|_| StateStoreError::InvalidManifest)?;
     manifest.validate()?;
     Ok(Some(manifest))
+}
+
+/// Skip unrelated legacy State fields without allocating a temporary Value
+/// tree containing every credential. A present invalid discriminator must
+/// never select the legacy fallback.
+pub(crate) fn probe_storage_format(bytes: &[u8]) -> Result<Option<String>, StateStoreError> {
+    #[derive(Deserialize)]
+    struct Probe {
+        #[serde(default, deserialize_with = "present_format")]
+        storage_format: Option<String>,
+    }
+    fn present_format<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<Option<String>, D::Error> {
+        String::deserialize(deserializer).map(Some)
+    }
+    serde_json::from_slice::<Probe>(bytes)
+        .map(|probe| probe.storage_format)
+        .map_err(|_| StateStoreError::InvalidManifest)
 }
 
 #[cfg(test)]
@@ -353,14 +366,14 @@ pub(crate) fn next_slot(current_state_record: &[u8]) -> Result<u8, StateStoreErr
 pub(crate) fn assemble_state(
     manifest: &StateManifest,
     chunks: &[&[u8]],
-) -> Result<Vec<u8>, StateStoreError> {
+) -> Result<Zeroizing<Vec<u8>>, StateStoreError> {
     manifest.validate()?;
     if chunks.len() != manifest.chunk_count() {
         return Err(StateStoreError::InvalidChunk);
     }
     let total =
         usize::try_from(manifest.total_bytes).map_err(|_| StateStoreError::InvalidManifest)?;
-    let mut state = Vec::with_capacity(total);
+    let mut state = Zeroizing::new(Vec::with_capacity(total));
     for (index, chunk) in chunks.iter().enumerate() {
         let valid_length = match manifest.storage_format.as_str() {
             STATE_STORAGE_FORMAT_V1 | STATE_STORAGE_FORMAT_V2 => {
@@ -381,10 +394,10 @@ pub(crate) fn assemble_state(
         if !valid_length {
             return Err(StateStoreError::InvalidChunk);
         }
-        state.extend_from_slice(chunk);
-        if state.len() > total {
+        if chunk.len() > total - state.len() {
             return Err(StateStoreError::InvalidChunk);
         }
+        state.extend_from_slice(chunk);
     }
     if state.len() != total || hex(&crypto::digest(&state)) != manifest.sha256 {
         return Err(StateStoreError::DigestMismatch);
@@ -483,7 +496,7 @@ mod tests {
             .iter()
             .map(|chunk| chunk.bytes.as_slice())
             .collect::<Vec<_>>();
-        assert_eq!(assemble_state(&manifest, &chunks)?, state);
+        assert_eq!(assemble_state(&manifest, &chunks)?.as_slice(), state);
         Ok(())
     }
 
@@ -592,6 +605,24 @@ mod tests {
         let legacy = br#"{"schema":5,"cluster_id":"legacy"}"#;
         assert!(decode_manifest(legacy)?.is_none());
         assert_eq!(next_slot(legacy)?, 0);
+        Ok(())
+    }
+
+    #[test]
+    fn format_probe_skips_legacy_secrets_but_rejects_invalid_discriminators()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = br#"{"schema":15,"auth":{"tokens":[{"credential":"synthetic"}]}}"#;
+        assert_eq!(probe_storage_format(legacy)?, None);
+        for invalid in [
+            br#"{"storage_format":null}"#.as_slice(),
+            br#"{"storage_format":[]}"#.as_slice(),
+            br#"{"storage_format":"a","storage_format":"b"}"#.as_slice(),
+        ] {
+            assert_eq!(
+                probe_storage_format(invalid),
+                Err(StateStoreError::InvalidManifest)
+            );
+        }
         Ok(())
     }
 

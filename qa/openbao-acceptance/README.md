@@ -105,3 +105,14 @@ The compatibility corpus records selected checks from these profiles through
 case to its executable script and keeps those checks separate from the generic
 differential runner; a scoped fixture is evidence of bounded runtime behavior,
 never a claim of complete OpenBao auth compatibility or independent admission.
+
+`radius_renewal_live.py` compares RADIUS token renewal against the checksum-pinned
+OpenBao 2.6.2 binary using real TLS servers and local UDP PAP responders. It
+checks provider acceptance/rejection on self/token/accessor renewal, target-token
+echo without accessor bearer leakage, opaque wrapping/one-use unwrap, policy
+changes, revocation, and provider revalidation after SIGKILL/reopen. The receipt
+explicitly records the configuration adaptation: candidate URL and host-enrolled
+secret versus official host/port/secret fields. The official request may omit
+Message-Authenticator; the candidate responder still requires it, and both
+responders sign reply authenticators. Only fixed case IDs, statuses and boolean
+observations enter the report. This does not establish RADIUS API parity.

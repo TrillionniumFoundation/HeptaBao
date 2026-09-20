@@ -4,7 +4,8 @@ use super::*;
 use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
     LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
-    RadiusLoginObservation, RadiusLoginPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan,
+    RadiusLoginObservation, RadiusLoginPlan, RadiusRenewalObservation, RadiusRenewalPlan,
+    RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -27,6 +28,7 @@ pub(super) enum OnlineAuthEffect {
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
     Radius(RadiusLoginPlan),
+    RadiusRenewal(Box<RadiusRenewalEffect>),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
         namespace: String,
@@ -35,6 +37,15 @@ pub(super) enum OnlineAuthEffect {
         now: u64,
         started: std::time::Instant,
     },
+}
+
+pub(super) struct RadiusRenewalEffect {
+    plan: RadiusRenewalPlan,
+    actor: Principal,
+    activation_nonce: String,
+    echo_token: Option<Zeroizing<String>>,
+    path: String,
+    wrap_ttl_seconds: Option<u64>,
 }
 
 pub(super) struct OnlineAuthEffectPlan {
@@ -49,6 +60,7 @@ pub(crate) enum OnlineAuthObservation {
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
     Radius(RadiusLoginObservation),
+    RadiusRenewal(RadiusRenewalObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
 }
@@ -71,6 +83,11 @@ impl OnlineAuthEffectPlan {
             OnlineAuthEffect::Radius(plan) => plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Radius)
+                .map_err(auth_error),
+            OnlineAuthEffect::RadiusRenewal(plan) => plan
+                .plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::RadiusRenewal)
                 .map_err(auth_error),
             OnlineAuthEffect::OidcBegin(plan) => plan
                 .execute(&self.outbound)
@@ -95,6 +112,140 @@ impl OnlineAuthEffectPlan {
 }
 
 impl Service {
+    pub(super) fn online_radius_renewal(
+        &mut self,
+        admitted: &State,
+        principal: &mut Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Option<Response> {
+        let plan = match admitted.auth.prepare_radius_renewal(
+            principal.as_ref(),
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            request.now,
+        ) {
+            Ok(None) => return None,
+            Err(error) => return Some(auth_error(error)),
+            Ok(Some(plan)) => plan,
+        };
+        if self.pending_online_auth_effect.is_some() {
+            return Some(Response::error(
+                503,
+                "online authentication dispatch state is unavailable",
+            ));
+        }
+        let Some(actor) = principal.take() else {
+            return Some(Response::error(403, "missing client token"));
+        };
+        self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+            outbound: self.outbound.clone(),
+            namespace: request.namespace.to_owned(),
+            request_now: request.now,
+            effect: OnlineAuthEffect::RadiusRenewal(Box::new(RadiusRenewalEffect {
+                plan,
+                actor,
+                activation_nonce: self.unseal_nonce.clone(),
+                echo_token: match request.path {
+                    "auth/token/renew-self" => Some(Zeroizing::new(request.token.to_owned())),
+                    "auth/token/renew" => request
+                        .body
+                        .get("token")
+                        .and_then(Value::as_str)
+                        .map(|token| Zeroizing::new(token.to_owned())),
+                    _ => None,
+                },
+                path: request.path.to_owned(),
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+            })),
+        });
+        Some(Response::error(
+            500,
+            "RADIUS renewal provider effect was not dispatched",
+        ))
+    }
+
+    fn finalize_radius_renewal_effect(
+        &mut self,
+        namespace: &str,
+        renewal: RadiusRenewalEffect,
+        observation: RadiusRenewalObservation,
+    ) -> Response {
+        let RadiusRenewalEffect {
+            plan,
+            mut actor,
+            activation_nonce,
+            echo_token,
+            path,
+            wrap_ttl_seconds,
+        } = renewal;
+        if self.recovery_required || self.state.is_none() || self.unseal_nonce != activation_nonce {
+            return Response::error(503, "RADIUS renewal authority is unavailable");
+        }
+        if let Some(ha) = self.ha.as_ref() {
+            match ha.lock() {
+                Ok(ha) if ha.is_leader().unwrap_or(false) => {}
+                _ => return Response::error(503, "RADIUS renewal leader changed"),
+            }
+        }
+        if let Err(error) = self.sync_from_ha() {
+            return error;
+        }
+        let Some(mut state) = self.state.clone() else {
+            return Response::error(503, "server sealed during RADIUS renewal");
+        };
+        if !state.namespace_exists(namespace) || state.namespace_is_sealed(namespace) {
+            return Response::error(503, "RADIUS renewal namespace is unavailable");
+        }
+        let now = plan.observed_now();
+        if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
+            return error;
+        }
+        let mut response = match state
+            .auth
+            .finish_radius_renewal(plan, &actor, observation, now)
+        {
+            Ok(response) => response,
+            Err(error) => return auth_error(error),
+        };
+        if let Err(error) = Self::finish_identity_response(
+            &mut state.auth,
+            &mut state.engines,
+            &mut response,
+            namespace,
+            now,
+        ) {
+            erase_json(&mut response.body);
+            return error;
+        }
+        // Echo only an already-supplied bearer; accessor renewal never
+        // reconstructs one. Wrapping and renewal publish in one transaction.
+        if let Some(token) = echo_token {
+            response.body["auth"]["client_token"] = json!(token.as_str());
+        }
+        if let Some(ttl) = wrap_ttl_seconds {
+            let wrapped = state
+                .auth
+                .wrap_response(namespace, &path, ttl, &response.body, now);
+            erase_json(&mut response.body);
+            response = match wrapped {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
+            };
+        }
+        state.schema = CURRENT_STATE_SCHEMA;
+        if let Err(error) = self.commit_state(&state) {
+            erase_json(&mut response.body);
+            return error;
+        }
+        self.state = Some(state);
+        Response {
+            status: response.status,
+            body: response.body,
+        }
+    }
+
     pub(super) fn online_login(
         &mut self,
         admitted: &State,
@@ -266,6 +417,12 @@ impl Service {
             Ok(observation) => observation,
             Err(response) => return response,
         };
+        if let OnlineAuthEffect::RadiusRenewal(renewal) = plan.effect {
+            let OnlineAuthObservation::RadiusRenewal(observation) = observation else {
+                return Response::error(503, "RADIUS renewal observation type mismatch");
+            };
+            return self.finalize_radius_renewal_effect(&request_namespace, *renewal, observation);
+        }
         let Some(mut state) = self.state.clone() else {
             let response = Response::error(503, "server sealed after online authentication entry");
             return if callback {
