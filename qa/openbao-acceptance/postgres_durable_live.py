@@ -147,14 +147,14 @@ def main() -> int:
             scope="durable-fixture-one",
         )
 
-        def invoke(mode: str, *, override: dict | None = None, label: str | None = None) -> int:
+        def invoke(mode: str, *, override: dict | None = None, label: str | None = None, timeout: int = 30) -> int:
             data = dict(config if override is None else override, mode=mode)
             result = subprocess.run(
                 [str(args.probe)],
                 input=json.dumps(data),
                 text=True,
                 capture_output=True,
-                timeout=30,
+                timeout=timeout,
             )
             if result.stdout.strip():
                 output = json.loads(result.stdout)
@@ -184,6 +184,65 @@ def main() -> int:
             "SELECT count(*) FROM heptabao_durable_v1.manifest_v1 WHERE scope='durable-orphan'"
         )
         check("orphan_scope_manifest_not_created", absent.returncode == 0 and absent.stdout.strip() == "0")
+
+        check("idle_session_operation_deadline_renewal", invoke("idle-session", override=dict(config, scope="durable-idle")) == 0)
+        check("maximum_artifact_boundary", invoke("maximum-artifact", override=dict(config, scope="durable-maximum"), timeout=180) == 0)
+
+        check("append_chunk_boundary_cases", invoke("append-boundaries", override=dict(config, scope="durable-boundary")) == 0)
+
+        large_config = dict(config, scope="durable-large")
+        check("large_artifact_seed_and_reopen", invoke("large-seed", override=large_config) == 0)
+        preserved_prefix_sql = (
+            "SELECT artifact,chunk_no,revision,md5(bytes) FROM heptabao_durable_v1.chunks_v1 "
+            "WHERE scope='durable-large' AND (artifact<>'journal' OR chunk_no<3) "
+            "ORDER BY artifact,chunk_no"
+        )
+        prefix_before = pg.sql(preserved_prefix_sql)
+        check("large_append_prefix_recorded", prefix_before.returncode == 0)
+        # Reject any rewrite of a full journal prefix or the other artifacts;
+        # a small append must only touch the partial tail and new chunks.
+        guard = pg.sql(
+            "CREATE FUNCTION hb_durable_test_append_guard() RETURNS trigger LANGUAGE plpgsql AS $$ "
+            "BEGIN IF OLD.scope='durable-large' AND (OLD.artifact<>'journal' OR OLD.chunk_no<3) "
+            "THEN RAISE EXCEPTION 'unexpected immutable chunk rewrite'; END IF; "
+            "IF TG_OP='DELETE' THEN RETURN OLD; END IF; RETURN NEW; END $$; "
+            "CREATE TRIGGER hb_durable_test_append_guard BEFORE UPDATE OR DELETE ON "
+            "heptabao_durable_v1.chunks_v1 FOR EACH ROW EXECUTE FUNCTION hb_durable_test_append_guard();"
+        )
+        check("large_append_prefix_rewrite_guard_installed", guard.returncode == 0)
+        check("large_journal_incremental_append", invoke("large-append", override=large_config) == 0)
+        prefix_after = pg.sql(preserved_prefix_sql)
+        check("large_append_existing_prefix_bytes_and_revisions_unchanged",
+              prefix_after.returncode == 0 and prefix_after.stdout == prefix_before.stdout)
+        guard = pg.sql(
+            "DROP TRIGGER hb_durable_test_append_guard ON heptabao_durable_v1.chunks_v1; "
+            "DROP FUNCTION hb_durable_test_append_guard();"
+        )
+        check("large_append_prefix_rewrite_guard_removed", guard.returncode == 0)
+        check("large_checkpoint_and_truncate", invoke("large-checkpoint", override=large_config) == 0)
+
+        # Each corruption receives its own fresh, isolated scope. Rejection
+        # must not change even one manifest or chunk, including unknown data.
+        for case, mutation in [
+            ("gap", "UPDATE heptabao_durable_v1.chunks_v1 SET chunk_no=80 WHERE scope='{scope}' AND artifact='snapshot' AND chunk_no=1"),
+            ("future_revision", "UPDATE heptabao_durable_v1.chunks_v1 SET revision=99 WHERE scope='{scope}' AND artifact='ledger' AND chunk_no=0"),
+            ("short_interior", "UPDATE heptabao_durable_v1.chunks_v1 SET bytes=substring(bytes FROM 1 FOR 1) WHERE scope='{scope}' AND artifact='snapshot' AND chunk_no=0"),
+        ]:
+            scope = "durable-corrupt-" + case
+            corrupt_config = dict(config, scope=scope)
+            check(case + "/seed", invoke("large-seed", override=corrupt_config, label=case) == 0)
+            changed = pg.sql(mutation.format(scope=scope))
+            check(case + "/corruption_injected", changed.returncode == 0)
+            state_sql = (
+                "SELECT revision,snapshot_len,ledger_len,journal_len FROM heptabao_durable_v1.manifest_v1 "
+                "WHERE scope='" + scope + "'; "
+                "SELECT artifact,chunk_no,revision,md5(bytes) FROM heptabao_durable_v1.chunks_v1 "
+                "WHERE scope='" + scope + "' ORDER BY artifact,chunk_no"
+            )
+            before = pg.sql(state_sql)
+            check(case + "/rejected", invoke("reject-large-layout", override=corrupt_config, label=case) == 0)
+            after = pg.sql(state_sql)
+            check(case + "/bytes_and_manifest_preserved", before.returncode == 0 and after.returncode == 0 and before.stdout == after.stdout)
 
         # Make COMMIT observable without adding a production failpoint. A
         # deferred constraint trigger waits on a test-only advisory lock, so

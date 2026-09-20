@@ -8,6 +8,7 @@ use std::{
     collections::BTreeMap,
     io::{Read, Write},
     num::NonZeroU32,
+    time::Duration,
 };
 use zeroize::Zeroizing;
 const MAX_FRAME: usize = 4 * 1024 * 1024;
@@ -18,6 +19,19 @@ const MAX_RESULT_ROWS: usize = 4096;
 const MAX_RESULT_COLUMNS: usize = 256;
 const MAX_RESULT_BYTES: usize = 4 * 1024 * 1024;
 const MAX_RESULT_FIELD: usize = 2 * 1024 * 1024;
+// Largest durable checkpoint: three 64 MiB artifacts, read and replacement,
+// hex encoded. A single transaction has one absolute budget, never per-page.
+const MAX_TRANSACTION_TRANSFER_BYTES: usize = 768 * 1024 * 1024;
+const TRANSACTION_BYTES_PER_SECOND: usize = 8 * 1024 * 1024;
+
+fn transaction_budget(transfer_bytes: usize) -> Result<Duration, &'static str> {
+    if transfer_bytes > MAX_TRANSACTION_TRANSFER_BYTES {
+        return Err("PostgreSQL transaction transfer budget exceeds bound");
+    }
+    Ok(Duration::from_secs(
+        3 + transfer_bytes.div_ceil(TRANSACTION_BYTES_PER_SECOND) as u64,
+    ))
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum ReadyState {
@@ -351,10 +365,26 @@ impl PgSession {
     /// Start a repeatable-read transaction. A failed transaction can only be
     /// made usable again by rollback.
     pub(crate) fn begin(&mut self, read_only: bool) -> Result<(), &'static str> {
+        self.begin_with_transfer_budget(read_only, 0)
+    }
+
+    /// Only an idle, non-poisoned session can start a new operation budget.
+    /// Idle time is not transaction time; all frames through COMMIT share this
+    /// one absolute deadline, including rollback on a failed statement.
+    pub(crate) fn begin_with_transfer_budget(
+        &mut self,
+        read_only: bool,
+        transfer_bytes: usize,
+    ) -> Result<(), &'static str> {
         self.check_usable()?;
         if self.ready != ReadyState::Idle {
             return Err("PostgreSQL transaction is already active");
         }
+        let budget = transaction_budget(transfer_bytes)?;
+        self.stream
+            .sock
+            .begin_operation(budget)
+            .map_err(|_| "PostgreSQL operation deadline unavailable")?;
         self.send_extended(begin_sql(read_only), &[])?;
         self.consume_result(
             false,
@@ -768,6 +798,22 @@ fn attributes(input: &str) -> Result<BTreeMap<&str, &str>, &'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn transaction_deadline_budget_is_bounded_by_transfer_size() -> Result<(), &'static str> {
+        assert_eq!(transaction_budget(0)?, Duration::from_secs(3));
+        assert_eq!(transaction_budget(1)?, Duration::from_secs(4));
+        assert_eq!(
+            transaction_budget(128 * 1024 * 1024)?,
+            Duration::from_secs(19)
+        );
+        assert_eq!(
+            transaction_budget(MAX_TRANSACTION_TRANSFER_BYTES)?,
+            Duration::from_secs(99)
+        );
+        assert!(transaction_budget(MAX_TRANSACTION_TRANSFER_BYTES + 1).is_err());
+        Ok(())
+    }
+
     #[test]
     fn scram_rejects_nonce_rebinding_duplicate_fields_and_excessive_work()
     -> Result<(), &'static str> {

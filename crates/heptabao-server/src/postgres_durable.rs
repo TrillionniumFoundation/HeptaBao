@@ -33,7 +33,13 @@ const LOCK_HELD: &str = "SELECT count(*)::text FROM pg_locks WHERE pid = pg_back
 const MANIFEST_GET: &str = "SELECT revision::text, snapshot_len::text, ledger_len::text, journal_len::text FROM heptabao_durable_v1.manifest_v1 WHERE format_version = 1 AND scope = $1";
 const SCOPE_CHUNK_COUNT: &str =
     "SELECT count(*)::text FROM heptabao_durable_v1.chunks_v1 WHERE scope = $1";
-const CHUNK_LIST: &str = "SELECT chunk_no::text, encode(bytes, 'hex') FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2 ORDER BY chunk_no";
+// Two hex-encoded chunks occupy at most 3 MiB, below the wire client's
+// unchanged 4 MiB aggregate result bound (not merely its per-field bound).
+// Qualify the numeric source column: ORDER BY the bare output name would
+// otherwise sort the selected ::text alias as 0, 1, 10, ... instead of 0, 1, 2.
+const CHUNK_PAGE: &str = "SELECT chunk_no::text, encode(bytes, 'hex') FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2 AND chunk_no >= $3::integer ORDER BY heptabao_durable_v1.chunks_v1.chunk_no LIMIT 2";
+const CHUNK_LAYOUT: &str = "SELECT chunk_no::text, octet_length(bytes)::text, revision::text FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2 ORDER BY heptabao_durable_v1.chunks_v1.chunk_no LIMIT 87";
+const JOURNAL_TAIL_UPDATE: &str = "UPDATE heptabao_durable_v1.chunks_v1 SET bytes = decode($4, 'hex'), revision = $3::bigint WHERE format_version = 1 AND scope = $1 AND artifact = 'journal' AND chunk_no = $2::integer AND bytes = decode($5, 'hex') RETURNING chunk_no::text";
 const CHUNK_DELETE: &str = "DELETE FROM heptabao_durable_v1.chunks_v1 WHERE format_version = 1 AND scope = $1 AND artifact = $2";
 const CHUNK_INSERT: &str = "INSERT INTO heptabao_durable_v1.chunks_v1 (format_version, scope, artifact, chunk_no, revision, bytes) VALUES (1, $1, $2, $3, $4, decode($5, 'hex'))";
 const MANIFEST_INSERT: &str = "INSERT INTO heptabao_durable_v1.manifest_v1 (format_version, scope, revision, snapshot_len, ledger_len, journal_len) VALUES (1, $1, $2, $3, $4, $5)";
@@ -131,10 +137,14 @@ impl PostgresDurableBackend {
         accept_identical: bool,
     ) -> Result<(), BackendError> {
         initial.validate_backend()?;
-        let mut session = self.transaction(false)?;
+        let mut session = self.transaction_with_budget(false, bundle_transfer_bytes(initial)?)?;
         match Self::manifest(&mut session, &self.scope) {
-            Ok(Some(_)) => {
-                if !accept_identical {
+            Ok(Some(manifest)) => {
+                if !accept_identical
+                    || manifest.snapshot_len != initial.snapshot.len()
+                    || manifest.ledger_len != initial.ledger.len()
+                    || manifest.journal_len != initial.journal.len()
+                {
                     self.rollback_and_retain(session);
                     return Err(BackendError::RootNotEmpty);
                 }
@@ -240,8 +250,19 @@ impl PostgresDurableBackend {
     }
 
     fn transaction(&mut self, read_only: bool) -> Result<PgSession, BackendError> {
+        self.transaction_with_budget(read_only, 0)
+    }
+
+    fn transaction_with_budget(
+        &mut self,
+        read_only: bool,
+        transfer_bytes: usize,
+    ) -> Result<PgSession, BackendError> {
         let mut session = self.take_session()?;
-        if session.begin(read_only).is_err() {
+        if session
+            .begin_with_transfer_budget(read_only, transfer_bytes)
+            .is_err()
+        {
             return Err(self.fail(session, BackendError::Unavailable));
         }
         let held = session
@@ -319,30 +340,68 @@ impl PostgresDurableBackend {
         }))
     }
 
+    fn artifact_layout(
+        session: &mut PgSession,
+        scope: &str,
+        artifact: &str,
+        expected_len: usize,
+        manifest_revision: u64,
+    ) -> Result<(), BackendError> {
+        let rows = session
+            .query(CHUNK_LAYOUT, &[scope, artifact])
+            .map_err(|_| BackendError::Unavailable)?;
+        // Every writer in this schema emits full chunks followed by at most
+        // one partial tail. The extra bounded row detects orphan suffixes.
+        if rows.len() != expected_len.div_ceil(MAX_CHUNK_BYTES) {
+            return Err(BackendError::Corrupt);
+        }
+        for (index, row) in rows.iter().enumerate() {
+            let expected_chunk_len = (expected_len - index * MAX_CHUNK_BYTES).min(MAX_CHUNK_BYTES);
+            if row.len() != 3
+                || row[0].as_deref().and_then(|s| s.parse::<usize>().ok()) != Some(index)
+                || row[1].as_deref().and_then(|s| s.parse::<usize>().ok())
+                    != Some(expected_chunk_len)
+                || !row[2]
+                    .as_deref()
+                    .and_then(|s| s.parse::<u64>().ok())
+                    .is_some_and(|revision| revision > 0 && revision <= manifest_revision)
+            {
+                return Err(BackendError::Corrupt);
+            }
+        }
+        Ok(())
+    }
+
     fn artifact(
         session: &mut PgSession,
         scope: &str,
         artifact: &str,
         expected_len: usize,
+        manifest_revision: u64,
     ) -> Result<Vec<u8>, BackendError> {
-        let rows = session
-            .query(CHUNK_LIST, &[scope, artifact])
-            .map_err(|_| BackendError::Unavailable)?;
+        Self::artifact_layout(session, scope, artifact, expected_len, manifest_revision)?;
         let mut output = Vec::with_capacity(expected_len);
-        for (index, row) in rows.iter().enumerate() {
-            if row.len() != 2
-                || row[0].as_deref().and_then(|s| s.parse::<usize>().ok()) != Some(index)
-            {
+        let chunk_count = expected_len.div_ceil(MAX_CHUNK_BYTES);
+        for first in (0..chunk_count).step_by(2) {
+            let start = first.to_string();
+            let rows = session
+                .query(CHUNK_PAGE, &[scope, artifact, &start])
+                .map_err(|_| BackendError::Unavailable)?;
+            if rows.len() != (chunk_count - first).min(2) {
                 return Err(BackendError::Corrupt);
             }
-            let hex = row[1].as_deref().ok_or(BackendError::Corrupt)?;
-            let bytes = decode_hex(hex)?;
-            if bytes.is_empty() || bytes.len() > MAX_CHUNK_BYTES {
-                return Err(BackendError::Corrupt);
-            }
-            output.extend_from_slice(&bytes);
-            if output.len() > MAX_BACKEND_ARTIFACT_BYTES {
-                return Err(BackendError::Capacity);
+            for (offset, row) in rows.iter().enumerate() {
+                let index = first + offset;
+                if row.len() != 2
+                    || row[0].as_deref().and_then(|s| s.parse::<usize>().ok()) != Some(index)
+                {
+                    return Err(BackendError::Corrupt);
+                }
+                let bytes = decode_hex(row[1].as_deref().ok_or(BackendError::Corrupt)?)?;
+                if bytes.len() != (expected_len - index * MAX_CHUNK_BYTES).min(MAX_CHUNK_BYTES) {
+                    return Err(BackendError::Corrupt);
+                }
+                output.extend_from_slice(&bytes);
             }
         }
         if output.len() != expected_len {
@@ -354,9 +413,27 @@ impl PostgresDurableBackend {
     fn bundle_in(session: &mut PgSession, scope: &str) -> Result<BackendBundle, BackendError> {
         let manifest = Self::manifest(session, scope)?.ok_or(BackendError::MissingArtifact)?;
         BackendBundle::new(
-            Self::artifact(session, scope, "snapshot", manifest.snapshot_len)?,
-            Self::artifact(session, scope, "ledger", manifest.ledger_len)?,
-            Self::artifact(session, scope, "journal", manifest.journal_len)?,
+            Self::artifact(
+                session,
+                scope,
+                "snapshot",
+                manifest.snapshot_len,
+                manifest.revision,
+            )?,
+            Self::artifact(
+                session,
+                scope,
+                "ledger",
+                manifest.ledger_len,
+                manifest.revision,
+            )?,
+            Self::artifact(
+                session,
+                scope,
+                "journal",
+                manifest.journal_len,
+                manifest.revision,
+            )?,
         )
     }
 
@@ -384,6 +461,103 @@ impl PostgresDurableBackend {
         Ok(())
     }
 
+    fn append_in(
+        session: &mut PgSession,
+        scope: &str,
+        expected_len: usize,
+        frame: &[u8],
+    ) -> Result<usize, BackendError> {
+        let manifest = Self::manifest(session, scope)?.ok_or(BackendError::MissingArtifact)?;
+        if manifest.journal_len != expected_len {
+            return Err(BackendError::StaleWriter);
+        }
+        // Inspect bounded metadata, never reload snapshot, ledger or journal
+        // payloads on append. Full ciphertext authentication remains owned by
+        // DurableService on recovery, as for the filesystem backend.
+        for (artifact, len) in [
+            ("snapshot", manifest.snapshot_len),
+            ("ledger", manifest.ledger_len),
+            ("journal", manifest.journal_len),
+        ] {
+            Self::artifact_layout(session, scope, artifact, len, manifest.revision)?;
+        }
+        if frame.is_empty() {
+            return Ok(expected_len);
+        }
+        let revision = manifest
+            .revision
+            .checked_add(1)
+            .ok_or(BackendError::Capacity)?;
+        let revision_s = revision.to_string();
+        let tail_len = expected_len % MAX_CHUNK_BYTES;
+        let mut consumed = 0;
+        let next_chunk = expected_len.div_ceil(MAX_CHUNK_BYTES);
+        if tail_len != 0 {
+            let index = (next_chunk - 1).to_string();
+            let rows = session
+                .query(CHUNK_PAGE, &[scope, "journal", &index])
+                .map_err(|_| BackendError::Unavailable)?;
+            if rows.len() != 1
+                || rows[0].len() != 2
+                || rows[0][0].as_deref() != Some(index.as_str())
+            {
+                return Err(BackendError::Corrupt);
+            }
+            let old_hex = rows[0][1].as_deref().ok_or(BackendError::Corrupt)?;
+            let mut tail = decode_hex(old_hex)?;
+            if tail.len() != tail_len {
+                return Err(BackendError::Corrupt);
+            }
+            consumed = frame.len().min(MAX_CHUNK_BYTES - tail_len);
+            tail.extend_from_slice(&frame[..consumed]);
+            let tail_hex = encode_hex(&tail);
+            let changed = session
+                .query(
+                    JOURNAL_TAIL_UPDATE,
+                    &[scope, &index, &revision_s, &tail_hex, old_hex],
+                )
+                .map_err(|_| BackendError::Unavailable)?;
+            if changed.len() != 1
+                || changed[0].len() != 1
+                || changed[0][0].as_deref() != Some(index.as_str())
+            {
+                return Err(BackendError::StaleWriter);
+            }
+        }
+        for (chunk_no, chunk) in (next_chunk..).zip(frame[consumed..].chunks(MAX_CHUNK_BYTES)) {
+            let index = chunk_no.to_string();
+            let hex = encode_hex(chunk);
+            session
+                .execute(CHUNK_INSERT, &[scope, "journal", &index, &revision_s, &hex])
+                .map_err(|_| BackendError::Unavailable)?;
+        }
+        let next_len = expected_len + frame.len();
+        let snapshot_len = manifest.snapshot_len.to_string();
+        let ledger_len = manifest.ledger_len.to_string();
+        let journal_len = next_len.to_string();
+        let old_revision = manifest.revision.to_string();
+        let changed = session
+            .query(
+                MANIFEST_UPDATE,
+                &[
+                    scope,
+                    &revision_s,
+                    &snapshot_len,
+                    &ledger_len,
+                    &journal_len,
+                    &old_revision,
+                ],
+            )
+            .map_err(|_| BackendError::Unavailable)?;
+        if changed.len() != 1
+            || changed[0].len() != 1
+            || changed[0][0].as_deref() != Some(revision_s.as_str())
+        {
+            return Err(BackendError::StaleWriter);
+        }
+        Ok(next_len)
+    }
+
     fn publish(
         &mut self,
         expected: &BackendBundle,
@@ -392,7 +566,8 @@ impl PostgresDurableBackend {
         expected_journal_len: Option<usize>,
     ) -> Result<(), BackendError> {
         replacement.validate_backend()?;
-        let mut session = self.transaction(false)?;
+        let transfer_bytes = bundle_transfer_bytes(expected)? + bundle_transfer_bytes(replacement)?;
+        let mut session = self.transaction_with_budget(false, transfer_bytes)?;
         let current = match Self::bundle_in(&mut session, &self.scope) {
             Ok(v) => v,
             Err(e) => {
@@ -493,17 +668,33 @@ impl DurableBackend for PostgresDurableBackend {
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {
-        let mut session = self.transaction(true)?;
-        let result = Self::bundle_in(&mut session, &self.scope);
+        // A short planning transaction reads only bounded lengths. The session
+        // writer fence spans planning and the actual read; all payload pages
+        // belong to the second transaction's single repeatable-read snapshot.
+        let mut planning = self.transaction(true)?;
+        let plan = match Self::manifest(&mut planning, &self.scope) {
+            Ok(Some(manifest)) => manifest,
+            Ok(None) => {
+                self.rollback_and_retain(planning);
+                return Err(BackendError::MissingArtifact);
+            }
+            Err(error) => {
+                self.rollback_and_retain(planning);
+                return Err(error);
+            }
+        };
+        self.finish(planning)?;
+        let transfer_bytes = 2 * (plan.snapshot_len + plan.ledger_len + plan.journal_len);
+        let mut session = self.transaction_with_budget(true, transfer_bytes)?;
+        let result = match Self::manifest(&mut session, &self.scope) {
+            Ok(Some(current)) if current == plan => Self::bundle_in(&mut session, &self.scope),
+            Ok(_) => Err(BackendError::StaleWriter),
+            Err(error) => Err(error),
+        };
         match result {
             Ok(bundle) => {
-                if session.commit().is_err() {
-                    self.put_poisoned(session);
-                    Err(BackendError::OutcomeUnknown)
-                } else {
-                    self.session = Some(session);
-                    Ok(bundle)
-                }
+                self.finish(session)?;
+                Ok(bundle)
             }
             Err(error) => {
                 self.rollback_and_retain(session);
@@ -522,18 +713,19 @@ impl DurableBackend for PostgresDurableBackend {
         {
             return Err(BackendError::Capacity);
         }
-        let current = self.load()?;
-        if current.journal.len() != expected_len {
-            return Err(BackendError::StaleWriter);
+        // Hex transfer: the new frame plus read/old-CAS/new tail payloads.
+        let transfer_bytes = 2 * frame.len() + 6 * MAX_CHUNK_BYTES;
+        let mut session = self.transaction_with_budget(false, transfer_bytes)?;
+        match Self::append_in(&mut session, &self.scope, expected_len, frame) {
+            Ok(length) => {
+                self.finish(session)?;
+                Ok(length)
+            }
+            Err(error) => {
+                self.rollback_and_retain(session);
+                Err(error)
+            }
         }
-        let mut journal = current.journal.clone();
-        journal.extend_from_slice(frame);
-        let replacement =
-            BackendBundle::new(current.snapshot.clone(), current.ledger.clone(), journal)
-                .map_err(|_| BackendError::Capacity)?;
-        let length = replacement.journal.len();
-        self.publish(&current, &replacement, true, Some(expected_len))?;
-        Ok(length)
     }
 
     fn truncate_journal(
@@ -713,8 +905,13 @@ fn map_storage(error: StorageError) -> BackendError {
         _ => BackendError::Unavailable,
     }
 }
+fn bundle_transfer_bytes(bundle: &BackendBundle) -> Result<usize, BackendError> {
+    bundle.validate_backend()?;
+    Ok(2 * (bundle.snapshot.len() + bundle.ledger.len() + bundle.journal.len()))
+}
+
 fn decode_hex(value: &str) -> Result<Vec<u8>, BackendError> {
-    if !value.len().is_multiple_of(2) {
+    if !value.is_ascii() || !value.len().is_multiple_of(2) {
         return Err(BackendError::Corrupt);
     }
     (0..value.len())
@@ -730,4 +927,17 @@ fn encode_hex(bytes: &[u8]) -> String {
         out.push(H[(byte & 15) as usize] as char);
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{BackendError, decode_hex};
+
+    #[test]
+    fn malformed_utf8_hex_is_rejected_without_slicing_panics() {
+        for value in ["你a", "é", "0", "gg"] {
+            assert_eq!(decode_hex(value), Err(BackendError::Corrupt));
+        }
+        assert_eq!(decode_hex("cafe"), Ok(vec![0xca, 0xfe]));
+    }
 }

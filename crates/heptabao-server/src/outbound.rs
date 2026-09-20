@@ -640,6 +640,16 @@ pub(crate) struct DeadlineSocket {
     deadline: Instant,
 }
 impl DeadlineSocket {
+    /// Start one bounded operation on an already authenticated persistent
+    /// connection. The protocol owner must first verify an idle, usable
+    /// boundary; reads/writes within that operation never extend this deadline.
+    pub(crate) fn begin_operation(&mut self, budget: Duration) -> io::Result<()> {
+        self.deadline = Instant::now()
+            .checked_add(budget)
+            .ok_or_else(|| io::Error::other("operation deadline exceeds supported bound"))?;
+        Ok(())
+    }
+
     fn remaining(&self) -> io::Result<Duration> {
         self.deadline
             .checked_duration_since(Instant::now())

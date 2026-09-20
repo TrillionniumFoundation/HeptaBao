@@ -11,9 +11,14 @@ The schema has a `manifest_v1` row per scope and `chunks_v1` rows keyed by
 into 768 KiB chunks so a hex encoded parameter remains under the PostgreSQL
 wire client's parameter limit. A checkpoint deletes and inserts chunks and
 advances the manifest revision in one repeatable-read transaction. The
-manifest is updated last; readers load all chunks and lengths from one
-transaction and reject gaps, duplicate chunk numbers, length mismatches, or
-oversized data.
+manifest is updated last. Readers first validate the bounded chunk layout,
+then load at most two chunks per query within the same repeatable-read
+transaction. Two hex-encoded chunks occupy at most 3 MiB, below the wire
+client's unchanged 4 MiB aggregate result limit. This permits artifacts above
+2 MiB without raising parser memory bounds. Readers reject gaps, extra chunks,
+non-full interior chunks, incorrect tail lengths, and chunk revisions newer
+than the manifest. Full sealed-artifact authentication remains the durable
+service's responsibility.
 
 Opening a backend takes a scope-specific PostgreSQL session advisory fence via
 `pg_try_advisory_lock`. A second writer receives `WriterLocked` immediately.
@@ -24,6 +29,20 @@ commit acknowledgement loss poisons the backend and returns
 be opened and the durable service must run its normal authenticated replay
 recovery before mutation resumes.
 
+A persistent PostgreSQL session starts a fresh absolute operation deadline only
+at an idle, usable `BEGIN` boundary; no query, page, frame, commit or rollback
+renews it. The budget is 3 seconds plus one second per started 8 MiB of expected
+hex-encoded transfer. Validated sizes cap it at 768 MiB (the largest full
+read-and-replace checkpoint), or 99 seconds. Small metadata-only transactions
+retain 3 seconds. An append budgets only its frame and at most one partial tail;
+it does not gain time proportional to the untouched journal. A full load first
+reads bounded manifest lengths in a short planning transaction, then verifies
+that manifest is unchanged and reads every artifact in a second, appropriately
+budgeted repeatable-read transaction. The same session writer fence spans both.
+A poisoned session cannot start a new budget or recover itself after an unknown
+commit. This fixes idle-session expiry without allowing slow peers to extend a
+transaction indefinitely. Server statement and lock timeouts remain unchanged.
+
 `initialize` is the only operation that creates the fixed schema. It runs DDL
 and strict relation, column, collation, nullability, primary-key, constraint,
 RLS, and persistence checks in one transaction. `open` performs the same
@@ -31,10 +50,17 @@ checks without creating or migrating objects. This keeps schema ownership
 explicit and makes malformed, unlogged, partitioned, or altered tables fail
 closed.
 
-The backend currently rewrites the journal chunks for an append inside its
-single transaction. This preserves the crash and stale-writer contract but is
-an O(n) physical path; an optimization can update only the final chunk and
-append new chunks after profiling. The optional `postgres_durable` object in
+Journal append reads bounded layout metadata for all three artifacts, then
+reads and updates only a partial journal tail and inserts any new chunks. Full
+prefix chunks, snapshot and ledger payloads are not read or rewritten. The
+manifest length and revision advance by compare-and-swap in that same fenced
+transaction. Payload transfer and mutation are O(chunk size + frame size),
+while layout inspection is O(number of chunks); memory for the append excludes
+the preexisting full journal. Checkpoint and truncation still compare and
+replace complete artifacts, using bounded pages for their reads. Unknown
+commit outcomes still poison the session and require reopening and replay.
+
+The optional `postgres_durable` object in
 the server JSON configuration selects this backend for initialization and
 reopen through `Service::install_postgres_durable_storage`. Its fields are
 `endpoint`, `connection_url`, `username`, `password`, and `scope`, matching
