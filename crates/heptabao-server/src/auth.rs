@@ -55,6 +55,9 @@ mod jwt_login;
 mod jwt_renewal;
 #[path = "auth_ldap_renewal.rs"]
 mod ldap_renewal;
+#[path = "auth_native_token.rs"]
+mod native_token;
+use native_token::{NativeOnlineToken, NativeTokenLimits};
 #[path = "auth_provider_renewal.rs"]
 mod provider_renewal;
 #[path = "auth_radius.rs"]
@@ -985,6 +988,9 @@ enum TokenAuthProvenance {
         credential: ProviderCredential,
     },
     Jwt {
+        role_name: String,
+    },
+    Kubernetes {
         role_name: String,
     },
     TokenApi,
@@ -4421,6 +4427,9 @@ impl AuthState {
                 if let Some(response) = self.renew_approle_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
+                if let Some(response) = self.renew_kubernetes_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
                     .map(|(mount, token_ttl, token_max_ttl)| {
@@ -4434,22 +4443,6 @@ impl AuthState {
                         )
                     })
                     .transpose()?;
-                let mut ancestor_limit: Option<u64> = None;
-                let mut parent_id = self
-                    .tokens
-                    .get(&id)
-                    .and_then(|token| token.parent.as_deref());
-                while let Some(parent) = parent_id {
-                    let ancestor = self.tokens.get(parent).ok_or_else(denied)?;
-                    if let Some(expiry) = ancestor.expires_at {
-                        ancestor_limit = Some(
-                            ancestor_limit
-                                .map(|limit| limit.min(expiry))
-                                .unwrap_or(expiry),
-                        );
-                    }
-                    parent_id = ancestor.parent.as_deref();
-                }
                 let increment = duration(
                     body,
                     "increment",
@@ -4480,9 +4473,6 @@ impl AuthState {
                     .max_expires_at
                     .map(|max| proposed.min(max))
                     .unwrap_or(proposed);
-                let expires_at = ancestor_limit
-                    .map(|limit| expires_at.min(limit))
-                    .unwrap_or(expires_at);
                 let cert_max_expiry = cert_role_limits
                     .map(|(_, token_max_ttl)| checked_expiry(issued_at, token_max_ttl))
                     .transpose()?;
@@ -4667,13 +4657,6 @@ impl AuthState {
         };
         if let (Some(expiry), Some(max)) = (expires_at, max_expires_at) {
             expires_at = Some(expiry.min(max));
-        }
-        if !no_parent && let Some(parent_expiry) = parent.expires_at {
-            expires_at = Some(
-                expires_at
-                    .map(|e| e.min(parent_expiry))
-                    .unwrap_or(parent_expiry),
-            );
         }
         let display_name = body
             .get("display_name")
@@ -5583,12 +5566,16 @@ fn login_token(
     })
 }
 fn token_info(token: &Token, now: u64) -> Value {
-    json!({"accessor": token.accessor, "policies": token.policies, "display_name": token.display_name,
+    let mut info = json!({"accessor": token.accessor, "policies": token.policies, "display_name": token.display_name,
         "creation_time": token.created_at, "ttl": token.expires_at.map(|t| t.saturating_sub(now)).unwrap_or(0),
         "expire_time_unix": token.expires_at, "explicit_max_ttl": token.max_expires_at.map(|t| t.saturating_sub(token.created_at)).unwrap_or(0),
-        "period": token.period, "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
+        "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
         "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
-        "entity_id": token.entity_id.as_deref().unwrap_or("")})
+        "entity_id": token.entity_id.as_deref().unwrap_or("")});
+    if token.period > 0 {
+        info["period"] = json!(token.period);
+    }
+    info
 }
 
 fn default_policy_source() -> String {

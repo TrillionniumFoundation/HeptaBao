@@ -64,31 +64,17 @@ impl AuthState {
         increment: u64,
         now: u64,
     ) -> Result<u64, AuthError> {
-        let (default_ttl, mut maximum_ttl) =
-            self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
-        if let Some(limit) = explicit_max_expires_at {
-            maximum_ttl = maximum_ttl.min(limit.saturating_sub(issued_at));
-        }
-        if maximum_ttl == 0 {
-            return Err(err(500, "past the max TTL, cannot renew"));
-        }
-        let ttl = if role.token_period > 0 {
-            role.token_period.min(maximum_ttl)
-        } else if increment > 0 {
-            increment
-        } else {
-            default_ttl
-        };
-        let mut expires_at = checked_expiry(now, ttl)?;
-        if role.token_period == 0 {
-            expires_at = expires_at.min(checked_expiry(issued_at, maximum_ttl)?);
-        }
-        if let Some(limit) = explicit_max_expires_at {
-            expires_at = expires_at.min(limit);
-        }
-        if expires_at <= now {
-            return Err(err(500, "past the max TTL, cannot renew"));
-        }
-        Ok(expires_at)
+        self.native_token_expiry(
+            scope,
+            NativeTokenLimits {
+                ttl: role.token_ttl,
+                max_ttl: role.token_max_ttl,
+                period: role.token_period,
+            },
+            issued_at,
+            explicit_max_expires_at,
+            increment,
+            now,
+        )
     }
 }

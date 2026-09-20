@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **19**. Its source constant is
+The current Service state schema is **20**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -58,7 +58,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 16 | Direct RADIUS renewal credentials and explicit token-API provenance; LDAP renewal and external identity membership evidence must be absent. |
 | 17 | Direct LDAP renewal credentials and provider-verified external identity membership evidence; JWT direct-role provenance and nonzero JWT periodic/explicit-max role fields must be absent. |
 | 18 | Direct JWT role provenance and distinct periodic/explicit-max JWT role limits; native-claim marker, optional trust extensions and role leeways must be absent. |
-| 19 | Current format, adding native reusable JWT assertions, optional explicit trust extensions, role time leeways and retired legacy JWT replay enforcement. New AppRole tokens also persist only their issue-time explicit maximum. |
+| 19 | Native reusable JWT assertions, optional explicit trust extensions, role time leeways and retired legacy JWT replay enforcement. New AppRole tokens also persist only their issue-time explicit maximum. Kubernetes renewal provenance and extended role limits must be absent. |
+| 20 | Current format, adding direct Kubernetes role provenance and native role/mount TTL, periodic and explicit-maximum limits. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -87,8 +88,17 @@ Old AppRole absolute maxima remain conservative because the stored value cannot
 distinguish a former ordinary maximum from a true explicit maximum; a fresh login
 uses current role/mount maxima and freezes only the true explicit cap.
 
+Schema 20 is required for direct Kubernetes renewal provenance, zero/default or
+greater-than-one-hour Kubernetes role TTLs, and nonzero role maximum, period or
+explicit maximum fields. New Kubernetes tokens renew locally against the current
+issuing role without another TokenReview. Policies and the explicit maximum remain
+their issue-time values. Legacy Kubernetes tokens remain nonrenewable; a fresh
+login is required to obtain native renewal provenance. Token-API children and
+orphans do not inherit it. JWT, AppRole and Kubernetes share lifetime arithmetic,
+while each method retains its own issuer validation.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 19. An authenticated
+it. Initialization and committed mutations use schema 20. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -102,7 +112,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-19-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-20-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -127,7 +137,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-18 binary must fail closed once native JWT or current AppRole lifetime semantics have been committed;
+A schema-19 binary must fail closed once current Kubernetes renewal or role lifetime semantics have been committed;
+a schema-18 binary must fail closed once native JWT or current AppRole lifetime semantics have been committed;
 a schema-17 binary must fail closed once JWT direct-role provenance or new role lifetime semantics have been committed;
 a schema-16 binary must fail closed once LDAP renewal credentials or external membership evidence has been committed;
 a schema-15 binary must fail closed once RADIUS renewal or token-API provenance has been committed;
@@ -163,7 +174,9 @@ OIDC code flow removes its encrypted, independently client-proven session before
 upstream exchange, then commits token and live Identity together. Expiry denial
 is durable; uncertain exchanges are not retried. Kubernetes login performs one
 verified online TokenReview per attempt and commits only a bounded nonrenewable
-local token. Read [online authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md).
+local token in legacy formats. Current Kubernetes logins issue renewable service
+tokens with role provenance; renewal does not contact the reviewer. Read
+[online authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md).
 
 The separate Kubernetes secrets-engine profile commits an issuance intent before
 calling the host-enrolled Kubernetes TokenRequest API outside the global Service

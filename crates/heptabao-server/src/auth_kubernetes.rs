@@ -33,12 +33,19 @@ struct KubernetesRole {
     audience: String,
     token_policies: BTreeSet<String>,
     token_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
     token_num_uses: u64,
 }
 
 pub(crate) struct KubernetesLoginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     role_name: String,
     presented: Zeroizing<String>,
     config: KubernetesConfig,
@@ -51,6 +58,17 @@ pub(crate) struct KubernetesLoginObservation {
     service_account_namespace: String,
     service_account_name: String,
     service_account_uid: String,
+}
+
+#[cfg(test)]
+impl KubernetesLoginObservation {
+    pub(crate) fn observed(namespace: &str, name: &str, uid: &str) -> Self {
+        Self {
+            service_account_namespace: namespace.into(),
+            service_account_name: name.into(),
+            service_account_uid: uid.into(),
+        }
+    }
 }
 
 impl KubernetesLoginPlan {
@@ -146,12 +164,22 @@ impl KubernetesRole {
                 .token_policies
                 .iter()
                 .any(|p| !valid_name(p) || p == "root")
-            || self.token_ttl == 0
-            || self.token_ttl > MAX_LOGIN_TTL
+            || self.token_ttl > MAX_TTL
+            || self.token_max_ttl > MAX_TTL
+            || self.token_period > MAX_TTL
+            || self.token_explicit_max_ttl > MAX_TTL
+            || self.token_max_ttl > 0 && self.token_ttl > self.token_max_ttl
         {
             return Err(bad("invalid Kubernetes role policy, TTL or audience"));
         }
         Ok(())
+    }
+    fn limits(&self) -> NativeTokenLimits {
+        NativeTokenLimits {
+            ttl: self.token_ttl,
+            max_ttl: self.token_max_ttl,
+            period: self.token_period,
+        }
     }
     fn bind_review(&self, review: &Value) -> Result<(String, String, String), AuthError> {
         if review.get("apiVersion").and_then(Value::as_str) != Some("authentication.k8s.io/v1")
@@ -217,6 +245,111 @@ impl KubernetesRole {
 }
 
 impl AuthState {
+    pub(crate) fn has_kubernetes_renewal_state(&self) -> bool {
+        self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::Kubernetes { .. })
+            )
+        }) || self
+            .kubernetes_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.roles.values())
+            .any(|role| {
+                role.token_ttl == 0
+                    || role.token_ttl > MAX_LOGIN_TTL
+                    || role.token_max_ttl > 0
+                    || role.token_period > 0
+                    || role.token_explicit_max_ttl > 0
+            })
+    }
+
+    pub(crate) fn validate_kubernetes_renewal_state(&self) -> Result<(), AuthError> {
+        for token in self.tokens.values() {
+            if let Some(TokenAuthProvenance::Kubernetes { role_name }) = &token.auth_provenance
+                && (token.root
+                    || token.parent.is_some()
+                    || !token.auth_origin_known
+                    || token.wrapping.is_some()
+                    || !valid_name(role_name)
+                    || token.period > MAX_TTL
+                    || token.policies.contains("root")
+                    || token.auth_cert_role.is_some()
+                    || token.auth_cert_sha256.is_some()
+                    || !token.auth_mount.as_ref().is_some_and(|mount| {
+                        self.online_mount_enabled(&token.namespace, mount, "kubernetes")
+                    }))
+            {
+                return Err(bad("invalid Kubernetes renewal provenance"));
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn renew_kubernetes_token(
+        &mut self,
+        namespace: &str,
+        target: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<AuthResponse>, AuthError> {
+        let token = self.tokens.get(target).ok_or_else(denied)?;
+        let Some(TokenAuthProvenance::Kubernetes { role_name }) = token.auth_provenance.as_ref()
+        else {
+            if token.auth_provenance.is_none()
+                && token.parent.is_none()
+                && token.auth_mount.as_ref().is_some_and(|mount| {
+                    self.online_mount_enabled(&token.namespace, mount, "kubernetes")
+                })
+            {
+                return Err(bad(
+                    "legacy Kubernetes token has no issuing role provenance; log in again",
+                ));
+            }
+            return Ok(None);
+        };
+        if token.namespace != namespace || token.parent.is_some() {
+            return Err(denied());
+        }
+        if !token.renewable {
+            return Err(bad("token is not renewable"));
+        }
+        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
+        let scope = AuthScope { namespace, mount };
+        if !self.online_mount_enabled(namespace, mount, "kubernetes") {
+            return Err(denied());
+        }
+        // TokenReview authenticates login only. Current reviewer credentials,
+        // audience, account bounds and assigned policies do not reauthenticate
+        // a service token or replace its issued policy snapshot.
+        let role = self
+            .kubernetes_at(scope)
+            .and_then(|state| state.roles.get(role_name))
+            .ok_or_else(|| err(500, "Kubernetes role does not exist during renewal"))?;
+        let expires_at = self.native_token_expiry(
+            scope,
+            role.limits(),
+            token.created_at,
+            token.max_expires_at,
+            duration(body, "increment", 0)?,
+            now,
+        )?;
+        let token = self.tokens.get_mut(target).ok_or_else(denied)?;
+        token.expires_at = Some(expires_at);
+        Ok(Some(AuthResponse {
+            login_identity: None,
+            external_groups: None,
+            status: 200,
+            mutated: true,
+            body: json!({"auth": {
+                "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
+                "entity_id":token.entity_id.as_deref().unwrap_or(""),
+                "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
+            }}),
+        }))
+    }
+
     pub(super) fn online_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
         self.effective_auth_mounts(namespace)
             .get(mount)
@@ -505,7 +638,10 @@ impl AuthState {
                     .map_err(|_| err(500, "role serialization failed"))?;
                 data["alias_name_source"] = json!("serviceaccount_uid");
                 data["token_type"] = json!("service");
-                data["token_renewable"] = json!(false);
+                data["token_max_ttl"] = json!(role.token_max_ttl);
+                data["token_period"] = json!(role.token_period);
+                data["token_explicit_max_ttl"] = json!(role.token_explicit_max_ttl);
+                data["token_renewable"] = json!(true);
                 Ok(response(data, false))
             }
             "POST" | "PUT" => {
@@ -517,6 +653,9 @@ impl AuthState {
                         "audience",
                         "token_policies",
                         "token_ttl",
+                        "token_max_ttl",
+                        "token_period",
+                        "token_explicit_max_ttl",
                         "token_num_uses",
                         "alias_name_source",
                         "token_type",
@@ -531,18 +670,60 @@ impl AuthState {
                 {
                     return Err(bad("unsupported Kubernetes token or alias profile"));
                 }
-                let role = KubernetesRole {
-                    bound_service_account_names: names(body, "bound_service_account_names", false)?,
-                    bound_service_account_namespaces: names(
-                        body,
-                        "bound_service_account_namespaces",
-                        true,
-                    )?,
-                    audience: string_field(body, "audience")?.into(),
-                    token_policies: policies(body, "token_policies", &BTreeSet::new(), true)?,
-                    token_ttl: duration(body, "token_ttl", 300)?,
-                    token_num_uses: number(body, "token_num_uses", 0)?,
-                };
+                // Native role updates preserve fields not present in this
+                // request. New roles still require explicit identity bounds.
+                let mut role = self
+                    .kubernetes_at(scope)
+                    .and_then(|state| state.roles.get(name))
+                    .cloned()
+                    .unwrap_or(KubernetesRole {
+                        bound_service_account_names: BTreeSet::new(),
+                        bound_service_account_namespaces: BTreeSet::new(),
+                        audience: String::new(),
+                        token_policies: BTreeSet::from(["default".into()]),
+                        token_ttl: 0,
+                        token_max_ttl: 0,
+                        token_period: 0,
+                        token_explicit_max_ttl: 0,
+                        token_num_uses: 0,
+                    });
+                if body
+                    .get("bound_service_account_names")
+                    .is_some_and(|v| !v.is_null())
+                {
+                    role.bound_service_account_names =
+                        names(body, "bound_service_account_names", false)?;
+                }
+                if body
+                    .get("bound_service_account_namespaces")
+                    .is_some_and(|v| !v.is_null())
+                {
+                    role.bound_service_account_namespaces =
+                        names(body, "bound_service_account_namespaces", true)?;
+                }
+                if body.get("audience").is_some_and(|v| !v.is_null()) {
+                    role.audience = string_field(body, "audience")?.into();
+                }
+                if body.get("token_policies").is_some_and(|v| !v.is_null()) {
+                    role.token_policies =
+                        policies(body, "token_policies", &role.token_policies, true)?;
+                }
+                for (field, target) in [
+                    ("token_ttl", &mut role.token_ttl),
+                    ("token_max_ttl", &mut role.token_max_ttl),
+                    ("token_period", &mut role.token_period),
+                    ("token_explicit_max_ttl", &mut role.token_explicit_max_ttl),
+                ] {
+                    if body.get(field).is_some_and(|value| !value.is_null()) {
+                        *target = duration(body, field, *target)?;
+                    }
+                }
+                if body
+                    .get("token_num_uses")
+                    .is_some_and(|value| !value.is_null())
+                {
+                    role.token_num_uses = number(body, "token_num_uses", role.token_num_uses)?;
+                }
                 role.validate()?;
                 self.validate_assignment(actor, &role.token_policies)?;
                 let state = self.kubernetes_mut(scope);
@@ -594,6 +775,11 @@ impl AuthState {
         Ok(KubernetesLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
+            mount_revision: self
+                .effective_auth_mounts(namespace)
+                .get(mount)
+                .cloned()
+                .ok_or_else(denied)?,
             role_name: role_name.into(),
             presented: Zeroizing::new(presented.into()),
             config,
@@ -608,8 +794,10 @@ impl AuthState {
         plan: KubernetesLoginPlan,
         observation: KubernetesLoginObservation,
     ) -> Result<AuthResponse, AuthError> {
-        if !self.online_mount_enabled(&plan.namespace, &plan.mount, "kubernetes") {
-            return Err(denied());
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
+        {
+            return Err(err(409, "Kubernetes auth mount changed during TokenReview"));
         }
         let state = self
             .kubernetes_at(AuthScope {
@@ -631,15 +819,22 @@ impl AuthState {
                 .as_secs()
                 .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
         );
-        let mut issued = self.issue_online_token(
+        let limits = plan.role.limits();
+        let mut issued = self.issue_native_online_token(
             AuthScope {
                 namespace: &plan.namespace,
                 mount: &plan.mount,
             },
             &observation.service_account_uid,
-            plan.role.token_policies,
-            plan.role.token_ttl,
-            plan.role.token_num_uses,
+            NativeOnlineToken {
+                policies: plan.role.token_policies,
+                limits,
+                explicit_max_ttl: plan.role.token_explicit_max_ttl,
+                uses: plan.role.token_num_uses,
+                provenance: TokenAuthProvenance::Kubernetes {
+                    role_name: plan.role_name.clone(),
+                },
+            },
             now,
         )?;
         issued.body["auth"]["metadata"] = json!({
@@ -698,6 +893,10 @@ impl AuthState {
 }
 
 #[cfg(test)]
+#[path = "auth_kubernetes_renewal_tests.rs"]
+mod renewal_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     fn role() -> KubernetesRole {
@@ -707,6 +906,9 @@ mod tests {
             audience: "heptabao".into(),
             token_policies: BTreeSet::from(["default".into()]),
             token_ttl: 300,
+            token_max_ttl: 0,
+            token_period: 0,
+            token_explicit_max_ttl: 0,
             token_num_uses: 0,
         }
     }
@@ -786,7 +988,7 @@ mod tests {
         r.token_policies.insert("root".into());
         assert!(r.validate().is_err());
         let mut r = role();
-        r.token_ttl = 3601;
+        r.token_ttl = MAX_TTL + 1;
         assert!(r.validate().is_err());
     }
 }

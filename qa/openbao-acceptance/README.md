@@ -92,6 +92,24 @@ preflight fixture success never authorizes a full-instance migration. See
 
 `kubernetes_online.py` exercises the actual server and pinned-TLS TokenReview
 protocol; it explicitly does not qualify a kube-apiserver or Kubernetes RBAC.
+`kubernetes_renewal_live.py` compares actual HTTPS service-token renewal with
+pinned official 2.6.2 after synthetic TLS TokenReview login. It covers three
+renewal routes without another TokenReview, assertion expiry, current role
+TTL/max/period and issued explicit max, policy snapshots, wrapping, rejected
+renewals without extension, child/orphan tokens, restart, role deletion, zero
+TTL defaults and partial role updates. The receipt explicitly separates the
+candidate's process-enrolled CA from the oracle's mount CA/key configuration
+and records the official request's omitted TypeMeta. This remains a synthetic
+TokenReview protocol profile, not a Kubernetes cluster or RBAC qualification.
+`kubernetes_native_upgrade.py` creates a fresh store with the receipt-pinned
+schema-19 binary, then checks schema-20 reads without application rewrites,
+old nonrenewable tokens remaining nonrenewable after role updates, and new
+native renewal tokens. It also exercises rejected downgrade and recovery,
+including existing child/orphan tokens and encrypted-state credential scans.
+Reopen comparisons exclude only the root replay ledger rebuilt before schema
+validation; live read/rejection checks compare the entire store. Existing
+stores are never accepted as fixture input; this does not qualify rolling or
+full-instance migration.
 `oidc_code_live.py` uses the fixed official 2.6.2 issuer, actual code/PKCE exchange,
 ID-token signatures and the native callback executable. `online_auth_ha.py`
 extends the real three-process fixture with leader death, quorum loss and

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the pinned schema-18 JWT store through native-login schema 19.
+"""Exercise the pinned schema-18 JWT store through native login (schema 19+).
 
 This creates a synthetic store, preserves explicit legacy trust extensions,
 retires ordinary JWT replay restrictions, and verifies rejected downgrade.
@@ -166,7 +166,7 @@ def main():
     root = Path(tempfile.mkdtemp(prefix="heptabao-jwt-native-upgrade-"))
     root.chmod(0o700)
     instance = None
-    result = {"schema": "heptabao.jwt-native-upgrade.v1", "from_schema": 18, "to_schema": 19,
+    result = {"schema": "heptabao.jwt-native-upgrade.v1", "from_schema": 18, "minimum_to_schema": 19,
               "synthetic_only": True, "legacy_source_commit": LEGACY_SOURCE,
               "legacy_binary_sha256": legacy_hash, "legacy_receipt_sha256": file_hash(LEGACY_RECEIPT),
               "candidate_binary_sha256": candidate_hash, "build_source_commit": args.build_source_commit,

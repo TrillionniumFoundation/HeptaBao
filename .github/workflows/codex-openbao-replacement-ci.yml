@@ -384,6 +384,7 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-online-authentication"
           python -c 'import os,sys; os.mkdir(sys.argv[1],0o700); os.chmod(sys.argv[1],0o700)' "$reports"
           timeout 180 python qa/openbao-acceptance/kubernetes_online.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/kubernetes.json"
+          timeout 240 python qa/openbao-acceptance/kubernetes_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/kubernetes-renewal.json"
           timeout 180 python qa/openbao-acceptance/ldap_bounded.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap.json"
           timeout 240 python qa/openbao-acceptance/ldap_openldap_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/openldap.json"
           timeout 240 python qa/openbao-acceptance/ldap_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-renewal.json"
@@ -391,6 +392,7 @@ jobs:
           timeout 240 python qa/openbao-acceptance/jwt_login_claims_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/jwt-login-claims.json"
           timeout 240 python qa/openbao-acceptance/cert_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/cert-renewal.json"
           timeout 240 python qa/openbao-acceptance/approle_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/approle-renewal.json"
+          timeout 240 python qa/openbao-acceptance/token_child_lifetime_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/token-child-lifetime.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.

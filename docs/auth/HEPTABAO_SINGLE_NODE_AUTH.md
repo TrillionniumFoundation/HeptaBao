@@ -104,6 +104,16 @@ maximum when set. Creating an orphan or periodic token requires both the normal
 operation capability and `sudo`. Nonroot token creation requires a subset of
 the issuing token's policies. Limited-use tokens cannot create children.
 
+A token-API child's requested and renewed TTL is bounded by its own limits,
+including any explicit maximum, and may exceed its parent's remaining TTL.
+This reported lifetime does not grant independence: every ancestor must still
+be live when the child is used. Renewing an ancestor before it expires can
+therefore keep a longer-lived child usable; removing or expiring an ancestor
+still invalidates the whole branch. The separate dynamic-secret issuer lifetime
+bound remains conservative and is not changed by this token response behavior.
+Token lookup omits `period` when it was zero at issue; otherwise it reports the
+issue-time period even if an AppRole or JWT role changes its renewal period.
+
 Parents are traversed on authentication and authorization. Missing, expired,
 exhausted or cyclic ancestors fail closed. Explicit revocation removes the whole
 descendant tree. Orphan login tokens are independent of an administrator's

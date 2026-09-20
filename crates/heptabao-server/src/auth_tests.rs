@@ -5,6 +5,8 @@ use super::*;
 mod approle_renewal_tests;
 #[path = "auth_cert_renewal_tests.rs"]
 mod certificate_renewal_tests;
+#[path = "auth_token_lifetime_tests.rs"]
+mod token_lifetime_tests;
 
 #[path = "auth_jwt_renewal_tests.rs"]
 mod jwt_renewal_tests;
