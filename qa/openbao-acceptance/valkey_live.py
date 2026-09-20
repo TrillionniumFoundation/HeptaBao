@@ -28,6 +28,10 @@ sys.path.insert(0, str(ROOT / "qa/single-node"))
 from smoke import Instance
 
 
+class ValkeyPermissionRejected(RuntimeError):
+    """An explicit provider authorization rejection, never a transport failure."""
+
+
 class Valkey:
     def __init__(self, root: Path, ca: Path, cert: Path, key: Path):
         self.root = root
@@ -66,7 +70,10 @@ class Valkey:
                         if len(line) > 65536 or not line.endswith(b"\r\n"):
                             raise RuntimeError("valkey_fixture_invalid_frame")
                         value = line[:-2]
-                        if prefix == b"-": raise RuntimeError("valkey_fixture_command_rejected")
+                        if prefix == b"-":
+                            if value.split(b" ", 1)[0] in {b"NOPERM", b"WRONGPASS", b"NOAUTH"}:
+                                raise ValkeyPermissionRejected("valkey_fixture_permission_rejected")
+                            raise RuntimeError("valkey_fixture_command_rejected")
                         if prefix == b"+": return value.decode()
                         if prefix == b":": return int(value)
                         if prefix == b"$":
@@ -96,8 +103,10 @@ class Valkey:
             with self.session(user, password) as command:
                 value = command(*args)
                 return subprocess.CompletedProcess([], 0, "(nil)" if value is None else str(value), "")
+        except ValkeyPermissionRejected:
+            return subprocess.CompletedProcess([], 1, "", "provider_permission_rejected")
         except (RuntimeError, OSError):
-            return subprocess.CompletedProcess([], 1, "", "provider_request_failed")
+            return subprocess.CompletedProcess([], 2, "", "provider_request_failed")
 
     def start(self) -> None:
         if self.process is not None:
@@ -264,11 +273,11 @@ def main() -> int:
         )
         check(
             "issued_readonly_user_cannot_write",
-            provider.cli(credential["username"], credential["password"], "SET", allowed_key, "denied").returncode != 0,
+            provider.cli(credential["username"], credential["password"], "SET", allowed_key, "denied").returncode == 1,
         )
         check(
             "issued_user_key_escape_denied",
-            provider.cli(credential["username"], credential["password"], "GET", "outside-key").returncode != 0,
+            provider.cli(credential["username"], credential["password"], "GET", "outside-key").returncode == 1,
         )
         provider.stop()
         provider.start()
@@ -298,7 +307,7 @@ def main() -> int:
         write_key = writer["key_pattern"][:-1] + "owned"
         check("readwrite_can_set", provider.cli(writer["username"], writer["password"], "SET", write_key, "value").stdout == "OK")
         for command in [("FLUSHALL",), ("FLUSHDB",), ("KEYS", "*"), ("SET", "outside", "denied"), ("ACL", "WHOAMI")]:
-            check("readwrite_denies_" + command[0].lower(), provider.cli(writer["username"], writer["password"], *command).returncode != 0)
+            check("readwrite_denies_" + command[0].lower(), provider.cli(writer["username"], writer["password"], *command).returncode == 1)
         # Hold a real authenticated session and a stale WATCH transaction over revoke.
         provider_id = key_pattern[len("hb:"):-2]
         marker = "hbf_" + provider_id[4:]
@@ -322,7 +331,7 @@ def main() -> int:
             check("revocation_fence_survives_provider_restart", isinstance(durable_marker, list) and "off" in durable_marker[1])
         check(
             "revoked_user_denied",
-            provider.cli(credential["username"], credential["password"], "PING").returncode != 0,
+            provider.cli(credential["username"], credential["password"], "PING").returncode == 1,
         )
         check(
             "revoked_user_absent_after_readback",
@@ -341,10 +350,10 @@ def main() -> int:
         check("short_issue", status == 200)
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
-            if provider.cli(short["data"]["username"], short["data"]["password"], "PING").returncode != 0:
+            if provider.cli(short["data"]["username"], short["data"]["password"], "PING").returncode == 1:
                 break
             time.sleep(0.1)
-        check("idle_expiry_removes_native_credential", provider.cli(short["data"]["username"], short["data"]["password"], "PING").returncode != 0)
+        check("idle_expiry_removes_native_credential", provider.cli(short["data"]["username"], short["data"]["password"], "PING").returncode == 1)
         provider.stop()
         status, pending = instance.call("POST", "sys/leases/revoke", {"lease_id": write_issued["lease_id"]})
         check("provider_outage_retains_revoke_intent", status == 503 and pending.get("reconcile_required") is True and "data" not in pending)
@@ -352,13 +361,13 @@ def main() -> int:
         check("pending_revoke_restart_unseal", instance.call("POST", "sys/unseal", {"key": candidate_key})[0] == 200)
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
-            if provider.cli(writer["username"], writer["password"], "PING").returncode != 0:
+            if provider.cli(writer["username"], writer["password"], "PING").returncode == 1:
                 break
             time.sleep(0.1)
-        check("restart_reconciles_pending_native_revoke", provider.cli(writer["username"], writer["password"], "PING").returncode != 0)
+        check("restart_reconciles_pending_native_revoke", provider.cli(writer["username"], writer["password"], "PING").returncode == 1)
         instance.stop(); provider.stop(); provider.start(); instance.start()
         check("final_restart_unseal", instance.call("POST", "sys/unseal", {"key": candidate_key})[0] == 200)
-        check("reconciled_revoke_survives_both_restarts", provider.cli(writer["username"], writer["password"], "PING").returncode != 0)
+        check("reconciled_revoke_survives_both_restarts", provider.cli(writer["username"], writer["password"], "PING").returncode == 1)
         report = {
             "schema": "heptabao.valkey-bounded-live.v1",
             "status": "passed",
