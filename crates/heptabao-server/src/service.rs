@@ -3911,6 +3911,7 @@ impl Service {
         )
     }
 
+    #[cfg(test)]
     fn persist_local_with_epoch_policy(
         &mut self,
         state: &State,
@@ -4043,14 +4044,72 @@ impl Service {
             ));
         }
         let operation_id = format!("hasync-{}", hex(&committed.digest));
-        if let Err(error) = self.persist_local_with_epoch_policy(
+        // HBSM4 carries the canonical owner-plan identity from the leader.
+        // Rebuild the follower's local plan before publication and compare the
+        // identity and changed-owner mask.  A mismatch means the HA state and
+        // local record-oriented state would diverge, so fail closed rather
+        // than silently falling back to a whole-state local rewrite.
+        let prepared_plan = match (
+            committed.owner_manifest_digest,
+            committed.changed_owner_mask,
+        ) {
+            (Some(expected_digest), Some(expected_mask)) => {
+                let durable = self
+                    .durable
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "server is sealed"))?;
+                let reuse = OwnerReuseHint::between(self.state.as_ref(), &state);
+                let plan = Self::prepare_owner_state_plan(
+                    durable,
+                    &state,
+                    &committed.bytes,
+                    &operation_id,
+                    state.schema,
+                    state.replay_epoch,
+                    PersistOwnerStateOptions {
+                        compact_before_entry: true,
+                        allow_epoch_catchup: true,
+                        reuse,
+                    },
+                )
+                .map_err(|_| Response::error(503, "HA owner publication preflight failed"))?;
+                let binding = plan
+                    .publication_binding(&operation_id, &committed.bytes)
+                    .map_err(|_| Response::error(503, "HA owner binding is invalid"))?;
+                if binding.owner_manifest_digest() != expected_digest
+                    || binding.changed_owner_mask() != expected_mask
+                {
+                    return Err(Response::error(
+                        503,
+                        "HA owner publication identity diverges from committed manifest",
+                    ));
+                }
+                Some(plan)
+            }
+            (None, None) => None,
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "HA owner publication metadata is incomplete",
+                ));
+            }
+        };
+        let result = self.persist_local_with_epoch_policy_and_plan(
             &state,
             &committed.bytes,
             &operation_id,
             state.schema,
             state.replay_epoch,
-            true,
-        ) {
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: true,
+                    reuse: OwnerReuseHint::between(self.state.as_ref(), &state),
+                },
+                prepared_plan,
+            },
+        );
+        if let Err(error) = result {
             self.recovery_required = true;
             return Err(Self::ha_committed_local_failure(error));
         }
