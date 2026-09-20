@@ -28,6 +28,32 @@ from online_evidence import admit_output, source_identity, publish
 from official_openbao_launcher import start_oracle, stop_oracle
 
 
+# These names identify the required security/lifecycle phases. Extra successful
+# observations may be added without changing an unrelated numeric total.
+REQUIRED_CASES = frozenset({
+    "issuer_real_enduser_login", "configuration_preflights_discovery",
+    "missing_pkce_discovery_does_not_enable_implicit_fallback",
+    "candidate_explicit_s256_enrollment", "client_secret_readback_redacted",
+    "client_rebinding_requires_new_mount", "missing_client_proof",
+    "unregistered_redirect", "unknown_role", "first_fixed_s256_and_client",
+    "first_no_client_proof_or_secret_in_url", "wrong_client_proof_does_not_consume",
+    "real_code_exchange_to_signed_id_token_to_candidate_login",
+    "native_renewable_token_uses_role_lease", "new_token_enters_actual_service",
+    "one_use_session_denies_callback_replay", "online_identity_has_no_administrative_authority",
+    "issuer_rejects_wrong_s256_verifier", "failed_exchange_session_not_restored",
+    "signature_valid_wrong_nonce_never_issues_token", "nonce_failure_is_terminal",
+    "restart_stays_sealed", "consumed_session_stays_consumed_after_restart",
+    "failed_exchange_stays_consumed_after_restart", "pending_session_verifier_and_proof_survive_restart",
+    "issuer_subject_reuses_live_identity", "existing_token_survives_restart",
+    "native_client_reserves_private_output_before_login", "native_client_real_callback_and_exchange",
+    "native_client_receives_bound_identity", "native_client_never_prints_bearer_or_client_secret",
+    "native_client_token_is_usable", "disabled_identity_denies_fresh_valid_code",
+    "disabled_identity_denies_existing_token", "role_update_invalidates_old_session",
+    "finite_first_use", "finite_second_use_denied", "disable_mount_revokes_issued_tokens",
+    "no_cleartext_oidc_credentials_in_candidate_persistence_and_logs", "complete",
+})
+
+
 def free_port():
     with socket.socket() as sock:
         sock.bind(("127.0.0.1",0))
@@ -189,6 +215,7 @@ def run(binary: Path, root: Path, checks: list[dict]):
         paths=list((instance.root/"data").rglob("*"))+[instance.root/"server.log",instance.root/"audit.jsonl"]
         forbidden=[client_secret.encode(),pending_proof.encode(),proof.encode(),code.encode(),token.encode(),finite_token.encode()]
         check("no_cleartext_oidc_credentials_in_candidate_persistence_and_logs",all(not any(secret in p.read_bytes() for secret in forbidden) for p in paths if p.is_file()))
+        check("complete", True)
     finally:
         if instance: instance.stop()
         if oracle:
@@ -223,7 +250,7 @@ def main():
     if observed:
         from official_openbao_launcher import VERSION, ARTIFACT_SHA256, BINARY_SHA256
         report["official_input"]={"version":VERSION,"archive_sha256":ARTIFACT_SHA256,"binary_sha256":BINARY_SHA256}
-    publish(output,parent,report,before,source_identity(ROOT,binary),82)
+    publish(output,parent,report,before,source_identity(ROOT,binary),required_cases=REQUIRED_CASES)
     print(json.dumps({"status":report["status"],"checks":len(checks),"failure":report["failure"]}))
     return 0 if report["status"]=="passed" else 1
 if __name__=="__main__":raise SystemExit(main())

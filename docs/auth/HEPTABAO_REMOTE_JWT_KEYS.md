@@ -152,10 +152,17 @@ results, duplicate case identities and two failing sides cannot pass admission.
 native time-claim semantics with the pinned official binary; it does not exercise
 OIDC authorization codes or the strict proof API.
 
-The schema-28 API-CA implementation has passed local Rust tests and lint checks;
-candidate live execution is pending. Official 2.6.2 probes established the three modes' eager
-configuration behavior and CA rejection/readback cases; those observations do
-not establish candidate success. New `jwt_api_tls_live.py` and
-`jwt_api_tls_upgrade.py` runners are intended to verify actual no-enrollment
-TLS/CA/SAN behavior and genuine schema-27 upgrade/downgrade boundaries. Only
-completed, source-and-binary-bound receipts qualify those cases.
+The schema-28 API-CA implementation passed local Rust tests and strict Clippy.
+[The API TLS comparison](../../qa/openbao-acceptance/evidence/jwt-api-tls-856ef3d.json)
+passed 141 observations on each binary, including CA replacement, wrong SAN,
+no startup endpoint enrollment, real login and restart. The OIDC comparison
+explicitly retains the candidate's S256 enrollment and POST callback adaptation.
+[The actual 27-to-28 upgrade](../../qa/openbao-acceptance/evidence/jwt-api-upgrade-6b4fed2-to-649c125.json)
+passed 121 observations: unchanged legacy reads and pending code, retained old
+enrollment until explicit API CA opt-in, no-enrollment operation after promotion,
+and refusal by the actual old binary after mutation.
+[The seven-phase TLS concurrency run](../../qa/openbao-acceptance/evidence/jwt-split-phase-649c125.json)
+passed 36 checks, including OIDC config preflight, independent writes and late
+authority changes. These receipts bind production source `649c125` and the
+observed binary; they are selected local acceptance, not full compatibility or
+independent production qualification.

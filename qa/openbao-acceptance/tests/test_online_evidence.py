@@ -26,6 +26,32 @@ class OnlineEvidenceTests(unittest.TestCase):
                 ([{'case':'one','passed':False}],1),([{'case':'one','passed':'true'}],1),
                 ([{'case':'private/value','passed':True}],1),([{'case':'one','passed':True,'token':'no'}],1)]:
             self.assertFalse(complete_checks(rows,count))
+    def test_named_completeness_accepts_extra_checks_but_requires_every_case(self):
+        required = frozenset({"phase", "complete"})
+        valid = [{"case": name, "passed": True} for name in ("phase", "extra", "complete")]
+        self.assertTrue(complete_checks(valid, required_cases=required))
+        for rows in ([], valid[1:], valid[:-1], valid + valid[:1],
+                     [dict(row, passed=1) for row in valid]):
+            self.assertFalse(complete_checks(rows, required_cases=required))
+        self.assertFalse(complete_checks(valid))
+        self.assertFalse(complete_checks(valid, required_cases=frozenset()))
+        self.assertFalse(complete_checks(valid, 1, required_cases=required))
+
+    def test_named_publish_preserves_an_execution_failure_even_with_complete_checks(self):
+        report = {"checks": [{"case": "complete", "passed": True}],
+                  "failure": "fixture_cleanup_failed"}
+        publish(self.output, admit_output(self.output), report, {}, {},
+                required_cases=frozenset({"complete"}))
+        saved = json.loads(self.output.read_text())
+        self.assertEqual(saved["status"], "failed")
+        self.assertEqual(saved["failure"], "fixture_cleanup_failed")
+
+    def test_named_publish_rejects_missing_phase_despite_successful_terminal_case(self):
+        report = {"checks": [{"case": "complete", "passed": True}], "failure": None}
+        publish(self.output, admit_output(self.output), report, {}, {},
+                required_cases=frozenset({"phase", "complete"}))
+        self.assertEqual(json.loads(self.output.read_text())["status"], "failed")
+
     def test_existing_output_and_dangling_symlink_reject(self):
         self.output.write_text('earlier partial result')
         with self.assertRaises(ValueError): admit_output(self.output)

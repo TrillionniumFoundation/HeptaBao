@@ -318,7 +318,15 @@ UID deletion/recreation. See `docs/plan/HEPTABAO_SECTION6_INTEGRATION_20260915.m
 for fixed input digests, prerequisites, cleanup and exact evidence boundaries.
 A wired gate does not imply it passed; current-head CI must execute it.
 
-The schema-28 API-CA transport changes passed local Rust tests and lint checks;
-real candidate TLS/upgrade execution is pending. Official CA/preflight observations alone are not
-candidate acceptance. This slice does not alter the confidential-client,
-POST callback/client-proof, S256, same-origin or role/claim limitations above.
+The schema-28 API-CA transport changes passed local Rust tests and strict Clippy.
+The [API TLS comparison](../../qa/openbao-acceptance/evidence/jwt-api-tls-856ef3d.json)
+passed 141 observations per side and the
+[actual 27-to-28 upgrade](../../qa/openbao-acceptance/evidence/jwt-api-upgrade-6b4fed2-to-649c125.json)
+passed 121 checks. The [OIDC renewal comparison](../../qa/openbao-acceptance/evidence/oidc-renewal-856ef3d.json)
+passed 122 observations per side; [online-auth HA](../../qa/openbao-acceptance/evidence/online-auth-ha-856ef3d.json)
+passed 34 checks on one host. Provider login wrapping also
+[passed 42 observations per side](../../qa/openbao-acceptance/evidence/provider-login-wrapping-649c125.json)
+against actual RADIUS PAP, OpenLDAP and controlled TokenReview providers.
+These selected receipts do not alter the confidential-client, POST
+callback/client-proof, S256, same-origin or role/claim limitations above, nor
+qualify a production Kubernetes cluster or multi-host deployment.

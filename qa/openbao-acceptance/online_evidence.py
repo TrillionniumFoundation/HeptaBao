@@ -55,8 +55,11 @@ def source_identity(root: Path, binary: Path) -> dict:
     }
 
 
-def complete_checks(checks: list[dict], expected_count: int) -> bool:
-    if not checks or len(checks) != expected_count:
+def complete_checks(checks: list[dict], expected_count: int | None = None, *,
+                    required_cases: frozenset[str] | None = None) -> bool:
+    if not checks or (expected_count is None and not required_cases):
+        return False
+    if expected_count is not None and len(checks) != expected_count:
         return False
     names = []
     for row in checks:
@@ -65,14 +68,16 @@ def complete_checks(checks: list[dict], expected_count: int) -> bool:
         if row["passed"] is not True or not isinstance(row["case"], str) or not re.fullmatch(r"[a-z0-9_]{1,120}", row["case"]):
             return False
         names.append(row["case"])
-    return len(set(names)) == len(names)
+    return (len(set(names)) == len(names)
+            and (required_cases is None or bool(required_cases) and required_cases.issubset(names)))
 
 
 def publish(output: Path, admitted_parent: tuple[int, int], report: dict,
-            before: dict, after: dict, expected_count: int) -> None:
+            before: dict, after: dict, expected_count: int | None = None, *,
+            required_cases: frozenset[str] | None = None) -> None:
     if before != after:
         report["failure"] = "source_or_binary_changed_during_execution"
-    if not complete_checks(report["checks"], expected_count):
+    if not complete_checks(report["checks"], expected_count, required_cases=required_cases):
         report["failure"] = report.get("failure") or "incomplete_or_invalid_observations"
     report["status"] = "passed" if report.get("failure") is None else "failed"
     report.update(before)
