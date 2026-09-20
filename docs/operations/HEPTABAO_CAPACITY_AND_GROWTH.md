@@ -55,6 +55,19 @@ point also checked that reads left durable counters unchanged. These are scoped
 development measurements, not a multi-host production latency commitment;
 write amplification and the 16 MiB logical limit remain unresolved.
 
+Transparent sharing of mounts, KV entries and historical payloads also reduced
+small-write CPU costs in a separate single-node development-build fixture. With
+1,149,819 / 3,907,031 / 9,420,395 logical bytes, twelve CAS writes to one key had
+median latencies of 232.096 / 781.095 / 1710.870 ms
+[before](../../qa/openbao-acceptance/evidence/kv-write-baseline-ded9dfa.json) and
+210.023 / 706.807 / 1451.222 ms
+[after](../../qa/openbao-acceptance/evidence/kv-write-cow-6e07000.json).
+The same runner retained large history and unrelated mounts, checked exact CAS
+versions, and reopened both latest and historical values. Physical write counts
+were unchanged; peak RSS did not improve at every size. Full serialization,
+hashing and changed-owner chunking still grow with total state size. These
+unoptimized development-build observations do not establish production capacity.
+
 The explicit HA migration endpoint is
 `POST` or `PUT /v1/sys/storage/raft/migrate-owner-state` (an empty JSON object
 is required). It is root-namespace and root-token only, requires the current
