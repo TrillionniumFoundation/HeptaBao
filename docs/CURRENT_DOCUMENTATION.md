@@ -125,6 +125,17 @@ for both exact head and prospective merge. `scripts/validate_delivery_gate_owner
 guards that separation so removing duplicate execution cannot silently remove a
 native product gate.
 
+Online authentication, Kubernetes protocol and RADIUS renewal HA receipts now
+require named safety checks and a terminal completion check instead of a fixed
+observation total. Additional successful observations do not invalidate a run;
+missing phases, duplicate names, non-boolean results and exceptions still fail.
+Schema-30 regressions record [36 authentication HA checks](../qa/openbao-acceptance/evidence/online-auth-ha-5181b4c.json),
+[71 Kubernetes protocol checks](../qa/openbao-acceptance/evidence/kubernetes-online-5181b4c.json)
+and [57 native RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-renewal-ha-5181b4c.json).
+An initial RADIUS attempt failed during fixture bootstrap before business checks;
+the diagnostic and normal reruns both passed. Its cause remains unestablished,
+and the earlier failure record is retained in the external-SSD test workspace.
+
 Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
 manual-only for reproducible evidence. Their obsolete branch push triggers and
 the duplicate V2 Linux assurance schedule are retired. Pull requests use the

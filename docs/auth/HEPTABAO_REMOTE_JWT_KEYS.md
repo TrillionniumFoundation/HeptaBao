@@ -115,6 +115,16 @@ schema 30; old absent state keeps its serialized shape. Concurrent role changes
 invalidate remote login results, and failed matches publish no token or wrapper.
 This adds claim predicates only: arbitrary claim mapping, selectable user/group
 claims and OIDC UserInfo merging remain separate work.
+
+The [schema-30 bound-claims comparison](../../qa/openbao-acceptance/evidence/jwt-bound-claims-6de8ab2.json)
+records 362 matching observations per side against OpenBao 2.6.2, using static
+and remote keys. Separate candidate checks reject a gated late JWKS result after
+role changes without publishing keys, tokens or wrappers. The [actual schema-29
+upgrade](../../qa/openbao-acceptance/evidence/jwt-bound-upgrade-6de8ab2.json)
+passes 110 checks, including unchanged legacy reads, old-token renewal, new
+predicates after restart, downgrade refusal and recovery. These scoped results
+do not cover arbitrary claim mapping or OIDC UserInfo.
+
 After a fetch, login verifies time claims using elapsed request time and the
 configured grace window. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.

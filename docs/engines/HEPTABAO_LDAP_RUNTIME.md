@@ -45,6 +45,15 @@ metadata retains its historical normalized-empty behavior. These semantics and
 non-default direct-token snapshots require schema 30; the legacy bounded LDAP
 profile is unchanged.
 
+The [no-default comparison](../../qa/openbao-acceptance/evidence/ldap-no-default-6de8ab2.json)
+records 151 matching observations per side with actual OpenLDAP Bind/Search.
+The [actual schema-29 upgrade](../../qa/openbao-acceptance/evidence/ldap-no-default-upgrade-5181b4c.json)
+passes 97 checks, preserving old normalized policy state and exercising new
+presence semantics, restart, downgrade refusal and recovery. The [native LDAP
+regression](../../qa/openbao-acceptance/evidence/ldap-native-5181b4c.json) records
+253 matching observations per side. The production binary is bound to source
+`6de8ab2`; the upgrade/regression harness is `5181b4c`.
+
 The manager-search state requires schema 23; new API-owned transport requires
 schema 25. Existing bounded configuration and local
 user/MFA authority stay intact. A request mixing the two configuration
