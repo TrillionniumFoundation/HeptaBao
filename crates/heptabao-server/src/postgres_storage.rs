@@ -15,6 +15,7 @@
 
 use crate::outbound::{EndpointConfig, Outbound};
 use crate::postgres_wire::{CommitError, PgSession};
+use serde::Deserialize;
 use std::fmt;
 use std::sync::{
     Arc,
@@ -93,6 +94,8 @@ impl std::error::Error for StorageError {}
 
 /// Deployment-owned connection settings. Debug output redacts credentials;
 /// the password is cleared when the final configured client is dropped.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PgStorageConfig {
     pub endpoint: EndpointConfig,
     pub connection_url: String,

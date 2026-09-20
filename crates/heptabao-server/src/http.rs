@@ -74,6 +74,10 @@ pub struct Config {
     /// Optional deployment-owned local Unix syslog audit device.
     #[serde(default)]
     pub audit_syslog: Option<crate::AuditSyslogConfig>,
+    /// Optional deployment-owned PostgreSQL durable backend. The password is
+    /// process configuration and is never accepted from an HTTP request.
+    #[serde(default)]
+    pub postgres_durable: Option<crate::postgres_storage::PgStorageConfig>,
     #[serde(default)]
     pub plugin_auth: Vec<crate::PluginAuthConfig>,
     #[serde(default)]
@@ -255,6 +259,9 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;
         service.install_audit_syslog(config.audit_syslog)?;
+        if let Some(postgres) = config.postgres_durable {
+            service.install_postgres_durable_storage(postgres)?;
+        }
     }
     if let Some(ha) = forwarding_ha {
         let weak_service = Arc::downgrade(&service);

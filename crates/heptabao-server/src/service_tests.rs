@@ -1,5 +1,131 @@
 use super::*;
 use std::sync::atomic::{AtomicU64, Ordering};
+
+fn invalid_postgres_config() -> PgStorageConfig {
+    PgStorageConfig {
+        endpoint: crate::outbound::EndpointConfig {
+            origin: "https://not-postgresql.example".into(),
+            address: std::net::SocketAddr::from(([127, 0, 0, 1], 5432)),
+            server_name: "not-postgresql.example".into(),
+            ca_pem: String::new(),
+            path_prefix: "/".into(),
+            shared_secret: String::new(),
+        },
+        connection_url: "postgresql://db.invalid/app".into(),
+        username: "heptabao".into(),
+        password: "secret".into(),
+        scope: "service".into(),
+    }
+}
+
+#[test]
+fn postgres_profile_binding_rejects_target_changes_without_binding_passwords() {
+    let config = invalid_postgres_config();
+    let profile = DurableProfile::postgresql(&config);
+    let mut changed = clone_pg_storage_config(&config);
+    changed.password = "rotated-secret".into();
+    assert_eq!(profile.binding, durable_profile_binding(&changed));
+    changed.connection_url = "postgresql://db.invalid/other".into();
+    assert_ne!(profile.binding, durable_profile_binding(&changed));
+    changed = clone_pg_storage_config(&config);
+    changed.endpoint.address = std::net::SocketAddr::from(([127, 0, 0, 2], 5432));
+    assert_ne!(profile.binding, durable_profile_binding(&changed));
+    changed = clone_pg_storage_config(&config);
+    changed.username = "another-user".into();
+    assert_ne!(profile.binding, durable_profile_binding(&changed));
+    let mut old_profile = profile.clone();
+    old_profile.schema = 1;
+    assert!(old_profile.validate().is_err());
+}
+
+#[test]
+fn postgres_backend_configuration_is_admitted_only_before_activation()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    assert!(
+        service
+            .install_postgres_durable_storage(invalid_postgres_config())
+            .is_err()
+    );
+    assert!(service.postgres_durable.is_none());
+    bootstrap(&mut service)?;
+    assert_eq!(
+        service.install_postgres_durable_storage(invalid_postgres_config()),
+        Err("durable backend configuration is immutable while unsealed".into())
+    );
+    Ok(())
+}
+
+#[test]
+fn postgres_profile_marks_initialized_store_without_allowing_filesystem_fallback()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let service = root.service()?;
+    private_directory(&service.data_dir)?;
+    let profile_config = PgStorageConfig {
+        endpoint: crate::outbound::EndpointConfig {
+            origin: "postgresql://db.example".into(),
+            address: std::net::SocketAddr::from(([127, 0, 0, 1], 5432)),
+            server_name: "db.example".into(),
+            ca_pem: String::new(),
+            path_prefix: "/".into(),
+            shared_secret: String::new(),
+        },
+        connection_url: "postgresql://db.example/app".into(),
+        username: "heptabao".into(),
+        password: "secret".into(),
+        scope: "service".into(),
+    };
+    persist_durable_profile(
+        &service.data_dir,
+        &DurableProfile::postgresql(&profile_config),
+    )?;
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(reopened.initialized());
+    assert_eq!(
+        reopened
+            .durable_profile
+            .as_ref()
+            .and_then(|profile| profile.scope.as_deref()),
+        Some("service")
+    );
+    assert!(
+        reopened
+            .install_postgres_durable_storage(invalid_postgres_config())
+            .is_err()
+    );
+    assert!(reopened.postgres_durable.is_none());
+    let error = reopened
+        .activate_barrier(&[17; 32])
+        .err()
+        .ok_or("unseal must fail")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(
+        error.body["errors"][0],
+        "PostgreSQL durable backend configuration is required before unseal"
+    );
+    let mut changed = clone_pg_storage_config(&profile_config);
+    changed.connection_url = "postgresql://db.example/other".into();
+    // Inject only at the test seam so this exercises reopen binding before
+    // network construction; production installation validates enrollment.
+    reopened.postgres_durable = Some(changed);
+    let error = reopened
+        .activate_barrier(&[17; 32])
+        .err()
+        .ok_or("unseal must fail")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(
+        error.body["errors"][0],
+        "PostgreSQL durable backend target does not match the initialized profile"
+    );
+    assert!(reopened.state.is_none());
+    assert!(reopened.durable.is_none());
+    assert!(!reopened.data_dir.join("state.hbs").exists());
+    Ok(())
+}
+
 static ROOT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 pub(super) struct Root {
     pub(super) path: PathBuf,

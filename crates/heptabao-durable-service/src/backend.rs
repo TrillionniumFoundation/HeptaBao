@@ -145,6 +145,52 @@ pub trait DurableBackend: Send {
         Self: Sized;
 }
 
+// Keep the public `DurableService<B>` type convenient for callers that do not
+// care which physical backend is selected.  The backend trait's consuming
+// `close` method is intentionally `Self: Sized`, so a type-erased backend can
+// only release ownership by dropping the object.  Both current remote and
+// filesystem implementations make close idempotent and perform their final
+// fence release on drop; concrete callers can still use their implementation's
+// explicit `close` method through `create_new_with_backend`.
+impl DurableBackend for Box<dyn DurableBackend> {
+    fn verify(&self) -> Result<(), BackendError> {
+        self.as_ref().verify()
+    }
+
+    fn load(&mut self) -> Result<BackendBundle, BackendError> {
+        self.as_mut().load()
+    }
+
+    fn initialize_empty(&mut self, initial: &BackendBundle) -> Result<(), BackendError> {
+        self.as_mut().initialize_empty(initial)
+    }
+
+    fn append_journal(&mut self, expected_len: usize, frame: &[u8]) -> Result<usize, BackendError> {
+        self.as_mut().append_journal(expected_len, frame)
+    }
+
+    fn truncate_journal(
+        &mut self,
+        expected_len: usize,
+        new_len: usize,
+    ) -> Result<(), BackendError> {
+        self.as_mut().truncate_journal(expected_len, new_len)
+    }
+
+    fn publish_checkpoint(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError> {
+        self.as_mut().publish_checkpoint(expected, replacement)
+    }
+
+    fn close(self) -> Result<(), BackendError> {
+        drop(self);
+        Ok(())
+    }
+}
+
 /// Descriptor-bound filesystem implementation of [`DurableBackend`].
 pub struct FileBackend {
     directory: ExclusiveDirectory,

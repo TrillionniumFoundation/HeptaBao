@@ -8,7 +8,8 @@ use base64::{Engine as _, engine::general_purpose::STANDARD};
 #[cfg(test)]
 use heptabao_durable_service::PutRequest;
 use heptabao_durable_service::{
-    Barrier, DurableService, MutationOutcome, ReconciliationStatus, Secret, ServiceError,
+    Barrier, DurableBackend, DurableService, MutationOutcome, ReconciliationStatus, Secret,
+    ServiceError,
 };
 use ring::hmac;
 use serde::{Deserialize, Serialize};
@@ -23,6 +24,9 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
+
+use crate::postgres_durable::PostgresDurableBackend;
+use crate::postgres_storage::PgStorageConfig;
 
 const CURRENT_STATE_SCHEMA: u32 = 14;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -74,6 +78,13 @@ const REKEY_METADATA_LIMIT: u64 = 96 * 1024;
 const INIT_RECOVERY_FILE: &str = "init-recovery.hbe";
 const INIT_RECOVERY_LIMIT: u64 = 16 * 1024;
 const MAX_BACKUP_TRANSFER_BYTES: usize = 20 * 1024 * 1024;
+const DURABLE_PROFILE_FILE: &str = "durable-backend.json";
+const DURABLE_PROFILE_LIMIT: u64 = 16 * 1024;
+// Schema 1 markers had only a scope and are deliberately rejected: they do
+// not bind the database target, so upgrading them in place would permit a
+// restart against a different PostgreSQL database.  An operator must rerun
+// the explicit initialization/migration procedure to produce schema 2.
+const DURABLE_PROFILE_SCHEMA: u32 = 2;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -84,6 +95,79 @@ struct SealMetadata {
     secret_shares: u8,
     secret_threshold: u8,
     wrapped_barrier_key: String,
+}
+
+/// Local, non-secret declaration of the physical durable backend.  Sealed
+/// application artifacts remain in the selected backend; this marker only
+/// prevents an initialized PostgreSQL deployment from being silently reopened
+/// against the local filesystem after a restart.
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct DurableProfile {
+    schema: u32,
+    backend: String,
+    scope: Option<String>,
+    binding: String,
+}
+
+impl DurableProfile {
+    fn postgresql(config: &PgStorageConfig) -> Self {
+        Self {
+            schema: DURABLE_PROFILE_SCHEMA,
+            backend: "postgresql".into(),
+            scope: Some(config.scope.clone()),
+            binding: durable_profile_binding(config),
+        }
+    }
+
+    fn validate(&self) -> Result<(), &'static str> {
+        if self.schema != DURABLE_PROFILE_SCHEMA {
+            return Err("unsupported durable backend profile schema");
+        }
+        match self.backend.as_str() {
+            "postgresql"
+                if self.scope.as_deref().is_some_and(|scope| {
+                    !scope.is_empty() && scope.len() <= 256 && !scope.chars().any(char::is_control)
+                }) && self.binding.len() == 64
+                    && self.binding.bytes().all(|byte| byte.is_ascii_hexdigit())
+                    && self.binding.bytes().all(|byte| !byte.is_ascii_uppercase()) =>
+            {
+                Ok(())
+            }
+            _ => Err("invalid durable backend profile"),
+        }
+    }
+}
+
+fn durable_profile_binding(config: &PgStorageConfig) -> String {
+    fn append_field(output: &mut Vec<u8>, value: &str) {
+        output.extend_from_slice(&(value.len() as u64).to_be_bytes());
+        output.extend_from_slice(value.as_bytes());
+    }
+    let mut input = b"heptabao.durable-profile.v2\0".to_vec();
+    append_field(&mut input, &config.endpoint.origin);
+    append_field(&mut input, &config.endpoint.address.to_string());
+    append_field(&mut input, &config.endpoint.server_name);
+    append_field(&mut input, &config.endpoint.path_prefix);
+    append_field(&mut input, &config.endpoint.ca_pem);
+    append_field(&mut input, &config.connection_url);
+    append_field(&mut input, &config.username);
+    append_field(&mut input, &config.scope);
+    hex(&crypto::digest(&input))
+}
+
+// PgStorageConfig deliberately does not derive Clone because it owns a secret
+// password and zeroizes it on drop.  Backend open/initialize needs a temporary
+// owned copy while Service keeps the enrolled configuration for the next
+// unseal; every copy has the same zeroizing Drop implementation.
+fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
+    PgStorageConfig {
+        endpoint: config.endpoint.clone(),
+        connection_url: config.connection_url.clone(),
+        username: config.username.clone(),
+        password: config.password.clone(),
+        scope: config.scope.clone(),
+    }
 }
 
 impl SealMetadata {
@@ -648,6 +732,8 @@ pub struct Service {
     audit_socket_failures: u64,
     audit_syslog: Option<AuditSyslogConfig>,
     audit_syslog_failures: u64,
+    postgres_durable: Option<PgStorageConfig>,
+    durable_profile: Option<DurableProfile>,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
@@ -748,6 +834,40 @@ impl Service {
         Ok(())
     }
 
+    /// Select PostgreSQL for the encrypted durable-service artifacts.  This is
+    /// process configuration and is intentionally unavailable through the
+    /// HTTP API.  A profile already published during initialization must match
+    /// the same scope; an initialized filesystem store cannot be converted by
+    /// silently falling back to a different backend.
+    pub fn install_postgres_durable_storage(
+        &mut self,
+        config: PgStorageConfig,
+    ) -> Result<(), String> {
+        if self.state.is_some() || self.durable.is_some() {
+            return Err("durable backend configuration is immutable while unsealed".into());
+        }
+        config
+            .validate()
+            .map_err(|_| "invalid PostgreSQL durable backend configuration".to_owned())?;
+        if let Some(profile) = self.durable_profile.as_ref() {
+            if profile.backend != "postgresql"
+                || profile.scope.as_deref() != Some(config.scope.as_str())
+                || profile.binding != durable_profile_binding(&config)
+            {
+                return Err(
+                    "PostgreSQL durable backend scope does not match the initialized profile"
+                        .into(),
+                );
+            }
+        } else if self.initialized() {
+            return Err(
+                "initialized filesystem durable storage cannot be replaced in place".into(),
+            );
+        }
+        self.postgres_durable = Some(config);
+        Ok(())
+    }
+
     /// The TLS private key and audit file belong outside the exclusively owned
     /// data directory. The directory is never initialized implicitly on serve.
     pub fn new(data_dir: PathBuf, audit_path: &Path) -> Result<Self, &'static str> {
@@ -808,6 +928,7 @@ impl Service {
             .recover(&mut audit, &audit_key)
             .map_err(|_| "audit verification or rotation recovery failed")?;
         let seal = load_seal_metadata(&data_dir)?;
+        let durable_profile = load_durable_profile(&data_dir)?;
         let pending_rekey = load_pending_rekey(&data_dir, seal.as_ref())?;
         let rekey = pending_rekey.map(|pending| RekeyState {
             nonce: pending.nonce.clone(),
@@ -849,6 +970,8 @@ impl Service {
             audit_socket_failures: 0,
             audit_syslog: None,
             audit_syslog_failures: 0,
+            postgres_durable: None,
+            durable_profile,
             durable: None,
             state: None,
             state_digest: None,
@@ -2497,6 +2620,7 @@ impl Service {
 
     fn initialized(&self) -> bool {
         self.data_dir.join("state.hbs").exists()
+            || self.data_dir.join(DURABLE_PROFILE_FILE).exists()
     }
 
     fn seal_status(&self) -> Response {
@@ -2663,14 +2787,40 @@ impl Service {
                 );
             }
         };
-        let mut durable = match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
-            Ok(value) => value,
-            Err(_) => {
-                return (
-                    Response::error(503, "cannot prepare durable initialization state"),
-                    false,
-                );
+        let (mut durable, durable_profile) = match self.postgres_durable.as_ref() {
+            Some(config) => {
+                let backend =
+                    match PostgresDurableBackend::initialize(clone_pg_storage_config(config)) {
+                        Ok(value) => Box::new(value) as Box<dyn DurableBackend>,
+                        Err(_) => {
+                            return (
+                                Response::error(
+                                    503,
+                                    "cannot initialize PostgreSQL durable backend",
+                                ),
+                                false,
+                            );
+                        }
+                    };
+                match DurableService::create_new_with_backend(backend, barrier, MAX_OPERATIONS) {
+                    Ok(value) => (value, Some(DurableProfile::postgresql(config))),
+                    Err(_) => {
+                        return (
+                            Response::error(503, "cannot prepare durable initialization state"),
+                            false,
+                        );
+                    }
+                }
             }
+            None => match DurableService::create_new(&stage.path, barrier, MAX_OPERATIONS) {
+                Ok(value) => (value, None),
+                Err(_) => {
+                    return (
+                        Response::error(503, "cannot prepare durable initialization state"),
+                        false,
+                    );
+                }
+            },
         };
         let bytes = match serde_json::to_vec(&state) {
             Ok(value) => Zeroizing::new(value),
@@ -2721,6 +2871,14 @@ impl Service {
         }
         if persist_seal_metadata(&stage.path, &seal).is_err() {
             return (Response::error(503, "cannot prepare seal metadata"), false);
+        }
+        if let Some(profile) = durable_profile.as_ref()
+            && persist_durable_profile(&stage.path, profile).is_err()
+        {
+            return (
+                Response::error(503, "cannot prepare durable backend profile"),
+                false,
+            );
         }
         drop(durable);
 
@@ -2774,6 +2932,7 @@ impl Service {
             }
         };
         self.seal = Some(seal);
+        self.durable_profile = durable_profile;
         self.state = None;
         self.durable = None;
         self.barrier_key = None;
@@ -3008,8 +3167,41 @@ impl Service {
         self.state = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
-        let mut durable = DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
-            .map_err(|_| Response::error(400, "unseal or recovery failed"))?;
+        let mut durable = match self.durable_profile.as_ref() {
+            Some(profile) if profile.backend == "postgresql" => {
+                let Some(config) = self.postgres_durable.as_ref() else {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend configuration is required before unseal",
+                    ));
+                };
+                if profile.scope.as_deref() != Some(config.scope.as_str()) {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend scope does not match the initialized profile",
+                    ));
+                }
+                if profile.binding != durable_profile_binding(config) {
+                    return Err(Response::error(
+                        503,
+                        "PostgreSQL durable backend target does not match the initialized profile",
+                    ));
+                }
+                let backend = PostgresDurableBackend::open(clone_pg_storage_config(config))
+                    .map_err(|_| Response::error(503, "PostgreSQL durable backend unavailable"))?;
+                DurableService::reopen_with_backend(
+                    Box::new(backend) as Box<dyn DurableBackend>,
+                    barrier,
+                    MAX_OPERATIONS,
+                )
+                .map_err(|_| Response::error(400, "unseal or recovery failed"))?
+            }
+            Some(_) => {
+                return Err(Response::error(503, "unsupported durable backend profile"));
+            }
+            None => DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
+                .map_err(|_| Response::error(400, "unseal or recovery failed"))?,
+        };
         let (state, bytes, state_rewrite_required) = Self::load_state_from_durable(&durable)?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
@@ -5066,6 +5258,82 @@ fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static 
         serde_json::from_slice(&encoded).map_err(|_| "invalid seal metadata")?;
     metadata.validate()?;
     Ok(Some(metadata))
+}
+
+fn load_durable_profile(data_dir: &Path) -> Result<Option<DurableProfile>, &'static str> {
+    let path = data_dir.join(DURABLE_PROFILE_FILE);
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let file = match options.open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err("cannot safely open durable backend profile"),
+    };
+    check_private_file(&file)
+        .map_err(|_| "durable backend profile must be a private regular file")?;
+    if file
+        .metadata()
+        .map_err(|_| "cannot inspect durable backend profile")?
+        .len()
+        > DURABLE_PROFILE_LIMIT
+    {
+        return Err("durable backend profile exceeds the supported bound");
+    }
+    let mut encoded = Vec::new();
+    file.take(DURABLE_PROFILE_LIMIT + 1)
+        .read_to_end(&mut encoded)
+        .map_err(|_| "cannot read durable backend profile")?;
+    if encoded.len() as u64 > DURABLE_PROFILE_LIMIT {
+        return Err("durable backend profile exceeds the supported bound");
+    }
+    let profile: DurableProfile =
+        serde_json::from_slice(&encoded).map_err(|_| "invalid durable backend profile")?;
+    profile.validate()?;
+    Ok(Some(profile))
+}
+
+fn persist_durable_profile(
+    data_dir: &Path,
+    profile: &DurableProfile,
+) -> Result<(), std::io::Error> {
+    profile.validate().map_err(std::io::Error::other)?;
+    private_directory(data_dir)?;
+    let encoded = serde_json::to_vec(profile)
+        .map_err(|_| std::io::Error::other("cannot encode durable backend profile"))?;
+    if encoded.len() as u64 > DURABLE_PROFILE_LIMIT {
+        return Err(std::io::Error::other(
+            "durable backend profile exceeds supported bound",
+        ));
+    }
+    let suffix = hex(&crypto::random::<8>().map_err(std::io::Error::other)?);
+    let temporary = data_dir.join(format!(".{DURABLE_PROFILE_FILE}.{suffix}.next"));
+    let final_path = data_dir.join(DURABLE_PROFILE_FILE);
+    let result = (|| {
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+        }
+        let mut file = options.open(&temporary)?;
+        check_private_file(&file)?;
+        file.write_all(&encoded)?;
+        file.sync_all()?;
+        fs::rename(&temporary, &final_path)?;
+        File::open(data_dir)?.sync_all()
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
 }
 
 fn load_pending_rekey(

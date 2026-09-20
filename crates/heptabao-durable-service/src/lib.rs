@@ -481,7 +481,7 @@ enum JournalEvent {
     },
 }
 
-pub struct DurableService<B: Barrier, P: DurableBackend = FileBackend> {
+pub struct DurableService<B: Barrier, P: DurableBackend = Box<dyn DurableBackend>> {
     backend: P,
     barrier: B,
     snapshot: Snapshot,
@@ -528,7 +528,8 @@ impl<B: Barrier> DurableService<B> {
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let backend = FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?;
+        let backend = Box::new(FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?)
+            as Box<dyn DurableBackend>;
         Self::create_new_with_backend(backend, barrier, max_retained_requests)
     }
 
@@ -538,7 +539,8 @@ impl<B: Barrier> DurableService<B> {
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let backend = FileBackend::open(root.as_ref()).map_err(map_backend_error)?;
+        let backend = Box::new(FileBackend::open(root.as_ref()).map_err(map_backend_error)?)
+            as Box<dyn DurableBackend>;
         Self::reopen_with_backend(backend, barrier, max_retained_requests)
     }
 }
