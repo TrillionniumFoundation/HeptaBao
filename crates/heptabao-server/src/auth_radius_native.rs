@@ -12,6 +12,7 @@ const NATIVE_FIELDS: &[&str] = &[
     "read_timeout",
     "nas_port",
     "nas_identifier",
+    "token_no_default_policy",
 ];
 const MAX_NATIVE_TIMEOUT: u64 = 60;
 
@@ -28,6 +29,11 @@ pub(super) struct RadiusNativeConfig {
     read_timeout: u64,
     nas_port: i64,
     nas_identifier: String,
+    #[serde(default, skip_serializing_if = "is_false")]
+    token_no_default_policy: bool,
+    // None is the schema-24 normalized policy representation; do not infer nil.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_policies_configured: Option<bool>,
 }
 impl Default for RadiusNativeConfig {
     fn default() -> Self {
@@ -40,6 +46,8 @@ impl Default for RadiusNativeConfig {
             read_timeout: 10,
             nas_port: 10,
             nas_identifier: String::new(),
+            token_no_default_policy: false,
+            token_policies_configured: Some(false),
         }
     }
 }
@@ -89,7 +97,7 @@ impl RadiusNativeConfig {
         json!({"host":self.host,"port":self.port,"unregistered_user_policies":self.unregistered_user_policies,
             "dial_timeout":self.dial_timeout,"read_timeout":self.read_timeout,"nas_port":self.nas_port,"nas_identifier":self.nas_identifier,
             "token_policies":mount.policies,"token_ttl":mount.token_ttl,"token_max_ttl":mount.token_max_ttl,
-            "token_period":mount.token_period,"token_explicit_max_ttl":mount.token_explicit_max_ttl,"token_num_uses":mount.token_num_uses})
+            "token_period":mount.token_period,"token_explicit_max_ttl":mount.token_explicit_max_ttl,"token_num_uses":mount.token_num_uses,"token_no_default_policy":self.token_no_default_policy})
     }
 }
 fn native_username(value: &str) -> bool {
@@ -296,7 +304,19 @@ impl AuthState {
                 *target = duration(body, field, *target)?;
             }
         }
+        if let Some(value) = body.get("token_no_default_policy") {
+            config.token_no_default_policy = if value.is_null() {
+                false
+            } else {
+                boolean(
+                    body,
+                    "token_no_default_policy",
+                    config.token_no_default_policy,
+                )?
+            };
+        }
         if body.get("token_policies").is_some() {
+            config.token_policies_configured = Some(true);
             mount.policies = policy_field(body, "token_policies")?;
         }
         for (field, target) in [
@@ -511,7 +531,15 @@ impl AuthState {
         policies.extend(normalized_policies(
             login_policies.iter().map(String::as_str),
         )?);
-        policies.insert("default".into());
+        if !plan
+            .config
+            .native
+            .as_ref()
+            .ok_or_else(denied)?
+            .token_no_default_policy
+        {
+            policies.insert("default".into());
+        }
         let elapsed = plan.started.elapsed();
         let now = plan.now.saturating_add(
             elapsed
@@ -538,6 +566,15 @@ impl AuthState {
             },
             now,
         )?;
+        if response.body["auth"]["token_policies"]
+            .as_array()
+            .is_some_and(Vec::is_empty)
+        {
+            response.body["auth"]
+                .as_object_mut()
+                .ok_or_else(denied)?
+                .remove("token_policies");
+        }
         response.body["auth"]["metadata"] = json!({"username":plan.username,"policies":metadata});
         Ok(response)
     }
@@ -566,8 +603,17 @@ impl AuthState {
         // The upstream plugin compares raw fallback names at renewal; core only
         // normalizes the newly issued service token's policy set during login.
         let mut policies = config.policies.clone();
-        policies.extend(self.radius_login_policies(scope, username)?);
-        if !same_policies(&policies, &token.policies) {
+        let login_policies = self.radius_login_policies(scope, username)?;
+        let nil_policies = config
+            .native
+            .as_ref()
+            .is_some_and(|native| native.token_policies_configured == Some(false))
+            && policies.is_empty()
+            && login_policies.is_empty();
+        policies.extend(login_policies);
+        // EquivalentPolicies distinguishes nil from an explicit empty list.
+        // Legacy schema-24 config had already normalized this distinction away.
+        if nil_policies && token.policies.is_empty() || !same_policies(&policies, &token.policies) {
             return Err(err(500, "policies have changed, not renewing"));
         }
         let expiry = self.native_token_expiry(
@@ -584,7 +630,7 @@ impl AuthState {
         )?;
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expiry);
-        Ok(AuthResponse {
+        let mut response = AuthResponse {
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -592,6 +638,27 @@ impl AuthState {
             body: json!({"auth":{
             "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,"entity_id":token.entity_id.as_deref().unwrap_or(""),
             "metadata":{"username":username,"policies":metadata},"lease_duration":expiry-now,"renewable":true,"token_type":"service"}}),
+        };
+        if token.policies.is_empty() {
+            response.body["auth"]
+                .as_object_mut()
+                .ok_or_else(denied)?
+                .remove("token_policies");
+        }
+        Ok(response)
+    }
+    pub(crate) fn has_radius_no_default_policy(&self) -> bool {
+        self.radius_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount.native.as_ref().is_some_and(|config| {
+                    config.token_no_default_policy || config.token_policies_configured.is_some()
+                })
+            })
+        }) || self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::RadiusNative { .. })
+            ) && !token.policies.contains("default")
         })
     }
     pub(crate) fn has_native_radius_state(&self) -> bool {

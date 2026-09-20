@@ -1,4 +1,4 @@
-//! The enrolled LDAPS profile rebinds the original credential and searches live
+//! The LDAPS profiles rebind the original credential and search live
 //! groups on every renewal. Local policy, identity and commit authority are
 //! checked only after that observation returns to the Service writer.
 use super::provider_renewal::{same_policies, state_revision};
@@ -41,6 +41,7 @@ impl LdapRenewalPlan {
             return match outbound.ldap_authenticate_native(
                 &self.config.url,
                 &config.options(),
+                config.transport.as_ref(),
                 &self.username,
                 &self.credential.0,
             ) {

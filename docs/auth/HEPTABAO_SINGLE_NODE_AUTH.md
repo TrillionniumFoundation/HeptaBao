@@ -384,7 +384,16 @@ deletes use literal keys; reads and login lookup use lowercase names, matching
 OpenBao's asymmetric behavior. LIST supports `after`/`limit` URL query parameters.
 An existing user mapping replaces the unregistered-user fallback, including an
 empty mapping, and its policies are combined with mount policies. Login adds the
-default policy. Deleting a mapping does not necessarily revoke access: renewal
+default policy unless `token_no_default_policy` is true; explicitly assigned
+`default` is still retained. The flag defaults to false, survives partial updates,
+and null resets it to false. Existing tokens keep their issued policies when the
+flag changes. Zero-policy tokens do not gain renewal/lookup permission implicitly;
+an administrator can renew them. Their auth response omits `token_policies`.
+New configurations preserve OpenBao's nil-versus-empty policy distinction:
+with no fallback, omitted `token_policies` rejects a zero-policy renewal with 500,
+while explicit `[]` or null permits it. Older schema-24 configurations keep their
+already-normalized empty-list behavior because the original input is unrecoverable.
+These default-policy and policy-presence semantics require schema 25. Deleting a mapping does not necessarily revoke access: renewal
 rechecks PAP and compares the resulting policies. A changed effective policy set
 returns 500 without extending the token. Raw fallback CSV is preserved in
 readback and issued metadata; OpenBao's renewal compares those raw fallback names,
@@ -703,8 +712,22 @@ requires schema 23. Mixing configuration vocabularies returns 400; switching an
 existing profile returns 409 and requires a new mount.
 
 StartTLS, SASL, referrals, arbitrary filters, nested-group expansion and full
-OpenBao LDAP API/error parity remain product work. The manager-search profile
-does not remove the deployment's explicit endpoint and CA enrollment boundary.
+OpenBao LDAP API/error parity remain product work. New native mounts configure
+LDAPS through the standard `url`, `certificate`, `connection_timeout` and
+`request_timeout` fields. They do not require process endpoint enrollment.
+Certificate omission/empty uses system roots; explicit PEM selects only those
+roots, with full server-name validation. URLs admit DNS, IPv4 and bracketed IPv6,
+with port 636 by default. Connection and whole-exchange budgets default to 30 and
+90 seconds, respectively, and are bounded to 1–300 seconds in this implementation.
+DNS and system-root loading use four fixed workers and a bounded queue; timeout
+does not create a replacement worker for a blocked platform call. No LDAP
+referral or server response can select another endpoint or trust root.
+
+Schema 23/24 native records keep their original enrolled transport until an
+administrator explicitly writes a certificate or timeout field; normal partial
+updates and reads preserve it. API-owned transport requires schema 25. The
+configuration snapshot is checked again before publishing login or renewal,
+including when the CA or URL changes during directory I/O.
 
 ## Auth mount revision, tune and remount boundary
 

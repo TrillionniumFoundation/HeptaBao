@@ -1,6 +1,6 @@
-//! Native LDAP search/bind profile over one host-enrolled TLS connection.
+//! Native LDAP search/bind profile over one verified TLS connection.
 //! Filters are parsed before I/O; template values enter BER assertion values,
-//! never LDAP filter syntax. No referrals, controls, paging, retries, or new CA.
+//! never LDAP filter syntax. No referrals, controls, paging or protocol retries.
 use super::*;
 
 const MAX_FILTER_INPUT: usize = 4096;
@@ -103,10 +103,20 @@ impl Outbound {
         &self,
         url: &str,
         options: &LdapNativeOptions<'_>,
+        transport: Option<&LdapTransportConfig>,
         username: &str,
         password: &str,
     ) -> Result<Option<LdapNativeObservation>, &'static str> {
         options.validate(username, password)?;
+        if let Some(transport) = transport {
+            let mut stream = transport.connect(url)?;
+            let observation = authenticate_exchange(&mut stream, options, username, password)?;
+            stream
+                .sock
+                .remaining()
+                .map_err(|_| "LDAP operation deadline exceeded")?;
+            return Ok(observation);
+        }
         let (endpoint, target) = self.endpoint(url, "ldaps")?;
         if target.path != "/" {
             return Err("native LDAP target must be an enrolled origin");

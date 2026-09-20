@@ -135,6 +135,95 @@ class Trace:
                        and data.get('meta')==auth['metadata'])
 
 
+def token_policy_shape(auth, expected):
+    return isinstance(auth,dict) and auth.get('policies')==expected and (
+        auth.get('token_policies')==expected if expected else 'token_policies' not in auth)
+
+
+def run_no_default_scenarios(trace,restart):
+    call,check=trace.call,trace.check
+    mount='radius-nodefault';provider=trace.provider
+    call('nodefault.mount','POST','sys/auth/'+mount,{'type':'radius'},expected=204)
+    def config(label,**fields):
+        call('nodefault.'+label,'POST','auth/'+mount+'/config',fields,expected=204)
+    def flag(label,expected):
+        data=call('nodefault.'+label,'GET','auth/'+mount+'/config').get('data',{})
+        check('nodefault.'+label+'.flag',config_matches(data,token_no_default_policy=expected))
+    def login(label,policies):
+        auth=trace.login('nodefault.'+label,path='auth/'+mount+'/login',policies=policies)
+        check('nodefault.'+label+'.policy_shape',token_policy_shape(auth,policies))
+        return auth
+    def renew(label,auth,policies,via):
+        route,body,actor={
+            'self':('renew-self',{},auth['client_token']),
+            'token':('renew',{'token':auth['client_token']},None),
+            'accessor':('renew-accessor',{'accessor':auth['accessor']},None),
+        }[via]
+        result=call('nodefault.'+label+'.renew_'+via,'POST','auth/token/'+route,dict(body,increment=240),token=actor,contact=True)
+        renewed=result.get('auth',{})
+        check('nodefault.'+label+'.renew_'+via+'.snapshot',token_policy_shape(renewed,policies)
+              and renewal_token_shape(renewed,auth['client_token'],via_accessor=via=='accessor'))
+    config('initial',host='127.0.0.1',port=provider.port,secret=provider.secret.decode(),
+           token_ttl=120,token_max_ttl=600,nas_port=provider.nas_port,token_policies=[])
+    flag('initial_read',False)
+    default=login('default',['default'])
+    config('true',token_no_default_policy=True)
+    bare=login('bare',[])
+    before=provider.count()
+    call('nodefault.bare.self_lookup_denied','GET','auth/token/lookup-self',token=bare['client_token'],expected=403)
+    call('nodefault.bare.self_renew_denied','POST','auth/token/renew-self',{},token=bare['client_token'],expected=403)
+    check('nodefault.bare.no_default_authority',provider.count()==before)
+    data=call('nodefault.bare.lookup','POST','auth/token/lookup',{'token':bare['client_token']}).get('data',{})
+    check('nodefault.bare.lookup_policies',data.get('policies')==[])
+    for via in ('token','accessor'):renew('bare',bare,[],via)
+    renew('old_default',default,['default'],'self')
+    config('explicit_config',token_policies=['default']);login('explicit',['default'])
+    config('fallback_config',token_policies=[],unregistered_user_policies='default');login('fallback',['default'])
+    config('empty_fallback',unregistered_user_policies='')
+    config('false',token_no_default_policy=False);flag('false_read',False)
+    login('after_false',['default']);renew('bare_after_false',bare,[],'token')
+    call('nodefault.policy','PUT','sys/policies/acl/nodefault-renew',{'policy':
+         'path "auth/token/renew-self" { capabilities = ["update"] } path "auth/token/lookup-self" { capabilities = ["read"] }'},expected=204)
+    config('mapped',token_policies=['nodefault-renew'])
+    original=login('original',['default','nodefault-renew'])
+    config('mapped_true',token_no_default_policy=True)
+    issued=login('issued',['nodefault-renew'])
+    config('partial',token_ttl=121);flag('partial_read',True)
+    config('null',token_no_default_policy=None);flag('null_read',False)
+    login('after_null',['default','nodefault-renew'])
+    config('before_restart',token_no_default_policy=True)
+    restart();check('nodefault.restart',True);flag('restart_read',True)
+    trace.lookup_metadata('nodefault.reopened_lookup',issued)
+    login('reopened_login',['nodefault-renew'])
+    for label,fields in [('toggle_false',{'token_no_default_policy':False}),
+                         ('add_default',{'token_no_default_policy':True,'token_policies':['default','nodefault-renew']}),
+                         ('remove_default',{'token_policies':['nodefault-renew']})]:
+        config(label,**fields)
+        for name,auth,policies in [('old',original,['default','nodefault-renew']),('new',issued,['nodefault-renew'])]:
+            for via in ('self','token','accessor'):renew(label+'.'+name,auth,policies,via)
+    config('real_policy_change',token_policies=['different'])
+    before=call('nodefault.changed.before','GET','auth/token/lookup-self',token=issued['client_token'])['data']['ttl']
+    call('nodefault.changed.rejected','POST','auth/token/renew',{'token':issued['client_token'],'increment':300},expected=500,contact=True)
+    after=call('nodefault.changed.after','GET','auth/token/lookup-self',token=issued['client_token'])['data']['ttl']
+    check('nodefault.changed.no_extension',type(before) is int and type(after) is int and 0<after<=before)
+    # A fresh omitted token_policies slice is nil upstream; an explicit [] or
+    # null materializes an empty slice. EquivalentPolicies treats them differently.
+    for label,value in [('empty',[]),('null',None)]:
+        m='radius-nodefault-nil-'+label
+        call('nodefault.nil_'+label+'.mount','POST','sys/auth/'+m,{'type':'radius'},expected=204)
+        call('nodefault.nil_'+label+'.config','POST','auth/'+m+'/config',{
+            'host':'127.0.0.1','port':provider.port,'secret':provider.secret.decode(),
+            'token_no_default_policy':True,'token_ttl':120,'token_max_ttl':600,'nas_port':provider.nas_port},expected=204)
+        auth=trace.login('nodefault.nil_'+label+'.login',path='auth/'+m+'/login',policies=[])
+        call('nodefault.nil_'+label+'.rejected','POST','auth/token/renew',
+             {'token':auth['client_token'],'increment':240},expected=500,contact=True)
+        call('nodefault.nil_'+label+'.materialize','POST','auth/'+m+'/config',{'token_policies':value},expected=204)
+        body=call('nodefault.nil_'+label+'.accepted','POST','auth/token/renew',
+             {'token':auth['client_token'],'increment':240},contact=True)
+        check('nodefault.nil_'+label+'.empty_snapshot',token_policy_shape(body.get('auth'),[]))
+    check('nodefault.complete',True)
+
+
 def run_scenarios(trace,restart):
     call,check,config,read,login=trace.call,trace.check,trace.config,trace.read,trace.login
     provider=trace.provider
@@ -258,6 +347,7 @@ def run_scenarios(trace,restart):
     check('restart.renew_shape',response.get('auth',{}).get('lease_duration')==120 and renewal_token_shape(response.get('auth'),rotated['client_token'],via_accessor=False))
     entity=call('identity.read','GET','identity/entity/id/'+rotated['entity_id']).get('data',{})
     check('identity.alias',any(alias.get('name')=='alice' for alias in entity.get('aliases',[])))
+    run_no_default_scenarios(trace,restart)
     check('receipt.no_sensitive_values',not any(secret in json.dumps(trace.rows) for secret in [SECRET.decode(),PASSWORD.decode(),provider.secret.decode(),*trace.tokens]))
     check('complete',True)
 
@@ -271,6 +361,11 @@ MILESTONES={
     'url_username.lookup.self.meta','body_precedence.lookup.token.meta','username_false.lookup.accessor.meta',
     'restart.lookup.self.meta','restart.lookup.token.meta','restart.lookup.accessor.meta',
     'renew.accessor.shape','wrap.inner','wrap.single_use','denied.no_wrapper_or_extension',
+    'nodefault.bare.policy_shape','nodefault.bare.no_default_authority','nodefault.partial_read.flag',
+    'nodefault.null_read.flag','nodefault.restart_read.flag','nodefault.reopened_login.policy_shape',
+    'nodefault.add_default.new.renew_accessor.snapshot','nodefault.remove_default.old.renew_self.snapshot',
+    'nodefault.changed.no_extension','nodefault.nil_empty.rejected','nodefault.nil_empty.empty_snapshot',
+    'nodefault.nil_null.rejected','nodefault.nil_null.empty_snapshot','nodefault.complete',
     'timeout.zero_no_packet','restart.renew_shape','identity.alias','receipt.no_sensitive_values','complete',
 }
 

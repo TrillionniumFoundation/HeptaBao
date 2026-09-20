@@ -6,7 +6,7 @@ A fresh `ldap` mount accepts OpenBao-style `binddn`, `bindpass`, `userdn`,
 `userattr`, `userfilter`, `groupdn`, `groupattr`, `groupfilter`,
 `case_sensitive_names`, `username_as_alias` and token lifetime/policy fields.
 Explicit `url` and `userattr` updates are stored in lowercase, matching OpenBao.
-It uses one host-enrolled LDAPS connection for manager bind, unique user search,
+It uses one verified LDAPS connection for manager bind, unique user search,
 user bind, manager rebind and optional group search. `userattr` and `groupattr`
 default to `cn`; the default user filter compares the configured user attribute
 with the username. The default group filter matches `memberUid`, `member` or
@@ -27,7 +27,8 @@ Renewal retains the issued alias. Provider credentials are encrypted and zeroize
 on drop; token-API children and orphans never inherit them. Config, auth mount,
 target token, live actor and mapping absence/presence are rechecked after I/O.
 
-This profile requires schema 23. Existing bounded configuration and local
+The manager-search state requires schema 23; new API-owned transport requires
+schema 25. Existing bounded configuration and local
 user/MFA authority stay intact. A request mixing the two configuration
 vocabularies returns 400; switching an existing profile returns 409. Use a new
 mount to select native configuration, including when a legacy local user was
@@ -36,15 +37,34 @@ created before configuration.
 Filters support AND, OR, NOT, equality and presence, with `{{.Username}}`,
 `{{.UserAttr}}` and group-only `{{.UserDN}}`. Template values become BER assertion
 values, never filter syntax. Filters are bounded to 4 KiB input, 16 KiB wire,
-12 levels and 128 nodes. The entire exchange has one three-second deadline,
-64 KiB response frames and a 256 KiB total response budget. Search admits at most
+12 levels and 128 nodes, with 64 KiB response frames and a 256 KiB total response budget. Search admits at most
 two user entries to establish uniqueness and 128 groups; multiple users fail.
 Substring/extended filters, general Go templates, anonymous discovery, paging,
 referrals, StartTLS, SASL and a complete Active Directory matrix remain open.
-The endpoint address, TLS name and CA still require process enrollment.
+New mounts use the standard `url`, `certificate`, `connection_timeout` and
+`request_timeout` configuration fields without process endpoint enrollment. An
+empty certificate selects system roots; explicit PEM selects only its own roots
+and never falls back after a verification failure. TLS verifies both the chain
+and the URL host, including IP SANs. LDAPS URLs support DNS, IPv4 and bracketed
+IPv6 with default port 636. Connection setup defaults to 30 seconds and the
+entire exchange to 90 seconds; both currently accept 1–300 seconds. These are
+absolute budgets, not per-message extensions. DNS and initial system-root loading
+run in a fixed four-worker pool with a queue of sixteen; abandoned requests do
+not spawn replacement resolver threads. A resolved address list is limited to
+sixteen and fixed for the connection attempt. These bounds and LDAPS-only
+transport remain narrower than the full OpenBao configuration surface.
+
+Old native records retain their process-enrolled address and CA, including the
+three-second exchange budget, until an administrator explicitly writes a
+certificate or timeout field. Unrelated partial updates preserve their authority.
+The transport snapshot enters the existing post-I/O configuration comparison,
+so changing a CA, target or deadline invalidates pending login/renewal results.
 
 `ldap_native_live.py` compares this profile with pinned OpenBao 2.6.2 using actual
-OpenLDAP. `ldap_native_upgrade.py` exercises the pinned schema-22 binary and store,
+OpenLDAP with no candidate endpoint enrollment, including DNS and API CA rotation.
+`ldap_transport_upgrade.py` exercises schema 24 transport preservation and explicit
+migration, existing direct tokens, downgrade refusal and recovery.
+`ldap_native_upgrade.py` exercises the pinned schema-22 binary and store,
 legacy mapping revocation, native optional mappings, credential isolation,
 downgrade refusal and recovery. These are scoped tests, not full migration or
 production qualification.

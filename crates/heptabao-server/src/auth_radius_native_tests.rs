@@ -628,3 +628,215 @@ fn native_radius_profile_boundaries_provenance_and_issued_cap_survive_restart() 
         Some(TokenAuthProvenance::Radius { .. })
     ));
 }
+
+#[test]
+fn native_radius_no_default_config_preserves_legacy_bytes_and_null_resets() {
+    let (mut s, r) = fixture();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "radius",
+    };
+    let original = Zeroizing::new(serde_json::to_vec(s.radius_native_at(scope).unwrap()).unwrap());
+    assert!(!String::from_utf8_lossy(&original).contains("token_no_default_policy"));
+    let mut legacy_json: Value = serde_json::from_slice(&original).unwrap();
+    legacy_json
+        .as_object_mut()
+        .unwrap()
+        .remove("token_policies_configured");
+    let legacy_bytes = Zeroizing::new(serde_json::to_vec(&legacy_json).unwrap());
+    let legacy: RadiusNativeConfig = serde_json::from_slice(&legacy_bytes).unwrap();
+    assert!(!legacy.token_no_default_policy);
+    assert_eq!(legacy.token_policies_configured, None);
+    assert_eq!(serde_json::to_value(&legacy).unwrap(), legacy_json);
+    assert!(
+        s.has_radius_no_default_policy(),
+        "new config records nil provenance even before enabling the flag"
+    );
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_no_default_policy": true}),
+    );
+    assert!(s.has_radius_no_default_policy());
+    write(&mut s, &r, "auth/radius/config", json!({"token_ttl": 120}));
+    assert_eq!(
+        read(&mut s, &r, "auth/radius/config")["token_no_default_policy"],
+        true
+    );
+    let saved = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+    let mut s: AuthState = serde_json::from_slice(&saved).unwrap();
+    s.validate_online_auth().unwrap();
+    assert!(s.has_radius_no_default_policy());
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_no_default_policy": null}),
+    );
+    assert_eq!(
+        read(&mut s, &r, "auth/radius/config")["token_no_default_policy"],
+        false
+    );
+    assert_eq!(
+        *original,
+        serde_json::to_vec(s.radius_native_at(scope).unwrap()).unwrap()
+    );
+}
+
+#[test]
+fn native_radius_no_default_omits_empty_token_policies_without_adding_permissions() {
+    let (mut s, r) = fixture();
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_no_default_policy": true, "token_policies": []}),
+    );
+    let auth = login(&mut s, "alice");
+    let raw = bearer(&auth);
+    assert_eq!(auth.body["auth"]["policies"], json!([]));
+    assert!(auth.body["auth"].get("token_policies").is_none());
+    assert!(s.tokens[&hash(&raw)].policies.is_empty());
+    let actor = s.authenticate(&raw, 110).unwrap();
+    assert_eq!(
+        s.prepare_provider_renewal(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/renew-self",
+            &json!({}),
+            110
+        )
+        .err()
+        .unwrap()
+        .status,
+        403
+    );
+    for via in ["renew", "renew-accessor"] {
+        let (actor, plan) = renew(&mut s, &r, &raw, via, 115);
+        let response = accept(&mut s, &actor, plan, 115).unwrap();
+        assert_eq!(response.body["auth"]["policies"], json!([]));
+        assert!(response.body["auth"].get("token_policies").is_none());
+    }
+    for fields in [
+        json!({"token_policies":["default"]}),
+        json!({"token_policies":[],"unregistered_user_policies":"default"}),
+    ] {
+        write(&mut s, &r, "auth/radius/config", fields);
+        assert_eq!(
+            login(&mut s, "alice").body["auth"]["token_policies"],
+            json!(["default"])
+        );
+    }
+}
+
+#[test]
+fn native_radius_no_default_toggle_preserves_issued_policies_on_all_renew_paths() {
+    let (mut s, r) = fixture();
+    write(
+        &mut s,
+        &r,
+        "sys/policies/acl/radius-renew",
+        json!({"policy":"path \"auth/token/renew-self\" { capabilities = [\"update\"] }"}),
+    );
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_policies":["radius-renew"]}),
+    );
+    let original = bearer(&login(&mut s, "alice"));
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_no_default_policy":true}),
+    );
+    let bare = bearer(&login(&mut s, "alice"));
+    let saved = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+    let mut s: AuthState = serde_json::from_slice(&saved).unwrap();
+    for fields in [
+        json!({"token_no_default_policy":false}),
+        json!({"token_no_default_policy":true,"token_policies":["default","radius-renew"]}),
+        json!({"token_policies":["radius-renew"]}),
+    ] {
+        write(&mut s, &r, "auth/radius/config", fields);
+        assert!(
+            s.has_radius_no_default_policy(),
+            "issued native policies retain schema fence after flag reset"
+        );
+        for (raw, expected) in [
+            (&original, json!(["default", "radius-renew"])),
+            (&bare, json!(["radius-renew"])),
+        ] {
+            for via in ["renew-self", "renew", "renew-accessor"] {
+                let (actor, plan) = renew(&mut s, &r, raw, via, 115);
+                assert_eq!(
+                    accept(&mut s, &actor, plan, 115).unwrap().body["auth"]["token_policies"],
+                    expected
+                );
+            }
+        }
+    }
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_policies":["different"]}),
+    );
+    let before = s.tokens[&hash(&bare)].expires_at;
+    let (actor, plan) = renew(&mut s, &r, &bare, "renew", 115);
+    assert_eq!(accept(&mut s, &actor, plan, 115).err().unwrap().status, 500);
+    assert_eq!(s.tokens[&hash(&bare)].expires_at, before);
+}
+
+#[test]
+fn native_radius_nil_empty_policy_distinction_and_legacy_normalization() {
+    for empty in [json!([]), Value::Null] {
+        let (mut s, r) = fixture();
+        write(
+            &mut s,
+            &r,
+            "auth/radius/config",
+            json!({"token_no_default_policy":true}),
+        );
+        let raw = bearer(&login(&mut s, "alice"));
+        let (actor, plan) = renew(&mut s, &r, &raw, "renew", 115);
+        assert_eq!(accept(&mut s, &actor, plan, 115).err().unwrap().status, 500);
+        write(
+            &mut s,
+            &r,
+            "auth/radius/config",
+            json!({"token_policies":empty}),
+        );
+        let (actor, plan) = renew(&mut s, &r, &raw, "renew", 115);
+        assert_eq!(accept(&mut s, &actor, plan, 115).unwrap().status, 200);
+    }
+    let (mut s, r) = fixture();
+    s.radius_mounts
+        .get_mut("")
+        .unwrap()
+        .get_mut("radius")
+        .unwrap()
+        .native
+        .as_mut()
+        .unwrap()
+        .token_policies_configured = None;
+    assert!(!s.has_radius_no_default_policy());
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_no_default_policy":true}),
+    );
+    let raw = bearer(&login(&mut s, "alice"));
+    let saved = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+    let mut s: AuthState = serde_json::from_slice(&saved).unwrap();
+    let (actor, plan) = renew(&mut s, &r, &raw, "renew", 115);
+    assert_eq!(
+        accept(&mut s, &actor, plan, 115).unwrap().status,
+        200,
+        "old normalized empty policies must not be guessed to have been nil"
+    );
+}

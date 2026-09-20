@@ -635,6 +635,7 @@ impl LdapLoginPlan {
             return match outbound.ldap_authenticate_native(
                 &self.config.url,
                 &config.options(),
+                config.transport.as_ref(),
                 &self.name,
                 &self.password,
             ) {

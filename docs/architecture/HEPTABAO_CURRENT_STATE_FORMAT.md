@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **24**. Its source constant is
+The current Service state schema is **25**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -63,7 +63,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 21 | Direct OIDC role provenance and native role/mount TTL, periodic and explicit-maximum limits. Nonzero RADIUS period/explicit-maximum configuration and direct periodic RADIUS tokens must be absent. |
 | 22 | RADIUS periodic and explicit-maximum configuration, direct periodic token snapshots and empty configured RADIUS policy sets. Native LDAP state must be absent. |
 | 23 | Native LDAP manager-search configuration, optional user mappings, direct-token credentials bound to the issued alias and opaque Identity aliases. Native RADIUS configuration, user-map mount entries and provenance must be absent. |
-| 24 | Current format, adding native RADIUS host/secret/NAS/timeout configuration, optional user mappings and direct-token credentials with issued metadata. |
+| 24 | Native RADIUS host/secret/NAS/timeout configuration, optional user mappings and direct-token credentials with issued metadata. LDAP API-owned transport and extended RADIUS default-policy state must be absent. |
+| 25 | Current format, adding native LDAP URL/CA/timeout transport authority and native RADIUS default-policy semantics. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -149,8 +150,26 @@ grants a fixed socket address but need not carry that secret. Issued username an
 policy metadata survive renewal and lookup. Children and orphans retain their
 own token-API provenance without provider credentials or metadata.
 
+Schema 25 is required for native LDAP API-owned transport. New native mounts
+use configured LDAPS URLs, optional certificate roots and connection/request
+timeouts without process endpoint enrollment. Old native records with no
+`transport` field retain the process-enrolled authority until an administrator
+explicitly writes `certificate`, `connection_timeout` or `request_timeout`.
+Unrelated partial updates preserve the old transport mode. The owned config
+snapshot participates in login/renewal revision checks; late observations cannot
+publish after a URL, CA or timeout change. Reading an old record does not migrate
+its transport or storage. Old binaries must reject this state after mutation.
+
+Schema 25 also records native RADIUS `token_no_default_policy` and whether new
+configuration explicitly supplied `token_policies`. The latter preserves the
+upstream difference between nil and an explicit empty list during zero-policy
+token renewal. Missing presence state in old schema-24 records retains its prior
+normalized-list behavior; no guessed reconstruction occurs. A direct native token
+without `default` also requires schema 25 even if configuration later resets the
+flag, since issued policies remain unchanged during renewal.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 24. An authenticated
+it. Initialization and committed mutations use schema 25. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -164,7 +183,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-24-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-25-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

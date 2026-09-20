@@ -584,3 +584,101 @@ fn native_ldap_issue_explicit_cap_persisted_and_token_api_children_have_no_crede
             .contains("synthetic-user-secret")
     );
 }
+
+#[test]
+fn native_ldap_transport_preserves_legacy_authority_until_explicit_configuration() {
+    let (state, root) = fixture();
+    assert!(state.has_native_ldap_transport());
+    let mut encoded = serde_json::to_value(&state).unwrap();
+    encoded["ldap_mounts"][""]["directory"]["native"]
+        .as_object_mut()
+        .unwrap()
+        .remove("transport");
+    let mut legacy: AuthState = serde_json::from_value(encoded.clone()).unwrap();
+    assert!(!legacy.has_native_ldap_transport());
+    assert_eq!(serde_json::to_value(&legacy).unwrap(), encoded);
+    let config = read(&mut legacy, &root, "auth/directory/config");
+    assert!(config.get("certificate").is_none());
+    update(
+        &mut legacy,
+        &root,
+        "auth/directory/config",
+        json!({"token_ttl":90}),
+    );
+    assert!(!legacy.has_native_ldap_transport());
+    legacy.validate_native_ldap_state().unwrap();
+    update(
+        &mut legacy,
+        &root,
+        "auth/directory/config",
+        json!({"certificate":""}),
+    );
+    assert!(legacy.has_native_ldap_transport());
+    let config = read(&mut legacy, &root, "auth/directory/config");
+    assert_eq!(config["certificate"], "");
+    assert_eq!(config["connection_timeout"], 30);
+    assert_eq!(config["request_timeout"], 90);
+    let persisted: AuthState =
+        serde_json::from_value(serde_json::to_value(&legacy).unwrap()).unwrap();
+    assert!(persisted.has_native_ldap_transport());
+    persisted.validate_native_ldap_state().unwrap();
+}
+
+#[test]
+fn native_ldap_transport_validation_is_atomic_and_url_defaults_are_persisted() {
+    let (mut state, root) = fixture();
+    for url in [
+        "ldaps://localhost",
+        "ldaps://[::1]",
+        "ldaps://[::1]:636/",
+        "ldaps://127.0.0.1",
+    ] {
+        update(
+            &mut state,
+            &root,
+            "auth/directory/config",
+            json!({"url":url}),
+        );
+        state.validate_native_ldap_state().unwrap();
+        assert_eq!(read(&mut state, &root, "auth/directory/config")["url"], url);
+    }
+    let actor = state.authenticate(&root, 100).unwrap();
+    for body in [
+        json!({"certificate":"garbage"}),
+        json!({"connection_timeout":0}),
+        json!({"request_timeout":301}),
+        json!({"request_timeout":-1}),
+        json!({"url":"ldaps://localhost/private"}),
+        json!({"url":"ldaps://user@localhost"}),
+    ] {
+        let before = state_revision(&state).unwrap();
+        let error = state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/directory/config",
+                &body,
+                100,
+            )
+            .err()
+            .unwrap();
+        assert_eq!(error.status, 400);
+        assert_eq!(state_revision(&state).unwrap(), before);
+    }
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"connection_timeout":4,"request_timeout":7}),
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"request_timeout":null}),
+    );
+    let data = read(&mut state, &root, "auth/directory/config");
+    assert_eq!(data["connection_timeout"], 4);
+    assert_eq!(data["request_timeout"], 90);
+}

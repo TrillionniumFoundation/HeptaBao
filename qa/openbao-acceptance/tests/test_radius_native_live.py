@@ -9,7 +9,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from bao_http import Response
 from core_isolation import ScenarioFailure
-from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5
+from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5,token_policy_shape
 
 class Provider:
     def count(self):return 0
@@ -71,6 +71,12 @@ class NativeRadiusTests(unittest.TestCase):
         trace.lookup_metadata('lookup',auth)
         self.assertEqual(len(rows),6);self.assertTrue(all(r['passed'] for r in rows))
         self.assertNotIn('private',json.dumps(rows))
+    def test_empty_native_policy_shape_must_not_gain_default_or_emit_token_policies(self):
+        self.assertTrue(token_policy_shape({'policies':[]},[]))
+        for auth in ({'policies':[],'token_policies':[]},{'policies':['default']},{'policies':None},{}):
+            self.assertFalse(token_policy_shape(auth,[]))
+        self.assertTrue(token_policy_shape({'policies':['default'],'token_policies':['default']},['default']))
+        self.assertFalse(token_policy_shape({'policies':['default']},['default']))
     def test_completion_requires_all_milestones_without_duplicates(self):
         names=sorted(MILESTONES-{'complete'})+['complete'];rows=[{'case':'radius_native.'+n,'passed':True} for n in names]
         self.assertTrue(complete_scenarios(rows))

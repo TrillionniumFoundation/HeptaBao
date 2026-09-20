@@ -272,12 +272,10 @@ def run(binary, root, checks, observations, inherited):
         directory = NativeDirectory(root / "directory", cert, key, ca)
         sensitive.extend((directory.admin_password.encode(), directory.user_password.encode()))
         provider = GatedLdap(directory, cert, key, ca)
-        endpoint = {"origin": provider.origin, "address": f"127.0.0.1:{provider.port}",
-                    "server_name": "127.0.0.1", "ca_pem": ca.read_text(), "path_prefix": "/"}
         for node in cluster.nodes:
             path = node.root / "server.json"
             config = json.loads(path.read_text())
-            config["outbound_endpoints"] = [endpoint]
+            config["outbound_endpoints"] = []
             private_write(path, config)
         cluster.bootstrap()
         inherited.extend(cluster.scenarios)
@@ -290,7 +288,8 @@ def run(binary, root, checks, observations, inherited):
 
         admin("mount_ldap", "POST", "sys/auth/ldap-native", {"type": "ldap"})
         config = configuration("candidate", directory, ca.read_text(), token_ttl=120,
-                               token_max_ttl=600, groupfilter="(member={{.UserDN}})")
+                               token_max_ttl=600, groupfilter="(member={{.UserDN}})",
+                               connection_timeout=3, request_timeout=3)
         config["url"] = provider.origin
         admin("configure_ldap", "POST", "auth/ldap-native/config", config)
         admin("mount_kv", "POST", "sys/mounts/ldap-secret", {"type": "kv", "options": {"version": "1"}})

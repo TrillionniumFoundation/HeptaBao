@@ -7,6 +7,9 @@ const DEFAULT_USER_FILTER: &str = "({{.UserAttr}}={{.Username}})";
 const DEFAULT_GROUP_FILTER: &str =
     "(|(memberUid={{.Username}})(member={{.UserDN}})(uniqueMember={{.UserDN}}))";
 const NATIVE_FIELDS: &[&str] = &[
+    "certificate",
+    "connection_timeout",
+    "request_timeout",
     "binddn",
     "bindpass",
     "userdn",
@@ -37,6 +40,9 @@ const BOUNDED_FIELDS: &[&str] = &[
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LdapNativeConfig {
+    // Absence preserves the transport authority of persisted schema 23/24 mounts.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) transport: Option<crate::outbound::LdapTransportConfig>,
     binddn: String,
     bindpass: ProviderCredential,
     userdn: String,
@@ -65,6 +71,7 @@ pub(super) struct LdapNativeUser {
 impl Default for LdapNativeConfig {
     fn default() -> Self {
         Self {
+            transport: None,
             binddn: String::new(),
             bindpass: ProviderCredential::new(""),
             userdn: String::new(),
@@ -86,6 +93,20 @@ impl Default for LdapNativeConfig {
 }
 
 impl LdapNativeConfig {
+    fn validate_target(&self, url: &str) -> Result<(), AuthError> {
+        if let Some(transport) = &self.transport {
+            transport
+                .validate_configuration(url)
+                .map_err(|_| bad("invalid native LDAP URL, CA or timeouts"))
+        } else {
+            let target = crate::outbound::Target::parse(url, "ldaps")
+                .map_err(|_| bad("native LDAP requires a host-enrolled LDAPS endpoint"))?;
+            if target.path != "/" {
+                return Err(bad("LDAP URL must be an origin"));
+            }
+            Ok(())
+        }
+    }
     pub(super) fn options(&self) -> crate::outbound::LdapNativeOptions<'_> {
         crate::outbound::LdapNativeOptions {
             bind_dn: &self.binddn,
@@ -150,13 +171,19 @@ impl LdapNativeConfig {
         Ok(())
     }
     fn readback(&self, url: &str) -> Value {
-        json!({"url":url,"binddn":self.binddn,"userdn":self.userdn,"userattr":self.userattr,
+        let mut data = json!({"url":url,"binddn":self.binddn,"userdn":self.userdn,"userattr":self.userattr,
             "userfilter":self.userfilter,"groupdn":self.groupdn,"groupattr":self.groupattr,
             "groupfilter":self.groupfilter,"case_sensitive_names":self.case_sensitive_names,
             "username_as_alias":self.username_as_alias,"starttls":false,
             "token_policies":self.token_policies,"token_ttl":self.token_ttl,"token_max_ttl":self.token_max_ttl,
             "token_period":self.token_period,"token_explicit_max_ttl":self.token_explicit_max_ttl,
-            "token_num_uses":self.token_num_uses})
+            "token_num_uses":self.token_num_uses});
+        if let Some(transport) = &self.transport {
+            data["certificate"] = json!(transport.certificate);
+            data["connection_timeout"] = json!(transport.connection_timeout);
+            data["request_timeout"] = json!(transport.request_timeout);
+        }
+        data
     }
 }
 
@@ -271,7 +298,7 @@ impl AuthState {
         allowed.extend(["url", "starttls"]);
         reject_unknown(body, &allowed)?;
         if body.get("starttls").is_some_and(|v| !v.is_null()) && boolean(body, "starttls", false)? {
-            return Err(bad("native LDAP requires a host-enrolled LDAPS endpoint"));
+            return Err(bad("native LDAP requires LDAPS; StartTLS is not supported"));
         }
         let current = self
             .ldap_mounts
@@ -281,11 +308,37 @@ impl AuthState {
         if body.get("url").is_some() {
             url = string_field(body, "url")?.to_ascii_lowercase();
         }
-        crate::outbound::Target::parse(&url, "ldaps")
-            .map_err(|_| bad("native LDAP requires a host-enrolled LDAPS endpoint"))?;
         let mut next = current
             .and_then(|c| c.native.as_deref().cloned())
             .unwrap_or_default();
+        // New native mounts use standard API authority. Old persisted mounts
+        // retain process enrollment until an explicit transport configuration.
+        let transport_update = ["certificate", "connection_timeout", "request_timeout"]
+            .iter()
+            .any(|field| body.get(field).is_some());
+        if current.is_none() || transport_update {
+            let transport = next.transport.get_or_insert_with(Default::default);
+            if let Some(value) = body.get("certificate") {
+                transport.certificate = if value.is_null() {
+                    String::new()
+                } else {
+                    string_field(body, "certificate")?.to_owned()
+                };
+            }
+            for (field, target, default) in [
+                ("connection_timeout", &mut transport.connection_timeout, 30),
+                ("request_timeout", &mut transport.request_timeout, 90),
+            ] {
+                if let Some(value) = body.get(field) {
+                    *target = if value.is_null() {
+                        default
+                    } else {
+                        number(body, field, *target)?
+                    };
+                }
+            }
+        }
+        next.validate_target(&url)?;
         for (field, target) in [
             ("binddn", &mut next.binddn),
             ("userdn", &mut next.userdn),
@@ -663,6 +716,16 @@ impl AuthState {
                 "lease_duration":expiry-now,"renewable":true,"token_type":"service"}}),
         })
     }
+    pub(crate) fn has_native_ldap_transport(&self) -> bool {
+        self.ldap_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount
+                    .native
+                    .as_ref()
+                    .is_some_and(|native| native.transport.is_some())
+            })
+        })
+    }
     pub(crate) fn has_native_ldap_state(&self) -> bool {
         self.ldap_mounts
             .values()
@@ -689,7 +752,7 @@ impl AuthState {
                         || !config.group_dn.is_empty()
                         || !config.group_attr.is_empty()
                         || !config.group_name_attr.is_empty()
-                        || crate::outbound::Target::parse(&config.url, "ldaps").is_err()
+                        || native.validate_target(&config.url).is_err()
                     {
                         return Err(bad("invalid native LDAP mount"));
                     }

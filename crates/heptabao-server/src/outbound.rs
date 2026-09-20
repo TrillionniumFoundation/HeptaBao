@@ -1,5 +1,5 @@
-//! Deployment-owned, address-pinned TLS egress. Remote metadata never adds an
-//! origin, changes a CA, follows a redirect, invokes DNS, or widens a path scope.
+//! Deployment-enrolled, address-pinned egress and a separate administrator-owned
+//! LDAP transport. Remote metadata never widens either transport authority.
 use md5::Context;
 use ring::rand::{SecureRandom, SystemRandom};
 use rustls::pki_types::ServerName;
@@ -19,6 +19,9 @@ use zeroize::Zeroizing;
 #[path = "outbound_ldap_native.rs"]
 mod ldap_native;
 pub(crate) use ldap_native::LdapNativeOptions;
+#[path = "outbound_ldap_transport.rs"]
+mod ldap_transport;
+pub(crate) use ldap_transport::LdapTransportConfig;
 #[path = "outbound_radius_native.rs"]
 mod radius_native;
 pub(crate) use radius_native::RadiusNativeOptions;

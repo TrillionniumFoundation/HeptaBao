@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Selected native LDAP APIs with actual OpenLDAP and pinned OpenBao 2.6.2.
 
-The candidate requires process-enrolled LDAPS targets; the Oracle takes a CA in
-its configuration. This profile does not establish general LDAP/AD API parity.
+Both sides configure LDAPS authority through the standard URL and CA fields.
+The candidate runs with no process-enrolled outbound endpoints. This profile does not establish general LDAP/AD API parity.
 """
 from __future__ import annotations
 
@@ -20,11 +20,12 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from ldap_renewal_live import RenewalDirectory, USER_DN, renewal_token_shape, wrapped_renewal_shape
 from ldap_openldap_live import Instance, private, ssha
-from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256
+from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256, certificates
 from online_evidence import admit_output, source_identity
+from ldap_transport_tls_probe import wrong_san_probe, san_rejection_observed
 
 ADAPTATION = {
-    "candidate": "native binddn/bindpass and token fields, process-enrolled LDAPS address and CA",
+    "candidate": "native URL, certificate and timeout fields; no process-enrolled LDAPS endpoints",
     "oracle": "native LDAP API fields with certificate CA supplied in auth configuration",
     "directory": "real local OpenLDAP; synthetic users, manager account and groups",
     "filters": "bounded AND/OR/NOT/equality/presence and Username/UserDN/UserAttr templates",
@@ -66,10 +67,9 @@ def configuration(side, directory, ca, **options):
             "bindpass": directory.admin_password, "userdn": "ou=people,dc=example,dc=test",
             "userattr": "uid", "groupdn": "ou=groups,dc=example,dc=test", "groupattr": "cn",
             "token_ttl": 0, "token_max_ttl": 600, "token_policies": [], **options}
-    if side == "oracle":
-        data["certificate"] = ca
-        data["connection_timeout"] = 2
-        data["request_timeout"] = 2
+    data.setdefault("certificate", ca)
+    data.setdefault("connection_timeout", 2)
+    data.setdefault("request_timeout", 2)
     return data
 
 
@@ -158,6 +158,52 @@ class Trace:
 
     def policy(self, name, rule='path "cubbyhole/*" { capabilities = ["read"] }'):
         self.call("policy." + name, "sys/policies/acl/" + name, {"policy": rule}, expected=204)
+
+
+
+def run_transport_scenarios(t, alternate_ca, probe_root, oracle_root):
+    m = t.mount("transport", url=t.directory.origin.replace("127.0.0.1", "localhost"))
+    auth = t.login("transport.dns_login", m)
+    for via in ("self", "token", "accessor"):
+        t.renew("transport.dns_renew_" + via, auth, via=via)
+    data = t.call("transport.read", "auth/" + m + "/config", method="GET")["data"]
+    t.check("transport.fields", config_matches(data, certificate=t.config["certificate"],
+            connection_timeout=2, request_timeout=2))
+    t.update("transport.wrong_ca", m, certificate=alternate_ca)
+    before = t.lookup("transport.before_wrong_ca", auth)["expire_time"]
+    for via in ("self", "token", "accessor"):
+        path, payload, actor = {
+            "self": ("auth/token/renew-self", {}, auth["client_token"]),
+            "token": ("auth/token/renew", {"token": auth["client_token"]}, None),
+            "accessor": ("auth/token/renew-accessor", {"accessor": auth["accessor"]}, None),
+        }[via]
+        t.call("transport.wrong_ca_reject_" + via, path, payload, token=actor, expected=400)
+    t.check("transport.failed_lease_unchanged",
+            t.lookup("transport.after_wrong_ca", auth)["expire_time"] == before)
+    t.update("transport.restore_ca", m, certificate=t.config["certificate"])
+    t.renew("transport.restored_without_restart", auth)
+    t.call("transport.invalid_pem", "auth/" + m + "/config", {"certificate": "not-a-certificate"}, expected=400)
+    t.renew("transport.invalid_write_preserved_authority", auth)
+    t.update("transport.clear_ca", m, certificate=None)
+    data = t.call("transport.empty_ca_read", "auth/" + m + "/config", method="GET")["data"]
+    t.check("transport.empty_ca_is_system_roots", data.get("certificate") == "")
+    t.call("transport.private_ca_not_system_trusted", "auth/" + m + "/login/alice",
+           {"password": t.directory.user_password}, token="", expected=400)
+    t.update("transport.restore_again", m, certificate=t.config["certificate"],
+             connection_timeout=None, request_timeout=None)
+    data = t.call("transport.default_timeouts_read", "auth/" + m + "/config", method="GET")["data"]
+    t.check("transport.default_timeouts", config_matches(data, connection_timeout=30, request_timeout=90))
+    t.renew("transport.default_timeouts_work", auth)
+    with wrong_san_probe(probe_root, oracle_root / "ca.crt", oracle_root / "ca.key") as probe:
+        t.update("transport.wrong_san_target", m, url=probe.origin)
+        t.call("transport.wrong_san_rejected", "auth/" + m + "/login/alice",
+               {"password": t.directory.user_password}, token="", expected=400)
+        evidence = probe.wait()
+        t.check("transport.wrong_san_before_ldap", san_rejection_observed(evidence), **evidence)
+    t.update("transport.restore_target", m, url=t.directory.origin)
+    t.renew("transport.restored_after_san_rejection", auth)
+    # The CA rotation applies to existing direct tokens on the next exchange.
+    t.check("transport.complete", True)
 
 
 def run_directory_scenarios(t):
@@ -342,7 +388,11 @@ def complete_scenarios(rows):
     names = [row.get("case") for row in rows]
     if any(not isinstance(n, str) for n in names) or len(set(names)) != len(names):
         return False
-    required = {"ldap_native.directory.complete", "ldap_native.mapping.complete",
+    required = {"ldap_native.transport.dns_login.auth", "ldap_native.transport.failed_lease_unchanged",
+                "ldap_native.transport.restored_without_restart.lease", "ldap_native.transport.private_ca_not_system_trusted",
+                "ldap_native.transport.default_timeouts", "ldap_native.transport.wrong_san_before_ldap",
+                "ldap_native.transport.complete",
+                "ldap_native.directory.complete", "ldap_native.mapping.complete",
                 "ldap_native.config_case.create.normalized", "ldap_native.config_case.partial.normalized",
                 "ldap_native.config_case.create.login.auth", "ldap_native.config_case.partial.login.auth",
                 "ldap_native.alias_missing.username_login.auth", "ldap_native.alias_missing.attribute_rejected",
@@ -385,6 +435,10 @@ def main():
         oracle_root = Path(oracle["root"])
         ca = Path(oracle["ca_file"]).read_text()
         reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"]).decode().strip())
+        alternate = root / "alternate-ca"
+        alternate.mkdir(mode=0o700)
+        certificates(alternate)
+        alternate_ca = (alternate / "ca.crt").read_text()
         sides = []
         def restart_reference():
             oracle["process"].kill()
@@ -398,8 +452,7 @@ def main():
             directories.append(directory)
             cfg = json.loads((instance.root / "server.json").read_text())
             cfg["lifecycle_interval_seconds"] = 0
-            cfg["outbound_endpoints"] = [{"origin": directory.origin, "address": "127.0.0.1:" + str(directory.port),
-                                         "server_name": "127.0.0.1", "ca_pem": ca, "path_prefix": "/"}]
+            cfg["outbound_endpoints"] = []
             private(instance.root / "server.json", json.dumps(cfg))
             instance.start()
             status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -423,6 +476,7 @@ def main():
             rows = report["cases"][side] = []
             try:
                 trace = Trace(client, directory, configuration(side, directory, ca), rows)
+                run_transport_scenarios(trace, alternate_ca, root / (side + "-wrong-san"), oracle_root)
                 run_directory_scenarios(trace)
                 run_alias_attribute_scenarios(trace)
                 run_mapping_scenarios(trace)

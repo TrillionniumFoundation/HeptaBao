@@ -514,6 +514,17 @@ impl AuthState {
                     "LDAP configuration requires a host-enrolled LDAPS endpoint",
                 ));
             }
+            if let Some(transport) = config
+                .native
+                .as_ref()
+                .and_then(|native| native.transport.as_ref())
+            {
+                // The authorized native API configuration owns this transport;
+                // validation remains pure and cannot contact a provider here.
+                return transport
+                    .validate_configuration(&config.url)
+                    .map_err(|_| bad("invalid native LDAP transport"));
+            }
             outbound
                 .endpoint(&config.url, "ldaps")
                 .map_err(|_| err(503, "LDAP bind target is not host-enrolled"))?;

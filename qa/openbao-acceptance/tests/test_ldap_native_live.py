@@ -85,7 +85,11 @@ class NativeLdapTests(unittest.TestCase):
             self.assertFalse(mapping_matches({"groups": groups, "policies": ["direct"]}, "aux", ["direct"]))
 
     def test_completion_rejects_missing_provider_mapping_identity_or_lifetime_proof(self):
-        names = ["ldap_native.directory.complete", "ldap_native.mapping.complete",
+        names = ["ldap_native.transport.dns_login.auth", "ldap_native.transport.failed_lease_unchanged",
+                 "ldap_native.transport.restored_without_restart.lease", "ldap_native.transport.private_ca_not_system_trusted",
+                 "ldap_native.transport.default_timeouts", "ldap_native.transport.wrong_san_before_ldap",
+                 "ldap_native.transport.complete",
+                 "ldap_native.directory.complete", "ldap_native.mapping.complete",
                  "ldap_native.config_case.create.normalized", "ldap_native.config_case.partial.normalized",
                  "ldap_native.config_case.create.login.auth", "ldap_native.config_case.partial.login.auth",
                  "ldap_native.alias_missing.username_login.auth", "ldap_native.alias_missing.attribute_rejected",

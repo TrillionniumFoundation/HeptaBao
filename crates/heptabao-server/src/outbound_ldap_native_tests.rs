@@ -460,6 +460,7 @@ fn unenrolled_origin_cannot_enable_native_ldap_network_access() {
             .ldap_authenticate_native(
                 "ldaps://untrusted.invalid:636",
                 &options(),
+                None,
                 "alice",
                 "synthetic"
             )
@@ -467,7 +468,13 @@ fn unenrolled_origin_cannot_enable_native_ldap_network_access() {
     );
     assert!(
         outbound
-            .ldap_authenticate_native("ldap://127.0.0.1:389", &options(), "alice", "synthetic")
+            .ldap_authenticate_native(
+                "ldap://127.0.0.1:389",
+                &options(),
+                None,
+                "alice",
+                "synthetic"
+            )
             .is_err()
     );
 }
@@ -519,4 +526,33 @@ fn configuration_validation_rejects_unsupported_filters_without_credentials_or_i
     config.user_filter = DEFAULT_USER_FILTER;
     config.bind_password = "";
     assert!(config.validate_configuration().is_err());
+}
+
+#[test]
+fn legacy_transport_remains_enrollment_only_and_explicit_transport_never_falls_back() {
+    let outbound = Outbound::default();
+    assert_eq!(
+        outbound.ldap_authenticate_native(
+            "ldaps://untrusted.invalid:636",
+            &options(),
+            None,
+            "alice",
+            "synthetic"
+        ),
+        Err("outbound origin is not host-enrolled")
+    );
+    let transport = LdapTransportConfig {
+        certificate: "broken CA".into(),
+        ..Default::default()
+    };
+    assert_eq!(
+        outbound.ldap_authenticate_native(
+            "ldaps://untrusted.invalid",
+            &options(),
+            Some(&transport),
+            "alice",
+            "synthetic"
+        ),
+        Err("invalid LDAP CA PEM contents")
+    );
 }

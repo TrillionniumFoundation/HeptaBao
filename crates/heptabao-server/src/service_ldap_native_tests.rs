@@ -8,30 +8,22 @@ use std::collections::BTreeSet;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
-fn enroll(service: &mut Service) -> TestResult {
+fn certificate() -> TestResult<String> {
     let mut engines = EngineState::default();
     engines.handle("", "POST", "sys/mounts/pki", &json!({"type":"pki"}), 100)?;
-    let certificate = engines
+    let result = engines
         .handle(
             "",
             "POST",
             "pki/root/generate/internal",
-            &json!({"common_name":"directory.example.test","ttl":"48h"}),
+            &json!({"common_name":"new-directory-root","ttl":"48h"}),
             100,
         )?
-        .ok_or("missing test CA")?;
-    service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
-        origin: "ldaps://directory.example.test:636".into(),
-        address: "127.0.0.1:636".parse()?,
-        server_name: "directory.example.test".into(),
-        ca_pem: certificate.body["data"]["certificate"]
-            .as_str()
-            .ok_or("missing CA")?
-            .into(),
-        path_prefix: "/".into(),
-        shared_secret: String::new(),
-    }])?;
-    Ok(())
+        .ok_or("missing CA")?;
+    Ok(result.body["data"]["certificate"]
+        .as_str()
+        .ok_or("missing certificate")?
+        .to_owned())
 }
 
 fn pending(
@@ -89,7 +81,6 @@ struct Fixture {
 
 fn fixture(root: &Root) -> TestResult<Fixture> {
     let mut service = root.service()?;
-    enroll(&mut service)?;
     let (key, root_token) = bootstrap(&mut service)?;
     for (path, body) in [
         ("sys/auth/ldap", json!({"type":"ldap"})),
@@ -252,6 +243,8 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
+    downgraded.schema = 24;
+    assert!(downgraded.validate_format().is_err());
     downgraded.schema = 22;
     assert!(downgraded.validate_format().is_err());
     assert_eq!(
@@ -286,7 +279,6 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
     assert_eq!(service.state_digest, before);
     drop(service);
     let mut service = root.service()?;
-    enroll(&mut service)?;
     assert_eq!(
         call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
         200
@@ -411,6 +403,8 @@ fn native_ldap_renewal_fences_absent_mapping_identity_and_live_actor() -> TestRe
         "identity-disabled",
         "actor-revoked",
         "config",
+        "transport",
+        "certificate",
     ] {
         let root = Root::new();
         let Fixture {
@@ -468,6 +462,20 @@ fn native_ldap_renewal_fences_absent_mapping_identity_and_live_actor() -> TestRe
                 &root_token,
                 json!({}),
             ),
+            "certificate" => call(
+                &mut service,
+                "POST",
+                "auth/ldap/config",
+                &root_token,
+                json!({"certificate":certificate()?}),
+            ),
+            "transport" => call(
+                &mut service,
+                "POST",
+                "auth/ldap/config",
+                &root_token,
+                json!({"connection_timeout":5}),
+            ),
             "config" => call(
                 &mut service,
                 "POST",
@@ -488,7 +496,7 @@ fn native_ldap_renewal_fences_absent_mapping_identity_and_live_actor() -> TestRe
 
 #[test]
 fn native_ldap_login_does_not_cross_missing_mapping_mount_or_activation_fences() -> TestResult {
-    for mutation in ["mapping", "mount", "activation"] {
+    for mutation in ["mapping", "mount", "activation", "transport", "certificate"] {
         let root = Root::new();
         let Fixture {
             mut service,
@@ -548,6 +556,32 @@ fn native_ldap_login_does_not_cross_missing_mapping_mount_or_activation_fences()
                         "auth/ldap/config",
                         &root_token,
                         config()
+                    )
+                    .status,
+                    204
+                );
+            }
+            "certificate" => {
+                assert_eq!(
+                    call(
+                        &mut service,
+                        "POST",
+                        "auth/ldap/config",
+                        &root_token,
+                        json!({"certificate":certificate()?})
+                    )
+                    .status,
+                    204
+                );
+            }
+            "transport" => {
+                assert_eq!(
+                    call(
+                        &mut service,
+                        "POST",
+                        "auth/ldap/config",
+                        &root_token,
+                        json!({"request_timeout":15})
                     )
                     .status,
                     204
