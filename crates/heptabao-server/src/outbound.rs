@@ -310,6 +310,80 @@ impl Outbound {
         read_ldap_group_search_response(&mut stream, group_name_attr).map(Some)
     }
 
+    /// Reconcile one durable issue intent. A previous successful Add whose
+    /// response was lost is accepted only after manager marker readback and a
+    /// bind using the exact generated password. A tombstone is never reissued.
+    pub(crate) fn ldap_dynamic_add(
+        &self,
+        url: &str,
+        bind_dn: &str,
+        bind_password: &str,
+        dn: &str,
+        attributes: &[(String, Vec<String>)],
+        password: &str,
+    ) -> Result<(), &'static str> {
+        validate_ldap_effect_input(bind_dn, bind_password, dn, attributes)?;
+        validate_ldap_password(password)?;
+        let marker = ldap_issue_marker(attributes)?;
+        let mut stream = self.ldap_manager_session(url, bind_dn, bind_password)?;
+        ldap_reconcile_add(&mut stream, dn, attributes, marker)?;
+        match self.ldap_bind_and_search_groups(url, dn, password, "", "cn", "cn")? {
+            Some(_) => Ok(()),
+            None => Err("LDAP issued credential failed bind readback"),
+        }
+    }
+
+    /// Retire a durable intent while retaining its DN as a fence against a
+    /// delayed Add. Missing entries are fenced with the original schema-valid
+    /// entry minus userPassword. Existing matching entries lose userPassword
+    /// and gain the tombstone marker in one atomic, asserted Modify.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn ldap_dynamic_tombstone(
+        &self,
+        url: &str,
+        bind_dn: &str,
+        bind_password: &str,
+        dn: &str,
+        old_password: &str,
+        request_digest: &str,
+        original_attributes: &[(String, Vec<String>)],
+    ) -> Result<(), &'static str> {
+        validate_ldap_effect_input(bind_dn, bind_password, dn, original_attributes)?;
+        validate_ldap_password(old_password)?;
+        if !valid_ldap_request_digest(request_digest)
+            || original_attributes
+                .iter()
+                .any(|(name, _)| name.eq_ignore_ascii_case("description"))
+        {
+            return Err("invalid LDAP dynamic fence digest or original entry");
+        }
+        let mut stream = self.ldap_manager_session(url, bind_dn, bind_password)?;
+        ldap_reconcile_tombstone(&mut stream, dn, request_digest, original_attributes)?;
+        match self.ldap_bind_and_search_groups(url, dn, old_password, "", "cn", "cn")? {
+            None => Ok(()),
+            Some(_) => Err("LDAP old dynamic credential remains usable"),
+        }
+    }
+
+    fn ldap_manager_session(
+        &self,
+        url: &str,
+        bind_dn: &str,
+        bind_password: &str,
+    ) -> Result<TlsStream, &'static str> {
+        let (endpoint, target) = self.endpoint(url, "ldaps")?;
+        if target.path != "/" {
+            return Err("LDAP dynamic target must be an enrolled origin");
+        }
+        let mut stream = endpoint.tls(endpoint.connect()?)?;
+        let bind = ldap_bind_request(bind_dn.as_bytes(), bind_password.as_bytes())?;
+        ldap_write(&mut stream, &bind)?;
+        if !read_ldap_bind_response(&mut stream)? {
+            return Err("LDAP manager bind rejected by provider");
+        }
+        Ok(stream)
+    }
+
     pub fn get_json(&self, url: &str) -> Result<Value, &'static str> {
         let (endpoint, target) = self.endpoint(url, "https")?;
         let mut stream = endpoint.tls(endpoint.connect()?)?;
@@ -631,6 +705,173 @@ fn valid_ldap_attribute(value: &str) -> bool {
         && bytes.all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
 }
 
+fn validate_ldap_effect_input(
+    bind_dn: &str,
+    bind_password: &str,
+    dn: &str,
+    attributes: &[(String, Vec<String>)],
+) -> Result<(), &'static str> {
+    if bind_dn.is_empty()
+        || bind_password.is_empty()
+        || dn.is_empty()
+        || bind_dn.len() > 1024
+        || bind_password.len() > 1024
+        || dn.len() > 1024
+        || attributes.is_empty()
+        || attributes.len() > 64
+        || [bind_dn, bind_password, dn]
+            .iter()
+            .any(|value| value.bytes().any(|byte| byte == 0 || byte < 0x20))
+    {
+        return Err("invalid LDAP dynamic effect input");
+    }
+    let mut total = 0usize;
+    let mut names = BTreeSet::new();
+    for (name, values) in attributes {
+        if !valid_ldap_attribute(name)
+            || !names.insert(name.to_ascii_lowercase())
+            || values.is_empty()
+            || values.len() > 32
+        {
+            return Err("invalid LDAP dynamic attribute set");
+        }
+        for value in values {
+            if value.is_empty() || value.len() > 4096 || value.bytes().any(|byte| byte == 0) {
+                return Err("invalid LDAP dynamic attribute value");
+            }
+            total = total
+                .checked_add(value.len())
+                .ok_or("LDAP dynamic attribute bound overflow")?;
+        }
+    }
+    if total > 64 * 1024 {
+        return Err("LDAP dynamic attributes exceed bound");
+    }
+    Ok(())
+}
+
+fn ldap_add_request(
+    message_id: u8,
+    dn: &str,
+    attributes: &[(String, Vec<String>)],
+) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    let mut attrs = Vec::new();
+    for (name, values) in attributes {
+        let mut set = Vec::new();
+        for value in values {
+            set.extend_from_slice(&ber_value(0x04, value.as_bytes())?);
+        }
+        let partial = [ber_value(0x04, name.as_bytes())?, ber_value(0x31, &set)?].concat();
+        attrs.extend_from_slice(&ber_value(0x30, &partial)?);
+    }
+    let add = [ber_value(0x04, dn.as_bytes())?, ber_value(0x30, &attrs)?].concat();
+    let protocol = ber_value(0x68, &add)?;
+    let message = [ber_value(0x02, &[message_id])?, protocol].concat();
+    Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+fn ldap_modify_request(
+    message_id: u8,
+    dn: &str,
+    changes: &[(String, Vec<String>)],
+    assertion: Option<(&str, &str)>,
+) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    if dn.is_empty()
+        || dn.len() > 1024
+        || changes.is_empty()
+        || changes.len() > 16
+        || dn.bytes().any(|byte| byte == 0 || byte < 0x20)
+    {
+        return Err("invalid LDAP modify input");
+    }
+    let mut changes_wire = Vec::new();
+    let mut names = BTreeSet::new();
+    for (attribute, values) in changes {
+        if !valid_ldap_attribute(attribute)
+            || !names.insert(attribute.to_ascii_lowercase())
+            || values.len() > 32
+            || (values.is_empty() && !attribute.eq_ignore_ascii_case("userPassword"))
+        {
+            return Err("invalid LDAP modify attribute set");
+        }
+        let mut vals = Vec::new();
+        for value in values {
+            if value.is_empty() || value.len() > 4096 || value.bytes().any(|byte| byte == 0) {
+                return Err("invalid LDAP modify value");
+            }
+            vals.extend_from_slice(&ber_value(0x04, value.as_bytes())?);
+        }
+        let partial = [
+            ber_value(0x04, attribute.as_bytes())?,
+            ber_value(0x31, &vals)?,
+        ]
+        .concat();
+        let change = [ber_value(0x0a, &[0x02])?, ber_value(0x30, &partial)?].concat();
+        changes_wire.extend_from_slice(&ber_value(0x30, &change)?);
+    }
+    let changes = ber_value(0x30, &changes_wire)?;
+    let modify = [ber_value(0x04, dn.as_bytes())?, changes].concat();
+    let protocol = ber_value(0x66, &modify)?;
+    let mut message = [ber_value(0x02, &[message_id])?, protocol].concat();
+    if let Some((assertion_attribute, assertion_value)) = assertion {
+        if !valid_ldap_attribute(assertion_attribute)
+            || assertion_value.is_empty()
+            || assertion_value.len() > 4096
+            || assertion_value.bytes().any(|byte| byte == 0)
+        {
+            return Err("invalid LDAP assertion");
+        }
+        // RFC 4528 equalityMatch filter: [3] SEQUENCE { attr, value }.
+        let filter = [
+            ber_value(0x04, assertion_attribute.as_bytes())?,
+            ber_value(0x04, assertion_value.as_bytes())?,
+        ]
+        .concat();
+        let filter = ber_value(0xa3, &filter)?;
+        let control = [
+            ber_value(0x04, b"1.3.6.1.1.12")?,
+            ber_value(0x01, &[0xff])?,
+            ber_value(0x04, &filter)?,
+        ]
+        .concat();
+        // Controls is a SEQUENCE OF Control, and each Control is itself a
+        // SEQUENCE. LDAPMessage then carries that Controls value under the
+        // implicitly tagged [0] field.
+        let control = ber_value(0x30, &control)?;
+        let controls = ber_value(0x30, &control)?;
+        message.extend_from_slice(&ber_value(0xa0, &controls)?);
+    }
+    Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+fn read_ldap_result_code(
+    stream: &mut impl Read,
+    expected_id: u8,
+    expected_tag: u8,
+) -> Result<u8, &'static str> {
+    let mut remaining = 64 * 1024usize;
+    let body = read_ldap_message_body(stream, &mut remaining)?;
+    let mut cursor = 0usize;
+    if ber_take(&body, &mut cursor, 0x02)? != [expected_id] {
+        return Err("unexpected LDAP result message id");
+    }
+    let operation = ber_take(&body, &mut cursor, expected_tag)?;
+    if cursor != body.len() {
+        return Err("LDAP result controls or trailing bytes are not supported");
+    }
+    let mut inner = 0usize;
+    let result = ber_take(operation, &mut inner, 0x0a)?;
+    if result.len() != 1 || result[0] >= 128 {
+        return Err("invalid LDAP result code");
+    }
+    let _matched_dn = ber_take(operation, &mut inner, 0x04)?;
+    let _diagnostic = ber_take(operation, &mut inner, 0x04)?;
+    if inner != operation.len() {
+        return Err("LDAP result referrals are not supported");
+    }
+    Ok(result[0])
+}
+
 fn ldap_group_search_request(
     group_dn: &[u8],
     group_attr: &[u8],
@@ -661,6 +902,34 @@ fn ldap_group_search_request(
     let mut message = Vec::new();
     message.extend_from_slice(&ber_value(0x02, &[0x02])?);
     message.extend_from_slice(&search);
+    Ok(Zeroizing::new(ber_value(0x30, &message)?))
+}
+
+fn ldap_entry_search_request(message_id: u8, dn: &str) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    if dn.is_empty() || dn.len() > 1024 || dn.bytes().any(|byte| byte == 0 || byte < 0x20) {
+        return Err("invalid LDAP readback DN");
+    }
+    let search = [
+        ber_value(0x04, dn.as_bytes())?,
+        ber_value(0x0a, &[0])?, // baseObject
+        ber_value(0x0a, &[0])?, // never dereference aliases
+        ber_value(0x02, &[1])?,
+        ber_value(0x02, &[3])?,
+        ber_value(0x01, &[0])?,
+        // RFC 4511 present [7] AttributeDescription, not NULL.
+        ber_value(0x87, b"objectClass")?,
+        ber_value(
+            0x30,
+            &[
+                ber_value(0x04, b"description")?,
+                ber_value(0x04, b"userPassword")?,
+            ]
+            .concat(),
+        )?,
+    ]
+    .concat();
+    let protocol = ber_value(0x63, &search)?;
+    let message = [ber_value(0x02, &[message_id])?, protocol].concat();
     Ok(Zeroizing::new(ber_value(0x30, &message)?))
 }
 
@@ -783,6 +1052,239 @@ fn read_ldap_group_search_response(
     Err("LDAP search entry count exceeds bound")
 }
 
+#[derive(Debug, PartialEq, Eq)]
+struct LdapEntryObservation {
+    marker: Option<String>,
+    password_present: bool,
+}
+
+fn read_ldap_entry(
+    stream: &mut impl Read,
+    expected_id: u8,
+    expected_dn: &str,
+) -> Result<Option<LdapEntryObservation>, &'static str> {
+    let mut remaining = 64 * 1024usize;
+    let mut entry = None;
+    // A baseObject search has at most one entry and one SearchResultDone.
+    for _ in 0..2 {
+        let body = Zeroizing::new(read_ldap_message_body(stream, &mut remaining)?);
+        let mut cursor = 0usize;
+        if ber_take(&body, &mut cursor, 0x02)? != [expected_id] {
+            return Err("unexpected LDAP readback message id");
+        }
+        let tag = *body.get(cursor).ok_or("missing LDAP readback operation")?;
+        let operation = ber_take(&body, &mut cursor, tag)?;
+        if cursor != body.len() {
+            return Err("LDAP readback controls or trailing bytes are not supported");
+        }
+        let mut inner = 0usize;
+        match tag {
+            0x64 => {
+                if entry.is_some() {
+                    return Err("LDAP base search returned multiple entries");
+                }
+                let dn = ber_take(operation, &mut inner, 0x04)?;
+                if !dn.eq_ignore_ascii_case(expected_dn.as_bytes()) {
+                    return Err("LDAP readback distinguished name mismatch");
+                }
+                let attributes = ber_take(operation, &mut inner, 0x30)?;
+                if inner != operation.len() {
+                    return Err("invalid LDAP readback entry");
+                }
+                let mut observation = LdapEntryObservation {
+                    marker: None,
+                    password_present: false,
+                };
+                let mut names = BTreeSet::new();
+                let mut attrs = 0usize;
+                while attrs < attributes.len() {
+                    let attribute = ber_take(attributes, &mut attrs, 0x30)?;
+                    let mut part = 0usize;
+                    let name = ber_take(attribute, &mut part, 0x04)?;
+                    let values = ber_take(attribute, &mut part, 0x31)?;
+                    if part != attribute.len() || !names.insert(name.to_ascii_lowercase()) {
+                        return Err("invalid or duplicate LDAP readback attribute");
+                    }
+                    if !name.eq_ignore_ascii_case(b"description")
+                        && !name.eq_ignore_ascii_case(b"userPassword")
+                    {
+                        return Err("unexpected LDAP readback attribute");
+                    }
+                    if name.eq_ignore_ascii_case(b"description") && values.is_empty() {
+                        return Err("LDAP readback marker is ambiguous");
+                    }
+                    let mut values_cursor = 0usize;
+                    let mut count = 0usize;
+                    while values_cursor < values.len() {
+                        let value = ber_take(values, &mut values_cursor, 0x04)?;
+                        count += 1;
+                        if count > 32 || value.len() > 4096 {
+                            return Err("LDAP readback attribute exceeds bound");
+                        }
+                        if name.eq_ignore_ascii_case(b"description") {
+                            if count != 1 || value.is_empty() {
+                                return Err("LDAP readback marker is ambiguous");
+                            }
+                            observation.marker = Some(
+                                std::str::from_utf8(value)
+                                    .map_err(|_| "LDAP marker is not UTF-8")?
+                                    .to_owned(),
+                            );
+                        } else {
+                            observation.password_present = true;
+                        }
+                    }
+                }
+                entry = Some(observation);
+            }
+            0x65 => {
+                let result = ber_take(operation, &mut inner, 0x0a)?;
+                let _matched_dn = ber_take(operation, &mut inner, 0x04)?;
+                let _diagnostic = ber_take(operation, &mut inner, 0x04)?;
+                if inner != operation.len() {
+                    return Err("LDAP readback referrals are not supported");
+                }
+                return match result {
+                    [0] => Ok(entry),
+                    [32] if entry.is_none() => Ok(None),
+                    _ => Err("LDAP readback rejected by provider"),
+                };
+            }
+            _ => return Err("unsupported LDAP readback operation"),
+        }
+    }
+    Err("LDAP base search did not terminate")
+}
+
+fn validate_ldap_password(password: &str) -> Result<(), &'static str> {
+    if password.is_empty() || password.len() > 1024 || password.bytes().any(|byte| byte == 0) {
+        return Err("invalid LDAP dynamic password");
+    }
+    Ok(())
+}
+
+fn valid_ldap_request_digest(digest: &str) -> bool {
+    digest.len() == 64
+        && digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
+fn ldap_issue_marker(attributes: &[(String, Vec<String>)]) -> Result<&str, &'static str> {
+    let mut markers = attributes
+        .iter()
+        .filter(|(name, _)| name.eq_ignore_ascii_case("description"));
+    let (_, values) = markers.next().ok_or("LDAP issue marker is missing")?;
+    if markers.next().is_some() || values.len() != 1 {
+        return Err("LDAP issue marker is ambiguous");
+    }
+    let marker = values[0].as_str();
+    if !marker
+        .strip_prefix("hb-request:")
+        .is_some_and(valid_ldap_request_digest)
+    {
+        return Err("invalid LDAP issue marker");
+    }
+    Ok(marker)
+}
+
+fn ldap_write(stream: &mut impl Write, request: &[u8]) -> Result<(), &'static str> {
+    stream
+        .write_all(request)
+        .and_then(|()| stream.flush())
+        .map_err(|_| "LDAP effect write failed; outcome unknown")
+}
+
+fn ldap_observe(
+    stream: &mut (impl Read + Write),
+    message_id: u8,
+    dn: &str,
+) -> Result<Option<LdapEntryObservation>, &'static str> {
+    ldap_write(stream, &ldap_entry_search_request(message_id, dn)?)?;
+    read_ldap_entry(stream, message_id, dn)
+}
+
+fn ldap_reconcile_add(
+    stream: &mut (impl Read + Write),
+    dn: &str,
+    attributes: &[(String, Vec<String>)],
+    marker: &str,
+) -> Result<(), &'static str> {
+    let mut observed = ldap_observe(stream, 2, dn)?;
+    if observed.is_none() {
+        ldap_write(stream, &ldap_add_request(3, dn, attributes)?)?;
+        // EntryAlreadyExists can be an earlier delayed execution, but only
+        // marker readback below decides whether this is the same issuance.
+        if !matches!(read_ldap_result_code(stream, 3, 0x69)?, 0 | 68) {
+            return Err("LDAP dynamic Add rejected by provider");
+        }
+        observed = ldap_observe(stream, 4, dn)?;
+    }
+    match observed {
+        Some(entry) if entry.marker.as_deref() == Some(marker) => Ok(()),
+        _ => Err("LDAP issue readback did not prove the current intent"),
+    }
+}
+
+fn ldap_reconcile_tombstone(
+    stream: &mut (impl Read + Write),
+    dn: &str,
+    digest: &str,
+    original_attributes: &[(String, Vec<String>)],
+) -> Result<(), &'static str> {
+    let marker = format!("hb-request:{digest}");
+    let tombstone = format!("hb-tombstone:{digest}");
+    let mut observed = ldap_observe(stream, 2, dn)?;
+    if observed.is_none() {
+        let attributes = original_attributes
+            .iter()
+            .filter(|(name, _)| {
+                !name.eq_ignore_ascii_case("userPassword")
+                    && !name.eq_ignore_ascii_case("description")
+            })
+            .cloned()
+            .chain(std::iter::once((
+                "description".to_owned(),
+                vec![tombstone.clone()],
+            )))
+            .collect::<Vec<_>>();
+        ldap_write(stream, &ldap_add_request(3, dn, &attributes)?)?;
+        if !matches!(read_ldap_result_code(stream, 3, 0x69)?, 0 | 68) {
+            return Err("LDAP absent-entry tombstone Add rejected by provider");
+        }
+        observed = ldap_observe(stream, 4, dn)?;
+    }
+    let entry = observed.ok_or("LDAP tombstone readback is absent")?;
+    if entry.marker.as_deref() == Some(tombstone.as_str()) && !entry.password_present {
+        return Ok(());
+    }
+    if entry.marker.as_deref() != Some(marker.as_str()) {
+        return Err("LDAP entry is not owned by this durable intent");
+    }
+    let changes = vec![
+        ("description".to_owned(), vec![tombstone.clone()]),
+        // RFC 4511 replace with an empty set removes the entire attribute.
+        ("userPassword".to_owned(), Vec::new()),
+    ];
+    ldap_write(
+        stream,
+        &ldap_modify_request(5, dn, &changes, Some(("description", &marker)))?,
+    )?;
+    // A concurrent replay may have already installed the exact tombstone.
+    // AssertionFailed is safe only if readback proves that terminal state.
+    if !matches!(read_ldap_result_code(stream, 5, 0x67)?, 0 | 122) {
+        return Err("LDAP tombstone Modify rejected by provider");
+    }
+    match ldap_observe(stream, 6, dn)? {
+        Some(entry)
+            if entry.marker.as_deref() == Some(tombstone.as_str()) && !entry.password_present =>
+        {
+            Ok(())
+        }
+        _ => Err("LDAP tombstone readback did not prove password removal"),
+    }
+}
+
 fn ber_take_length(bytes: &[u8], offset: &mut usize) -> Result<usize, &'static str> {
     let first = *bytes.get(*offset).ok_or("truncated LDAP BER length")?;
     *offset += 1;
@@ -826,9 +1328,9 @@ fn ber_take<'a>(
 }
 
 fn read_ldap_bind_response(stream: &mut impl Read) -> Result<bool, &'static str> {
-    let mut prefix = [0u8; 4];
+    let mut prefix = [0u8; 2];
     stream
-        .read_exact(&mut prefix[..2])
+        .read_exact(&mut prefix)
         .map_err(|_| "truncated LDAP bind response")?;
     if prefix[0] != 0x30 {
         return Err("invalid LDAP response envelope");
@@ -839,10 +1341,11 @@ fn read_ldap_bind_response(stream: &mut impl Read) -> Result<bool, &'static str>
         if count == 0 || count > 2 {
             return Err("invalid LDAP response length");
         }
+        let mut more = [0u8; 2];
         stream
-            .read_exact(&mut prefix[..count])
+            .read_exact(&mut more[..count])
             .map_err(|_| "truncated LDAP response length")?;
-        head.extend_from_slice(&prefix[..count]);
+        head.extend_from_slice(&more[..count]);
     }
     let mut offset = 1usize;
     let body_len = ber_take_length(&head, &mut offset)?;
@@ -870,6 +1373,9 @@ fn read_ldap_bind_response(stream: &mut impl Read) -> Result<bool, &'static str>
     }
     let _matched_dn = ber_take(bind, &mut inner, 0x04)?;
     let _diagnostic = ber_take(bind, &mut inner, 0x04)?;
+    if inner != bind.len() {
+        return Err("trailing LDAP bind result bytes");
+    }
     match result[0] {
         0 => Ok(true),
         49 => Ok(false),
@@ -1600,6 +2106,158 @@ mod tests {
         let groups = read_ldap_group_search_response(&mut bytes.as_slice(), "cn")?;
         assert_eq!(groups, BTreeSet::from(["engineering".to_owned()]));
         assert!(ldap_group_search_request(b"", b"member", b"user", b"cn").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn ldap_dynamic_requests_use_present_objectclass_and_atomic_password_delete()
+    -> Result<(), &'static str> {
+        let search = ldap_entry_search_request(7, "uid=alice,ou=people,dc=example,dc=test")?;
+        assert!(
+            search
+                .windows(b"objectClass".len())
+                .any(|w| w == b"objectClass")
+        );
+        assert!(!search.windows(3).any(|w| w == b"\x87\x00"));
+
+        let modify = ldap_modify_request(
+            9,
+            "uid=alice,ou=people,dc=example,dc=test",
+            &[
+                ("description".into(), vec!["hb-tombstone:".to_owned()]),
+                ("userPassword".into(), Vec::new()),
+            ],
+            Some(("description", "hb-request:")),
+        )?;
+        assert!(
+            modify
+                .windows(b"userPassword".len())
+                .any(|w| w == b"userPassword")
+        );
+        assert!(modify.windows(2).any(|w| w == b"1\x00"));
+        assert!(
+            modify
+                .windows(b"1.3.6.1.1.12".len())
+                .any(|w| w == b"1.3.6.1.1.12")
+        );
+        let mut remaining = 64 * 1024;
+        let body = read_ldap_message_body(&mut modify.as_slice(), &mut remaining)?;
+        let mut cursor = 0;
+        let _message_id = ber_take(&body, &mut cursor, 0x02)?;
+        let _modify = ber_take(&body, &mut cursor, 0x66)?;
+        let controls = ber_take(&body, &mut cursor, 0xa0)?;
+        assert_eq!(cursor, body.len());
+        let mut controls_cursor = 0;
+        let control_set = ber_take(controls, &mut controls_cursor, 0x30)?;
+        assert_eq!(controls_cursor, controls.len());
+        let mut control_set_cursor = 0;
+        let control = ber_take(control_set, &mut control_set_cursor, 0x30)?;
+        assert_eq!(control_set_cursor, control_set.len());
+        assert_eq!(control.first().copied(), Some(0x04));
+        assert!(
+            ldap_modify_request(9, "uid=x", &[("description".into(), Vec::new())], None).is_err()
+        );
+        assert!(validate_ldap_effect_input(
+            "cn=manager",
+            "manager-password",
+            "uid=x,ou=people,dc=example,dc=test",
+            &[
+                ("cn".into(), vec!["alice".into()]),
+                ("CN".into(), vec!["alice".into()]),
+            ],
+        )
+        .is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn ldap_readback_accepts_owned_entry_and_absence_only() -> Result<(), &'static str> {
+        let dn = "uid=alice,ou=people,dc=example,dc=test";
+        let entry_attrs = [
+            ber_value(
+                0x30,
+                &[
+                    ber_value(0x04, b"description")?,
+                    ber_value(0x31, &ber_value(0x04, b"hb-request:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")?)?,
+                ].concat(),
+            )?,
+            ber_value(
+                0x30,
+                &[
+                    ber_value(0x04, b"userPassword")?,
+                    ber_value(0x31, &ber_value(0x04, b"secret")?)?,
+                ].concat(),
+            )?,
+        ].concat();
+        let entry = ber_value(
+            0x64,
+            &[
+                ber_value(0x04, dn.as_bytes())?,
+                ber_value(0x30, &entry_attrs)?,
+            ]
+            .concat(),
+        )?;
+        let done = ber_value(
+            0x65,
+            &[
+                ber_value(0x0a, &[0])?,
+                ber_value(0x04, b"")?,
+                ber_value(0x04, b"")?,
+            ]
+            .concat(),
+        )?;
+        let bytes = [
+            ber_value(0x30, &[ber_value(0x02, &[7])?, entry].concat())?,
+            ber_value(0x30, &[ber_value(0x02, &[7])?, done].concat())?,
+        ]
+        .concat();
+        assert_eq!(
+            read_ldap_entry(&mut bytes.as_slice(), 7, dn)?,
+            Some(LdapEntryObservation {
+                marker: Some(
+                    "hb-request:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        .into()
+                ),
+                password_present: true,
+            })
+        );
+
+        let absent_done = ber_value(
+            0x65,
+            &[
+                ber_value(0x0a, &[32])?,
+                ber_value(0x04, b"")?,
+                ber_value(0x04, b"")?,
+            ]
+            .concat(),
+        )?;
+        let absent = ber_value(0x30, &[ber_value(0x02, &[8])?, absent_done].concat())?;
+        assert_eq!(read_ldap_entry(&mut absent.as_slice(), 8, dn)?, None);
+        Ok(())
+    }
+
+    #[test]
+    fn ldap_result_code_preserves_entry_exists_for_reconciliation() -> Result<(), &'static str> {
+        let response = ber_value(
+            0x30,
+            &[
+                ber_value(0x02, &[3])?,
+                ber_value(
+                    0x69,
+                    &[
+                        ber_value(0x0a, &[68])?,
+                        ber_value(0x04, b"")?,
+                        ber_value(0x04, b"already exists")?,
+                    ]
+                    .concat(),
+                )?,
+            ]
+            .concat(),
+        )?;
+        assert_eq!(
+            read_ldap_result_code(&mut response.as_slice(), 3, 0x69)?,
+            68
+        );
         Ok(())
     }
 

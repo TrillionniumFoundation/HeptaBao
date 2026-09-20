@@ -423,6 +423,21 @@
         "<absolute evidence path>"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "actual_openldap_secret": {
+      "script": "qa/openbao-acceptance/openldap_secret_live.py",
+      "arguments": [
+        "--binary",
+        "<candidate>",
+        "--work-dir",
+        "<private-work-dir>",
+        "--output",
+        "<private-new-output>"
+      ],
+      "prerequisites": [
+        "actual_openldap_2_6"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1125,18 +1140,29 @@
     {
       "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
       "category": "secret_engines",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_openldap.rs",
       "technical_contract": {
-        "api_or_protocol": "ldap/config, roles/*, static-role rotation and creds/*",
-        "required_positive_and_hostile_behavior": "Real directory dynamic accounts, password rotation, groups and DN escaping",
-        "remaining_semantics_and_effect_checks": "Deletion/rotation errors cannot be reported as revoked; external account ownership must be provable",
+        "api_or_protocol": "ldap/config, role/* and creds/* with bounded LDAPS dynamic identity profile",
+        "required_positive_and_hostile_behavior": "Real LDAPS directory account creation, owner-scoped renewal, password readback, asserted tombstone revoke and DN/subtree fencing",
+        "remaining_semantics_and_effect_checks": "Retained-DN tombstone is scoped revoke evidence; OpenBao delete/static-role/root-rotation/AD/RACF/group/library semantics remain open, as do HA and lost-reply faults",
         "crash_reopen": "Interrupt ldap/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-OPENLDAP, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "openldap_secret_live.real_manager_bind_and_issue",
+        "openldap_secret_live.owner_renewal_and_other_owner_denied",
+        "openldap_secret_live.provider_and_service_restart_recovery",
+        "openldap_secret_live.tombstone_revoke_denies_old_password",
+        "openldap_secret_live.delayed_add_is_fenced",
+        "openldap_secret_live.provider_outage_pending_reconcile",
+        "openldap_secret_live.idle_expiry_reconciles",
+        "openldap_secret_live.no_plaintext_secret_persistence"
+      ],
+      "available_scoped_profiles": [
+        "actual_openldap_secret"
+      ],
       "whole_surface_admitted": false
     },
     {

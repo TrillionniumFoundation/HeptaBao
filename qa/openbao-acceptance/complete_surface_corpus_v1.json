@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 49,
-    "defined_not_implemented_surface_count": 11,
-    "fixture_case_count": 300,
+    "implemented_surface_count": 50,
+    "defined_not_implemented_surface_count": 10,
+    "fixture_case_count": 308,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -404,9 +404,18 @@
       "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "openldap_secret_live.real_manager_bind_and_issue",
+        "openldap_secret_live.owner_renewal_and_other_owner_denied",
+        "openldap_secret_live.provider_and_service_restart_recovery",
+        "openldap_secret_live.tombstone_revoke_denies_old_password",
+        "openldap_secret_live.delayed_add_is_fenced",
+        "openldap_secret_live.provider_outage_pending_reconcile",
+        "openldap_secret_live.idle_expiry_reconciles",
+        "openldap_secret_live.no_plaintext_secret_persistence"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

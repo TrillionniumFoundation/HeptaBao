@@ -977,19 +977,26 @@
         "{mount}/role/*",
         "{mount}/creds/*"
       ],
-      "positive": "Create actual constrained directory identities and group membership",
-      "hostile": "Reject DN/filter injection and unauthorized subtree or group changes",
-      "lifecycle": "Reconcile partial directory writes, rotate credentials and prove actual revoke",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Create a real LDAPS dynamic directory identity and prove password bind and manager readback",
+      "hostile": "Reject DN/subtree escape, foreign lease owner renewal, conflicting lease identity and unauthorized config/role changes",
+      "lifecycle": "Persist intent before LDAPS I/O, recover after service/provider restart, asserted tombstone revoke, read back marker and remove userPassword, and expire through the lifecycle worker",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/openldap.rs",
+        "crates/heptabao-server/src/service_openldap.rs",
+        "crates/heptabao-server/src/outbound.rs"
+      ],
       "contract_sources": [],
       "guides": [
+        "docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md",
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/openldap_secret_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Dynamic LDAP credentials, expiry and revoke behavior."
+      "remaining_scope": "This bounded profile retains the DN tombstone to fence delayed Add. OpenBao 2.6.2 static roles, root rotation, multi-entry LDIF, service-account checkout, AD/RACF schemas, native delete semantics, HA/provider replication, lost-reply fault injection and existing bound-session revocation remain open."
     },
     {
       "surface_id": "HB-SURFACE-SECRET-RABBITMQ",

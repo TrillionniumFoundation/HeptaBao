@@ -47,6 +47,7 @@ impl EngineState {
                 Backend::Ssh(engine) => !engine.leases.is_empty(),
                 Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
                 Backend::Kubernetes(engine) => engine.has_unresolved(),
+                Backend::OpenLdap(engine) => engine.has_unresolved(),
                 _ => false,
             })
         })
@@ -57,7 +58,10 @@ impl EngineState {
                 state.mounts.values().any(|mount| {
                     matches!(
                         mount.backend,
-                        Backend::Ssh(_) | Backend::Pki(_) | Backend::Kubernetes(_)
+                        Backend::Ssh(_)
+                            | Backend::Pki(_)
+                            | Backend::Kubernetes(_)
+                            | Backend::OpenLdap(_)
                     )
                 })
             })
@@ -69,6 +73,7 @@ impl EngineState {
                     Backend::Ssh(engine) => engine.validate(name, self.lease_clock)?,
                     Backend::Pki(engine) => engine.validate(name, self.lease_clock)?,
                     Backend::Kubernetes(engine) => engine.validate()?,
+                    Backend::OpenLdap(engine) => engine.validate()?,
                     _ => {}
                 }
             }
@@ -92,6 +97,11 @@ impl EngineState {
                             engine
                                 .active_owners(self.lease_clock)
                                 .map(|owner| (namespace.clone(), owner.clone())),
+                        ),
+                        Backend::OpenLdap(engine) => owners.extend(
+                            engine
+                                .lease_owners()
+                                .map(|owner| (namespace.clone(), owner.to_owned())),
                         ),
                         _ => {}
                     }

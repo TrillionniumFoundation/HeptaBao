@@ -70,7 +70,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | Kubernetes | PluginSecret | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
+  .backend.{Database | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]
 ```
 
@@ -118,8 +118,10 @@ semantics, seal wrapping and external entropy sources are not implemented.
 Requests for these options return explicit errors. Bounded PKI and SSH implementations are described below. `database` is a
 routing marker whose effects, configuration and leases are owned by Service, not
 an unauthenticated EngineState callback; read the [PostgreSQL contract](HEPTABAO_POSTGRESQL_PROVIDER.md).
-LDAP, Kubernetes and other unimplemented engine types return HTTP 501 instead
-of registering a nonfunctional mount. There is no generic plugin-success route.
+The bounded OpenLDAP dynamic-secret profile is described in
+`HEPTABAO_OPENLDAP_RUNTIME.md`; broader LDAP engine types and unsupported
+provider operations return explicit HTTP 501 instead of registering a
+nonfunctional mount. There is no generic plugin-success route.
 
 ## KV v1
 

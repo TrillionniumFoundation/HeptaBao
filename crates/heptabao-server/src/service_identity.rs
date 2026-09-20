@@ -50,6 +50,9 @@ impl State {
         self.engines
             .validate_kubernetes_state()
             .map_err(|error| Response::error(503, &error.message))?;
+        self.engines
+            .validate_openldap_state()
+            .map_err(|error| Response::error(503, &error.message))?;
         if self.schema < 9 && !self.namespaces.is_empty() {
             return Err(Response::error(
                 503,
@@ -81,6 +84,12 @@ impl State {
                 "namespace seal state requires schema 13",
             ));
         }
+        if self.schema < 14 && self.engines.has_openldap_mount() {
+            return Err(Response::error(
+                503,
+                "OpenLDAP dynamic credential state requires schema 14",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -101,7 +110,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

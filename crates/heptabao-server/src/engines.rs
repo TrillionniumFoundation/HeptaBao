@@ -22,6 +22,7 @@ pub(crate) mod kubernetes;
 mod kv;
 #[path = "engine_leases.rs"]
 mod leases;
+pub(crate) mod openldap;
 mod pki;
 mod ssh;
 mod totp;
@@ -148,6 +149,8 @@ enum Backend {
     Kubernetes(kubernetes::Kubernetes),
     /// Durable binding to a deployment-enrolled read-only secret plugin.
     PluginSecret(String),
+    /// Bounded OpenLDAP dynamic credential state; network effects are Service-owned.
+    OpenLdap(openldap::OpenLdap),
     Kv1(BTreeMap<String, Value>),
     Kv2(kv::Kv2),
     Transit(transit::Transit),
@@ -219,6 +222,7 @@ impl Mount {
             Backend::Database => ("database", json!({})),
             Backend::Kubernetes(_) => ("kubernetes", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
+            Backend::OpenLdap(_) => ("ldap", json!({"schema":"openldap"})),
             Backend::Kv1(_) => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
@@ -395,6 +399,9 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    pub(crate) fn lease_clock(&self) -> u64 {
+        self.lease_clock
+    }
     pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
         self.namespaces
             .keys()
@@ -512,6 +519,176 @@ impl EngineState {
         for namespace in self.namespaces.values() {
             for mount in namespace.mounts.values() {
                 if let Backend::Kubernetes(engine) = &mount.backend {
+                    engine.validate()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn openldap_mount(&self, namespace: &str, path: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| {
+                matches!(value.backend, Backend::OpenLdap(_)).then_some(mount.clone())
+            })
+            .max_by_key(String::len)
+    }
+
+    pub(crate) fn has_openldap_mount(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state
+                .mounts
+                .values()
+                .any(|mount| matches!(mount.backend, Backend::OpenLdap(_)))
+        })
+    }
+
+    pub(crate) fn openldap_lease_mount(&self, namespace: &str, lease_id: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .find_map(|(mount, value)| match &value.backend {
+                Backend::OpenLdap(engine) if engine.contains_lease(lease_id) => Some(mount.clone()),
+                _ => None,
+            })
+    }
+
+    pub(crate) fn openldap_dispatch(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+        issuer: Option<&crate::auth::LeaseIssuer>,
+    ) -> Result<Option<openldap::Dispatch>> {
+        let Some(mount_path) = self.openldap_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount_path)
+            .ok_or_else(|| bad("invalid OpenLDAP mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        engine
+            .dispatch(namespace, &mount_path, method, relative, body, now, issuer)
+            .map(Some)
+    }
+
+    pub(crate) fn openldap_stage_revoke(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+    ) -> Result<openldap::EffectPlan> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before revoke"));
+        };
+        engine.stage_revoke(namespace, mount, lease_id)
+    }
+
+    pub(crate) fn openldap_renew(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+        owner: Option<&str>,
+        increment: u64,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before renewal"));
+        };
+        engine.renew(lease_id, owner, increment, now)
+    }
+
+    pub(crate) fn openldap_finalize(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &openldap::EffectPlan,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed after provider entry"));
+        };
+        engine.finalize(plan)
+    }
+
+    pub(crate) fn openldap_reconcile_candidates(
+        &self,
+        now: u64,
+        live: &BTreeSet<(String, String)>,
+    ) -> Vec<(String, String, String, bool)> {
+        let mut candidates = Vec::new();
+        for (namespace, state) in &self.namespaces {
+            for (mount, value) in &state.mounts {
+                if let Backend::OpenLdap(engine) = &value.backend {
+                    let owners = engine
+                        .lease_owners()
+                        .filter(|owner| live.contains(&(namespace.clone(), (*owner).to_owned())))
+                        .map(str::to_owned)
+                        .collect();
+                    candidates.extend(
+                        engine
+                            .reconcile_candidates(now, &owners)
+                            .into_iter()
+                            .map(|(id, revoke)| (namespace.clone(), mount.clone(), id, revoke)),
+                    );
+                }
+            }
+        }
+        candidates
+    }
+
+    pub(crate) fn openldap_prepare_effect(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+        now: u64,
+        force_revoke: bool,
+    ) -> Result<openldap::EffectPlan> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before reconciliation"));
+        };
+        engine.prepare_effect(namespace, mount, lease_id, now, force_revoke)
+    }
+
+    pub(crate) fn validate_openldap_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::OpenLdap(engine) = &mount.backend {
                     engine.validate()?;
                 }
             }
@@ -699,6 +876,7 @@ impl EngineState {
                 Backend::Database
                 | Backend::Kubernetes(_)
                 | Backend::PluginSecret(_)
+                | Backend::OpenLdap(_)
                 | Backend::Pki(_)
                 | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
@@ -832,6 +1010,12 @@ impl EngineState {
                 return Err(error(
                     501,
                     "plugin operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::OpenLdap(_) => {
+                return Err(error(
+                    501,
+                    "OpenLDAP operations require the audited external-effect dispatcher",
                 ));
             }
             Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
@@ -1008,6 +1192,12 @@ fn handle_mounts(
                 "Kubernetes mount is fenced while token intents or leases exist",
             ));
         }
+        if matches!(&current.backend, Backend::OpenLdap(engine) if engine.has_unresolved()) {
+            return Err(error(
+                409,
+                "OpenLDAP mount is fenced while credential intents or leases exist",
+            ));
+        }
         let incarnation = current.incarnation.max(1);
         state.mounts.remove(&name);
         state.mount_epochs.insert(
@@ -1086,6 +1276,20 @@ fn handle_mounts(
                 return Err(bad("database mount options are not supported"));
             }
             Backend::Database
+        }
+        "ldap" => {
+            if body
+                .get("options")
+                .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+                || body
+                    .get("config")
+                    .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+            {
+                return Err(bad(
+                    "OpenLDAP mount options are configured through the engine config endpoint",
+                ));
+            }
+            Backend::OpenLdap(openldap::OpenLdap::default())
         }
         "kubernetes" => {
             if body

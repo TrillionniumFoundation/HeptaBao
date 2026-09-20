@@ -383,6 +383,19 @@
         "restart_reconciles_pending_native_revoke",
         "reconciled_revoke_survives_both_restarts"
       ]
+    },
+    "openldap_secret_live": {
+      "script": "qa/openbao-acceptance/openldap_secret_live.py",
+      "case_ids": [
+        "real_manager_bind_and_issue",
+        "owner_renewal_and_other_owner_denied",
+        "provider_and_service_restart_recovery",
+        "tombstone_revoke_denies_old_password",
+        "delayed_add_is_fenced",
+        "provider_outage_pending_reconcile",
+        "idle_expiry_reconciles",
+        "no_plaintext_secret_persistence"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

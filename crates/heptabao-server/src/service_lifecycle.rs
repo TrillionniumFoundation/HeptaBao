@@ -76,6 +76,11 @@ pub(crate) struct LifecycleWorker {
     stop: mpsc::Sender<()>,
     join: Option<JoinHandle<()>>,
 }
+
+enum ProviderMaintenance {
+    Database(database::DatabaseMaintenance),
+    OpenLdap(openldap_secret::OpenLdapMaintenance),
+}
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
         let _ = self.stop.send(());
@@ -115,11 +120,23 @@ pub(crate) fn start_lifecycle_worker(
                     if writer.maintain_raft_admin().is_err() {
                         eprintln!("heptabao-lifecycle: autopilot transition pending");
                     }
-                    let pending = match writer.prepare_database_maintenance(now) {
-                        Ok(pending) => pending,
-                        Err(_) => {
-                            eprintln!("heptabao-lifecycle: provider reconciliation pending");
-                            None
+                    let prefer_openldap = writer.lifecycle_provider_cursor;
+                    writer.lifecycle_provider_cursor = !prefer_openldap;
+                    let pending = if prefer_openldap {
+                        match writer.prepare_openldap_maintenance(now) {
+                            Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
+                            Ok(None) | Err(_) => match writer.prepare_database_maintenance(now) {
+                                Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
+                                Ok(None) | Err(_) => None,
+                            },
+                        }
+                    } else {
+                        match writer.prepare_database_maintenance(now) {
+                            Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
+                            Ok(None) | Err(_) => match writer.prepare_openldap_maintenance(now) {
+                                Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
+                                Ok(None) | Err(_) => None,
+                            },
                         }
                     };
                     // Local expiry is deliberately completed before any remote
@@ -133,18 +150,27 @@ pub(crate) fn start_lifecycle_worker(
                     continue;
                 };
                 // No Service writer is held while provider I/O/readback runs.
-                let provider_result = pending.execute();
-                let Ok(mut writer) = service.try_lock() else {
-                    // The durable intent remains authoritative; a later tick can
-                    // repeat the idempotent provider readback/finalization.
-                    eprintln!("heptabao-lifecycle: provider finalize deferred");
-                    continue;
-                };
-                if writer
-                    .finish_database_maintenance(pending, provider_result)
-                    .is_err()
-                {
-                    eprintln!("heptabao-lifecycle: provider reconciliation pending");
+                match pending {
+                    ProviderMaintenance::Database(pending) => {
+                        let result = pending.execute();
+                        let Ok(mut writer) = service.try_lock() else {
+                            eprintln!("heptabao-lifecycle: provider finalize deferred");
+                            continue;
+                        };
+                        if writer.finish_database_maintenance(pending, result).is_err() {
+                            eprintln!("heptabao-lifecycle: provider reconciliation pending");
+                        }
+                    }
+                    ProviderMaintenance::OpenLdap(pending) => {
+                        let result = pending.plan.execute();
+                        let Ok(mut writer) = service.try_lock() else {
+                            eprintln!("heptabao-lifecycle: OpenLDAP finalize deferred");
+                            continue;
+                        };
+                        if writer.finish_openldap_maintenance(pending, result).is_err() {
+                            eprintln!("heptabao-lifecycle: OpenLDAP reconciliation pending");
+                        }
+                    }
                 }
             }
         })

@@ -24,7 +24,7 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-const CURRENT_STATE_SCHEMA: u32 = 13;
+const CURRENT_STATE_SCHEMA: u32 = 14;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -44,6 +44,8 @@ mod lifecycle;
 mod namespaces;
 #[path = "service_online_auth.rs"]
 mod online_auth;
+#[path = "service_openldap.rs"]
+mod openldap_secret;
 #[path = "service_plugin.rs"]
 mod plugin;
 pub use plugin::{PluginAuthConfig, PluginSecretConfig};
@@ -534,6 +536,7 @@ enum ExternalEffectPlan {
     PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
+    OpenLdap(openldap_secret::OpenLdapEffectPlan),
 }
 
 pub(crate) enum ExternalEffectResult {
@@ -544,6 +547,7 @@ pub(crate) enum ExternalEffectResult {
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
+    OpenLdap(Result<(), Response>),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -576,6 +580,7 @@ impl PendingExternalRequest {
             ExternalEffectPlan::KubernetesToken(plan) => {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
+            ExternalEffectPlan::OpenLdap(plan) => ExternalEffectResult::OpenLdap(plan.execute()),
         }
     }
 }
@@ -624,6 +629,10 @@ pub struct Service {
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
+    pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
+    openldap_in_flight: openldap_secret::OpenLdapFlights,
+    openldap_cursor: Option<(String, String, String)>,
+    lifecycle_provider_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
@@ -821,6 +830,10 @@ impl Service {
             pending_plugin_auth: None,
             pending_plugin_read: None,
             pending_kubernetes_token: None,
+            pending_openldap_effect: None,
+            openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
+            openldap_cursor: None,
+            lifecycle_provider_cursor: false,
             auth_plugins: BTreeMap::new(),
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
@@ -1047,6 +1060,9 @@ impl Service {
                 ExternalEffectPlan::KubernetesToken(plan),
                 ExternalEffectResult::KubernetesToken(result),
             ) => self.finalize_kubernetes_token(&plan, result),
+            (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
+                self.finalize_openldap_effect(&plan, result)
+            }
             _ => {
                 self.recovery_required = true;
                 Response::error(503, "external request observation type mismatch")
@@ -1094,6 +1110,7 @@ impl Service {
             || self.pending_plugin_auth.is_some()
             || self.pending_plugin_read.is_some()
             || self.pending_kubernetes_token.is_some()
+            || self.pending_openldap_effect.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -1204,13 +1221,15 @@ impl Service {
         let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
+        let openldap = self.pending_openldap_effect.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_batch.is_some())
             + usize::from(online_auth.is_some())
             + usize::from(plugin_auth.is_some())
             + usize::from(plugin_read.is_some())
-            + usize::from(kubernetes_token.is_some());
+            + usize::from(kubernetes_token.is_some())
+            + usize::from(openldap.is_some());
         if staged > 1 {
             self.recovery_required = true;
             return RequestExecution::Complete(self.audit_completed_response(
@@ -1226,7 +1245,8 @@ impl Service {
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
             .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
-            .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken));
+            .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
+            .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
@@ -1521,6 +1541,9 @@ impl Service {
         }
         if self.database_handles(&admitted, namespace, path, body) {
             return self.database_route(admitted, principal.as_ref(), &request);
+        }
+        if Self::openldap_handles(&admitted, namespace, path, body) {
+            return self.openldap_route(admitted, principal.as_ref(), &request);
         }
         if Self::kubernetes_secret_handles(&admitted, namespace, path) {
             return self.kubernetes_secret_route(admitted, principal.as_ref(), &request);
@@ -3700,6 +3723,16 @@ impl Service {
                 return Response::error(
                     409,
                     "database provider epochs cannot be rolled back with a local snapshot",
+                );
+            }
+            if self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.engines.has_openldap_mount())
+            {
+                return Response::error(
+                    409,
+                    "OpenLDAP provider intents cannot be rolled back with a local snapshot",
                 );
             }
             if !matches!(method, "POST" | "PUT") {

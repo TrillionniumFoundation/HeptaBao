@@ -494,21 +494,21 @@ Existing bounded profiles: `qa/openbao-acceptance/kubernetes_cluster_live.py`.
 
 ### HB-SURFACE-SECRET-OPENLDAP
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP11`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP11`, `H19-WP13`.
 API families: `{mount}/config`; `{mount}/role/*`; `{mount}/creds/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/engines/openldap.rs`, `crates/heptabao-server/src/service_openldap.rs`, `crates/heptabao-server/src/outbound.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`, `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Create actual constrained directory identities and group membership.
+**Positive:** Create a real LDAPS dynamic directory identity and prove password bind and manager readback.
 
-**Hostile:** Reject DN/filter injection and unauthorized subtree or group changes.
+**Hostile:** Reject DN/subtree escape, foreign lease owner renewal, conflicting lease identity and unauthorized config/role changes.
 
-**Lifecycle:** Reconcile partial directory writes, rotate credentials and prove actual revoke.
+**Lifecycle:** Persist intent before LDAPS I/O, recover after service/provider restart, asserted tombstone revoke, read back marker and remove userPassword, and expire through the lifecycle worker.
 
-**Remaining scope:** Dynamic LDAP credentials, expiry and revoke behavior.
+**Remaining scope:** This bounded profile retains the DN tombstone to fence delayed Add. OpenBao 2.6.2 static roles, root rotation, multi-entry LDIF, service-account checkout, AD/RACF schemas, native delete semantics, HA/provider replication, lost-reply fault injection and existing bound-session revocation remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/openldap_secret_live.py`.
 
 ### HB-SURFACE-SECRET-RABBITMQ
 
