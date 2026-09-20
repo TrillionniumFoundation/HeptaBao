@@ -2,6 +2,10 @@ use super::*;
 
 const MAX_RETAINED_VERSIONS: u64 = 10_000;
 
+fn metadata_cas_disabled(value: &bool) -> bool {
+    !*value
+}
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(super) struct Kv2 {
     config: Config,
@@ -12,6 +16,8 @@ pub(super) struct Kv2 {
 struct Config {
     max_versions: u64,
     cas_required: bool,
+    #[serde(default, skip_serializing_if = "metadata_cas_disabled")]
+    metadata_cas_required: bool,
     delete_version_after: u64,
 }
 
@@ -26,6 +32,9 @@ impl Config {
         if let Some(cas_required) = optional_bool(body, "cas_required")? {
             self.cas_required = cas_required;
         }
+        if let Some(required) = optional_bool(body, "metadata_cas_required")? {
+            self.metadata_cas_required = required;
+        }
         if let Some(after) = body.get("delete_version_after") {
             self.delete_version_after = duration_seconds(after)?;
         }
@@ -33,7 +42,7 @@ impl Config {
     }
 
     fn json(&self) -> Value {
-        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"delete_version_after":format!("{}s",self.delete_version_after)})
+        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"metadata_cas_required":self.metadata_cas_required,"delete_version_after":format!("{}s",self.delete_version_after)})
     }
 }
 
@@ -41,6 +50,8 @@ impl Config {
 struct Entry {
     config: Config,
     current_version: u64,
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    current_metadata_version: u64,
     oldest_version: u64,
     created_at: u64,
     updated_at: u64,
@@ -92,6 +103,7 @@ impl Entry {
         Self {
             config: Config::default(),
             current_version: 0,
+            current_metadata_version: 0,
             oldest_version: 0,
             created_at: now,
             updated_at: now,
@@ -104,6 +116,7 @@ impl Entry {
         metadata["created_time"] = json!(timestamp(self.created_at));
         metadata["updated_time"] = json!(timestamp(self.updated_at));
         metadata["current_version"] = json!(self.current_version);
+        metadata["current_metadata_version"] = json!(self.current_metadata_version);
         metadata["oldest_version"] = json!(self.oldest_version);
         metadata["custom_metadata"] = json!(self.custom_metadata);
         metadata["versions"] = Value::Object(self.versions.iter().map(|(version, value)| {
@@ -232,6 +245,13 @@ fn list_map_keys<T>(
 }
 
 impl Kv2 {
+    pub(super) fn has_metadata_cas_state(&self) -> bool {
+        self.config.metadata_cas_required
+            || self.entries.values().any(|entry| {
+                entry.config.metadata_cas_required || entry.current_metadata_version != 0
+            })
+    }
+
     pub(super) fn contains(&self, path: &str) -> bool {
         self.entries
             .get(path)
@@ -319,9 +339,16 @@ impl Kv2 {
             }
             reject_unknown(
                 body,
-                &["max_versions", "cas_required", "delete_version_after"],
+                &[
+                    "max_versions",
+                    "cas_required",
+                    "metadata_cas_required",
+                    "delete_version_after",
+                ],
             )?;
-            self.config.update(body)?;
+            let mut config = self.config.clone();
+            config.update(body)?;
+            self.config = config;
             return Ok(empty(true));
         }
         let (operation, resource) = path.split_once('/').unwrap_or((path, ""));
@@ -535,38 +562,76 @@ impl Kv2 {
         now: u64,
         patch: bool,
     ) -> Result<EngineResponse> {
+        const PATCHABLE_FIELDS: &[&str] = &[
+            "max_versions",
+            "cas_required",
+            "metadata_cas_required",
+            "delete_version_after",
+            "custom_metadata",
+        ];
         reject_unknown(
             body,
             &[
                 "max_versions",
                 "cas_required",
+                "metadata_cas_required",
+                "metadata_cas",
                 "delete_version_after",
                 "custom_metadata",
             ],
         )?;
-        if patch && !self.entries.contains_key(resource) {
+        let cas = optional_u64(body, "metadata_cas")?;
+        if !PATCHABLE_FIELDS
+            .iter()
+            .any(|field| body.get(*field).is_some())
+        {
+            return Ok(empty(false));
+        }
+        let previous = self.entries.get(resource);
+        if patch && previous.is_none() {
             return Err(not_found());
         }
-        let entry = self
-            .entries
-            .entry(resource.into())
-            .or_insert_with(|| Entry::new(now));
-        entry.config.update(body)?;
+        let cas_required = self.config.metadata_cas_required
+            || previous.is_some_and(|entry| entry.config.metadata_cas_required);
+        if cas_required && cas.is_none() {
+            return Err(bad(
+                "metadata check-and-set parameter required for this call",
+            ));
+        }
+        if let Some(cas) = cas {
+            match previous {
+                None if cas != 0 => {
+                    return Err(bad("metadata_cas must be 0 when creating new metadata"));
+                }
+                Some(entry) if cas != entry.current_metadata_version => {
+                    return Err(bad(
+                        "metadata check-and-set parameter does not match the current version",
+                    ));
+                }
+                _ => {}
+            }
+        }
+        // Validate the entire update before touching durable state. In particular,
+        // a rejected CAS or invalid custom metadata must not create an entry or
+        // change its configuration, timestamp, or metadata version.
+        let next_version = previous
+            .map_or(0, |entry| entry.current_metadata_version)
+            .checked_add(1)
+            .ok_or_else(|| bad("metadata version limit reached"))?;
+        let mut config = previous
+            .map(|entry| entry.config.clone())
+            .unwrap_or_default();
+        config.update(body)?;
+        let mut custom_metadata = previous.and_then(|entry| entry.custom_metadata.clone());
         if let Some(metadata) = body.get("custom_metadata") {
             if metadata.is_null() {
-                if let Some(old) = entry.custom_metadata.take() {
-                    for (mut name, mut value) in old {
-                        name.zeroize();
-                        value.zeroize();
-                    }
-                }
-                entry.custom_metadata = None;
+                custom_metadata = None;
             } else {
                 let metadata = metadata
                     .as_object()
                     .ok_or_else(|| bad("custom_metadata must be a string map"))?;
                 let mut next = if patch {
-                    entry.custom_metadata.clone().unwrap_or_default()
+                    custom_metadata.take().unwrap_or_default()
                 } else {
                     BTreeMap::new()
                 };
@@ -589,15 +654,40 @@ impl Kv2 {
                 if next.len() > 64 {
                     return Err(bad("too many custom metadata entries"));
                 }
-                if let Some(old) = entry.custom_metadata.replace(next) {
-                    for (mut name, mut value) in old {
-                        name.zeroize();
-                        value.zeroize();
-                    }
-                }
+                custom_metadata = Some(next);
             }
         }
-        Ok(empty(true))
+        let mut warnings = Vec::new();
+        for (field, mandated) in [
+            ("cas_required", self.config.cas_required),
+            ("metadata_cas_required", self.config.metadata_cas_required),
+        ] {
+            if mandated && body.get(field) == Some(&Value::Bool(false)) {
+                warnings.push(format!("\"{field}\" set to false, but is mandated by backend config. This value will be ignored."));
+            }
+        }
+        let entry = self
+            .entries
+            .entry(resource.into())
+            .or_insert_with(|| Entry::new(now));
+        entry.config = config;
+        entry.current_metadata_version = next_version;
+        entry.updated_at = now;
+        if let Some(old) = std::mem::replace(&mut entry.custom_metadata, custom_metadata) {
+            for (mut name, mut value) in old {
+                name.zeroize();
+                value.zeroize();
+            }
+        }
+        if warnings.is_empty() {
+            Ok(empty(true))
+        } else {
+            Ok(EngineResponse {
+                status: 200,
+                body: json!({"warnings": warnings}),
+                mutated: true,
+            })
+        }
     }
 }
 

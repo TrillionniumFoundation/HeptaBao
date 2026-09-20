@@ -779,3 +779,38 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     );
     Ok(())
 }
+
+#[test]
+fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestResult {
+    for (path, body) in [
+        ("secret/config", json!({"metadata_cas_required":true})),
+        (
+            "secret/metadata/item",
+            json!({"custom_metadata":{"owner":"synthetic"}}),
+        ),
+        (
+            "secret/metadata/item",
+            json!({"metadata_cas_required":true}),
+        ),
+    ] {
+        let (auth, _) = AuthState::bootstrap(100)?;
+        let mut engines = EngineState::default();
+        engines
+            .handle("", "POST", path, &body, 100)?
+            .ok_or("missing engine response")?;
+        let mut state = State {
+            schema: 15,
+            cluster_id: "metadata-cas-schema".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: engines.into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+        };
+        assert!(state.validate_format().is_ok());
+        state.schema = 14;
+        assert!(state.validate_format().is_err());
+    }
+    Ok(())
+}

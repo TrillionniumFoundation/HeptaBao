@@ -685,6 +685,15 @@ impl EngineState {
         engine.prepare_effect(namespace, mount, lease_id, now, force_revoke)
     }
 
+    pub(crate) fn has_metadata_cas_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| match &mount.backend {
+                Backend::Kv2(engine) => engine.has_metadata_cas_state(),
+                _ => false,
+            })
+        })
+    }
+
     pub(crate) fn validate_openldap_state(&self) -> Result<()> {
         for namespace in self.namespaces.values() {
             for mount in namespace.mounts.values() {

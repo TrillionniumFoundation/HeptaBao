@@ -1820,3 +1820,238 @@ fn mount_registry_revision_cas_remount_and_incarnation_are_persisted() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn kv_metadata_cas_is_independent_of_data_versions_and_survives_reopen() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/data-first",
+        json!({"data":{"v":1}}),
+        10,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/data-first",
+        json!({}),
+        10,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 0);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/data-first",
+        json!({"metadata_cas":0,"custom_metadata":{"owner":"first"}}),
+        11,
+    )?;
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/metadata-first",
+        json!({"metadata_cas":0,"metadata_cas_required":true,"custom_metadata":{"owner":"first"}}),
+        12,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        12,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 1);
+    assert_eq!(read.body["data"]["metadata_cas_required"], true);
+    assert_eq!(read.body["data"]["current_version"], 0);
+    let bytes = serde_json::to_vec(&state)?;
+    state = serde_json::from_slice(&bytes)?;
+    for body in [
+        json!({"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":0,"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":2,"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":1,"cas_required":true,"custom_metadata":{"owner":42}}),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "PATCH",
+                "secret/metadata/metadata-first",
+                body,
+                13
+            )
+            .err()
+            .ok_or("invalid metadata update")?
+            .status,
+            400
+        );
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    request(
+        &mut state,
+        "",
+        "PATCH",
+        "secret/metadata/metadata-first",
+        json!({"metadata_cas":1,"custom_metadata":{"owner":null,"team":"second"}}),
+        14,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        14,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 2);
+    assert_eq!(
+        read.body["data"]["custom_metadata"],
+        json!({"team":"second"})
+    );
+    assert_eq!(read.body["data"]["updated_time"], json!(timestamp(14)));
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/metadata-first",
+        json!({"data":{"v":1}}),
+        15,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        15,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 2);
+    assert_eq!(read.body["data"]["current_version"], 1);
+    let before = serde_json::to_vec(&state)?;
+    for method in ["POST", "PATCH"] {
+        assert!(
+            !request(
+                &mut state,
+                "",
+                method,
+                "secret/metadata/metadata-first",
+                json!({"metadata_cas":123}),
+                20
+            )?
+            .mutated
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn kv_metadata_cas_global_policy_and_legacy_state_defaults() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/legacy",
+        json!({"data":{"v":1}}),
+        10,
+    )?;
+    // Old snapshots omit both new fields at every config/entry nesting level.
+    fn remove_new_fields(value: &mut Value) {
+        if let Value::Object(map) = value {
+            map.remove("metadata_cas_required");
+            map.remove("current_metadata_version");
+            for child in map.values_mut() {
+                remove_new_fields(child);
+            }
+        }
+    }
+    let mut legacy = serde_json::to_value(&state)?;
+    remove_new_fields(&mut legacy);
+    let legacy_bytes = serde_json::to_vec(&legacy)?;
+    state = serde_json::from_value(legacy)?;
+    assert_eq!(
+        serde_json::to_vec(&serde_json::to_value(&state)?)?,
+        legacy_bytes
+    );
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/legacy",
+        json!({}),
+        10,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 0);
+    assert_eq!(read.body["data"]["metadata_cas_required"], false);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/config",
+        json!({"metadata_cas_required":true}),
+        11,
+    )?;
+    let config = request(&mut state, "", "GET", "secret/config", json!({}), 11)?;
+    assert_eq!(config.body["data"]["metadata_cas_required"], true);
+    for body in [
+        json!({"custom_metadata":{"v":"no-cas"}}),
+        json!({"metadata_cas":1,"custom_metadata":{"v":"bad-cas"}}),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        assert_eq!(
+            request(&mut state, "", "POST", "secret/metadata/new", body, 12)
+                .err()
+                .ok_or("missing or invalid initial CAS")?
+                .status,
+            400
+        );
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/new",
+        json!({"metadata_cas":0,"custom_metadata":{"v":"ok"}}),
+        13,
+    )?;
+    let response = request(
+        &mut state,
+        "",
+        "PATCH",
+        "secret/metadata/new",
+        json!({"metadata_cas":1,"metadata_cas_required":false}),
+        14,
+    )?;
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.body["warnings"],
+        json!([
+            "\"metadata_cas_required\" set to false, but is mandated by backend config. This value will be ignored."
+        ])
+    );
+    let before = serde_json::to_vec(&state)?;
+    assert_eq!(
+        request(
+            &mut state,
+            "",
+            "POST",
+            "secret/metadata/new",
+            json!({"custom_metadata":{"v":"still-required"}}),
+            15
+        )
+        .err()
+        .ok_or("global enforcement survives local false")?
+        .status,
+        400
+    );
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}

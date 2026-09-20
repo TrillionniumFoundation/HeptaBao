@@ -166,6 +166,34 @@ cannot be bypassed by omitting options. PATCH additionally requires a current
 readable version; null removes object members, nested objects merge recursively
 and arrays replace as whole values.
 
+Metadata updates have a separate OpenBao 2.6.2 check-and-set counter. Configure
+`metadata_cas_required` on the engine or a key, and provide `metadata_cas` to
+POST/PUT/PATCH `metadata/:path`. Either requirement is sufficient to require the
+counter; a key cannot relax the engine-wide requirement. Reads expose
+`current_metadata_version` and the key's `metadata_cas_required` setting. An
+explicit initial counter must be zero. Creating metadata directly sets its
+counter to one; metadata initially created by a data write starts at zero.
+Successful metadata updates increment the counter without creating a data
+version, and update `updated_time`. Data writes do not increment this counter.
+A stale counter or a missing required counter returns 400 without changing the
+entry. Empty metadata updates (including a request containing only the counter)
+do not mutate state. Disabling a key requirement while the engine mandates it
+returns a warning and leaves the engine-wide requirement effective.
+
+The metadata CAS fields survive serialization. Older snapshots without these
+fields reopen with counter zero and the requirement disabled, preserving their
+canonical serialized form. Service state schema 15 fences populated metadata CAS
+state from older readers; schema 14 remains readable only without the new state. The focused
+`kv_metadata_cas_*` engine tests cover this upgrade, stale/missing counters,
+PATCH, failed-update atomicity and separation from data versions.
+`qa/openbao-acceptance/kv_metadata_cas_live.py` runs the same requests against
+fresh HeptaBao and pinned official OpenBao 2.6.2 HTTPS instances. It checks
+statuses, counter/metadata response fields, no-op and failed-write readback,
+POST/PUT/PATCH and exact global-enforcement warnings. It uses
+`HB_ORACLE_BINARY`/`HB_ORACLE_ARCHIVE` and the shared comparison harness; run it
+with `--binary <candidate> --output <new-private-receipt>`. Its scoped comparison
+does not qualify all KV behavior or production use.
+
 GET of a retained deleted or destroyed version returns 404 with its version
 metadata and null data. It does not fall back to an earlier live version. A
 missing or retention-pruned version returns 404 without synthetic metadata.

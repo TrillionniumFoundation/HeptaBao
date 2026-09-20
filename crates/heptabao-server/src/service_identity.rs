@@ -90,6 +90,12 @@ impl State {
                 "OpenLDAP dynamic credential state requires schema 14",
             ));
         }
+        if self.schema < 15 && self.engines.has_metadata_cas_state() {
+            return Err(Response::error(
+                503,
+                "KV metadata CAS state requires schema 15",
+            ));
+        }
         let pre_database = self.database.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
@@ -110,7 +116,7 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | CURRENT_STATE_SCHEMA => Ok(()),
+            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
