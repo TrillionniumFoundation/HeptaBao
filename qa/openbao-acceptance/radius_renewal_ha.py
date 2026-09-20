@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import shutil
 import socket
+import struct
 import tempfile
 import threading
 import time
@@ -26,9 +27,43 @@ ROOT = Path(__file__).resolve().parents[2]
 GATE_BUDGET_SECONDS = 2.7
 
 
+def profile_configuration(port, *, native=False):
+    endpoint = {"origin": f"radius://127.0.0.1:{port}",
+                "address": f"127.0.0.1:{port}", "server_name": "127.0.0.1",
+                "ca_pem": "", "path_prefix": "/"}
+    config = {"token_policies": ["default"], "token_ttl": 120, "token_max_ttl": 600}
+    if native:
+        # Keep the same three-second wire deadline as the legacy fault profile.
+        # API credentials do not create an ambient DNS route or process secret.
+        config.update(host="127.0.0.1", port=port, secret=SECRET.decode(),
+                      read_timeout=3, dial_timeout=3)
+    else:
+        endpoint["shared_secret"] = SECRET.decode()
+        config["url"] = endpoint["origin"]
+    return endpoint, config
+
+
+def native_nas_valid(packet):
+    """Native default NAS-Port=10, no NAS-Identifier; full MA is checked separately."""
+    ports, identifiers, offset = [], [], 20
+    while offset < len(packet):
+        if offset + 2 > len(packet):
+            return False
+        kind, length = packet[offset:offset + 2]
+        if length < 2 or offset + length > len(packet):
+            return False
+        if kind == 5:
+            ports.append(packet[offset + 2:offset + length])
+        elif kind == 32:
+            identifiers.append(packet[offset + 2:offset + length])
+        offset += length
+    return ports == [struct.pack("!I", 10)] and not identifiers
+
+
 class GatedRadius:
     """Hold precisely one validated Accept; no packet/credential enters output."""
-    def __init__(self):
+    def __init__(self, *, native=False):
+        self.native = native
         self.lock = threading.Lock()
         self.received = threading.Event()
         self.replied = threading.Event()
@@ -68,6 +103,8 @@ class GatedRadius:
                 if observation != {"credentials_valid": True,
                                    "message_authenticator_present": True, "accepted": True}:
                     raise ValueError("invalid_synthetic_credentials")
+                if self.native and not native_nas_valid(packet):
+                    raise ValueError("invalid_native_nas_attributes")
                 with self.lock:
                     gated = self.armed
                     self.armed = False
@@ -129,9 +166,9 @@ def authority_denied(status, body, phase):
         for error in errors)
 
 
-def run(binary, root, checks, observations, inherited):
+def run(binary, root, checks, observations, inherited, *, native=False):
     cluster = None
-    provider = GatedRadius()
+    provider = GatedRadius(native=native)
     sensitive = [SECRET, PASSWORD]
 
     def check(name, passed):
@@ -141,9 +178,7 @@ def run(binary, root, checks, observations, inherited):
 
     try:
         cluster = Cluster(binary, root / "cluster")
-        endpoint = {"origin": f"radius://127.0.0.1:{provider.port}",
-                    "address": f"127.0.0.1:{provider.port}", "server_name": "127.0.0.1",
-                    "ca_pem": "", "path_prefix": "/", "shared_secret": SECRET.decode()}
+        endpoint, radius_config = profile_configuration(provider.port, native=native)
         for node in cluster.nodes:
             path = node.root / "server.json"
             config = json.loads(path.read_text())
@@ -154,9 +189,8 @@ def run(binary, root, checks, observations, inherited):
         inherited.extend(cluster.scenarios)
         leader = cluster.leader()
         check("mount_radius", leader.call("POST", "sys/auth/radius", {"type": "radius"}, token=cluster.root_token)[0] == 204)
-        check("configure_radius", leader.call("POST", "auth/radius/config", {
-            "url": endpoint["origin"], "token_policies": ["default"],
-            "token_ttl": 120, "token_max_ttl": 600}, token=cluster.root_token)[0] == 204)
+        check("configure_radius", leader.call("POST", "auth/radius/config", radius_config,
+              token=cluster.root_token)[0] == 204)
 
         def expiry(node, token, label):
             status, body = node.call("GET", "auth/token/lookup-self", token=token)
@@ -254,6 +288,7 @@ def run(binary, root, checks, observations, inherited):
 
 def main():
     parser = SafeArgumentParser(description=__doc__)
+    parser.add_argument("--native", action="store_true", help="use encrypted native host/port/secret configuration")
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -266,7 +301,7 @@ def main():
     checks, observations, inherited = [], {}, []
     failure = None
     try:
-        run(binary, root, checks, observations, inherited)
+        run(binary, root, checks, observations, inherited, native=args.native)
     except Exception as error:
         failure = next((row["case"] for row in reversed(checks) if not row["passed"]),
                        "fixture_" + type(error).__name__)
@@ -274,6 +309,7 @@ def main():
         shutil.rmtree(root)
     report = {"schema": "heptabao.radius-renewal-ha.v1", "checks": checks, "failure": failure,
               "execution_failure": failure,
+              "profile": "native_config" if args.native else "legacy_process_secret",
               "same_host": True, "physical_fault_qualification": False,
               "full_openbao_compatibility": False, "observations": observations,
               "bootstrap_checks": inherited}

@@ -275,7 +275,7 @@ impl Service {
             .online_mount_route(request.namespace, request.path)?;
         let handled = kind == "kubernetes" && suffix == "login"
             || kind == "ldap" && suffix.starts_with("login/")
-            || kind == "radius" && suffix == "login"
+            || kind == "radius" && (suffix == "login" || suffix.starts_with("login/"))
             || kind == "oidc" && matches!(suffix.as_str(), "oidc/auth_url" | "oidc/callback");
         if !handled {
             return None;
@@ -322,13 +322,25 @@ impl Service {
                 Err(error) => return Some(auth_error(error)),
             }
         } else if kind == "radius" {
-            match admitted.auth.prepare_radius_login(
-                request.namespace,
-                &mount,
-                request.method,
-                request.body,
-                request.now,
-            ) {
+            let plan = if let Some(username) = suffix.strip_prefix("login/") {
+                admitted.auth.prepare_radius_login_with_path(
+                    request.namespace,
+                    &mount,
+                    Some(username),
+                    request.method,
+                    request.body,
+                    request.now,
+                )
+            } else {
+                admitted.auth.prepare_radius_login(
+                    request.namespace,
+                    &mount,
+                    request.method,
+                    request.body,
+                    request.now,
+                )
+            };
+            match plan {
                 Ok(plan) => OnlineAuthEffect::Radius(plan),
                 Err(error) => return Some(auth_error(error)),
             }

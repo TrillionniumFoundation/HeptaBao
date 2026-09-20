@@ -19,6 +19,9 @@ use zeroize::Zeroizing;
 #[path = "outbound_ldap_native.rs"]
 mod ldap_native;
 pub(crate) use ldap_native::LdapNativeOptions;
+#[path = "outbound_radius_native.rs"]
+mod radius_native;
+pub(crate) use radius_native::RadiusNativeOptions;
 
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
 #[derive(Clone, Deserialize)]
@@ -30,7 +33,8 @@ pub struct EndpointConfig {
     pub ca_pem: String,
     #[serde(default = "root_prefix")]
     pub path_prefix: String,
-    /// Process-only shared secret for a deployment-enrolled RADIUS endpoint.
+    /// Optional process credential for the legacy RADIUS profile. Native RADIUS
+    /// uses the encrypted mount credential against this enrolled address.
     #[serde(default)]
     pub shared_secret: String,
 }
@@ -157,7 +161,6 @@ impl Outbound {
                 || !config.path_prefix.ends_with('/')
                 || (is_radius
                     && (config.path_prefix != "/"
-                        || config.shared_secret.is_empty()
                         || config.shared_secret.len() > 256
                         || config.shared_secret.bytes().any(|byte| byte == 0)))
                 || (!is_radius && !config.shared_secret.is_empty())
@@ -429,6 +432,9 @@ impl Outbound {
             .radius_endpoints
             .get(&target.origin)
             .ok_or("RADIUS endpoint is not host-enrolled")?;
+        if endpoint.shared_secret.is_empty() {
+            return Err("legacy RADIUS endpoint has no process credential");
+        }
         let mut request_authenticator = [0u8; 16];
         SystemRandom::new()
             .fill(&mut request_authenticator)
@@ -473,20 +479,20 @@ fn md5_parts(parts: &[&[u8]]) -> [u8; 16] {
 }
 
 fn hmac_md5(key: &[u8], message: &[u8]) -> [u8; 16] {
-    let mut normalized = [0u8; 64];
+    let mut normalized = Zeroizing::new([0u8; 64]);
     if key.len() > normalized.len() {
         normalized[..16].copy_from_slice(&md5_parts(&[key]));
     } else {
         normalized[..key.len()].copy_from_slice(key);
     }
-    let mut inner = [0x36u8; 64];
-    let mut outer = [0x5cu8; 64];
+    let mut inner = Zeroizing::new([0x36u8; 64]);
+    let mut outer = Zeroizing::new([0x5cu8; 64]);
     for index in 0..64 {
         inner[index] ^= normalized[index];
         outer[index] ^= normalized[index];
     }
-    let inner_digest = md5_parts(&[&inner, message]);
-    md5_parts(&[&outer, &inner_digest])
+    let inner_digest = Zeroizing::new(md5_parts(&[inner.as_slice(), message]));
+    md5_parts(&[outer.as_slice(), inner_digest.as_slice()])
 }
 
 fn radius_access_request(
@@ -496,6 +502,27 @@ fn radius_access_request(
     password: &[u8],
     shared_secret: &[u8],
 ) -> Result<Vec<u8>, &'static str> {
+    radius_access_request_with_nas(
+        identifier,
+        request_authenticator,
+        username,
+        password,
+        shared_secret,
+        None,
+    )
+}
+
+fn radius_access_request_with_nas(
+    identifier: u8,
+    request_authenticator: &[u8; 16],
+    username: &[u8],
+    password: &[u8],
+    shared_secret: &[u8],
+    nas: Option<(i64, &str)>,
+) -> Result<Vec<u8>, &'static str> {
+    if nas.is_some_and(|(_, identifier)| identifier.len() > 253) {
+        return Err("RADIUS NAS identifier exceeds bound");
+    }
     if username.is_empty()
         || username.len() > 253
         || password.is_empty()
@@ -525,8 +552,16 @@ fn radius_access_request(
     let password_len = 2usize
         .checked_add(encrypted.len())
         .ok_or("RADIUS packet length overflow")?;
+    let nas_len = nas.map_or(0, |(_, identifier)| {
+        6 + if identifier.is_empty() {
+            0
+        } else {
+            2 + identifier.len()
+        }
+    });
     let packet_len = 20usize
-        .checked_add(user_len)
+        .checked_add(nas_len)
+        .and_then(|value| value.checked_add(user_len))
         .and_then(|value| value.checked_add(password_len))
         .and_then(|value| value.checked_add(18))
         .ok_or("RADIUS packet length overflow")?;
@@ -542,6 +577,20 @@ fn radius_access_request(
     packet.push(2);
     packet.push(u8::try_from(password_len).map_err(|_| "RADIUS password exceeds bound")?);
     packet.extend_from_slice(&encrypted);
+    if let Some((port, identifier)) = nas {
+        // OpenBao writes uint32(config.NasPort), including signed/wide inputs.
+        let port = port.to_be_bytes();
+        packet.extend_from_slice(&[5, 6]);
+        packet.extend_from_slice(&port[4..]);
+        if !identifier.is_empty() {
+            packet.push(32);
+            packet.push(
+                u8::try_from(2 + identifier.len())
+                    .map_err(|_| "RADIUS NAS identifier exceeds bound")?,
+            );
+            packet.extend_from_slice(identifier.as_bytes());
+        }
+    }
     packet.extend_from_slice(&[80, 18]);
     packet.extend_from_slice(&[0u8; 16]);
     let authenticator = hmac_md5(shared_secret, &packet);

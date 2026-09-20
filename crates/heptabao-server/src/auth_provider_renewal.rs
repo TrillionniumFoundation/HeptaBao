@@ -113,10 +113,11 @@ impl AuthState {
         let token = self.active_token(&target, now, false)?;
         let increment = duration(body, "increment", 0)?;
         match token.auth_provenance {
-            Some(TokenAuthProvenance::Radius { .. }) => self
-                .prepare_radius_renewal_target(namespace, path, target, increment, now)
-                .map(ProviderRenewalPlan::Radius)
-                .map(Some),
+            Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::RadiusNative { .. }) => {
+                self.prepare_radius_renewal_target(namespace, path, target, increment, now)
+                    .map(ProviderRenewalPlan::Radius)
+                    .map(Some)
+            }
             Some(TokenAuthProvenance::Ldap { .. } | TokenAuthProvenance::LdapNative { .. }) => self
                 .prepare_ldap_renewal_target(namespace, path, target, increment, now)
                 .map(ProviderRenewalPlan::Ldap)

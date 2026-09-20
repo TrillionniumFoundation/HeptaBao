@@ -12,6 +12,7 @@ pub(crate) struct RadiusRenewalPlan {
     config: RadiusMount,
     target: Zeroizing<String>,
     target_revision: [u8; 32],
+    native_revision: Option<[u8; 32]>,
     username: String,
     credential: ProviderCredential,
     path: String,
@@ -27,6 +28,17 @@ impl RadiusRenewalPlan {
         &self,
         outbound: &crate::outbound::Outbound,
     ) -> Result<RadiusRenewalObservation, AuthError> {
+        if let Some(config) = &self.config.native {
+            return match outbound.radius_authenticate_native(
+                &self.config.url,
+                &config.options(),
+                &self.username,
+                &self.credential.0,
+            ) {
+                Ok(true) => Ok(RadiusRenewalObservation),
+                Ok(false) | Err(_) => Err(bad("RADIUS login failed during renewal")),
+            };
+        }
         match outbound.radius_authenticate(&self.config.url, &self.username, &self.credential.0) {
             Ok(true) => Ok(RadiusRenewalObservation),
             Ok(false) => Err(bad("access denied by the authentication server")),
@@ -93,6 +105,12 @@ impl AuthState {
                         || token.policies.contains("root")
                         || !token.auth_mount.as_ref().is_some_and(|mount| {
                             self.online_mount_enabled(&token.namespace, mount, "radius")
+                                && self
+                                    .radius_native_at(AuthScope {
+                                        namespace: &token.namespace,
+                                        mount,
+                                    })
+                                    .is_none()
                         })
                     {
                         return Err(bad("invalid RADIUS renewal provenance"));
@@ -126,6 +144,7 @@ impl AuthState {
             token.auth_provenance,
             Some(
                 TokenAuthProvenance::Radius { .. }
+                    | TokenAuthProvenance::RadiusNative { .. }
                     | TokenAuthProvenance::Ldap { .. }
                     | TokenAuthProvenance::LdapNative { .. }
             )
@@ -152,12 +171,17 @@ impl AuthState {
         now: u64,
     ) -> Result<RadiusRenewalPlan, AuthError> {
         let token = self.active_token(&target, now, false)?;
-        let Some(TokenAuthProvenance::Radius {
-            username,
-            credential,
-        }) = &token.auth_provenance
-        else {
-            return Err(denied());
+        let (username, credential, native) = match &token.auth_provenance {
+            Some(TokenAuthProvenance::Radius {
+                username,
+                credential,
+            }) => (username, credential, false),
+            Some(TokenAuthProvenance::RadiusNative {
+                username,
+                credential,
+                ..
+            }) => (username, credential, true),
+            _ => return Err(denied()),
         };
         if !token.renewable {
             return Err(bad("token is not renewable"));
@@ -175,12 +199,21 @@ impl AuthState {
             .and_then(|mounts| mounts.get(mount))
             .cloned()
             .ok_or_else(|| bad("radius backend not configured"))?;
+        if config.native.is_some() != native {
+            return Err(denied());
+        }
+        let native_revision = if native {
+            Some(self.radius_native_local_revision(AuthScope { namespace, mount }, username)?)
+        } else {
+            None
+        };
         Ok(RadiusRenewalPlan {
             namespace: namespace.to_owned(),
             mount: mount.clone(),
             mount_revision,
             config,
             target_revision: state_revision(token)?,
+            native_revision,
             target,
             username: username.clone(),
             credential: credential.clone(),
@@ -215,6 +248,24 @@ impl AuthState {
                 409,
                 "RADIUS renewal authority changed during provider request",
             ));
+        }
+        if plan.config.native.is_some() {
+            let scope = AuthScope {
+                namespace: &plan.namespace,
+                mount: &plan.mount,
+            };
+            if Some(self.radius_native_local_revision(scope, &plan.username)?)
+                != plan.native_revision
+            {
+                return Err(err(409, "RADIUS mapping changed during provider request"));
+            }
+            return self.finish_native_radius_renewal(
+                scope,
+                &plan.target,
+                &plan.username,
+                plan.increment,
+                now,
+            );
         }
         if !same_policies(&plan.config.policies, &token.policies) {
             return Err(err(500, "policies have changed, not renewing"));

@@ -65,6 +65,9 @@ use native_token::{NativeOnlineToken, NativeTokenLimits};
 mod provider_renewal;
 #[path = "auth_radius.rs"]
 mod radius;
+#[path = "auth_radius_native.rs"]
+mod radius_native;
+use radius_native::RadiusNativeConfig;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
@@ -128,6 +131,8 @@ pub struct AuthState {
     /// process-enrolled; this durable map retains only route and token policy.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     radius_mounts: BTreeMap<String, BTreeMap<String, RadiusMount>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    radius_native_users: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
     /// Deployment-enrolled authentication plugins never choose token authority.
     /// This durable map binds a mount to one admitted plugin id and server-owned
     /// policy/TTL limits. The plugin returns only an authentication decision and
@@ -476,7 +481,7 @@ struct LdapMount {
     native: Option<Box<LdapNativeConfig>>,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct RadiusMount {
     url: String,
     policies: BTreeSet<String>,
@@ -487,6 +492,8 @@ struct RadiusMount {
     #[serde(default, skip_serializing_if = "is_zero")]
     token_explicit_max_ttl: u64,
     token_num_uses: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    native: Option<Box<RadiusNativeConfig>>,
 }
 
 impl LdapMount {
@@ -588,6 +595,7 @@ pub(crate) struct RadiusLoginPlan {
     username: String,
     password: Zeroizing<String>,
     config: RadiusMount,
+    native_revision: Option<[u8; 32]>,
     now: u64,
     started: std::time::Instant,
 }
@@ -599,6 +607,17 @@ impl RadiusLoginPlan {
         &self,
         outbound: &crate::outbound::Outbound,
     ) -> Result<RadiusLoginObservation, AuthError> {
+        if let Some(config) = &self.config.native {
+            return match outbound.radius_authenticate_native(
+                &self.config.url,
+                &config.options(),
+                &self.username,
+                &self.password,
+            ) {
+                Ok(true) => Ok(RadiusLoginObservation),
+                Ok(false) | Err(_) => Err(bad("RADIUS login failed")),
+            };
+        }
         match outbound.radius_authenticate(&self.config.url, &self.username, &self.password) {
             Ok(true) => Ok(RadiusLoginObservation),
             Ok(false) => Err(denied()),
@@ -1021,6 +1040,11 @@ enum TokenAuthProvenance {
     Radius {
         username: String,
         credential: ProviderCredential,
+    },
+    RadiusNative {
+        username: String,
+        credential: ProviderCredential,
+        policy_metadata: String,
     },
     Ldap {
         username: String,
@@ -1601,6 +1625,12 @@ impl AuthState {
                 .cloned(),
         );
         namespaces.extend(
+            self.radius_native_users
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
             self.plugin_auth_mounts
                 .keys()
                 .filter(|value| !value.is_empty())
@@ -1673,6 +1703,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .radius_native_users
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .plugin_auth_mounts
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -1699,6 +1733,7 @@ impl AuthState {
             ldap_groups: BTreeMap::new(),
             ldap_native_users: BTreeMap::new(),
             radius_mounts: BTreeMap::new(),
+            radius_native_users: BTreeMap::new(),
             plugin_auth_mounts: BTreeMap::new(),
             cert_roles: BTreeMap::new(),
         };
@@ -2082,6 +2117,9 @@ impl AuthState {
         if let Some(mounts) = self.radius_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.radius_native_users.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -2279,6 +2317,16 @@ impl AuthState {
             .and_then(|mounts| mounts.remove(from))
         {
             self.radius_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
+            .radius_native_users
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.radius_native_users
                 .entry(namespace.into())
                 .or_default()
                 .insert(to.into(), value);
@@ -2668,7 +2716,10 @@ impl AuthState {
                 "radius" if suffix == "config" => {
                     self.radius_route(principal, scope, method, body, now)
                 }
-                "radius" if suffix == "login" => Err(err(
+                "radius" if suffix == "users" || suffix.starts_with("users/") => {
+                    self.radius_native_user_route(principal, scope, method, path, body, now)
+                }
+                "radius" if suffix == "login" || suffix.starts_with("login/") => Err(err(
                     503,
                     "RADIUS login requires the Service online-auth dispatcher",
                 )),
@@ -3357,6 +3408,9 @@ impl AuthState {
             route_capability(method, false)?,
             now,
         )?;
+        if self.radius_native_config_request(scope, body)? {
+            return self.radius_native_config_route(principal, scope, method, body, now);
+        }
         match method {
             "GET" => {
                 reject_unknown(body, &[])?;
@@ -3408,6 +3462,7 @@ impl AuthState {
                         token_period: 0,
                         token_explicit_max_ttl: 0,
                         token_num_uses: 0,
+                        native: None,
                     });
                 if body.get("url").is_some() {
                     next.url = string_field(body, "url")?.into();
@@ -3494,6 +3549,18 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<RadiusLoginPlan, AuthError> {
+        self.prepare_radius_login_with_path(namespace, mount, None, method, body, now)
+    }
+
+    pub(crate) fn prepare_radius_login_with_path(
+        &self,
+        namespace: &str,
+        mount: &str,
+        path_username: Option<&str>,
+        method: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<RadiusLoginPlan, AuthError> {
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
@@ -3504,6 +3571,25 @@ impl AuthState {
             .filter(|entry| entry.kind == "radius")
             .cloned()
             .ok_or_else(denied)?;
+        let config = self
+            .radius_mounts
+            .get(namespace)
+            .and_then(|mounts| mounts.get(mount))
+            .cloned()
+            .ok_or_else(|| err(503, "RADIUS authentication is not configured"))?;
+        if config.native.is_some() {
+            return self.prepare_native_radius_login(
+                AuthScope { namespace, mount },
+                mount_revision,
+                config,
+                path_username,
+                body,
+                now,
+            );
+        }
+        if path_username.is_some() {
+            return Err(err(404, "unsupported legacy RADIUS login route"));
+        }
         reject_unknown(body, &["username", "password"])?;
         let username = string_field(body, "username")?;
         if username.is_empty()
@@ -3516,12 +3602,6 @@ impl AuthState {
         if password.is_empty() || password.len() > 128 || password.bytes().any(|byte| byte == 0) {
             return Err(denied());
         }
-        let config = self
-            .radius_mounts
-            .get(namespace)
-            .and_then(|mounts| mounts.get(mount))
-            .cloned()
-            .ok_or_else(|| err(503, "RADIUS authentication is not configured"))?;
         Ok(RadiusLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
@@ -3529,6 +3609,7 @@ impl AuthState {
             username: username.into(),
             password: Zeroizing::new(password.into()),
             config,
+            native_revision: None,
             now,
             started: std::time::Instant::now(),
         })
@@ -3552,6 +3633,9 @@ impl AuthState {
                 != Some(&plan.config)
         {
             return Err(err(409, "RADIUS configuration changed during login"));
+        }
+        if plan.config.native.is_some() {
+            return self.finish_native_radius_login(plan);
         }
         let elapsed = plan.started.elapsed();
         let now = plan.now.saturating_add(
@@ -5732,6 +5816,14 @@ fn token_info(token: &Token, now: u64) -> Value {
         "entity_id": token.entity_id.as_deref().unwrap_or("")});
     if token.period > 0 {
         info["period"] = json!(token.period);
+    }
+    if let Some(TokenAuthProvenance::RadiusNative {
+        username,
+        policy_metadata,
+        ..
+    }) = &token.auth_provenance
+    {
+        info["meta"] = json!({"username": username, "policies": policy_metadata});
     }
     info
 }

@@ -364,9 +364,46 @@ with a parent remain ordinary children. A legacy parentless RADIUS-associated
 token without provenance might be a direct login or an orphan child, so renewal
 is refused with a request to log in again; its existing expiration and other
 permissions remain unchanged. This is a bounded PAP renewal profile, not full
-RADIUS compatibility: OpenBao host/port/secret configuration, user mappings,
-NAS options and the complete token parameter set remain open. Finite-token renewal
-defaults follow the current TTL as described above.
+RADIUS compatibility. Finite-token renewal defaults follow the current TTL as
+described above. The original URL configuration remains available for existing
+mounts; new native configuration is described below.
+
+Schema 24 adds native `host`, `port`, `secret`, `unregistered_user_policies`,
+`dial_timeout`, `read_timeout`, `nas_port` and `nas_identifier` configuration.
+The host is stored lowercase, port defaults to 1812, both timeouts to 10 seconds,
+NAS-Port to 10 and NAS-Identifier to empty. Configuration stores the encrypted
+shared secret and omits it from readback. It does not register a network route:
+login and renewal still require the exact enrolled origin and fixed socket
+address. The process credential is optional for native requests; the legacy
+profile refuses an endpoint without its process credential. Native requests
+always use the current configured secret.
+
+`users/:name` stores optional policies and may be written before configuration.
+The last mapping's deletion leaves a native-profile mount entry. User writes and
+deletes use literal keys; reads and login lookup use lowercase names, matching
+OpenBao's asymmetric behavior. LIST supports `after`/`limit` URL query parameters.
+An existing user mapping replaces the unregistered-user fallback, including an
+empty mapping, and its policies are combined with mount policies. Login adds the
+default policy. Deleting a mapping does not necessarily revoke access: renewal
+rechecks PAP and compares the resulting policies. A changed effective policy set
+returns 500 without extending the token. Raw fallback CSV is preserved in
+readback and issued metadata; OpenBao's renewal compares those raw fallback names,
+so whitespace or case differences can reject renewal even after login normalized
+the issued policies. `auth/.../login/:username` and the body username are supported.
+Issued metadata survives all renewal and token lookup routes.
+
+PAP sends NAS-Port as the low 32 bits of the signed stored value and sends a
+nonempty NAS-Identifier. There is one request and no retry. Read timeout zero
+fails before sending; dial timeout zero has no separate connect limit but remains
+bounded by the overall read deadline. Supported timeouts are 0–60 seconds,
+shared secrets 1–256 bytes, passwords 1–128 bytes and usernames/NAS identifiers at
+most 253 bytes. Host configuration supports ASCII DNS names and IPv4 literals;
+the registered socket may use IPv6. Signed ports can be stored for faithful
+readback, but invalid destination ports fail before I/O. The profile requires
+strict response and Message-Authenticator verification; CHAP, EAP, challenges,
+arbitrary timeout ranges, IPv6 literal host configuration and the full TokenParams
+surface remain open. Native/legacy configuration mixing returns 400, changing an
+existing profile returns 409, and native configuration DELETE returns 405.
 
 ## Authentication mount registry
 

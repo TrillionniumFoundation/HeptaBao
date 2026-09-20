@@ -143,10 +143,26 @@ Message-Authenticator; the candidate responder still requires it, and both
 responders sign reply authenticators. Only fixed case IDs, statuses and boolean
 observations enter the report. This does not establish RADIUS API parity.
 
+`radius_native_live.py` uses the same host/port/secret configuration on both
+sides and validates optional user mappings, case-sensitive storage keys, LIST
+pagination, raw fallback policies, issued metadata, NAS attributes, secret
+rotation, renewal, wrapping and restart against pinned 2.6.2. The candidate
+endpoint grants a fixed destination without a process secret; configuration does
+not authorize new network destinations. Receipts retain the timeout and strict
+Message-Authenticator profile limits instead of claiming full RADIUS parity.
+`radius_config_native_upgrade.py` opens a real schema-23 store with the new binary,
+preserves old finite/periodic/child/orphan tokens, exercises native configuration
+and policy changes, rejects a schema-23 downgrade, and verifies recovery and
+credential isolation. Process enrollment is adapted explicitly for the older
+binary; the encrypted store is never edited to make downgrade succeed.
+
 `radius_renewal_ha.py` uses three real server processes and gates signed UDP
 acceptance across leader SIGKILL, quorum loss and sealing. It reads absolute
 token expiry back to detect stale-authority renewal. This is a process-level HA
 fixture, not evidence from independent physical hosts.
+Its `--native` mode keeps the same fault scenarios while obtaining the shared
+secret from encrypted API configuration; the enrolled endpoint has no process
+secret and the actual UDP request must carry the native default NAS-Port.
 
 `ldap_renewal_live.py` compares two independent real OpenLDAP stores with pinned
 LDAPS certificates and the official 2.6.2 binary. Its provider trace checks fresh

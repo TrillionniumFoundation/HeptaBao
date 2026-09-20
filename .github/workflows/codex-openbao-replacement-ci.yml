@@ -336,9 +336,16 @@ jobs:
           timeout 180 python qa/openbao-acceptance/radius_renewal_live.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --output "$reports/radius-renewal.json"
+          timeout 300 python qa/openbao-acceptance/radius_native_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --build-source-commit "$EXPECTED_SOURCE" \
+            --output "$reports/radius-native.json"
           timeout 240 python qa/openbao-acceptance/radius_renewal_ha.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --output "$reports/radius-renewal-ha.json"
+          timeout 240 python qa/openbao-acceptance/radius_renewal_ha.py --native \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/radius-native-renewal-ha.json"
 
       - name: Compare operational Agent and Proxy behavior with official OpenBao
         shell: bash

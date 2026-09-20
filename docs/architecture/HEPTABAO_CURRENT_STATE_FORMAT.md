@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **23**. Its source constant is
+The current Service state schema is **24**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -62,7 +62,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 20 | Direct Kubernetes role provenance and native role/mount TTL, periodic and explicit-maximum limits. OIDC renewal provenance and extended role limits must be absent. |
 | 21 | Direct OIDC role provenance and native role/mount TTL, periodic and explicit-maximum limits. Nonzero RADIUS period/explicit-maximum configuration and direct periodic RADIUS tokens must be absent. |
 | 22 | RADIUS periodic and explicit-maximum configuration, direct periodic token snapshots and empty configured RADIUS policy sets. Native LDAP state must be absent. |
-| 23 | Current format, adding native LDAP manager-search configuration, optional user mappings, direct-token credentials bound to the issued alias and opaque Identity aliases. |
+| 23 | Native LDAP manager-search configuration, optional user mappings, direct-token credentials bound to the issued alias and opaque Identity aliases. Native RADIUS configuration, user-map mount entries and provenance must be absent. |
+| 24 | Current format, adding native RADIUS host/secret/NAS/timeout configuration, optional user mappings and direct-token credentials with issued metadata. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -139,8 +140,17 @@ schema 23, including aliases created directly through the Identity API. Entity
 names, group names and identifiers retain their existing grammar; directory group
 observations retain their 256-byte name budget.
 
+Schema 24 is required for native RADIUS configuration, direct native provenance
+or a native user-map mount entry, including an empty entry left after deleting
+the last mapping. That entry permits users to be configured before the provider
+and prevents a later silent switch to the old URL profile. Native configuration
+retains an encrypted, zeroizing shared secret; runtime endpoint registration
+grants a fixed socket address but need not carry that secret. Issued username and
+policy metadata survive renewal and lookup. Children and orphans retain their
+own token-API provenance without provider credentials or metadata.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 23. An authenticated
+it. Initialization and committed mutations use schema 24. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -154,7 +164,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-23-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-24-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -179,7 +189,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-22 binary must fail closed once native LDAP authority or opaque Identity aliases have been committed;
+A schema-23 binary must fail closed once native RADIUS configuration, user-map intent or token provenance has been committed;
+a schema-22 binary must fail closed once native LDAP authority or opaque Identity aliases have been committed;
 a schema-21 binary must fail closed once current RADIUS periodic or explicit-maximum semantics have been committed;
 a schema-20 binary must fail closed once current OIDC renewal or role lifetime semantics have been committed;
 a schema-19 binary must fail closed once current Kubernetes renewal or role lifetime semantics have been committed;

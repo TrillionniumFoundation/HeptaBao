@@ -315,7 +315,7 @@ Existing bounded profiles: `qa/openbao-acceptance/ldap_bounded.py`, `qa/openbao-
 ### HB-SURFACE-AUTH-RADIUS
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP08`, `H16-WP10`.
-API families: `auth/{mount}/config`; `auth/{mount}/login`.
+API families: `auth/{mount}/config`; `auth/{mount}/login`; `auth/{mount}/login/{username}`; `auth/{mount}/users/*`.
 Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/service_online_auth.rs`.
 Separate contracts: none claimed.
 Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
@@ -324,9 +324,9 @@ Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
 **Hostile:** Bad Message-Authenticator, bad Response Authenticator, provider rejection and packet loss fail closed without issuing a token.
 
-**Lifecycle:** The one-shot three-second exchange never retries an unknown provider outcome; route and token policy survive the schema-12 persistence fence.
+**Lifecycle:** The legacy three-second exchange and native configured-timeout exchange both use one request. Current config/user policy authority is rechecked after PAP; lease, metadata and wrapper changes commit together. Native secret/user state requires schema 24 and older URL profiles retain their issuer semantics.
 
-**Remaining scope:** This is IPv4 UDP PAP only. CHAP, EAP, Access-Challenge workflows, IPv6, host/port/secret OpenBao API parity, full field/error parity, independent qualification, HA provider faults and production operation remain open. The bounded receipt is qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json.
+**Remaining scope:** Native host/port/secret, user policies and NAS fields are implemented alongside the legacy profile. CHAP, EAP, Access-Challenge workflows, IPv6 literal host configuration, arbitrary timeout ranges, complete TokenParams and weak-type coercions, full field/error parity, independent qualification and multi-host faults remain open. See `qa/openbao-acceptance/radius_native_live.py`; the earlier bounded receipt is `qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json`.
 
 Existing bounded profiles: `qa/openbao-acceptance/radius_bounded.py`.
 

@@ -397,6 +397,7 @@ impl AuthState {
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
         self.validate_oidc_state()?;
         self.validate_native_ldap_state()?;
+        self.validate_native_radius_state()?;
         for (namespace, mounts) in &self.kubernetes_mounts {
             validate_namespace(namespace)?;
             for (mount, state) in mounts {
@@ -454,8 +455,9 @@ impl AuthState {
             validate_namespace(namespace)?;
             for (mount, config) in mounts {
                 if !self.online_mount_enabled(namespace, mount, "radius")
-                    || crate::outbound::Target::parse(&config.url, "radius")
-                        .map_or(true, |target| target.path != "/")
+                    || config.native.is_none()
+                        && crate::outbound::Target::parse(&config.url, "radius")
+                            .map_or(true, |target| target.path != "/")
                     || config.policies.len() > 128
                     || config
                         .policies
@@ -523,6 +525,12 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|mounts| mounts.get(&mount))
                 .ok_or_else(|| err(503, "RADIUS authentication is not configured"))?;
+            // Native config is encrypted data, not an egress enrollment. Ports
+            // and undeployed origins may be stored; PAP must resolve only an
+            // existing fixed process route when the effect actually executes.
+            if config.native.is_some() {
+                return Ok(());
+            }
             outbound
                 .radius_endpoint(&config.url)
                 .map_err(|_| err(503, "RADIUS target is not host-enrolled"))?;
