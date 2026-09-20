@@ -42,8 +42,9 @@ class UpgradeTrace(Trace):
         self.check(name+'.snapshot',data.get('policies')==expected)
     def admin_renew(self,name,auth,*,status=200):
         for via,body in [('renew',{'token':auth['client_token']}),('renew-accessor',{'accessor':auth['accessor']})]:
-            result=self.call(name+'.'+via,'POST','auth/token/'+via,dict(body,increment=120),status=status,provider=True)
-            if status==200:self.check(name+'.'+via+'.empty_policies',result.get('auth',{}).get('policies')==[] and 'token_policies' not in result.get('auth',{}))
+            label=name+'.'+via.replace('-','_')
+            result=self.call(label,'POST','auth/token/'+via,dict(body,increment=120),status=status,provider=True)
+            if status==200:self.check(label+'.empty_policies',result.get('auth',{}).get('policies')==[] and 'token_policies' not in result.get('auth',{}))
 
 def prepare_legacy(instance,provider,cases):
     instance.start();status,initialized=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
