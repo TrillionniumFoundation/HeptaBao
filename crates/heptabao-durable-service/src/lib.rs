@@ -11,20 +11,43 @@
 //! Callers must supply a [`Barrier`] implementation that provides confidentiality and
 //! authenticity for every persisted payload.
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
 use sha2::{Digest, Sha256};
-#[cfg(target_os = "linux")]
+#[cfg(all(test, target_os = "linux"))]
 use std::os::unix::fs::OpenOptionsExt;
 use zeroize::{Zeroize, Zeroizing};
 
 use std::collections::BTreeMap;
 use std::fmt;
-use std::fs::{self, File, OpenOptions};
+#[cfg(test)]
+use std::fs;
+#[cfg(test)]
+use std::fs::{File, OpenOptions};
+#[cfg(test)]
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(test)]
+use std::path::PathBuf;
 
 mod capacity;
 pub use capacity::CapacityStatus;
+mod backend;
+pub use backend::{BackendBundle, BackendError, DurableBackend, FileBackend};
+
+fn map_backend_error(error: BackendError) -> ServiceError {
+    match error {
+        BackendError::InvalidRoot => ServiceError::InvalidRoot,
+        BackendError::RootNotEmpty => ServiceError::RootNotEmpty,
+        BackendError::MissingArtifact | BackendError::Corrupt => ServiceError::CorruptState,
+        BackendError::Io | BackendError::Unavailable => {
+            ServiceError::Io(std::io::Error::other("durable backend I/O failed"))
+        }
+        BackendError::Unsupported => ServiceError::UnsupportedProfile,
+        BackendError::WriterLocked => ServiceError::WriterLocked,
+        BackendError::StaleWriter => ServiceError::RecoveryRequired,
+        BackendError::Capacity => ServiceError::RequestCapacityExhausted,
+        BackendError::OutcomeUnknown => ServiceError::RecoveryRequired,
+    }
+}
 
 const SNAPSHOT_MAGIC: &[u8; 4] = b"HBS2";
 const SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP2";
@@ -225,7 +248,6 @@ pub enum Failpoint {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ReplayRetirementFailpoint {
     None,
-    AfterLedgerPublication,
     AfterJournalPublication,
 }
 
@@ -460,8 +482,7 @@ enum JournalEvent {
 }
 
 pub struct DurableService<B: Barrier> {
-    root: PathBuf,
-    directory: ExclusiveDirectory,
+    backend: FileBackend,
     barrier: B,
     snapshot: Snapshot,
     snapshot_plaintext_bytes: usize,
@@ -507,22 +528,7 @@ impl<B: Barrier> DurableService<B> {
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let root = validate_root(root.as_ref(), true)?;
-        if root.exists() {
-            let mut entries = fs::read_dir(&root)?;
-            if entries.next().transpose()?.is_some() {
-                return Err(ServiceError::RootNotEmpty);
-            }
-        } else {
-            fs::create_dir_all(&root)?;
-        }
-        let directory = acquire_writer_lock(&root)?;
-        let root = directory.access_path().to_path_buf();
-        // Recheck under the acquired process fence: concurrent creators cannot
-        // initialize an already-populated directory.
-        if fs::read_dir(&root)?.next().transpose()?.is_some() {
-            return Err(ServiceError::RootNotEmpty);
-        }
+        let mut backend = FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?;
         let snapshot = Snapshot {
             generation: 0,
             entries: BTreeMap::new(),
@@ -530,12 +536,17 @@ impl<B: Barrier> DurableService<B> {
         };
         let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let ledger = BTreeMap::new();
-        persist_snapshot(&root, &barrier, &snapshot)?;
-        initialize_journal(&root)?;
-        persist_ledger(&root, &barrier, 0, 0, 0, &ledger)?;
+        let snapshot_bytes = sealed_snapshot(&barrier, &snapshot)?;
+        let ledger_bytes = sealed_ledger(&barrier, 0, 0, 0, &ledger)?;
+        backend
+            .initialize_empty(&BackendBundle {
+                snapshot: snapshot_bytes,
+                ledger: ledger_bytes,
+                journal: JOURNAL_MAGIC.to_vec(),
+            })
+            .map_err(map_backend_error)?;
         Ok(Self {
-            root,
-            directory,
+            backend,
             barrier,
             snapshot,
             snapshot_plaintext_bytes,
@@ -557,18 +568,17 @@ impl<B: Barrier> DurableService<B> {
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
-        let root = validate_root(root.as_ref(), false)?;
-        let directory = acquire_writer_lock(&root)?;
-        let root = directory.access_path().to_path_buf();
-        let snapshot = load_snapshot(&root, &barrier)?;
+        let mut backend = FileBackend::open(root.as_ref()).map_err(map_backend_error)?;
+        let bundle = backend.load().map_err(map_backend_error)?;
+        let snapshot = decode_snapshot_frame(&bundle.snapshot, &barrier)?;
         let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let (journal_sequence, events, journal_bytes, incomplete_tail) =
-            load_journal(&root, &barrier)?;
+            decode_journal_frames(&bundle.journal, &barrier)?;
+        let physical_journal_bytes = bundle.journal.len();
         let (ledger_generation, replay_epoch, retired_through_generation, ledger) =
-            load_ledger(&root, &barrier)?;
+            decode_ledger_frame(&bundle.ledger, &barrier)?;
         let mut service = Self {
-            root,
-            directory,
+            backend,
             barrier,
             snapshot,
             snapshot_plaintext_bytes,
@@ -582,7 +592,12 @@ impl<B: Barrier> DurableService<B> {
             max_retained_requests,
             unresolved: false,
         };
-        service.recover(events, ledger_generation, incomplete_tail)?;
+        service.recover(
+            events,
+            ledger_generation,
+            incomplete_tail,
+            physical_journal_bytes,
+        )?;
         Ok(service)
     }
 
@@ -784,12 +799,9 @@ impl<B: Barrier> DurableService<B> {
 
     /// Retire every resolved request identity in the current replay epoch.
     ///
-    /// The operation first checkpoints the complete active ledger, then publishes
-    /// an authenticated HBC3 ledger carrying the next epoch and the exact retired
-    /// generation frontier, and finally rewrites the journal checkpoint against
-    /// the empty active ledger. A crash between those two replacements is
-    /// recoverable because the authenticated frontier makes the old checkpoint
-    /// historical rather than replay authority. Unknown outcomes must be
+    /// The operation publishes an authenticated HBC3 ledger carrying the next
+    /// epoch and exact retired generation frontier together with the empty
+    /// journal checkpoint as one backend checkpoint. Unknown outcomes must be
     /// reconciled before this maintenance operation is allowed.
     pub fn retire_replay_epoch(&mut self) -> Result<ReplayRetirementOutcome, ServiceError> {
         self.retire_replay_epoch_with_failpoint(ReplayRetirementFailpoint::None)
@@ -802,7 +814,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         self.compact()?;
         let previous_epoch = self.replay_epoch;
         let current_epoch = previous_epoch
@@ -823,20 +835,27 @@ impl<B: Barrier> DurableService<B> {
         let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + frame.len());
         journal.extend_from_slice(JOURNAL_MAGIC);
         journal.extend_from_slice(&frame);
-        if journal.len() > self.journal_limit {
+        let journal_len = journal.len();
+        if journal_len > self.journal_limit {
             return Err(ServiceError::JournalCapacityExhausted);
         }
         self.unresolved = true;
-        atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
+        let expected = self.backend.load().map_err(map_backend_error)?;
+        self.backend
+            .publish_checkpoint(
+                &expected,
+                &BackendBundle {
+                    snapshot: expected.snapshot.clone(),
+                    ledger: ledger_bytes,
+                    journal,
+                },
+            )
+            .map_err(map_backend_error)?;
         self.ledger.clear();
         self.replay_epoch = current_epoch;
         self.retired_through_generation = retired_through_generation;
-        if failpoint == ReplayRetirementFailpoint::AfterLedgerPublication {
-            return Err(ServiceError::RecoveryRequired);
-        }
-        atomic_write(&self.root, &journal_path(&self.root), &journal)?;
         self.journal_sequence = 1;
-        self.journal_bytes = journal.len();
+        self.journal_bytes = journal_len;
         if failpoint == ReplayRetirementFailpoint::AfterJournalPublication {
             return Err(ServiceError::RecoveryRequired);
         }
@@ -856,7 +875,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         let logical_payload_bytes = self
             .snapshot
             .entries
@@ -910,7 +929,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         validate_committed_state(
             &self.snapshot,
             self.snapshot.generation,
@@ -926,7 +945,8 @@ impl<B: Barrier> DurableService<B> {
         let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + frame.len());
         journal.extend_from_slice(JOURNAL_MAGIC);
         journal.extend_from_slice(&frame);
-        if journal.len() > self.journal_limit {
+        let journal_len = journal.len();
+        if journal_len > self.journal_limit {
             return Err(ServiceError::JournalCapacityExhausted);
         }
         // Snapshot and replay ledger are checkpoint state, not per-request
@@ -948,17 +968,25 @@ impl<B: Barrier> DurableService<B> {
         }
         let before = self.journal_bytes;
         self.unresolved = true;
-        atomic_write(&self.root, &snapshot_path(&self.root), &snapshot_bytes)?;
-        atomic_write(&self.root, &ledger_path(&self.root), &ledger_bytes)?;
-        atomic_write(&self.root, &journal_path(&self.root), &journal)?;
+        let expected = self.backend.load().map_err(map_backend_error)?;
+        self.backend
+            .publish_checkpoint(
+                &expected,
+                &BackendBundle {
+                    snapshot: snapshot_bytes,
+                    ledger: ledger_bytes,
+                    journal,
+                },
+            )
+            .map_err(map_backend_error)?;
         self.journal_sequence = 1;
-        self.journal_bytes = journal.len();
+        self.journal_bytes = journal_len;
         self.unresolved = false;
         Ok(CompactionOutcome {
             generation: self.snapshot.generation,
             retained_requests: self.ledger.len(),
             journal_bytes_before: before,
-            journal_bytes_after: journal.len(),
+            journal_bytes_after: journal_len,
         })
     }
 
@@ -969,7 +997,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         validate_committed_state(
             &self.snapshot,
             self.snapshot.generation,
@@ -1021,9 +1049,9 @@ impl<B: Barrier> DurableService<B> {
     /// Restore one previously exported backup into this exclusively owned
     /// directory. Rollback is rejected unless `allow_rollback` is explicit.
     ///
-    /// Replacement uses independently atomic files. A crash or I/O failure can
-    /// leave a mixed set, which is deliberately rejected on reopen rather than
-    /// being guessed or automatically reset.
+    /// Replacement is one backend checkpoint. Filesystem and database backends
+    /// must reject stale expected bundles instead of guessing after an unknown
+    /// write outcome.
     pub fn restore_backup(
         &mut self,
         backup: &[u8],
@@ -1032,24 +1060,24 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         let restored = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
         if restored.snapshot.generation < self.snapshot.generation && !allow_rollback {
             return Err(ServiceError::BackupRollbackRejected);
         }
         let previous_generation = self.snapshot.generation;
         self.unresolved = true;
-        atomic_write(
-            &self.root,
-            &snapshot_path(&self.root),
-            &restored.snapshot_bytes,
-        )?;
-        atomic_write(&self.root, &ledger_path(&self.root), &restored.ledger_bytes)?;
-        atomic_write(
-            &self.root,
-            &journal_path(&self.root),
-            &restored.journal_bytes,
-        )?;
+        let expected = self.backend.load().map_err(map_backend_error)?;
+        self.backend
+            .publish_checkpoint(
+                &expected,
+                &BackendBundle {
+                    snapshot: restored.snapshot_bytes.clone(),
+                    ledger: restored.ledger_bytes.clone(),
+                    journal: restored.journal_bytes.clone(),
+                },
+            )
+            .map_err(map_backend_error)?;
         self.snapshot = restored.snapshot;
         self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
         self.ledger = restored.ledger;
@@ -1091,7 +1119,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
         let binding_digest = binding.digest();
         if let Some(existing) = self.ledger.get(&binding.key) {
             if existing.binding_digest != binding_digest {
@@ -1255,7 +1283,13 @@ impl<B: Barrier> DurableService<B> {
         if size > self.journal_limit || next > MAX_RECORDS as u64 {
             return Err(ServiceError::JournalCapacityExhausted);
         }
-        append_journal_frame(&self.root, frame)?;
+        let written = self
+            .backend
+            .append_journal(self.journal_bytes, frame)
+            .map_err(map_backend_error)?;
+        if written != size {
+            return Err(ServiceError::CorruptState);
+        }
         // Never consume a sequence in memory on a failed append.
         self.journal_sequence = next;
         self.journal_bytes = size;
@@ -1276,6 +1310,7 @@ impl<B: Barrier> DurableService<B> {
         events: Vec<JournalEvent>,
         ledger_generation: u64,
         incomplete_tail: bool,
+        physical_journal_bytes: usize,
     ) -> Result<(), ServiceError> {
         validate_ledger_generation(
             &self.ledger,
@@ -1434,11 +1469,9 @@ impl<B: Barrier> DurableService<B> {
         // Only a physically incomplete tail is repairable. Fully framed bad
         // checksums, sequence gaps and authentication failures fail closed.
         if incomplete_tail {
-            let file = nofollow_options()
-                .write(true)
-                .open(journal_path(&self.root))?;
-            file.set_len(self.journal_bytes as u64)?;
-            file.sync_all()?;
+            self.backend
+                .truncate_journal(physical_journal_bytes, self.journal_bytes)
+                .map_err(map_backend_error)?;
         }
         if let Some(marker) = pending {
             if published_pending {
@@ -1470,14 +1503,24 @@ impl<B: Barrier> DurableService<B> {
         // Reopen materializes the rebuilt replay ledger as a fresh checkpoint
         // prefix. The full application snapshot intentionally stays journal-
         // backed until explicit compact/backup/retirement checkpointing.
-        persist_ledger(
-            &self.root,
+        let expected = self.backend.load().map_err(map_backend_error)?;
+        let replacement_ledger = sealed_ledger(
             &self.barrier,
             self.snapshot.generation,
             self.replay_epoch,
             self.retired_through_generation,
             &self.ledger,
         )?;
+        self.backend
+            .publish_checkpoint(
+                &expected,
+                &BackendBundle {
+                    snapshot: expected.snapshot.clone(),
+                    ledger: replacement_ledger,
+                    journal: expected.journal.clone(),
+                },
+            )
+            .map_err(map_backend_error)?;
         self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
         self.unresolved = false;
         Ok(())
@@ -1793,66 +1836,31 @@ fn validate_segmented_path(value: &str, maximum: usize) -> Result<(), ()> {
     Ok(())
 }
 
-fn validate_root(root: &Path, create: bool) -> Result<PathBuf, ServiceError> {
-    if !root.is_absolute() {
-        return Err(ServiceError::InvalidRoot);
-    }
-    if root.exists() {
-        let metadata = fs::symlink_metadata(root)?;
-        if metadata.file_type().is_symlink() || !metadata.is_dir() {
-            return Err(ServiceError::InvalidRoot);
-        }
-    } else if !create {
-        return Err(ServiceError::InvalidRoot);
-    }
-    Ok(root.to_path_buf())
-}
-
-fn acquire_writer_lock(root: &Path) -> Result<ExclusiveDirectory, ServiceError> {
-    ExclusiveDirectory::open(root).map_err(map_guard_error)
-}
-
-fn map_guard_error(error: DirectoryGuardError) -> ServiceError {
-    match error {
-        DirectoryGuardError::WriterBusy => ServiceError::WriterLocked,
-        DirectoryGuardError::UnsupportedPlatform
-        | DirectoryGuardError::DescriptorPathUnavailable => ServiceError::UnsupportedProfile,
-        DirectoryGuardError::Io(error) => ServiceError::Io(error),
-        _ => ServiceError::InvalidRoot,
-    }
-}
-
-#[cfg(target_os = "linux")]
+#[cfg(all(test, target_os = "linux"))]
 fn nofollow_options() -> OpenOptions {
     let mut options = OpenOptions::new();
     options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     options
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(all(test, not(target_os = "linux")))]
 fn nofollow_options() -> OpenOptions {
     OpenOptions::new()
 }
 
+#[cfg(test)]
 fn snapshot_path(root: &Path) -> PathBuf {
     root.join("state.hbs")
 }
 
+#[cfg(test)]
 fn journal_path(root: &Path) -> PathBuf {
     root.join("journal.hbj")
 }
 
+#[cfg(test)]
 fn ledger_path(root: &Path) -> PathBuf {
     root.join("ledger.hbl")
-}
-
-fn persist_snapshot<B: Barrier>(
-    root: &Path,
-    barrier: &B,
-    snapshot: &Snapshot,
-) -> Result<(), ServiceError> {
-    let encoded = sealed_snapshot(barrier, snapshot)?;
-    atomic_write(root, &snapshot_path(root), &encoded)
 }
 
 fn sealed_snapshot<B: Barrier>(barrier: &B, snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
@@ -1868,11 +1876,6 @@ fn sealed_snapshot<B: Barrier>(barrier: &B, snapshot: &Snapshot) -> Result<Vec<u
     let checksum = digest32(b"heptabao.durable-service.snapshot-frame.v2", &encoded);
     encoded.extend_from_slice(&checksum);
     Ok(encoded)
-}
-
-fn load_snapshot<B: Barrier>(root: &Path, barrier: &B) -> Result<Snapshot, ServiceError> {
-    let encoded = read_bounded(&snapshot_path(root))?;
-    decode_snapshot_frame(&encoded, barrier)
 }
 
 fn decode_snapshot_frame<B: Barrier>(
@@ -1911,17 +1914,6 @@ fn decode_snapshot_frame<B: Barrier>(
     Ok(snapshot)
 }
 
-fn initialize_journal(root: &Path) -> Result<(), ServiceError> {
-    let path = journal_path(root);
-    let mut file = nofollow_options()
-        .write(true)
-        .create_new(true)
-        .open(&path)?;
-    file.write_all(JOURNAL_MAGIC)?;
-    file.sync_all()?;
-    sync_parent(root)
-}
-
 fn sealed_journal_record<B: Barrier>(
     barrier: &B,
     sequence: u64,
@@ -1941,24 +1933,6 @@ fn sealed_journal_record<B: Barrier>(
     write_u32(&mut encoded, frame_len);
     encoded.extend_from_slice(&frame);
     Ok(encoded)
-}
-
-fn append_journal_frame(root: &Path, frame: &[u8]) -> Result<(), ServiceError> {
-    let mut file = nofollow_options().append(true).open(journal_path(root))?;
-    if !file.metadata()?.is_file() {
-        return Err(ServiceError::CorruptState);
-    }
-    file.write_all(frame)?;
-    file.sync_all()?;
-    Ok(())
-}
-
-fn load_journal<B: Barrier>(
-    root: &Path,
-    barrier: &B,
-) -> Result<(u64, Vec<JournalEvent>, usize, bool), ServiceError> {
-    let encoded = read_bounded(&journal_path(root))?;
-    decode_journal_frames(&encoded, barrier)
 }
 
 fn decode_journal_frames<B: Barrier>(
@@ -2023,6 +1997,7 @@ fn decode_journal_frames<B: Barrier>(
     ))
 }
 
+#[cfg(test)]
 fn persist_ledger<B: Barrier>(
     root: &Path,
     barrier: &B,
@@ -2064,14 +2039,6 @@ fn sealed_ledger<B: Barrier>(
     let checksum = digest32(b"heptabao.durable-service.ledger-frame.v2", &encoded);
     encoded.extend_from_slice(&checksum);
     Ok(encoded)
-}
-
-fn load_ledger<B: Barrier>(
-    root: &Path,
-    barrier: &B,
-) -> Result<(u64, u64, u64, BTreeMap<RequestKey, LedgerRecord>), ServiceError> {
-    let encoded = read_bounded(&ledger_path(root))?;
-    decode_ledger_frame(&encoded, barrier)
 }
 
 fn decode_ledger_frame<B: Barrier>(
@@ -2211,6 +2178,7 @@ fn decode_backup<B: Barrier>(
     })
 }
 
+#[cfg(test)]
 fn atomic_write(root: &Path, target: &Path, bytes: &[u8]) -> Result<(), ServiceError> {
     if bytes.len() > MAX_FILE_BYTES {
         return Err(ServiceError::CorruptState);
@@ -2227,11 +2195,13 @@ fn atomic_write(root: &Path, target: &Path, bytes: &[u8]) -> Result<(), ServiceE
     sync_parent(root)
 }
 
+#[cfg(test)]
 fn sync_parent(root: &Path) -> Result<(), ServiceError> {
     File::open(root)?.sync_all()?;
     Ok(())
 }
 
+#[cfg(test)]
 fn read_bounded(path: &Path) -> Result<Vec<u8>, ServiceError> {
     let metadata = fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink() || !metadata.is_file() {
@@ -2997,49 +2967,39 @@ mod tests {
     #[test]
     fn replay_retirement_publication_boundaries_fence_and_recover() -> Result<(), ServiceError> {
         let _serial = serial_test();
-        for (label, failpoint) in [
-            (
-                "retire-ledger-boundary",
-                ReplayRetirementFailpoint::AfterLedgerPublication,
+        let root = TestRoot::new("retire-journal-boundary")?;
+        let barrier = TestBarrier::new();
+        let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
+        service.put(put_request("epoch-before-1", b"one")?)?;
+        service.put(put_request("epoch-before-2", b"two")?)?;
+        let generation = service.snapshot.generation;
+        assert!(matches!(
+            service.retire_replay_epoch_with_failpoint(
+                ReplayRetirementFailpoint::AfterJournalPublication
             ),
-            (
-                "retire-journal-boundary",
-                ReplayRetirementFailpoint::AfterJournalPublication,
-            ),
-        ] {
-            let root = TestRoot::new(label)?;
-            let barrier = TestBarrier::new();
-            let mut service = DurableService::create_new(&root.0, barrier.clone(), 16)?;
-            service.put(put_request("epoch-before-1", b"one")?)?;
-            service.put(put_request("epoch-before-2", b"two")?)?;
-            let generation = service.snapshot.generation;
-            assert!(matches!(
-                service.retire_replay_epoch_with_failpoint(failpoint),
-                Err(ServiceError::RecoveryRequired)
-            ));
-            assert!(service.recovery_required());
-            assert_eq!(service.replay_epoch(), 1);
-            assert_eq!(service.retired_through_generation(), generation);
-            assert!(matches!(
-                service
-                    .put_in_replay_epoch(1, put_request("must-fence-before-reopen", b"blocked")?),
-                Err(ServiceError::RecoveryRequired)
-            ));
-            drop(service);
+            Err(ServiceError::RecoveryRequired)
+        ));
+        assert!(service.recovery_required());
+        assert_eq!(service.replay_epoch(), 1);
+        assert_eq!(service.retired_through_generation(), generation);
+        assert!(matches!(
+            service.put_in_replay_epoch(1, put_request("must-fence-before-reopen", b"blocked")?),
+            Err(ServiceError::RecoveryRequired)
+        ));
+        drop(service);
 
-            let mut reopened = DurableService::reopen(&root.0, barrier.clone(), 16)?;
-            assert!(!reopened.recovery_required());
-            assert_eq!(reopened.replay_epoch(), 1);
-            assert_eq!(reopened.retired_through_generation(), generation);
-            let outcome =
-                reopened.put_in_replay_epoch(1, put_request("epoch-after-reopen", b"resumed")?)?;
-            assert!(matches!(outcome, MutationOutcome::Committed { .. }));
-            drop(reopened);
+        let mut reopened = DurableService::reopen(&root.0, barrier.clone(), 16)?;
+        assert!(!reopened.recovery_required());
+        assert_eq!(reopened.replay_epoch(), 1);
+        assert_eq!(reopened.retired_through_generation(), generation);
+        let outcome =
+            reopened.put_in_replay_epoch(1, put_request("epoch-after-reopen", b"resumed")?)?;
+        assert!(matches!(outcome, MutationOutcome::Committed { .. }));
+        drop(reopened);
 
-            let reopened = DurableService::reopen(&root.0, barrier, 16)?;
-            assert_eq!(reopened.replay_epoch(), 1);
-            assert_eq!(reopened.snapshot.generation, generation + 1);
-        }
+        let reopened = DurableService::reopen(&root.0, barrier, 16)?;
+        assert_eq!(reopened.replay_epoch(), 1);
+        assert_eq!(reopened.snapshot.generation, generation + 1);
         Ok(())
     }
 

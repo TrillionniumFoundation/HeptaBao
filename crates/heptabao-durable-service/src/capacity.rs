@@ -167,7 +167,7 @@ impl<B: Barrier> DurableService<B> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
-        self.directory.verify().map_err(map_guard_error)?;
+        self.backend.verify().map_err(map_backend_error)?;
 
         let key = RequestKey {
             principal: request.principal.clone(),
@@ -707,7 +707,7 @@ mod tests {
         let next_ledger = sealed_ledger(&service.barrier, generation, 1, generation, &empty)?;
         // Simulate process death after the authenticated HBC3 ledger/frontier
         // replacement and before the replacement empty-ledger checkpoint.
-        atomic_write(&service.root, &ledger_path(&service.root), &next_ledger)?;
+        atomic_write(&root.0, &ledger_path(&root.0), &next_ledger)?;
         drop(service);
 
         let mut recovered = DurableService::reopen(&root.0, TestBarrier::new(), 8)?;
