@@ -1,11 +1,11 @@
 {
   "schema": "heptabao.postgresql-durable-backend.v1",
   "status": "passed_scoped_backend",
-  "source_sha": "318cf8862d5c88eb24f6747457e6b579a55d8614",
+  "source_sha": "833f20bcd37509a0c95ae652a865c3ba86dff1c9",
   "source_dirty": false,
-  "candidate_probe_sha256": "13b7e35a76ac4ed1bae1825b09edf6ed948ceda0da44d30e5b3a3a7ea9820729",
-  "runner_sha256": "5cbdacaad31bbbd0fad1ea566b0a637f8d7c28fbee1b4ec53ce52976cfd0ded6",
-  "observed_at_unix": 1789913828,
+  "candidate_probe_sha256": "1680b7c6bf8e7145d0abb849f74fae742ff735977af260bbf29ad4a12b6ff2ff",
+  "runner_sha256": "118029e52738d7eca5c9d41cd88df0ed40793029fd1e6225ffadbc129687d416",
+  "observed_at_unix": 1789918166,
   "checks": [
     {
       "case": "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
@@ -13,6 +13,22 @@
     },
     {
       "case": "durable_initialize_empty",
+      "passed": true
+    },
+    {
+      "case": "durable_initialize_empty_rejects_existing_scope",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_matches_exact_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_rejects_different_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_conflict_preserves_bundle",
       "passed": true
     },
     {
@@ -45,6 +61,26 @@
     },
     {
       "case": "durable_reopen_probe",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_fixture_created",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_rejects_orphan_chunks",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_initialization_rejected",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_bytes_preserved",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_manifest_not_created",
       "passed": true
     },
     {
