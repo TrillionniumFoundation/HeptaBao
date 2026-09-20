@@ -5,7 +5,7 @@ use crate::auth::{
     AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
     LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLoginObservation,
     ProviderRenewalObservation, ProviderRenewalPlan, RadiusLoginObservation, RadiusLoginPlan,
-    RemoteJwtLoginObservation, RemoteJwtLoginPlan,
+    RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -24,7 +24,8 @@ fn auth_error(error: AuthError) -> Response {
 }
 
 pub(super) enum OnlineAuthEffect {
-    RemoteJwt(RemoteJwtLoginPlan),
+    RemoteJwt(Box<RemoteJwtEffect>),
+    RemoteJwtConfig(Box<RemoteJwtConfigEffect>),
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
     Radius(RadiusLoginPlan),
@@ -37,6 +38,19 @@ pub(super) enum OnlineAuthEffect {
         now: u64,
         started: std::time::Instant,
     },
+}
+
+pub(super) struct RemoteJwtEffect {
+    plan: RemoteJwtLoginPlan,
+    path: String,
+    wrap_ttl_seconds: Option<u64>,
+}
+
+pub(super) struct RemoteJwtConfigEffect {
+    plan: RemoteJwtConfigPlan,
+    actor: Principal,
+    path: String,
+    wrap_ttl_seconds: Option<u64>,
 }
 
 pub(super) struct ProviderRenewalEffect {
@@ -57,6 +71,7 @@ pub(super) struct OnlineAuthEffectPlan {
 
 pub(crate) enum OnlineAuthObservation {
     RemoteJwt(RemoteJwtLoginObservation),
+    RemoteJwtConfig(RemoteJwtLoginObservation),
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
     Radius(RadiusLoginObservation),
@@ -68,9 +83,15 @@ pub(crate) enum OnlineAuthObservation {
 impl OnlineAuthEffectPlan {
     pub(super) fn execute(&self) -> Result<OnlineAuthObservation, Response> {
         match &self.effect {
-            OnlineAuthEffect::RemoteJwt(plan) => plan
+            OnlineAuthEffect::RemoteJwt(effect) => effect
+                .plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::RemoteJwt)
+                .map_err(auth_error),
+            OnlineAuthEffect::RemoteJwtConfig(effect) => effect
+                .plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::RemoteJwtConfig)
                 .map_err(auth_error),
             OnlineAuthEffect::Kubernetes(plan) => plan
                 .execute(&self.outbound)
@@ -230,44 +251,143 @@ impl Service {
         }
     }
 
+    pub(super) fn online_remote_jwt_config(
+        &mut self,
+        admitted: &State,
+        principal: &mut Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Option<Response> {
+        let plan = match admitted.auth.prepare_remote_jwt_config(
+            principal.as_ref(),
+            request.namespace,
+            request.path,
+            request.method,
+            request.body,
+            request.now,
+        ) {
+            Ok(Some(plan)) => plan,
+            Ok(None) => return None,
+            Err(error) => return Some(auth_error(error)),
+        };
+        if self.pending_online_auth_effect.is_some() {
+            return Some(Response::error(
+                503,
+                "online authentication dispatch state is unavailable",
+            ));
+        }
+        let Some(actor) = principal.take() else {
+            return Some(Response::error(403, "missing client token"));
+        };
+        self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+            outbound: self.outbound.clone(),
+            activation_nonce: self.unseal_nonce.clone(),
+            namespace: request.namespace.to_owned(),
+            request_now: request.now,
+            effect: OnlineAuthEffect::RemoteJwtConfig(Box::new(RemoteJwtConfigEffect {
+                plan,
+                actor,
+                path: request.path.to_owned(),
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+            })),
+        });
+        Some(Response::error(
+            500,
+            "remote JWT configuration was not dispatched",
+        ))
+    }
+
+    fn finalize_remote_jwt_config(
+        &mut self,
+        namespace: &str,
+        effect: RemoteJwtConfigEffect,
+        observed: RemoteJwtLoginObservation,
+    ) -> Response {
+        let RemoteJwtConfigEffect {
+            plan,
+            mut actor,
+            path,
+            wrap_ttl_seconds,
+        } = effect;
+        let Some(mut state) = self.state.clone() else {
+            return Response::error(503, "remote JWT configuration authority unavailable");
+        };
+        let now = plan.observed_now();
+        if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
+            return error;
+        }
+        let mut response = match state.auth.finish_remote_jwt_config(plan, &actor, observed) {
+            Ok(response) => response,
+            Err(error) => return auth_error(error),
+        };
+        if let Some(ttl) = wrap_ttl_seconds
+            && response.status != 204
+            && !response.body.is_null()
+        {
+            let wrapped = state
+                .auth
+                .wrap_response(namespace, &path, ttl, &response.body, now);
+            erase_json(&mut response.body);
+            response = match wrapped {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
+            };
+        }
+        // Like ordinary dispatch, a pure no-op does not promote an old
+        // schema or append a durable generation. Finite-use admission already
+        // committed before staging and is never rolled back by this shortcut.
+        if response.mutated {
+            state.schema = CURRENT_STATE_SCHEMA;
+            if let Err(error) = self.commit_state(&state) {
+                erase_json(&mut response.body);
+                return error;
+            }
+            self.state = Some(state);
+        }
+        Response {
+            status: response.status,
+            body: response.body,
+        }
+    }
+
     pub(super) fn online_login(
         &mut self,
         admitted: &State,
         request: &RequestView<'_>,
     ) -> Option<Response> {
-        // Remote-JWT login is a normal auth route, but its discovery/JWKS read
-        // must not hold the Service writer. Wrapped JWT login keeps the legacy
-        // path until wrapping and split-phase publication share one envelope.
-        if request.wrap_ttl_seconds.is_none() {
-            match admitted.auth.prepare_remote_jwt_login(
-                request.namespace,
-                request.path,
-                request.method,
-                request.body,
-                request.now,
-            ) {
-                Ok(Some(plan)) => {
-                    if self.pending_online_auth_effect.is_some() {
-                        return Some(Response::error(
-                            503,
-                            "online authentication dispatch state is unavailable",
-                        ));
-                    }
-                    self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
-                        outbound: self.outbound.clone(),
-                        activation_nonce: self.unseal_nonce.clone(),
-                        namespace: request.namespace.into(),
-                        request_now: request.now,
-                        effect: OnlineAuthEffect::RemoteJwt(plan),
-                    });
+        // Both ordinary and wrapped remote JWT logins use the same effect;
+        // response wrapping is applied only to the finished candidate state.
+        match admitted.auth.prepare_remote_jwt_login(
+            request.namespace,
+            request.path,
+            request.method,
+            request.body,
+            request.now,
+        ) {
+            Ok(Some(plan)) => {
+                if self.pending_online_auth_effect.is_some() {
                     return Some(Response::error(
-                        500,
-                        "remote JWT refresh was not dispatched",
+                        503,
+                        "online authentication dispatch state is unavailable",
                     ));
                 }
-                Err(error) => return Some(auth_error(error)),
-                Ok(None) => {}
+                self.pending_online_auth_effect = Some(OnlineAuthEffectPlan {
+                    outbound: self.outbound.clone(),
+                    activation_nonce: self.unseal_nonce.clone(),
+                    namespace: request.namespace.into(),
+                    request_now: request.now,
+                    effect: OnlineAuthEffect::RemoteJwt(Box::new(RemoteJwtEffect {
+                        plan,
+                        path: request.path.to_owned(),
+                        wrap_ttl_seconds: request.wrap_ttl_seconds,
+                    })),
+                });
+                return Some(Response::error(
+                    500,
+                    "remote JWT refresh was not dispatched",
+                ));
             }
+            Err(error) => return Some(auth_error(error)),
+            Ok(None) => {}
         }
 
         let (kind, mount, suffix) = admitted
@@ -322,24 +442,15 @@ impl Service {
                 Err(error) => return Some(auth_error(error)),
             }
         } else if kind == "radius" {
-            let plan = if let Some(username) = suffix.strip_prefix("login/") {
-                admitted.auth.prepare_radius_login_with_path(
-                    request.namespace,
-                    &mount,
-                    Some(username),
-                    request.method,
-                    request.body,
-                    request.now,
-                )
-            } else {
-                admitted.auth.prepare_radius_login(
-                    request.namespace,
-                    &mount,
-                    request.method,
-                    request.body,
-                    request.now,
-                )
-            };
+            let plan = admitted.auth.prepare_radius_login_from(
+                request.namespace,
+                &mount,
+                suffix.strip_prefix("login/"),
+                request.method,
+                request.body,
+                request.now,
+                request.origin_peer,
+            );
             match plan {
                 Ok(plan) => OnlineAuthEffect::Radius(plan),
                 Err(error) => return Some(auth_error(error)),
@@ -441,7 +552,10 @@ impl Service {
     ) -> Response {
         let callback = plan.callback();
         let request_namespace = plan.namespace.clone();
-        let request_now = plan.request_now;
+        let request_now = match &plan.effect {
+            OnlineAuthEffect::RemoteJwt(effect) => effect.plan.observed_now(),
+            _ => plan.request_now,
+        };
         let observation = match result {
             Ok(observation) => observation,
             Err(response) => return response,
@@ -454,6 +568,18 @@ impl Service {
             } else {
                 response
             };
+        }
+        let wrapping = match &plan.effect {
+            OnlineAuthEffect::RemoteJwt(effect) => effect
+                .wrap_ttl_seconds
+                .map(|ttl| (effect.path.clone(), ttl)),
+            _ => None,
+        };
+        if let OnlineAuthEffect::RemoteJwtConfig(effect) = plan.effect {
+            let OnlineAuthObservation::RemoteJwtConfig(observed) = observation else {
+                return Response::error(503, "remote JWT configuration observation type mismatch");
+            };
+            return self.finalize_remote_jwt_config(&request_namespace, *effect, observed);
         }
         if let OnlineAuthEffect::ProviderRenewal(renewal) = plan.effect {
             let OnlineAuthObservation::ProviderRenewal(observation) = observation else {
@@ -478,7 +604,7 @@ impl Service {
             (
                 OnlineAuthEffect::RemoteJwt(auth_plan),
                 OnlineAuthObservation::RemoteJwt(observed),
-            ) => state.auth.finish_remote_jwt_login(auth_plan, observed),
+            ) => state.auth.finish_remote_jwt_login(auth_plan.plan, observed),
             (
                 OnlineAuthEffect::Kubernetes(auth_plan),
                 OnlineAuthObservation::Kubernetes(observed),
@@ -533,6 +659,17 @@ impl Service {
                 consumed_oidc_error(error)
             } else {
                 error
+            };
+        }
+        if let Some((path, ttl)) = wrapping {
+            let wrapped =
+                state
+                    .auth
+                    .wrap_response(&request_namespace, &path, ttl, &issued.body, request_now);
+            erase_json(&mut issued.body);
+            issued = match wrapped {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
             };
         }
         state.schema = CURRENT_STATE_SCHEMA;
@@ -771,3 +908,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "service_remote_jwt_tests.rs"]
+mod remote_jwt_tests;

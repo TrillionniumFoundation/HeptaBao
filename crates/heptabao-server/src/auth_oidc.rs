@@ -958,6 +958,7 @@ impl AuthState {
             AuthScope { namespace, mount },
             &observation.subject,
             NativeOnlineToken {
+                bound_cidrs: Vec::new(),
                 policies,
                 limits,
                 explicit_max_ttl: exchange.role.token_explicit_max_ttl,

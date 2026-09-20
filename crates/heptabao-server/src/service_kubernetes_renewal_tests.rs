@@ -59,6 +59,7 @@ fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::External(pending) => pending,
@@ -100,6 +101,7 @@ fn local_renew(
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: wrap.then_some(60),
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::Complete(response) => Ok(response),

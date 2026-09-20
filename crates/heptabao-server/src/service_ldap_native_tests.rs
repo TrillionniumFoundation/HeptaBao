@@ -44,6 +44,7 @@ fn pending(
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds,
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::External(plan) => Ok(plan),

@@ -285,6 +285,7 @@ fn wrapping_read_uses_transactional_capture_not_immutable_dispatch() -> TestResu
         allow_forward: true,
         enforce_namespace: true,
         wrap_ttl_seconds: Some(30),
+        origin_peer: None,
         client_certificates: None,
     });
     assert_eq!(response.status, 200);
@@ -545,6 +546,7 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
             allow_forward: false,
             enforce_namespace: true,
             wrap_ttl_seconds: None,
+            origin_peer: None,
             client_certificates: None,
         }) {
             RequestExecution::Complete(response) => response,

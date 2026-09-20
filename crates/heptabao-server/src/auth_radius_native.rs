@@ -14,6 +14,7 @@ const NATIVE_FIELDS: &[&str] = &[
     "nas_port",
     "nas_identifier",
     "token_no_default_policy",
+    "token_bound_cidrs",
 ];
 const MAX_NATIVE_TIMEOUT: u64 = 60;
 
@@ -22,6 +23,8 @@ const MAX_NATIVE_TIMEOUT: u64 = 60;
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RadiusNativeConfig {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    bound_cidrs: Vec<String>,
     host: String,
     port: i64,
     // Missing on old records: preserve process enrollment until target reconfiguration.
@@ -42,6 +45,7 @@ pub(super) struct RadiusNativeConfig {
 impl Default for RadiusNativeConfig {
     fn default() -> Self {
         Self {
+            bound_cidrs: Vec::new(),
             host: String::new(),
             port: 1812,
             api_transport: true,
@@ -57,6 +61,9 @@ impl Default for RadiusNativeConfig {
     }
 }
 impl RadiusNativeConfig {
+    pub(super) fn has_bound_cidrs(&self) -> bool {
+        !self.bound_cidrs.is_empty()
+    }
     fn url(&self) -> String {
         if self.host.contains(':') {
             format!("radius://[{}]:{}", self.host, self.port)
@@ -77,6 +84,7 @@ impl RadiusNativeConfig {
         }
     }
     fn validate(&self) -> Result<(), AuthError> {
+        token_cidrs::validate(&self.bound_cidrs)?;
         // Keep signed ports for API readback; the transport rejects unusable ports
         // before DNS or PAP I/O. Legacy records keep their original host grammar.
         if self.api_transport {
@@ -112,7 +120,7 @@ impl RadiusNativeConfig {
         Ok(())
     }
     fn readback(&self, mount: &RadiusMount) -> Value {
-        json!({"host":self.host,"port":self.port,"unregistered_user_policies":self.unregistered_user_policies,
+        json!({"token_bound_cidrs":self.bound_cidrs,"host":self.host,"port":self.port,"unregistered_user_policies":self.unregistered_user_policies,
             "dial_timeout":self.dial_timeout,"read_timeout":self.read_timeout,"nas_port":self.nas_port,"nas_identifier":self.nas_identifier,
             "token_policies":mount.policies,"token_ttl":mount.token_ttl,"token_max_ttl":mount.token_max_ttl,
             "token_period":mount.token_period,"token_explicit_max_ttl":mount.token_explicit_max_ttl,"token_num_uses":mount.token_num_uses,"token_no_default_policy":self.token_no_default_policy})
@@ -287,6 +295,9 @@ impl AuthState {
                 native: None,
             });
         let mut config = mount.native.take().map(|c| *c).unwrap_or_default();
+        if body.get("token_bound_cidrs").is_some() {
+            config.bound_cidrs = token_cidrs::field(body)?;
+        }
         if body.get("host").is_some() || body.get("port").is_some() {
             config.api_transport = true;
         }
@@ -484,6 +495,7 @@ impl AuthState {
         let changed = users.insert(name.into(), policies.clone()).as_ref() != Some(&policies);
         Ok(empty(changed))
     }
+    #[allow(clippy::too_many_arguments)]
     pub(super) fn prepare_native_radius_login(
         &self,
         scope: AuthScope<'_>,
@@ -492,7 +504,12 @@ impl AuthState {
         path_username: Option<&str>,
         body: &Value,
         now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<RadiusLoginPlan, AuthError> {
+        token_cidrs::check(
+            &config.native.as_ref().ok_or_else(denied)?.bound_cidrs,
+            origin_peer,
+        )?;
         reject_unknown(body, &["username", "password"])?;
         let username = match body.get("username") {
             None | Some(Value::Null) => path_username.unwrap_or("").to_owned(),
@@ -513,6 +530,7 @@ impl AuthState {
             return Err(bad("invalid RADIUS credentials"));
         }
         Ok(RadiusLoginPlan {
+            origin_peer,
             namespace: scope.namespace.into(),
             mount: scope.mount.into(),
             mount_revision,
@@ -546,6 +564,14 @@ impl AuthState {
         if Some(self.radius_native_local_revision(scope, &plan.username)?) != plan.native_revision {
             return Err(err(409, "RADIUS mapping changed during provider request"));
         }
+        let bound_cidrs = plan
+            .config
+            .native
+            .as_ref()
+            .ok_or_else(denied)?
+            .bound_cidrs
+            .clone();
+        token_cidrs::check(&bound_cidrs, plan.origin_peer)?;
         let login_policies = self.radius_login_policies(scope, &plan.username)?;
         let metadata = login_policies.join(",");
         let mut policies = plan.config.policies.clone();
@@ -571,6 +597,7 @@ impl AuthState {
             scope,
             &plan.username,
             NativeOnlineToken {
+                bound_cidrs,
                 policies,
                 limits: NativeTokenLimits {
                     ttl: plan.config.token_ttl,

@@ -278,6 +278,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     token: &request.token,
                     body: std::mem::take(&mut request.body),
                     wrap_ttl_seconds: request.wrap_ttl_seconds,
+                    origin_peer: request.origin_peer,
                     client_certificates: request.client_certificates.take(),
                 },
                 Instant::now() + Duration::from_secs(15),
@@ -383,6 +384,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 token: &request.token,
                                 body: std::mem::take(&mut request.body.0),
                                 wrap_ttl_seconds: request.wrap_ttl_seconds,
+                                origin_peer: Some(peer),
                                 client_certificates: request.client_certificates.take(),
                             },
                             Instant::now() + timeout,
@@ -422,8 +424,18 @@ fn lock_until<'a, T>(
     deadline: Instant,
 ) -> Result<MutexGuard<'a, T>, LockWaitError> {
     loop {
+        // An available mutex is not permission to publish a late external
+        // result. Check both sides of acquisition, including uncontended locks.
+        if Instant::now() >= deadline {
+            return Err(LockWaitError::Busy);
+        }
         match mutex.try_lock() {
-            Ok(guard) => return Ok(guard),
+            Ok(guard) => {
+                if Instant::now() >= deadline {
+                    return Err(LockWaitError::Busy);
+                }
+                return Ok(guard);
+            }
             Err(TryLockError::Poisoned(_)) => return Err(LockWaitError::Poisoned),
             Err(TryLockError::WouldBlock) => {
                 let now = Instant::now();
@@ -1222,6 +1234,66 @@ mod service_lock_deadline_tests {
                 .map_err(|_| "state poisoned after external effect")?,
             42
         );
+        Ok(())
+    }
+
+    #[test]
+    fn expired_deadline_rejects_an_uncontended_writer() {
+        let lock = Mutex::new(());
+        let deadline = Instant::now() - Duration::from_millis(1);
+        assert!(matches!(
+            lock_until(&lock, deadline),
+            Err(LockWaitError::Busy)
+        ));
+    }
+
+    #[test]
+    fn gated_external_result_after_deadline_never_calls_finish_even_when_writer_is_free()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let finished = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let worker_finished = Arc::clone(&finished);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                Instant::now() + Duration::from_millis(40),
+                |_| {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    99_u64
+                },
+                |value, (), observed| {
+                    worker_finished.store(true, Ordering::Release);
+                    *value = observed;
+                    Response {
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let concurrent = state
+            .try_lock()
+            .map(|mut value| {
+                *value = 7;
+            })
+            .map_err(|_| "external effect held writer");
+        // The provider gate opens after the original request budget. The
+        // writer remains free, which exposed the old try_lock-before-deadline bug.
+        std::thread::sleep(Duration::from_millis(60));
+        release.wait();
+        let response = worker.join().map_err(|_| "external worker panicked")?;
+        concurrent?;
+        assert_eq!(response.status, 503);
+        assert!(!finished.load(Ordering::Acquire));
+        assert_eq!(*state.lock().map_err(|_| "state poisoned")?, 7);
         Ok(())
     }
 

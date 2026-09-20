@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 26;
+const CURRENT_STATE_SCHEMA: u32 = 27;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -617,10 +617,39 @@ pub struct ServiceRequest<'a> {
     pub token: &'a str,
     pub body: Value,
     pub wrap_ttl_seconds: Option<u64>,
+    /// Original socket peer, attested by the listener or authenticated HA node.
+    /// Trusted Rust embedders may supply it; None never grants a CIDR-bound token.
+    pub origin_peer: Option<std::net::IpAddr>,
     /// Peer certificate chain captured by the TLS listener. This is populated
     /// only after rustls has completed client-chain validation; callers that do
     /// not own a verified TLS session must leave it absent.
     pub(crate) client_certificates: Option<Vec<Vec<u8>>>,
+}
+
+impl<'a> ServiceRequest<'a> {
+    pub fn new(
+        method: &'a str,
+        path: &'a str,
+        namespace: &'a str,
+        token: &'a str,
+        body: Value,
+    ) -> Self {
+        Self {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        }
+    }
+
+    pub fn with_origin_peer(mut self, peer: std::net::IpAddr) -> Self {
+        self.origin_peer = Some(peer);
+        self
+    }
 }
 
 struct RequestDispatch<'a> {
@@ -633,6 +662,7 @@ struct RequestDispatch<'a> {
     allow_forward: bool,
     enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
+    origin_peer: Option<std::net::IpAddr>,
     client_certificates: Option<Vec<Vec<u8>>>,
 }
 
@@ -646,6 +676,7 @@ struct RequestView<'a> {
     allow_forward: bool,
     enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
+    origin_peer: Option<std::net::IpAddr>,
     client_certificates: Option<&'a [Vec<u8>]>,
 }
 
@@ -1108,6 +1139,7 @@ impl Service {
                 token,
                 body,
                 wrap_ttl_seconds: None,
+                origin_peer: None,
                 client_certificates: None,
             },
             now,
@@ -1129,6 +1161,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         } = request;
         self.handle_at_mode(RequestDispatch {
@@ -1141,6 +1174,7 @@ impl Service {
             allow_forward: true,
             enforce_namespace: false,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         })
     }
@@ -1159,6 +1193,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         } = request;
         self.begin_at_mode(RequestDispatch {
@@ -1171,6 +1206,7 @@ impl Service {
             allow_forward: true,
             enforce_namespace: true,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         })
     }
@@ -1186,6 +1222,7 @@ impl Service {
             token,
             body,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         } = request;
         self.begin_at_mode(RequestDispatch {
@@ -1198,6 +1235,7 @@ impl Service {
             allow_forward: false,
             enforce_namespace: true,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         })
     }
@@ -1283,6 +1321,7 @@ impl Service {
             allow_forward,
             enforce_namespace,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         } = request;
         if self.pending_database_effect.is_some()
@@ -1397,6 +1436,7 @@ impl Service {
             allow_forward,
             enforce_namespace,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates: client_certificates.as_deref(),
         });
         erase_json(&mut body);
@@ -1454,6 +1494,7 @@ impl Service {
             allow_forward,
             enforce_namespace,
             wrap_ttl_seconds,
+            origin_peer,
             client_certificates,
         } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
@@ -1557,6 +1598,7 @@ impl Service {
                             token,
                             body,
                             wrap_ttl_seconds,
+                            origin_peer,
                             client_certificates,
                         )
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
@@ -1676,7 +1718,7 @@ impl Service {
         {
             None
         } else {
-            match admitted.auth.authenticate(token, now) {
+            match admitted.auth.authenticate_from(token, now, origin_peer) {
                 Ok(principal) => Some(principal),
                 Err(error) => return Response::error(error.status, &error.message),
             }
@@ -1862,6 +1904,9 @@ impl Service {
         if let Some(response) = self.online_provider_renewal(&admitted, &mut principal, &request) {
             return response;
         }
+        if let Some(response) = self.online_remote_jwt_config(&admitted, &mut principal, &request) {
+            return response;
+        }
         if let Some(response) = self.online_login(&admitted, &request) {
             return response;
         }
@@ -1876,13 +1921,6 @@ impl Service {
         // wrapping was explicitly requested.
         let wrapping_rollback = wrap_ttl_seconds.map(|_| admitted.clone());
         let mut transaction = admitted;
-        if let Err(error) =
-            transaction
-                .auth
-                .refresh_remote_jwt(namespace, path, method, &self.outbound, false)
-        {
-            return Response::error(error.status, &error.message);
-        }
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
                 .auth
@@ -1908,14 +1946,6 @@ impl Service {
                 client_certificates,
             )
         };
-        if response.status < 300
-            && let Err(error) =
-                transaction
-                    .auth
-                    .refresh_remote_jwt(namespace, path, method, &self.outbound, true)
-        {
-            return Response::error(error.status, &error.message);
-        }
         if response.status < 300
             && matches!(method, "POST" | "PUT")
             && let Err(error) =
@@ -2020,10 +2050,11 @@ impl Service {
         if request.token.is_empty() {
             return Some(Response::error(403, "missing client token"));
         }
-        let mut principal = match state
-            .auth
-            .authenticate_read_only(request.token, request.now)
-        {
+        let mut principal = match state.auth.authenticate_read_only_from(
+            request.token,
+            request.now,
+            request.origin_peer,
+        ) {
             Ok(Some(principal)) => principal,
             Ok(None) => return None,
             Err(error) => return Some(Response::error(error.status, &error.message)),

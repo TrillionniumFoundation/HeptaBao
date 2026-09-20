@@ -68,11 +68,19 @@ After a fetch, login verifies time claims using elapsed request time and the
 configured grace window. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.
 
-Remote login I/O executes outside the Service writer. Completion rechecks the
-active seal generation, namespace, HA leadership and current mount/configuration
-before publishing the token and identity state. Config-write fetches still
-run inside their configuration transaction. A slow or unavailable IdP may deny or
-delay logins; no production throughput or offline-availability claim follows.
+Remote configuration preflight and both ordinary and wrapped login I/O execute
+outside the Service writer. Completion rechecks active seal generation, namespace,
+HA leadership and current mount/configuration. Login also requires the complete
+selected role to remain unchanged, then resolves Identity against current state.
+Configuration rechecks its original caller's live identity, expiry and update/sudo
+authority and merges only the proposed configuration into current state, preserving
+unrelated concurrent writes. Identical configuration and keys do not append a
+durable transaction. Wrapped login publishes the token, identity, key cache and
+single-use wrapper together; wrapping or persistence failure installs none of that
+candidate state. An external result arriving after the HTTP finalization deadline
+cannot reacquire publication authority merely because the writer is idle. A slow
+or unavailable IdP may still deny or delay requests; no production throughput or
+offline-availability claim follows.
 
 Native JWT service-token renewal uses the stored role name and current role/mount
 TTL limits locally. It neither fetches keys nor revalidates the original JWT's

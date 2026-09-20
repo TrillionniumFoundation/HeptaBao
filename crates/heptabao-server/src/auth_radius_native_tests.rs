@@ -1059,3 +1059,226 @@ fn native_radius_transport_promotion_fences_inflight_login_and_all_renew_routes(
         accept(&mut s, &actor, fresh, 110).unwrap();
     }
 }
+
+fn cidr_login(
+    s: &mut AuthState,
+    peer: Option<std::net::IpAddr>,
+) -> Result<AuthResponse, AuthError> {
+    let plan = s.prepare_radius_login_from(
+        "",
+        "radius",
+        None,
+        "POST",
+        &json!({"username":"alice","password":"pw"}),
+        100,
+        peer,
+    )?;
+    s.finish_radius_login(plan, RadiusLoginObservation)
+}
+
+#[test]
+fn native_radius_cidr_login_and_token_admission_fail_before_use_consumption() {
+    let (mut s, r) = fixture();
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["127.0.0.1/32"],"token_num_uses":2}),
+    );
+    let good = Some("127.0.0.1".parse().unwrap());
+    let bad_peer = Some("127.0.0.2".parse().unwrap());
+    for peer in [None, bad_peer] {
+        let before = state_revision(&s).unwrap();
+        assert_eq!(cidr_login(&mut s, peer).err().unwrap().status, 403);
+        assert_eq!(state_revision(&s).unwrap(), before);
+    }
+    let raw = bearer(&cidr_login(&mut s, good).unwrap());
+    assert_eq!(s.tokens[&hash(&raw)].bound_cidrs, ["127.0.0.1"]);
+    assert!(s.has_token_bound_cidrs());
+    for peer in [None, bad_peer] {
+        let before = state_revision(&s).unwrap();
+        assert_eq!(
+            s.authenticate_from(&raw, 101, peer).err().unwrap().status,
+            403
+        );
+        assert_eq!(
+            s.authenticate_read_only_from(&raw, 101, peer)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        assert_eq!(state_revision(&s).unwrap(), before);
+        assert_eq!(s.tokens[&hash(&raw)].uses_remaining, Some(2));
+    }
+    let principal = s.authenticate_from(&raw, 101, good).unwrap();
+    assert_eq!(s.tokens[&hash(&raw)].uses_remaining, Some(1));
+    s.check_principal(&principal, "", 101).unwrap();
+    // A held affine capability must not outlive a changed token constraint.
+    s.tokens.get_mut(&hash(&raw)).unwrap().bound_cidrs = vec!["192.0.2.0/24".into()];
+    assert_eq!(
+        s.check_principal(&principal, "", 101).err().unwrap().status,
+        403
+    );
+}
+
+#[test]
+fn native_radius_cidr_snapshot_survives_config_change_renewal_and_restart() {
+    let (mut s, r) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["127.0.0.1/32"]}),
+    );
+    let raw = bearer(&cidr_login(&mut s, good).unwrap());
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["192.0.2.0/24"]}),
+    );
+    assert_eq!(cidr_login(&mut s, good).err().unwrap().status, 403);
+    for via in ["renew-self", "renew", "renew-accessor"] {
+        let actor_peer = if via == "renew-self" {
+            good
+        } else {
+            Some("127.0.0.2".parse().unwrap())
+        };
+        let actor = s
+            .authenticate_from(if via == "renew-self" { &raw } else { &r }, 110, actor_peer)
+            .unwrap();
+        let body = match via {
+            "renew" => json!({"token":raw,"increment":300}),
+            "renew-accessor" => json!({"accessor":s.tokens[&hash(&raw)].accessor,"increment":300}),
+            _ => json!({"increment":300}),
+        };
+        let plan = s
+            .prepare_provider_renewal(
+                Some(&actor),
+                "",
+                "POST",
+                &format!("auth/token/{via}"),
+                &body,
+                110,
+            )
+            .unwrap()
+            .unwrap();
+        accept(&mut s, &actor, plan, 110).unwrap();
+        assert_eq!(
+            token_info(&s.tokens[&hash(&raw)], 110)["bound_cidrs"],
+            json!(["127.0.0.1"])
+        );
+    }
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":null}),
+    );
+    assert_eq!(
+        read(&mut s, &r, "auth/radius/config")["token_bound_cidrs"],
+        json!([])
+    );
+    assert!(
+        s.has_token_bound_cidrs(),
+        "issued tokens keep the schema fence after config clear"
+    );
+    let bytes = Zeroizing::new(serde_json::to_vec(&s).unwrap());
+    let mut reopened: AuthState = serde_json::from_slice(&bytes).unwrap();
+    reopened.validate_online_auth().unwrap();
+    assert!(reopened.authenticate(&raw, 110).is_err());
+    assert!(reopened.authenticate_from(&raw, 110, good).is_ok());
+    let fresh = bearer(&cidr_login(&mut reopened, None).unwrap());
+    assert!(reopened.authenticate(&fresh, 110).is_ok());
+}
+
+#[test]
+fn native_radius_child_inherits_cidr_but_orphan_does_not() {
+    let (mut s, r) = fixture();
+    write(
+        &mut s,
+        &r,
+        "sys/policies/acl/cidr-issuer",
+        json!({"policy":
+        "path \"auth/token/create\" { capabilities = [\"update\",\"sudo\"] } path \"auth/token/create-orphan\" { capabilities = [\"update\",\"sudo\"] }"}),
+    );
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["127.0.0.1"],"token_policies":["cidr-issuer"]}),
+    );
+    let good = Some("127.0.0.1".parse().unwrap());
+    let other = Some("127.0.0.2".parse().unwrap());
+    let parent = bearer(&cidr_login(&mut s, good).unwrap());
+    for (path, bound) in [
+        ("auth/token/create", true),
+        ("auth/token/create-orphan", false),
+    ] {
+        let principal = s.authenticate_from(&parent, 100, good).unwrap();
+        let response = s
+            .handle(
+                Some(&principal),
+                "",
+                "POST",
+                path,
+                &json!({"policies":["default"]}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        let child = bearer(&response);
+        assert_eq!(s.authenticate_from(&child, 101, other).is_err(), bound);
+        assert_eq!(s.tokens[&hash(&child)].bound_cidrs.is_empty(), !bound);
+        assert!(matches!(
+            s.tokens[&hash(&child)].auth_provenance,
+            Some(TokenAuthProvenance::TokenApi)
+        ));
+        assert_eq!(
+            token_info(&s.tokens[&hash(&child)], 101)
+                .get("bound_cidrs")
+                .is_some(),
+            bound
+        );
+    }
+}
+
+#[test]
+fn native_radius_cidr_config_change_fences_an_inflight_login() {
+    let (mut s, r) = fixture();
+    let good = Some("127.0.0.1".parse().unwrap());
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["127.0.0.1"]}),
+    );
+    let plan = s
+        .prepare_radius_login_from(
+            "",
+            "radius",
+            None,
+            "POST",
+            &json!({"username":"alice","password":"pw"}),
+            100,
+            good,
+        )
+        .unwrap();
+    write(
+        &mut s,
+        &r,
+        "auth/radius/config",
+        json!({"token_bound_cidrs":["127.0.0.2"]}),
+    );
+    let before = state_revision(&s).unwrap();
+    assert_eq!(
+        s.finish_radius_login(plan, RadiusLoginObservation)
+            .err()
+            .unwrap()
+            .status,
+        409
+    );
+    assert_eq!(state_revision(&s).unwrap(), before);
+}

@@ -510,6 +510,7 @@ impl HaProcess {
         token: &str,
         body: &serde_json::Value,
         wrap_ttl_seconds: Option<u64>,
+        origin_peer: Option<std::net::IpAddr>,
         client_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Response, String> {
         let local = self.local_id()?;
@@ -523,8 +524,8 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
-        let request = Zeroizing::new(match wrap_ttl_seconds {
-            Some(ttl) => encode_wrapped_request_for_cluster(
+        let request = Zeroizing::new(if let Some(peer) = origin_peer {
+            crate::ha_forward::encode_peer_request_for_cluster(
                 &self.cluster_id,
                 (local, leader),
                 method,
@@ -532,20 +533,35 @@ impl HaProcess {
                 namespace,
                 token,
                 body,
-                ttl,
+                wrap_ttl_seconds,
                 client_certificates,
-            )?,
-            None => encode_forward_request(
-                &self.cluster_id,
-                local,
-                leader,
-                method,
-                path,
-                namespace,
-                token,
-                body,
-                client_certificates,
-            )?,
+                peer,
+            )?
+        } else {
+            match wrap_ttl_seconds {
+                Some(ttl) => encode_wrapped_request_for_cluster(
+                    &self.cluster_id,
+                    (local, leader),
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body,
+                    ttl,
+                    client_certificates,
+                )?,
+                None => encode_forward_request(
+                    &self.cluster_id,
+                    local,
+                    leader,
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body,
+                    client_certificates,
+                )?,
+            }
         });
         let response = zeroize::Zeroizing::new(
             self.forward_transport

@@ -47,6 +47,7 @@ fn pending_with_wrapping(
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds,
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::External(plan) => Ok(plan),
@@ -412,5 +413,291 @@ fn native_radius_service_login_and_renewal_mapping_absence_and_live_identity_fen
         assert!(failed.status >= 400, "{mode}");
         assert_eq!(service.state_digest, before, "{mode}");
     }
+    Ok(())
+}
+
+fn request_from(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    peer: Option<std::net::IpAddr>,
+) -> Response {
+    let mut request = ServiceRequest::new(method, path, "", token, body);
+    request.origin_peer = peer;
+    service.handle_request_at(request, 100)
+}
+
+fn login_from(service: &mut Service, peer: Option<std::net::IpAddr>) -> RequestExecution {
+    service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/radius/login",
+        namespace: "",
+        token: "",
+        body: json!({"username":"alice","password":"synthetic-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: peer,
+        client_certificates: None,
+    })
+}
+
+#[test]
+fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_after_restart()
+-> TestResult {
+    let root = Root::new();
+    let (mut service, key, root_token, _, _) = fixture(&root)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/cidr-reader",
+            &root_token,
+            json!({"policy":"path \"secret/data/cidr\" { capabilities = [\"read\",\"update\"] }"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "secret/data/cidr",
+            &root_token,
+            json!({"data":{"value":"synthetic"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &root_token,
+            json!({"token_bound_cidrs":["127.0.0.1"],"token_policies":["cidr-reader"]})
+        )
+        .status,
+        204
+    );
+    let mut downgraded = service.state.clone().ok_or("missing state")?;
+    downgraded.schema = 26;
+    assert!(
+        downgraded.validate_format().is_err(),
+        "configured CIDRs require schema 27"
+    );
+    let good = Some("127.0.0.1".parse()?);
+    let wrong = Some("127.0.0.2".parse()?);
+    for peer in [None, wrong] {
+        let before = service
+            .current_state_digest()
+            .map_err(|_| "missing digest")?;
+        match login_from(&mut service, peer) {
+            RequestExecution::Complete(response) => assert_eq!(response.status, 403),
+            RequestExecution::External(_) => return Err("denied peer reached provider".into()),
+        }
+        assert_eq!(
+            service
+                .current_state_digest()
+                .map_err(|_| "missing digest")?,
+            before
+        );
+    }
+    let pending = match login_from(&mut service, good) {
+        RequestExecution::External(pending) => pending,
+        _ => return Err("allowed peer did not stage provider".into()),
+    };
+    let issued = service.finish_external_request(
+        *pending,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(issued.status, 200);
+    let token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("missing token")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &root_token,
+            json!({"token_bound_cidrs":[]})
+        )
+        .status,
+        204
+    );
+    let mut downgraded = service.state.clone().ok_or("missing state")?;
+    downgraded.schema = 26;
+    assert!(
+        downgraded.validate_format().is_err(),
+        "issued token retains schema 27 fence after config clear"
+    );
+    for reopened in [false, true] {
+        if reopened {
+            drop(service);
+            service = root.service()?;
+            assert_eq!(
+                call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+        }
+        for peer in [None, wrong] {
+            let before = service
+                .current_state_digest()
+                .map_err(|_| "missing digest")?;
+            assert_eq!(
+                request_from(
+                    &mut service,
+                    "GET",
+                    "secret/data/cidr",
+                    &token,
+                    json!({}),
+                    peer
+                )
+                .status,
+                403
+            );
+            assert_eq!(
+                request_from(
+                    &mut service,
+                    "POST",
+                    "secret/data/cidr",
+                    &token,
+                    json!({"data":{"value":"must-not-publish"}}),
+                    peer
+                )
+                .status,
+                403
+            );
+            assert_eq!(
+                service
+                    .current_state_digest()
+                    .map_err(|_| "missing digest")?,
+                before
+            );
+        }
+        let before_dispatches = service.kv_read_only_dispatches;
+        assert_eq!(
+            request_from(
+                &mut service,
+                "GET",
+                "secret/data/cidr",
+                &token,
+                json!({}),
+                good
+            )
+            .status,
+            200
+        );
+        assert!(service.kv_read_only_dispatches > before_dispatches);
+        assert_eq!(
+            request_from(
+                &mut service,
+                "POST",
+                "secret/data/cidr",
+                &token,
+                json!({"data":{"value":"allowed"}}),
+                good
+            )
+            .status,
+            200
+        );
+        let lookup = request_from(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &token,
+            json!({}),
+            good,
+        );
+        assert_eq!(lookup.body["data"]["bound_cidrs"], json!(["127.0.0.1"]));
+    }
+    Ok(())
+}
+
+#[test]
+fn native_radius_cidr_change_during_provider_call_prevents_issuance() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, root_token, _, _) = fixture(&root)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &root_token,
+            json!({"token_bound_cidrs":["127.0.0.1"]})
+        )
+        .status,
+        204
+    );
+    // RADIUS login wrapping is rejected before a provider effect is prepared.
+    // Check that boundary separately; the inflight CIDR fence below must stage
+    // an actually supported, unwrapped login rather than expect a wrapped plan.
+    let before_wrapped = service
+        .current_state_digest()
+        .map_err(|_| "missing digest")?;
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/radius/login",
+        namespace: "",
+        token: "",
+        body: json!({"username":"alice","password":"synthetic-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: Some("127.0.0.1".parse()?),
+        client_certificates: None,
+    }) {
+        RequestExecution::Complete(response) => {
+            assert_eq!(response.status, 400);
+            assert!(response.body.get("auth").is_none());
+            assert!(response.body.get("wrap_info").is_none());
+        }
+        RequestExecution::External(_) => {
+            return Err("unsupported wrapped login reached provider".into());
+        }
+    }
+    assert_eq!(
+        service
+            .current_state_digest()
+            .map_err(|_| "missing digest")?,
+        before_wrapped
+    );
+    let pending = match login_from(&mut service, Some("127.0.0.1".parse()?)) {
+        RequestExecution::External(pending) => pending,
+        RequestExecution::Complete(_) => return Err("allowed peer did not stage provider".into()),
+    };
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &root_token,
+            json!({"token_bound_cidrs":["127.0.0.2"]})
+        )
+        .status,
+        204
+    );
+    let before = service
+        .current_state_digest()
+        .map_err(|_| "missing digest")?;
+    let rejected = service.finish_external_request(
+        *pending,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(rejected.status, 409);
+    assert!(rejected.body.get("auth").is_none());
+    assert!(rejected.body.get("wrap_info").is_none());
+    assert_eq!(
+        service
+            .current_state_digest()
+            .map_err(|_| "missing digest")?,
+        before
+    );
     Ok(())
 }

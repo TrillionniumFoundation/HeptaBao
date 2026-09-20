@@ -395,6 +395,7 @@ impl AuthState {
             })
     }
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
+        self.validate_token_bound_cidrs()?;
         self.validate_oidc_state()?;
         self.validate_native_ldap_state()?;
         self.validate_native_radius_state()?;
@@ -854,6 +855,7 @@ impl AuthState {
             },
             &observation.service_account_uid,
             NativeOnlineToken {
+                bound_cidrs: Vec::new(),
                 policies: token_policies,
                 limits,
                 explicit_max_ttl: plan.role.token_explicit_max_ttl,

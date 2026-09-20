@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **26**. Its source constant is
+The current Service state schema is **27**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -65,7 +65,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 23 | Native LDAP manager-search configuration, optional user mappings, direct-token credentials bound to the issued alias and opaque Identity aliases. Native RADIUS configuration, user-map mount entries and provenance must be absent. |
 | 24 | Native RADIUS host/secret/NAS/timeout configuration, optional user mappings and direct-token credentials with issued metadata. LDAP API-owned transport and extended RADIUS default-policy state must be absent. |
 | 25 | Native LDAP URL/CA/timeout transport authority and native RADIUS default-policy semantics; RADIUS API transport authority must be absent. |
-| 26 | Current format, adding administrator-configured RADIUS target authority without process endpoint enrollment. |
+| 26 | Administrator-configured RADIUS target authority without process endpoint enrollment; token source CIDR constraints must be absent. |
+| 27 | Current format, adding native RADIUS source CIDR configuration and issued-token source constraints. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -178,8 +179,19 @@ updates preserve the old transport authority. Neither login nor read performs
 this promotion. The marker participates in existing configuration revision checks,
 so an in-flight provider success cannot cross the promotion boundary.
 
+Schema 27 is required if a native RADIUS configuration or any issued token has
+nonempty source CIDRs. Missing fields deserialize as empty and remain omitted
+from stored JSON. A token retains its issuance-time constraints when current
+configuration changes or clears them; this keeps the schema fence active after
+configuration reset. Ordinary token children inherit constraints, while orphan
+and nonexpiring root-token children follow the existing independent authority
+rules. Request peer addresses are transient trusted inputs, not stored tokens.
+HBFQ3 carries the accepted client socket address inside authenticated HA frames.
+Older frames remain readable without a peer; constrained tokens reject missing
+peers, and forwarding never retries by stripping source information.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 26. An authenticated
+it. Initialization and committed mutations use schema 27. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

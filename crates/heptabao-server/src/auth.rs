@@ -37,7 +37,7 @@ pub(crate) use oidc::{OidcBeginObservation, OidcBeginPlan, OidcExchange, OidcLog
 #[path = "auth_remote.rs"]
 mod remote;
 use remote::RemoteJwtSource;
-pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
+pub(crate) use remote::{RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan};
 
 #[path = "auth_acl.rs"]
 mod acl;
@@ -68,6 +68,8 @@ mod radius;
 #[path = "auth_radius_native.rs"]
 mod radius_native;
 use radius_native::RadiusNativeConfig;
+#[path = "auth_token_cidrs.rs"]
+mod token_cidrs;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
@@ -589,6 +591,7 @@ impl LdapLoginObservation {
 }
 
 pub(crate) struct RadiusLoginPlan {
+    origin_peer: Option<std::net::IpAddr>,
     namespace: String,
     mount: String,
     mount_revision: AuthMount,
@@ -996,6 +999,8 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    bound_cidrs: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     wrapping: Option<wrapping::WrappedResponse>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1080,6 +1085,7 @@ impl Drop for Token {
 /// An affine capability owned by exactly one service dispatcher invocation.
 /// It is non-cloneable, non-serializable and never crosses the public API.
 pub(super) struct Principal {
+    origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
     identity_checked: bool,
     digest: String,
@@ -1740,6 +1746,7 @@ impl AuthState {
             cert_roles: BTreeMap::new(),
         };
         let token = Token {
+            bound_cidrs: Vec::new(),
             wrapping: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
@@ -1796,24 +1803,46 @@ impl AuthState {
 
     /// A read-only capability is available only for an unlimited ordinary token.
     /// Finite-use and wrapping tokens must enter the durable admission path.
+    #[cfg(test)]
     pub(super) fn authenticate_read_only(
         &self,
         raw: &str,
         now: u64,
+    ) -> Result<Option<Principal>, AuthError> {
+        self.authenticate_read_only_from(raw, now, None)
+    }
+
+    pub(super) fn authenticate_read_only_from(
+        &self,
+        raw: &str,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<Principal>, AuthError> {
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
         let id = hash(raw);
         let token = self.active_token(&id, now, true)?;
+        token_cidrs::check(&token.bound_cidrs, origin_peer)?;
         if token.uses_remaining.is_some() || token.wrapping.is_some() {
             return Ok(None);
         }
-        Ok(Some(Self::request_principal(id, token.clone(), now)))
+        Ok(Some(Self::request_principal(
+            id,
+            token.clone(),
+            now,
+            origin_peer,
+        )))
     }
 
-    fn request_principal(id: String, token: Token, _now: u64) -> Principal {
+    fn request_principal(
+        id: String,
+        token: Token,
+        _now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Principal {
         Principal {
+            origin_peer,
             identity_policies: BTreeSet::new(),
             identity_checked: false,
             digest: id,
@@ -1823,12 +1852,23 @@ impl AuthState {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn authenticate(&mut self, raw: &str, now: u64) -> Result<Principal, AuthError> {
+        self.authenticate_from(raw, now, None)
+    }
+
+    pub(super) fn authenticate_from(
+        &mut self,
+        raw: &str,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Principal, AuthError> {
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
         let id = hash(raw);
-        self.active_token(&id, now, true)?;
+        let current = self.active_token(&id, now, true)?;
+        token_cidrs::check(&current.bound_cidrs, origin_peer)?;
         let token = self.tokens.get_mut(&id).ok_or_else(denied)?;
         if let Some(remaining) = &mut token.uses_remaining {
             *remaining -= 1;
@@ -1841,7 +1881,7 @@ impl AuthState {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
             token.wrapping = None;
         }
-        Ok(Self::request_principal(id, request_token, now))
+        Ok(Self::request_principal(id, request_token, now, origin_peer))
     }
 
     fn check_principal<'a>(
@@ -1852,6 +1892,7 @@ impl AuthState {
     ) -> Result<&'a Token, AuthError> {
         validate_namespace(namespace)?;
         let token = self.active_token(&principal.digest, now, false)?;
+        token_cidrs::check(&token.bound_cidrs, principal.origin_peer)?;
         if token.accessor != principal.token.accessor
             || token.entity_id != principal.token.entity_id
             || token.entity_id.is_some() && !principal.identity_checked
@@ -3543,6 +3584,7 @@ impl AuthState {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn prepare_radius_login(
         &self,
         namespace: &str,
@@ -3554,6 +3596,7 @@ impl AuthState {
         self.prepare_radius_login_with_path(namespace, mount, None, method, body, now)
     }
 
+    #[cfg(test)]
     pub(crate) fn prepare_radius_login_with_path(
         &self,
         namespace: &str,
@@ -3562,6 +3605,20 @@ impl AuthState {
         method: &str,
         body: &Value,
         now: u64,
+    ) -> Result<RadiusLoginPlan, AuthError> {
+        self.prepare_radius_login_from(namespace, mount, path_username, method, body, now, None)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn prepare_radius_login_from(
+        &self,
+        namespace: &str,
+        mount: &str,
+        path_username: Option<&str>,
+        method: &str,
+        body: &Value,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<RadiusLoginPlan, AuthError> {
         if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
@@ -3587,6 +3644,7 @@ impl AuthState {
                 path_username,
                 body,
                 now,
+                origin_peer,
             );
         }
         if path_username.is_some() {
@@ -3605,6 +3663,7 @@ impl AuthState {
             return Err(denied());
         }
         Ok(RadiusLoginPlan {
+            origin_peer,
             namespace: namespace.into(),
             mount: mount.into(),
             mount_revision,
@@ -4068,6 +4127,7 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                bound_cidrs: Vec::new(),
                 wrapping: None,
                 entity_id: None,
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
@@ -4169,114 +4229,7 @@ impl AuthState {
                 ))
             }
             "POST" | "PUT" => {
-                let actor = self.permission(principal, namespace, path, "update", now)?;
-                self.authorize_request(actor, namespace, path, "sudo", now)?;
-                reject_unknown(
-                    body,
-                    &[
-                        "issuer",
-                        "audiences",
-                        "required_namespace",
-                        "clock_skew_seconds",
-                        "maximum_token_lifetime_seconds",
-                        "keys",
-                        "jwks",
-                        "jwks_url",
-                        "oidc_discovery_url",
-                        "bound_issuer",
-                        "jwt_supported_algs",
-                    ],
-                )?;
-                reject_alias_pair(body, "issuer", "bound_issuer")?;
-                let issuer = string_field(
-                    body,
-                    if body.get("issuer").is_some() {
-                        "issuer"
-                    } else {
-                        "bound_issuer"
-                    },
-                )?
-                .to_owned();
-                let audiences = claim_values(body, "audiences")?;
-                let required_namespace = body
-                    .get("required_namespace")
-                    .map(|value| {
-                        value
-                            .as_str()
-                            .ok_or_else(|| bad("required_namespace must be a string"))
-                    })
-                    .transpose()?
-                    .map(str::to_owned);
-                if required_namespace
-                    .as_deref()
-                    .is_some_and(|value| value != namespace)
-                {
-                    return Err(bad(
-                        "required_namespace must equal the configured auth namespace",
-                    ));
-                }
-                let clock_skew_seconds = body
-                    .get("clock_skew_seconds")
-                    .map(|_| number(body, "clock_skew_seconds", 0))
-                    .transpose()?;
-                let maximum_token_lifetime_seconds = body
-                    .get("maximum_token_lifetime_seconds")
-                    .map(|_| number(body, "maximum_token_lifetime_seconds", 0))
-                    .transpose()?;
-                if body.get("keys").is_some() && body.get("jwks").is_some() {
-                    return Err(bad("configure either JWT keys or jwks, not both"));
-                }
-                let jwt_supported_algs = if body.get("jwt_supported_algs").is_some() {
-                    let values = claim_values(body, "jwt_supported_algs")?;
-                    if values.is_empty()
-                        || values
-                            .iter()
-                            .any(|v| !matches!(v.as_str(), "EdDSA" | "ES256" | "RS256"))
-                    {
-                        return Err(bad("unsupported JWT algorithm allowlist"));
-                    }
-                    Some(values)
-                } else {
-                    None
-                };
-                let remote = RemoteJwtSource::parse(body)?;
-                let keys = if remote.is_some() {
-                    BTreeMap::new()
-                } else if let Some(jwks) = body.get("jwks") {
-                    parse_jwks(jwks)?
-                } else {
-                    let key_values = body
-                        .get("keys")
-                        .and_then(Value::as_array)
-                        .ok_or_else(|| bad("JWT keys or jwks are required"))?;
-                    parse_legacy_jwt_keys(key_values)?
-                };
-                let config = JwtConfig {
-                    remote,
-                    jwt_supported_algs,
-                    issuer,
-                    audiences,
-                    required_namespace,
-                    clock_skew_seconds,
-                    maximum_token_lifetime_seconds,
-                    keys,
-                };
-                if config.remote.is_none() {
-                    config.verifier()?;
-                } else {
-                    let mut audiences = config.audiences.clone();
-                    if audiences.is_empty() {
-                        audiences.insert("configuration-shape-only".into());
-                    }
-                    TrustPolicy::new(
-                        config.issuer.clone(),
-                        audiences,
-                        config.required_namespace.clone().filter(|s| !s.is_empty()),
-                        config.clock_skew_seconds.unwrap_or(30),
-                        config.maximum_token_lifetime_seconds.unwrap_or(86400),
-                    )
-                    .map_err(|_| bad("invalid remote JWT trust policy"))?;
-                }
+                let config = self.parse_jwt_config(principal, scope, body, now)?;
                 let mutated =
                     self.jwt_at(scope).and_then(|state| state.config.as_ref()) != Some(&config);
                 self.jwt_at_mut(scope).config = Some(config);
@@ -4284,6 +4237,127 @@ impl AuthState {
             }
             _ => Err(err(405, "method not allowed")),
         }
+    }
+
+    fn parse_jwt_config(
+        &self,
+        principal: Option<&Principal>,
+        scope: AuthScope<'_>,
+        body: &Value,
+        now: u64,
+    ) -> Result<JwtConfig, AuthError> {
+        let AuthScope { namespace, mount } = scope;
+        let path = format!("auth/{mount}/config");
+        let path = path.as_str();
+        let actor = self.permission(principal, namespace, path, "update", now)?;
+        self.authorize_request(actor, namespace, path, "sudo", now)?;
+        reject_unknown(
+            body,
+            &[
+                "issuer",
+                "audiences",
+                "required_namespace",
+                "clock_skew_seconds",
+                "maximum_token_lifetime_seconds",
+                "keys",
+                "jwks",
+                "jwks_url",
+                "oidc_discovery_url",
+                "bound_issuer",
+                "jwt_supported_algs",
+            ],
+        )?;
+        reject_alias_pair(body, "issuer", "bound_issuer")?;
+        let issuer = string_field(
+            body,
+            if body.get("issuer").is_some() {
+                "issuer"
+            } else {
+                "bound_issuer"
+            },
+        )?
+        .to_owned();
+        let audiences = claim_values(body, "audiences")?;
+        let required_namespace = body
+            .get("required_namespace")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("required_namespace must be a string"))
+            })
+            .transpose()?
+            .map(str::to_owned);
+        if required_namespace
+            .as_deref()
+            .is_some_and(|value| value != namespace)
+        {
+            return Err(bad(
+                "required_namespace must equal the configured auth namespace",
+            ));
+        }
+        let clock_skew_seconds = body
+            .get("clock_skew_seconds")
+            .map(|_| number(body, "clock_skew_seconds", 0))
+            .transpose()?;
+        let maximum_token_lifetime_seconds = body
+            .get("maximum_token_lifetime_seconds")
+            .map(|_| number(body, "maximum_token_lifetime_seconds", 0))
+            .transpose()?;
+        if body.get("keys").is_some() && body.get("jwks").is_some() {
+            return Err(bad("configure either JWT keys or jwks, not both"));
+        }
+        let jwt_supported_algs = if body.get("jwt_supported_algs").is_some() {
+            let values = claim_values(body, "jwt_supported_algs")?;
+            if values.is_empty()
+                || values
+                    .iter()
+                    .any(|v| !matches!(v.as_str(), "EdDSA" | "ES256" | "RS256"))
+            {
+                return Err(bad("unsupported JWT algorithm allowlist"));
+            }
+            Some(values)
+        } else {
+            None
+        };
+        let remote = RemoteJwtSource::parse(body)?;
+        let keys = if remote.is_some() {
+            BTreeMap::new()
+        } else if let Some(jwks) = body.get("jwks") {
+            parse_jwks(jwks)?
+        } else {
+            let key_values = body
+                .get("keys")
+                .and_then(Value::as_array)
+                .ok_or_else(|| bad("JWT keys or jwks are required"))?;
+            parse_legacy_jwt_keys(key_values)?
+        };
+        let config = JwtConfig {
+            remote,
+            jwt_supported_algs,
+            issuer,
+            audiences,
+            required_namespace,
+            clock_skew_seconds,
+            maximum_token_lifetime_seconds,
+            keys,
+        };
+        if config.remote.is_none() {
+            config.verifier()?;
+        } else {
+            let mut audiences = config.audiences.clone();
+            if audiences.is_empty() {
+                audiences.insert("configuration-shape-only".into());
+            }
+            TrustPolicy::new(
+                config.issuer.clone(),
+                audiences,
+                config.required_namespace.clone().filter(|s| !s.is_empty()),
+                config.clock_skew_seconds.unwrap_or(30),
+                config.maximum_token_lifetime_seconds.unwrap_or(86400),
+            )
+            .map_err(|_| bad("invalid remote JWT trust policy"))?;
+        }
+        Ok(config)
     }
 
     fn jwt_role_route(
@@ -4915,6 +4989,11 @@ impl AuthState {
         }
         self.issue(
             Token {
+                bound_cidrs: if no_parent || expires_at.is_none() {
+                    Vec::new()
+                } else {
+                    parent.bound_cidrs.clone()
+                },
                 wrapping: None,
                 entity_id: parent.entity_id.clone(),
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
@@ -5787,6 +5866,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        bound_cidrs: Vec::new(),
         wrapping: None,
         entity_id: None,
         cubbyhole: cubbyhole::TokenCubbyhole::default(),
@@ -5817,6 +5897,9 @@ fn token_info(token: &Token, now: u64) -> Value {
         "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
         "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
         "entity_id": token.entity_id.as_deref().unwrap_or("")});
+    if !token.bound_cidrs.is_empty() {
+        info["bound_cidrs"] = json!(token.bound_cidrs);
+    }
     if token.period > 0 {
         info["period"] = json!(token.period);
     }

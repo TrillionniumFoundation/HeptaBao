@@ -652,6 +652,7 @@ impl AuthState {
             scope,
             &alias,
             NativeOnlineToken {
+                bound_cidrs: Vec::new(),
                 policies,
                 limits: config.limits(),
                 explicit_max_ttl: config.token_explicit_max_ttl,

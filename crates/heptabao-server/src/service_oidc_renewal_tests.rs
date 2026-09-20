@@ -37,6 +37,7 @@ fn pending(
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::External(plan) => Ok(plan),
@@ -101,6 +102,7 @@ fn renew(
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: Some(60),
+        origin_peer: None,
         client_certificates: None,
     }) {
         RequestExecution::Complete(response) => Ok(response),

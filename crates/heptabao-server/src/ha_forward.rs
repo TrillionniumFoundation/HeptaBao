@@ -6,6 +6,7 @@ use zeroize::{Zeroize, Zeroizing};
 
 const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
 const WRAPPED_REQUEST_MAGIC: &[u8; 5] = b"HBFQ2";
+const PEER_REQUEST_MAGIC: &[u8; 5] = b"HBFQ3";
 const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
@@ -33,6 +34,8 @@ pub(crate) struct ForwardRequest {
     pub wrap_ttl_seconds: Option<u64>,
     #[serde(default)]
     pub client_certificates: Option<Vec<Vec<u8>>>,
+    #[serde(default)]
+    pub origin_peer: Option<std::net::IpAddr>,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -74,6 +77,8 @@ struct ForwardRequestRef<'a> {
     wrap_ttl_seconds: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     client_certificates: Option<&'a [Vec<u8>]>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    origin_peer: Option<std::net::IpAddr>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -105,7 +110,9 @@ impl Drop for ForwardResponse {
 }
 
 pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
-    encoded.starts_with(REQUEST_MAGIC) || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
+    encoded.starts_with(REQUEST_MAGIC)
+        || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
+        || encoded.starts_with(PEER_REQUEST_MAGIC)
 }
 
 #[cfg(test)]
@@ -177,6 +184,7 @@ pub(crate) fn encode_request_for_cluster(
             body,
             wrap_ttl_seconds: None,
             client_certificates,
+            origin_peer: None,
         },
     )
 }
@@ -254,19 +262,64 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             body,
             wrap_ttl_seconds: Some(ttl),
             client_certificates,
+            origin_peer: None,
+        },
+    )
+}
+
+/// HBFQ3 is accepted only through the peer-authenticated listener. The source
+/// node attests this socket IP together with the complete request inside mTLS.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_peer_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<&[Vec<u8>]>,
+    origin_peer: std::net::IpAddr,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(direction.0, direction.1)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    if wrap_ttl_seconds.is_some_and(|ttl| ttl == 0 || ttl > 32 * 24 * 3600) {
+        return Err("HA wrapping TTL is invalid".into());
+    }
+    encode(
+        PEER_REQUEST_MAGIC,
+        &ForwardRequestRef {
+            cluster_id,
+            source: direction.0,
+            target: direction.1,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            client_certificates,
+            origin_peer: Some(origin_peer),
         },
     )
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+    let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
     let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
-    let magic = if wrapped {
+    let magic = if with_peer {
+        PEER_REQUEST_MAGIC
+    } else if wrapped {
         WRAPPED_REQUEST_MAGIC
     } else {
         REQUEST_MAGIC
     };
     let request: ForwardRequest = decode(magic, encoded)?;
-    if wrapped != request.wrap_ttl_seconds.is_some()
+    if with_peer != request.origin_peer.is_some()
+        || !with_peer && wrapped != request.wrap_ttl_seconds.is_some()
         || request
             .wrap_ttl_seconds
             .is_some_and(|ttl| ttl == 0 || ttl > 32 * 24 * 3600)
@@ -607,6 +660,61 @@ mod wrapping_frame_tests {
             )
             .is_err()
         );
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod peer_frame_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn original_peer_is_typed_versioned_and_bound_with_wrapping_and_cluster() -> Result<(), String>
+    {
+        for peer in ["127.0.0.2", "2001:db8::2"] {
+            let peer: std::net::IpAddr = peer.parse().map_err(|_| "bad test peer")?;
+            for ttl in [None, Some(60)] {
+                let frame = encode_peer_request_for_cluster(
+                    TEST_CLUSTER_ID,
+                    (1, 2),
+                    "POST",
+                    "auth/token/renew-self",
+                    "",
+                    "synthetic-token",
+                    &json!({}),
+                    ttl,
+                    None,
+                    peer,
+                )?;
+                assert!(frame.starts_with(PEER_REQUEST_MAGIC));
+                assert!(is_forward_request(&frame));
+                let request = decode_request_for_cluster(&frame, TEST_CLUSTER_ID)?;
+                assert_eq!(request.origin_peer, Some(peer));
+                assert_eq!(request.wrap_ttl_seconds, ttl);
+                assert_eq!((request.source, request.target), (1, 2));
+                assert!(decode_request_for_cluster(&frame, "other-cluster").is_err());
+                for magic in [REQUEST_MAGIC, WRAPPED_REQUEST_MAGIC] {
+                    let mut downgraded = frame.clone();
+                    downgraded[..5].copy_from_slice(magic);
+                    assert!(decode_request(&downgraded).is_err());
+                }
+                let mut value: Value =
+                    serde_json::from_slice(&frame[9..]).map_err(|_| "bad test frame")?;
+                value
+                    .as_object_mut()
+                    .ok_or("not an object")?
+                    .remove("origin_peer");
+                assert!(decode_request(&encode(PEER_REQUEST_MAGIC, &value)?).is_err());
+                value["origin_peer"] = json!("localhost");
+                assert!(decode_request(&encode(PEER_REQUEST_MAGIC, &value)?).is_err());
+            }
+        }
+        let old = encode_request(1, 2, "GET", "secret/data/a", "", "synthetic", &json!({}))?;
+        assert!(decode_request(&old)?.origin_peer.is_none());
+        let mut falsely_upgraded = old;
+        falsely_upgraded[..5].copy_from_slice(PEER_REQUEST_MAGIC);
+        assert!(decode_request(&falsely_upgraded).is_err());
         Ok(())
     }
 }

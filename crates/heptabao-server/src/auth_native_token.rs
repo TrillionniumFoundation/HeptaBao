@@ -11,6 +11,7 @@ pub(super) struct NativeTokenLimits {
 }
 
 pub(super) struct NativeOnlineToken {
+    pub(super) bound_cidrs: Vec<String>,
     pub(super) policies: BTreeSet<String>,
     pub(super) limits: NativeTokenLimits,
     pub(super) explicit_max_ttl: u64,
@@ -80,6 +81,7 @@ impl AuthState {
             now,
         )?;
         let token = Token {
+            bound_cidrs: authority.bound_cidrs,
             wrapping: None,
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),

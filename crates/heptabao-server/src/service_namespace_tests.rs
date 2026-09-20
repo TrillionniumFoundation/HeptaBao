@@ -274,6 +274,7 @@ fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
             token: &token,
             body,
             wrap_ttl_seconds: None,
+            origin_peer: None,
             client_certificates: None,
         }) {
             RequestExecution::Complete(response) => response,
@@ -358,6 +359,7 @@ fn unknown_namespace_is_not_an_implicit_scope_or_write_target()
             token,
             body,
             wrap_ttl_seconds: None,
+            origin_peer: None,
             client_certificates: None,
         }) {
             RequestExecution::Complete(response) => response,

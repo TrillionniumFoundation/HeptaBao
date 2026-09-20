@@ -149,6 +149,7 @@ impl AuthState {
             wrapped_accessor: wrapped_accessor.clone(),
         };
         let token = Token {
+            bound_cidrs: Vec::new(),
             wrapping: Some(wrapped),
             entity_id: None,
             cubbyhole: cubbyhole::TokenCubbyhole::default(),
