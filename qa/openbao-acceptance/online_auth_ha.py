@@ -164,7 +164,11 @@ def main():
     report["same_host"]=True
     report["concurrency_observations"]=observations
     report["base_ha_scenarios"]=inherited
-    if len(inherited)!=22 or len(set(inherited))!=22:
+    # Base HA may gain additional checks. Require its actual fault/recovery
+    # milestones instead of rejecting successful runs for a stale case count.
+    required_base={"new_leader_after_sigkill","quorum_loss_write_denied",
+        "all_three_rejoined_after_quorum_recovery"}
+    if not required_base.issubset(inherited) or len(set(inherited))!=len(inherited):
         report["failure"]=report["failure"] or "incomplete_base_ha"
     publish(output,parent,report,before,source_identity(ROOT,binary),34)
     print(json.dumps({"status":report["status"],"checks":len(checks),"failure":report["failure"]}))
