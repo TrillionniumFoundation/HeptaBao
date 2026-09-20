@@ -44,7 +44,7 @@ class Work:
             try:
                 self.value = operation()
             except Exception as error:
-                self.error = type(error).__name__
+                self.error = safe_failure(error, [])
             finally:
                 self.done.set()
 
@@ -53,7 +53,7 @@ class Work:
 
     def result(self):
         if self.error is not None:
-            raise Failure("request_worker_failed")
+            raise Failure(self.error)
         return self.value
 
 
@@ -165,7 +165,7 @@ def run(binary, root, checks, observations):
         check("mounted", instance.call("POST", "sys/auth/gated", {"type": "jwt"})[0] == 204)
 
         def counters():
-            status, response = instance.call("GET", "sys/internal/storage/capacity")
+            status, response = instance.call("GET", "sys/internal/capacity")
             data = response.get("data", {})
             if status != 200 or any(type(data.get(name)) is not int for name in COUNTERS):
                 raise Failure("durable_counters_unavailable")
