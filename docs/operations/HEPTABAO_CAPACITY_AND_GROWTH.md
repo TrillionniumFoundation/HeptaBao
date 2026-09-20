@@ -13,8 +13,8 @@ and deterministic content-defined boundaries: chunks are at least **384 KiB**, t
 **512 KiB**, and are capped at **768 KiB** except the final short chunk. New chunks,
 retired chunk references and the manifest publication point are committed through
 one durable atomic batch. The shared serialized-state admission bound is
-**16 MiB**, and HA replication uses that same bound. New HA publication writes
-`HBSM3`: deterministic content-defined chunks are staged under a bounded
+**16 MiB**, and HA replication uses that same bound. The `HBSM3` format introduced
+deterministic content-defined chunks staged under a bounded
 128-index/two-slot physical keyspace, while the manifest carries the logical chunk
 order independently of physical index. A prefix/middle insertion can therefore
 resynchronize and reuse authenticated later chunks without shifting every
@@ -36,6 +36,24 @@ identity to carry unchanged authenticated owner descriptors and chunks forward
 without a second serialization/hash/chunk pass; changed owners alone are
 rechunked locally. HA still consumes the complete logical image, so this reduces
 local physical/CPU amplification but is **not** record-oriented scalability.
+
+Stable HBSM4 reads can reuse fully verified state after a fresh ReadIndex and
+manifest authentication, bound to unchanged Raft and local durable generations.
+In the same-host three-process development fixture, 24 reads of one small KV
+value at each state size produced these median latencies:
+
+| Logical state bytes | Before reuse | With reuse |
+|---|---:|---:|
+| 920,099 | 52.723 ms | 5.371 ms |
+| 3,676,235 | 197.561 ms | 5.343 ms |
+| 9,188,507 | 480.396 ms | 5.598 ms |
+
+The [baseline receipt](../../qa/openbao-acceptance/evidence/ha-read-baseline-5c6aa90.json)
+and [reuse receipt](../../qa/openbao-acceptance/evidence/ha-read-cached-7c10621.json)
+bind the same measurement runner and exact source/binary observations. Each
+point also checked that reads left durable counters unchanged. These are scoped
+development measurements, not a multi-host production latency commitment;
+write amplification and the 16 MiB logical limit remain unresolved.
 
 The explicit HA migration endpoint is
 `POST` or `PUT /v1/sys/storage/raft/migrate-owner-state` (an empty JSON object
