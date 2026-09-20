@@ -26,6 +26,46 @@ from kubernetes_online import Reviewer
 ROOT=Path(__file__).resolve().parents[2]
 
 
+# Named safety milestones permit additional observations without accepting skipped phases.
+REQUIRED_CASES = frozenset({
+    'issuer_auth_mount',
+    'issuer_user',
+    'issuer_login',
+    'issuer_key',
+    'issuer_client',
+    'issuer_provider',
+    'oidc_mount_via_follower',
+    'oidc_config_via_follower',
+    'oidc_role_via_follower',
+    'kubernetes_mount_via_follower',
+    'kubernetes_config_via_follower',
+    'kubernetes_role_via_follower',
+    'pre_failover_session',
+    'pre_failover_issuer_code',
+    'leader_killed_after_session_commit_before_code_exchange',
+    'successor_consumes_replicated_pkce_session',
+    'callback_replay_denied_on_surviving_nodes',
+    'follower_tokenreview_executes_once_on_leader',
+    'no_quorum_no_external_tokenreview',
+    'no_quorum_cannot_publish_oidc_session',
+    'no_quorum_cannot_accept_local_token',
+    'spent_session_survives_second_leader_loss',
+    'published_identity_token_survives_second_leader_loss',
+    'published_kubernetes_token_survives_second_leader_loss',
+    'concurrent_session',
+    'concurrent_issuer_code',
+    'concurrent_cross_node_callback_releases_exactly_one_token',
+    'disable_oidc_mount',
+    'disable_kubernetes_mount',
+    'mount_revocations_apply_node_1',
+    'mount_revocations_apply_node_2',
+    'mount_revocations_apply_node_3',
+    'replicated_auth_state_and_logs_are_not_plaintext',
+    'complete',
+})
+
+
+
 def callback_targets(nodes, leader):
     """Exercise Service serialization without saturating the one forward slot.
 
@@ -93,6 +133,7 @@ def run(binary, root, checks, inherited, observations):
         token=result["auth"]["client_token"];entity=result["auth"]["entity_id"]
         for n in cluster.running():
             check(f"callback_replay_denied_node_{n.node_id}",n.call("POST","auth/browser/oidc/callback",callback)[0] == 403)
+        check("callback_replay_denied_on_surviving_nodes", True)
         count=reviewer.count
         status,result=follower.call("POST","auth/workload/login",{"role":"app","jwt":reviewer.presented})
         check("follower_tokenreview_executes_once_on_leader",status == 200 and reviewer.count == count+1 and reviewer.request_valid)
@@ -126,6 +167,7 @@ def run(binary, root, checks, inherited, observations):
         files=[]
         for n in cluster.nodes:files += [p for folder in [n.data_dir,n.root/"raft"] for p in folder.rglob("*") if p.is_file()]+[n.root/"audit.jsonl",n.root/"process.log"]
         check("replicated_auth_state_and_logs_are_not_plaintext",all(not any(v in p.read_bytes() for v in private_values) for p in files if p.is_file()))
+        check("complete", True)
     finally:
         if cluster:cluster.close()
         if reviewer:reviewer.close()
@@ -169,7 +211,7 @@ def main():
         "all_three_rejoined_after_quorum_recovery"}
     if not required_base.issubset(inherited) or len(set(inherited))!=len(inherited):
         report["failure"]=report["failure"] or "incomplete_base_ha"
-    publish(output,parent,report,before,source_identity(ROOT,binary),34)
+    publish(output,parent,report,before,source_identity(ROOT,binary), required_cases=REQUIRED_CASES)
     print(json.dumps({"status":report["status"],"checks":len(checks),"failure":report["failure"]}))
     return 0 if report["status"]=="passed" else 1
 if __name__=="__main__":raise SystemExit(main())

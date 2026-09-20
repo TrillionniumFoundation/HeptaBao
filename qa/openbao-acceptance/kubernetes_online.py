@@ -113,6 +113,83 @@ class Reviewer:
             raise RuntimeError("reviewer_join_failed")
 
 
+# Named safety milestones permit additional observations without accepting skipped phases.
+REQUIRED_CASES = frozenset({
+    'initialize',
+    'unseal',
+    'nested_mount',
+    'config_before_egress',
+    'role',
+    'reviewer_redacted_in_readback',
+    'request_cannot_enable_tls_bypass',
+    'request_cannot_use_ambient_credentials',
+    'pre_egress_reject_role',
+    'pre_egress_reject_extra',
+    'pre_egress_reject_jwt',
+    'online_review_to_real_token',
+    'reviewer_request_binding',
+    'uid_metadata',
+    'reviewer_groups_never_become_root_policy',
+    'token_reads_own_identity',
+    'provider_cannot_grant_root',
+    'each_login_requires_new_review',
+    'config_requires_authorization',
+    'root_policy_assignment_rejected',
+    'realm_rebinding_requires_remount',
+    'reject_revoked',
+    'no_error_credential_echo_revoked',
+    'reject_bool_string',
+    'no_error_credential_echo_bool_string',
+    'reject_wrong_audience',
+    'no_error_credential_echo_wrong_audience',
+    'reject_no_audience',
+    'no_error_credential_echo_no_audience',
+    'reject_no_uid',
+    'no_error_credential_echo_no_uid',
+    'reject_wrong_namespace',
+    'no_error_credential_echo_wrong_namespace',
+    'reject_wrong_name',
+    'no_error_credential_echo_wrong_name',
+    'reject_non_sa',
+    'no_error_credential_echo_non_sa',
+    'reject_wrong_version',
+    'no_error_credential_echo_wrong_version',
+    'reject_error',
+    'no_error_credential_echo_error',
+    'reject_redirect',
+    'no_error_credential_echo_redirect',
+    'reject_duplicate',
+    'no_error_credential_echo_duplicate',
+    'reject_oversized',
+    'no_error_credential_echo_oversized',
+    'reject_drop',
+    'no_error_credential_echo_drop',
+    'issued_token_is_not_continuously_reviewed',
+    'disable_entity',
+    'disabled_identity_denies_new_login',
+    'disabled_identity_denies_existing_token',
+    'enable_entity',
+    'recreated_serviceaccount_uid_gets_different_identity',
+    'finite_role',
+    'finite_login',
+    'finite_first_read',
+    'finite_replay_denied',
+    'unmount_revokes_issued_tokens',
+    'remount',
+    'configure_remount',
+    'role_remount',
+    'remount_accessor_prevents_old_alias_rebind',
+    'sealed_after_sigkill',
+    'unseal_after_sigkill',
+    'durable_token_after_sigkill',
+    'role_config_and_identity_survive_sigkill',
+    'all_egress_requests_match_review_contract',
+    'no_plaintext_credentials_in_state_or_diagnostics',
+    'complete',
+})
+
+
+
 def run(binary: Path, root: Path, checks: list[dict]):
     instance = Instance(binary, root / "candidate")
     reviewer = Reviewer(instance.root / "tls.crt", instance.root / "tls.key")
@@ -194,6 +271,7 @@ def run(binary: Path, root: Path, checks: list[dict]):
         sensitive=[reviewer.reviewer.encode(),reviewer.presented.encode(),fresh.encode(),finite.encode()]
         paths=list((instance.root/"data").rglob("*"))+[instance.root/"server.log",instance.root/"audit.jsonl"]
         check("no_plaintext_credentials_in_state_or_diagnostics",all(not any(v in p.read_bytes() for v in sensitive) for p in paths if p.is_file()))
+        check("complete", True)
     finally:
         instance.stop();reviewer.close()
 
@@ -221,7 +299,7 @@ def main():
         shutil.rmtree(root)
     report={"schema":"heptabao.kubernetes-tokenreview-protocol.v1","checks":checks,"failure":failure,
         "actual_kube_apiserver":False,"browser_ui_automation":False}
-    publish(output,parent,report,before,source_identity(ROOT,binary),70)
+    publish(output,parent,report,before,source_identity(ROOT,binary), required_cases=REQUIRED_CASES)
     print(json.dumps({"status":report["status"],"checks":len(checks),"failure":report["failure"]}))
     return 0 if report["status"]=="passed" else 1
 if __name__=="__main__":raise SystemExit(main())

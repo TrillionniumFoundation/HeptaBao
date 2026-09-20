@@ -27,6 +27,24 @@ Renewal retains the issued alias. Provider credentials are encrypted and zeroize
 on drop; token-API children and orphans never inherit them. Config, auth mount,
 target token, live actor and mapping absence/presence are rechecked after I/O.
 
+Native config accepts `token_no_default_policy`, default false. Partial updates
+preserve it; null resets false. Login omits the implicit `default` policy when
+enabled, but explicit config/user/group assignments of `default` are retained.
+Changing the flag does not rewrite issued policies. Empty token-policy lists
+are omitted from auth response `token_policies`; effective `policies` still
+includes any live Identity grants. Zero-policy tokens gain no implicit lookup
+or self-renew permission.
+
+New native config preserves the upstream distinction between omitted and
+explicit empty/null `token_policies`. With no nonempty user/group assignment,
+an omitted list and a zero-policy token cause administrative provider renewal
+to return 500; explicit `[]` or null allows it. Empty mappings do not turn an
+omitted list into an explicit empty list. Renewal still performs actual directory
+authentication and compares non-default policies. Old config without presence
+metadata retains its historical normalized-empty behavior. These semantics and
+non-default direct-token snapshots require schema 30; the legacy bounded LDAP
+profile is unchanged.
+
 The manager-search state requires schema 23; new API-owned transport requires
 schema 25. Existing bounded configuration and local
 user/MFA authority stay intact. A request mixing the two configuration

@@ -139,3 +139,53 @@ impl AuthState {
         mount.native_claims = true;
     }
 }
+
+/// OpenBao applies the matching mode on each role write, while omission of
+/// the bound map retains that map. Explicit null clears the map, not the mode.
+pub(super) fn bound_claims_update(
+    body: &Value,
+    previous: Option<&NativeJwtBoundClaims>,
+) -> Result<Option<NativeJwtBoundClaims>, AuthError> {
+    let kind = match body.get("bound_claims_type") {
+        None => NativeJwtBoundClaimsType::String,
+        Some(Value::String(value)) if value == "string" => NativeJwtBoundClaimsType::String,
+        Some(Value::String(value)) if value == "glob" => NativeJwtBoundClaimsType::Glob,
+        _ => return Err(bad("bound_claims_type must be string or glob")),
+    };
+    let claims = match body.get("bound_claims") {
+        None => previous
+            .map(|bounds| bounds.claims.clone())
+            .unwrap_or_default(),
+        Some(Value::Null) => BTreeMap::new(),
+        Some(Value::Object(values)) => values.iter().map(|(k, v)| (k.clone(), v.clone())).collect(),
+        _ => return Err(bad("bound_claims must be an object")),
+    };
+    // A mode-only update is allowed even if an existing map contains values
+    // unsuitable for glob matching; those values then fail at authentication.
+    if body.get("bound_claims").is_some()
+        && kind == NativeJwtBoundClaimsType::Glob
+        && claims.values().any(|value| match value {
+            Value::String(_) => false,
+            Value::Array(values) => values.iter().any(|value| !value.is_string()),
+            _ => true,
+        })
+    {
+        return Err(bad("glob bound claims must be strings or lists of strings"));
+    }
+    if previous.is_none()
+        && body.get("bound_claims").is_none()
+        && body.get("bound_claims_type").is_none()
+    {
+        return Ok(None);
+    }
+    Ok(Some(NativeJwtBoundClaims { kind, claims }))
+}
+
+impl AuthState {
+    pub(crate) fn has_jwt_bound_claims_state(&self) -> bool {
+        self.jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| mount.roles.values().any(|role| role.bound_claims.is_some()))
+    }
+}

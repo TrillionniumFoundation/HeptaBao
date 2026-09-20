@@ -65,8 +65,14 @@ impl JwtVerifier {
         token: &str,
         now: u64,
         time: NativeJwtTimePolicy,
+        bounds: Option<&NativeJwtBoundClaims>,
     ) -> Result<NativeJwtIdentity, AuthError> {
         let (mut claims, _) = self.verified_claims(token)?;
+        // Match only the verified, original claims. Registered fields have not
+        // been consumed or replaced with inferred time values yet.
+        if bounds.is_some_and(|bounds| !bounds.matches(&claims)) {
+            return Err(AuthError::ClaimDenied);
+        }
         let issuer = take_string(&mut claims, "iss")?;
         let subject = take_string(&mut claims, "sub")?;
         let audiences = take_audiences(&mut claims)?;

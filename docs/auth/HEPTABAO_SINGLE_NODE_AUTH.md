@@ -460,7 +460,7 @@ The whole registry, credentials and issued-token provenance live in encrypted `A
 
 ## Bounded JWT authentication
 
-Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports host-enrolled `jwks_url` and OIDC Discovery over verified HTTPS; see [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks use the separate OIDC mount profile; full OpenBao JWT claim-mapping parity remains open. Static and remote trust sources are mutually exclusive.
+Enable a mount of type `jwt`, configure its trust, create an explicitly bound role, then submit `POST auth/<mount>/login` with exactly the supported `role` and `jwt` inputs. This is the restored HeptaBao pinned-key profile. In addition to the historical explicit `keys` array, configuration can accept an inline public-only RFC 7517 `jwks` object for Ed25519/EdDSA and P-256/ES256 verification. This paragraph describes the static-key profile only. The current remote-key profile supports API-configured `jwks_url` and OIDC Discovery over verified HTTPS; historical records retain their enrolled transport until explicit promotion. See [the remote key contract](HEPTABAO_REMOTE_JWT_KEYS.md). Browser authorization-code callbacks use the separate OIDC mount profile; full OpenBao JWT claim-mapping parity remains open. Static and remote trust sources are mutually exclusive.
 
 Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; mutation requires `update` and `sudo`. Inputs are:
 
@@ -477,6 +477,15 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
 
 A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl`, `token_max_ttl` and `token_num_uses` configure the issued service token: default TTL is one hour, default maximum equals that TTL, both are positive and bounded by the service maximum of 32 days, and maximum cannot be below TTL. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
+
+Static and remote JWT roles also support `bound_claims` and `bound_claims_type`
+(`string` or `glob`). Every configured selector must match the original
+signature-verified claims; alternatives within a selector use OR. Selectors
+starting with `/` use JSON Pointer traversal, and glob matching treats only `*`
+as a wildcard. This is an issuance check; local renewal keeps its existing role
+and lifetime checks. See the [bound-claims contract](HEPTABAO_REMOTE_JWT_KEYS.md)
+for numeric behavior, partial updates and the schema-30 downgrade fence. Claim
+mapping and arbitrary `user_claim` selection remain outside this profile.
 
 For OpenBao API readback compatibility, JWT config GET returns both `issuer` and
 `bound_issuer`, while role GET returns both `policies` and `token_policies`; each
@@ -644,7 +653,7 @@ The SSH engine's CIDR rules are not authentication-method CIDR support.
 
 ## Remote key-source extension
 
-The current [remote JWKS / OIDC Discovery JWT implementation](HEPTABAO_REMOTE_JWT_KEYS.md) adds host-enrolled verified HTTPS, login-time key refresh and RSA/RS256. Static keys remain a separate mutually exclusive profile. Browser authorization-code OIDC, MFA and arbitrary claim mapping are not implied. Newly persisted source/algorithm constraints require schema 4.
+The current [remote JWKS / OIDC Discovery JWT implementation](HEPTABAO_REMOTE_JWT_KEYS.md) adds API-configured verified HTTPS, login-time key refresh and RSA/RS256. Historical records retain their enrolled transport until explicit promotion. Static keys remain a separate mutually exclusive profile. Browser authorization-code OIDC, MFA and arbitrary claim mapping are not implied. Newly persisted source/algorithm constraints require schema 4; API-configured transport requires schema 28.
 
 ## Online methods and schema 5
 
@@ -764,6 +773,12 @@ administrator explicitly writes a certificate or timeout field; normal partial
 updates and reads preserve it. API-owned transport requires schema 25. The
 configuration snapshot is checked again before publishing login or renewal,
 including when the CA or URL changes during directory I/O.
+
+Native LDAP supports `token_no_default_policy`, including preservation of
+explicitly mapped `default` and OpenBao's distinction between omitted and empty
+token policy configuration. Issued token policies remain fixed during renewal.
+The [native LDAP contract](../engines/HEPTABAO_LDAP_RUNTIME.md) describes zero-policy
+renewal behavior and the schema-30 state boundary.
 
 ## Auth mount revision, tune and remount boundary
 

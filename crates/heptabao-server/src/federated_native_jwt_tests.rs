@@ -72,7 +72,7 @@ fn native_numeric_dates_optional_claims_and_default_synthesis_match_openbao() {
     ] {
         let token = signed(&pair, claims.clone());
         assert_eq!(
-            verifier.verify_native(&token, 1000, time).is_ok(),
+            verifier.verify_native(&token, 1000, time, None).is_ok(),
             accepted,
             "{claims}"
         );
@@ -102,7 +102,7 @@ fn native_leeways_apply_to_missing_times_and_clock_skew_to_all_times() {
         };
         assert_eq!(
             verifier
-                .verify_native(&signed(&pair, claims.clone()), 1000, time)
+                .verify_native(&signed(&pair, claims.clone()), 1000, time, None)
                 .is_ok(),
             accepted,
             "{claims}"
@@ -119,13 +119,21 @@ fn native_reuse_does_not_relax_the_separate_strict_proof_contract() {
             claims["jti"] = jti;
         }
         let token = signed(&pair, claims);
-        let first = verifier.verify_native(&token, 1000, time).unwrap();
-        assert_eq!(verifier.verify_native(&token, 1000, time).unwrap(), first);
+        let first = verifier.verify_native(&token, 1000, time, None).unwrap();
+        assert_eq!(
+            verifier.verify_native(&token, 1000, time, None).unwrap(),
+            first
+        );
         assert!(verifier.verify(&token, 1000).is_err());
     }
     assert!(
         verifier
-            .verify_native(&signed(&pair, json!({"exp":1120,"jti":1})), 1000, time)
+            .verify_native(
+                &signed(&pair, json!({"exp":1120,"jti":1})),
+                1000,
+                time,
+                None
+            )
             .is_err()
     );
     let token = signed(&pair, json!({"iat":1000,"exp":1120,"jti":"proof"}));
@@ -152,7 +160,7 @@ fn explicit_maximum_requires_real_signed_dates_and_cannot_use_synthetic_times() 
     ] {
         assert_eq!(
             verifier
-                .verify_native(&signed(&pair, claims.clone()), 1000, bounded)
+                .verify_native(&signed(&pair, claims.clone()), 1000, bounded, None)
                 .is_ok(),
             accepted,
             "{claims}"

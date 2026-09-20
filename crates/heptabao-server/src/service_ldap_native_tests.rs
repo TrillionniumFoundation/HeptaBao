@@ -826,6 +826,15 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
         ..
     } = fixture(&root)?;
     let mut historical = service.state.clone().ok_or("state")?;
+    // Format-only fixture: old native LDAP configs had neither field. Actual
+    // migration is separately exercised with pinned historical binaries.
+    let mut old_auth = serde_json::to_value(&historical.auth)?;
+    let config = old_auth["ldap_mounts"][""]["ldap"]["native"]
+        .as_object_mut()
+        .ok_or("native config")?;
+    config.remove("token_policies_configured");
+    config.remove("token_no_default_policy");
+    historical.auth = serde_json::from_value(old_auth)?;
     historical.schema = 28;
     assert!(historical.validate_format().is_ok());
     assert_eq!(
@@ -959,5 +968,219 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
         assert_eq!(lookup.status, 200);
         assert_eq!(lookup.body["data"]["bound_cidrs"], json!(["127.0.0.1"]));
     }
+    Ok(())
+}
+
+#[test]
+fn native_ldap_no_default_change_during_login_cannot_publish_token_or_wrapper() -> TestResult {
+    for wrap in [None, Some(60)] {
+        let root = Root::new();
+        let Fixture {
+            mut service,
+            root_token,
+            ..
+        } = fixture(&root)?;
+        let plan = pending(
+            &mut service,
+            "auth/ldap/login/new-user",
+            "",
+            json!({"password":"synthetic-directory-password"}),
+            100,
+            wrap,
+        )?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/ldap/config",
+                &root_token,
+                json!({"token_no_default_policy":true})
+            )
+            .status,
+            204
+        );
+        let digest = service.state_digest;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let rejected = service.finish_external_request(
+            *plan,
+            ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Ldap(
+                LdapLoginObservation::native("new-user", groups(true)),
+            ))),
+        );
+        assert_eq!(rejected.status, 409);
+        assert!(rejected.body.get("auth").is_none_or(Value::is_null));
+        assert!(rejected.body.get("wrap_info").is_none_or(Value::is_null));
+        assert_eq!(service.state_digest, digest);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_policies()
+-> TestResult {
+    let root = Root::new();
+    let Fixture {
+        mut service,
+        key,
+        root_token,
+        ..
+    } = fixture(&root)?;
+    let mut configured = service.state.clone().ok_or("state")?;
+    configured.schema = 29;
+    assert!(
+        configured.validate_format().is_err(),
+        "new policy-list presence must not be discarded by old readers"
+    );
+    configured.schema = CURRENT_STATE_SCHEMA;
+    assert!(configured.validate_format().is_ok());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/policies/acl/ldap-renewer",
+            &root_token,
+            json!({"policy":"path \"auth/token/renew-self\" { capabilities = [\"update\"] }"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/ldap/config",
+            &root_token,
+            json!({"token_no_default_policy":true,"token_policies":["ldap-renewer"]})
+        )
+        .status,
+        204
+    );
+    let plan = pending(
+        &mut service,
+        "auth/ldap/login/alice",
+        "",
+        json!({"password":"synthetic-directory-password"}),
+        100,
+        Some(60),
+    )?;
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let wrapped = service.finish_external_request(
+        *plan,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Ldap(
+            LdapLoginObservation::native("Case Person", groups(true)),
+        ))),
+    );
+    assert_eq!(wrapped.status, 200);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        before + 1
+    );
+    let wrapper = wrapped.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("wrapper")?
+        .to_owned();
+    let unwrapped = call(
+        &mut service,
+        "POST",
+        "sys/wrapping/unwrap",
+        &wrapper,
+        json!({}),
+    );
+    assert_eq!(unwrapped.status, 200);
+    assert_eq!(
+        unwrapped.body["auth"]["token_policies"],
+        json!(["ldap-renewer"])
+    );
+    assert_eq!(
+        unwrapped.body["auth"]["identity_policies"],
+        json!(["directory-only"])
+    );
+    assert_eq!(
+        unwrapped.body["auth"]["policies"],
+        json!(["directory-only", "ldap-renewer"])
+    );
+    let token = unwrapped.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?
+        .to_owned();
+    let accessor = unwrapped.body["auth"]["accessor"]
+        .as_str()
+        .ok_or("accessor")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/ldap/config",
+            &root_token,
+            json!({"token_no_default_policy":false})
+        )
+        .status,
+        204
+    );
+    // Isolate the issued-token discriminator from the new config metadata.
+    let mut issued = service.state.clone().ok_or("state")?;
+    let mut auth = serde_json::to_value(&issued.auth)?;
+    let old_config = auth["ldap_mounts"][""]["ldap"]["native"]
+        .as_object_mut()
+        .ok_or("native config")?;
+    old_config.remove("token_policies_configured");
+    old_config.remove("token_no_default_policy");
+    issued.auth = serde_json::from_value(auth)?;
+    issued.schema = 29;
+    assert!(
+        issued.validate_format().is_err(),
+        "issued non-default LDAP tokens preserve the format fence"
+    );
+    issued.schema = CURRENT_STATE_SCHEMA;
+    assert!(issued.validate_format().is_ok());
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    for (endpoint, actor, body) in [
+        (
+            "auth/token/renew-self",
+            token.as_str(),
+            json!({"increment":120}),
+        ),
+        (
+            "auth/token/renew",
+            root_token.as_str(),
+            json!({"token":token,"increment":120}),
+        ),
+        (
+            "auth/token/renew-accessor",
+            root_token.as_str(),
+            json!({"accessor":accessor,"increment":120}),
+        ),
+    ] {
+        let plan = pending(&mut service, endpoint, actor, body, 110, None)?;
+        let renewed = accepted(&mut service, *plan, true);
+        assert_eq!(renewed.status, 200);
+        assert_eq!(
+            renewed.body["auth"]["token_policies"],
+            json!(["ldap-renewer"])
+        );
+        assert_eq!(
+            renewed.body["auth"]["policies"],
+            json!(["directory-only", "ldap-renewer"])
+        );
+    }
+    let lookup = call(
+        &mut service,
+        "POST",
+        "auth/token/lookup",
+        &root_token,
+        json!({"token":token}),
+    );
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["policies"], json!(["ldap-renewer"]));
     Ok(())
 }

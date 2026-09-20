@@ -14,6 +14,9 @@ mod jwt_renewal_tests;
 #[path = "auth_jwt_login_tests.rs"]
 mod jwt_login_tests;
 
+#[path = "auth_jwt_bound_claims_tests.rs"]
+mod jwt_bound_claims_tests;
+
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();

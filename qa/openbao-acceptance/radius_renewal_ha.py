@@ -27,6 +27,80 @@ ROOT = Path(__file__).resolve().parents[2]
 GATE_BUDGET_SECONDS = 2.7
 
 
+REQUIRED_BOOTSTRAP = frozenset({
+    'fresh_seed_uninitialized',
+    'fresh_seed_initialized',
+    'seed_unsealed_before_ha',
+    'seed_cluster_identity_read_back',
+    'three_distinct_service_processes',
+    'node_1_unsealed',
+    'node_2_unsealed',
+    'node_3_unsealed',
+})
+
+# Named safety milestones permit additional observations without accepting skipped phases.
+REQUIRED_CASES = frozenset({
+    'mount_radius',
+    'configure_radius',
+    'healthy_login',
+    'healthy_lookup',
+    'healthy_forwarded_renewal',
+    'healthy_provider_exactly_once',
+    'healthy_after_lookup',
+    'healthy_extension_committed',
+    'leader_killed_login',
+    'leader_killed_lookup',
+    'leader_killed_provider_inflight',
+    'leader_killed_accept_sent_before_timeout',
+    'leader_killed_no_success_or_wrapper',
+    'leader_killed_successor_lookup',
+    'leader_killed_expiry_not_extended',
+    'leader_killed_node_1_lookup',
+    'leader_killed_node_1_same_expiry',
+    'leader_killed_node_2_lookup',
+    'leader_killed_node_2_same_expiry',
+    'leader_killed_node_3_lookup',
+    'leader_killed_node_3_same_expiry',
+    'quorum_lost_login',
+    'quorum_lost_lookup',
+    'quorum_lost_provider_inflight',
+    'quorum_lost_accept_sent_before_timeout',
+    'quorum_lost_no_success_or_wrapper',
+    'quorum_lost_successor_lookup',
+    'quorum_lost_expiry_not_extended',
+    'quorum_lost_node_1_lookup',
+    'quorum_lost_node_1_same_expiry',
+    'quorum_lost_node_2_lookup',
+    'quorum_lost_node_2_same_expiry',
+    'quorum_lost_node_3_lookup',
+    'quorum_lost_node_3_same_expiry',
+    'sealed_login',
+    'sealed_lookup',
+    'sealed_provider_inflight',
+    'seal_acknowledged',
+    'sealed_accept_sent_before_timeout',
+    'sealed_no_success_or_wrapper',
+    'sealed_node_unsealed',
+    'sealed_successor_lookup',
+    'sealed_expiry_not_extended',
+    'sealed_node_1_lookup',
+    'sealed_node_1_same_expiry',
+    'sealed_node_2_lookup',
+    'sealed_node_2_same_expiry',
+    'sealed_node_3_lookup',
+    'sealed_node_3_same_expiry',
+    'fresh_request_after_recovery_succeeds',
+    'recovery_rechecks_provider',
+    'recovered_lookup',
+    'recovery_extension_committed',
+    'durable_lookup',
+    'acknowledged_renewal_survives_leader_death',
+    'secrets_absent_from_storage_and_logs',
+    'complete',
+})
+
+
+
 def profile_configuration(port, *, native=False):
     endpoint = {"origin": f"radius://127.0.0.1:{port}",
                 "address": f"127.0.0.1:{port}", "server_name": "127.0.0.1",
@@ -278,6 +352,7 @@ def run(binary, root, checks, observations, inherited, *, native=False):
             files.extend([node.root / "audit.jsonl", node.root / "process.log"])
         check("secrets_absent_from_storage_and_logs", all(not any(secret in path.read_bytes()
               for secret in sensitive) for path in files if path.is_file()))
+        check("complete", True)
     finally:
         try:
             provider.close()
@@ -313,9 +388,9 @@ def main():
               "same_host": True, "physical_fault_qualification": False,
               "full_openbao_compatibility": False, "observations": observations,
               "bootstrap_checks": inherited}
-    if len(inherited) != 8 or len(set(inherited)) != 8:
+    if not REQUIRED_BOOTSTRAP.issubset(inherited) or len(set(inherited)) != len(inherited):
         report["failure"] = report["failure"] or "incomplete_cluster_bootstrap"
-    publish(output, parent, report, before, source_identity(ROOT, binary), 56)
+    publish(output, parent, report, before, source_identity(ROOT, binary), required_cases=REQUIRED_CASES)
     print(json.dumps({"status": report["status"], "checks": len(checks), "failure": report["failure"]}))
     return 0 if report["status"] == "passed" else 1
 

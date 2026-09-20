@@ -330,6 +330,30 @@ fn same_remote_config_and_keys_do_not_append_but_rotated_keys_do() -> TestResult
 }
 
 #[test]
+fn jwt_claim_predicates_reject_old_schema_even_after_explicit_clear() -> TestResult {
+    let root = Root::new();
+    let (mut service, admin) = fixture(&root)?;
+    let mut legacy = service.state.clone().ok_or("state")?;
+    legacy.schema = 29;
+    assert!(legacy.validate_format().is_ok());
+    for body in [
+        json!({"bound_claims_type":"glob","bound_claims":{"sub":"ali*"}}),
+        json!({"bound_claims":{}}),
+    ] {
+        assert_eq!(
+            call(&mut service, "POST", "auth/remote/role/app", &admin, body).status,
+            204
+        );
+        let mut state = service.state.clone().ok_or("state")?;
+        state.schema = 29;
+        assert!(state.validate_format().is_err());
+        state.schema = CURRENT_STATE_SCHEMA;
+        assert!(state.validate_format().is_ok());
+    }
+    Ok(())
+}
+
+#[test]
 fn native_jwt_https_state_is_schema_fenced_and_config_preflight_is_not_a_login() -> TestResult {
     let root = Root::new();
     let (service, _) = fixture(&root)?;

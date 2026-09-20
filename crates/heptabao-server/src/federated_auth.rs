@@ -38,6 +38,9 @@ const REPLAY_FRAME_BYTES: usize = REPLAY_BODY_BYTES + REPLAY_TAG_BYTES;
 #[path = "federated_native_jwt.rs"]
 mod native_jwt;
 pub(crate) use native_jwt::NativeJwtTimePolicy;
+#[path = "federated_jwt_bound_claims.rs"]
+mod bound_claims;
+pub(crate) use bound_claims::{NativeJwtBoundClaims, NativeJwtBoundClaimsType};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum JwtAlgorithm {

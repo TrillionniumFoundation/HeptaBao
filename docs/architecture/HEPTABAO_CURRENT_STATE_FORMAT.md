@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **29**. Its source constant is
+The current Service state schema is **30**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -68,7 +68,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 26 | Administrator-configured RADIUS target authority without process endpoint enrollment; token source CIDR constraints must be absent. |
 | 27 | Native RADIUS source CIDR configuration and issued-token source constraints; JWT/OIDC API-owned HTTPS transport and nonempty inactive JWT CA readback fields must be absent. |
 | 28 | Administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields; native LDAP CIDRs and Kubernetes API HTTPS authority must be absent. |
-| 29 | Current format, adding native LDAP source constraints and administrator-configured Kubernetes authentication HTTPS transport. |
+| 29 | Native LDAP source constraints and administrator-configured Kubernetes authentication HTTPS transport; JWT bound-claim predicates and native LDAP default-policy metadata must be absent. |
+| 30 | Current format, adding native JWT bound-claim rules and native LDAP default-policy and policy-list-presence semantics. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -229,8 +230,21 @@ must include CA. The optional native reviewer uses the presented JWT when empty,
 without persisting that JWT or retrying after a configured reviewer fails.
 The Kubernetes secrets engine keeps its separate transport and state contract.
 
+Schema 30 is required for a JWT role carrying a typed bound-claims rule, including
+an explicitly cleared map. Old roles omit the optional field and retain their
+exact serialized shape. The original signature-verified claims are checked at
+login; assertions or arbitrary claim maps are not saved with issued tokens.
+Existing token renewal continues to use role limits without rechecking claims.
+
+Native LDAP config also requires schema 30 when it records policy-list presence
+or enables `token_no_default_policy`. New config distinguishes omission from an
+explicit empty/null policy list. Old absent metadata retains the normalized
+historical behavior because the original input cannot be recovered. Non-default
+direct LDAP token snapshots retain the format fence even after config changes.
+Issued policies remain fixed; config toggles affect future logins only.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 29. An authenticated
+it. Initialization and committed mutations use schema 30. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -244,7 +258,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-28 binary cannot read schema-29 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-29 binary cannot read schema-30 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

@@ -917,3 +917,247 @@ fn native_ldap_child_inherits_cidr_but_orphan_does_not() {
         ));
     }
 }
+
+#[test]
+fn native_ldap_no_default_preserves_old_config_bytes_and_partial_null_semantics() {
+    let (mut state, root) = fixture();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "directory",
+    };
+    let mut legacy = serde_json::to_value(state.ldap_native_at(scope).unwrap()).unwrap();
+    legacy
+        .as_object_mut()
+        .unwrap()
+        .remove("token_policies_configured");
+    assert!(legacy.get("token_no_default_policy").is_none());
+    let old: LdapNativeConfig = serde_json::from_value(legacy.clone()).unwrap();
+    assert!(!old.token_no_default_policy);
+    assert_eq!(old.token_policies_configured, None);
+    assert!(serde_json::to_value(old).unwrap() == legacy);
+    assert!(state.has_ldap_no_default_policy());
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_no_default_policy":true}),
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_ttl":121}),
+    );
+    assert_eq!(
+        read(&mut state, &root, "auth/directory/config")["token_no_default_policy"],
+        true
+    );
+    assert_eq!(
+        state
+            .ldap_native_at(scope)
+            .unwrap()
+            .token_policies_configured,
+        Some(false)
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_no_default_policy":null,"token_policies":null}),
+    );
+    let config = read(&mut state, &root, "auth/directory/config");
+    assert_eq!(config["token_no_default_policy"], false);
+    assert_eq!(config["token_policies"], json!([]));
+    assert!(config.get("token_policies_configured").is_none());
+    assert_eq!(
+        state
+            .ldap_native_at(scope)
+            .unwrap()
+            .token_policies_configured,
+        Some(true)
+    );
+}
+
+#[test]
+fn native_ldap_no_default_nil_empty_and_empty_mappings_match_provider_renewal() {
+    for mapping in [None, Some("users/alice"), Some("groups/engineering")] {
+        let (mut state, root) = fixture();
+        update(
+            &mut state,
+            &root,
+            "auth/directory/config",
+            json!({"token_no_default_policy":true}),
+        );
+        if let Some(path) = mapping {
+            update(
+                &mut state,
+                &root,
+                &format!("auth/directory/{path}"),
+                json!({"policies":[]}),
+            );
+        }
+        let issued = login(&mut state, "alice", "alice", &["engineering"]);
+        assert_eq!(issued.body["auth"]["policies"], json!([]));
+        assert!(issued.body["auth"].get("token_policies").is_none());
+        let raw = bearer(&issued);
+        let actor = state.authenticate(&raw, 110).unwrap();
+        assert_eq!(
+            state
+                .prepare_provider_renewal(
+                    Some(&actor),
+                    "",
+                    "POST",
+                    "auth/token/renew-self",
+                    &json!({}),
+                    110
+                )
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        for via in ["renew", "renew-accessor"] {
+            let (actor, plan) = renewal(&mut state, &root, &raw, via, 110);
+            let before = state_revision(&state).unwrap();
+            assert_eq!(
+                accepted(&mut state, plan, &actor, &["engineering"], 110)
+                    .err()
+                    .unwrap()
+                    .status,
+                500
+            );
+            assert_eq!(state_revision(&state).unwrap(), before);
+        }
+        for value in [json!([]), Value::Null] {
+            update(
+                &mut state,
+                &root,
+                "auth/directory/config",
+                json!({"token_policies":value}),
+            );
+            for via in ["renew", "renew-accessor"] {
+                let (actor, plan) = renewal(&mut state, &root, &raw, via, 115);
+                let response = accepted(&mut state, plan, &actor, &["engineering"], 115).unwrap();
+                assert_eq!(response.body["auth"]["policies"], json!([]));
+                assert!(response.body["auth"].get("token_policies").is_none());
+            }
+        }
+        // Older native configs had already lost nil/empty provenance. Do not
+        // retroactively infer nil when an old normalized config is reopened.
+        state
+            .ldap_mounts
+            .get_mut("")
+            .unwrap()
+            .get_mut("directory")
+            .unwrap()
+            .native
+            .as_mut()
+            .unwrap()
+            .token_policies_configured = None;
+        let (actor, plan) = renewal(&mut state, &root, &raw, "renew", 120);
+        assert_eq!(
+            accepted(&mut state, plan, &actor, &["engineering"], 120)
+                .unwrap()
+                .status,
+            200
+        );
+    }
+}
+
+#[test]
+fn native_ldap_no_default_keeps_explicit_default_from_config_user_and_group() {
+    for owner in ["config", "users/alice", "groups/engineering"] {
+        let (mut state, root) = fixture();
+        update(
+            &mut state,
+            &root,
+            "auth/directory/config",
+            json!({"token_no_default_policy":true}),
+        );
+        let body = if owner == "config" {
+            json!({"token_policies":["default"]})
+        } else {
+            json!({"policies":["default"]})
+        };
+        update(&mut state, &root, &format!("auth/directory/{owner}"), body);
+        let issued = login(&mut state, "alice", "alice", &["engineering"]);
+        assert_eq!(issued.body["auth"]["token_policies"], json!(["default"]));
+        let raw = bearer(&issued);
+        for via in ["renew-self", "renew", "renew-accessor"] {
+            let (actor, plan) = renewal(&mut state, &root, &raw, via, 110);
+            assert_eq!(
+                accepted(&mut state, plan, &actor, &["engineering"], 110)
+                    .unwrap()
+                    .body["auth"]["token_policies"],
+                json!(["default"])
+            );
+        }
+    }
+}
+
+#[test]
+fn native_ldap_no_default_toggles_only_future_tokens_and_policy_change_still_fails() {
+    let (mut state, root) = fixture();
+    update(
+        &mut state,
+        &root,
+        "sys/policies/acl/ldap-renewer",
+        json!({"policy":"path \"auth/token/renew-self\" { capabilities = [\"update\"] }"}),
+    );
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_policies":["ldap-renewer"]}),
+    );
+    let original = bearer(&login(&mut state, "alice", "alice", &[]));
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_no_default_policy":true}),
+    );
+    let bare = bearer(&login(&mut state, "alice", "alice", &[]));
+    for enabled in [true, false] {
+        update(
+            &mut state,
+            &root,
+            "auth/directory/config",
+            json!({"token_no_default_policy":enabled}),
+        );
+        for (raw, expected) in [
+            (&original, json!(["default", "ldap-renewer"])),
+            (&bare, json!(["ldap-renewer"])),
+        ] {
+            for via in ["renew-self", "renew", "renew-accessor"] {
+                let (actor, plan) = renewal(&mut state, &root, raw, via, 110);
+                assert_eq!(
+                    accepted(&mut state, plan, &actor, &[], 110).unwrap().body["auth"]["token_policies"],
+                    expected
+                );
+            }
+        }
+    }
+    update(
+        &mut state,
+        &root,
+        "auth/directory/config",
+        json!({"token_policies":["default"]}),
+    );
+    for via in ["renew-self", "renew", "renew-accessor"] {
+        let (actor, plan) = renewal(&mut state, &root, &bare, via, 115);
+        let before = state_revision(&state).unwrap();
+        assert_eq!(
+            accepted(&mut state, plan, &actor, &[], 115)
+                .err()
+                .unwrap()
+                .status,
+            500
+        );
+        assert_eq!(state_revision(&state).unwrap(), before);
+    }
+    // A retained no-default direct token remains a format discriminator even
+    // after its mount configuration is absent.
+    state.ldap_mounts.get_mut("").unwrap().remove("directory");
+    assert!(state.has_ldap_no_default_policy());
+}

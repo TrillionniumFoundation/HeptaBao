@@ -88,6 +88,33 @@ JWT assertions are reusable: each successful login issues a new service token.
 missing dates are derived with the role's leeway settings. Role type is `jwt`, user_claim is `sub` in this profile;
 Identity alias/entity binding and live entity/group policy checks still apply.
 New keys with the same subject reuse the correct existing identity binding.
+
+Static and remote JWT roles accept `bound_claims` and `bound_claims_type`.
+Every configured claim must match; scalar/list alternatives match if any pair
+agrees. Missing claims, scalar null and empty alternatives deny login. String
+mode preserves boolean/string distinctions. Selectors beginning with `/` use
+the pinned JSON-pointer behavior, including escaped keys and Go base-zero array
+indexes. Other selectors are literal top-level claim names. Glob mode treats
+only `*` as a wildcard, including across `/`; `?`, brackets and backslashes are
+literal characters. Glob configuration requires string values or string lists.
+
+Matching uses the same original signature-verified payload as issuer/time
+validation. It does not decode another unverified copy or retain arbitrary
+claims in token metadata. The pinned upstream verifier converts numeric scalar
+claims through f64 and truncates to signed integers, but does not convert numeric
+array elements; the matcher preserves this observed distinction. Expected
+integer and floating-point JSON categories remain distinct. Out-of-range
+float-to-integer conversion and nested object/array equality reject rather than
+emulate implementation-dependent behavior.
+
+Role updates preserve an omitted bound map; null or `{}` clears it. An omitted
+`bound_claims_type` resets the mode to `string`, including on partial writes;
+null or an unknown mode returns 400 without mutation. Readback includes
+`role_type:"jwt"` and `user_claim:"sub"`. The new optional role state requires
+schema 30; old absent state keeps its serialized shape. Concurrent role changes
+invalidate remote login results, and failed matches publish no token or wrapper.
+This adds claim predicates only: arbitrary claim mapping, selectable user/group
+claims and OIDC UserInfo merging remain separate work.
 After a fetch, login verifies time claims using elapsed request time and the
 configured grace window. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.

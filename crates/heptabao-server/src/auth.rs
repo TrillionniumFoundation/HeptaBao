@@ -3,7 +3,8 @@
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
 use crate::federated_auth::{
-    JwtAlgorithm, JwtVerifier, NativeJwtTimePolicy, TrustPolicy, VerificationKey,
+    JwtAlgorithm, JwtVerifier, NativeJwtBoundClaims, NativeJwtBoundClaimsType, NativeJwtTimePolicy,
+    TrustPolicy, VerificationKey,
 };
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use ring::{
@@ -893,6 +894,8 @@ impl JwtConfig {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtRole {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    bound_claims: Option<NativeJwtBoundClaims>,
     bound_groups: BTreeSet<String>,
     #[serde(default)]
     bound_subject: Option<String>,
@@ -4129,7 +4132,12 @@ impl AuthState {
             }
             let verified = verification_config
                 .verifier()?
-                .verify_native(jwt, now, jwt_login::native_time_policy(&config, &role))
+                .verify_native(
+                    jwt,
+                    now,
+                    jwt_login::native_time_policy(&config, &role),
+                    role.bound_claims.as_ref(),
+                )
                 .map_err(|_| bad("JWT signature or claims validation failed"))?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
@@ -4424,6 +4432,10 @@ impl AuthState {
                     .ok_or_else(|| err(404, "JWT role not found"))?;
                 Ok(response(
                     json!({
+                        "role_type": "jwt",
+                        "user_claim": "sub",
+                        "bound_claims_type": role.bound_claims.as_ref().map_or("string", |bounds| bounds.kind.as_str()),
+                        "bound_claims": role.bound_claims.as_ref().map(|bounds| &bounds.claims),
                         "bound_groups": role.bound_groups,
                         "bound_subject": role.bound_subject,
                         "bound_audiences": role.bound_audiences,
@@ -4449,6 +4461,8 @@ impl AuthState {
                     &[
                         "role_type",
                         "user_claim",
+                        "bound_claims_type",
+                        "bound_claims",
                         "bound_groups",
                         "bound_subject",
                         "bound_audiences",
@@ -4480,6 +4494,12 @@ impl AuthState {
                     .jwt_at(scope)
                     .and_then(|state| state.roles.get(name))
                     .cloned();
+                let bound_claims = jwt_login::bound_claims_update(
+                    body,
+                    previous
+                        .as_ref()
+                        .and_then(|role| role.bound_claims.as_ref()),
+                )?;
                 let bound_groups = if body.get("bound_groups").is_some() {
                     claim_values(body, "bound_groups")?
                 } else {
@@ -4584,6 +4604,7 @@ impl AuthState {
                     return Err(bad("JWT role token TTL is outside bounds"));
                 }
                 let role = JwtRole {
+                    bound_claims,
                     bound_groups,
                     bound_subject,
                     bound_audiences,

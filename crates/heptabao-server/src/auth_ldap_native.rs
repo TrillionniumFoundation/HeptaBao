@@ -21,6 +21,7 @@ const NATIVE_FIELDS: &[&str] = &[
     "case_sensitive_names",
     "username_as_alias",
     "token_policies",
+    "token_no_default_policy",
     "token_ttl",
     "token_max_ttl",
     "token_period",
@@ -57,6 +58,12 @@ pub(super) struct LdapNativeConfig {
     case_sensitive_names: bool,
     username_as_alias: bool,
     token_policies: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    token_no_default_policy: bool,
+    // None preserves the already-normalized policy lists in older native mounts.
+    // New mounts distinguish an omitted list from an explicit empty/null list.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_policies_configured: Option<bool>,
     token_ttl: u64,
     token_max_ttl: u64,
     token_period: u64,
@@ -87,6 +94,8 @@ impl Default for LdapNativeConfig {
             case_sensitive_names: false,
             username_as_alias: false,
             token_policies: BTreeSet::new(),
+            token_no_default_policy: false,
+            token_policies_configured: Some(false),
             token_ttl: 0,
             token_max_ttl: 0,
             token_period: 0,
@@ -183,7 +192,7 @@ impl LdapNativeConfig {
             "userfilter":self.userfilter,"groupdn":self.groupdn,"groupattr":self.groupattr,
             "groupfilter":self.groupfilter,"case_sensitive_names":self.case_sensitive_names,
             "username_as_alias":self.username_as_alias,"starttls":false,
-            "token_policies":self.token_policies,"token_ttl":self.token_ttl,"token_max_ttl":self.token_max_ttl,
+            "token_policies":self.token_policies,"token_no_default_policy":self.token_no_default_policy,"token_ttl":self.token_ttl,"token_max_ttl":self.token_max_ttl,
             "token_period":self.token_period,"token_explicit_max_ttl":self.token_explicit_max_ttl,
             "token_num_uses":self.token_num_uses,"token_bound_cidrs":self.bound_cidrs});
         if let Some(transport) = &self.transport {
@@ -389,7 +398,19 @@ impl AuthState {
         if body.get("token_bound_cidrs").is_some() {
             next.bound_cidrs = token_cidrs::field(body)?;
         }
+        if let Some(value) = body.get("token_no_default_policy") {
+            next.token_no_default_policy = if value.is_null() {
+                false
+            } else {
+                boolean(
+                    body,
+                    "token_no_default_policy",
+                    next.token_no_default_policy,
+                )?
+            };
+        }
         if body.get("token_policies").is_some() {
+            next.token_policies_configured = Some(true);
             next.token_policies = names(body, "token_policies")?;
         }
         for (field, target) in [
@@ -632,7 +653,6 @@ impl AuthState {
                 }
             }
         }
-        assigned.insert("default".into());
         Ok((assigned, groups))
     }
     pub(super) fn finish_native_ldap_login(
@@ -655,8 +675,11 @@ impl AuthState {
         if alias.is_empty() || alias.len() > 1024 || alias.chars().any(char::is_control) {
             return Err(bad("invalid LDAP alias"));
         }
-        let (policies, groups) =
+        let (mut policies, groups) =
             self.native_ldap_authority(scope, &plan.name, observation.groups)?;
+        if !config.token_no_default_policy {
+            policies.insert("default".into());
+        }
         let now = plan.observed_now();
         let mut response = self.issue_native_online_token(
             scope,
@@ -675,6 +698,15 @@ impl AuthState {
             },
             now,
         )?;
+        if response.body["auth"]["token_policies"]
+            .as_array()
+            .is_some_and(Vec::is_empty)
+        {
+            response.body["auth"]
+                .as_object_mut()
+                .ok_or_else(denied)?
+                .remove("token_policies");
+        }
         response.body["auth"]["metadata"] = json!({"username":plan.name});
         response.external_groups = Some(identity::ExternalGroups {
             mount: plan.mount,
@@ -699,10 +731,13 @@ impl AuthState {
         };
         let alias = alias.clone();
         let (policies, groups) = self.native_ldap_authority(scope, username, directory_groups)?;
-        if !same_policies(&policies, &token.policies) {
+        let config = self.ldap_native_at(scope).ok_or_else(denied)?;
+        // Upstream EquivalentPolicies distinguishes nil from an explicit empty
+        // list. Empty local mappings do not turn an omitted config list non-nil.
+        let nil_policies = config.token_policies_configured == Some(false) && policies.is_empty();
+        if nil_policies && token.policies.is_empty() || !same_policies(&policies, &token.policies) {
             return Err(err(500, "policies have changed, not renewing"));
         }
-        let config = self.ldap_native_at(scope).ok_or_else(denied)?;
         let expiry = self.native_token_expiry(
             scope,
             config.limits(),
@@ -713,7 +748,7 @@ impl AuthState {
         )?;
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expiry);
-        Ok(AuthResponse {
+        let mut response = AuthResponse {
             login_identity: None,
             external_groups: Some(identity::ExternalGroups {
                 mount: scope.mount.into(),
@@ -725,6 +760,27 @@ impl AuthState {
             body: json!({"auth":{"accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
                 "entity_id":token.entity_id.as_deref().unwrap_or(""),"metadata":{"username":username},
                 "lease_duration":expiry-now,"renewable":true,"token_type":"service"}}),
+        };
+        if token.policies.is_empty() {
+            response.body["auth"]
+                .as_object_mut()
+                .ok_or_else(denied)?
+                .remove("token_policies");
+        }
+        Ok(response)
+    }
+    pub(crate) fn has_ldap_no_default_policy(&self) -> bool {
+        self.ldap_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount.native.as_ref().is_some_and(|config| {
+                    config.token_no_default_policy || config.token_policies_configured.is_some()
+                })
+            })
+        }) || self.tokens.values().any(|token| {
+            matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::LdapNative { .. })
+            ) && !token.policies.contains("default")
         })
     }
     pub(crate) fn has_native_ldap_transport(&self) -> bool {
