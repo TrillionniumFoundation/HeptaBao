@@ -8,6 +8,7 @@ diagnostics in the receipt.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -16,7 +17,65 @@ import selectors
 import subprocess
 import time
 
-from postgres_live import Instance, Postgres, ROOT
+from postgres_live import Instance, Postgres, ROOT, psql_environment
+from postgres_storage_live import DropServerReplyProxy
+
+COMMIT_GATE = "hb-durable-test-commit-gate"
+
+
+def hold_commit_gate(pg: Postgres):
+    """Hold a transaction advisory lock used by a deferred test trigger."""
+    env_context = psql_environment(
+        pg.root.parent,
+        port=pg.port,
+        database="app",
+        user="hb_bootstrap",
+        password=pg.password,
+        ca=pg.ca,
+        application="hb-durable-commit-gate",
+    )
+    env = env_context.__enter__()
+    process = subprocess.Popen(
+        [str(pg.bin / "psql"), "-X", "-qAt", "-w", "-v", "ON_ERROR_STOP=1"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        env=env,
+        text=True,
+    )
+    process.stdin.write(
+        "SELECT pg_advisory_lock(hashtextextended('"
+        + COMMIT_GATE
+        + "',0)); SELECT 'locked';\n"
+    )
+    process.stdin.flush()
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        line = process.stdout.readline()
+        if line.strip() == "locked":
+            return env_context, process
+        if process.poll() is not None:
+            break
+    process.kill()
+    process.wait(timeout=5)
+    env_context.__exit__(None, None, None)
+    raise RuntimeError("commit_gate_not_ready")
+
+
+def release_commit_gate(env_context, process) -> None:
+    if process.poll() is None:
+        process.stdin.write(
+            "SELECT pg_advisory_unlock(hashtextextended('"
+            + COMMIT_GATE
+            + "',0));\n"
+        )
+        process.stdin.close()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=5)
+    env_context.__exit__(None, None, None)
 
 
 def main() -> int:
@@ -105,6 +164,94 @@ def main() -> int:
 
         check("durable_basic_probe", invoke("basic") == 0)
         check("durable_reopen_probe", invoke("reopen") == 0)
+
+        # Make COMMIT observable without adding a production failpoint. A
+        # deferred constraint trigger waits on a test-only advisory lock, so
+        # the fixture can prove that the backend's write reached COMMIT before
+        # the transparent proxy drops the server acknowledgement.
+        trigger_sql = (
+            "CREATE OR REPLACE FUNCTION hb_durable_test_commit_gate() RETURNS trigger "
+            "LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_advisory_xact_lock("
+            "hashtextextended('" + COMMIT_GATE + "',0)); RETURN NEW; END $$; "
+            "DROP TRIGGER IF EXISTS hb_durable_test_commit_gate ON "
+            "heptabao_durable_v1.manifest_v1; "
+            "CREATE CONSTRAINT TRIGGER hb_durable_test_commit_gate AFTER INSERT OR UPDATE "
+            "ON heptabao_durable_v1.manifest_v1 DEFERRABLE INITIALLY DEFERRED FOR EACH ROW "
+            "EXECUTE FUNCTION hb_durable_test_commit_gate();"
+        )
+        installed = pg.sql(trigger_sql)
+        check("deferred_commit_gate_installed", installed.returncode == 0)
+        gate_holder = None
+        gate_env = None
+        proxy = None
+        process = None
+        try:
+            gate_env, gate_holder = hold_commit_gate(pg)
+            proxy = DropServerReplyProxy(pg.port)
+            proxy.start()
+            proxy_config = copy.deepcopy(config)
+            proxy_config["endpoint"]["origin"] = proxy.origin
+            proxy_config["endpoint"]["address"] = f"127.0.0.1:{proxy.port}"
+            proxy_config["connection_url"] = proxy.origin + "/app"
+            process = subprocess.Popen(
+                [str(args.probe)],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            )
+            process.stdin.write(json.dumps(dict(proxy_config, mode="lost-commit")))
+            process.stdin.close()
+            process.stdin = None
+            ready = selectors.DefaultSelector()
+            ready.register(process.stdout, selectors.EVENT_READ)
+            events = ready.select(timeout=10)
+            marker = process.stdout.readline().strip() if events else ""
+            check("lost_commit_probe_started", marker == "commit_pending")
+            deadline = time.monotonic() + 10
+            waiting = False
+            while time.monotonic() < deadline:
+                activity = pg.sql(
+                    "SELECT count(*) FROM pg_stat_activity WHERE usename='hb_storage' "
+                    "AND query LIKE 'COMMIT%' AND wait_event_type='Lock'"
+                )
+                waiting = activity.returncode == 0 and activity.stdout.strip() == "1"
+                if waiting:
+                    break
+                time.sleep(0.05)
+            check("lost_commit_commit_reached_and_blocked", waiting)
+            proxy.drop_server_replies()
+            release_commit_gate(gate_env, gate_holder)
+            gate_env = None
+            gate_holder = None
+            # The server has committed, but the acknowledgement is still
+            # discarded. Closing the proxy turns the unknown outcome into the
+            # backend's explicit OutcomeUnknown result.
+            time.sleep(0.2)
+            proxy.close()
+            proxy = None
+            stdout, _ = process.communicate(timeout=20)
+            process = None
+            output = json.loads(stdout)
+            for entry in output.get("checks", []):
+                check("lost_commit/" + entry["case"], entry["passed"])
+            check("lost_commit_probe_exited_cleanly", True)
+        finally:
+            if process is not None and process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+            if proxy is not None:
+                proxy.close()
+            if gate_holder is not None:
+                release_commit_gate(gate_env, gate_holder)
+            elif gate_env is not None:
+                gate_env.__exit__(None, None, None)
+            pg.sql(
+                "DROP TRIGGER IF EXISTS hb_durable_test_commit_gate ON "
+                "heptabao_durable_v1.manifest_v1; "
+                "DROP FUNCTION IF EXISTS hb_durable_test_commit_gate();"
+            )
+        check("lost_commit_reopen_exactly_once", invoke("reopen-lost") == 0)
 
         # A second session must be rejected immediately while the first owns
         # the scope lock.  No subprocess is allowed to remain blocked.

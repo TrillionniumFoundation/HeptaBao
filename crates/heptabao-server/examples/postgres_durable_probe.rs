@@ -111,6 +111,23 @@ fn run(input: Input, checks: &mut Vec<Value>) -> Result<(), Box<dyn std::error::
             backend.close()?;
             Ok(())
         }
+        "reopen-lost" => {
+            let mut backend = PostgresDurableBackend::open(config(&input))?;
+            let bundle = backend.load()?;
+            let marker = b"lost-commit-frame";
+            let occurrences = bundle
+                .journal
+                .windows(marker.len())
+                .filter(|window| *window == marker)
+                .count();
+            check(
+                checks,
+                "durable_lost_commit_replayed_exactly_once",
+                occurrences == 1,
+            )?;
+            backend.close()?;
+            Ok(())
+        }
         "reject-schema" => check(
             checks,
             "durable_schema_fault_rejected",
