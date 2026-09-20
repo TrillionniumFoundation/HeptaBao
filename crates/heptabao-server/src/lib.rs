@@ -26,6 +26,7 @@ mod ha_forward;
 pub mod ha_state;
 pub mod http;
 pub mod outbound;
+pub mod postgres_durable;
 pub mod postgres_storage;
 mod postgres_wire;
 mod service;

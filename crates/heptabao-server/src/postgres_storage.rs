@@ -280,7 +280,10 @@ impl PostgresStorage {
         })
     }
 
-    fn connect(&self) -> Result<PgSession, StorageError> {
+    /// Open one enrolled PostgreSQL session for a specialized physical
+    /// backend. The caller owns the session and must never reconnect after an
+    /// uncertain result; this is crate-visible by design.
+    pub(crate) fn connect(&self) -> Result<PgSession, StorageError> {
         let (endpoint, _) = self
             .outbound
             .endpoint(&self.config.connection_url, "postgresql")
