@@ -98,3 +98,68 @@ class ActualKubernetesBoundaryTests(unittest.TestCase):
         self.assertIn(k.KIND_SHA256,text)
         self.assertIn('kubernetes_cluster_live.py',text)
         self.assertIn('--allow-disposable-cluster',text)
+
+
+class KindArchitecturePinTests(unittest.TestCase):
+    def test_architecture_selects_exact_release_asset_digest(self):
+        for machine in ('x86_64', 'amd64'):
+            self.assertEqual(k.kind_digest('Linux',machine),k.KIND_SHA256)
+        for machine in ('aarch64', 'arm64'):
+            self.assertEqual(k.kind_digest('Linux',machine),
+                             '8e1014e87c34901cc422a1445866835d1e666f2a61301c27e722bdeab5a1f7e4')
+        self.assertNotEqual(k.KIND_ARM64_SHA256,k.KIND_SHA256)
+
+    def test_unsupported_platform_does_not_fall_back_to_another_asset(self):
+        for system,machine in [('Darwin','arm64'),('Linux','armv7l'),('Linux',''),('Windows','amd64')]:
+            with self.subTest(system=system,machine=machine),self.assertRaises(k.PrerequisiteMissing):
+                k.kind_digest(system,machine)
+
+    def test_arm64_main_validates_selected_digest_before_daemon_or_allocation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);root.chmod(0o700)
+            binary=root/'kind';binary.write_bytes(b'wrong-architecture-or-modified');binary.chmod(0o700)
+            with patch.object(k.platform,'system',return_value='Linux'), \
+                    patch.object(k.platform,'machine',return_value='aarch64'), \
+                    patch.object(k.shutil,'which',return_value='/usr/bin/docker'), \
+                    patch.object(k.subprocess,'run') as daemon, \
+                    self.assertRaisesRegex(k.FixtureFailure,'prerequisite_binary_digest_mismatch'):
+                k.main(['--binary',str(root/'candidate'),'--kind',str(binary),
+                        '--output',str(root/'report.json'),'--allow-disposable-cluster'])
+            daemon.assert_not_called()
+            self.assertFalse((root/'report.json').exists())
+
+
+class ActualKubernetesCompletionTests(unittest.TestCase):
+    def test_additional_passing_observations_are_allowed(self):
+        from online_evidence import complete_checks
+        rows=[{'case':name,'passed':True} for name in sorted(k.REQUIRED_CASES)]
+        self.assertTrue(complete_checks(rows,required_cases=k.REQUIRED_CASES))
+        self.assertTrue(complete_checks(rows+[{'case':'new_independent_observation','passed':True}],required_cases=k.REQUIRED_CASES))
+
+    def test_each_required_phase_missing_duplicate_or_nonboolean_fails(self):
+        from online_evidence import complete_checks
+        rows=[{'case':name,'passed':True} for name in sorted(k.REQUIRED_CASES)]
+        for case in k.REQUIRED_CASES:
+            with self.subTest(case=case):
+                self.assertFalse(complete_checks([row for row in rows if row['case'] != case],required_cases=k.REQUIRED_CASES))
+        self.assertFalse(complete_checks(rows+[rows[0]],required_cases=k.REQUIRED_CASES))
+        self.assertFalse(complete_checks([dict(row,passed=1) if i == 0 else row for i,row in enumerate(rows)],required_cases=k.REQUIRED_CASES))
+        self.assertFalse(complete_checks([dict(row,passed=False) if i == 0 else row for i,row in enumerate(rows)],required_cases=k.REQUIRED_CASES))
+
+
+class KindSelectedPinAdmissionTests(unittest.TestCase):
+    def test_main_passes_each_platform_pin_to_executable_admission(self):
+        for machine,expected in [('x86_64',k.KIND_SHA256),('aarch64',k.KIND_ARM64_SHA256)]:
+            with self.subTest(machine=machine),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);root.chmod(0o700)
+                binary=root/'kind';binary.write_bytes(b'synthetic');binary.chmod(0o700)
+                with patch.object(k.platform,'system',return_value='Linux'), \
+                        patch.object(k.platform,'machine',return_value=machine), \
+                        patch.object(k.shutil,'which',return_value='/usr/bin/docker'), \
+                        patch.object(k,'validate_binary',side_effect=k.FixtureFailure('stop_before_exec')) as admit, \
+                        patch.object(k.subprocess,'run') as daemon, \
+                        self.assertRaisesRegex(k.FixtureFailure,'stop_before_exec'):
+                    k.main(['--binary',str(root/'candidate'),'--kind',str(binary),
+                            '--output',str(root/'report.json'),'--allow-disposable-cluster'])
+                admit.assert_called_once_with(binary,expected)
+                daemon.assert_not_called()

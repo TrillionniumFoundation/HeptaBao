@@ -45,6 +45,10 @@ with a safe before-entry retry.
 single-node KIND cluster only with explicit `--allow-disposable-cluster` permission.
 KIND v0.31.0 Linux amd64 is pinned by SHA-256
 `eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa`.
+Linux arm64 uses its separate official executable digest
+`8e1014e87c34901cc422a1445866835d1e666f2a61301c27e722bdeab5a1f7e4`.
+The runner selects the native architecture and verifies its executable before
+contacting Docker; unsupported architectures do not fall back to emulation.
 The node image is `kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f`.
 These fixed upstream inputs come from the official KIND release metadata:
 https://github.com/kubernetes-sigs/kind/releases/tag/v0.31.0 . They are a synthetic
@@ -55,8 +59,9 @@ The fixture uses the actual API server, etcd-backed objects, RBAC role/binding,
 ServiceAccount TokenRequest and TokenReview endpoints. The reviewer receives only
 `create` permission on `authentication.k8s.io/tokenreviews`, not cluster-admin.
 The fixture's administrator certificate is used only to provision its own cluster.
-HeptaBao receives the reviewer bearer credential and a host-enrolled CA/origin;
-it never receives the cluster administrator key.
+HeptaBao's authentication mount receives the reviewer bearer and API-configured
+CA/host. The separate Kubernetes secrets engine retains its startup endpoint
+enrollment. Neither receives the cluster administrator key.
 
 Required observations include actual audience and namespace rejection, a modified
 signature, encrypted Service restart, deletion/recreation of a same-named account
@@ -64,8 +69,11 @@ with a different UID, denial of the old JWT, separate local identity for the new
 UID, revoked/restored reviewer RBAC, and auth-unmount local-token revocation.
 Read-only TokenReview/SubjectAccessReview observations wait for control-plane
 cache convergence before one tested login; uncertain logins are never retried.
-Issued HeptaBao tokens are still bounded nonrenewable local tokens, not continually
-revoked by later ServiceAccount deletion. The fixture does not assert otherwise.
+Issued HeptaBao service tokens use native local renewal against their current
+role. The fixture renews an existing token while reviewer RBAC is revoked,
+without another TokenReview. Later ServiceAccount deletion does not continuously
+revoke issued local tokens. The separately issued Kubernetes secret tokens keep
+their bounded, nonrenewable lease behavior.
 
 Ambient KUBECONFIG, external/exec credentials, TLS bypass, remote Docker hosts and
 nondefault Docker contexts are rejected or removed. The only admitted API origin
@@ -79,7 +87,7 @@ never a simulated pass. Containers are not separate physical hosts, and a passin
 fixture is not browser UI, distribution, physical-fault or independent security
 qualification.
 
-Run in a disposable Linux amd64 Docker environment:
+Run in a disposable Linux amd64 or arm64 Docker environment:
 
 ```text
 python qa/openbao-acceptance/kubernetes_cluster_live.py --binary /absolute/heptabao-server --kind /absolute/pinned-kind --output /absolute/new-0700-dir/kubernetes.json --allow-disposable-cluster

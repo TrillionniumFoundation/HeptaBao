@@ -36,10 +36,25 @@ from online_evidence import admit_output, source_identity, publish
 
 KIND_VERSION = '0.31.0'
 KIND_SHA256 = 'eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa'
+KIND_ARM64_SHA256 = '8e1014e87c34901cc422a1445866835d1e666f2a61301c27e722bdeab5a1f7e4'
 NODE_IMAGE = 'kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f'
 DOCKER_SOCKET = 'unix:///var/run/docker.sock'
 AUDIENCE = 'heptabao-real-kubernetes'
-EXPECTED_CHECKS = 45
+REQUIRED_CASES = frozenset({
+    'actual_apiserver_version', 'actual_serviceaccount_uids_distinct',
+    'actual_reviewer_rbac_admitted', 'actual_tokenrequests',
+    'real_kubernetes_tokenrequest_issues_secret', 'kubernetes_secret_lease_is_bounded_nonrenewable',
+    'issued_kubernetes_secret_token_is_real', 'kubernetes_secret_role_readback_redacts_manager',
+    'real_tokenreview_issues_local_token', 'local_token_native_renewable', 'live_identity_bound',
+    'wrong_actual_audience_denied', 'foreign_actual_namespace_denied', 'invalid_signature_denied',
+    'reviewer_credential_not_read_back', 'issued_token_usable', 'restart_requires_unseal',
+    'restart_unseal', 'kubernetes_secret_config_role_survive_restart', 'restart_issued_kubernetes_token_is_real',
+    'real_review_after_restart_same_uid', 'deleted_serviceaccount_invalidates_secret_tokens',
+    'deleted_uid_token_denied', 'same_name_has_new_actual_uid', 'recreated_serviceaccount_gets_new_secret_token',
+    'replacement_uid_has_distinct_identity', 'old_jwt_not_revived_by_recreation',
+    'real_rbac_denial_releases_no_local_token', 'native_renewal_independent_of_reviewer_rbac',
+    'explicit_rbac_restore_allows_new_login', 'unmount_revokes_local_token', 'complete',
+})
 
 
 class PrerequisiteMissing(Exception):
@@ -48,6 +63,17 @@ class PrerequisiteMissing(Exception):
 
 class FixtureFailure(Exception):
     pass
+
+
+def kind_digest(system: str, machine: str) -> str:
+    # Separate official release assets; a new architecture never weakens the
+    # existing executable digest admission or substitutes emulation.
+    if system == 'Linux':
+        if machine in ('x86_64', 'amd64'):
+            return KIND_SHA256
+        if machine in ('aarch64', 'arm64'):
+            return KIND_ARM64_SHA256
+    raise PrerequisiteMissing('linux_amd64_or_arm64_kind_fixture_required')
 
 
 def private(path: Path, data: bytes) -> None:
@@ -319,7 +345,7 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         status, result = login(worker_jwt)
         check('real_tokenreview_issues_local_token',status == 200 and bool(result.get('auth',{}).get('client_token')))
         old_token=result['auth']['client_token'];old_entity=result['auth']['entity_id']
-        check('local_token_bounded_nonrenewable',result['auth'].get('renewable') is False and 0 < result['auth']['lease_duration'] <= 300)
+        check('local_token_native_renewable',result['auth'].get('renewable') is True and 0 < result['auth']['lease_duration'] <= 300)
         check('live_identity_bound',bool(old_entity))
         check('wrong_actual_audience_denied',login(wrong_aud)[0] == 403)
         check('foreign_actual_namespace_denied',login(other_jwt)[0] == 403)
@@ -363,6 +389,10 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         cluster.await_review_permission(False)
         denied_status, denied=login(new_jwt)
         check('real_rbac_denial_releases_no_local_token',denied_status >= 400 and not denied.get('auth'))
+        renew_status, renewed=service.call('POST','auth/token/renew-self',{},token=old_token)
+        check('native_renewal_independent_of_reviewer_rbac',renew_status == 200
+              and renewed.get('auth',{}).get('client_token') == old_token
+              and renewed.get('auth',{}).get('renewable') is True)
         cluster.post('/apis/rbac.authorization.k8s.io/v1/clusterrolebindings',binding)
         cluster.await_review_permission(True)
         status, restored=login(new_jwt)
@@ -370,6 +400,7 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         token=restored['auth']['client_token']
         check('auth_unmount',service.call('DELETE','sys/auth/'+mount)[0] == 204)
         check('unmount_revokes_local_token',service.call('GET','auth/token/lookup-self',token=token)[0] == 403)
+        check('complete',True)
         return {'kubernetes_version':version['gitVersion'],'kind_version':KIND_VERSION,'node_image':NODE_IMAGE,
                 'actual_kube_apiserver':True,'actual_etcd':True,'actual_rbac':True,
                 'scope':'new_single_host_kind_cluster_not_distribution_or_production_qualification'}
@@ -391,18 +422,18 @@ def main(argv=None):
     if not args.allow_disposable_cluster:
         parser.error('explicit disposable cluster permission required')
     admitted=admit_output(args.output)
-    if platform.system() != 'Linux' or platform.machine() not in ('x86_64','amd64'):
-        raise PrerequisiteMissing('linux_amd64_kind_fixture_required')
+    expected_kind_digest=kind_digest(platform.system(),platform.machine())
     if not args.kind.is_file() or shutil.which('docker') is None:
         raise PrerequisiteMissing('actual_kind_and_docker_required')
-    kind=validate_binary(args.kind,KIND_SHA256)
+    kind=validate_binary(args.kind,expected_kind_digest)
     env=local_environment(dict(os.environ))
     ready=subprocess.run(['docker','--host',DOCKER_SOCKET,'info'],env=env,stdin=subprocess.DEVNULL,
                          stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15,check=False)
     if ready.returncode:
         raise PrerequisiteMissing('local_docker_daemon_required')
     before=source_identity(ROOT,args.binary)
-    report={'schema':'heptabao.actual-kubernetes.v1','checks':[],'failure':None}
+    report={'schema':'heptabao.actual-kubernetes.v1','checks':[],'failure':None,
+            'host_architecture':platform.machine(),'kind_binary_sha256':expected_kind_digest}
     root=Path(tempfile.mkdtemp(prefix='hb-actual-kubernetes-'));root.chmod(0o700)
     try:
         report.update(run(args.binary.absolute(),kind,root,report['checks']))
@@ -413,7 +444,7 @@ def main(argv=None):
             shutil.rmtree(root)
         except OSError:
             report['failure']='private_fixture_cleanup_failed'
-    publish(args.output,admitted,report,before,source_identity(ROOT,args.binary),EXPECTED_CHECKS)
+    publish(args.output,admitted,report,before,source_identity(ROOT,args.binary),required_cases=REQUIRED_CASES)
     print(json.dumps({'status':report['status'],'count':len(report['checks']),'failure':report.get('failure')}))
     return 0 if report['status']=='passed' else 1
 
