@@ -602,11 +602,11 @@ Existing bounded profiles: none bound yet; executable fixtures must be implement
 
 ### HB-SURFACE-DB-VALKEY
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP09`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP09`, `H19-WP13`.
 API families: `database/config/*`; `database/roles/*`; `database/static-roles/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/valkey_wire.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/engines/HEPTABAO_VALKEY_PROVIDER.md`.
 
 **Positive:** Create real Valkey ACL users and rotate static/root credentials over verified TLS.
 
@@ -614,9 +614,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Persist ACL revocation and credentials through reconnect and provider restart.
 
-**Remaining scope:** Real version, ACL, TLS, rotate and revoke matrix required.
+**Remaining scope:** Real Valkey 7.2 TLS dynamic ACL issue/renew/revoke, durable markers, dual restart, stale WATCH and outage recovery are executable. Full OpenBao statements, static/root credential rotation, broader ACLs, Valkey 9.x, provider cluster failover, HeptaBao HA campaign, physical faults, bounded marker retirement, migration and independent differential admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/valkey_live.py`.
 
 ### HB-SURFACE-AUDIT-FILE
 

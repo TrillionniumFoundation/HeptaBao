@@ -427,3 +427,12 @@ uncertain-effect recovery shortcut.
 ## Independent module closure dossier
 
 The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-server.md).
+
+## Valkey provider integration
+
+`service_database.rs` also dispatches the bounded Valkey 7.2 TLS ACL provider.
+`valkey_wire.rs` owns bounded RESP2 framing; the database engine retains durable
+intent and validates provider readback before returning credentials.
+[The Valkey guide](../engines/HEPTABAO_VALKEY_PROVIDER.md) specifies exact
+command permissions, WATCH/EXEC plus durable ACL marker fencing, expiry and
+restart semantics, and the remaining full-provider compatibility work.

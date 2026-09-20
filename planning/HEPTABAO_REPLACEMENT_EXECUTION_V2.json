@@ -1148,16 +1148,21 @@
       "positive": "Create real Valkey ACL users and rotate static/root credentials over verified TLS",
       "hostile": "Reject key/channel glob privilege escape and wrong cluster identity",
       "lifecycle": "Persist ACL revocation and credentials through reconnect and provider restart",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs",
+        "crates/heptabao-server/src/valkey_wire.rs"
+      ],
       "contract_sources": [],
       "guides": [
-        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+        "docs/engines/HEPTABAO_VALKEY_PROVIDER.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/valkey_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real version, ACL, TLS, rotate and revoke matrix required."
+      "remaining_scope": "Real Valkey 7.2 TLS dynamic ACL issue/renew/revoke, durable markers, dual restart, stale WATCH and outage recovery are executable. Full OpenBao statements, static/root credential rotation, broader ACLs, Valkey 9.x, provider cluster failover, HeptaBao HA campaign, physical faults, bounded marker retirement, migration and independent differential admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUDIT-FILE",

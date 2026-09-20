@@ -9,6 +9,40 @@ use zeroize::Zeroizing;
 
 const MAX_FRAME: usize = 256 * 1024;
 const MAX_DEPTH: usize = 8;
+const MAX_NODES: usize = 1024;
+
+/// Tracks the complete RESP reply, rather than just individual bulk values.
+/// Without an aggregate budget a bounded array of individually-small values
+/// could still force unbounded allocation and CPU before the caller sees it.
+struct ParseBudget {
+    frame_remaining: usize,
+    nodes_remaining: usize,
+}
+
+impl ParseBudget {
+    fn new() -> Self {
+        Self {
+            frame_remaining: MAX_FRAME,
+            nodes_remaining: MAX_NODES,
+        }
+    }
+
+    fn bytes(&mut self, count: usize) -> Result<(), &'static str> {
+        if count > self.frame_remaining {
+            return Err("Valkey RESP response exceeds frame bound");
+        }
+        self.frame_remaining -= count;
+        Ok(())
+    }
+
+    fn node(&mut self) -> Result<(), &'static str> {
+        self.nodes_remaining = self
+            .nodes_remaining
+            .checked_sub(1)
+            .ok_or("Valkey RESP response exceeds node bound")?;
+        Ok(())
+    }
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum RespValue {
@@ -60,8 +94,8 @@ impl ValkeySession {
         let database: u8 = database
             .parse()
             .map_err(|_| "invalid Valkey database index")?;
-        if database > 15 {
-            return Err("Valkey database index exceeds bounded profile");
+        if database != 0 {
+            return Err("Valkey ACL profile requires database zero");
         }
         let stream = endpoint.tls(endpoint.connect()?)?;
         let mut session = Self { stream };
@@ -81,14 +115,16 @@ impl ValkeySession {
                 arg.is_empty()
                     || arg.len() > 4096
                     || !arg.is_ascii()
-                    || arg
-                        .bytes()
-                        .any(|byte| byte == b'\r' || byte == b'\n' || byte == 0)
+                    || arg.bytes().any(|byte| byte < 0x20 || byte == 0x7f)
             })
         {
             return Err("Valkey command exceeds bounded RESP profile");
         }
-        let mut request = Vec::with_capacity(args.iter().map(|arg| arg.len() + 16).sum());
+        // Commands can contain generated passwords. Keep the serialized frame
+        // in zeroizing storage until it is released after the write.
+        let mut request = Zeroizing::new(Vec::with_capacity(
+            args.iter().map(|arg| arg.len() + 16).sum(),
+        ));
         request.extend_from_slice(format!("*{}\r\n", args.len()).as_bytes());
         for arg in args {
             request.extend_from_slice(format!("${}\r\n", arg.len()).as_bytes());
@@ -102,40 +138,51 @@ impl ValkeySession {
             .write_all(&request)
             .and_then(|()| self.stream.flush())
             .map_err(|_| "Valkey command delivery uncertain")?;
-        parse_value(&mut self.stream, 0)
+        let mut budget = ParseBudget::new();
+        parse_value(&mut self.stream, 0, &mut budget)
     }
 }
 
-fn parse_value(stream: &mut impl Read, depth: usize) -> Result<RespValue, &'static str> {
+fn parse_value(
+    stream: &mut impl Read,
+    depth: usize,
+    budget: &mut ParseBudget,
+) -> Result<RespValue, &'static str> {
     if depth > MAX_DEPTH {
         return Err("Valkey RESP nesting exceeds bound");
     }
+    budget.node()?;
     let mut prefix = [0u8; 1];
+    budget.bytes(1)?;
     stream
         .read_exact(&mut prefix)
         .map_err(|_| "Valkey response unavailable")?;
     match prefix[0] {
-        b'+' => Ok(RespValue::Simple(read_line(stream)?)),
+        b'+' => Ok(RespValue::Simple(read_line(stream, budget)?)),
         b'-' => {
-            discard_line(stream)?;
+            discard_line(stream, budget)?;
             Ok(RespValue::Error)
         }
         b':' => {
-            let line = read_line(stream)?;
+            let line = read_line(stream, budget)?;
             let value = line
                 .parse::<i64>()
                 .map_err(|_| "invalid Valkey integer response")?;
             Ok(RespValue::Integer(value))
         }
         b'$' => {
-            let length = read_length(stream)?;
-            if length < 0 {
+            let length = read_length(stream, budget)?;
+            if length == -1 {
                 return Ok(RespValue::Null);
+            }
+            if length < -1 {
+                return Err("invalid Valkey bulk length");
             }
             let length = usize::try_from(length).map_err(|_| "invalid Valkey bulk length")?;
             if length > MAX_FRAME {
                 return Err("Valkey bulk response exceeds bound");
             }
+            budget.bytes(length.checked_add(2).ok_or("invalid Valkey bulk length")?)?;
             let mut bytes = Zeroizing::new(vec![0; length]);
             stream
                 .read_exact(&mut bytes)
@@ -144,9 +191,12 @@ fn parse_value(stream: &mut impl Read, depth: usize) -> Result<RespValue, &'stat
             Ok(RespValue::Bulk(bytes))
         }
         b'*' => {
-            let length = read_length(stream)?;
-            if length < 0 {
+            let length = read_length(stream, budget)?;
+            if length == -1 {
                 return Ok(RespValue::Null);
+            }
+            if length < -1 {
+                return Err("invalid Valkey array length");
             }
             let length = usize::try_from(length).map_err(|_| "invalid Valkey array length")?;
             if length > 256 {
@@ -154,7 +204,7 @@ fn parse_value(stream: &mut impl Read, depth: usize) -> Result<RespValue, &'stat
             }
             let mut values = Vec::with_capacity(length);
             for _ in 0..length {
-                values.push(parse_value(stream, depth + 1)?);
+                values.push(parse_value(stream, depth + 1, budget)?);
             }
             Ok(RespValue::Array(values))
         }
@@ -162,15 +212,17 @@ fn parse_value(stream: &mut impl Read, depth: usize) -> Result<RespValue, &'stat
     }
 }
 
-fn read_line(stream: &mut impl Read) -> Result<String, &'static str> {
+fn read_line(stream: &mut impl Read, budget: &mut ParseBudget) -> Result<String, &'static str> {
     let mut bytes = Vec::new();
     loop {
         let mut byte = [0u8; 1];
+        budget.bytes(1)?;
         stream
             .read_exact(&mut byte)
             .map_err(|_| "truncated Valkey response line")?;
         if byte[0] == b'\r' {
             let mut lf = [0u8; 1];
+            budget.bytes(1)?;
             stream
                 .read_exact(&mut lf)
                 .map_err(|_| "truncated Valkey response line terminator")?;
@@ -186,12 +238,12 @@ fn read_line(stream: &mut impl Read) -> Result<String, &'static str> {
     }
 }
 
-fn discard_line(stream: &mut impl Read) -> Result<(), &'static str> {
-    read_line(stream).map(|_| ())
+fn discard_line(stream: &mut impl Read, budget: &mut ParseBudget) -> Result<(), &'static str> {
+    read_line(stream, budget).map(|_| ())
 }
 
-fn read_length(stream: &mut impl Read) -> Result<i64, &'static str> {
-    read_line(stream)?
+fn read_length(stream: &mut impl Read, budget: &mut ParseBudget) -> Result<i64, &'static str> {
+    read_line(stream, budget)?
         .parse::<i64>()
         .map_err(|_| "invalid Valkey response length")
 }
@@ -215,14 +267,18 @@ mod tests {
     #[test]
     fn parses_bounded_resp_shapes() {
         let mut stream = Cursor::new(b"+OK\r\n:7\r\n$3\r\nfoo\r\n*2\r\n+on\r\n$-1\r\n".to_vec());
-        assert!(parse_value(&mut stream, 0).is_ok());
-        assert_eq!(parse_value(&mut stream, 0), Ok(RespValue::Integer(7)));
+        let mut budget = ParseBudget::new();
+        assert!(parse_value(&mut stream, 0, &mut budget).is_ok());
+        assert_eq!(
+            parse_value(&mut stream, 0, &mut budget),
+            Ok(RespValue::Integer(7))
+        );
         assert!(matches!(
-            parse_value(&mut stream, 0),
+            parse_value(&mut stream, 0, &mut budget),
             Ok(RespValue::Bulk(_))
         ));
         assert!(matches!(
-            parse_value(&mut stream, 0),
+            parse_value(&mut stream, 0, &mut budget),
             Ok(RespValue::Array(_))
         ));
     }
@@ -230,8 +286,35 @@ mod tests {
     #[test]
     fn rejects_malformed_or_oversized_resp() {
         let mut malformed = Cursor::new(b"$1\n".to_vec());
-        assert!(parse_value(&mut malformed, 0).is_err());
+        assert!(parse_value(&mut malformed, 0, &mut ParseBudget::new()).is_err());
         let mut oversized = Cursor::new(format!("${}\r\n", MAX_FRAME + 1).into_bytes());
-        assert!(parse_value(&mut oversized, 0).is_err());
+        assert!(parse_value(&mut oversized, 0, &mut ParseBudget::new()).is_err());
+        for input in [&b"$-2\r\n"[..], &b"*-2\r\n"[..]] {
+            let mut invalid = Cursor::new(input.to_vec());
+            assert!(parse_value(&mut invalid, 0, &mut ParseBudget::new()).is_err());
+        }
+    }
+
+    #[test]
+    fn rejects_replies_that_exceed_aggregate_frame_budget() {
+        let item = vec![b'x'; 2048];
+        let mut response = b"*128\r\n".to_vec();
+        for _ in 0..128 {
+            response.extend_from_slice(format!("${}\r\n", item.len()).as_bytes());
+            response.extend_from_slice(&item);
+            response.extend_from_slice(b"\r\n");
+        }
+        let mut stream = Cursor::new(response);
+        assert!(parse_value(&mut stream, 0, &mut ParseBudget::new()).is_err());
+    }
+
+    #[test]
+    fn rejects_replies_that_exceed_aggregate_node_budget() {
+        let mut response = b"*256\r\n".to_vec();
+        for _ in 0..256 {
+            response.extend_from_slice(b"*5\r\n+OK\r\n+OK\r\n+OK\r\n+OK\r\n+OK\r\n");
+        }
+        let mut stream = Cursor::new(response);
+        assert!(parse_value(&mut stream, 0, &mut ParseBudget::new()).is_err());
     }
 }

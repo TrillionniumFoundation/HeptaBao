@@ -53,10 +53,13 @@ enum DatabaseProvider {
     Postgresql,
     Valkey,
 }
+fn is_postgresql_provider(provider: &DatabaseProvider) -> bool {
+    *provider == DatabaseProvider::Postgresql
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Connection {
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_postgresql_provider")]
     provider: DatabaseProvider,
     connection_url: String,
     username: String,
@@ -212,7 +215,7 @@ impl DatabaseConfigPlan {
                     .connection
                     .valkey_session(&self.outbound)
                     .map_err(failure)?;
-                if !valkey.command(&["PING"]).map_err(failure)?.is_ok() {
+                if !resp_text_equals(&valkey.command(&["PING"]).map_err(failure)?, "PONG") {
                     return Err(failure("Valkey provider did not acknowledge PING"));
                 }
                 let whoami = valkey.command(&["ACL", "WHOAMI"]).map_err(failure)?;
@@ -406,66 +409,157 @@ impl DatabaseEffectPlan {
             .connection
             .valkey_session(&self.outbound)
             .map_err(|_| indeterminate())?;
-        if self.lease.phase == Phase::PendingRevoke {
-            let _ = valkey
-                .command(&["ACL", "DELUSER", &self.lease.username])
-                .map_err(|_| indeterminate())?;
-            if !valkey
-                .command(&["ACL", "GETUSER", &self.lease.username])
-                .map_err(|_| indeterminate())?
-                .is_null()
-            {
-                return Err(Response {
-                    status: 503,
-                    body: json!({
-                        "errors":["Valkey ACL user remains after revocation; pending intent retained"],
-                        "lease_id":self.lease.id,
-                        "reconcile_required":true
-                    }),
-                });
-            }
-            return Ok(());
-        }
-
         let permissions = valkey_permissions(&self.lease.provider_role)
             .ok_or_else(|| failure("unsupported Valkey ACL role profile"))?;
-        let key_pattern = format!("~hb:{}:*", self.lease.provider_id);
-        let mut args = vec![
-            "ACL".to_owned(),
-            "SETUSER".to_owned(),
-            self.lease.username.clone(),
-            "on".to_owned(),
-            "-@all".to_owned(),
-            "resetkeys".to_owned(),
-            "resetchannels".to_owned(),
-            key_pattern.clone(),
-        ];
-        if self.lease.phase == Phase::PendingIssue {
-            let password = self
-                .lease
-                .password
-                .as_ref()
-                .ok_or_else(|| failure("Valkey issue lost secret material"))?;
-            args.push("resetpass".to_owned());
-            args.push(format!(">{}", password.0));
+        let pattern = format!("~hb:{}:*", self.lease.provider_id);
+        // The off/no-password ACL marker and managed user share one atomic ACL
+        // SAVE file. The transient WATCH key only serializes live connections:
+        // a provider restart kills all watchers and restores the durable marker.
+        // Never expire/delete either fence: old leaders may still hold plans.
+        let marker = format!("hbf_{}", &self.lease.provider_id[4..]);
+        let watch_key = format!("__heptabao_fence:{}", self.lease.provider_id);
+        if !valkey
+            .command(&["WATCH", &watch_key])
+            .map_err(|_| indeterminate())?
+            .is_ok()
+        {
+            return Err(indeterminate());
         }
-        args.extend(
-            permissions
-                .iter()
-                .map(|permission| (*permission).to_owned()),
-        );
-        let refs = args.iter().map(String::as_str).collect::<Vec<_>>();
-        if !valkey.command(&refs).map_err(|_| indeterminate())?.is_ok() {
+        let previous = valkey
+            .command(&["ACL", "GETUSER", &marker])
+            .map_err(|_| indeterminate())?;
+        let fence = valkey_fence_readback(&previous).ok_or_else(indeterminate)?;
+        if !valkey_fence_admits(fence, self.lease.seq, &self.lease.request_digest) {
+            return Err(indeterminate());
+        }
+        let current = valkey
+            .command(&["ACL", "GETUSER", &self.lease.username])
+            .map_err(|_| indeterminate())?;
+        let expected_password = self
+            .lease
+            .password
+            .as_ref()
+            .map(|password| hex(&crypto::digest(password.0.as_bytes())));
+        match self.lease.phase {
+            Phase::PendingIssue => {
+                if expected_password.is_none() || (fence.is_none() && !current.is_null()) {
+                    return Err(indeterminate());
+                }
+            }
+            Phase::PendingRenew => {
+                // Renewal must not recreate a disappeared user, turn on a
+                // disabled account, or preserve an expanded ACL/selector.
+                if fence.is_none()
+                    || !valkey_acl_readback_matches(&current, &pattern, permissions, None)
+                {
+                    return Err(indeterminate());
+                }
+            }
+            Phase::PendingRevoke => {
+                if fence.is_none() && !current.is_null() {
+                    return Err(indeterminate());
+                }
+            }
+            _ => return Err(indeterminate()),
+        }
+        if !valkey
+            .command(&["MULTI"])
+            .map_err(|_| indeterminate())?
+            .is_ok()
+        {
+            return Err(indeterminate());
+        }
+        let mut queue = |args: &[&str]| -> Result<(), Response> {
+            if resp_text_equals(
+                &valkey.command(args).map_err(|_| indeterminate())?,
+                "QUEUED",
+            ) {
+                Ok(())
+            } else {
+                Err(indeterminate())
+            }
+        };
+        match self.lease.phase {
+            Phase::PendingIssue => {
+                let hash = format!(
+                    "#{}",
+                    expected_password.as_deref().ok_or_else(indeterminate)?
+                );
+                let mut args = vec![
+                    "ACL",
+                    "SETUSER",
+                    &self.lease.username,
+                    "reset",
+                    "on",
+                    "resetchannels",
+                    &pattern,
+                    &hash,
+                ];
+                args.extend_from_slice(permissions);
+                queue(&args)?;
+            }
+            Phase::PendingRenew => queue(&["PING"])?,
+            Phase::PendingRevoke => queue(&["ACL", "DELUSER", &self.lease.username])?,
+            _ => return Err(indeterminate()),
+        }
+        let binding = format!("{}:{}", self.lease.seq, self.lease.request_digest);
+        let marker_pattern = format!("~{binding}");
+        queue(&[
+            "ACL",
+            "SETUSER",
+            &marker,
+            "reset",
+            "off",
+            "resetchannels",
+            &marker_pattern,
+        ])?;
+        queue(&["SET", &watch_key, &binding])?;
+        let executed = valkey.command(&["EXEC"]).map_err(|_| indeterminate())?;
+        let RespValue::Array(results) = executed else {
+            return Err(indeterminate());
+        };
+        if results.len() != 3
+            || !results[1].is_ok()
+            || !results[2].is_ok()
+            || match self.lease.phase {
+                Phase::PendingIssue => !results[0].is_ok(),
+                Phase::PendingRenew => !resp_text_equals(&results[0], "PONG"),
+                Phase::PendingRevoke => !matches!(results[0], RespValue::Integer(0 | 1)),
+                _ => true,
+            }
+        {
+            return Err(indeterminate());
+        }
+        if !valkey
+            .command(&["ACL", "SAVE"])
+            .map_err(|_| indeterminate())?
+            .is_ok()
+        {
+            return Err(indeterminate());
+        }
+        let observed_marker = valkey
+            .command(&["ACL", "GETUSER", &marker])
+            .map_err(|_| indeterminate())?;
+        if valkey_fence_readback(&observed_marker)
+            != Some(Some((self.lease.seq, self.lease.request_digest.as_str())))
+        {
             return Err(indeterminate());
         }
         let observed = valkey
             .command(&["ACL", "GETUSER", &self.lease.username])
             .map_err(|_| indeterminate())?;
-        if !valkey_acl_readback_matches(&observed, &key_pattern, permissions) {
-            return Err(Response {
-                status: 503,
-                body: json!({"errors":["Valkey ACL readback did not prove the bounded user policy"],"lease_id":self.lease.id,"reconcile_required":true}),
-            });
+        let matched = if self.lease.phase == Phase::PendingRevoke {
+            observed.is_null()
+        } else {
+            valkey_acl_readback_matches(
+                &observed,
+                &pattern,
+                permissions,
+                expected_password.as_deref(),
+            )
+        };
+        if !matched {
+            return Err(indeterminate());
         }
         Ok(())
     }
@@ -596,7 +690,7 @@ impl DatabaseState {
                                         .connection_url
                                         .rsplit_once('/')
                                         .and_then(|(_, value)| value.parse::<u8>().ok())
-                                        .is_none_or(|db| db > 15)
+                                        .is_none_or(|db| db != 0)
                             }
                         }
                     {
@@ -797,20 +891,23 @@ fn provider_fence_identity(cluster: &str) -> Result<String, Response> {
     Ok(format!("hbf1:{}", hex(&crypto::digest(&binding))))
 }
 
+// Explicit key-bearing command lists avoid category expansion and keyless
+// operations such as FLUSHALL, KEYS, SCAN and module-added commands.
 fn valkey_permissions(role: &str) -> Option<&'static [&'static str]> {
     match role {
-        "readonly" => Some(&["+@read"]),
-        "readwrite" => Some(&["+@read", "+@write"]),
+        "readonly" => Some(&[
+            "+ping", "+get", "+mget", "+exists", "+ttl", "+pttl", "+type",
+        ]),
+        "readwrite" => Some(&[
+            "+ping", "+get", "+mget", "+exists", "+ttl", "+pttl", "+type", "+set", "+del",
+            "+unlink", "+expire", "+pexpire", "+persist",
+        ]),
         _ => None,
     }
 }
 
 fn resp_text_equals(value: &RespValue, expected: &str) -> bool {
-    match value {
-        RespValue::Simple(text) => text == expected,
-        RespValue::Bulk(bytes) => bytes.as_slice() == expected.as_bytes(),
-        _ => false,
-    }
+    resp_text(value) == Some(expected)
 }
 
 fn resp_text(value: &RespValue) -> Option<&str> {
@@ -828,39 +925,104 @@ fn resp_text_list(value: &RespValue) -> Option<Vec<&str>> {
     values.iter().map(resp_text).collect()
 }
 
-fn valkey_acl_readback_matches(value: &RespValue, key_pattern: &str, permissions: &[&str]) -> bool {
+fn valkey_acl_fields(value: &RespValue) -> Option<BTreeMap<&str, &RespValue>> {
     let RespValue::Array(fields) = value else {
-        return false;
+        return None;
     };
-    let mut flags = None;
-    let mut commands = None;
-    let mut keys = None;
-    let mut channels = None;
+    if fields.len() != 12 {
+        return None;
+    }
+    let mut map = BTreeMap::new();
     for pair in fields.as_chunks::<2>().0 {
-        match resp_text(&pair[0]) {
-            Some("flags") => flags = resp_text_list(&pair[1]),
-            Some("commands") => commands = resp_text(&pair[1]),
-            Some("keys") => keys = resp_text_list(&pair[1]),
-            Some("channels") => channels = resp_text_list(&pair[1]),
-            _ => {}
+        let key = resp_text(&pair[0])?;
+        if ![
+            "flags",
+            "passwords",
+            "commands",
+            "keys",
+            "channels",
+            "selectors",
+        ]
+        .contains(&key)
+            || map.insert(key, &pair[1]).is_some()
+        {
+            return None;
         }
     }
-    let Some(flags) = flags else { return false };
-    let Some(commands) = commands else {
+    Some(map)
+}
+
+fn valkey_acl_readback_matches(
+    value: &RespValue,
+    key_pattern: &str,
+    permissions: &[&str],
+    password_hash: Option<&str>,
+) -> bool {
+    let Some(fields) = valkey_acl_fields(value) else {
         return false;
     };
-    let Some(keys) = keys else { return false };
-    let Some(channels) = channels else {
+    let Some(flags) = resp_text_list(fields["flags"]) else {
         return false;
     };
-    flags.contains(&"on")
-        && !commands.contains("+@all")
-        && permissions
+    let Some(passwords) = resp_text_list(fields["passwords"]) else {
+        return false;
+    };
+    let Some(commands) = resp_text(fields["commands"]) else {
+        return false;
+    };
+    let actual: BTreeSet<_> = commands.split_ascii_whitespace().collect();
+    let expected: BTreeSet<_> = std::iter::once("-@all")
+        .chain(permissions.iter().copied())
+        .collect();
+    valkey_flags_match(&flags, "on")
+        && passwords.len() == 1
+        && passwords[0].len() == 64
+        && passwords[0].bytes().all(|b| b.is_ascii_hexdigit())
+        && password_hash.is_none_or(|hash| passwords[0] == hash)
+        && actual == expected
+        && commands.split_ascii_whitespace().count() == expected.len()
+        && resp_text_equals(fields["keys"], key_pattern)
+        && resp_text_equals(fields["channels"], "")
+        && matches!(fields["selectors"], RespValue::Array(values) if values.is_empty())
+}
+
+fn valkey_flags_match(flags: &[&str], state: &str) -> bool {
+    let unique: BTreeSet<_> = flags.iter().copied().collect();
+    unique.len() == flags.len()
+        && unique.contains(state)
+        && unique
             .iter()
-            .all(|permission| commands.contains(permission))
-        && keys.len() == 1
-        && keys[0] == key_pattern
-        && channels.is_empty()
+            .all(|flag| *flag == state || *flag == "sanitize-payload")
+}
+
+fn valkey_fence_readback(value: &RespValue) -> Option<Option<(u64, &str)>> {
+    if value.is_null() {
+        return Some(None);
+    }
+    let fields = valkey_acl_fields(value)?;
+    if !valkey_flags_match(&resp_text_list(fields["flags"])?, "off")
+        || !resp_text_list(fields["passwords"])?.is_empty()
+        || !resp_text_equals(fields["commands"], "-@all")
+        || !resp_text_equals(fields["channels"], "")
+        || !matches!(fields["selectors"], RespValue::Array(values) if values.is_empty())
+    {
+        return None;
+    }
+    let (sequence, digest) = resp_text(fields["keys"])?
+        .strip_prefix('~')?
+        .split_once(':')?;
+    let sequence = sequence
+        .parse::<u64>()
+        .ok()
+        .filter(|s| *s > 0 && *s <= i64::MAX as u64)?;
+    if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return None;
+    }
+    Some(Some((sequence, digest)))
+}
+
+fn valkey_fence_admits(previous: Option<(u64, &str)>, sequence: u64, digest: &str) -> bool {
+    previous.is_none_or(|(old, binding)| sequence > old || (sequence == old && digest == binding))
 }
 fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
     let bytes = Zeroizing::new(
@@ -1020,11 +1182,7 @@ impl Service {
                         .map_err(invalid)?;
                         if !name(target.path.trim_start_matches('/'))
                             || (provider == DatabaseProvider::Valkey
-                                && target
-                                    .path
-                                    .trim_start_matches('/')
-                                    .parse::<u8>()
-                                    .map_or(true, |db| db > 15))
+                                && target.path.trim_start_matches('/').parse::<u8>() != Ok(0))
                         {
                             return Err(invalid(
                                 "single explicit bounded provider database required",
@@ -1037,7 +1195,7 @@ impl Service {
                         let password = text(body, "password")?.to_owned();
                         if password.len() > 512 || !password.is_ascii() {
                             return Err(invalid(
-                                "bounded ASCII PostgreSQL manager password required",
+                                "bounded ASCII database manager password required",
                             ));
                         }
                         let roles = body
@@ -2214,26 +2372,104 @@ mod tests {
         assert!(ttl(&json!({"ttl":false}), "ttl", 1).is_err());
         assert!(!name("bad; DROP ROLE manager"));
         assert!(fields(&json!({"creation_statements":[]}), &["provider_role"]).is_err());
-        assert_eq!(valkey_permissions("readonly"), Some(&["+@read"][..]));
+        assert!(
+            valkey_permissions("readonly")
+                .is_some_and(|p| p.contains(&"+get") && !p.contains(&"+set"))
+        );
         assert!(valkey_permissions("+@all").is_none());
     }
 
-    #[test]
-    fn valkey_readback_requires_bounded_acl_policy() {
-        let pattern = "~hb:hb1:abcd:*";
-        let value = RespValue::Array(vec![
-            RespValue::Bulk(Zeroizing::new(b"flags".to_vec())),
-            RespValue::Array(vec![RespValue::Bulk(Zeroizing::new(b"on".to_vec()))]),
-            RespValue::Bulk(Zeroizing::new(b"commands".to_vec())),
-            RespValue::Bulk(Zeroizing::new(b"-@all+@read".to_vec())),
-            RespValue::Bulk(Zeroizing::new(b"keys".to_vec())),
-            RespValue::Array(vec![RespValue::Bulk(Zeroizing::new(
-                pattern.as_bytes().to_vec(),
-            ))]),
-            RespValue::Bulk(Zeroizing::new(b"channels".to_vec())),
+    fn acl_value(flags: &[&str], commands: &str, keys: &str, passwords: &[&str]) -> RespValue {
+        let text = |s: &str| RespValue::Bulk(Zeroizing::new(s.as_bytes().to_vec()));
+        RespValue::Array(vec![
+            text("flags"),
+            RespValue::Array(flags.iter().map(|s| text(s)).collect()),
+            text("passwords"),
+            RespValue::Array(passwords.iter().map(|s| text(s)).collect()),
+            text("commands"),
+            text(commands),
+            text("keys"),
+            text(keys),
+            text("channels"),
+            text(""),
+            text("selectors"),
             RespValue::Array(Vec::new()),
-        ]);
-        assert!(valkey_acl_readback_matches(&value, pattern, &["+@read"]));
-        assert!(!valkey_acl_readback_matches(&value, "~*", &["+@read"]));
+        ])
+    }
+
+    #[test]
+    fn valkey_readback_rejects_privilege_password_selector_and_shape_drift() {
+        let pattern = "~hb:hb1:abcd:*";
+        let password = "ab".repeat(32);
+        let permissions = &["+ping", "+get"][..];
+        let valid = || acl_value(&["on"], "-@all +get +ping", pattern, &[&password]);
+        assert!(valkey_acl_readback_matches(
+            &valid(),
+            pattern,
+            permissions,
+            Some(&password)
+        ));
+        for value in [
+            acl_value(&["on", "nopass"], "-@all +get +ping", pattern, &[&password]),
+            acl_value(&["on"], "-@all +get +ping +flushall", pattern, &[&password]),
+            acl_value(&["on"], "-@all +get +ping", "~*", &[&password]),
+            acl_value(&["on"], "-@all +get +ping", pattern, &[]),
+            acl_value(
+                &["on"],
+                "-@all +get +ping",
+                pattern,
+                &[&password, &password],
+            ),
+        ] {
+            assert!(!valkey_acl_readback_matches(
+                &value,
+                pattern,
+                permissions,
+                None
+            ));
+        }
+        assert!(!valkey_acl_readback_matches(
+            &valid(),
+            pattern,
+            permissions,
+            Some(&"cd".repeat(32))
+        ));
+        let RespValue::Array(mut fields) = valid() else {
+            unreachable!()
+        };
+        fields[11] = RespValue::Array(vec![RespValue::Array(Vec::new())]);
+        assert!(!valkey_acl_readback_matches(
+            &RespValue::Array(fields),
+            pattern,
+            permissions,
+            None
+        ));
+        let RespValue::Array(mut fields) = valid() else {
+            unreachable!()
+        };
+        fields.push(RespValue::Null);
+        assert!(!valkey_acl_readback_matches(
+            &RespValue::Array(fields),
+            pattern,
+            permissions,
+            None
+        ));
+    }
+
+    #[test]
+    fn valkey_durable_fence_rejects_stale_and_conflicting_envelopes() -> Result<(), TestFailure> {
+        let digest = "ab".repeat(32);
+        let marker = acl_value(&["off"], "-@all", &format!("~10:{digest}"), &[]);
+        let fence = valkey_fence_readback(&marker).ok_or(TestFailure)?;
+        assert_eq!(fence, Some((10, digest.as_str())));
+        assert!(!valkey_fence_admits(fence, 9, &digest));
+        assert!(!valkey_fence_admits(fence, 10, &"cd".repeat(32)));
+        assert!(valkey_fence_admits(fence, 10, &digest));
+        assert!(valkey_fence_admits(fence, 11, &"cd".repeat(32)));
+        assert!(
+            valkey_fence_readback(&acl_value(&["on"], "-@all", &format!("~10:{digest}"), &[]))
+                .is_none()
+        );
+        Ok(())
     }
 }

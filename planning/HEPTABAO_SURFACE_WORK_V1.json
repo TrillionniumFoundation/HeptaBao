@@ -411,6 +411,18 @@
         "inspect-openbao-snapshot_binary"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "valkey_live": {
+      "script": "qa/openbao-acceptance/valkey_live.py",
+      "arguments": [
+        "--binary",
+        "<absolute candidate binary>",
+        "--work-dir",
+        "<new private test directory>",
+        "--output",
+        "<absolute evidence path>"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -849,8 +861,8 @@
     {
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
       "category": "auth_methods",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_kubernetes.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, users/* and login",
         "required_positive_and_hostile_behavior": "Authenticators, shared-secret custody, challenge flow, retransmission bounds and source peer checks",
@@ -859,7 +871,13 @@
         "isolation": "For HB-SURFACE-AUTH-RADIUS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "radius_bounded.config_roundtrip",
+        "radius_bounded.pap_accept_with_message_authenticator",
+        "radius_bounded.reject_bad_authenticator",
+        "radius_bounded.reject_bad_response_authenticator",
+        "radius_bounded.timeout_fails_closed"
+      ],
       "available_scoped_profiles": [],
       "whole_surface_admitted": false
     },
@@ -1220,8 +1238,8 @@
     {
       "surface_id": "HB-SURFACE-DB-VALKEY",
       "category": "database_providers",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "Valkey database provider",
         "required_positive_and_hostile_behavior": "ACL users, command/key/channel patterns, TLS, password rotation and connections",
@@ -1230,8 +1248,25 @@
         "isolation": "For HB-SURFACE-DB-VALKEY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "valkey_live.valkey_tls_acl_configuration",
+        "valkey_live.issued_user_reads_bound_key",
+        "valkey_live.issued_readonly_user_cannot_write",
+        "valkey_live.issued_user_key_escape_denied",
+        "valkey_live.acl_user_survives_valkey_restart",
+        "valkey_live.renew_after_both_restarts",
+        "valkey_live.readwrite_can_set",
+        "valkey_live.stale_writer_aborted_after_revoke",
+        "valkey_live.revoke_terminates_existing_session",
+        "valkey_live.revocation_fence_survives_provider_restart",
+        "valkey_live.idle_expiry_removes_native_credential",
+        "valkey_live.provider_outage_retains_revoke_intent",
+        "valkey_live.restart_reconciles_pending_native_revoke",
+        "valkey_live.reconciled_revoke_survives_both_restarts"
+      ],
+      "available_scoped_profiles": [
+        "valkey_live"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -1760,8 +1795,8 @@
     {
       "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
       "category": "namespace_workflow",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
         "api_or_protocol": "Per-namespace seal and key ownership targets",
         "required_positive_and_hostile_behavior": "Explicit custody/availability semantics, parent isolation and sealed child request routing",
@@ -1770,7 +1805,16 @@
         "isolation": "For HB-SURFACE-NAMESPACE-SEAL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
+      "fixture_case_ids": [
+        "namespace_seal_live.create_namespace",
+        "namespace_seal_live.seal_status",
+        "namespace_seal_live.sealed_child_fails_closed",
+        "namespace_seal_live.sealed_descendant_inherits_parent_fence",
+        "namespace_seal_live.unauthorized_seal_control_denied",
+        "namespace_seal_live.parent_unseal",
+        "namespace_seal_live.namespace_seal_survives_restart",
+        "namespace_seal_live.post_restart_fence"
+      ],
       "available_scoped_profiles": [],
       "whole_surface_admitted": false
     },

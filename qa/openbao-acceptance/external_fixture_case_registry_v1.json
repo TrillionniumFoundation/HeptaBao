@@ -364,6 +364,25 @@
         "namespace_seal_survives_restart",
         "post_restart_fence"
       ]
+    },
+    "valkey_live": {
+      "script": "qa/openbao-acceptance/valkey_live.py",
+      "case_ids": [
+        "valkey_tls_acl_configuration",
+        "issued_user_reads_bound_key",
+        "issued_readonly_user_cannot_write",
+        "issued_user_key_escape_denied",
+        "acl_user_survives_valkey_restart",
+        "renew_after_both_restarts",
+        "readwrite_can_set",
+        "stale_writer_aborted_after_revoke",
+        "revoke_terminates_existing_session",
+        "revocation_fence_survives_provider_restart",
+        "idle_expiry_removes_native_credential",
+        "provider_outage_retains_revoke_intent",
+        "restart_reconciles_pending_native_revoke",
+        "reconciled_revoke_survives_both_restarts"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

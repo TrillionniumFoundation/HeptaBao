@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 48,
-    "defined_not_implemented_surface_count": 12,
-    "fixture_case_count": 286,
+    "implemented_surface_count": 49,
+    "defined_not_implemented_surface_count": 11,
+    "fixture_case_count": 300,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -467,9 +467,24 @@
       "surface_id": "HB-SURFACE-DB-VALKEY",
       "category": "database_providers",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 14,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "valkey_live.valkey_tls_acl_configuration",
+        "valkey_live.issued_user_reads_bound_key",
+        "valkey_live.issued_readonly_user_cannot_write",
+        "valkey_live.issued_user_key_escape_denied",
+        "valkey_live.acl_user_survives_valkey_restart",
+        "valkey_live.renew_after_both_restarts",
+        "valkey_live.readwrite_can_set",
+        "valkey_live.stale_writer_aborted_after_revoke",
+        "valkey_live.revoke_terminates_existing_session",
+        "valkey_live.revocation_fence_survives_provider_restart",
+        "valkey_live.idle_expiry_removes_native_credential",
+        "valkey_live.provider_outage_retains_revoke_intent",
+        "valkey_live.restart_reconciles_pending_native_revoke",
+        "valkey_live.reconciled_revoke_survives_both_restarts"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
