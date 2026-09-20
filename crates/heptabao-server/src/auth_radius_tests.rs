@@ -75,6 +75,58 @@ fn prepare(state: &mut AuthState, raw: &str, now: u64) -> (Principal, RadiusRene
 }
 
 #[test]
+fn radius_login_rejects_observation_from_deleted_and_identically_recreated_mount() {
+    let (mut state, root_raw, _) = fixture();
+    let root = state.authenticate(&root_raw, 101).unwrap();
+    let credentials = json!({"username": "alice", "password": "synthetic-radius-password"});
+    let plan = state
+        .prepare_radius_login("", "radius", "POST", &credentials, 101)
+        .unwrap();
+    let old_mount = state.effective_auth_mounts("")["radius"].clone();
+    let old_config = plan.config.clone();
+    for (method, path, body) in [
+        ("DELETE", "sys/auth/radius", json!({})),
+        ("POST", "sys/auth/radius", json!({"type": "radius"})),
+        (
+            "POST",
+            "auth/radius/config",
+            json!({"url": "radius://radius.example.test:1812",
+            "token_policies": ["issuer"], "token_ttl": 120, "token_max_ttl": 600}),
+        ),
+    ] {
+        state
+            .handle(Some(&root), "", method, path, &body, 102)
+            .unwrap()
+            .unwrap();
+    }
+    assert_eq!(
+        state.effective_auth_mounts("")["radius"].kind,
+        old_mount.kind
+    );
+    assert_ne!(
+        state.effective_auth_mounts("")["radius"].accessor,
+        old_mount.accessor
+    );
+    assert!(state.radius_mounts[""]["radius"] == old_config);
+    let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let rejected = state.finish_radius_login(plan, RadiusLoginObservation);
+    assert_eq!(rejected.err().unwrap().status, 409);
+    let after = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    assert!(before.as_slice() == after.as_slice());
+
+    // A fresh observation for the replacement mount is still usable; the
+    // rejection is tied to the old mount incarnation, not its path or config.
+    let current = state
+        .prepare_radius_login("", "radius", "POST", &credentials, 103)
+        .unwrap();
+    let accepted = state
+        .finish_radius_login(current, RadiusLoginObservation)
+        .unwrap();
+    assert_eq!(accepted.status, 200);
+    assert!(accepted.body["auth"]["client_token"].as_str().is_some());
+}
+
+#[test]
 fn radius_renewal_credentials_survive_serialization_but_never_reach_token_output() {
     let (state, _, raw) = fixture();
     let encoded = Zeroizing::new(serde_json::to_vec(&state).unwrap());

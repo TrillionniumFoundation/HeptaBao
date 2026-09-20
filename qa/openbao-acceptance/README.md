@@ -151,6 +151,16 @@ application-schema validation. Pure reads and rejected ambiguous renewals after
 unseal must leave the entire store unchanged. This selected upgrade sequence does
 not qualify rolling upgrades or arbitrary historical stores.
 
+`jwt_native_upgrade.py` opens a real schema-18 store created with the pinned
+`c749caf` binary, then exercises schema-19 native JWT login. Pure reads and failed
+logins must preserve the entire opened store. Explicit legacy clock and lifetime
+extensions retain their behavior until configuration is replaced; ordinary JWT
+reuse then issues distinct service tokens, including after restart. A rejected
+old-binary downgrade must preserve application artifacts, with the same explicit
+`ledger.hbl` reopen exception as the provider fixture. The candidate build commit
+is caller-supplied and kept separate from the executing harness identity. This
+historical binary pair does not qualify rolling upgrades.
+
 `jwt_renewal_live.py` compares static ES256 and remote-JWKS service-token renewal
 with official 2.6.2. The JWT expires shortly after login; the issued token keeps
 its role-based TTL, and renewal consults current local role settings while keeping
@@ -164,8 +174,13 @@ never treated as proof of binary provenance. This is not complete JWT/OIDC API,
 browser authorization, or configuration-update parity.
 
 `jwt_login_claims_live.py` separately compares ordinary static/remote JWT login:
-optional `iat` and `jti` while `exp` is present, repeated use of the same signed
-assertion, distinct service tokens bound to the same entity, and another login
-after restart. It also rejects assertions expired beyond default clock skew and
-those missing all three time claims. This profile does not change or qualify OIDC
-authorization-code consumption, nonce checking, or state replay protection.
+optional or empty `jti`, repeated use of the same signed assertion, distinct
+service tokens bound to the same entity, and another login after restart. Its
+native time matrix covers single `iat`/`nbf`/`exp` claims, missing-claim synthesis,
+zero/null/fractional/negative NumericDates, no implicit one-hour lifetime cap, and
+role leeway set to zero/default, negative/disabled, or positive values. Separate
+cases distinguish clock-skew grace on present claims from expiration/not-before
+leeway used only to synthesize missing claims. It rejects assertions expired
+beyond grace and those missing all time claims. Configuration is the native
+profile without candidate-only clock/lifetime extensions. This profile does not
+change or qualify OIDC code consumption, nonce checking, or state replay rules.

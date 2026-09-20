@@ -62,7 +62,7 @@ def main():
     if out.exists():p.error('output must be new')
     root=Path(tempfile.mkdtemp(prefix='hb-jwks-compare-'));instance=Instance(binary,root/'candidate');issuer=JsonIssuer(instance.root/'tls.crt',instance.root/'tls.key');oracle=None
     digest=hashlib.sha256(binary.read_bytes()).hexdigest()
-    report={'schema':'heptabao.remote-jwt-selected-comparison.v1','target_version':'2.6.2','candidate_binary_sha256':digest,'oracle_binary_sha256':BINARY_SHA256,'cases':{},'side_failures':{},'independent_qualification':False,'full_openbao_compatibility':False,'deployment_difference':'candidate startup-pinned egress/CA versus oracle per-mount CA; not configuration API equivalence','excluded':'browser code flow, immediate Oracle cache invalidation, jti replay parity, arbitrary claims mappings'}
+    report={'schema':'heptabao.remote-jwt-selected-comparison.v1','target_version':'2.6.2','candidate_binary_sha256':digest,'oracle_binary_sha256':BINARY_SHA256,'cases':{},'side_failures':{},'independent_qualification':False,'full_openbao_compatibility':False,'deployment_difference':'candidate startup-pinned egress/CA versus oracle per-mount CA; not configuration API equivalence','excluded':'browser code flow, immediate Oracle cache invalidation, arbitrary claims mappings; ordinary JWT reuse has a separate jwt_login_claims_live.py profile'}
     try:
         cpath=instance.root/'server.json';cfg=json.loads(cpath.read_text());ca=(instance.root/'ca.crt').read_text()
         cfg['outbound_endpoints']=[dict(origin=issuer.origin,address=f'127.0.0.1:{issuer.port}',server_name='localhost',ca_pem=ca)]

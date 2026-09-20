@@ -1,11 +1,16 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+#[path = "auth_approle_renewal_tests.rs"]
+mod approle_renewal_tests;
 #[path = "auth_cert_renewal_tests.rs"]
 mod certificate_renewal_tests;
 
 #[path = "auth_jwt_renewal_tests.rs"]
 mod jwt_renewal_tests;
+
+#[path = "auth_jwt_login_tests.rs"]
+mod jwt_login_tests;
 
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
@@ -1264,7 +1269,7 @@ fn approle_renewal_reloads_live_role_mount_and_survives_restart() {
         &json!({"increment": 1}),
         116,
     );
-    assert!(matches!(denied, Err(error) if error.status == 403));
+    assert!(matches!(denied, Err(error) if error.status == 500));
 }
 
 #[test]
@@ -2853,7 +2858,7 @@ fn configured_jwt_mount(
 }
 
 #[test]
-fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_replay() {
+fn jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[47; 32]).unwrap();
     let (mut state, _, root) = setup();
@@ -2931,9 +2936,9 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
                 &request,
                 1051
             )
-            .is_err()
+            .is_ok()
     );
-    assert_eq!(serde_json::to_vec(&state).unwrap(), saved);
+    assert_ne!(serde_json::to_vec(&state).unwrap(), saved);
     assert!(
         state
             .handle(
@@ -2972,7 +2977,7 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
 }
 
 #[test]
-fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_replay() {
+fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[48; 32]).unwrap();
     let wrong_pair = Ed25519KeyPair::from_seed_unchecked(&[49; 32]).unwrap();
@@ -2993,7 +2998,7 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
         ("sub", json!("mallory")),
         ("groups", json!(["others"])),
         ("heptabao_namespace", json!("other")),
-        ("exp", json!(1050)),
+        ("exp", json!(1049)),
         ("exp", json!(100000)),
         ("nbf", json!(1100)),
         ("iat", json!(1100)),
@@ -3002,9 +3007,6 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
         claims[field] = value;
         invalid.push(signed_jwt(&pair, &header, &claims));
     }
-    let mut missing_jti = valid.clone();
-    missing_jti.as_object_mut().unwrap().remove("jti");
-    invalid.push(signed_jwt(&pair, &header, &missing_jti));
     for header in [
         json!({"alg":"none","kid":"key-1"}),
         json!({"alg":"ES256","kid":"key-1"}),
@@ -3068,7 +3070,7 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
 }
 
 #[test]
-fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
+fn jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[50; 32]).unwrap();
     let (mut state, _, root) = setup();
@@ -3083,28 +3085,26 @@ fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
     let mut old_claims = jwt_claims("old");
     old_claims["exp"] = json!(1100);
     let old = signed_jwt(&pair, &header, &old_claims);
+    let scope = AuthScope {
+        namespace: "team",
+        mount: "workload",
+    };
+    let fingerprint = state
+        .jwt_at(scope)
+        .unwrap()
+        .config
+        .as_ref()
+        .unwrap()
+        .verifier()
+        .unwrap()
+        .verify(&old, 1050)
+        .unwrap()
+        .replay_fingerprint();
     state
-        .handle(
-            None,
-            "team",
-            "POST",
-            "auth/workload/login",
-            &json!({"role":"app","jwt":old}),
-            1050,
-        )
-        .unwrap();
-    let new = signed_jwt(&pair, &header, &jwt_claims("new"));
-    state
-        .handle(
-            None,
-            "team",
-            "POST",
-            "auth/workload/login",
-            &json!({"role":"app","jwt":new}),
-            1150,
-        )
-        .unwrap();
-    assert_eq!(state.jwt_mounts["team"]["workload"].replay.len(), 1);
+        .jwt_at_mut(scope)
+        .replay
+        .insert(URL_SAFE_NO_PAD.encode(fingerprint), 1100);
+    state.jwt_at_mut(scope).last_admission_time = 1150;
     let saved = serde_json::to_vec(&state).unwrap();
     let mut state: AuthState = serde_json::from_slice(&saved).unwrap();
     assert!(
@@ -3114,12 +3114,42 @@ fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
                 "team",
                 "POST",
                 "auth/workload/login",
-                &json!({"role":"app","jwt":old}),
+                &json!({"role":"app","jwt":"invalid"}),
                 1050
             )
             .is_err()
     );
     assert_eq!(serde_json::to_vec(&state).unwrap(), saved);
+    let first = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/workload/login",
+            &json!({"role":"app","jwt":old}),
+            1050,
+        )
+        .unwrap()
+        .unwrap();
+    let second = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/workload/login",
+            &json!({"role":"app","jwt":old}),
+            1051,
+        )
+        .unwrap()
+        .unwrap();
+    assert_ne!(
+        first.body["auth"]["client_token"],
+        second.body["auth"]["client_token"]
+    );
+    assert!(state.jwt_at(scope).unwrap().native_claims);
+    assert!(state.jwt_at(scope).unwrap().replay.is_empty());
+    assert_eq!(state.jwt_at(scope).unwrap().last_admission_time, 0);
+    state.validate_native_jwt_state().unwrap();
 }
 
 #[test]
@@ -3278,7 +3308,7 @@ fn jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion() {
 }
 
 #[test]
-fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen() {
+fn jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     struct SyntheticRoot(std::path::PathBuf);
     impl Drop for SyntheticRoot {
@@ -3392,7 +3422,7 @@ fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen(
                 1053
             )
             .status,
-        403
+        200
     );
     assert_eq!(
         service

@@ -80,11 +80,15 @@ def run(binary, root, checks):
         jwt=token(private,jwk,issuer.origin)
         status,logged=login(jwt);check("real_rsa_signature_login",status==200 and bool(logged.get("auth",{}).get("entity_id")))
         entity=logged["auth"]["entity_id"];old_access=logged["auth"]["client_token"]
-        check("same_assertion_replay_rejected",login(jwt)[0]==403)
-        check("wrong_audience_rejected",login(token(private,jwk,issuer.origin,aud="other"))[0]==403)
-        check("wrong_issuer_rejected",login(token(private,jwk,"https://wrong.invalid:443"))[0]==403)
+        status,repeated=login(jwt)
+        check("same_assertion_issues_distinct_service_token",status==200
+              and repeated.get("auth",{}).get("entity_id")==entity
+              and bool(repeated.get("auth",{}).get("client_token"))
+              and repeated["auth"]["client_token"]!=old_access)
+        check("wrong_audience_rejected",login(token(private,jwk,issuer.origin,aud="other"))[0]==400)
+        check("wrong_issuer_rejected",login(token(private,jwk,"https://wrong.invalid:443"))[0]==400)
         new_private,new_jwk=signing_key("ES256","key-b");issuer.documents["/keys"]={"keys":[new_jwk]}
-        check("removed_key_immediately_rejected",login(token(private,jwk,issuer.origin))[0]==403)
+        check("removed_key_immediately_rejected",login(token(private,jwk,issuer.origin))[0]==400)
         status,logged=login(token(new_private,new_jwk,issuer.origin));check("p256_rotation_login",status==200)
         check("rotation_preserves_subject_identity",logged["auth"]["entity_id"]==entity)
         for mode in ["redirect","duplicate","oversized","unavailable"]:
@@ -105,10 +109,16 @@ def run(binary, root, checks):
         private,jwk=signing_key("EdDSA","key-c");issuer.documents["/keys"]={"keys":[jwk]}
         check("eddsa_rotation_login",login(token(private,jwk,issuer.origin))[0]==200)
         instance.stop();instance.start();check("restart_unseal",instance.call("POST","sys/unseal",{"key":key})[0]==200)
-        check("restart_does_not_resurrect_old_key",login(token(new_private,new_jwk,issuer.origin))[0]==403)
-        jwt=token(private,jwk,issuer.origin);check("restart_current_key_login",login(jwt)[0]==200)
+        check("restart_does_not_resurrect_old_key",login(token(new_private,new_jwk,issuer.origin))[0]==400)
+        jwt=token(private,jwk,issuer.origin);status,logged=login(jwt)
+        check("restart_current_key_login",status==200)
+        preceding_access=logged["auth"]["client_token"]
         instance.stop();instance.start();check("second_restart_unseal",instance.call("POST","sys/unseal",{"key":key})[0]==200)
-        check("replay_persists_after_restart",login(jwt)[0]==403)
+        status,repeated=login(jwt)
+        check("same_assertion_reusable_after_restart",status==200
+              and repeated.get("auth",{}).get("entity_id")==entity
+              and bool(repeated.get("auth",{}).get("client_token"))
+              and repeated["auth"]["client_token"]!=preceding_access)
         check("not_browser_oidc",instance.call("POST","auth/federated/role/oidc",{"role_type":"oidc","user_claim":"sub","bound_audiences":["heptabao-test"]})[0]==501)
         params={"bound_issuer":issuer.origin,"jwks_url":issuer.origin+"/keys","jwt_supported_algs":["EdDSA"]}
         check("direct_jwks_configuration",instance.call("POST","auth/federated/config",params)[0]==204)

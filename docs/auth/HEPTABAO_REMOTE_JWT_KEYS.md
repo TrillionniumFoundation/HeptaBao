@@ -8,10 +8,10 @@ OpenBao auth-method compatibility or independent qualification.
 
 `auth_remote.rs` runs remote key resolution in the existing authenticated config
 transaction and login path. `outbound.rs` supplies deployment-owned verified TLS.
-`federated_auth.rs` validates signed JWTs; existing identity bindings, token
+`federated_auth.rs` and `federated_native_jwt.rs` validate signed JWTs; existing identity bindings, token
 persistence and live ACL remain authoritative. `auth.rs` owns configuration and
-mount-scoped replay state. Service schema 4 protects the new source-selection and
-algorithm constraints from older readers.
+identity state. Schema 4 introduced source-selection and algorithm constraints;
+schema 19 adds native reusable assertions and role time-claim leeways.
 
 Exactly one source is accepted: existing static keys/inline JWKS, `jwks_url`, or
 `oidc_discovery_url`. Mixed sources fail without committing a changed config.
@@ -58,18 +58,19 @@ TLS failure, duplicate JSON, redirect, oversized document or absent algorithm-
 approved key fails closed. Removing a key affects subsequent logins; this does
 not revoke existing HeptaBao tokens independently of their normal authority rules.
 
-JWT verifies issuer, role audience, iat, exp, sub and jti through the existing
-verifier. Its bounded persistent replay ledger consumes a successful assertion
-before token release. Role type is `jwt`, user_claim is `sub` in this profile;
+JWT verifies issuer, role audience, subject, signature and time claims. Ordinary
+JWT assertions are reusable: each successful login issues a new service token.
+`jti` is optional metadata. At least one nonzero `iat`, `nbf` or `exp` is required;
+missing dates are derived with the role's leeway settings. Role type is `jwt`, user_claim is `sub` in this profile;
 Identity alias/entity binding and live entity/group policy checks still apply.
 New keys with the same subject reuse the correct existing identity binding.
-After a fetch, login verifies the JWT using elapsed request time and rejects
-expiry during the fetch. The auth mount incarnation and trust configuration must
+After a fetch, login verifies time claims using elapsed request time and the
+configured grace window. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.
 
 Remote login I/O executes outside the Service writer. Completion rechecks the
 active seal generation, namespace, HA leadership and current mount/configuration
-before publishing the token, replay and identity state. Config-write fetches still
+before publishing the token and identity state. Config-write fetches still
 run inside their configuration transaction. A slow or unavailable IdP may deny or
 delay logins; no production throughput or offline-availability claim follows.
 
@@ -80,6 +81,15 @@ its policies leaves their issued token policies intact. Service-token expiry is
 independent of the assertion's expiry. Schema 18 protects this provenance and the
 distinct periodic/explicit maximum semantics; see the
 [JWT role and renewal contract](HEPTABAO_SINGLE_NODE_AUTH.md#bounded-jwt-authentication).
+
+New configurations use native role time defaults, with no implicit one-hour JWT
+lifetime limit. Explicit legacy `clock_skew_seconds` and
+`maximum_token_lifetime_seconds` remain compatibility extensions; the latter
+requires real signed `iat` and `exp`. Existing stored constraints remain active
+until configuration is replaced. A supplied role `clock_skew_leeway` overrides
+the config clock alias; without that override the legacy alias permits future
+`iat`/`nbf` grace but retains strict rejection at `exp`. OIDC consumed-session/nonce checks and the public strict
+proof verifier retain their separate one-use contracts.
 
 ## Explicit non-goals and compatibility limits
 
@@ -103,5 +113,8 @@ exercise rotation, restart, live identity invalidation and hostile/failing key
 sources. The comparison runner separately starts the checksum-pinned official
 OpenBao 2.6.2 binary and performs the same selected JWT-key scenarios against both
 servers. It discloses the deployment-configuration difference and does not claim
-browser OIDC, jti replay or immediate key-cache invalidation equivalence. Empty
+browser OIDC or immediate key-cache invalidation equivalence. Empty
 results, duplicate case identities and two failing sides cannot pass admission.
+`jwt_login_claims_live.py` independently compares ordinary assertion reuse and
+native time-claim semantics with the pinned official binary; it does not exercise
+OIDC authorization codes or the strict proof API.

@@ -5,9 +5,10 @@
 //!
 //! The verifier accepts only explicitly configured JWS algorithms and key IDs,
 //! rejects duplicate top-level JSON members, binds issuer, audience, namespace
-//! and time claims, and records a token fingerprint durably before returning a
-//! principal. MFA proofs are HMAC authenticated and channel-bound, and use the
-//! same accepted-before-release replay ledger.
+//! and time claims. The explicit `verify_and_record` proof API records a
+//! fingerprint durably before release; native JWT login accepts reusable bearer
+//! assertions through a separate profile. MFA proofs are HMAC authenticated,
+//! channel-bound and use the one-use replay ledger.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
@@ -33,6 +34,10 @@ const REPLAY_MAGIC: &[u8; 5] = b"HBRL1";
 const REPLAY_BODY_BYTES: usize = 5 + 8 + 32 + 8 + 32;
 const REPLAY_TAG_BYTES: usize = 32;
 const REPLAY_FRAME_BYTES: usize = REPLAY_BODY_BYTES + REPLAY_TAG_BYTES;
+
+#[path = "federated_native_jwt.rs"]
+mod native_jwt;
+pub(crate) use native_jwt::NativeJwtTimePolicy;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum JwtAlgorithm {
@@ -198,8 +203,9 @@ impl JwtVerifier {
     }
 
     /// Verify the signed assertion without granting an application capability.
-    /// The caller still owns role authorization and durable replay admission;
-    /// `heptabao-server` commits both with token issuance in its encrypted state.
+    /// This strict proof profile requires iat, exp and jti. Callers requiring
+    /// one-use proof admission must use `verify_and_record`; ordinary native
+    /// JWT bearer login uses a separate crate-private verification profile.
     pub fn verify(&self, token: &str, now: u64) -> Result<VerifiedPrincipal, AuthError> {
         self.verify_internal(token, now, None)
     }
@@ -218,12 +224,10 @@ impl JwtVerifier {
         self.verify_internal(token, now, Some((nonce, access_token, code)))
     }
 
-    fn verify_internal(
+    fn verified_claims(
         &self,
         token: &str,
-        now: u64,
-        oidc: Option<(&str, &str, &str)>,
-    ) -> Result<VerifiedPrincipal, AuthError> {
+    ) -> Result<(BTreeMap<String, Value>, JwtAlgorithm), AuthError> {
         if token.is_empty() || token.len() > MAX_TOKEN_BYTES || !token.is_ascii() {
             return Err(AuthError::MalformedToken);
         }
@@ -262,7 +266,16 @@ impl JwtVerifier {
         let signing_input = format!("{encoded_header}.{encoded_claims}");
         verify_signature(key, signing_input.as_bytes(), &signature_bytes)?;
 
-        let mut claims = parse_unique_object(&claims_bytes)?;
+        Ok((parse_unique_object(&claims_bytes)?, key.algorithm))
+    }
+
+    fn verify_internal(
+        &self,
+        token: &str,
+        now: u64,
+        oidc: Option<(&str, &str, &str)>,
+    ) -> Result<VerifiedPrincipal, AuthError> {
+        let (mut claims, algorithm) = self.verified_claims(token)?;
         let issuer = take_string(&mut claims, "iss")?;
         let subject = take_string(&mut claims, "sub")?;
         let audiences = take_audiences(&mut claims)?;
@@ -273,7 +286,7 @@ impl JwtVerifier {
             // Code flow uses durable one-use state and a verified nonce; OIDC
             // ID tokens are not required to carry the separate JWT profile's jti.
             let _ = take_optional_string(&mut claims, "jti")?;
-            if key.algorithm == JwtAlgorithm::Ed25519
+            if algorithm == JwtAlgorithm::Ed25519
                 || self.policy.audiences.len() != 1
                 || take_string(&mut claims, "nonce")? != nonce
             {

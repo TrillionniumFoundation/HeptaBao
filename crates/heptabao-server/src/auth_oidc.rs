@@ -153,8 +153,8 @@ impl OidcExchange {
                 issuer: self.config.oidc_discovery_url.clone(),
                 audiences: BTreeSet::from([self.config.oidc_client_id.clone()]),
                 required_namespace: None,
-                clock_skew_seconds: 30,
-                maximum_token_lifetime_seconds: 86400,
+                clock_skew_seconds: Some(30),
+                maximum_token_lifetime_seconds: Some(86400),
                 keys: parse_jwks(&keys)?,
             };
             let elapsed = started.elapsed();

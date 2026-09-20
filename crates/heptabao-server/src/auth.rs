@@ -2,7 +2,9 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
-use crate::federated_auth::{JwtAlgorithm, JwtVerifier, TrustPolicy, VerificationKey};
+use crate::federated_auth::{
+    JwtAlgorithm, JwtVerifier, NativeJwtTimePolicy, TrustPolicy, VerificationKey,
+};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use ring::{
     digest, hmac, pbkdf2,
@@ -39,12 +41,16 @@ pub(crate) use remote::{RemoteJwtLoginObservation, RemoteJwtLoginPlan};
 
 #[path = "auth_acl.rs"]
 mod acl;
+#[path = "auth_approle_renewal.rs"]
+mod approle_renewal;
 #[path = "auth_capabilities.rs"]
 mod capabilities;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_jwt_login.rs"]
+mod jwt_login;
 #[path = "auth_jwt_renewal.rs"]
 mod jwt_renewal;
 #[path = "auth_ldap_renewal.rs"]
@@ -69,7 +75,6 @@ const MFA_SEED_BYTES: usize = 32;
 const MFA_PERIOD_SECONDS: u64 = 30;
 const MFA_DIGITS: usize = 6;
 const MFA_DRIFT_STEPS: u64 = 1;
-const MAX_EXTERNAL_REPLAY_ENTRIES: usize = 32_000;
 const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
@@ -554,6 +559,7 @@ impl LdapLoginObservation {
 pub(crate) struct RadiusLoginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     username: String,
     password: Zeroizing<String>,
     config: RadiusMount,
@@ -611,8 +617,10 @@ struct JwtConfig {
     issuer: String,
     audiences: BTreeSet<String>,
     required_namespace: Option<String>,
-    clock_skew_seconds: u64,
-    maximum_token_lifetime_seconds: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    clock_skew_seconds: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    maximum_token_lifetime_seconds: Option<u64>,
     keys: BTreeMap<String, JwtKeyRecord>,
 }
 
@@ -762,8 +770,8 @@ impl JwtConfig {
             self.required_namespace
                 .clone()
                 .filter(|value| !value.is_empty()),
-            self.clock_skew_seconds,
-            self.maximum_token_lifetime_seconds,
+            self.clock_skew_seconds.unwrap_or(30),
+            self.maximum_token_lifetime_seconds.unwrap_or(86400),
         )
         .map_err(|_| bad("invalid JWT trust policy"))?;
         let mut keys = Vec::with_capacity(self.keys.len());
@@ -805,6 +813,12 @@ struct JwtRole {
     token_period: u64,
     #[serde(default, skip_serializing_if = "is_zero")]
     token_explicit_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    clock_skew_leeway: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    expiration_leeway: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    not_before_leeway: Option<i64>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
@@ -822,6 +836,8 @@ struct JwtMountState {
     roles: BTreeMap<String, JwtRole>,
     identities: BTreeMap<String, ExternalIdentity>,
     replay: BTreeMap<String, u64>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    native_claims: bool,
     // Once expired replay records are pruned, a clock rollback must not revive
     // them. This watermark commits atomically with replay and issued tokens.
     last_admission_time: u64,
@@ -972,15 +988,6 @@ enum TokenAuthProvenance {
         role_name: String,
     },
     TokenApi,
-}
-
-#[derive(Clone, Copy)]
-struct AppRoleRenewalLimits {
-    token_ttl: u64,
-    token_max_ttl: u64,
-    token_period: u64,
-    token_explicit_max_ttl: u64,
-    mount_max_ttl: u64,
 }
 
 impl Drop for Token {
@@ -1174,6 +1181,9 @@ fn checked_expiry(now: u64, ttl: u64) -> Result<u64, AuthError> {
 }
 fn is_zero(value: &u64) -> bool {
     *value == 0
+}
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 fn unlimited_zero(value: u64) -> Option<u64> {
@@ -2043,48 +2053,6 @@ impl AuthState {
             .or_default()
             .entry(scope.mount.into())
             .or_default()
-    }
-
-    fn admit_external_replay(
-        &mut self,
-        scope: AuthScope<'_>,
-        fingerprint: [u8; 32],
-        expires_at: u64,
-        now: u64,
-    ) -> Result<(), AuthError> {
-        let state = self.jwt_at_mut(scope);
-        if expires_at <= now || now < state.last_admission_time {
-            return Err(denied());
-        }
-        let mut key = URL_SAFE_NO_PAD.encode(fingerprint);
-        if state.replay.get(&key).is_some_and(|expiry| *expiry > now) {
-            key.zeroize();
-            return Err(denied());
-        }
-        if state
-            .replay
-            .values()
-            .filter(|expiry| **expiry > now)
-            .count()
-            >= MAX_EXTERNAL_REPLAY_ENTRIES
-        {
-            key.zeroize();
-            return Err(err(503, "external replay registry capacity exhausted"));
-        }
-        // All fallible checks precede the mutation, including randomness for
-        // token creation at the caller; Service owns the durable transaction.
-        let mut retained = BTreeMap::new();
-        for (mut id, expiry) in std::mem::take(&mut state.replay) {
-            if expiry > now {
-                retained.insert(id, expiry);
-            } else {
-                id.zeroize();
-            }
-        }
-        retained.insert(key, expires_at);
-        state.replay = retained;
-        state.last_admission_time = now;
-        Ok(())
     }
 
     #[cfg(test)]
@@ -3393,13 +3361,12 @@ impl AuthState {
             return Err(err(405, "method not allowed"));
         }
         validate_namespace(namespace)?;
-        if !self
+        let mount_revision = self
             .effective_auth_mounts(namespace)
             .get(mount)
-            .is_some_and(|entry| entry.kind == "radius")
-        {
-            return Err(denied());
-        }
+            .filter(|entry| entry.kind == "radius")
+            .cloned()
+            .ok_or_else(denied)?;
         reject_unknown(body, &["username", "password"])?;
         let username = string_field(body, "username")?;
         if username.is_empty()
@@ -3421,6 +3388,7 @@ impl AuthState {
         Ok(RadiusLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
+            mount_revision,
             username: username.into(),
             password: Zeroizing::new(password.into()),
             config,
@@ -3438,10 +3406,8 @@ impl AuthState {
             namespace: &plan.namespace,
             mount: &plan.mount,
         };
-        if !self
-            .effective_auth_mounts(&plan.namespace)
-            .get(&plan.mount)
-            .is_some_and(|entry| entry.kind == "radius")
+        if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
+            != Some(&plan.mount_revision)
             || self
                 .radius_mounts
                 .get(&plan.namespace)
@@ -3817,15 +3783,15 @@ impl AuthState {
                 .map(|state| &state.roles)
                 .and_then(|roles| roles.get(role_name))
                 .cloned()
-                .ok_or_else(denied)?;
+                .ok_or_else(|| bad("JWT role not found"))?;
             let mut verification_config = config.clone();
             if verification_config.audiences.is_empty() {
                 verification_config.audiences = role.bound_audiences.clone();
             }
             let verified = verification_config
                 .verifier()?
-                .verify(jwt, now)
-                .map_err(|_| denied())?;
+                .verify_native(jwt, now, jwt_login::native_time_policy(&config, &role))
+                .map_err(|_| bad("JWT signature or claims validation failed"))?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
             if claimed_namespace != namespace
                 || !role.bound_groups.is_subset(&verified.groups)
@@ -3837,14 +3803,13 @@ impl AuthState {
                     && role.bound_audiences.is_disjoint(&verified.audiences)
                 || role.policies.contains("root")
             {
-                return Err(denied());
+                return Err(bad("JWT role or namespace claims do not match"));
             }
             let explicit_max_expires_at = (role.token_explicit_max_ttl > 0)
                 .then(|| checked_expiry(now, role.token_explicit_max_ttl))
                 .transpose()?;
             let expires_at =
                 self.jwt_token_expiry(scope, &role, now, explicit_max_expires_at, 0, now)?;
-            let fingerprint = verified.replay_fingerprint();
             let identity_key = hash(&format!("{}\0{}", verified.issuer, verified.subject));
             let identity = ExternalIdentity {
                 issuer: verified.issuer.clone(),
@@ -3884,12 +3849,7 @@ impl AuthState {
                 mount: mount.into(),
                 alias: verified.subject.clone(),
             });
-            if let Err(error) =
-                self.admit_external_replay(scope, fingerprint, verified.expires_at, now)
-            {
-                crate::service::erase_json(&mut response.body);
-                return Err(error);
-            }
+            self.retire_jwt_login_replay(scope);
             self.jwt_at_mut(scope)
                 .identities
                 .insert(identity_key, identity);
@@ -4008,9 +3968,14 @@ impl AuthState {
                         "required_namespace must equal the configured auth namespace",
                     ));
                 }
-                let clock_skew_seconds = number(body, "clock_skew_seconds", 30)?;
-                let maximum_token_lifetime_seconds =
-                    number(body, "maximum_token_lifetime_seconds", 3600)?;
+                let clock_skew_seconds = body
+                    .get("clock_skew_seconds")
+                    .map(|_| number(body, "clock_skew_seconds", 0))
+                    .transpose()?;
+                let maximum_token_lifetime_seconds = body
+                    .get("maximum_token_lifetime_seconds")
+                    .map(|_| number(body, "maximum_token_lifetime_seconds", 0))
+                    .transpose()?;
                 if body.get("keys").is_some() && body.get("jwks").is_some() {
                     return Err(bad("configure either JWT keys or jwks, not both"));
                 }
@@ -4060,8 +4025,8 @@ impl AuthState {
                         config.issuer.clone(),
                         audiences,
                         config.required_namespace.clone().filter(|s| !s.is_empty()),
-                        config.clock_skew_seconds,
-                        config.maximum_token_lifetime_seconds,
+                        config.clock_skew_seconds.unwrap_or(30),
+                        config.maximum_token_lifetime_seconds.unwrap_or(86400),
                     )
                     .map_err(|_| bad("invalid remote JWT trust policy"))?;
                 }
@@ -4105,6 +4070,9 @@ impl AuthState {
                         "token_max_ttl": role.token_max_ttl,
                         "token_period": role.token_period,
                         "token_explicit_max_ttl": role.token_explicit_max_ttl,
+                        "clock_skew_leeway": role.clock_skew_leeway.unwrap_or(0),
+                        "expiration_leeway": role.expiration_leeway.unwrap_or(0),
+                        "not_before_leeway": role.not_before_leeway.unwrap_or(0),
                         "token_num_uses": role.token_num_uses
                     }),
                     false,
@@ -4128,6 +4096,9 @@ impl AuthState {
                         "token_num_uses",
                         "token_period",
                         "token_explicit_max_ttl",
+                        "clock_skew_leeway",
+                        "expiration_leeway",
+                        "not_before_leeway",
                     ],
                 )?;
                 if body
@@ -4142,8 +4113,26 @@ impl AuthState {
                         "only role_type jwt with sub identity is implemented",
                     ));
                 }
-                let bound_groups = claim_values(body, "bound_groups")?;
-                let bound_audiences = claim_values(body, "bound_audiences")?;
+                let previous = self
+                    .jwt_at(scope)
+                    .and_then(|state| state.roles.get(name))
+                    .cloned();
+                let bound_groups = if body.get("bound_groups").is_some() {
+                    claim_values(body, "bound_groups")?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.bound_groups.clone())
+                        .unwrap_or_default()
+                };
+                let bound_audiences = if body.get("bound_audiences").is_some() {
+                    claim_values(body, "bound_audiences")?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.bound_audiences.clone())
+                        .unwrap_or_default()
+                };
                 let bound_subject = body
                     .get("bound_subject")
                     .map(|value| {
@@ -4157,7 +4146,12 @@ impl AuthState {
                             .map(str::to_owned)
                             .ok_or_else(|| bad("invalid bound subject"))
                     })
-                    .transpose()?;
+                    .transpose()?
+                    .or_else(|| {
+                        previous
+                            .as_ref()
+                            .and_then(|role| role.bound_subject.clone())
+                    });
                 reject_alias_pair(body, "policies", "token_policies")?;
                 let role_policies = policies(
                     body,
@@ -4166,15 +4160,57 @@ impl AuthState {
                     } else {
                         "policies"
                     },
-                    &BTreeSet::new(),
+                    &previous
+                        .as_ref()
+                        .map(|role| role.policies.clone())
+                        .unwrap_or_default(),
                     true,
                 )?;
                 self.validate_assignment(actor, &role_policies)?;
-                let token_ttl = duration(body, "token_ttl", DEFAULT_TTL)?;
-                let token_max_ttl = duration(body, "token_max_ttl", token_ttl)?;
-                let token_num_uses = number(body, "token_num_uses", 0)?;
-                let token_period = duration(body, "token_period", 0)?;
-                let token_explicit_max_ttl = duration(body, "token_explicit_max_ttl", 0)?;
+                let token_ttl = duration(
+                    body,
+                    "token_ttl",
+                    previous.as_ref().map_or(DEFAULT_TTL, |role| role.token_ttl),
+                )?;
+                let token_max_ttl = duration(
+                    body,
+                    "token_max_ttl",
+                    previous
+                        .as_ref()
+                        .map_or(token_ttl, |role| role.token_max_ttl),
+                )?;
+                let token_num_uses = number(
+                    body,
+                    "token_num_uses",
+                    previous.as_ref().map_or(0, |role| role.token_num_uses),
+                )?;
+                let token_period = duration(
+                    body,
+                    "token_period",
+                    previous.as_ref().map_or(0, |role| role.token_period),
+                )?;
+                let token_explicit_max_ttl = duration(
+                    body,
+                    "token_explicit_max_ttl",
+                    previous
+                        .as_ref()
+                        .map_or(0, |role| role.token_explicit_max_ttl),
+                )?;
+                let clock_skew_leeway = jwt_login::role_leeway(
+                    body,
+                    "clock_skew_leeway",
+                    previous.as_ref().and_then(|role| role.clock_skew_leeway),
+                )?;
+                let expiration_leeway = jwt_login::role_leeway(
+                    body,
+                    "expiration_leeway",
+                    previous.as_ref().and_then(|role| role.expiration_leeway),
+                )?;
+                let not_before_leeway = jwt_login::role_leeway(
+                    body,
+                    "not_before_leeway",
+                    previous.as_ref().and_then(|role| role.not_before_leeway),
+                )?;
                 if token_ttl == 0
                     || token_ttl > MAX_TTL
                     || token_max_ttl < token_ttl
@@ -4194,6 +4230,9 @@ impl AuthState {
                     token_num_uses,
                     token_period,
                     token_explicit_max_ttl,
+                    clock_skew_leeway,
+                    expiration_leeway,
+                    not_before_leeway,
                 };
                 let roles = &mut self.jwt_at_mut(scope).roles;
                 let mutated = roles.get(name) != Some(&role);
@@ -4379,7 +4418,9 @@ impl AuthState {
                 if let Some(response) = self.renew_jwt_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
-                let approle_limits = self.approle_renewal_limits(&id)?;
+                if let Some(response) = self.renew_approle_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
                     .map(|(mount, token_ttl, token_max_ttl)| {
@@ -4423,20 +4464,7 @@ impl AuthState {
                 if !token.renewable {
                     return Err(bad("token is not renewable"));
                 }
-                let ttl = if let Some(limits) = approle_limits {
-                    // AppRole renewal follows the current role. A role may be
-                    // tuned from finite to periodic (or back) after issue;
-                    // periodic values are always bounded by the current
-                    // mount maximum, while finite defaults/maxima are read
-                    // from the live role and mount.
-                    if limits.token_period > 0 {
-                        limits.token_period.min(limits.mount_max_ttl)
-                    } else if increment == 0 {
-                        limits.token_ttl
-                    } else {
-                        increment.min(limits.token_max_ttl)
-                    }
-                } else if token.period > 0 {
+                let ttl = if token.period > 0 {
                     token.period
                 } else if increment == 0 {
                     cert_role_limits.map_or(DEFAULT_TTL, |(token_ttl, _)| token_ttl)
@@ -4459,25 +4487,6 @@ impl AuthState {
                     .map(|(_, token_max_ttl)| checked_expiry(issued_at, token_max_ttl))
                     .transpose()?;
                 let expires_at = cert_max_expiry
-                    .map(|max| expires_at.min(max))
-                    .unwrap_or(expires_at);
-                let approle_max_expiry = approle_limits
-                    .filter(|limits| limits.token_period == 0 || limits.token_explicit_max_ttl > 0)
-                    .map(|limits| {
-                        // A current role maximum can shorten a renewal, but
-                        // never extend the absolute maximum captured at issue.
-                        // The explicit-max field is intentionally not used to
-                        // replace token.max_expires_at; it can only add a
-                        // newly configured cap for an already-issued token.
-                        let max_ttl = if limits.token_explicit_max_ttl > 0 {
-                            limits.token_explicit_max_ttl
-                        } else {
-                            limits.token_max_ttl
-                        };
-                        checked_expiry(issued_at, max_ttl)
-                    })
-                    .transpose()?;
-                let expires_at = approle_max_expiry
                     .map(|max| expires_at.min(max))
                     .unwrap_or(expires_at);
                 if expires_at <= now {
@@ -4576,51 +4585,6 @@ impl AuthState {
             return Err(denied());
         }
         Ok(Some((mount.into(), role.token_ttl, role.token_max_ttl)))
-    }
-
-    /// Re-read the AppRole issuer at renewal time. The token's namespace and
-    /// mount are authoritative; the request namespace and display name are
-    /// deliberately ignored. This mirrors OpenBao's role lookup while
-    /// retaining the issue-time absolute cap already persisted on the token.
-    fn approle_renewal_limits(&self, id: &str) -> Result<Option<AppRoleRenewalLimits>, AuthError> {
-        let token = self.tokens.get(id).ok_or_else(denied)?;
-        let Some(TokenAuthProvenance::AppRole { role_name }) = token.auth_provenance.as_ref()
-        else {
-            return Ok(None);
-        };
-        let mount = token.auth_mount.as_deref().ok_or_else(denied)?;
-        let scope = AuthScope {
-            namespace: &token.namespace,
-            mount,
-        };
-        // A disabled/deleted mount or role must fail closed even when a token
-        // still happens to be present in an old snapshot.
-        let mounts = self.effective_auth_mounts(scope.namespace);
-        let mount_entry = mounts
-            .get(scope.mount)
-            .filter(|entry| entry.kind == "approle")
-            .ok_or_else(denied)?;
-        let role = self
-            .roles_at(scope)
-            .and_then(|roles| roles.get(role_name))
-            .ok_or_else(denied)?;
-        let (token_ttl, token_max_ttl) =
-            self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
-        let mount_max_ttl = if mount_entry.max_lease_ttl == 0 {
-            MAX_TTL
-        } else {
-            mount_entry.max_lease_ttl
-        };
-        if mount_max_ttl == 0 || mount_max_ttl > MAX_TTL {
-            return Err(bad("invalid persisted auth mount TTL limits"));
-        }
-        Ok(Some(AppRoleRenewalLimits {
-            token_ttl,
-            token_max_ttl,
-            token_period: role.token_period,
-            token_explicit_max_ttl: role.token_explicit_max_ttl,
-            mount_max_ttl,
-        }))
     }
 
     fn create_token(
@@ -5464,32 +5428,14 @@ impl AuthState {
             format!("approle-{name}"),
             now,
         )?;
-        if role.token_period > 0 {
-            token.period = role.token_period;
-            let period_expiry = checked_expiry(now, role.token_period)?;
-            // Periodic AppRole tokens renew by their period indefinitely unless
-            // an explicit hard maximum is configured.  token_max_ttl is the
-            // finite-token ceiling and must not silently turn periodic tokens
-            // into finite leases.
-            token.max_expires_at = None;
-            if let Some(explicit_max) = (role.token_explicit_max_ttl > 0)
-                .then(|| checked_expiry(now, role.token_explicit_max_ttl))
-                .transpose()?
-            {
-                token.max_expires_at = Some(explicit_max);
-            }
-            token.expires_at =
-                Some(period_expiry.min(token.max_expires_at.unwrap_or(period_expiry)));
-        } else if role.token_explicit_max_ttl > 0 {
-            let explicit_max = checked_expiry(now, role.token_explicit_max_ttl)?;
-            token.max_expires_at = Some(
-                token
-                    .max_expires_at
-                    .map(|max| max.min(explicit_max))
-                    .unwrap_or(explicit_max),
-            );
-            token.expires_at = token.expires_at.map(|expiry| expiry.min(explicit_max));
-        }
+        token.period = role.token_period;
+        // Only an explicit hard cap is fixed at login. Ordinary role/mount
+        // maxima are recalculated from issue time during finite renewal.
+        token.max_expires_at = (role.token_explicit_max_ttl > 0)
+            .then(|| checked_expiry(now, role.token_explicit_max_ttl))
+            .transpose()?;
+        token.expires_at =
+            Some(self.approle_token_expiry(scope, &role, now, token.max_expires_at, 0, now)?);
         token.auth_mount = Some(mount.into());
         token.auth_provenance = Some(TokenAuthProvenance::AppRole {
             role_name: name.clone(),

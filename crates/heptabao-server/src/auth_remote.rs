@@ -367,7 +367,7 @@ mod tests {
                 .err()
                 .unwrap()
                 .status,
-            403
+            400
         );
         assert_eq!(state.tokens.len(), before);
         let (mut state, _, plan, observed) = login_fixture();

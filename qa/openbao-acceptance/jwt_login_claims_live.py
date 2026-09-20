@@ -48,6 +48,65 @@ class Trace(jwt_renewal_live.Trace):
             raise ScenarioFailure(case)
 
 
+def native_time_matrix(now):
+    """Integer offsets avoid the live clock-skew boundary; no credentials here."""
+    zero = {"clock_skew_leeway": 0, "expiration_leeway": 0, "not_before_leeway": 0}
+    no_clock = dict(zero, clock_skew_leeway=-1)
+    rows = []
+
+    def add(name, *, claims=None, omit=(), leeway=None, status=200):
+        rows.append((name, dict(zero if leeway is None else leeway), omit, claims or {}, status))
+
+    add("exp_only", omit=("iat", "nbf", "jti"))
+    add("exp_only_far_future_synthesized_nbf", omit=("iat", "nbf"), claims={"exp": now + 300}, status=400)
+    add("iat_only", omit=("exp", "nbf"))
+    add("iat_only_past_with_synthesized_expiry", omit=("exp", "nbf"), claims={"iat": now - 200})
+    add("iat_only_expired", omit=("exp", "nbf"), claims={"iat": now - 240}, status=400)
+    add("nbf_only", omit=("exp", "iat"), claims={"nbf": now})
+    add("iat_and_nbf_without_exp", omit=("exp",), claims={"iat": now - 30, "nbf": now})
+    add("all_times_zero", claims={"iat": 0, "nbf": 0, "exp": 0}, status=400)
+    add("all_times_null", claims={"iat": None, "nbf": None, "exp": None}, status=400)
+    add("zero_exp_is_synthesized", claims={"exp": 0})
+    add("zero_iat_is_missing", claims={"iat": 0})
+    add("zero_nbf_is_synthesized", claims={"nbf": 0})
+    add("no_implicit_hour_lifetime_cap", claims={"exp": now + 7200})
+    add("fractional_numeric_dates", claims={"iat": now - 1.5, "nbf": now - 1.25, "exp": now + 120.75})
+    add("negative_iat", claims={"iat": -1})
+    add("negative_nbf", claims={"nbf": -1})
+    add("negative_exp", claims={"exp": -1}, status=400)
+    add("negative_fraction_iat", claims={"iat": -0.5})
+    add("fraction_truncated_to_missing", omit=("exp", "nbf"), claims={"iat": 0.75}, status=400)
+    add("nonnumeric_date", claims={"iat": "not-a-date"}, status=400)
+    add("boolean_date", claims={"iat": True}, status=400)
+    add("zero_clock_defaults_accept_future_iat", claims={"iat": now + 30, "exp": now + 180})
+    add("zero_clock_defaults_deny_far_future_iat", claims={"iat": now + 120, "exp": now + 300}, status=400)
+    add("zero_clock_defaults_accept_future_nbf", claims={"nbf": now + 30, "exp": now + 180})
+    add("zero_clock_defaults_deny_far_future_nbf", claims={"nbf": now + 120, "exp": now + 300}, status=400)
+    add("zero_clock_defaults_accept_recent_expiry", claims={"iat": now - 90, "exp": now - 30})
+    add("zero_clock_defaults_deny_old_expiry", claims={"iat": now - 180, "exp": now - 120}, status=400)
+    add("negative_clock_disables_iat_grace", claims={"iat": now + 10}, leeway=no_clock, status=400)
+    add("negative_clock_disables_nbf_grace", claims={"nbf": now + 10}, leeway=no_clock, status=400)
+    add("negative_clock_disables_exp_grace", claims={"iat": now - 90, "exp": now - 10}, leeway=no_clock, status=400)
+    positive_clock = dict(zero, clock_skew_leeway=120)
+    add("positive_clock_accepts_future_iat", claims={"iat": now + 90, "exp": now + 300}, leeway=positive_clock)
+    add("positive_clock_accepts_future_nbf", claims={"nbf": now + 90, "exp": now + 300}, leeway=positive_clock)
+    add("positive_clock_accepts_recent_expiry", claims={"iat": now - 240, "exp": now - 90}, leeway=positive_clock)
+    add("default_expiry_synthesis", omit=("exp", "nbf"), claims={"iat": now - 90}, leeway=no_clock)
+    add("disabled_expiry_synthesis", omit=("exp", "nbf"), claims={"iat": now - 10},
+        leeway=dict(no_clock, expiration_leeway=-1), status=400)
+    add("positive_expiry_synthesis", omit=("exp", "nbf"), claims={"iat": now - 200},
+        leeway=dict(no_clock, expiration_leeway=300))
+    add("expiry_leeway_does_not_relax_present_exp", claims={"iat": now - 90, "exp": now - 10},
+        leeway=dict(no_clock, expiration_leeway=300), status=400)
+    add("default_nbf_synthesis", omit=("iat", "nbf"), leeway=no_clock)
+    add("disabled_nbf_synthesis", omit=("iat", "nbf"), leeway=dict(no_clock, not_before_leeway=-1), status=400)
+    add("positive_nbf_synthesis", omit=("iat", "nbf"), claims={"exp": now + 300},
+        leeway=dict(no_clock, not_before_leeway=400))
+    add("nbf_leeway_does_not_relax_present_nbf", claims={"nbf": now + 10},
+        leeway=dict(no_clock, not_before_leeway=400), status=400)
+    return rows
+
+
 def run_scenarios(client, issuer, private, jwk, config, restart, mode, results):
     t = Trace(client, issuer, mode, results)
     mount = "jwt-claims-" + mode
@@ -58,9 +117,9 @@ def run_scenarios(client, issuer, private, jwk, config, restart, mode, results):
     t.call("role", "auth/" + mount + "/role/test",
            jwt_renewal_live.role(token_policies=["default"]), expected=204)
     remembered = []
-    for name, omit in [("complete", ()), ("no_jti", ("jti",)), ("no_iat", ("iat",)),
-                       ("no_jti_or_iat", ("jti", "iat"))]:
-        assertion = signed_assertion(private, jwk, issuer.origin, omit=omit, case=mode + "-" + name)
+    for name, omit, overrides in [("complete", (), {}), ("no_jti", ("jti",), {}), ("no_iat", ("iat",), {}),
+                                  ("no_jti_or_iat", ("jti", "iat"), {}), ("empty_jti", (), {"jti": ""})]:
+        assertion = signed_assertion(private, jwk, issuer.origin, omit=omit, case=mode + "-" + name, **overrides)
         auth = []
         for attempt in (1, 2):
             body = t.call(name + ".login_" + str(attempt), login, {"role": "test", "jwt": assertion})
@@ -86,10 +145,23 @@ def run_scenarios(client, issuer, private, jwk, config, restart, mode, results):
         body = t.call(name + ".denied", login, {"role": "test", "jwt": assertion}, expected=400)
         t.check(name + ".no_service_token", body.get("auth") is None and not body.get("wrap_info"))
 
+    for index, (name, leeway, _, _, _) in enumerate(native_time_matrix(0)):
+        t.call("time." + name + ".role", "auth/" + mount + "/role/test",
+               jwt_renewal_live.role(token_policies=["default"], **leeway), expected=204)
+        # Rebase time offsets after the role write, so earlier matrix cases
+        # cannot consume this case's clock-skew margin on a slower machine.
+        _, _, omit, claims, expected = native_time_matrix(int(time.time()))[index]
+        assertion = signed_assertion(private, jwk, issuer.origin, omit=omit, case=mode + "-" + name, **claims)
+        body = t.call("time." + name + ".login", login, {"role": "test", "jwt": assertion}, expected=expected)
+        if expected == 200:
+            t.check("time." + name + ".service_token_shape", service_token_shape(body.get("auth")))
+        else:
+            t.check("time." + name + ".no_service_token", body.get("auth") is None and not body.get("wrap_info"))
+
 
 def main():
     return jwt_renewal_live.main(scenario_runner=run_scenarios, profile="jwt-login-claims", runner_path=Path(__file__),
-        scope="ordinary JWT login only: optional iat/jti, repeated assertions, time validation; OIDC authorization code, state and nonce are excluded")
+        scope="ordinary native JWT login only: optional/synthesized time claims, NumericDate values, role leeway, optional/empty jti and repeated assertions; OIDC authorization code, state and nonce are excluded")
 
 
 if __name__ == "__main__":

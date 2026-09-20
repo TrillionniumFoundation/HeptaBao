@@ -368,7 +368,7 @@ reject unsupported versions and schema-1 records carrying identity-aware fields.
 The original schema-1-only binary therefore refuses upgraded state instead of
 ignoring the new identity constraints.
 
-Rollback from current state requires a schema-6-capable predecessor, compatible
+Rollback from current state requires a binary that understands its stored schema, compatible
 provider/HA formats and the current revocation state. Never edit the discriminator, discard new fields, or restore a stale
 schema-1 backup to make an old binary run. This format fence is not an external
 monotonic rollback anchor and does not qualify mixed-version rolling upgrades.

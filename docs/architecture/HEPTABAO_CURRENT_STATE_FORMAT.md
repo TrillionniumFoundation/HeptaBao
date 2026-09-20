@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **18**. Its source constant is
+The current Service state schema is **19**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -57,7 +57,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 15 | KV v2 metadata CAS requirements and independent metadata versions; RADIUS renewal and explicit token-API provenance must be absent. |
 | 16 | Direct RADIUS renewal credentials and explicit token-API provenance; LDAP renewal and external identity membership evidence must be absent. |
 | 17 | Direct LDAP renewal credentials and provider-verified external identity membership evidence; JWT direct-role provenance and nonzero JWT periodic/explicit-max role fields must be absent. |
-| 18 | Current format, adding direct JWT role provenance and distinct periodic/explicit-max JWT role limits. |
+| 18 | Direct JWT role provenance and distinct periodic/explicit-max JWT role limits; native-claim marker, optional trust extensions and role leeways must be absent. |
+| 19 | Current format, adding native reusable JWT assertions, optional explicit trust extensions, role time leeways and retired legacy JWT replay enforcement. New AppRole tokens also persist only their issue-time explicit maximum. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -68,7 +69,7 @@ legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
 
 Schema 18 is required for direct JWT role provenance or nonzero JWT role period
-and explicit maximum fields. JWT assertions expire at login admission; a new
+and explicit maximum fields. JWT time claims are checked at login admission; a new
 JWT service token is bounded independently by its role and mount. Its stored
 absolute maximum represents only the explicit maximum captured at issuance;
 ordinary role/mount maxima are reread at renewal and measured from issue time.
@@ -76,8 +77,18 @@ Old JWT tokens keep their recorded expiry and maximum. Old parentless JWT tokens
 without provenance must log in again to renew; old children with a parent keep
 their ordinary token-API renewal. New token-API children do not inherit JWT roles.
 
+Schema 19 is required for native JWT state. Stored legacy trust-limit numbers
+remain explicit constraints; absent values in new configurations select native
+role time semantics. A successful native login clears only that JWT mount's old
+assertion replay entries and watermark, and marks their retirement in the same
+transaction as token/identity issuance. Failed logins do not perform this migration.
+This does not retire OIDC sessions, MFA proofs or the durable operation ledger.
+Old AppRole absolute maxima remain conservative because the stored value cannot
+distinguish a former ordinary maximum from a true explicit maximum; a fresh login
+uses current role/mount maxima and freezes only the true explicit cap.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 18. An authenticated
+it. Initialization and committed mutations use schema 19. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -91,7 +102,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a schema-18-capable rollback binary with compatible HA and provider formats.
+fields it happens to know. Keep a schema-19-capable rollback binary with compatible HA and provider formats.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -116,7 +127,8 @@ one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
 protects the local owner boundary; HA still serializes the complete logical state
 and therefore remains outside the record-oriented scalability gate.
-A schema-17 binary must fail closed once JWT direct-role provenance or new role lifetime semantics have been committed;
+A schema-18 binary must fail closed once native JWT or current AppRole lifetime semantics have been committed;
+a schema-17 binary must fail closed once JWT direct-role provenance or new role lifetime semantics have been committed;
 a schema-16 binary must fail closed once LDAP renewal credentials or external membership evidence has been committed;
 a schema-15 binary must fail closed once RADIUS renewal or token-API provenance has been committed;
 a schema-14 binary must fail closed once KV metadata CAS state has been committed;
@@ -131,7 +143,7 @@ state has been committed. Never lower `State.schema`, delete new fields, reset
 revocation/tombstone state or restore an old snapshot to make a binary start.
 
 A schema-1→2 or schema-2→3 rehearsal only proves its tested historical pair. It is
-not a schema-13 rolling upgrade receipt. Mixed-version cluster operation, source
+not a current-format rolling upgrade receipt. Mixed-version cluster operation, source
 format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Before changing durable files, the service

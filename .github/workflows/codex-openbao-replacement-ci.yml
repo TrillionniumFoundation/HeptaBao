@@ -388,7 +388,9 @@ jobs:
           timeout 240 python qa/openbao-acceptance/ldap_openldap_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/openldap.json"
           timeout 240 python qa/openbao-acceptance/ldap_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-renewal.json"
           timeout 240 python qa/openbao-acceptance/jwt_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/jwt-renewal.json"
+          timeout 240 python qa/openbao-acceptance/jwt_login_claims_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/jwt-login-claims.json"
           timeout 240 python qa/openbao-acceptance/cert_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/cert-renewal.json"
+          timeout 240 python qa/openbao-acceptance/approle_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/approle-renewal.json"
           timeout 240 python qa/openbao-acceptance/oidc_code_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/oidc.json"
           timeout 360 python qa/openbao-acceptance/online_auth_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ha.json"
           # A controlled TokenReview fixture is not an actual Kubernetes cluster.

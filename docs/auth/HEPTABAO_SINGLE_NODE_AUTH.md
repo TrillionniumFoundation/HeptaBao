@@ -272,8 +272,8 @@ secret ID is valid for one hour and one login. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
 lifetime or use count. `token_period` can be set up to the service maximum to
-issue periodic AppRole tokens; such tokens renew at the current role period,
-clamped to the current mount maximum. A
+issue periodic AppRole tokens; login and renewal use the current role period,
+clamped to the current role and mount maxima. A
 positive `token_explicit_max_ttl` adds a hard lifetime cap from login time for
 both periodic and finite tokens, and periodic renewal is clamped to the
 remaining cap. Zero preserves the uncapped periodic behavior. Both fields are
@@ -303,9 +303,16 @@ limiter; this module has no distributed login-throttling authority.
 Direct AppRole login tokens persist structured issuer provenance containing the
 token namespace, mount and role name. Renewal re-reads that exact live role and
 mount, so deleting the role or mount denies renewal and current finite TTL/max
-settings take effect without changing the token's policies. An explicit maximum
-captured at issue remains an absolute issue-time cap even if the role is later
-expanded. Tokens created through `auth/token/create` deliberately do not inherit
+settings take effect without changing the token's policies. An omitted or zero
+renewal increment uses the current role TTL. Ordinary maxima are measured from
+issue time and can be raised for a still-active token; switching to periodic
+renewal removes the ordinary absolute age limit. The explicit maximum captured
+at issue remains fixed even if the role later adds, removes, reduces or expands
+its explicit maximum. A deleted role or a still-active token past the current
+finite maximum returns 500, matching OpenBao 2.6.2; already expired tokens remain
+403. Old stored absolute caps remain conservative because they cannot be
+classified as ordinary versus explicit; log in again to use raised ordinary
+limits. Tokens created through `auth/token/create` deliberately do not inherit
 AppRole issuer provenance and therefore use ordinary token renewal semantics.
 This persisted field requires service state schema 11; older binaries reject it
 instead of silently dropping renewal authority. Bounded RADIUS PAP mounts add durable route and token policy in schema 12; the process-enrolled `radius://` UDP endpoint and shared secret stay outside `AuthState`, and schema-11 readers reject the state. The profile supports one-shot IPv4 UDP PAP with strict Message-Authenticator and Response Authenticator checks; CHAP, EAP, IPv6, challenge flows and full OpenBao field parity remain outside this slice.
@@ -355,8 +362,8 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | `issuer` | Exact trusted `iss`; URL-shaped issuer strings are supported |
 | `audiences` | Trusted audience string or string array, including URI audiences |
 | `required_namespace` | If supplied, equals the configuring request namespace; root empty string is handled as no additional verifier namespace restriction, while route admission still checks the root namespace |
-| `clock_skew_seconds` | Default 30, maximum 300; applies to future `iat`/`nbf`, not to accepting an already expired token |
-| `maximum_token_lifetime_seconds` | Default 3600, maximum 86400; bounds the JWT's issued-to-expiry lifetime |
+| `clock_skew_seconds` | Optional legacy extension, 0–300 seconds; grace applies only to future `iat`/`nbf`, while `now >= exp` rejects. A supplied role `clock_skew_leeway` replaces this with native time semantics. Absent in a new config means native role/default semantics |
+| `maximum_token_lifetime_seconds` | Optional legacy extension, 1–86400 seconds; requires signed `iat` and `exp` and bounds their difference. New configs have no implicit lifetime cap |
 | `keys` | 1–64 entries with distinct selected key identities: `kid`, `algorithm`, `key_base64`; mutually exclusive with `jwks` |
 | `jwks` | Inline RFC 7517 public key set; accepts only signature-use Ed25519/EdDSA or P-256/ES256 public material, rejects private/symmetric/duplicate/unknown-key input; mutually exclusive with `keys` |
 | key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
@@ -368,9 +375,11 @@ For OpenBao API readback compatibility, JWT config GET returns both `issuer` and
 `bound_issuer`, while role GET returns both `policies` and `token_policies`; each
 pair is the same persisted value and does not create a second authorization path.
 
-Login strictly checks header algorithm/key identity/signature and claims `iss`, `sub`, `aud`, `exp`, `iat`, optional `nbf`, `jti`, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` and `iat` are required. `now >= exp` rejects the JWT; future `iat`/`nbf` allow only configured skew, and `nbf >= exp` is invalid. A nonroot namespace requires an exactly matching `heptabao_namespace` claim; an absent claim maps to the root namespace only. As in OpenBao 2.6.2, the issued service token has its own role/mount lifetime and can outlive the login JWT. Missing trust returns 503 on login (404 on absent config read); wrong role, replay or failed verification returns 403, malformed route input returns 400, and each case denies issuance and does not silently fall back to an unbound login.
+Login checks header algorithm/key identity/signature, `iss`, `sub`, `aud`, time claims, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` is optional and does not make an assertion single-use. At least one nonzero `iat`, `nbf` or `exp` is required. NumericDate fractions truncate toward zero; null and zero act as absent dates. Missing `exp` is derived from the later of `iat`/`nbf` plus expiration leeway. Missing `nbf` uses `iat` when nonzero, otherwise `exp` minus not-before leeway. The role's `clock_skew_leeway` applies to all three time comparisons; zero or unset selects 60 seconds and negative disables it. `expiration_leeway` and `not_before_leeway` zero/unset select 150 seconds, negative disables the respective derivation offset. They do not add grace to an existing signed date. These role fields accept signed seconds or durations and are preserved on partial role updates.
 
-Accepted JWT replay identity and the issued token are owned by `AuthState`; Service commits them atomically with the mount/subject alias and entity association in `EngineState`. Replay is mount/namespace scoped and survives restart/HA replication. A persistent time watermark prevents a clock rollback from reviving replay entries that were pruned after expiry. Failed verification does not consume a valid future replay entry. This protection does not establish a trusted host clock, external identity lifecycle synchronization or full identity API support.
+A nonroot namespace requires an exactly matching `heptabao_namespace`; an absent claim maps to the root namespace. The issued service token has its own role/mount lifetime and can outlive the JWT. Missing trust returns 503 on login (404 on absent config read); signature, time and claim failures return 400, while core ACL/live-identity rejection remains 403. Config extensions stored by older binaries remain active until a config replacement explicitly omits them; they do not silently become native defaults on upgrade.
+
+Each successful use of a valid JWT issues a distinct service token with the same subject's identity binding, including after restart. Service commits issuance and identity together. On the first successful native login it also retires that mount's legacy assertion replay map and watermark, with schema 19 preventing an older reader from restoring the former behavior. Failed verification leaves the store unchanged. OIDC one-use state/nonce and strict public proof replay checks remain independent. This does not establish a trusted host clock or full identity API support.
 
 Successful JWT login creates a bounded service token carrying its issuing role
 name in schema-18 Auth state. `renew-self`, `renew` and `renew-accessor` reread that
@@ -462,11 +471,14 @@ The following functions in `crates/heptabao-server/src/auth_tests.rs` exercise t
 - `custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy` verifies separate role/secret-ID state.
 - `disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials` verifies disable effects.
 - `legacy_fixed_auth_state_survives_upgrade_and_unmount_fences_unattributed_tokens` verifies legacy state/provenance handling.
-- `jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_replay` verifies bound issuance and persisted replay.
-- `jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_replay` verifies hostile inputs.
-- `jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart` verifies the watermark.
 - `jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion` verifies real ES256 and algorithm selection.
-- `jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen` initializes a real Service/disk state, logs in, reads KV, reopens, rejects replay, disables the mount and verifies revocation after another reopen.
+
+The JWT scenarios in `auth_tests.rs` and `federated_native_jwt_tests.rs` cover
+reusable native assertions, hostile inputs, explicit legacy trust extensions,
+time derivation and persisted identity/token authority. The separate strict proof
+and OIDC tests still require one-use admission. The real TLS runners
+`jwt_login_claims_live.py`, `jwt_renewal_live.py` and `jwt_native_upgrade.py` exercise
+official comparison and a pinned historical upgrade/downgrade/recovery sequence.
 
 Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. Named scenarios identify executable evidence; current pass receipts and independent qualification remain separate.
 

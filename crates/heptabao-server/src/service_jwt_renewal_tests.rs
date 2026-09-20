@@ -73,6 +73,25 @@ fn wrapped(
     }
 }
 
+fn restore_v18_jwt_config(auth: &mut Value) -> TestResult {
+    for mounts in auth["jwt_mounts"]
+        .as_object_mut()
+        .ok_or("JWT namespaces")?
+        .values_mut()
+    {
+        for mount in mounts.as_object_mut().ok_or("JWT mounts")?.values_mut() {
+            mount
+                .as_object_mut()
+                .ok_or("JWT mount")?
+                .remove("native_claims");
+            // These fields were mandatory numbers before native defaults.
+            mount["config"]["clock_skew_seconds"] = json!(0);
+            mount["config"]["maximum_token_lifetime_seconds"] = json!(3600);
+        }
+    }
+    Ok(())
+}
+
 #[test]
 fn jwt_renewal_role_check_echo_and_wrapper_survive_restart() -> TestResult {
     for operation in ["renew-self", "renew", "renew-accessor"] {
@@ -162,7 +181,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     let root = Root::new();
     let (mut service, _, admin, token) = fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
-    assert_eq!(state.schema, 18);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 17;
     assert!(state.validate_format().is_err());
     let mut auth = serde_json::to_value(&state.auth)?;
@@ -179,6 +198,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
             .ok_or("token")?
             .remove("auth_provenance");
     }
+    restore_v18_jwt_config(&mut auth)?;
     state.auth = serde_json::from_value::<AuthState>(auth)?.into();
     assert!(state.validate_format().is_ok());
     let mut actor = state.auth.authenticate(&token, 101)?;
@@ -218,10 +238,43 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
             .ok_or("token")?
             .remove("auth_provenance");
     }
+    restore_v18_jwt_config(&mut auth)?;
     roles_only.auth = serde_json::from_value::<AuthState>(auth)?.into();
     roles_only.schema = 17;
     assert!(roles_only.validate_format().is_err());
     roles_only.schema = 18;
     assert!(roles_only.validate_format().is_ok());
+    Ok(())
+}
+
+#[test]
+fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways() -> TestResult {
+    let root = Root::new();
+    let (service, _, _, _) = fixture(&root)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let mut legacy = serde_json::to_value(&state.auth)?;
+    restore_v18_jwt_config(&mut legacy)?;
+    state.auth = serde_json::from_value::<AuthState>(legacy.clone())?.into();
+    state.schema = 18;
+    assert!(state.validate_format().is_ok());
+    for variant in ["default", "leeway", "native"] {
+        let mut value = legacy.clone();
+        let mount = &mut value["jwt_mounts"][""]["jwt"];
+        match variant {
+            "default" => {
+                mount["config"]
+                    .as_object_mut()
+                    .ok_or("config")?
+                    .remove("maximum_token_lifetime_seconds");
+            }
+            "leeway" => mount["roles"]["app"]["clock_skew_leeway"] = json!(0),
+            _ => mount["native_claims"] = json!(true),
+        }
+        state.auth = serde_json::from_value::<AuthState>(value)?.into();
+        state.schema = 18;
+        assert!(state.validate_format().is_err(), "{variant}");
+        state.schema = CURRENT_STATE_SCHEMA;
+        assert!(state.validate_format().is_ok(), "{variant}");
+    }
     Ok(())
 }
