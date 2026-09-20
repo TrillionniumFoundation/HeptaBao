@@ -120,6 +120,16 @@ token remains subject to its local TTL, token/mount revocation and live Identity
 policy. Reviewer credential rotation or unavailability does not invalidate an
 already issued service token or prevent its local renewal.
 
+The schema-29 [API TLS/reviewer comparison](../../qa/openbao-acceptance/evidence/kubernetes-api-tls-a14a7fd.json)
+passed 91 observations on each binary, with the malformed-PEM difference recorded
+explicitly. It includes wrong CA/SAN with no HTTP request, one POST without
+reviewer fallback, restart and provider-independent renewal.
+The [actual 28-to-29 upgrade](../../qa/openbao-acceptance/evidence/kubernetes-api-upgrade-649c125-to-a14a7fd.json)
+passed 59 checks using the preserved old binary, including legacy enrollment,
+explicit CA promotion, old-token renewal and downgrade refusal without changing
+application artifacts. Both use a controlled HTTPS TokenReview server; actual
+kube-apiserver/etcd/RBAC acceptance remains a separate gate below.
+
 ## OIDC confidential authorization-code profile
 
 Enable `POST sys/auth/<mount>` with `{"type":"oidc"}`. The existing `jwt` mount

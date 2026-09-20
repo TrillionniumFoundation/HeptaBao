@@ -402,6 +402,13 @@ future issuance only. Direct LDAP token snapshots and constrained config require
 schema 29. Existing legacy bounded LDAP keeps its prior behavior. Wrong-source
 login rejects before contacting the directory, while administrative provider
 renewal checks the caller's source constraints and retains the target's snapshot.
+The [native LDAP CIDR comparison](../../qa/openbao-acceptance/evidence/ldap-cidrs-a14a7fd.json)
+passed 134 observations per side with actual OpenLDAP and IPv4/IPv6 socket peers.
+The [real 28-to-29 upgrade](../../qa/openbao-acceptance/evidence/ldap-cidrs-upgrade-649c125-to-a14a7fd.json)
+passed 70 checks; [same-host HA](../../qa/openbao-acceptance/evidence/ldap-cidrs-ha-a14a7fd.json)
+passed 49, including forwarded origin, election, retained snapshots and quorum
+loss. These selected runs do not qualify Unix-address semantics, batch tokens or
+multi-host faults.
 Untrusted forwarding headers cannot supply the peer. HBFQ3 preserves the original
 socket peer through authenticated HA forwarding; missing peer information denies
 a constrained token. Mixed-version forwarding to older binaries can fail closed
