@@ -38,6 +38,7 @@ class Trace:
         self.checks = []
         self.case = "setup"
         self.secrets = []
+        self.diagnostics = {}
 
     def check(self, case, passed):
         if not re.fullmatch(r"[a-z0-9_]{1,120}", case) or any(row["case"] == case for row in self.checks):
@@ -338,7 +339,7 @@ def main():
     args.work_dir.mkdir(mode=0o700)
     trace = Trace()
     report = {"schema": "heptabao.batch-provider-lease-live.v1", "checks": trace.checks,
-        "provider": args.provider, "build_source_commit": args.build_source_commit,
+        "diagnostics": trace.diagnostics, "provider": args.provider, "build_source_commit": args.build_source_commit,
         "build_source_binding": "caller supplied commit, exact candidate binary SHA; distinct from harness source",
         "profile": "candidate real provider; retained LDAP tombstone and operator-installed PG contract, no differential/HA claim",
         "failure": None, "secrets_scope": "candidate data, audit and server logs; provider credential stores remain private"}

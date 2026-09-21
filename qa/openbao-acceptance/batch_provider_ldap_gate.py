@@ -3,6 +3,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 import json
 import socket
+import ssl
 import time
 
 from ldap_native_renewal_ha import GatedLdap, read_frame, tlv, GATE_BUDGET_SECONDS
@@ -34,44 +35,75 @@ def is_issue_readback(message, operation, payload, *, added, entries):
             and success_result(payload))
 
 
+
+def failure_category(error):
+    # Exception messages may contain hostnames, paths or credential material.
+    # The report contains only a fixed class, never str(error).
+    if isinstance(error, ssl.SSLError):
+        return "tls_error"
+    if isinstance(error, TimeoutError):
+        return "timeout"
+    if isinstance(error, EOFError):
+        return "eof"
+    if isinstance(error, OSError):
+        return "socket_error"
+    return "protocol_error"
+
 class DynamicGate(GatedLdap):
+    def __init__(self, *args):
+        self.diagnostics = {}
+        super().__init__(*args)
+
     def arm(self):
         self.observed_dn = None
         self.real_add_seen = False
+        self.diagnostics = dict(stage="armed", failure=None, request_id=None, request_op=None,
+            response_id=None, response_op=None, search_entries=0, normal_client_close=False)
         super().arm()
 
     def exchange(self, raw):
         client = upstream = None
         added = gated = False
         try:
+            self.diagnostics["stage"] = "accept_tls"
             raw.settimeout(5)
             client = self.server_context.wrap_socket(raw, server_side=True)
+            self.diagnostics["stage"] = "connect_provider"
             upstream = self.client_context.wrap_socket(socket.create_connection(
                 ("127.0.0.1", self.directory.port), timeout=5), server_hostname="127.0.0.1")
             with self.lock:
                 self.active.update((client, upstream))
             for _ in range(12):
                 try:
+                    self.diagnostics["stage"] = "read_client"
                     request = read_frame(client)
                 except EOFError:
+                    self.diagnostics["normal_client_close"] = True
                     return  # Normal client close after its verified final result.
+                self.diagnostics["stage"] = "parse_client"
                 identifier, op, _ = fields(request)
+                self.diagnostics.update(request_id=identifier, request_op=op)
                 if op == 0x42:
                     upstream.sendall(request)
                     return
                 terminal = {0x60: 0x61, 0x63: 0x65, 0x68: 0x69, 0x66: 0x67}.get(op)
                 if terminal is None:
                     raise ValueError("unexpected_dynamic_operation")
+                self.diagnostics["stage"] = "write_provider"
                 upstream.sendall(request)
                 entries = 0
                 observed_dn = None
                 while True:
+                    self.diagnostics["stage"] = "read_provider"
                     response = read_frame(upstream)
+                    self.diagnostics["stage"] = "parse_provider"
                     message, operation, payload = fields(response)
+                    self.diagnostics.update(response_id=message, response_op=operation)
                     if message != identifier or operation not in ((0x64, terminal) if op == 0x63 else (terminal,)):
                         raise ValueError("unexpected_dynamic_response")
                     if operation == 0x64:
                         entries += 1
+                        self.diagnostics["search_entries"] = entries
                         tag, dn, _ = tlv(payload)
                         if tag != 4 or len(dn) > 1024:
                             raise ValueError("invalid_readback_dn")
@@ -85,20 +117,23 @@ class DynamicGate(GatedLdap):
                         if gated:
                             self.observed_dn, self.real_add_seen = observed_dn, True
                             started = time.monotonic()
+                            self.diagnostics["stage"] = "gate_wait"
                             self.received.set()
                             if not self.release.wait(GATE_BUDGET_SECONDS):
                                 raise ValueError("provider_gate_timeout")
                             self.gate_elapsed = time.monotonic() - started
                             if self.gate_elapsed >= GATE_BUDGET_SECONDS:
                                 raise ValueError("provider_gate_deadline")
+                    self.diagnostics["stage"] = "write_client"
                     client.sendall(response)
                     if gated:
                         self.replied.set()
                     if operation == terminal:
                         break
             raise ValueError("too_many_ldap_messages")
-        except (EOFError, OSError, ValueError):
+        except (EOFError, OSError, ValueError) as error:
             if not self.stopped.is_set():
+                self.diagnostics["failure"] = failure_category(error)
                 self.failed = True
                 self.received.set()
         finally:
@@ -135,6 +170,7 @@ def ldap_completion(instance, provider, trace, key):
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(instance.call, "GET", "ldap-gate/creds/reader", token=child)
             ready = gate.received.wait(1.5)
+            trace.diagnostics["ldap_completion_gate"] = dict(gate.diagnostics)
             trace.check("completion_real_provider_observed", ready and gate.real_add_seen and not gate.failed
                         and isinstance(gate.observed_dn, str))
             dn = gate.observed_dn

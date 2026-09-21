@@ -1,8 +1,9 @@
 import json
+import ssl
 import unittest
 
 from batch_provider_lease_live import REQUIRED, Trace, FixtureError, no_secret_failure
-from batch_provider_ldap_gate import fields, is_issue_readback
+from batch_provider_ldap_gate import fields, is_issue_readback, failure_category
 from online_evidence import complete_checks
 
 
@@ -16,6 +17,14 @@ RESULT = tlv(0x0a, b"\0") + tlv(4, b"") + tlv(4, b"")
 
 
 class ProviderLeaseGuards(unittest.TestCase):
+    def test_gate_error_diagnostic_never_exports_exception_message(self):
+        sentinel = "synthetic-secret-host-path-sentinel"
+        for error, expected in [(ssl.SSLError(sentinel), "tls_error"),
+                (TimeoutError(sentinel), "timeout"), (EOFError(sentinel), "eof"),
+                (OSError(sentinel), "socket_error"), (ValueError(sentinel), "protocol_error")]:
+            self.assertEqual(failure_category(error), expected)
+            self.assertNotIn(sentinel, json.dumps({"failure": failure_category(error)}))
+
     def test_incomplete_lifecycle_and_missing_cleanup_cannot_pass(self):
         rows = [{"case": name, "passed": True} for name in sorted(REQUIRED)]
         self.assertTrue(complete_checks(rows, required_cases=REQUIRED))
