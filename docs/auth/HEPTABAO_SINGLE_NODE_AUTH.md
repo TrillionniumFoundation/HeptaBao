@@ -357,7 +357,12 @@ Those failed receipts remain retained. The ACL-corrected `fec4f05` release passe
 the [141-check three-voter profile](../../qa/openbao-acceptance/evidence/userpass-names-ha-fec4f05.json)
 and a repeated [110-check real schema39 upgrade](../../qa/openbao-acceptance/evidence/userpass-names-upgrade-fec4f05.json).
 Its differential run passed the ACL cases but exposed the empty-list status
-difference, now corrected in source and awaiting a new release comparison.
+difference. The corrected `6f641ff` default-feature release passes the
+[70-case-per-side comparison](../../qa/openbao-acceptance/evidence/userpass-names-live-6f641ff.json),
+including empty lists before creation and after deletion, delegated policy
+configuration, root-policy login refusal and restart. Separate uppercase
+subroute observations confirm the deliberate canonical-account difference;
+they are not counted as parity. Earlier failed receipts remain preserved.
 Unicode name expansion and old-mount adoption are outside this slice.
 
 ## Userpass TOTP MFA

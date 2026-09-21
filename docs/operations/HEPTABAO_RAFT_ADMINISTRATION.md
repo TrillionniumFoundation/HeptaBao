@@ -111,8 +111,19 @@ the existing request deadline remains authoritative. No HTTP, environment or
 persisted switch enables this instrumentation. The gated QA uses two fresh
 three-voter groups, kills the owned process at the received event and checks
 recovery with a separate default-feature executable built from the same source.
-This exact-window qualification is pending; instrumentation is not ordinary
-release-binary evidence or a physical-power-loss test.
+The [111-check exact-window run](../../qa/openbao-acceptance/evidence/native-ha-gated-6f641ff.json)
+passes on source `6f641ff`. Both phases observe18 actual Stage receipts ending
+at index105; P precedes Publish, while Q observes commit106 before local
+generation23 changes. The killed node's complete local durable artifacts stay
+unchanged. Survivors and the recovered group retain the live values in P and the
+archived values in Q, including the ACL owner, followed by full restart and a
+new write/save. The instrumented executable SHA256 is
+`5a481b35a54c0b250b5160e9f68faace5e46da7137b2bea80fe23fa0b808e2b4`;
+recovery uses the separately built default-feature executable
+`346fc4fb464d0e49857a9e7348cc006ac9ab5bcaf0a436f1458da32197c310a7`.
+The ordinary executable also rejects fixture arguments before configuration
+loading. Instrumentation does not prove an identical crash point was observed
+inside the ordinary executable, physical power loss or separate hosts.
 
 A terminal native-upload admission rejection now drains valid remaining body
 framing outside the Service writer before sending its response. The decoder's
