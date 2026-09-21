@@ -150,6 +150,17 @@ failed receipts remain in the external-SSD workspace: one caught duplicate
 observation labels, another incorrectly required an active lease to reach its
 absolute cap. The corrected checks preserve exact captured limits and reject
 any grant or expiry beyond them.
+Fresh system defaults and Token API mount lifetimes now pass
+[194 observations per side](../qa/openbao-acceptance/evidence/token-mount-ttl-f2650f4.json),
+including the prior-grant renewal rule, changing mount maxima, root special
+cases, wrapping and restart. The [387-check real schema-32 upgrade](../qa/openbao-acceptance/evidence/token-defaults-upgrade-f2650f4.json)
+preserves old one-hour defaults and ambiguous issued caps, distinguishes old
+missing grant history from new recorded grants, verifies read-only byte
+preservation and refused downgrade, and checks a separate fresh 32-day store.
+The [202-observation child-token comparison](../qa/openbao-acceptance/evidence/token-child-lifetime-f2650f4.json)
+also passes on this candidate. AppRole credential defaults and missing legacy
+SecretID metadata remain separate work; these results do not close full auth
+compatibility or production qualification.
 The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
 and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
 the forged headers now carry the allowed address while the actual socket uses a
