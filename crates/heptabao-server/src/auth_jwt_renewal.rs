@@ -3,7 +3,27 @@
 //! contacting its issuer or comparing the role's current policy/claim bindings.
 use super::*;
 
+// Framework duration fields treat null exactly like omission. Zero is an
+// explicit value and leaves TTL selection to the current auth mount.
+pub(super) fn role_duration(body: &Value, field: &str, previous: u64) -> Result<u64, AuthError> {
+    if body.get(field).is_none_or(Value::is_null) {
+        Ok(previous)
+    } else {
+        duration(body, field, previous)
+    }
+}
+
 impl AuthState {
+    /// Zero role limits were rejected before the native-default format fence.
+    /// Existing positive values retain their exact stored meaning.
+    pub(crate) fn has_jwt_native_ttl_defaults(&self) -> bool {
+        self.jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.roles.values())
+            .any(|role| role.token_ttl == 0 || role.token_max_ttl == 0)
+    }
+
     pub(crate) fn has_jwt_renewal_state(&self) -> bool {
         self.tokens
             .values()
@@ -23,7 +43,12 @@ impl AuthState {
             .flat_map(|mounts| mounts.values())
             .flat_map(|mount| mount.roles.values())
         {
-            if role.token_period > MAX_TTL || role.token_explicit_max_ttl > MAX_TTL {
+            if role.token_ttl > MAX_TTL
+                || role.token_max_ttl > MAX_TTL
+                || role.token_max_ttl > 0 && role.token_ttl > role.token_max_ttl
+                || role.token_period > MAX_TTL
+                || role.token_explicit_max_ttl > MAX_TTL
+            {
                 return Err(bad("invalid JWT role renewal limits"));
             }
         }

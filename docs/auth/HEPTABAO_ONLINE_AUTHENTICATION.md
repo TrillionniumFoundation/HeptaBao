@@ -373,6 +373,13 @@ restoration, provider-independent service-token renewal and cleanup. This is
 one disposable local cluster, not qualification of every distribution or
 production deployment; later candidate changes still need relevant regression.
 
+The [schema-31 ARM64 KIND run](../../qa/openbao-acceptance/evidence/actual-kubernetes-cidrs-eab043f.json)
+passes 65 checks, retaining those scenarios and adding real socket-source CIDRs,
+forged allowed-address headers, issued constraints after role clearing, restart
+and local renewal while reviewer RBAC is revoked. It uses the production binary
+from `d2c669d` and the frozen clean harness `eab043f`; the disposable cluster was
+removed after the run. This remains one Kubernetes v1.35.0 cluster on one host.
+
 The schema-28 API-CA transport changes passed local Rust tests and strict Clippy.
 The [API TLS comparison](../../qa/openbao-acceptance/evidence/jwt-api-tls-856ef3d.json)
 passed 141 observations per side and the

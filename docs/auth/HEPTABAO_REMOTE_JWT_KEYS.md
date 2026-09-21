@@ -151,6 +151,17 @@ independent of the assertion's expiry. Schema 18 protects this provenance and th
 distinct periodic/explicit maximum semantics; see the
 [JWT role and renewal contract](HEPTABAO_SINGLE_NODE_AUTH.md#bounded-jwt-authentication).
 
+New JWT roles store zero `token_ttl` and `token_max_ttl` by default, independently
+selecting the current mount's default and maximum. Explicit zero restores that
+inheritance. Null or omitted TTL, maximum, period and explicit-maximum fields
+preserve existing role values; a nonzero maximum must not be smaller than a
+nonzero TTL. Older stored positive values keep their exact meaning until an
+administrator changes them. Schema 32 fences zero role limits. Renewal keeps
+issued policies, period lookup snapshots and absolute explicit caps, while
+ordinary limits use current role/mount values. The process-wide default remains
+one hour; full OpenBao system-default and token-mount tuning parity are separate
+work, so this does not imply a matching untuned deployment default.
+
 New configurations use native role time defaults, with no implicit one-hour JWT
 lifetime limit. Explicit legacy `clock_skew_seconds` and
 `maximum_token_lifetime_seconds` remain compatibility extensions; the latter

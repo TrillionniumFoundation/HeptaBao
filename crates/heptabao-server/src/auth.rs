@@ -4550,29 +4550,27 @@ impl AuthState {
                     true,
                 )?;
                 self.validate_assignment(actor, &role_policies)?;
-                let token_ttl = duration(
+                let token_ttl = jwt_renewal::role_duration(
                     body,
                     "token_ttl",
-                    previous.as_ref().map_or(DEFAULT_TTL, |role| role.token_ttl),
+                    previous.as_ref().map_or(0, |role| role.token_ttl),
                 )?;
-                let token_max_ttl = duration(
+                let token_max_ttl = jwt_renewal::role_duration(
                     body,
                     "token_max_ttl",
-                    previous
-                        .as_ref()
-                        .map_or(token_ttl, |role| role.token_max_ttl),
+                    previous.as_ref().map_or(0, |role| role.token_max_ttl),
                 )?;
                 let token_num_uses = number(
                     body,
                     "token_num_uses",
                     previous.as_ref().map_or(0, |role| role.token_num_uses),
                 )?;
-                let token_period = duration(
+                let token_period = jwt_renewal::role_duration(
                     body,
                     "token_period",
                     previous.as_ref().map_or(0, |role| role.token_period),
                 )?;
-                let token_explicit_max_ttl = duration(
+                let token_explicit_max_ttl = jwt_renewal::role_duration(
                     body,
                     "token_explicit_max_ttl",
                     previous
@@ -4594,9 +4592,8 @@ impl AuthState {
                     "not_before_leeway",
                     previous.as_ref().and_then(|role| role.not_before_leeway),
                 )?;
-                if token_ttl == 0
-                    || token_ttl > MAX_TTL
-                    || token_max_ttl < token_ttl
+                if token_ttl > MAX_TTL
+                    || token_max_ttl > 0 && token_max_ttl < token_ttl
                     || token_max_ttl > MAX_TTL
                     || token_period > MAX_TTL
                     || token_explicit_max_ttl > MAX_TTL

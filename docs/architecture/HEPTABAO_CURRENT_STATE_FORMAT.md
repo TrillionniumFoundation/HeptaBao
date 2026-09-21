@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **31**. Its source constant is
+The current Service state schema is **32**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -70,7 +70,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 28 | Administrator-configured JWT/OIDC HTTPS transport and source-specific CA fields; native LDAP CIDRs and Kubernetes API HTTPS authority must be absent. |
 | 29 | Native LDAP source constraints and administrator-configured Kubernetes authentication HTTPS transport; JWT bound-claim predicates and native LDAP default-policy metadata must be absent. |
 | 30 | Native JWT bound-claim rules and native LDAP default-policy and policy-list-presence semantics; Kubernetes role and direct-token source constraints must be absent. |
-| 31 | Current format, adding Kubernetes role source constraints and their issued-token snapshots. |
+| 31 | Kubernetes role source constraints and their issued-token snapshots; zero JWT role TTL or maximum must be absent. |
+| 32 | Current format, adding JWT role zero-value TTL and maximum inheritance. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -250,8 +251,14 @@ from old serialized roles. Clearing a role's constraint changes future logins;
 it cannot remove issued token constraints or their format fence. Token-API
 children retain inherited source constraints under the existing token format.
 
+Schema 32 is required for a JWT role with zero TTL or maximum, which selects the
+current mount's corresponding setting. Existing positive role values are not
+reinterpreted as defaults. Null and omitted duration updates preserve existing
+values; explicit zero changes the role to inheritance. Issued token policies,
+period lookup snapshots and absolute explicit caps remain unchanged.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 31. An authenticated
+it. Initialization and committed mutations use schema 32. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -265,7 +272,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-30 binary cannot read schema-31 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-31 binary cannot read schema-32 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

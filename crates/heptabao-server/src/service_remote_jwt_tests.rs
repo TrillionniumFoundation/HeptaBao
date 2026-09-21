@@ -92,6 +92,51 @@ fn fixture(root: &Root) -> TestResult<(Service, String)> {
 }
 
 #[test]
+fn jwt_zero_role_limits_require_new_format_but_old_positive_limits_remain_admitted() -> TestResult {
+    let root = Root::new();
+    let (mut service, admin) = fixture(&root)?;
+    let mut state = service.state.as_ref().ok_or("state")?.clone();
+    state.schema = 31;
+    assert!(state.validate_format().is_ok());
+    for limits in [
+        json!({"role_type":"jwt","token_ttl":0,"token_max_ttl":600}),
+        json!({"role_type":"jwt","token_ttl":120,"token_max_ttl":0}),
+    ] {
+        assert_eq!(
+            call(&mut service, "POST", "auth/remote/role/app", &admin, limits).status,
+            204
+        );
+        let mut state = service.state.as_ref().ok_or("state")?.clone();
+        state.schema = 31;
+        assert_eq!(
+            state
+                .validate_format()
+                .err()
+                .ok_or("missing TTL schema fence")?
+                .status,
+            503
+        );
+        state.schema = CURRENT_STATE_SCHEMA;
+        assert!(state.validate_format().is_ok());
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/remote/role/app",
+            &admin,
+            json!({"role_type":"jwt","token_ttl":120,"token_max_ttl":600})
+        )
+        .status,
+        204
+    );
+    let mut state = service.state.as_ref().ok_or("state")?.clone();
+    state.schema = 31;
+    assert!(state.validate_format().is_ok());
+    Ok(())
+}
+
+#[test]
 fn config_preflight_failure_preserves_old_config_and_concurrent_write_survives_success()
 -> TestResult {
     let root = Root::new();
