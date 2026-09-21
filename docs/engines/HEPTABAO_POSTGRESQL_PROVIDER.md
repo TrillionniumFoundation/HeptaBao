@@ -1,9 +1,10 @@
 # PostgreSQL dynamic credentials and renewable lease implementation
 
-Status: implemented development profile; actual PostgreSQL 17 server execution is
-an **unmet qualification gate** in the current delivery. TLS/SCRAM protocol-model
-success is not SQL execution, a database login, external revocation or OpenBao
-PostgreSQL plugin compatibility. All production, migration and independent
+Status: implemented development profile with source-bound real PostgreSQL 17.11
+provider and batch-lease execution receipts below. TLS/SCRAM protocol models
+remain separate from SQL, database login and external revocation evidence.
+These scoped runs do not establish full OpenBao PostgreSQL plugin compatibility;
+changed candidates require their own runs. Production, migration and independent
 compatibility authority remains false.
 
 ## Long-lived lease retirement invariant
@@ -193,7 +194,7 @@ This is repository-controlled execution, not independent provider qualification.
 Every changed candidate must execute the real runner again; the wire model cannot
 substitute for SQL, OID/DDL semantics, login or session-termination evidence.
 
-The latest SSD Lima guest run bound to source head `45c7edc` used PostgreSQL
+The SSD Lima guest provider run bound to source head `45c7edc` used PostgreSQL
 17.11 from the arm64 PGDG package and candidate binary SHA-256
 `e389be313be0c5240a2dadd33cd866ae215e28f4c2f2ec7a95dba26de6b1e72a`. Its
 [54-check receipt](../../qa/openbao-acceptance/evidence/postgresql-live-45c7edc.json)
@@ -202,6 +203,11 @@ restart/outage reconciliation, active-session termination and more than 128
 issue/revoke lifecycles. The receipt is scoped repository evidence; it does not
 admit static roles, root rotation, full OpenBao statement/template/error parity,
 multi-host provider faults or independent qualification.
+
+A later `eeab30a` binary passed [46 real PostgreSQL batch-lease checks](../../qa/openbao-acceptance/evidence/batch-postgres-lease-eeab30a.json),
+including actual generated-role login, lease retirement and parent revocation.
+Its exact binary and runner identities are recorded in that receipt; it does not
+transfer provider qualification to later binaries.
 
 ## Bounds, recovery and operation
 

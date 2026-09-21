@@ -733,14 +733,28 @@ and 204 observations (SHA256
 `jwt_batch_live.py` compares those observations with an explicitly disclosed
 static PEM-to-inline-JWKS configuration adaptation. `jwt_batch_upgrade.py`
 uses three actual schema43 stores to separate role-type, mount-type and alias
-metadata reader gates. Their presence alone is not a qualification result.
+metadata reader gates.
 The first schema44 candidate (`e4fe91c`) completed all 204 observations per
 side but differed in five missing-role reads: OpenBao returns HTTP 404 with an
 empty `errors` list. The candidate incorrectly added an error message. The
-corrected read keeps authorization and invalid-write rejection unchanged; its
-new binary still requires the full comparison and upgrade/HA runs. The failed
+corrected read keeps authorization and invalid-write rejection unchanged. The failed
 receipt remains on the external SSD (SHA256
 `b817d0d07c76821a44b3c7291ef890aad22b4689ca99d94ccaf4117f4af393cb`).
+
+The corrected `cfc0102` binary (SHA256
+`3f803313c4465d587d4c4ede7e4326fc78472275e08897ef35eacdffa0a3c9c3`)
+passes [204 observations per side](../../qa/openbao-acceptance/evidence/jwt-batch-live-cfc0102.json),
+[289 real schema43-to-44 upgrade checks](../../qa/openbao-acceptance/evidence/jwt-batch-upgrade-cfc0102.json),
+[44 remote HTTPS JWKS checks](../../qa/openbao-acceptance/evidence/jwt-remote-batch-live-cfc0102.json)
+and [149 checks across three TLS voters](../../qa/openbao-acceptance/evidence/jwt-batch-ha-cfc0102.json).
+Upgrade uses three independent old-binary stores; the first role-type, mount-type
+and login-metadata mutations each immediately reject the old reader. Existing
+service tokens retain renewal metadata and orphan status on all three renewal
+routes. HA exercises standby login, Identity disable/restore, assertion reuse,
+role/mount removal, leader change and full restart with reads through every voter.
+The remote immediate issue/use chain stayed within one integer second in this run;
+it does not resolve the separate concurrent-clock gap above. Each receipt binds
+clean unchanged source, binary and helper inputs, secret scans and process cleanup.
 OIDC browser roles, arbitrary user-claim/claim mappings, MFA and batch key
 rotation remain outside this ordinary JWT slice.
 

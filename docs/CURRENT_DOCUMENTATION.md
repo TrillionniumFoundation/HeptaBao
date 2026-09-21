@@ -202,8 +202,10 @@ coverage differs from the Linux PR gate; its obsolete branch trigger is retired.
 
 ## Current scalability, cutover and release-candidate evidence
 
-The bounded whole-state runtime remains a scalability blocker rather than a
-record-oriented storage claim. The current capacity live profile records logical
+The current KV1 record path avoids whole-state encoding for ordinary value/index
+deltas; opaque owners, snapshots and maintenance retain the scalability limits
+described in [the capacity contract](operations/HEPTABAO_CAPACITY_AND_GROWTH.md).
+The capacity live profile records logical
 state growth, durable bytes, write latency and Linux RSS so candidate changes can
 be compared with measured write amplification instead of only raising constants.
 HTTP and authenticated HA request workers also use a bounded deadline when
@@ -265,7 +267,7 @@ server dependencies. Current module status and all independent gates are unchang
 
 ## Schema 4 external boundaries and qualification distinction
 
-- [PostgreSQL provider, renewable lease and reconcile](engines/HEPTABAO_POSTGRESQL_PROVIDER.md): actual PostgreSQL 17 acceptance remains blocked without the server binaries; wire models are labelled explicitly.
+- [PostgreSQL provider, renewable lease and reconcile](engines/HEPTABAO_POSTGRESQL_PROVIDER.md): real PostgreSQL 17.11 execution has source-bound provider and batch-lease receipts; full plugin parity and independent acceptance remain open, and changed candidates require their own runs.
 - [Remote JWKS / Discovery-backed JWT](auth/HEPTABAO_REMOTE_JWT_KEYS.md): fresh verified HTTPS keys, not browser OIDC code flow.
 - [Raft membership / persisted snapshots / Autopilot](operations/HEPTABAO_RAFT_ADMINISTRATION.md): same-version pre-enrolled native consensus operations, not full restore/migration parity.
 
