@@ -342,7 +342,10 @@ Imported OIDC code sessions are discarded. External database/OpenLDAP secret
 state and changed autopilot/promotion configuration return409. Complete local
 and HA closure/capacity admission runs before staging; later append failure can
 still have an uncertain outcome and fences recovery instead of allowing retry.
-This implementation awaits its separate real-process restore qualification.
+The same-host three-voter restore and release-binary process-death profiles
+pass; their bounded coverage and receipts are recorded in
+[Raft administration](HEPTABAO_RAFT_ADMINISTRATION.md). Exact post-Stage and
+commit-before-local-persist crash windows remain separate fault work.
 OpenBao archive migration,
 cross-seal restore and non-Linux native transfer remain unimplemented.
 Explicit JSON HA export and Raft's internal snapshot replication are separate.

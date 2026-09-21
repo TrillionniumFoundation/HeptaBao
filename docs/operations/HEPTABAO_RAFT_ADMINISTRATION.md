@@ -81,7 +81,14 @@ one; it does not rewind the local ledger, Raft log or membership. Complete
 closure/capacity preflight precedes Stage, and uncertain publication outcomes
 require recovery. The first profile requires a root actor and unchanged Raft
 administration state, discards imported OIDC pending sessions and rejects external
-database/OpenLDAP secret state. Its separate real-process qualification is pending.
+database/OpenLDAP secret state. The `0b31fb2` release passes a
+[296-check real-process restore profile](../../qa/openbao-acceptance/evidence/native-ha-restore-0b31fb2.json):
+raw and official CLI restores, forward-moving generations/epochs, all-voter
+hashes, actual schema38 reader rejection, expired actor/body budgets, late
+RADIUS acceptance fencing, full restart and leadership transfer. Independent
+cases verify administration-state rejection, empty database registry rollback
+and the OpenLDAP mount guard with unchanged data after refusal. A configured
+external database guard and external-provider rollback are not covered.
 JSON backup keeps its separate behavior.
 
 The [68-check restore fault profile](../../qa/openbao-acceptance/evidence/native-ha-fault-0b31fb2.json)
