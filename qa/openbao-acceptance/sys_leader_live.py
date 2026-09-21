@@ -30,16 +30,58 @@ from remote_jwks_live import Instance
 
 COMMON_PHASES = frozenset({'uninitialized','post','head','initialized','sealed','unsealed',
     'anonymous','invalid_token','namespace_wrap','body_ignored','finite_issued','finite',
-    'finite_unchanged','resealed'})
+    'finite_unchanged','resealed','http_edges'})
 HA_PHASES = frozenset({'ha_initial','ha_finite_issued','ha_standby_finite','ha_uses_unchanged',
     'ha_reads_unchanged','ha_restarted_sealed','ha_reunsealed','ha_quorum_lost',
     'ha_partition_diagnostic','ha_partition_read_rejected','ha_recovered','ha_step_down',
     'ha_successor','ha_successor_changed','ha_value_retained','ha_cleanup','plaintext_absent'})
 ALLOWED = frozenset({'ha_enabled','is_self','leader_address','raft_committed_index','raft_applied_index'})
 
+# Exact outer-middleware/dedicated-handler observations. Status 200 means the
+# normal leader response for the current lifecycle (HA sealed is then 503).
+HTTP_EDGE_CASES = (
+    ('list','GET','list=true',{},None,200),
+    ('scan','GET','scan=true',{},None,200),
+    ('both','GET','list=true&scan=true',{},None,400),
+    ('invalid_selector','GET','scan=invalid',{},None,400),
+    ('unknown','GET','unknown=value',{},None,200),
+    ('bare','GET','bare',{},None,200),
+    ('invalid_escape','GET','unknown=%GG',{},None,200),
+    ('duplicate','GET','list=true&list=false',{},None,200),
+    ('bad_wrap','GET','',{'X-Vault-Wrap-TTL':'invalid'},None,200),
+    ('bad_format','GET','',{'X-Vault-Wrap-Format':'synthetic'},None,200),
+    ('bad_namespace','GET','',{'X-Vault-Namespace':'a//b'},None,200),
+    ('unsupported_header','GET','',{'X-Vault-Synthetic':'x'},None,200),
+    ('post_invalid_json','POST','',{'Content-Type':'application/json'},'{',405),
+    ('post_text','POST','',{'Content-Type':'text/plain'},'synthetic',405),
+    ('get_text','GET','',{'Content-Type':'text/plain'},'synthetic',200),
+    ('first_false','GET','list=false&list=true&scan=true',{},None,200),
+    ('first_true','GET','list=true&list=false&scan=true',{},None,400),
+    ('first_empty','GET','list=&list=true&scan=true',{},None,200),
+    ('first_invalid','GET','list=invalid&list=false',{},None,400),
+    ('second_invalid','GET','list=false&list=invalid',{},None,200),
+    ('bad_value_skipped','GET','list=%GG&list=true&scan=true',{},None,400),
+    ('bad_value_only','GET','list=%GG&scan=true',{},None,200),
+    ('bad_key_skipped','GET','li%GGst=true&scan=true',{},None,200),
+    ('bad_unrelated_then_both','GET','unrelated=%GG&list=true&scan=true',{},None,400),
+    ('semicolon_pair_skipped','GET','list=true;x=1&scan=true',{},None,200),
+    ('semicolon_scan_skipped','GET','list=true&scan=true;x=1',{},None,200),
+    ('encoded_semicolon','GET','list=true%3B',{},None,400),
+    ('encoded_key','GET','%6cist=true&scan=true',{},None,400),
+    ('bare_first','GET','list&list=true&scan=true',{},None,200),
+    ('nul_value','GET','list=%00',{},None,400),
+    ('invalid_utf8_value','GET','scan=%FF',{},None,400),
+    ('invalid_utf8_key','GET','%FF=true&scan=true',{},None,200),
+    ('both_false','GET','list=FALSE&scan=0',{},None,200),
+    ('post_invalid_selector','POST','list=invalid&scan=true',{},None,405),
+    ('head_invalid_selector','HEAD','list=invalid&scan=true',{},None,405),
+)
+
 
 def complete(rows, *, oracle_only=False):
-    required = {'complete'} | {prefix+'_'+name for prefix in ('official_file','official_raft') for name in COMMON_PHASES}
+    prefixes = ('official_file','official_raft') if oracle_only else ('official_file','official_raft','candidate_file')
+    required = {'complete'} | {prefix+'_'+name for prefix in prefixes for name in COMMON_PHASES}
+    required |= {prefix+'_http_'+case[0] for prefix in prefixes for case in HTTP_EDGE_CASES}
     if not oracle_only:
         required |= { 'candidate_file_'+name for name in COMMON_PHASES } | HA_PHASES
     return (complete_checks(rows, required_cases=frozenset(required)) and rows[-1]['case']=='complete')
@@ -72,13 +114,26 @@ class Endpoint:
         values={} if headers is None else dict(headers)
         if token:values['X-Vault-Token']=token
         if body is not None:values['Content-Type']='application/json'
-        connection=http.client.HTTPSConnection('127.0.0.1',self.port,context=self.context,timeout=15)
+        return self.raw_call(method,path,None if body is None else json.dumps(body),headers=values)
+    def raw_call(self,method,path,body=None,*,headers=None,timeout=15):
+        connection=http.client.HTTPSConnection('127.0.0.1',self.port,context=self.context,timeout=timeout)
         try:
-            connection.request(method,'/v1/'+path,None if body is None else json.dumps(body),values)
+            connection.request(method,'/v1/'+path,body,{} if headers is None else headers)
             response=connection.getresponse();raw=response.read(65537)
             if len(raw)>65536:raise FixtureError('oversize_status_response')
             return response.status,json.loads(raw) if raw else {}
         finally:connection.close()
+
+
+def http_edges(endpoint,prefix,ha,check,observations):
+    for name,method,query,headers,raw_body,expected in HTTP_EDGE_CASES:
+        path='sys/leader'+('?' + query if query else '')
+        status,body=endpoint.raw_call(method,path,raw_body,headers=headers,timeout=5)
+        valid=(shape(status,body,ha=ha,sealed=True,official=prefix.startswith('official')) if expected==200
+               else status==expected and body==({} if method=='HEAD' else {'errors':[]}))
+        check(prefix+'_http_'+name,valid)
+        observations.append({'case':prefix+'_http_'+name,'status':status,'fields':sorted(body)})
+    check(prefix+'_http_edges',True)
 
 
 class Official:
@@ -123,6 +178,7 @@ def lifecycle(endpoint,prefix,ha,check,observations):
             address=endpoint.address if ha and not sealed else None,official=prefix.startswith('official')))
         observations.append({'case':prefix+'_'+name,'status':status,'fields':sorted(value)})
     observe('uninitialized',sealed=True)
+    http_edges(endpoint,prefix,ha,check,observations)
     check(prefix+'_post',endpoint.call('POST',body={})==(405,{'errors':[]}))
     check(prefix+'_head',endpoint.call('HEAD')==(405,{}))
     status,initialized=endpoint.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})

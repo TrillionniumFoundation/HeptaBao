@@ -77,6 +77,15 @@ administration state, discards imported OIDC pending sessions and rejects extern
 database/OpenLDAP secret state. Its separate real-process qualification is pending.
 JSON backup keeps its separate behavior.
 
+A terminal native-upload admission rejection now drains valid remaining body
+framing outside the Service writer before sending its response. The decoder's
+size/chunk limits and original connection deadline still apply; no archive is
+parsed or staged and no application operation is retried. Download and redirect
+paths do not drain. This addresses complete uploads losing their refusal when
+the connection closes with unread request bytes; incomplete or slow uploads,
+earlier parse/rate-limit failures and expired connection budgets remain outside
+that response-delivery guarantee. Candidate live verification is pending.
+
 The pinned OpenBao2.6.2 CLI has an independently reproduced redirect limitation:
 its snapshot client discards the second response, and restore does not rewind
 the original file body. A [small TLS transport observation](../../qa/openbao-acceptance/evidence/official-snapshot-cli-redirect-observation.json)
@@ -99,7 +108,12 @@ schema39 [78-check live profile](../../qa/openbao-acceptance/evidence/sys-leader
 compares the official file/Raft lifecycle and exercises three TLS candidate
 processes, finite-use preservation, seal/restart, loss of quorum and leadership
 transfer. A diagnostic remains available during a partition while a protected
-read fails. Query/header parsing edge cases and the two omitted fields remain
+read fails. The HTTP parser now retains the dedicated handler's original method,
+ignores logical body/header fields and checks only the global GET list/scan
+selectors using Go's first-valid-query-value behavior. Conflicting true selectors
+or invalid booleans return400 with an empty errors list; framing and deadline
+limits remain. Its expanded live comparison is pending. Unsupported HTTP methods
+outside the parser's existing method set and the two omitted fields remain
 separate compatibility work.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
 passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,

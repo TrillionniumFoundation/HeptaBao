@@ -236,7 +236,9 @@ pub(super) fn execute(
         }
     };
     let mut pending = match execution {
-        RequestExecution::Complete(response) => return NativeReply::Json(response),
+        RequestExecution::Complete(response) => {
+            return rejected_upload_response(reader, native.body, deadline, response);
+        }
         RequestExecution::External(pending) => pending,
     };
     let (observation, file) = match BodyReader::new(reader, native.body, deadline) {
@@ -262,6 +264,31 @@ pub(super) fn execute(
     } else {
         NativeReply::Json(response)
     }
+}
+
+fn rejected_upload_response(
+    reader: &mut impl Read,
+    body: NativeBody,
+    deadline: Instant,
+    response: Response,
+) -> NativeReply {
+    // Admission has already refused the request and released the writer. Drain
+    // only its bounded framing, without a spool, archive parsing or another
+    // Service call. Closing a TCP connection with unread upload bytes can reset
+    // the response while clients are still sending, hiding the actual refusal.
+    // Both the decoder and DeadlineStream retain the original request deadline;
+    // malformed, incomplete or slow uploads never acquire a new I/O budget.
+    if !matches!(body.framing, Framing::Download)
+        && let Ok(mut body) = BodyReader::new(reader, body, deadline)
+    {
+        let mut buffer = Zeroizing::new([0; 8192]);
+        while let Ok(count) = body.read(&mut *buffer) {
+            if count == 0 {
+                break;
+            }
+        }
+    }
+    NativeReply::Json(response)
 }
 
 pub(super) fn write_file_response(
@@ -294,6 +321,62 @@ mod redirect_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn rejected_uploads_drain_framing_without_changing_the_refusal_or_deadline() -> io::Result<()> {
+        for (framing, prefix, remaining) in [
+            (Framing::Length(3), b"a".as_slice(), b"bc".as_slice()),
+            (
+                Framing::Chunked,
+                b"3\r\na".as_slice(),
+                b"bc\r\n0\r\n\r\n".as_slice(),
+            ),
+        ] {
+            let mut source = remaining;
+            let reply = rejected_upload_response(
+                &mut source,
+                NativeBody {
+                    framing,
+                    prefix: Zeroizing::new(prefix.to_vec()),
+                },
+                Instant::now() + Duration::from_secs(1),
+                Response::error(403, "permission denied"),
+            );
+            assert!(source.is_empty());
+            let mut wire = Vec::new();
+            reply.write(&mut wire, false)?;
+            assert!(wire.starts_with(b"HTTP/1.1 403 Forbidden\r\n"));
+            assert!(wire.ends_with(br#"{"errors":["permission denied"]}"#));
+        }
+        struct Unread(usize);
+        impl Read for Unread {
+            fn read(&mut self, _: &mut [u8]) -> io::Result<usize> {
+                self.0 += 1;
+                Err(io::Error::other("unexpected socket read"))
+            }
+        }
+        for (framing, deadline) in [
+            (Framing::Download, Instant::now() + Duration::from_secs(1)),
+            (
+                Framing::Length(1),
+                Instant::now() - Duration::from_millis(1),
+            ),
+        ] {
+            let mut source = Unread(0);
+            let reply = rejected_upload_response(
+                &mut source,
+                NativeBody {
+                    framing,
+                    prefix: Zeroizing::new(Vec::new()),
+                },
+                deadline,
+                Response::error(403, "permission denied"),
+            );
+            assert_eq!(source.0, 0);
+            assert!(matches!(reply, NativeReply::Json(ref response) if response.status == 403));
+        }
+        Ok(())
+    }
+
     #[test]
     fn native_chunked_decoder_accepts_split_chunks_and_rejects_ambiguous_or_unbounded_framing()
     -> io::Result<()> {

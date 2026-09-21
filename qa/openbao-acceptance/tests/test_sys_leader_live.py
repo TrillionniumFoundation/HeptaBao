@@ -5,6 +5,14 @@ import sys_leader_live as fixture
 class FakeLifecycle:
     address='https://127.0.0.1:8200'
     def __init__(self,ha):self.ha=ha;self.sealed=True;self.calls=[]
+    def raw_call(self,method,path,body=None,*,headers=None,timeout=15):
+        for name,wanted_method,query,wanted_headers,wanted_body,expected in fixture.HTTP_EDGE_CASES:
+            if (method,path,headers,body)==(wanted_method,'sys/leader'+('?' + query if query else ''),wanted_headers,wanted_body):
+                self.calls.append((method,path,'',headers))
+                if expected!=200:return expected,{} if method=='HEAD' else {'errors':[]}
+                if self.ha and self.sealed:return 503,{'errors':['Vault is sealed']}
+                return 200,{'ha_enabled':False}
+        raise AssertionError('unexpected raw leader request')
     def call(self,method,path='sys/leader',body=None,*,token='',headers=None):
         self.calls.append((method,path,token,headers))
         if path=='sys/leader':
@@ -67,5 +75,28 @@ class LeaderGuards(unittest.TestCase):
         self.assertFalse(fixture.complete([r for r in rows if r['case']!='official_raft_sealed'],oracle_only=True))
         self.assertFalse(fixture.complete(rows+[rows[-1]],oracle_only=True))
         self.assertFalse(fixture.complete([],oracle_only=True))
+
+    def test_actual_edge_phase_is_required_and_cannot_hide_global_selector_rejection(self):
+        rows=[];observations=[]
+        def check(name,condition):
+            self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
+        endpoint=FakeLifecycle(False)
+        fixture.http_edges(endpoint,'official_file',False,check,observations)
+        self.assertEqual({row['case'] for row in observations},
+            {'official_file_http_'+case[0] for case in fixture.HTTP_EDGE_CASES})
+        self.assertEqual(len(rows),len(set(row['case'] for row in rows)))
+        self.assertTrue(any(query=='sys/leader?list=%GG&list=true&scan=true' for _,query,_,_ in endpoint.calls))
+        class Wrong(FakeLifecycle):
+            def raw_call(self,method,path,body=None,**kwargs):
+                if path=='sys/leader?list=true&scan=true':return 200,{'ha_enabled':False}
+                return super().raw_call(method,path,body,**kwargs)
+        with self.assertRaises(AssertionError):
+            fixture.http_edges(Wrong(False),'official_file',False,check,[])
+        all_rows=[]
+        for prefix,ha in [('official_file',False),('official_raft',True)]:
+            fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
+        all_rows.append({'case':'complete','passed':True})
+        self.assertTrue(fixture.complete(all_rows,oracle_only=True))
+        self.assertFalse(fixture.complete([row for row in all_rows if row['case']!='official_raft_http_first_empty'],oracle_only=True))
 
 if __name__=='__main__':unittest.main()

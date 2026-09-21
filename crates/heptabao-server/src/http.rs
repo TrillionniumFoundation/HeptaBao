@@ -28,6 +28,9 @@ use zeroize::{Zeroize, Zeroizing};
 #[path = "http_snapshot.rs"]
 mod snapshot;
 
+#[path = "http_leader.rs"]
+mod leader;
+
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
@@ -413,17 +416,20 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         };
                         (reply, is_head)
                     }
-                    Err(error) => (
-                        snapshot::NativeReply::Json(audited_wire_rejection(
+                    Err(error) => {
+                        let mut response = audited_wire_rejection(
                             &service,
                             &attempt_id,
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
                             deadline,
-                        )),
-                        false,
-                    ),
+                        );
+                        if error.empty_errors && response.status == error.status {
+                            response.body = json!({"errors": []});
+                        }
+                        (snapshot::NativeReply::Json(response), false)
+                    }
                 };
                 let _ = reply.write(&mut stream, head);
             });
@@ -633,12 +639,16 @@ struct Request {
 struct ParseError {
     status: u16,
     message: &'static str,
+    // The dedicated leader handler's global selector rejection has no logical
+    // error message. Do not replace an audit failure with this empty shape.
+    empty_errors: bool,
 }
 impl From<io::Error> for ParseError {
     fn from(_: io::Error) -> Self {
         Self {
             status: 400,
             message: "incomplete or timed out HTTP request",
+            empty_errors: false,
         }
     }
 }
@@ -646,6 +656,7 @@ fn bad(message: &'static str) -> ParseError {
     ParseError {
         status: 400,
         message,
+        empty_errors: false,
     }
 }
 
@@ -703,6 +714,7 @@ fn read_request_mode(
     if target.len() > 8192 || !target.starts_with("/v1/") {
         return Err(bad("request must use /v1/ API"));
     }
+    let leader_route = target[4..].split('?').next() == Some("sys/leader");
     let mut map = BTreeMap::new();
     for (count, line) in lines.enumerate() {
         if count >= 100 || line.starts_with([' ', '\t']) {
@@ -726,36 +738,44 @@ fn read_request_mode(
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }
-    if map.keys().any(|name| {
-        (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
-            && !matches!(
-                name.as_str(),
-                "x-vault-token"
-                    | "x-vault-namespace"
-                    | "x-vault-request"
-                    | "x-vault-wrap-ttl"
-                    | "x-vault-wrap-format"
-            )
-    }) {
+    if !leader_route
+        && map.keys().any(|name| {
+            (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
+                && !matches!(
+                    name.as_str(),
+                    "x-vault-token"
+                        | "x-vault-namespace"
+                        | "x-vault-request"
+                        | "x-vault-wrap-ttl"
+                        | "x-vault-wrap-format"
+                )
+        })
+    {
         return Err(ParseError {
             status: 501,
             message: "requested OpenBao header semantics are not implemented",
+            empty_errors: false,
         });
     }
-    if map
-        .get("x-vault-wrap-format")
-        .is_some_and(|value| value.as_str() != "uuid")
+    if !leader_route
+        && map
+            .get("x-vault-wrap-format")
+            .is_some_and(|value| value.as_str() != "uuid")
     {
         return Err(ParseError {
             status: 501,
             message: "only opaque response wrapping tokens are supported",
+            empty_errors: false,
         });
     }
-    let wrap_ttl_seconds = map
-        .get("x-vault-wrap-ttl")
-        .map(|value| parse_wrap_ttl(value))
-        .transpose()?
-        .flatten();
+    let wrap_ttl_seconds = if leader_route {
+        None
+    } else {
+        map.get("x-vault-wrap-ttl")
+            .map(|value| parse_wrap_ttl(value))
+            .transpose()?
+            .flatten()
+    };
     let route = target[4..].split('?').next().unwrap_or_default();
     let snapshot_route = matches!(
         route,
@@ -806,9 +826,14 @@ fn read_request_mode(
         return Err(ParseError {
             status: 413,
             message: "request body exceeds limit",
+            empty_errors: false,
         });
     }
-    let raw_namespace = map.get("x-vault-namespace").map_or("", |s| s.as_str());
+    let raw_namespace = if leader_route {
+        ""
+    } else {
+        map.get("x-vault-namespace").map_or("", |s| s.as_str())
+    };
     if raw_namespace == "/" || raw_namespace.contains("//") {
         return Err(bad("ambiguous namespace segments"));
     }
@@ -816,12 +841,17 @@ fn read_request_mode(
         .strip_suffix('/')
         .unwrap_or(raw_namespace)
         .to_owned();
-    let token = map.remove("x-vault-token").unwrap_or_default();
+    let token = if leader_route {
+        Zeroizing::new(String::new())
+    } else {
+        map.remove("x-vault-token").unwrap_or_default()
+    };
     if token.len() > 16 * 1024 {
         return Err(bad("token header exceeds limit"));
     }
     let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
     if length > 0
+        && !leader_route
         && !native_snapshot
         && !query_only
         && map.get("content-type").is_some_and(|v| {
@@ -846,6 +876,19 @@ fn read_request_mode(
     }
     if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
+    }
+    if leader_route {
+        leader::validate_selectors(&method, &target)?;
+        return Ok(Request {
+            native_snapshot: None,
+            method,
+            path: "sys/leader".to_owned(),
+            namespace: String::new(),
+            token,
+            body: SecretJson(json!({})),
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        });
     }
     // OpenBao reads fields for these operations from the query string only.
     // Still consume and bound the complete body above so ignored bytes cannot
