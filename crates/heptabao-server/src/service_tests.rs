@@ -3068,7 +3068,7 @@ fn public_userpass_login_does_not_spend_a_separate_finite_bearer()
             json!({"password":"incorrect"})
         )
         .status,
-        403
+        400
     );
     assert_eq!(
         call(

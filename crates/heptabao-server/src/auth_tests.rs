@@ -3798,3 +3798,9 @@ fn token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal() {
 
 #[path = "auth_userpass_renewal_tests.rs"]
 mod userpass_renewal_tests;
+
+#[path = "auth_userpass_password_tests.rs"]
+mod userpass_password_tests;
+
+#[path = "auth_userpass_alias_tests.rs"]
+mod userpass_alias_tests;

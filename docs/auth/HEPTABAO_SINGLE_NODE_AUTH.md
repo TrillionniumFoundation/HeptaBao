@@ -196,7 +196,11 @@ HCL attributes. These unsupported inputs fail closed. There is no silently ignor
 
 User records contain a random 32-byte salt, a 32-byte PBKDF2-HMAC-SHA256 verifier,
 the KDF iteration count (600,000 for new passwords), token policies, TTL/use
-limits and an optional persistent TOTP MFA enrollment. Passwords must contain 12–1024 bytes. Login uses `ring::pbkdf2::verify`;
+limits and an optional persistent TOTP MFA enrollment. Native userpass accepts
+new passwords of 1–72 UTF-8 bytes; an oversized replacement returns 500, matching
+the OpenBao 2.6.2 bcrypt write boundary. Existing long PBKDF credentials retain
+their exact-byte verification. The bounded local LDAP profile retains its
+12–1024-byte write rule. Login uses `ring::pbkdf2::verify`;
 the unknown-user path performs an equivalent dummy KDF. Error messages never
 contain the password, verifier, bearer token or secret ID. Password rotation
 replaces salt and verifier. The plaintext password is never serialized into
@@ -210,8 +214,18 @@ protection against a compromised host.
 Assignments cannot include `root`; a nonroot manager can assign only a subset
 of their own token policies. User configuration updates accept explicit
 `policies`/`token_policies`, `ttl`/`token_ttl` and `max_ttl`/`token_max_ttl` aliases;
-specifying both aliases is rejected. Password and policies subroutes enforce
-their respective field boundaries.
+native userpass gives the token-prefixed field priority. A null token duration
+falls back to its legacy alias, while a supplied null `token_policies` clears
+policies. Bounded LDAP still rejects both aliases. A native body `username` is
+ignored in favor of the path account, including on password/policy subroutes;
+other unrelated fields remain rejected. This does not merge mixed-case accounts.
+
+A general update with an absent, null or empty password preserves its verifier.
+New accounts and the password-reset subroute require a nonempty password. Reset
+of an unknown account returns 500; missing/empty login passwords return 500,
+and wrong passwords or unknown login accounts return 400. These input and status
+rules have dedicated tests; bcrypt hash import, bcrypt's 72-byte login truncation
+and upstream username case folding remain separate compatibility gaps.
 
 Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
 configured policy set. Login adds the implicit default policy to the issued token.

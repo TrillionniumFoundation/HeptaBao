@@ -5339,6 +5339,7 @@ impl AuthState {
             body,
             &[
                 "password",
+                "username",
                 "policies",
                 "token_policies",
                 "ttl",
@@ -5350,6 +5351,11 @@ impl AuthState {
                 "token_explicit_max_ttl",
             ],
         )?;
+        // The userpass framework captures username from the path before
+        // field validation; a body value never redirects the account route.
+        if !native_userpass && body.get("username").is_some() {
+            return Err(bad("username body field requires a userpass mount"));
+        }
         if !native_userpass
             && (body.get("token_period").is_some() || body.get("token_explicit_max_ttl").is_some())
         {
@@ -5357,15 +5363,25 @@ impl AuthState {
                 "native userpass token parameters require a userpass mount",
             ));
         }
+        if native_userpass && subpath == "password" && existing.is_none() {
+            return Err(err(500, "username does not exist"));
+        }
         if subpath == "password"
-            && (body.as_object().is_none_or(|o| o.len() != 1) || body.get("password").is_none())
+            && (body.as_object().is_none_or(|o| {
+                o.keys()
+                    .any(|k| k != "password" && !(native_userpass && k == "username"))
+            }) || body.get("password").is_none())
         {
             return Err(bad("password endpoint accepts only password"));
         }
         if subpath == "policies"
-            && body
-                .as_object()
-                .is_some_and(|o| o.keys().any(|k| k != "policies" && k != "token_policies"))
+            && body.as_object().is_some_and(|o| {
+                o.keys().any(|k| {
+                    k != "policies"
+                        && k != "token_policies"
+                        && !(native_userpass && k == "username")
+                })
+            })
         {
             return Err(bad("policies endpoint accepts only policy fields"));
         }
@@ -5390,11 +5406,26 @@ impl AuthState {
             token_explicit_max_ttl: 0,
             mfa: None,
         });
-        if let Some(password) = body.get("password") {
-            let password = password
-                .as_str()
-                .ok_or_else(|| bad("password must be a string"))?;
-            if password.len() < 12 || password.len() > 1024 {
+        // Native userpass treats empty/null password in a general update as
+        // an omitted replacement. Creation and the dedicated reset endpoint
+        // still require a nonempty password. Bounded LDAP keeps its own rule.
+        let password = match body.get("password") {
+            None => None,
+            Some(Value::Null) if native_userpass => None,
+            Some(value) => Some(
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("password must be a string"))?,
+            ),
+        };
+        let password = password.filter(|value| !native_userpass || !value.is_empty());
+        if let Some(password) = password {
+            if native_userpass && password.len() > 72 {
+                // Match the upstream bcrypt write boundary without changing
+                // our KDF or invalidating previously issued long credentials.
+                return Err(err(500, "password exceeds 72 bytes"));
+            }
+            if !native_userpass && (password.len() < 12 || password.len() > 1024) {
                 return Err(bad("password must be 12 to 1024 bytes"));
             }
             user.salt.zeroize();
@@ -5410,12 +5441,14 @@ impl AuthState {
                 password.as_bytes(),
                 &mut user.verifier,
             );
-        } else if existing.is_none() {
-            return Err(bad("password is required for new user"));
+        } else if existing.is_none() || (native_userpass && subpath == "password") {
+            return Err(bad("a nonempty password is required"));
         }
-        reject_alias_pair(body, "policies", "token_policies")?;
-        reject_alias_pair(body, "ttl", "token_ttl")?;
-        reject_alias_pair(body, "max_ttl", "token_max_ttl")?;
+        if !native_userpass {
+            reject_alias_pair(body, "policies", "token_policies")?;
+            reject_alias_pair(body, "ttl", "token_ttl")?;
+            reject_alias_pair(body, "max_ttl", "token_max_ttl")?;
+        }
         let policy_field = if body.get("token_policies").is_some() {
             "token_policies"
         } else {
@@ -5504,10 +5537,18 @@ impl AuthState {
         if !valid_name(name) {
             return Err(denied());
         }
-        reject_unknown(body, &["password", "totp_code"])?;
-        let password = string_field(body, "password")?;
+        reject_unknown(body, &["password", "totp_code", "username"])?;
+        let password = match body.get("password") {
+            None | Some(Value::Null) => "",
+            Some(value) => value
+                .as_str()
+                .ok_or_else(|| bad("password must be a string"))?,
+        };
+        if password.is_empty() {
+            return Err(err(500, "missing password"));
+        }
         if password.len() > 1024 {
-            return Err(denied());
+            return Err(bad("invalid username or password"));
         }
         let user = self
             .users_at(scope)
@@ -5529,7 +5570,9 @@ impl AuthState {
             verifier,
         )
         .is_ok();
-        let mut user = user.filter(|_| verified).ok_or_else(denied)?;
+        let mut user = user
+            .filter(|_| verified)
+            .ok_or_else(|| bad("invalid username or password"))?;
         let accepted_counter = match user.mfa.as_ref() {
             Some(enrollment) => Some(verify_totp(
                 enrollment,

@@ -4,9 +4,11 @@
 use super::*;
 
 pub(super) fn update_token_limits(user: &mut User, body: &Value) -> Result<(), AuthError> {
+    // Native duration null is absent for alias upgrade; explicit zero wins.
+    // Policy null is different: a supplied token_policies null clears it.
     user.token_ttl = jwt_renewal::role_duration(
         body,
-        if body.get("token_ttl").is_some() {
+        if body.get("token_ttl").is_some_and(|value| !value.is_null()) {
             "token_ttl"
         } else {
             "ttl"
@@ -15,7 +17,10 @@ pub(super) fn update_token_limits(user: &mut User, body: &Value) -> Result<(), A
     )?;
     user.token_max_ttl = jwt_renewal::role_duration(
         body,
-        if body.get("token_max_ttl").is_some() {
+        if body
+            .get("token_max_ttl")
+            .is_some_and(|value| !value.is_null())
+        {
             "token_max_ttl"
         } else {
             "max_ttl"
