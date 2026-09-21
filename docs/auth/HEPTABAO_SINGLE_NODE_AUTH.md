@@ -1127,8 +1127,13 @@ possible backend failure.
 The [official-only AppRole probe](../../qa/openbao-acceptance/evidence/approle-batch-official-probe-v2-20260922.json)
 records 33 scenarios and 187 observations, including all 12 role/mount type
 combinations and SecretID exhaustion after Identity denial. The integrated
-candidate passed all 948 server tests and its compile-fail doctest; live
-qualification for this increment is pending. The pinned official handler
+baseline passed all 948 server tests and its compile-fail doctest; the final
+readback correction passed 38 AppRole tests and strict Clippy.
+The [dual receipt for `cdf3b98`](../../qa/openbao-acceptance/evidence/approle-batch-live-cdf3b98.json)
+completed those 33 scenarios and 187 observations per endpoint. All 184 normal
+observations match the pinned calibration and each other; the three null-input
+observations separately verify the deliberate safe rejection. Source, binary
+and helpers remained unchanged and both secret scans passed. The pinned official handler
 panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
 instead. Native role/SecretID CIDRs, arbitrary SecretID/alias metadata, dedicated
 per-field role subroutes and the remaining AppRole configuration surface remain
