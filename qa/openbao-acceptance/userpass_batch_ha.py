@@ -63,6 +63,13 @@ def rejected(status, body):
             and bool(body['errors']) and not any(body.get(k) for k in ('auth', 'data', 'wrap_info')))
 
 
+def standby_response(status, body, expected_address):
+    # The dedicated handler omits false is_self, like OpenBao's omitempty.
+    return (status == 200 and isinstance(body, dict) and body.get('ha_enabled') is True
+            and ('is_self' not in body or body['is_self'] is False)
+            and body.get('leader_address') == expected_address)
+
+
 def lookup_matches(status, body, token, *, alive):
     if not alive:
         return rejected(status, body)
@@ -127,8 +134,7 @@ def run(binary, bao, work, rows, observations):
             active = cluster.leader()
             node = next(n for n in cluster.nodes if n.node_id != active.node_id)
             status, body = node.call('GET', 'sys/leader')
-            check(name+'_standby', status == 200 and body.get('is_self') is False
-                  and body.get('leader_address') == f'https://127.0.0.1:{active.http_port}')
+            check(name+'_standby', standby_response(status, body, f'https://127.0.0.1:{active.http_port}'))
             return node
         def grant(node, name, body, *, parent=None, orphan=False, batch=True):
             route = 'auth/token/create-orphan' if orphan else 'auth/token/create'

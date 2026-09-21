@@ -7,6 +7,20 @@ import userpass_batch_ha as f
 
 
 class BatchHaGuards(unittest.TestCase):
+    def test_standby_omitted_false_is_accepted_without_accepting_an_active_or_unknown_node(self):
+        address = 'https://127.0.0.1:12345'
+        body = {'ha_enabled': True, 'leader_address': address}
+        self.assertTrue(f.standby_response(200, body, address))
+        self.assertTrue(f.standby_response(200, {**body, 'is_self': False}, address))
+        for value in (True, None, 0, '', 'false'):
+            self.assertFalse(f.standby_response(200, {**body, 'is_self': value}, address))
+        for bad in (None, {}, {'ha_enabled': False, 'leader_address': address},
+                    {'ha_enabled': 1, 'leader_address': address}, {'ha_enabled': True},
+                    {'ha_enabled': True, 'leader_address': 'https://127.0.0.1:54321'}):
+            self.assertFalse(f.standby_response(200, bad, address))
+        for status in (403, 500, 503):
+            self.assertFalse(f.standby_response(status, body, address))
+
     def test_named_milestones_reject_missing_duplicate_failed_or_unsafe_rows(self):
         rows = [{'case': name, 'passed': True} for name in sorted(f.REQUIRED-{'complete'})]
         rows.append({'case': 'complete', 'passed': True})
