@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""One official CLI upload with an expired actor, on a fresh file-backed TLS node.
+"""One official CLI and two raw HTTPS uploads with an expired actor on a TLS node.
 
+Independent length/chunked refusals do not substitute for the CLI assertion.
 Diagnostic profile only: 5-second listener, no HA, no mutation retry, no raw CLI
 stderr in the receipt. A transport failure is not accepted as an HTTP 403 pass.
 """
 from __future__ import annotations
 import hashlib
+import http.client
+import socket
+import ssl
 import json
 from pathlib import Path
 import re
@@ -23,7 +27,7 @@ from online_evidence import admit_output, source_identity
 
 REQUIRED = frozenset({'initialized', 'unsealed', 'mounted', 'seed_complete', 'cli_save',
     'archive_contract', 'actor_created', 'actor_expired', 'expired_actor_denied',
-    'generation_unchanged', 'data_unchanged', 'complete'})
+    'generation_unchanged', 'data_unchanged', 'raw_length_denied', 'raw_chunked_denied', 'complete'})
 
 
 def complete(rows):
@@ -34,10 +38,43 @@ def complete(rows):
     return len(names)==len(set(names)) and names[-1]=='complete' and REQUIRED.issubset(names)
 
 
-def record_upload_result(check, denied, before, after, values_unchanged):
+def raw_rejection(instance, archive, token, *, chunked):
+    """One wire request, bounded response, fixed error names; never expose body/text."""
+    result={'http_status':None,'response_complete':False,'error_class':None}
+    connection=http.client.HTTPSConnection('127.0.0.1',instance.port,context=instance.context,timeout=5)
+    headers={'X-Vault-Token':token,'Content-Type':'application/octet-stream','Connection':'close'}
+    if chunked:headers['Transfer-Encoding']='chunked'
+    else:headers['Content-Length']=str(archive.stat().st_size)
+    try:
+        with archive.open('rb') as body:
+            connection.request('POST','/v1/sys/storage/raft/snapshot',body=body,
+                               headers=headers,encode_chunked=chunked)
+            response=connection.getresponse();result['http_status']=response.status
+            payload=response.read(65537)
+            result['response_complete']=len(payload)<=65536
+            if len(payload)>65536:result['error_class']='response_bound'
+    except (socket.timeout, TimeoutError):result['error_class']='timeout'
+    except ssl.SSLError:result['error_class']='tls'
+    except http.client.RemoteDisconnected:result['error_class']='remote_disconnected'
+    except ConnectionResetError:result['error_class']='connection_reset'
+    except BrokenPipeError:result['error_class']='broken_pipe'
+    except ConnectionAbortedError:result['error_class']='connection_aborted'
+    except http.client.IncompleteRead:result['error_class']='incomplete_read'
+    except http.client.HTTPException:result['error_class']='http_protocol'
+    except OSError:result['error_class']='io'
+    finally:connection.close()
+    return result
+
+
+def record_upload_result(check, denied, before, after, values_unchanged, raw=None):
     # Keep independent readback observations even when the CLI loses the response.
     check('generation_unchanged', after == before)
     check('data_unchanged', values_unchanged)
+    if raw is not None:
+        for encoding in ('length','chunked'):
+            result=raw[encoding]
+            check('raw_'+encoding+'_denied',result['http_status']==403
+                  and result['response_complete'] is True and result['error_class'] is None)
     check('expired_actor_denied', denied)
 
 
@@ -89,13 +126,19 @@ def run(binary, bao, work, checks, observations):
         observations['restore_attempts']=1
         denied=cli(bao,SimpleNamespace(address=instance.address,root=instance.root,token=token),
                    work,'restore',archive,expected_error=403,diagnostics=diagnostics)
+        raw={}
+        observations['raw_rejections']=raw
+        observations['raw_upload_attempts']=0
+        for encoding in ('length','chunked'):
+            observations['raw_upload_attempts']+=1
+            raw[encoding]=raw_rejection(instance,archive,token,chunked=encoding=='chunked')
         after=generation();values_unchanged=True
         for index,digest in hashes.items():
             status,body=call('GET','rejection/k'+str(index))
             actual=hashlib.sha256(json.dumps(body.get('data'),sort_keys=True,separators=(',',':')).encode()).digest()
             values_unchanged &= status==200 and actual==digest
         observations.update(generation_before=before,generation_after=after)
-        record_upload_result(check,denied,before,after,values_unchanged)
+        record_upload_result(check,denied,before,after,values_unchanged,raw)
         check('complete',True)
     finally:
         if instance is not None:instance.stop()

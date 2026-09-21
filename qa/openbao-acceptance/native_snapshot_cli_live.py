@@ -212,6 +212,14 @@ def cli_diagnostics(exit_code, stderr, *, timed_out=False):
         ('broken_pipe', (b'broken pipe',)),
         ('timeout', (b'timed out', b'timeout', b'deadline exceeded')),
         ('tls', (b'tls:', b'x509:')),
+        ('closed_file', (b'file already closed', b'closed file')),
+        ('closed_network', (b'use of closed network connection', b'closed network')),
+        ('connection_aborted', (b'connection aborted', b'software caused connection abort')),
+        ('http_transport', (b'net/http:', b'http/1.x transport connection broken')),
+        ('request_body', (b'contentlength', b'body length', b'request.body', b'request body')),
+        ('read_syscall', (b'read tcp ', b'read: ', b'read /')),
+        ('write_syscall', (b'write tcp ', b'write: ', b'write /')),
+        ('server_closed_idle', (b'server closed idle connection',)),
     ) if any(pattern in bounded for pattern in patterns)]
     if timed_out and 'timeout' not in categories: categories.append('timeout')
     statuses = re.findall(rb'Code: ([0-9]{3})(?:[.\s]|$)', stderr[:65536])
