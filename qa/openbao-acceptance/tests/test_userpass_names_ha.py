@@ -4,6 +4,17 @@ import unittest
 import userpass_names_ha as fixture
 
 class NamesHaGuards(unittest.TestCase):
+    def test_account_and_alias_reads_keep_distinct_observation_ids(self):
+        def request(method,path,body,**kwargs):
+            data={'keys':['mixed']} if method=='LIST' else {'aliases':[{'name':'mixed'}]}
+            return SimpleNamespace(status=200,body={'data':data})
+        rows=[];trace=fixture.Trace(SimpleNamespace(request=request,last_family=4),rows,[])
+        trace.one_account('initial');trace.alias('initial','synthetic-entity')
+        names=[row['case'] for row in rows]
+        self.assertEqual(len(names),len(set(names)))
+        self.assertIn('initial_single_account',names)
+        self.assertIn('initial_canonical_alias',names)
+
     def test_completion_uses_real_transition_and_semantic_milestones(self):
         rows=[{'case':name,'passed':True} for name in sorted(fixture.REQUIRED-{'complete'})]+[{'case':'complete','passed':True}]
         self.assertTrue(fixture.complete(rows))

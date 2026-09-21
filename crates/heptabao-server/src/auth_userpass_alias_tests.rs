@@ -210,7 +210,7 @@ fn userpass_alias_errors_do_not_change_password_policy_or_issue_tokens() {
     for body in [
         json!({"password":"changed", "ttl":40,"token_ttl":"bad-duration"}),
         json!({"password":"changed","max_ttl":200,"token_max_ttl":20}),
-        json!({"password":"changed","policies":["default"],"token_policies":["root"]}),
+        json!({"password":"changed","policies":["default"],"token_policies":[false]}),
     ] {
         let before = provider_renewal::state_revision(&state).unwrap();
         assert!(write(&mut state, &root, "alice", body).is_err());

@@ -28,6 +28,8 @@ REQUIRED=frozenset({'mounted.status','created.status','read_lower.canonical','re
     'same_entity','canonical_alias','general_replace.status','old_password.status','replacement.credentials',
     'general_list.canonical','held_token.valid','renew.canonical','reset_lower.status','reset_lower_login.credentials',
     'policies_lower.status','policies_login.canonical','raw_acl_denied.status','raw_acl_update.status',
+    'delegated_policy.status','delegated_login.policies','root_config.status','root_login.status',
+    'root_held.valid','restore_policy.status',
     'restart_login.credentials','restart_entity','restart_held.valid','deleted.status','deleted_login.status',
     'deleted_read.status','secrets_absent','complete'})
 DEVIATIONS=frozenset({'password_write.status','password_old.status','password_new.status','password_list.shape',
@@ -108,6 +110,13 @@ def run_scenarios(client,restart,rows):
     t.sensitive.append(admin['client_token'])
     t.write('raw_acl_denied','mixed',{'token_ttl':121},status=403,bearer=admin['client_token'])
     t.write('raw_acl_update','MiXeD',{'token_ttl':121},bearer=admin['client_token'])
+    t.write('delegated_policy','MiXeD',{'token_policies':['delegated-policy']},bearer=admin['client_token'])
+    delegated=t.login('delegated_login','MIXED',reset)
+    t.check('delegated_login.policies',set(delegated.get('policies',[]))=={'default','delegated-policy'})
+    t.write('root_config','MiXeD',{'token_policies':['root']},bearer=admin['client_token'])
+    t.login('root_login','MIXED',reset,status=400)
+    t.valid('root_held',auths[0])
+    t.write('restore_policy','MiXeD',{'token_policies':['name-policy']},bearer=admin['client_token'])
     restart()
     again=t.login('restart_login','MIXED',reset)
     t.check('restart_entity',again['entity_id']==auths[0]['entity_id'])

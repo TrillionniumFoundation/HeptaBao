@@ -47,10 +47,10 @@ class Trace:
             and data.get('entity_id')==auth['entity_id'] and type(data.get('ttl')) is int and data['ttl']>0)
         return data
     def one_account(self,name):
-        data=self.call(name,'LIST',f'auth/{MOUNT}/users').get('data') or {}
+        data=self.call(name+'_list','LIST',f'auth/{MOUNT}/users').get('data') or {}
         self.check(name+'_single_account',data.get('keys')==['mixed'])
     def alias(self,name,entity):
-        data=self.call(name,'GET','identity/entity/id/'+entity).get('data') or {}
+        data=self.call(name+'_entity','GET','identity/entity/id/'+entity).get('data') or {}
         aliases=data.get('aliases') or []
         self.check(name+'_canonical_alias',len(aliases)==1 and aliases[0].get('name')=='mixed')
     def renew(self,name,auth):

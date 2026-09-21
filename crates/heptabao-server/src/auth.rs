@@ -5588,7 +5588,12 @@ impl AuthState {
         } else {
             policies(body, policy_field, &user.policies, !native_userpass)?
         };
-        self.validate_assignment(actor, &user.policies)?;
+        // A native userpass configuration route delegates account management
+        // through its ACL. Its administrator need not hold the account's login
+        // policies. Bounded LDAP retains its existing assignment restriction.
+        if !native_userpass {
+            self.validate_assignment(actor, &user.policies)?;
+        }
         if native_userpass {
             userpass_renewal::update_token_limits(&mut user, body)?;
             userpass_cidrs::update(&mut user, body)?;
@@ -5730,6 +5735,10 @@ impl AuthState {
                 None
             }
         };
+        if self.online_mount_enabled(namespace, mount, "userpass") && user.policies.contains("root")
+        {
+            return Err(bad("auth methods cannot create root tokens"));
+        }
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
         let mut token_policies = user.policies.clone();

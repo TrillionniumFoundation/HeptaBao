@@ -282,7 +282,7 @@ fn canonical_account_resolution_does_not_rewrite_the_acl_request_path() -> TestR
             "POST",
             "auth/userpass/users/mixed",
             &admin,
-            json!({"password":"original"})
+            json!({"password":"original","token_policies":["login-policy"]})
         )
         .status,
         204
@@ -352,6 +352,140 @@ fn canonical_account_resolution_does_not_rewrite_the_acl_request_path() -> TestR
         )
         .body["data"]["keys"],
         json!(["mixed"])
+    );
+    Ok(())
+}
+
+#[test]
+fn userpass_path_acl_delegates_policies_but_cannot_issue_root_tokens() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    assert_eq!(call(&mut service, "PUT", "sys/policies/acl/account-admin", &admin,
+        json!({"policy":"path \"auth/userpass/users/delegated\" { capabilities=[\"update\"] } path \"auth/directory/users/delegated\" { capabilities=[\"update\"] }"})).status, 204);
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &admin,
+        json!({"policies":["account-admin"],"ttl":300}),
+    );
+    let actor = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actor")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/delegated",
+            actor,
+            json!({"password":"delegated-password","token_policies":["not-held"]})
+        )
+        .status,
+        204
+    );
+    let login = call(
+        &mut service,
+        "POST",
+        "auth/userpass/login/delegated",
+        "",
+        json!({"password":"delegated-password"}),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(
+        login.body["auth"]["policies"],
+        json!(["default", "not-held"])
+    );
+    let held = login.body["auth"]["client_token"].as_str().ok_or("held")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/delegated",
+            actor,
+            json!({"token_ttl":121})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/delegated",
+            actor,
+            json!({"token_policies":["root"]})
+        )
+        .status,
+        204
+    );
+    let before = service.current_state_digest().map_err(|_| "digest")?;
+    let wrong = call(
+        &mut service,
+        "POST",
+        "auth/userpass/login/delegated",
+        "",
+        json!({"password":"wrong"}),
+    );
+    assert_eq!(wrong.status, 400);
+    assert_eq!(
+        wrong.body["errors"],
+        json!(["invalid username or password"])
+    );
+    let root_login = call(
+        &mut service,
+        "POST",
+        "auth/userpass/login/delegated",
+        "",
+        json!({"password":"delegated-password"}),
+    );
+    assert_eq!(root_login.status, 400);
+    assert_eq!(
+        root_login.body["errors"],
+        json!(["auth methods cannot create root tokens"])
+    );
+    assert!(root_login.body.get("auth").is_none());
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "digest")?,
+        before
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/lookup",
+            &admin,
+            json!({"token":held})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/directory",
+            &admin,
+            json!({"type":"ldap"})
+        )
+        .status,
+        204
+    );
+    let before = service.current_state_digest().map_err(|_| "digest")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/directory/users/delegated",
+            actor,
+            json!({"password":"bounded-password","token_policies":["not-held"]})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "digest")?,
+        before
     );
     Ok(())
 }

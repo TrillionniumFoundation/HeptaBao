@@ -323,6 +323,13 @@ passes ACL checks. Login metadata, Identity alias and new token provenance use
 that canonical name; aliases elsewhere are not globally renamed or merged.
 Tune, metadata updates and remount preserve the mount's mode and accessor.
 
+Native userpass account management is delegated by the configuration path's ACL.
+An authorized administrator can retain or assign login policies that the
+administrator's own token does not hold, including when changing only a TTL or
+password. Configuring `root` is permitted, but a correct-password login returns400
+before issuing credentials or changing authentication state. Bounded LDAP and
+Token API assignment restrictions keep their existing behavior.
+
 An absent mode retains historical exact matching. Schema38/39 stores remain
 readable without adopting a mode or rewriting application records; old Alice
 and alice credentials, Identity bindings and issued-token renewal sources stay
@@ -338,8 +345,14 @@ record while login still reads the lower-case account. HeptaBao deliberately
 updates the canonical account. This difference is recorded separately from
 matching behavior in `userpass_names_live.py`; it is not a compatibility pass.
 Real schema39 upgrade and three-voter profiles are `userpass_names_upgrade.py`
-and `userpass_names_ha.py`. Release-binary qualification of this new mode is pending;
-Unicode name expansion and old-mount adoption are outside this slice.
+and `userpass_names_ha.py`. The `11705f6` release passes the
+[110-check actual schema39 upgrade](../../qa/openbao-acceptance/evidence/userpass-names-upgrade-11705f6.json),
+including separate old Alice/alice entities and renewal sources, two pure-read
+reopens, a new canonical mount and an actual old-reader refusal. Its first
+differential run exposed a configuration-ACL restriction; its first HA run
+completed the business checks but failed because observation IDs collided.
+Those failed receipts remain retained; corrected differential and HA qualification
+is pending. Unicode name expansion and old-mount adoption are outside this slice.
 
 ## Userpass TOTP MFA
 
