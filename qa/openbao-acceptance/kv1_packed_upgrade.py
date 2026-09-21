@@ -5,6 +5,8 @@ The default old36 seed is 256 actual HTTPS writes. Candidate density is 20,000
 separate 600-byte canonical JSON records. This is NOT the schema35 whole-image
 HA migration problem. No storage fabrication, bulk backdoor, retries, timeout
 increase, or throughput pass threshold is used. Progress contains no credentials.
+Requests are paced at 100/s under the unchanged production rate limit; elapsed
+growth measurements include this pacing and are not service throughput results.
 """
 from __future__ import annotations
 import hashlib
@@ -16,7 +18,7 @@ import shutil
 import tempfile
 import time
 
-from bao_http import Client, SafeArgumentParser, canonical, private_write
+from bao_http import BaoError, Client, SafeArgumentParser, canonical, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from identity_upgrade import validate_binary_pins
 from jwt_native_ttl_upgrade import scan_storage
@@ -33,6 +35,7 @@ VALUE_BYTES = 600
 TARGET_RECORDS = 20_000
 CHECKPOINT_RECORDS = 256
 HTTP_TIMEOUT = 5
+REQUESTS_PER_SECOND = 100
 REQUIRED = frozenset({'legacy_seed_written', 'legacy_all_hashes', 'current_application_unchanged',
     'current_reads_noop_rejection_unchanged', 'second_open_application_unchanged',
     'second_open_reads_unchanged', 'first_mutation_succeeded', 'migration_all_hashes',
@@ -86,9 +89,10 @@ class DenseData:
 
 
 class Trace:
-    def __init__(self, instance, checks):
+    def __init__(self, instance, checks, progress=lambda value: None):
         self.instance, self.checks = instance, checks
         self.client = Client(instance.address, str(instance.root/'ca.crt'), instance.token, timeout=HTTP_TIMEOUT)
+        self.progress, self.next_start = progress, 0.0
 
     def check(self, name, condition):
         if not isinstance(name, str) or re.fullmatch(r'[a-z0-9_]{1,120}', name) is None:
@@ -97,8 +101,17 @@ class Trace:
         if condition is not True:
             raise ScenarioFailure(name)
 
+    def response(self, method, path, body=None):
+        delay = self.next_start - time.monotonic()
+        if delay > 0:
+            time.sleep(delay)
+        # Schedule from actual start: slow operations must not create a burst
+        # of catch-up requests. This is pacing, never a retry.
+        self.next_start = time.monotonic() + 1 / REQUESTS_PER_SECOND
+        return self.client.request(method, '/v1/'+path, body)
+
     def request(self, method, path, body=None, expected=200):
-        result = self.client.request(method, '/v1/'+path, body)
+        result = self.response(method, path, body)
         if result.status != expected:
             # Do not surface response bodies, target paths or exception strings.
             raise ScenarioFailure('unexpected_http_status_'+str(result.status))
@@ -108,10 +121,17 @@ class Trace:
         return MOUNT + '/dense/' + f'{ordinal:05d}'
 
     def verify(self, label, data):
+        self.progress({'status':'in_progress','phase':label,'records_verified':0,
+                       'records_present':len(data.hashes)})
+        verified = 0
         for ordinal in sorted(data.hashes):
-            result = self.client.request('GET', '/v1/'+self.value_path(ordinal))
+            result = self.response('GET', self.value_path(ordinal))
             if not data.matches(ordinal, result):
                 self.check(label+'_record_'+str(ordinal), False)
+            verified += 1
+            if verified % CHECKPOINT_RECORDS == 0 or verified == len(data.hashes):
+                self.progress({'status':'in_progress','phase':label,'records_verified':verified,
+                               'records_present':len(data.hashes)})
         self.check(label, True)
 
     def format(self):
@@ -137,7 +157,7 @@ def run(instance, candidate, legacy, seed, target, checks, points, observations,
     if status != 200:
         raise ScenarioFailure('legacy_initialization_failed')
     instance.token, key = initialized['root_token'], initialized['keys_base64'][0]
-    t, data = Trace(instance, checks), DenseData()
+    t, data = Trace(instance, checks, progress), DenseData()
     t.request('POST', 'sys/unseal', {'key':key})
     t.request('POST', 'sys/mounts/'+MOUNT, {'type':'kv','options':{'version':'1'}}, expected=204)
     t.request('PUT', 'secret/data/packed-control', {'data':{'retained':True}})
@@ -202,8 +222,8 @@ def run(instance, candidate, legacy, seed, target, checks, points, observations,
     # Actual old reader, not a forged schema field or expected parser failure.
     instance.stop(); application = durable_manifest(store, application_only=True)
     instance.binary = legacy; instance.start()
-    t.check('downgrade_unseal_refused', t.client.request('POST','/v1/sys/unseal',{'key':key}).status == 503)
-    t.check('downgrade_remains_sealed', t.client.request('GET','/v1/sys/health').status == 503)
+    t.check('downgrade_unseal_refused', t.response('POST','sys/unseal',{'key':key}).status == 503)
+    t.check('downgrade_remains_sealed', t.response('GET','sys/health').status == 503)
     instance.stop()
     t.check('downgrade_application_unchanged', durable_manifest(store, application_only=True) == application)
     restart(candidate)
@@ -216,7 +236,7 @@ def run(instance, candidate, legacy, seed, target, checks, points, observations,
     before, started = process_observation(instance.process.pid), time.perf_counter_ns()
     replacement = data.make(target//2)
     t.request('PUT', t.value_path(target//2), replacement, expected=204); data.remember(target//2, replacement)
-    t.check('dense_point_update', data.matches(target//2, t.client.request('GET','/v1/'+t.value_path(target//2))))
+    t.check('dense_point_update', data.matches(target//2, t.response('GET',t.value_path(target//2))))
     observations['point_update'] = {'latency_ms':round((time.perf_counter_ns()-started)/1e6,3),
                                   **measurement_delta(before,process_observation(instance.process.pid))}
     instance.stop(); application = durable_manifest(store, application_only=True)
@@ -237,6 +257,10 @@ def safe_failure(error, checks):
         return failed
     if isinstance(error, ScenarioFailure) and re.fullmatch(r'unexpected_http_status_[0-9]{3}', str(error)):
         return str(error)
+    if isinstance(error, BaoError) and error.code in {
+        'transport_read_failed','transport_outcome_unknown','invalid_json',
+        'response_object_required','response_size_limit','redirect_rejected'}:
+        return 'client_' + error.code
     return 'fixture_' + type(error).__name__
 
 
@@ -293,6 +317,8 @@ def main():
         'dense_20000_capacity_covered':failure is None and args.target_records == TARGET_RECORDS,
         'schema35_dense_ha_migration_covered':False,'historical_20000_seed_covered':failure is None and args.legacy_records == TARGET_RECORDS,
         'data_and_maintenance_http_timeout_seconds':HTTP_TIMEOUT,'bootstrap_helper_timeout_seconds':10,'mutation_retries':0,'bulk_import_backdoor':False,
+        'workload_max_requests_per_second':REQUESTS_PER_SECOND,'growth_elapsed_includes_request_pacing':True,
+        'verification_retries':0,'production_rate_limit_unchanged':True,
         'progress_is_resumable':False,'speedup_or_latency_gate':False,'ha_or_postgresql_covered':False,
         'application_artifact_scope':'all entries except root ledger.hbl, historically re-sealed before schema validation',
         'plaintext_scan_scope':'root token, unseal key and first eight random payload prefixes',

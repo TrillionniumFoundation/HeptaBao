@@ -107,5 +107,39 @@ class PackedUpgradeGuards(unittest.TestCase):
         self.assertNotIn('first_mutation_succeeded',names)
         self.assertIn(('PUT','/v1/'+fixture.MOUNT+'/rejected'),calls)
 
+    def test_pacing_cannot_burst_after_slow_io_or_retry_a_failed_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            instance=SimpleNamespace(root=Path(directory),address='https://localhost:443',token='synthetic')
+            with patch.object(fixture,'Client') as client, \
+                 patch.object(fixture.time,'monotonic',side_effect=[10,10,10.001,10.01,15,15]), \
+                 patch.object(fixture.time,'sleep') as sleep:
+                trace=fixture.Trace(instance,[])
+                trace.response('GET','first')
+                trace.response('GET','second')
+                client.return_value.request.side_effect=fixture.BaoError('transport_read_failed')
+                with self.assertRaises(fixture.BaoError) as caught:
+                    trace.response('GET','third')
+                self.assertEqual(client.return_value.request.call_count,3)
+                sleep.assert_called_once()
+                self.assertAlmostEqual(sleep.call_args.args[0],0.009)
+                self.assertAlmostEqual(trace.next_start,15.01)
+                self.assertEqual(fixture.safe_failure(caught.exception,[]),'client_transport_read_failed')
+                self.assertEqual(fixture.safe_failure(fixture.BaoError('synthetic-secret'),[]),'fixture_BaoError')
+
+    def test_verification_progress_records_only_completed_hash_checks(self):
+        data=fixture.DenseData()
+        values=[data.make(i) for i in range(2)]
+        for i,value in enumerate(values):data.remember(i,value)
+        progress=[];checks=[]
+        with tempfile.TemporaryDirectory() as directory:
+            instance=SimpleNamespace(root=Path(directory),address='https://localhost:443',token='synthetic')
+            with patch.object(fixture,'Client'), patch.object(fixture.Trace,'response',
+                side_effect=[Response(200,{'data':values[0]}),Response(429,{})]):
+                trace=fixture.Trace(instance,checks,progress.append)
+                with self.assertRaises(fixture.ScenarioFailure):trace.verify('dense_all_hashes',data)
+        self.assertEqual(checks,[{'case':'dense_all_hashes_record_1','passed':False}])
+        self.assertEqual(progress,[{'status':'in_progress','phase':'dense_all_hashes',
+                                    'records_verified':0,'records_present':2}])
+
 
 if __name__=='__main__':unittest.main()
