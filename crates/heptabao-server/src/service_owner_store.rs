@@ -14,55 +14,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use zeroize::Zeroizing;
 
-/// A growing serializer must wipe the old allocation before releasing it;
-/// ordinary Vec reallocation is not covered by Zeroizing's final Drop.
+/// Shared bounded serialization wipes previous allocations on growth.
 pub(crate) fn serialize_owner(
     value: &impl Serialize,
 ) -> Result<Zeroizing<Vec<u8>>, OwnerStoreError> {
-    struct Writer {
-        bytes: Zeroizing<Vec<u8>>,
-        overflowed: bool,
-    }
-    impl std::io::Write for Writer {
-        fn write(&mut self, input: &[u8]) -> std::io::Result<usize> {
-            let Some(next_len) = self
-                .bytes
-                .len()
-                .checked_add(input.len())
-                .filter(|size| *size <= MAX_SERIALIZED_STATE_BYTES)
-            else {
-                self.overflowed = true;
-                return Err(std::io::Error::other(
-                    "serialized owner exceeds state limit",
-                ));
-            };
-            if next_len > self.bytes.capacity() {
-                let capacity = next_len
-                    .max(self.bytes.capacity().saturating_mul(2))
-                    .min(MAX_SERIALIZED_STATE_BYTES);
-                let mut grown = Zeroizing::new(Vec::with_capacity(capacity));
-                grown.extend_from_slice(&self.bytes);
-                self.bytes = grown; // wipes the previous allocation before freeing it
-            }
-            self.bytes.extend_from_slice(input);
-            Ok(input.len())
-        }
-        fn flush(&mut self) -> std::io::Result<()> {
-            Ok(())
-        }
-    }
-    let mut writer = Writer {
-        bytes: Zeroizing::new(Vec::new()),
-        overflowed: false,
-    };
-    if serde_json::to_writer(&mut writer, value).is_err() {
-        return Err(if writer.overflowed {
-            OwnerStoreError::StateTooLarge
-        } else {
-            OwnerStoreError::Serialization
-        });
-    }
-    Ok(writer.bytes)
+    crate::secret_serde::to_vec(value, MAX_SERIALIZED_STATE_BYTES).map_err(|error| match error {
+        crate::secret_serde::Error::TooLarge => OwnerStoreError::StateTooLarge,
+        crate::secret_serde::Error::Serialization => OwnerStoreError::Serialization,
+    })
 }
 
 pub(crate) const STATE_STORAGE_FORMAT: &str = "heptabao-state-owners-v4";

@@ -15,7 +15,7 @@ class OnlineAuthenticationTests(unittest.TestCase):
         # The code exchange is deliberately split out of the Service writer:
         # callback consumption is durable before the external plan can execute.
         execute=text.index('impl OnlineAuthEffectPlan')
-        exchange=text.index('.execute(namespace, *now, *started, &self.outbound)',execute)
+        exchange=text.index('.execute(namespace, *now, *started, &self.outbound, deadline)',execute)
         self.assertLess(execute,exchange)
         self.assertLess(text.index('wrap_ttl_seconds.is_some()'),consume)
         self.assertIn('retry_allowed',text)

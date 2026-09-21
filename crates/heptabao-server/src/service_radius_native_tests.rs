@@ -7,6 +7,27 @@ use crate::auth::{ProviderRenewalObservation, RadiusLoginObservation, RadiusRene
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn enroll(service: &mut Service) -> TestResult {
     service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
         origin: "radius://radius.example.test:1812".into(),
@@ -155,12 +176,14 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     let state = service.state.as_ref().ok_or("missing state")?;
     assert!(state.auth.has_native_radius_state());
     let mut downgraded = state.clone();
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_ok(),
         "an empty native mapping entry has no schema-25 semantics"
     );
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 23;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -194,12 +217,14 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     );
     let state = service.state.as_ref().ok_or("missing configured state")?;
     let mut downgraded = state.clone();
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 25;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "API-authorized targets need schema 26"
     );
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -488,6 +513,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
         204
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 26;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -536,6 +562,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
         204
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 26;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

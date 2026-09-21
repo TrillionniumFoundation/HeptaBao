@@ -7,6 +7,27 @@ use crate::auth::KubernetesLoginObservation;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
     let mut engines = EngineState::default();
@@ -299,6 +320,7 @@ fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -
     let (service, _, _, token) = fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 19;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
@@ -522,6 +544,7 @@ fn native_kubernetes_config_needs_no_endpoint_and_redacts_optional_reviewer() ->
     let state = service.state.as_ref().ok_or("state")?;
     assert!(state.auth.has_kubernetes_api_https_state());
     let mut downgraded = state.clone();
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 28;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -578,6 +601,7 @@ fn schema_twenty_eight_admits_legacy_kubernetes_enrollment_without_api_authority
         .ok_or("config")?
         .remove("transport");
     state.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 28;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(!state.auth.has_kubernetes_api_https_state());
@@ -707,6 +731,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     let root = Root::new();
     let (mut service, key, admin, old) = fixture(&root)?;
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    restore_legacy_engine_owner(&mut admission)?;
     admission.schema = 30;
     admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(admission.validate_format().is_ok());
@@ -724,6 +749,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
         204
     );
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    restore_legacy_engine_owner(&mut admission)?;
     admission.schema = 30;
     admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert_eq!(
@@ -814,6 +840,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
             .has_kube_role_bound_cidrs()
     );
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
+    restore_legacy_engine_owner(&mut admission)?;
     admission.schema = 30;
     admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert_eq!(

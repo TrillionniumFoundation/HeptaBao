@@ -8,6 +8,27 @@ use std::collections::BTreeSet;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn certificate() -> TestResult<String> {
     let mut engines = EngineState::default();
     engines.handle("", "POST", "sys/mounts/pki", &json!({"type":"pki"}), 100)?;
@@ -210,6 +231,7 @@ fn opaque_identity_alias_requires_schema23_without_native_ldap_configuration() -
     assert!(!state.auth.has_native_ldap_state());
     assert!(state.engines.has_opaque_identity_aliases());
     let mut older = state.clone();
+    restore_legacy_engine_owner(&mut older)?;
     older.schema = 22;
     older.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(older.validate_format().is_err());
@@ -245,9 +267,11 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 22;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -838,6 +862,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     config.remove("token_policies_configured");
     config.remove("token_no_default_policy");
     historical.auth = serde_json::from_value(old_auth)?;
+    restore_legacy_engine_owner(&mut historical)?;
     historical.schema = 28;
     historical.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(historical.validate_format().is_ok());
@@ -864,6 +889,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
         204
     );
     let mut configured = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut configured)?;
     configured.schema = 28;
     configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -922,6 +948,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
             .has_ldap_token_bound_cidrs()
     );
     let mut issued = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut issued)?;
     issued.schema = 28;
     issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -1036,6 +1063,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
         ..
     } = fixture(&root)?;
     let mut configured = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut configured)?;
     configured.schema = 29;
     configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -1138,6 +1166,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
     old_config.remove("token_policies_configured");
     old_config.remove("token_no_default_policy");
     issued.auth = serde_json::from_value(auth)?;
+    restore_legacy_engine_owner(&mut issued)?;
     issued.schema = 29;
     issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

@@ -28,8 +28,9 @@ use zeroize::{Zeroize, Zeroizing};
 
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
+use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 35;
+const CURRENT_STATE_SCHEMA: u32 = 36;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -65,6 +66,8 @@ pub(crate) use owner_store::OwnerPublicationBinding;
 pub(crate) use owner_store::OwnerWritePlan;
 #[path = "service_raft_admin.rs"]
 mod raft_admin;
+#[path = "service_records.rs"]
+mod records;
 #[path = "service_state_store.rs"]
 mod state_store;
 pub(crate) use lifecycle::start_lifecycle_worker;
@@ -361,7 +364,8 @@ impl OwnerReuseHint {
         Self {
             namespaces: next.namespaces.ptr_eq(&previous.namespaces),
             auth: next.auth.ptr_eq(&previous.auth),
-            engines: next.engines.ptr_eq(&previous.engines),
+            engines: next.engines.ptr_eq(&previous.engines)
+                || next.engines.owner_metadata_shared_with(&previous.engines),
             database: next.database.ptr_eq(&previous.database),
             raft_admin: next.raft_admin.ptr_eq(&previous.raft_admin),
         }
@@ -787,6 +791,8 @@ fn classify_request_effect(
 }
 
 pub struct Service {
+    // HTTP-local scope only: never part of State, replication, or persistence.
+    request_deadline: Option<std::time::Instant>,
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     database_in_flight: database::DatabaseFlights,
@@ -821,6 +827,8 @@ pub struct Service {
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
     state_digest: Option<[u8; 32]>,
+    record_root: Option<RecordStateRoot>,
+    record_writes_since_gc: u64,
     ha_read_cache: Option<ha_read::HaReadCache>,
     kv_read_only_dispatches: u64,
     seal: Option<SealMetadata>,
@@ -1041,6 +1049,7 @@ impl Service {
         let unseal_nonce = hex(&crypto::random::<16>()?);
         let recovery_required = postgres_pending_exists(&data_dir)?;
         Ok(Self {
+            request_deadline: None,
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             database_in_flight: database::DatabaseFlights::default(),
@@ -1075,6 +1084,8 @@ impl Service {
             durable: None,
             state: None,
             state_digest: None,
+            record_root: None,
+            record_writes_since_gc: 0,
             ha_read_cache: None,
             kv_read_only_dispatches: 0,
             seal,
@@ -1188,6 +1199,31 @@ impl Service {
             origin_peer,
             client_certificates,
         })
+    }
+
+    /// Keep the original HTTP deadline through synchronous forwarding. Restore
+    /// the prior scope before returning either a response or an external plan.
+    pub(crate) fn begin_request_before(
+        &mut self,
+        mut request: ServiceRequest<'_>,
+        deadline: std::time::Instant,
+        forwarded: bool,
+    ) -> RequestExecution {
+        if std::time::Instant::now() >= deadline {
+            erase_json(&mut request.body);
+            return RequestExecution::Complete(Response::error(
+                503,
+                "service request deadline exceeded",
+            ));
+        }
+        let previous = self.request_deadline.replace(deadline);
+        let result = if forwarded {
+            self.begin_forwarded(request)
+        } else {
+            self.begin_request(request)
+        };
+        self.request_deadline = previous;
+        result
     }
 
     /// Start a network request while holding the Service writer. A database
@@ -1643,6 +1679,7 @@ impl Service {
                             wrap_ttl_seconds,
                             origin_peer,
                             client_certificates,
+                            self.request_deadline,
                         )
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
                     Err(_) => Response::error(503, "HA process lock is unavailable"),
@@ -1918,6 +1955,8 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             self.state = None;
+            self.record_root = None;
+            self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
             self.durable = None;
             self.barrier_key = None;
@@ -2045,32 +2084,59 @@ impl Service {
         } else {
             admitted = transaction;
         }
-        let mut serialized = match owner_store::serialize_owner(&admitted) {
-            Ok(v) => v,
-            Err(error) => return state_serialization_error(error),
+        if admitted.engines.record_root().is_some() {
+            let mut plan = match self.prepare_record_plan(&admitted) {
+                Ok(plan) => plan,
+                Err(error) => return error,
+            };
+            let current = match self.current_state_identity() {
+                Ok(identity) => identity,
+                Err(error) => return error,
+            };
+            if plan.identity != current {
+                admitted.schema = CURRENT_STATE_SCHEMA;
+                plan = match self.prepare_record_plan(&admitted) {
+                    Ok(plan) => plan,
+                    Err(error) => return error,
+                };
+                if let Err(error) = self.commit_record_plan(&admitted, plan) {
+                    return error;
+                }
+                self.state = Some(admitted);
+            }
+            return response;
+        }
+        let serialized_digest = match records::legacy_candidate_digest(&admitted) {
+            Ok(digest) => digest,
+            Err(error) => return error,
         };
-        let mut serialized_digest = crypto::digest(&serialized);
         match classify_request_effect(method, before_digest, serialized_digest) {
             RequestEffectClass::PureRead => {}
             RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
                 if admitted.schema != CURRENT_STATE_SCHEMA {
                     admitted.schema = CURRENT_STATE_SCHEMA;
-                    serialized = match owner_store::serialize_owner(&admitted) {
-                        Ok(value) => value,
-                        Err(error) => return state_serialization_error(error),
-                    };
-                    serialized_digest = crypto::digest(&serialized);
                 }
                 if let Err(error) = admitted.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state_bytes(
-                    &admitted,
-                    &serialized,
-                    admitted.schema,
-                    admitted.replay_epoch,
-                    serialized_digest,
-                ) {
+                // Only a proven logical mutation triggers the one-way V4→V5
+                // transition. The installed candidate is exactly what we commit.
+                let key = match crypto::random::<32>() {
+                    Ok(key) => key,
+                    Err(error) => return Response::error(503, error),
+                };
+                admitted.engines = match admitted
+                    .engines
+                    .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(key))
+                {
+                    Ok(engines) => engines.into(),
+                    Err(error) => return Response::error(error.status, &error.message),
+                };
+                let plan = match self.prepare_record_plan(&admitted) {
+                    Ok(plan) => plan,
+                    Err(error) => return error,
+                };
+                if let Err(error) = self.commit_record_plan(&admitted, plan) {
                     return error;
                 }
                 self.state = Some(admitted);
@@ -2396,6 +2462,27 @@ impl Service {
             .map_err(|_| Response::error(503, "server state is unavailable"))?
             .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
 
+        if let Some(mut root) = records::decode_root(record.expose())? {
+            let mut state =
+                Self::materialize_record_state(&root, &records::DurableReader(durable))?;
+            if state.replay_epoch > durable.replay_epoch() {
+                return Err(Response::error(
+                    503,
+                    "record replay epoch is ahead of durable authority",
+                ));
+            }
+            let rewrite = state.replay_epoch < durable.replay_epoch();
+            if rewrite {
+                state.replay_epoch = durable.replay_epoch();
+                root.replay_epoch = state.replay_epoch;
+                state.schema = CURRENT_STATE_SCHEMA;
+                root.state_schema = state.schema;
+            }
+            let bytes = root
+                .encode()
+                .map_err(|_| Response::error(503, "record root encoding failed"))?;
+            return Ok((state, bytes, rewrite));
+        }
         let owner_manifest = owner_store::decode_manifest(record.expose())
             .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
         let (mut state, mut bytes, mut needs_rewrite) = if let Some(manifest) = owner_manifest {
@@ -2708,6 +2795,16 @@ impl Service {
 
     fn commit_state(&mut self, state: &State) -> Result<(), Response> {
         state.validate_format()?;
+        if state.engines.record_root().is_some() {
+            let plan = self.prepare_record_plan(state)?;
+            return self.commit_record_plan(state, plan);
+        }
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "record state cannot publish a legacy candidate",
+            ));
+        }
         let bytes = owner_store::serialize_owner(state).map_err(state_serialization_error)?;
         let next_digest = crypto::digest(&bytes);
         self.commit_state_bytes(state, &bytes, state.schema, state.replay_epoch, next_digest)
@@ -2740,6 +2837,16 @@ impl Service {
         next_digest: [u8; 32],
         allow_legacy_migration: bool,
     ) -> Result<(), Response> {
+        if state.engines.record_root().is_some() {
+            let plan = self.prepare_record_plan(state)?;
+            return self.commit_record_plan(state, plan);
+        }
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "record state cannot publish legacy bytes",
+            ));
+        }
         #[cfg(not(test))]
         let capacity = MAX_STATE_BYTES;
         #[cfg(test)]
@@ -3233,6 +3340,8 @@ impl Service {
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
         self.state = None;
+        self.record_root = None;
+        self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         self.durable = None;
         self.barrier_key = None;
@@ -3397,6 +3506,8 @@ impl Service {
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
         self.state = None;
+        self.record_root = None;
+        self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         self.durable = None;
         self.barrier_key = None;
@@ -3633,6 +3744,8 @@ impl Service {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
                     self.state = None;
+                    self.record_root = None;
+                    self.record_writes_since_gc = 0;
                     self.ha_read_cache = None;
                     self.durable = None;
                     self.barrier_key = None;
@@ -3642,6 +3755,8 @@ impl Service {
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
                 self.state = None;
+                self.record_root = None;
+                self.record_writes_since_gc = 0;
                 self.ha_read_cache = None;
                 self.durable = None;
                 self.barrier_key = None;
@@ -3684,6 +3799,8 @@ impl Service {
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
             self.state = None;
+            self.record_root = None;
+            self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
             self.durable = None;
             self.barrier_key = None;
@@ -3695,6 +3812,8 @@ impl Service {
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
         self.durable = None;
         self.state = None;
+        self.record_root = None;
+        self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
         let barrier =
             AeadBarrier::new(*key).map_err(|_| Response::error(400, "invalid unseal key"))?;
@@ -3751,22 +3870,29 @@ impl Service {
                 "state-format-{}",
                 hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
             );
-            match Self::persist_owner_state_batch(
-                &mut durable,
-                &state,
-                &bytes,
-                &operation_id,
-                state.schema,
-                state.replay_epoch,
-                OwnerBatchInput {
-                    options: PersistOwnerStateOptions {
-                        compact_before_entry: true,
-                        allow_epoch_catchup: false,
-                        reuse: OwnerReuseHint::default(),
+            let rewrite_result = if let Some(root) = records::decode_root(&bytes)? {
+                let plan = records::existing_plan(root)?;
+                Self::persist_record_batch(&mut durable, &plan, &operation_id)
+            } else {
+                Self::persist_owner_state_batch(
+                    &mut durable,
+                    &state,
+                    &bytes,
+                    &operation_id,
+                    state.schema,
+                    state.replay_epoch,
+                    OwnerBatchInput {
+                        options: PersistOwnerStateOptions {
+                            compact_before_entry: true,
+                            allow_epoch_catchup: false,
+                            reuse: OwnerReuseHint::default(),
+                        },
+                        prepared_plan: None,
                     },
-                    prepared_plan: None,
-                },
-            ) {
+                )
+                .map(|_| ())
+            };
+            match rewrite_result {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
@@ -3795,7 +3921,15 @@ impl Service {
         }
         self.durable = Some(durable);
         self.state = Some(state);
-        self.state_digest = Some(crypto::digest(&bytes));
+        self.record_root = records::decode_root(&bytes)?;
+        self.state_digest = Some(match &self.record_root {
+            Some(root) => root
+                .identity()
+                .map_err(|_| Response::error(503, "record identity failed"))?
+                .digest(),
+            None => crypto::digest(&bytes),
+        });
+        self.record_writes_since_gc = 64;
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
         let sync_as_leader = if let Some(ha) = self.ha.as_ref() {
@@ -4254,7 +4388,10 @@ impl Service {
         };
         Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
-            "state_limit_bytes": MAX_STATE_BYTES,
+            "state_storage_format": if self.record_root.is_some() {crate::state_record_root::STORAGE_FORMAT} else {owner_store::STATE_STORAGE_FORMAT},
+            "state_limit_bytes": if self.record_root.is_some() {MAX_STATE_BYTES+crate::state_records::MAX_GRAPH_BYTES} else {MAX_STATE_BYTES},
+            "state_limit_is_admission_budget": false,
+            "durable_artifact_limit_bytes": capacity.max_file_bytes,
             "stored_value_bytes": capacity.logical_payload_bytes,
             "generation": capacity.generation,
             "journal_bytes": capacity.journal_bytes,
@@ -4545,7 +4682,15 @@ impl Service {
             .ok_or_else(|| Response::error(503, "server is sealed"))?;
         let (state, bytes, _) = Self::load_state_from_durable(durable)?;
         self.state = Some(state);
-        self.state_digest = Some(crypto::digest(&bytes));
+        self.record_root = records::decode_root(&bytes)?;
+        self.state_digest = Some(match &self.record_root {
+            Some(root) => root
+                .identity()
+                .map_err(|_| Response::error(503, "record identity failed"))?
+                .digest(),
+            None => crypto::digest(&bytes),
+        });
+        self.record_writes_since_gc = 64;
         self.recovery_required = false;
         Ok(())
     }
@@ -4565,6 +4710,22 @@ impl Service {
         let state_record = records
             .get("state")
             .ok_or_else(|| Response::error(400, "snapshot does not contain server state"))?;
+        if let Some(root) = records::decode_root(state_record.as_slice())? {
+            struct BackupReader<'a>(&'a BTreeMap<String, Zeroizing<Vec<u8>>>);
+            impl crate::state_records::RecordReader for BackupReader<'_> {
+                fn read_object(
+                    &self,
+                    reference: &crate::state_records::ObjectRef,
+                ) -> Result<Zeroizing<Vec<u8>>, crate::state_records::RecordError> {
+                    self.0
+                        .get(&reference.resource())
+                        .cloned()
+                        .ok_or(crate::state_records::RecordError::Missing)
+                }
+            }
+            let state = Self::materialize_record_state(&root, &BackupReader(&records))?;
+            return Ok(state.engines.has_openldap_mount() || !state.database.is_empty());
+        }
         if let Some(manifest) = owner_store::decode_manifest(state_record.as_slice())
             .map_err(|_| Response::error(400, "snapshot owner-state manifest is invalid"))?
         {
@@ -4898,6 +5059,9 @@ impl Service {
                 self.ha_read_cache = previous_cache;
                 return Ok(());
             }
+            crate::ha::CommittedStateRead::Records(committed) => {
+                return self.sync_record_state_from_ha(&ha, *committed);
+            }
             crate::ha::CommittedStateRead::Materialized(state) => Some(state),
             crate::ha::CommittedStateRead::Absent => None,
         };
@@ -4925,10 +5089,21 @@ impl Service {
                     .state
                     .clone()
                     .ok_or_else(|| Response::error(503, "server is sealed"))?;
-                self.commit_state(&state)?;
+                if state.engines.record_root().is_some() {
+                    let plan = self.full_existing_record_plan(&state)?;
+                    self.commit_record_plan(&state, plan)?;
+                } else {
+                    self.commit_state(&state)?;
+                }
             }
             return Ok(());
         };
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "HA record authority cannot fall back to legacy state",
+            ));
+        }
         if self.current_state_digest()? == committed.digest {
             self.cache_verified_ha_state(&committed)?;
             return Ok(());
@@ -5053,8 +5228,9 @@ impl Service {
         let standby = leader.is_some() && leader != local;
         let active = leader.is_some() && leader == local && ha.ensure_linearizable().is_ok();
         let application_ready = self
-            .state_digest
-            .is_some_and(|digest| ha.ensure_application_digest(digest).is_ok());
+            .current_state_identity()
+            .ok()
+            .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
         (true, standby, active, application_ready, leader, local)
     }
 

@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **35**. Its source constant is
+The current Service state schema is **36**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -74,7 +74,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 32 | JWT role zero-value TTL and maximum inheritance; system default and Token API grant metadata must be absent. |
 | 33 | Persisted system lease defaults and the last granted Token API lease duration; zero AppRole token TTL/max and SecretID issuance metadata must be absent. |
 | 34 | Native AppRole token TTL inheritance and SecretID issuance facts; native userpass limits, configured policy semantics and direct issuer provenance must be absent. |
-| 35 | Current format, adding userpass TTL/max inheritance, period/explicit maximum, configured policies without implicit default, and direct issuing-account provenance. |
+| 35 | Userpass TTL/max inheritance, period/explicit maximum, configured policies without implicit default, and direct issuing-account provenance; KV1 record roots must be absent. |
+| 36 | Adds authenticated KV1 record graphs and the V5 publication root. Legacy inline KV1/V4 state remains admitted until its explicit write-side transition. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -290,7 +291,7 @@ uses without fabricated timestamps or TTL. Finite successful uses update the
 record, and exhaustion removes it atomically with token issuance.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 34. An authenticated
+it. Initialization and committed mutations use schema 36. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -304,7 +305,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-33 binary cannot read schema-34 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-35 binary cannot read schema-36 state or its V5 root.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not
@@ -327,8 +328,8 @@ changed and reused owners are classified by content digest, and staged or retire
 owner chunks must belong to a changed owner. The only exception is the explicit
 one-time cleanup of legacy `state-chunks/*` resources during format migration.
 The service validates this write set before the durable batch is admitted. This
-protects the local owner boundary; HA still serializes the complete logical state
-and therefore remains outside the record-oriented scalability gate.
+protects the legacy V4 owner boundary. Its HA representation still serializes
+the complete logical state; the V5 KV1 path below uses a separate typed root.
 A schema-23 binary must fail closed once native RADIUS configuration, user-map intent or token provenance has been committed;
 a schema-22 binary must fail closed once native LDAP authority or opaque Identity aliases have been committed;
 a schema-21 binary must fail closed once current RADIUS periodic or explicit-maximum semantics have been committed;
@@ -355,7 +356,8 @@ format conversion and production disaster recovery require separate exact-binary
 rehearsals. Backup export uses HeptaBao's encrypted format, not OpenBao `raft.snap`.
 Local restore is refused in HA mode. Before changing durable files, the service
 authenticates and inspects the incoming backup's system records in both the
-current V4 owner-manifest format and the bounded legacy format. A backup
+V5 record-root, V4 owner-manifest and bounded legacy formats. V5 inspection
+validates the complete referenced graph before examining external-effect owners. A backup
 containing database provider records or OpenLDAP mount/dynamic-secret state is
 rejected before restore, because a local snapshot cannot revoke or reconcile
 those external identities. The same guard applies to the current durable state:
@@ -363,6 +365,42 @@ restoring database provider records is refused, and restore is refused while any
 OpenLDAP mount exists. OpenLDAP dynamic credentials use a retained-DN tombstone
 profile; this is an explicit bounded compatibility surface, not OpenBao delete
 semantics.
+
+## Schema 36: KV1 record publication
+
+`state_records` owns the immutable ordered KV1 index; keys include namespace,
+mount, incarnation and path. `EngineState` stores only `Kv1Records` mount metadata
+in its serialized owner. The runtime graph is not serde state and cannot be
+reconstructed from that owner alone. `state_record_root` authenticates the five
+opaque owner descriptors, KV1 root, cluster, schema and replay epoch using a
+persisted nonzero address key. That key and canonical root remain encrypted.
+
+A valid V4 pure read or reopen does not convert storage. The first proven
+mutation through ordinary logical dispatch converts the actual candidate to
+`heptabao-state-records-v5`. Provider/lifecycle-only writes can remain V4 until
+that transition. Once V5, those writers also use the record publication path;
+they cannot publish a legacy JSON image that omits the runtime KV1 graph.
+
+`service_records` preflights cumulative local capacity before HA authority.
+At most 95 new objects and the root share one 96-mutation batch; larger closures
+stage bounded object batches before the final root publication. Partial staging
+is not application state. HBSM5 uses typed Stage/Publish/Prune commands and a
+`RecordsV5` identity distinct from the legacy image digest. Reopening validates
+canonical owners, object authentication and shape, the complete graph and mount
+incarnations. Corruption or missing objects never select a legacy fallback.
+
+Initial HA anchoring of an existing V5 installation supplies its full validated
+closure, even though reopen has no pending delta. This is restricted to the
+existing authenticated Absent-anchor path; anonymous health cannot create it.
+Normal writes carry only changed values/pages and changed opaque owners.
+Current readers pin complete Arc graphs. Periodic unreachable-object collection
+uses the published root and bounded delete batches; failed publication never
+clears a candidate's pending objects as if it had committed.
+
+KV2, authentication/provider state and the other owners remain opaque JSON under
+the shared 16MiB owner budget. Record layout is not a claim of unrestricted
+capacity, full backup support or measured write scaling. The independent logical,
+local durable and HA limits are specified in the [capacity contract](../operations/HEPTABAO_CAPACITY_AND_GROWTH.md).
 
 ## External state and uncertainty
 

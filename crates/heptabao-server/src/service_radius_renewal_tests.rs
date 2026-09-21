@@ -7,6 +7,27 @@ use crate::auth::{ProviderRenewalObservation, RadiusLoginObservation, RadiusRene
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn enroll(service: &mut Service) -> TestResult {
     service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
         origin: "radius://radius.example.test:1812".into(),
@@ -242,6 +263,7 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 15;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -263,6 +285,7 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
         .ok_or("missing route")?;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
+    restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.schema = 16;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
@@ -622,6 +645,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     let (mut service, _, admin, _, _) = fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -642,6 +666,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
         204
     );
     state = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -701,6 +726,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
         204
     );
     let mut state = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

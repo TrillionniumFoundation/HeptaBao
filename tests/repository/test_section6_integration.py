@@ -64,8 +64,10 @@ class SectionSixIntegrationTests(unittest.TestCase):
 
         navigation = (ROOT/'docs/storage/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
         self.assertIn('docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md', navigation)
-        self.assertIn('16 MiB', navigation)
-        self.assertIn('content-defined', navigation)
+        # The navigation shim links the one authoritative budget table instead
+        # of copying format-specific limits which can drift independently.
+        self.assertIn('V4/V5', navigation)
+        self.assertIn('logical component budgets', navigation)
         self.assertIn('replay', navigation.lower())
         contract = (ROOT/'docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md').read_text()
         self.assertIn('16 MiB', contract)

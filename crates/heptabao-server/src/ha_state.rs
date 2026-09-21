@@ -15,6 +15,10 @@ use ring::{
 use std::fmt;
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "ha_record_codec.rs"]
+mod records;
+pub(crate) use records::{CommittedRecordRoot, runtime_reference};
+
 const MAGIC: &[u8; 5] = b"HBSR1";
 const MANIFEST_MAGIC_V2: &[u8; 5] = b"HBSM2";
 const MANIFEST_MAGIC: &[u8; 5] = b"HBSM3";
@@ -74,6 +78,7 @@ struct DecodedManifestBody {
 pub(crate) enum CommittedStateDescriptor {
     Legacy(Zeroizing<Vec<u8>>),
     Chunked(ReplicatedStateManifest),
+    RecordsV5(Box<CommittedRecordRoot>),
 }
 
 impl ReplicatedStateProposal {
@@ -85,6 +90,12 @@ impl ReplicatedStateProposal {
         validate_operation_id(&operation_id)?;
         let valid_sealed_size = if sealed.starts_with(MAGIC) {
             (HEADER_BYTES + TAG_BYTES..=HEADER_BYTES + MAX_STATE_BYTES + TAG_BYTES)
+                .contains(&sealed.len())
+        } else if sealed.starts_with(records::ROOT_MAGIC) {
+            (records::ROOT_HEADER_BYTES + TAG_BYTES + 1
+                ..=records::ROOT_HEADER_BYTES
+                    + TAG_BYTES
+                    + crate::state_record_root::MAX_ROOT_BYTES)
                 .contains(&sealed.len())
         } else if sealed.starts_with(MANIFEST_MAGIC)
             || sealed.starts_with(MANIFEST_MAGIC_V2)
@@ -438,6 +449,11 @@ impl ClusterStateCodec {
         digest: [u8; 32],
         sealed: &[u8],
     ) -> Result<CommittedStateDescriptor, ReplicatedStateError> {
+        if sealed.starts_with(records::ROOT_MAGIC) {
+            return self
+                .open_record_root(operation_id, digest, sealed)
+                .map(|root| CommittedStateDescriptor::RecordsV5(Box::new(root)));
+        }
         if sealed.starts_with(MAGIC) {
             return self
                 .open_committed_parts(operation_id, digest, sealed)
@@ -982,7 +998,9 @@ mod tests {
                 assert_eq!(usize::try_from(decoded.total_bytes)?, state.len());
                 assert_eq!(decoded.chunks, refs);
             }
-            CommittedStateDescriptor::Legacy(_) => return Err("expected chunked manifest".into()),
+            CommittedStateDescriptor::Legacy(_) | CommittedStateDescriptor::RecordsV5(_) => {
+                return Err("expected chunked manifest".into());
+            }
         }
 
         let legacy = codec.seal("legacy-op", base, b"legacy-state")?;
@@ -1047,7 +1065,9 @@ mod tests {
                 assert_eq!(manifest.state_digest, digest);
                 assert_eq!(manifest.chunks, refs);
             }
-            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM2 manifest".into()),
+            CommittedStateDescriptor::Legacy(_) | CommittedStateDescriptor::RecordsV5(_) => {
+                return Err("expected HBSM2 manifest".into());
+            }
         }
         Ok(())
     }
@@ -1084,7 +1104,9 @@ mod tests {
         )?;
         match descriptor {
             CommittedStateDescriptor::Chunked(manifest) => assert_eq!(manifest.chunks, refs),
-            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM3 manifest".into()),
+            CommittedStateDescriptor::Legacy(_) | CommittedStateDescriptor::RecordsV5(_) => {
+                return Err("expected HBSM3 manifest".into());
+            }
         }
         Ok(())
     }
@@ -1123,7 +1145,9 @@ mod tests {
                 assert_eq!(manifest.owner_manifest_digest, Some(owner_manifest_digest));
                 assert_eq!(manifest.changed_owner_mask, Some(0b0010));
             }
-            CommittedStateDescriptor::Legacy(_) => return Err("expected HBSM4 manifest".into()),
+            CommittedStateDescriptor::Legacy(_) | CommittedStateDescriptor::RecordsV5(_) => {
+                return Err("expected HBSM4 manifest".into());
+            }
         }
 
         // Owner metadata is encrypted within the manifest body.  A stale or

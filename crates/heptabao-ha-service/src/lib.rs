@@ -17,7 +17,7 @@ use std::io::{self, Read, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::path::{Component, Path, PathBuf};
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
 use ring::rand::{SecureRandom, SystemRandom};
@@ -723,6 +723,37 @@ impl MutualTlsPeerTransport {
         })
     }
 
+    /// Application forwarding uses one absolute budget, including connect and
+    /// every TLS/frame I/O. Consensus RPCs retain their separate peer timeout.
+    pub fn exchange_before(
+        &self,
+        peer: &NodeId,
+        frame: &[u8],
+        caller_deadline: Instant,
+    ) -> Result<Vec<u8>, HaError> {
+        if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+            return Err(HaError::InvalidFrame);
+        }
+        let deadline = caller_deadline.min(Instant::now() + self.timeout);
+        let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
+        let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
+            .map_err(|_| HaError::InvalidCluster)?;
+        let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
+            .map_err(|_| HaError::Transport)?;
+        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
+        let stream = ForwardDeadlineStream { stream, deadline };
+        let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
+            .map_err(|_| HaError::Transport)?;
+        let mut tls = rustls::StreamOwned::new(connection, stream);
+        write_bounded_frame(&mut tls, frame)?;
+        let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
+        // Buffered TLS plaintext must not bypass the final deadline check, and
+        // a rejected late response must erase its plaintext before deallocation.
+        forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        Ok(std::mem::take(&mut *response))
+    }
+
     pub fn exchange(&self, peer: &NodeId, frame: &[u8]) -> Result<Vec<u8>, HaError> {
         if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
             return Err(HaError::InvalidFrame);
@@ -742,6 +773,38 @@ impl MutualTlsPeerTransport {
         let mut tls = rustls::StreamOwned::new(connection, stream);
         write_bounded_frame(&mut tls, frame)?;
         read_bounded_frame(&mut tls)
+    }
+}
+
+fn forward_remaining(deadline: Instant) -> io::Result<Duration> {
+    deadline
+        .checked_duration_since(Instant::now())
+        .filter(|remaining| !remaining.is_zero())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "forward deadline exceeded"))
+}
+
+struct ForwardDeadlineStream {
+    stream: TcpStream,
+    deadline: Instant,
+}
+
+impl Read for ForwardDeadlineStream {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        self.stream
+            .set_read_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.read(buffer)
+    }
+}
+impl Write for ForwardDeadlineStream {
+    fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+        self.stream
+            .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.write(buffer)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.stream
+            .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.flush()
     }
 }
 
@@ -1270,11 +1333,11 @@ fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
     if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
         return Err(HaError::InvalidFrame);
     }
-    let mut frame = vec![0_u8; length];
+    let mut frame = zeroize::Zeroizing::new(vec![0_u8; length]);
     reader
         .read_exact(&mut frame)
         .map_err(|_| HaError::Transport)?;
-    Ok(frame)
+    Ok(std::mem::take(&mut *frame))
 }
 
 fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
@@ -1699,6 +1762,90 @@ mod tests {
         assert_eq!(
             identify_peer_certificate_chain(&identities, &oversized),
             Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn forwarded_exchange_rejects_expired_budget_before_connect() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let tls = rustls::ClientConfig::builder_with_provider(Arc::new(
+            rustls::crypto::ring::default_provider(),
+        ))
+        .with_safe_default_protocol_versions()
+        .unwrap()
+        .with_root_certificates(rustls::RootCertStore::empty())
+        .with_no_client_auth();
+        let transport = MutualTlsPeerTransport::new(
+            BTreeMap::from([(
+                node("n2"),
+                TlsPeerEndpoint::new(listener.local_addr().unwrap(), "node-2.example.internal")
+                    .unwrap(),
+            )]),
+            Arc::new(tls),
+            Duration::from_secs(15),
+        )
+        .unwrap();
+        assert_eq!(
+            transport.exchange_before(&node("n2"), b"request", Instant::now()),
+            Err(HaError::Transport)
+        );
+        assert!(
+            listener
+                .accept()
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+        );
+    }
+
+    #[test]
+    fn forwarding_fragments_cannot_reset_absolute_budget() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+        let (stream, _) = listener.accept().unwrap();
+        let mut stream = ForwardDeadlineStream {
+            stream,
+            deadline: Instant::now() + Duration::from_millis(80),
+        };
+        let sender = thread::spawn(move || {
+            let mut client = client;
+            for _ in 0..10 {
+                if client.write_all(b"x").is_err() {
+                    break;
+                }
+                thread::sleep(Duration::from_millis(20));
+            }
+        });
+        let start = Instant::now();
+        let mut received = 0;
+        let mut byte = [0];
+        while stream.read(&mut byte).is_ok_and(|count| count == 1) {
+            received += 1;
+        }
+        assert!(received < 10);
+        assert!(start.elapsed() < Duration::from_millis(500));
+        drop(stream);
+        sender.join().unwrap();
+    }
+
+    #[test]
+    fn expired_forward_stream_cannot_write_or_flush() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+        let (stream, _) = listener.accept().unwrap();
+        client.set_nonblocking(true).unwrap();
+        let mut stream = ForwardDeadlineStream {
+            stream,
+            deadline: Instant::now(),
+        };
+        assert_eq!(
+            stream.write(b"request").unwrap_err().kind(),
+            io::ErrorKind::TimedOut
+        );
+        assert_eq!(stream.flush().unwrap_err().kind(), io::ErrorKind::TimedOut);
+        assert!(
+            (&client)
+                .read(&mut [0])
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
         );
     }
 

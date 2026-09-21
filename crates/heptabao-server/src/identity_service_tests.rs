@@ -727,17 +727,26 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (admin, key) = bootstrap(&mut s)?;
-    let issued = call(
-        &mut s,
-        "",
-        &admin,
-        "POST",
-        "auth/token/create",
-        json!({"policies":["default"],"num_uses":1}),
-    );
+    // Issue through AuthState before any Service mutation publishes a v5 root.
+    // Persisting this historical fixture must not attempt to downgrade an
+    // already-published record root or discard any KV1 data.
+    let mut legacy = s.state.clone().ok_or("state")?;
+    assert!(legacy.engines.record_root().is_none());
+    assert!(!legacy.engines.has_record_kv1());
+    let actor = legacy.auth.authenticate(&admin, 100)?;
+    let issued = legacy
+        .auth
+        .handle(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/create",
+            &json!({"policies":["default"],"num_uses":1}),
+            100,
+        )?
+        .ok_or("missing token creation response")?;
     assert_eq!(issued.status, 200);
     let token = text(&issued.body, "/auth/client_token")?;
-    let mut legacy = s.state.clone().ok_or("state")?;
     // Model a token actually issued by the schema-1 API, before the explicit
     // token-API issuer marker existed; do not relabel new content as legacy.
     let mut encoded_auth = serde_json::to_value(&legacy.auth)?;

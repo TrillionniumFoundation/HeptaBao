@@ -16,6 +16,30 @@ fn current_manifest(
         .ok_or_else(|| "state record is not an owner manifest".into())
 }
 
+// The retained V4 publication path is still used by lifecycle/provider owners
+// before the ordinary-dispatch migration boundary. Exercise it explicitly;
+// V5 HTTP publication and unchanged-owner reuse have separate Service tests.
+fn legacy_owner_write(
+    service: &mut Service,
+    path: &str,
+    body: Value,
+) -> Result<Response, Box<dyn std::error::Error>> {
+    assert!(service.record_root.is_none());
+    let mut state = service.state.clone().ok_or("state")?;
+    let mut response = state
+        .engines
+        .handle("", "PUT", path, &body, 100)?
+        .ok_or("engine route")?;
+    service
+        .commit_state(&state)
+        .map_err(|_| "legacy owner commit")?;
+    service.state = Some(state);
+    Ok(Response {
+        status: response.status,
+        body: std::mem::take(&mut response.body),
+    })
+}
+
 #[test]
 fn large_engine_owner_round_trips_through_owner_chunks_and_restart()
 -> Result<(), Box<dyn std::error::Error>> {
@@ -23,13 +47,11 @@ fn large_engine_owner_round_trips_through_owner_chunks_and_restart()
     let mut service = root.service()?;
     let (key, token) = bootstrap(&mut service)?;
     let payload = "x".repeat(900 * 1024);
-    let response = call(
+    let response = legacy_owner_write(
         &mut service,
-        "PUT",
         "secret/data/large",
-        &token,
         json!({"data":{"blob":payload}}),
-    );
+    )?;
     assert_eq!(response.status, 200, "{}", response.body);
 
     let manifest = current_manifest(&service)?;
@@ -177,13 +199,11 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
         .map(|index| original.chunk_resource("auth", index))
         .collect::<Result<std::collections::BTreeSet<_>, _>>()?;
 
-    let first = call(
+    let first = legacy_owner_write(
         &mut service,
-        "PUT",
         "secret/data/first",
-        &token,
         json!({"data":{"value":"one"}}),
-    );
+    )?;
     assert_eq!(first.status, 200, "{}", first.body);
     let after_first = current_manifest(&service)?;
     let after_first_auth = (0..after_first.chunk_count("auth")?)
@@ -195,13 +215,11 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
     );
 
     let first_all = after_first.unique_chunk_resources()?;
-    let second = call(
+    let second = legacy_owner_write(
         &mut service,
-        "PUT",
         "secret/data/second",
-        &token,
         json!({"data":{"value":"two"}}),
-    );
+    )?;
     assert_eq!(second.status, 200, "{}", second.body);
     let final_manifest = current_manifest(&service)?;
     let final_all = final_manifest.unique_chunk_resources()?;
@@ -345,7 +363,7 @@ fn large_unchanged_owner_bounds_v4_write_set_to_changed_owner()
 }
 
 #[test]
-fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
+fn v3_state_chunks_are_retired_atomically_by_retained_v4_owner_publication()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
@@ -385,13 +403,11 @@ fn v3_state_chunks_are_retired_atomically_on_first_v4_mutation()
         call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
         200
     );
-    let write = call(
+    let write = legacy_owner_write(
         &mut service,
-        "PUT",
         "secret/data/promote-v4",
-        &token,
         json!({"data":{"value":"v4"}}),
-    );
+    )?;
     assert_eq!(write.status, 200, "{}", write.body);
     let durable = service.durable.as_ref().ok_or("durable missing")?;
     for old in old_resources {

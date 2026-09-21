@@ -40,37 +40,80 @@ impl Service {
         #[cfg(test)]
         let state_limit = self.state_capacity;
 
-        // `DurableService::capacity().logical_payload_bytes` measures all bytes
-        // currently owned by the local durable store. The V4 owner-addressed
-        // state layout can retain reusable chunks plus the current manifest, so
-        // physical durable bytes can exceed the serialized application-state
-        // bound even while the current State remains admissible. The public
-        // `state_*` fields are an application-state contract, not a physical
-        // storage-amplification counter; derive them from the exact in-memory
-        // State that would be passed to commit_state_bytes().
-        let state_bytes = match self.state.as_ref() {
-            Some(state) => match owner_store::serialize_owner(state) {
-                Ok(bytes) => bytes.len(),
-                Err(_) => return Response::error(503, "server state serialization unavailable"),
-            },
-            None => return Response::error(503, "server is sealed"),
-        };
+        let (state_bytes, state_limit, storage_format, profile, chunk_target, size_basis) =
+            if let Some(root) = &self.record_root {
+                let owner_bytes = root
+                    .owners
+                    .iter()
+                    .map(|owner| owner.total_bytes)
+                    .sum::<u64>();
+                let kv_bytes = root
+                    .kv1
+                    .reference
+                    .as_ref()
+                    .map_or(0, |reference| reference.payload_bytes);
+                let Some(total) = owner_bytes
+                    .checked_add(kv_bytes)
+                    .and_then(|bytes| usize::try_from(bytes).ok())
+                else {
+                    return Response::error(503, "record capacity arithmetic failed");
+                };
+                #[cfg(not(test))]
+                let record_limit = MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES;
+                #[cfg(test)]
+                let record_limit = if self.state_capacity == MAX_STATE_BYTES {
+                    MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+                } else {
+                    self.state_capacity
+                };
+                (
+                    total,
+                    record_limit,
+                    crate::state_record_root::STORAGE_FORMAT,
+                    "bounded-record-state-v5",
+                    crate::state_record_root::OWNER_CHUNK_BYTES,
+                    "opaque-owner-json-plus-kv1-canonical-values",
+                )
+            } else {
+                let bytes = match self.state.as_ref() {
+                    Some(state) => match owner_store::serialize_owner(state) {
+                        Ok(bytes) => bytes.len(),
+                        Err(_) => {
+                            return Response::error(503, "server state serialization unavailable");
+                        }
+                    },
+                    None => return Response::error(503, "server is sealed"),
+                };
+                (
+                    bytes,
+                    state_limit,
+                    owner_store::STATE_STORAGE_FORMAT,
+                    "bounded-owner-state-v4",
+                    owner_store::STATE_CHUNK_BYTES,
+                    "canonical-state-json",
+                )
+            };
         if state_bytes > state_limit {
             return Response::error(503, "committed server state exceeds configured capacity");
         }
-
-        // The Service admits one bounded serialized logical application state.
-        // Local durability uses the V4 owner-scoped, content-defined chunk
-        // manifest while HA still proposes the complete serialized state. This
-        // is not a per-secret quota and it is not a record-oriented scale claim.
+        // V5 state_bytes is the live logical payload, not the tiny root size.
+        // The durable encrypted-artifact preflight can reject below this upper
+        // bound because pages, ciphertext, replay records and staged objects
+        // also consume space. No capacity reservation is implied.
         Response::ok(json!({"data": {
-            "profile": "bounded-owner-state-v4",
+            "profile": profile,
             "scope": "serving-leader-local",
             "state_schema": CURRENT_STATE_SCHEMA,
-            "state_storage_format": owner_store::STATE_STORAGE_FORMAT,
-            "state_chunk_target_bytes": owner_store::STATE_CHUNK_BYTES,
+            "state_storage_format": storage_format,
+            "state_chunk_target_bytes": chunk_target,
             "kv_read_only_dispatches": self.kv_read_only_dispatches,
             "state_bytes": state_bytes,
+            "state_size_basis": size_basis,
+            "durable_payload_bytes": capacity.logical_payload_bytes,
+            "durable_artifact_limit_bytes": capacity.max_file_bytes,
+            "opaque_owner_limit_bytes": MAX_STATE_BYTES,
+            "kv1_encoded_graph_limit_bytes": crate::state_records::MAX_GRAPH_BYTES,
+            "state_remaining_is_admission_budget": false,
             "state_limit_bytes": state_limit,
             "state_remaining_bytes": state_limit - state_bytes,
             "generation": capacity.generation,

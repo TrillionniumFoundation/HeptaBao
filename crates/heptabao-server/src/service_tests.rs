@@ -1680,8 +1680,17 @@ fn finite_use_is_committed_for_acl_denial_and_state_capacity_rejection()
         &token,
         r#"path "secret/data/large" { capabilities = ["create", "update", "read"] }"#,
     )?;
-    service.state_capacity =
-        serde_json::to_vec(service.state.as_ref().ok_or("missing state")?)?.len();
+    // Leave room for the separately committed finite-use admission while
+    // rejecting the 4 KiB business mutation under the record payload bound.
+    service.state_capacity = service
+        .record_root
+        .as_ref()
+        .ok_or("missing root")?
+        .owners
+        .iter()
+        .map(|owner| owner.total_bytes as usize)
+        .sum::<usize>()
+        + 1024;
     assert_eq!(
         call(
             &mut service,
@@ -1743,7 +1752,11 @@ fn unknown_journal_write_releases_no_secret_and_preserves_last_committed_state()
         json!({"data":{"value":"uncertain-secret"}}),
     );
     assert_eq!(result.status, 503);
-    assert!(result.body["recovery_reference"].is_string());
+    assert!(
+        result.body["recovery_reference"].is_string(),
+        "{}",
+        result.body
+    );
     assert!(!result.body.to_string().contains("uncertain-secret"));
     assert!(service.recovery_required);
     assert_eq!(
@@ -3079,5 +3092,49 @@ fn public_userpass_login_does_not_spend_a_separate_finite_bearer()
         .status,
         403
     );
+    Ok(())
+}
+
+#[test]
+fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let previous = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    service.request_deadline = Some(previous);
+    for forwarded in [false, true] {
+        let response = service.begin_request_before(
+            ServiceRequest::new("GET", "sys/health", "", "", Value::Null),
+            std::time::Instant::now() + std::time::Duration::from_secs(1),
+            forwarded,
+        );
+        assert!(matches!(response, RequestExecution::Complete(_)));
+        assert_eq!(service.request_deadline, Some(previous));
+        let response = service.begin_request_before(
+            ServiceRequest::new(
+                "POST",
+                "sys/init",
+                "",
+                "",
+                json!({"secret_shares":1,"secret_threshold":1}),
+            ),
+            std::time::Instant::now(),
+            forwarded,
+        );
+        assert!(matches!(
+            response,
+            RequestExecution::Complete(Response { status: 503, .. })
+        ));
+        assert_eq!(service.request_deadline, Some(previous));
+        assert!(service.seal.is_none());
+        assert!(service.state.is_none());
+    }
+    service.request_deadline = None;
+    let _ = service.begin_request_before(
+        ServiceRequest::new("GET", "sys/health", "", "", Value::Null),
+        std::time::Instant::now() + std::time::Duration::from_secs(1),
+        false,
+    );
+    assert!(service.request_deadline.is_none());
     Ok(())
 }

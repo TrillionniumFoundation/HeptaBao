@@ -264,6 +264,11 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
     }
     if let Some(ha) = forwarding_ha {
+        let forward_timeout = ha
+            .lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .forward_timeout()
+            .min(Duration::from_secs(config.timeout_seconds));
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
             let Some(service) = weak_service.upgrade() else {
@@ -281,7 +286,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     origin_peer: request.origin_peer,
                     client_certificates: request.client_certificates.take(),
                 },
-                Instant::now() + Duration::from_secs(15),
+                Instant::now() + forward_timeout,
                 true,
             );
             request.token.zeroize();
@@ -305,6 +310,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     );
     for stream in listener.incoming() {
         let stream = stream.map_err(|_| "listener accept failed")?;
+        let timeout = Duration::from_secs(config.timeout_seconds);
+        // One budget from accept, including worker scheduling, TLS/body reads,
+        // service lock waiting, forwarding, provider work, and response writes.
+        let deadline = Instant::now() + timeout;
         if connections
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 (value < config.max_connections).then_some(value + 1)
@@ -324,7 +333,6 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             .map_or(true, |mut limiter| !limiter.allow(peer));
         let service = Arc::clone(&service);
         let tls = Arc::clone(&tls);
-        let timeout = Duration::from_secs(config.timeout_seconds);
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
             .spawn(move || {
@@ -337,13 +345,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let Ok(connection) = ServerConnection::new(tls) else {
                     return;
                 };
-                let mut stream = StreamOwned::new(
-                    connection,
-                    DeadlineStream {
-                        stream,
-                        deadline: Instant::now() + timeout,
-                    },
-                );
+                let mut stream = StreamOwned::new(connection, DeadlineStream { stream, deadline });
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
                     Err(_) => return,
@@ -355,7 +357,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         WireRejection::RateLimited,
                         429,
                         "request rate limit exceeded",
-                        Instant::now() + timeout,
+                        deadline,
                     );
                     let _ = write_response(&mut stream, response, false);
                     return;
@@ -387,7 +389,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 origin_peer: Some(peer),
                                 client_certificates: request.client_certificates.take(),
                             },
-                            Instant::now() + timeout,
+                            deadline,
                             false,
                         );
                         (response, is_head)
@@ -399,7 +401,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
-                            Instant::now() + timeout,
+                            deadline,
                         ),
                         false,
                     ),
@@ -482,22 +484,18 @@ where
 
 fn execute_service_request(
     service: &Arc<Mutex<Service>>,
-    request: ServiceRequest<'_>,
+    mut request: ServiceRequest<'_>,
     deadline: Instant,
     forwarded: bool,
 ) -> Response {
     let execution = match lock_until(service, deadline) {
-        Ok(mut writer) => {
-            if forwarded {
-                writer.begin_forwarded(request)
-            } else {
-                writer.begin_request(request)
-            }
-        }
+        Ok(mut writer) => writer.begin_request_before(request, deadline, forwarded),
         Err(LockWaitError::Busy) => {
+            crate::service::erase_json(&mut request.body);
             return Response::error(503, "service state lock deadline exceeded");
         }
         Err(LockWaitError::Poisoned) => {
+            crate::service::erase_json(&mut request.body);
             return Response::error(503, "service state is unavailable");
         }
     };
@@ -1176,6 +1174,92 @@ mod tests {
 #[cfg(test)]
 mod service_lock_deadline_tests {
     use super::*;
+
+    #[test]
+    fn slow_body_and_writer_wait_share_budget_before_mutating_dispatch()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-http-deadline-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        let (stream, _) = listener.accept()?;
+        let deadline = Instant::now() + Duration::from_millis(250);
+        let mut stream = DeadlineStream { stream, deadline };
+        let sender = std::thread::spawn(move || -> io::Result<()> {
+            let body = br#"{"secret_shares":1,"secret_threshold":1}"#;
+            write!(
+                client,
+                "POST /v1/sys/init HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n",
+                body.len()
+            )?;
+            std::thread::sleep(Duration::from_millis(40));
+            client.write_all(body)
+        });
+        let mut parsed = read_request(&mut stream, Duration::from_secs(1))
+            .map_err(|_| "synthetic slow request failed parsing")?;
+        sender.join().map_err(|_| "synthetic sender panicked")??;
+        // The body has consumed part of the accepted connection's budget.
+        // Keep the writer busy beyond the remaining budget; no dispatch may run.
+        let held = service.lock().map_err(|_| "test service poisoned")?;
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                &parsed.method,
+                &parsed.path,
+                &parsed.namespace,
+                &parsed.token,
+                std::mem::take(&mut parsed.body.0),
+            ),
+            deadline,
+            false,
+        );
+        assert_eq!(response.status, 503);
+        drop(held);
+        let read = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", Value::Null),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["initialized"], false);
+        // A new connection is allowed a new budget: the same valid mutation
+        // succeeds, proving the timed-out request was not a rejected test input.
+        let mut initialized = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                "POST",
+                "sys/init",
+                "",
+                "",
+                json!({"secret_shares":1,"secret_threshold":1}),
+            ),
+            Instant::now() + Duration::from_secs(5),
+            false,
+        );
+        assert_eq!(initialized.status, 200);
+        crate::service::erase_json(&mut initialized.body);
+        Ok(())
+    }
 
     #[test]
     fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()

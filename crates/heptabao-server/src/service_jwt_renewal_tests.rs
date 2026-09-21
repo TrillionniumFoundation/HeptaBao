@@ -7,6 +7,27 @@ use ring::signature::{Ed25519KeyPair, KeyPair};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
     let (key, admin) = bootstrap(&mut service)?;
@@ -183,6 +204,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     let (mut service, _, admin, token) = fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 17;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
@@ -242,9 +264,11 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     }
     restore_v18_jwt_config(&mut auth)?;
     roles_only.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    restore_legacy_engine_owner(&mut roles_only)?;
     roles_only.schema = 17;
     roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_err());
+    restore_legacy_engine_owner(&mut roles_only)?;
     roles_only.schema = 18;
     roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_ok());
@@ -259,6 +283,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
     let mut legacy = serde_json::to_value(&state.auth)?;
     restore_v18_jwt_config(&mut legacy)?;
     state.auth = serde_json::from_value::<AuthState>(legacy.clone())?.into();
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 18;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -276,6 +301,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
             _ => mount["native_claims"] = json!(true),
         }
         state.auth = serde_json::from_value::<AuthState>(value)?.into();
+        restore_legacy_engine_owner(&mut state)?;
         state.schema = 18;
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err(), "{variant}");

@@ -28,7 +28,7 @@ A valid transition obeys all of the following rules.
 
 ## Single-node sequence
 
-For a single-node Service, the authenticated route clones the current state, checks that its `replay_epoch` matches the durable-service epoch, increments exactly once, and persists the new state through `persist_state_batch`. That persistence path retires the local detailed replay ledger first and then writes the chunked state under the new epoch. The response is released only after local convergence is observed.
+For a single-node Service, the authenticated route clones the current state, checks that its `replay_epoch` matches the durable-service epoch, increments exactly once, and persists the candidate through the selected storage path. Local replay retirement precedes publication of either the legacy owner manifest or the V5 record root under the new epoch. The response is released only after local convergence is observed.
 
 If the operation-identity ledger is already full, the retirement path is still admitted specifically so capacity can be recovered without silently deleting old identities. A restart must reopen with the same epoch frontier before new state effects are accepted.
 
@@ -36,7 +36,7 @@ If the operation-identity ledger is already full, the retirement path is still a
 
 In HA, the leader performs the same authorization and one-step validation, but the target `State.replay_epoch` is first proposed through the existing Raft application-state path. Committing that state defines the cluster order of the transition; it does not by itself delete every node's local ledger.
 
-When the leader or a follower applies the committed target state, `persist_state_batch` compares the target epoch with the node-local durable epoch. Normal publication permits at most one-step advancement. The dedicated authoritative HA catch-up path may be several epochs behind: it repeatedly invokes the same durable replay-retirement primitive until the local owner reaches the committed target, verifies the exact epoch, and only then publishes the local chunk manifest/state batch. This is not an unguarded restore path and cannot be selected by a normal request.
+When the leader or a follower applies the committed target state, the selected legacy or record publication path compares the target epoch with the node-local durable epoch. Normal publication permits at most one-step advancement. The dedicated authoritative HA catch-up path may be several epochs behind: it repeatedly invokes the same durable replay-retirement primitive until the local owner reaches the committed target, verifies the exact epoch, and only then publishes the local owner manifest or record root. This is not an unguarded restore path and cannot be selected by a normal request.
 
 A newly elected leader must be able to observe the committed epoch locally and commit an ordinary mutation in it. That behavioral check is important because a standby HTTP request can be forwarded to the leader and cannot prove the standby's local replay ledger advanced.
 
@@ -48,15 +48,21 @@ A partial retirement/publication failure sets the Service recovery fence. The ca
 
 ## Storage and capacity interaction
 
-Replay retirement does not make the current state layout horizontally scalable.
-The serialized logical application state is bounded to **16 MiB**. Local durability
-uses the current `heptabao-state-owners-v4` owner-scoped, content-addressed
-manifest; **512 KiB** is the target chunk size, with 384 KiB minimum and 768 KiB
-maximum boundaries for non-final chunks. HA uses separate bounded replicated
-chunk framing after serializing the same complete logical state. These mechanisms
-reduce physical rewrite/transport granularity but do not provide record-oriented
-state ownership or bounded logical serialization cost; those remain separate
-replacement-admission work.
+Replay retirement retains the same identity frontier across both storage paths.
+Legacy `heptabao-state-owners-v4` stores one bounded logical State in owner chunks;
+HBSM4 replicates that complete logical image. Current
+`heptabao-state-records-v5` separates immutable KV1 blocks/index pages from opaque
+owners and publishes a single authenticated root; HBSM5 orders typed object
+staging and root publication. KV2 and other opaque owners still have whole-owner
+serialization costs. A pure legacy read/reopen does not migrate; ordinary logical
+mutation explicitly constructs the V5 candidate before publication.
+
+The [capacity contract](../operations/HEPTABAO_CAPACITY_AND_GROWTH.md) records
+source-bound V4 chunk limits and distinct V5 root, owner, value, page, and graph
+limits. Durable artifact/journal limits, replay identities and HA snapshot limits
+remain independent and can reject before any logical component ceiling is reached.
+A passing drift guard establishes documentation consistency only, not scalability
+or replacement qualification.
 
 The retained root-only `GET sys/internal/storage/capacity` view exposes `replay_epoch`, `retired_through_generation`, and `replay_retirement`. In HA the latter is `raft-coordinated`. `GET sys/internal/capacity` reports the newer logical application-state capacity contract. Neither route reserves capacity or grants replacement authority.
 

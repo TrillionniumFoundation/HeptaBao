@@ -5,37 +5,58 @@ and unresolved scalability exit, not a new plan or a production-capacity claim.
 
 ## Real owner and interface
 
-The running Service owns one logical serialized `State` containing Auth, Identity,
-KV, Transit, PKI, SSH, wrappers, local leases, PostgreSQL intents and Raft-admin
-state. The durable representation is no longer one 768 KiB value. Current local
-storage uses the `heptabao-state-owners-v4` owner-scoped content-addressed manifest
-and deterministic content-defined boundaries: chunks are at least **384 KiB**, target
-**512 KiB**, and are capped at **768 KiB** except the final short chunk. New chunks,
-retired chunk references and the manifest publication point are committed through
-one durable atomic batch. The shared serialized-state admission bound is
-**16 MiB**, and HA replication uses that same bound. The `HBSM3` format introduced
-deterministic content-defined chunks staged under a bounded
-128-index/two-slot physical keyspace, while the manifest carries the logical chunk
-order independently of physical index. A prefix/middle insertion can therefore
-resynchronize and reuse authenticated later chunks without shifting every
-subsequent Raft chunk key. Historical whole-state `HBSR1` and fixed-position
-`HBSM2` manifests remain readable for online upgrade. `HBSR1` can be inspected
-and caught up, but a mutation refuses to promote it implicitly and
-requires an explicit owner-manifest migration. New owner-bound service
-commits use `HBSM4`: the encrypted manifest carries a canonical owner-manifest
-digest (with operation revision removed) and a five-owner changed mask. Followers
-rebuild their local owner plan and fail closed if the canonical target manifest
-identity diverges before publishing durable state. The mask is range-validated
-but is not compared to a follower's local delta: a lagging follower may span
-several leader commits. An HBSM3 or older envelope never silently claims this
-owner-delta guarantee. The manifest is still the sole authoritative publication
-point, so interrupted staging cannot expose a partial logical state. A point
-mutation still serializes the complete logical State once for its cluster binding
-and HA-compatible digest. Local V4 persistence then uses copy-on-write owner
-identity to carry unchanged authenticated owner descriptors and chunks forward
-without a second serialization/hash/chunk pass; changed owners alone are
-rechunked locally. HA still consumes the complete logical image, so this reduces
-local physical/CPU amplification but is **not** record-oriented scalability.
+The Service remains the sole application authority. Schema36 adds a KV1 record
+path: `state_records` holds immutable value blocks and ordered index pages, while
+`heptabao-state-records-v5` binds that graph and five opaque owners. A point write
+encodes the changed value/index path and any changed opaque owner; it does not
+serialize all KV1 payloads. KV2, Auth/provider state, Identity, Transit, PKI, SSH,
+wrappers, leases and database/Raft administration remain in opaque JSON owners.
+
+The budgets are independent:
+
+| Boundary | Enforced limit and meaning |
+|---|---|
+| Logical components | Opaque owners total 16MiB; KV1 conservative encoded graph 64MiB, including repeated references; individual canonical value 16MiB. The normal HTTP request limit remains 256KiB. |
+| Local durability | Existing 64MiB artifact/journal limits and 32,000 replay identities per epoch. Immutable-publication preflight includes the cumulative staged peak, final root, ciphertext/framing and replay records before HA submission. |
+| HA | Typed application data has a 47MiB encoded budget and at most 131,072 objects; the existing 128MiB complete-snapshot ceiling is not raised. Sealed/encoded objects and retained Raft data can reject earlier than a logical component bound. |
+
+The sum of logical component ceilings is **not 80MiB of usable storage**. Shared
+content, index metadata, encryption, retained operations and staging determine
+actual admission. A diagnostic remainder is not an allocation reservation.
+
+Legacy V4 stores retain their 16MiB whole-State bound and HBSM4 owner-bound
+whole-image replication until an ordinary logical mutation explicitly converts
+its real candidate. Pure read/reopen does not perform this conversion. V1–V3
+and HBSR1/HBSM2/HBSM3 remain explicit legacy decoding/migration paths; malformed
+or incomplete current state never falls back to them. HBSR1 still requires the
+explicit owner migration before a V5 transition.
+
+Migration needs room for the old authoritative state and new immutable objects
+at the same time. The current legacy double-slot HA layout can exhaust the
+47MiB staging budget even when the final V5 graph would fit. Reclaiming verified
+inactive legacy slots and qualifying a near-limit old-binary migration remain
+open; a small upgrade profile cannot qualify that boundary. Dense small-record
+states may need a separately resumable migration protocol even after inactive
+slots are reclaimed. No existing limit is raised to hide this staging peak.
+
+The source-bound limits below distinguish legacy layout constraints from V5
+component constraints. They do not replace the tighter durable/HA admission
+checks above; no row is a reservation or a measured capacity result.
+
+| Layout | Source constant | Enforced value | Scope |
+|---|---|---|---|
+| Shared | `server::MAX_APPLICATION_STATE_BYTES` | 16 MiB | V4 whole serialized State; V5 aggregate opaque-owner JSON, excluding KV1 records. |
+| V4 legacy | `service_owner_store::STATE_STORAGE_FORMAT` | `heptabao-state-owners-v4` | Legacy owner-manifest discriminator, retained for reopen and explicit transition. |
+| V4 legacy | `service_owner_store::STATE_CHUNK_BYTES` | 512 KiB | Content-defined owner chunk target. |
+| V4 legacy | `service_owner_store::STATE_CHUNK_MIN_BYTES` | 384 KiB | Minimum content-defined boundary; final owner chunk may be shorter. |
+| V4 legacy | `service_owner_store::STATE_CHUNK_MAX_BYTES` | 768 KiB | Maximum content-defined owner chunk. |
+| V5 records | `state_record_root::STORAGE_FORMAT` | `heptabao-state-records-v5` | Current typed publication root discriminator. |
+| V5 records | `state_record_root::MAX_ROOT_BYTES` | 64 KiB | Canonical serialized publication root. |
+| V5 records | `state_record_root::OWNER_CHUNK_BYTES` | 256 KiB | Opaque-owner chunk payload. |
+| V5 records | `state_records::BLOCK_BYTES` | 256 KiB | KV1 value block payload. |
+| V5 records | `state_records::PAGE_BYTES` | 32 KiB | Encoded index page bound. |
+| V5 records | `state_records::MAX_VALUE_BYTES` | 16 MiB | One canonical KV1 value; HTTP request admission remains separately tighter. |
+| V5 records | `state_records::MAX_GRAPH_BYTES` | 64 MiB | Conservative encoded KV1 graph count, including repeated references. |
 
 Stable HBSM4 reads can reuse fully verified state after a fresh ReadIndex and
 manifest authentication, bound to unchanged Raft and local durable generations.
@@ -53,7 +74,7 @@ and [reuse receipt](../../qa/openbao-acceptance/evidence/ha-read-cached-7c10621.
 bind the same measurement runner and exact source/binary observations. Each
 point also checked that reads left durable counters unchanged. These are scoped
 development measurements, not a multi-host production latency commitment;
-write amplification and the 16 MiB logical limit remain unresolved.
+they measure the historical V4 path, not the schema 36 KV1 record path.
 
 Transparent sharing of mounts, KV entries and historical payloads also reduced
 small-write CPU costs in a separate single-node development-build fixture. With
@@ -64,14 +85,16 @@ median latencies of 232.096 / 781.095 / 1710.870 ms
 [after](../../qa/openbao-acceptance/evidence/kv-write-cow-6e07000.json).
 The same runner retained large history and unrelated mounts, checked exact CAS
 versions, and reopened both latest and historical values. Physical write counts
-were unchanged; peak RSS did not improve at every size. Full serialization,
-hashing and changed-owner chunking still grow with total state size. These
+were unchanged; peak RSS did not improve at every size. For that historical V4/KV2 measurement, full serialization,
+hashing and changed-owner chunking grow with total state size. These
 unoptimized development-build observations do not establish production capacity.
 
 The explicit HA migration endpoint is
 `POST` or `PUT /v1/sys/storage/raft/migrate-owner-state` (an empty JSON object
 is required). It is root-namespace and root-token only, requires the current
-leader, and is idempotent after the committed envelope is already HBSM4. The
+leader, and is idempotent after the committed envelope is already HBSM4 or
+HBSM5. HBSM5 returns its typed record digest without calling the legacy-only
+whole-state reader. The
 route suppresses unrelated lease and wrapping-clock maintenance for that one
 request so an HBSR1 image is not rejected before the migration gate runs.
 Migration preserves the exact logical bytes and binds the new owner manifest to
@@ -93,8 +116,9 @@ bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 
 | Field | Meaning |
 |---|---|
-| `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | Current serialized logical application payload and 16 MiB hard bound. |
-| `state_storage_format`, `state_chunk_target_bytes` | Exact current local state framing identity (`heptabao-state-owners-v4`) and 512 KiB target chunk size; these are diagnostics, not a compatibility promise. |
+| `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | V4: canonical State bytes/16MiB. V5: opaque-owner JSON plus logical KV1 value JSON, component-sum upper bound and logical headroom only; `state_remaining_is_admission_budget` is false. |
+| `state_storage_format`, `state_chunk_target_bytes` | Exact active format: `heptabao-state-owners-v4`/512KiB target or `heptabao-state-records-v5`/256KiB owner chunks. These fields do not infer migration from schema alone. |
+| `state_size_basis`, `durable_payload_bytes`, `durable_artifact_limit_bytes` | Distinguish logical measurement from stored resources and the tighter encrypted-artifact admission boundary. |
 | `retained_operations`, `operation_limit`, `operations_remaining` | Active-epoch local durable replay identities and remaining slots. |
 | `journal_bytes`, `journal_limit_bytes` | Current local replay journal and configured hard bound. |
 | `generation` | Durable committed local generation, not a cluster-wide capacity reservation. |
@@ -109,25 +133,33 @@ This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
 ## State publication and legacy migration
 
-`system/state` may contain either a historical serialized `State` record, a V1
-alternating-slot manifest, a V2 fixed content-addressed manifest, or the current
-V1–V3 whole-state manifests remain readable for one-way promotion. A V4 writer serializes each authoritative owner independently, hashes each chosen
-owner chunk, reuses unchanged owner resources, deletes replaced previous-generation
-resources and publishes the new owner manifest in the same
-`DurableService::apply_batch` binding. The owner manifest is the sole local publication point, so one logical state
-transition still consumes one replay identity and one durable generation. A reader accepts only a complete manifest
-whose version-specific chunk shape, state schema, total length and SHA-256 binding
-verify.
+`system/state` is the sole local authority: a legacy State/manifest, V4 owner
+manifest, or V5 record root. With V5, up to 95 new immutable objects plus the root
+share one 96-mutation batch. Larger migration/catch-up closures stage full bounded
+batches first; only the final batch publishes the root. Readers accept no partial
+closure, and an uncertain stage/publication outcome retains recovery fencing.
+Old schema-35 binaries reject schema 36 and the new root rather than losing record data.
 
-On unseal, a valid legacy state or older manifest is decoded before the next
-mutation promotes it through the current atomic publication path. Malformed
-manifests, missing chunks, digest mismatches or indeterminate publication outcomes
-never fall back to an older representation by guesswork. Fresh initialization and
-HA catch-up use the same state publication path.
+HBSM5 replicates typed Stage/Publish/Prune commands with authenticated object
+metadata and sealed bytes. Publication compares a typed legacy/record base.
+A follower validates the full committed closure before its local root becomes
+authoritative. The explicitly authorized first HA anchor emits the complete
+local V5 closure, including after restart; ordinary commits remain deltas.
+ReadIndex, namespace/ACL admission, finite-use accounting and audit release rules
+are unchanged.
+
+Current readers pin fully materialized immutable graphs. Unreachable local objects
+are collected against the current published root every 64 successful writes or on
+the first later write after reopen/catch-up. This is scheduled full-closure work,
+not a claim that every maintenance request is logarithmic. GC does not reset
+replay identities. Once converted, provider and lifecycle commits also retain V5;
+KV2/provider payloads have not become independently addressable records.
 
 ## Before-entry capacity handling
 
-`DurableService::preflight_new_identity` rejects a known-full active replay epoch
+V5 uses `DurableService::preflight_immutable_publication` to check cumulative
+staging/publication bounds without cloning or scanning the full stored values.
+Legacy `DurableService::preflight_new_identity` rejects a known-full active replay epoch
 before `Service::persist` proposes a fresh HA operation. This preflight is not a
 future I/O guarantee. Exact duplicates inside the active epoch use their retained
 record; identities at or before a retired authenticated frontier remain stale and
@@ -168,10 +200,14 @@ multi-host qualification remain separate exits.
 
 Current source anchors include:
 
-- `crates/heptabao-server/src/service_state_store.rs` for manifest/chunk framing,
-  shared 16 MiB admission and legacy-state assembly;
-- `crates/heptabao-server/src/ha_state.rs` for authenticated HA replication using
-  the same serialized-state bound, including a >768 KiB round trip;
+- `crates/heptabao-server/src/state_records.rs`, `state_record_root.rs` and
+  `service_records.rs` for record/index framing, root identity, bounded staging,
+  initial anchor closure and interrupted-stage/reopen behavior;
+- `crates/heptabao-server/src/service_state_store.rs` for legacy manifest/chunk
+  framing and the old 16MiB state-assembly bound;
+- `crates/heptabao-server/src/ha_record_codec.rs` and `ha_record_runtime.rs` for
+  HBSM5 authenticated objects and typed root publication; `ha_state.rs` retains
+  the legacy whole-image framing;
 - `crates/heptabao-durable-service/src/capacity.rs` for replay retirement restart,
   crash-window and backup/restore tests;
 - `crates/heptabao-server/src/service_capacity_tests.rs` for root-only retirement
@@ -188,13 +224,12 @@ be used as admission evidence.
 
 ## Scalable-storage and HA lifecycle exits still required
 
-Owner-scoped local persistence removes whole-state local physical rewrites, while
-HA still uses complete logical serialization and whole-state logical proposals.
-Production-scale closure still requires extending record ownership through the HA
-state-machine boundary or another demonstrated architecture whose write
-amplification, peak memory, snapshot streaming and recovery cost remain bounded as
-the dataset grows. The implemented HA replay-epoch protocol still requires the
-fault, snapshot, upgrade and multi-host qualification cases listed below.
+Schema36 connects KV1 record ownership through local publication and typed HA
+state-machine commands. This source implementation does not establish measured
+capacity or qualify its lifecycle. KV2 and the remaining opaque owners still have
+whole-owner serialization costs. Record growth, periodic GC, peak memory, snapshot
+encoding and recovery must be measured together with the HA replay-epoch and
+fault/upgrade cases below.
 
 Before admission, exercise total datasets materially above the legacy ceiling,
 long write histories beyond one replay epoch, leader/follower catch-up,
@@ -206,8 +241,8 @@ and derives throughput, p50/p95/p99 latency and physical write-amplification cur
 It also measures startup plus unseal/load recovery at both the small initial state
 and the near-capacity state, yielding a source-bound recovery-cost curve instead of
 one final restart anecdote. Those measurements expose growth/write-amplification,
-memory, latency, disk and recovery trends for the bounded whole-state implementation;
-they do not convert it into a record-oriented scale claim. Production admission
+memory, latency, disk and recovery trends for the historical whole-state profile;
+they are not receipts for the new KV1 record implementation. Production admission
 still requires repeatable curves on representative multi-host hardware and larger
 datasets under a storage architecture that is not constrained by whole-state
 serialization. Do not
@@ -220,7 +255,8 @@ reconcile-only 503, not a new-attempt capacity rejection.
 ## Immutable KV read cost and runtime counter
 
 Eligible unlimited-token KV GET/LIST/SCAN operations borrow shared authoritative
-state and use `engines/kv.rs` immutable handlers. They do not clone the EngineState,
+state and use the corresponding `engines/kv.rs` or `engines/kv1_records.rs`
+immutable handlers. They do not clone the EngineState,
 serialize the complete State, advance a generation or allocate replay identities.
 Ordered KV listing seeks from the cursor and skips emitted shallow subtrees.
 Live token/parent/Identity/namespace/ACL checks, ReadIndex and both audits remain;
@@ -238,5 +274,11 @@ RSS, and repeats a read after SIGKILL/reopen. `--baseline` measures the same wor
 without claiming the new dispatch path. Timing is descriptive and sample counts
 are explicit; this single-host development fixture cannot grant production scale.
 
-Owner-level `CowOwner` sharing and immutable reads do not remove whole-state write
-serialization, state admission bounds, or the remaining long-horizon HA/fault exits.
+Owner-level sharing and immutable reads are distinct from the V5 KV1 write path.
+Neither removes component/local/HA admission bounds, opaque-owner write costs,
+or the remaining long-horizon HA/fault exits.
+
+The existing decoded manual backup transfer limit is still 20MiB. Record-layout
+read/write capacity and HA snapshot replication do not remove this export/restore
+limit. No new schema-36 capacity/performance or upgrade result is asserted here; exact
+binary receipts must be recorded after the relevant live profiles execute.

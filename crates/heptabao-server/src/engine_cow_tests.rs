@@ -37,6 +37,7 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             identity: identity::IdentityState::default(),
         };
         let mut state = EngineState {
+            records: None,
             lease_clock: 0,
             namespaces: BTreeMap::from([("".into(), CowNamespace(Arc::new(namespace)))]),
         };

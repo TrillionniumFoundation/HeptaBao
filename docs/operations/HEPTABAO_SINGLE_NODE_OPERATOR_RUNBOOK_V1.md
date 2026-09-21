@@ -91,7 +91,9 @@ rollback-protection provider. Consult the detailed Identity and server guides.
 |---|---|---|
 | HTTP headers / normal body | 16 KiB / 256 KiB | Send one canonical JSON request per connection; chunked/pipelined requests are rejected |
 | Snapshot request / response body | 32 MiB / 32 MiB | Snapshot-specific JSON/base64 transfer still has the smaller decoded limit below |
-| Serialized logical Service state | 16 MiB, published as 512 KiB immutable chunks plus one manifest | This removes the legacy 768 KiB single-value ceiling but not whole-state serialization/write amplification; use capacity preflight and measured growth curves rather than raising the bound |
+| Legacy V4 / V5 opaque owners | 16MiB whole State for V4;16MiB combined opaque owners after the V5 transition | KV2 and provider/authentication data remain opaque; check actual `state_storage_format` |
+| V5 KV1 graph | 64MiB conservative encoded graph; normal HTTP body remains 256KiB | This is not allocatable capacity: local encrypted artifacts and HA encoding can reject sooner |
+| Local durable artifact | 64MiB including framing, ciphertext and retained metadata | Publication preflight runs before HA; do not add logical component ceilings and claim that sum is usable |
 | Retained durable operation identities | 32,000 | Compact the journal when needed; compaction retains replay identities and does not reset this limit |
 | Durable journal | 64 MiB | Root `POST /v1/sys/storage/raft/compact` with `{}`; inspect returned generation and before/after byte counts |
 | Decoded backup transfer | 20 MiB | Export fails with 507 above the limit; keep size headroom before a restore drill |
@@ -99,6 +101,16 @@ rollback-protection provider. Consult the detailed Identity and server guides.
 | Retained sealed audit segments | 1–64, default 8, plus active segment | Archive sealed segments externally before retention removes older records |
 
 Capacity or filesystem failure is not permission to continue unrecorded requests. New durable writes can fail before entry with 507; an unavailable audit path can block reads, health and denied attempts as well. A finite-use token may already have consumed its admitted use before a subsequent ACL or state-capacity rejection. Alert externally on byte/inode headroom and failed operations; there is no integrated metrics exporter or background retention daemon for general token/lease models.
+
+For schema 36, `heptabao-state-records-v5` is selected by the explicit ordinary
+logical write transition, not merely by unseal or a schema number. Old schema-35 binaries
+must reject a committed schema-36 root. Retain compatible rollback artifacts and verify
+actual read-only reopen/migration behavior. Initial HA anchoring copies the full
+validated record closure; ordinary writes stage only changed objects. A partial
+stage is not an application publication. See [capacity](HEPTABAO_CAPACITY_AND_GROWTH.md)
+for the independent budgets and diagnostic field meanings. The 20MiB decoded
+manual backup ceiling above remains an open restriction even for larger KV1
+installations; HA snapshot support is not evidence of manual export capacity.
 
 ## Optional mandatory HTTPS audit collector
 

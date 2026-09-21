@@ -408,6 +408,23 @@ impl Service {
         Ok(())
     }
 
+    fn record_migration_status(&self) -> Result<Option<Response>, Response> {
+        if self.record_root.is_none() {
+            return Ok(None);
+        }
+        let crate::state_record_root::StateIdentity::RecordsV5(digest) =
+            self.current_state_identity()?
+        else {
+            return Err(Response::error(
+                503,
+                "record migration identity is inconsistent",
+            ));
+        };
+        Ok(Some(Response::ok(json!({"data":{
+            "migrated":false,"already_migrated":true,"format":"HBSM5","digest":hex(&digest)
+        }}))))
+    }
+
     /// Promote the currently committed HBSR1 image to an owner-bound HBSM4
     /// manifest.  The route is deliberately idempotent: after a local
     /// publication failure the next retry first catches up from the committed
@@ -420,6 +437,16 @@ impl Service {
             .as_ref()
             .ok_or_else(|| Response::error(503, "HA is not enabled"))?
             .clone();
+        if let Some(response) = self.record_migration_status()? {
+            // The route has already authorized the root actor/current leader,
+            // and sync_from_ha above authenticated the committed publication.
+            let identity = self.current_state_identity()?;
+            ha.lock()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+                .ensure_application_identity(identity)
+                .map_err(|_| Response::error(503, "HA record authority is unavailable"))?;
+            return Ok(response);
+        }
         let committed = ha
             .lock()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
@@ -568,6 +595,78 @@ impl Service {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn record_migration_status_is_idempotent_and_cannot_bypass_ha_admission()
+    -> Result<(), Box<dyn std::error::Error>> {
+        use super::super::tests::{Root, bootstrap, call};
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        assert!(
+            service
+                .record_migration_status()
+                .map_err(|_| "legacy status")?
+                .is_none()
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "secret/data/record-migration",
+                &token,
+                json!({"data":{"value":"retained"}})
+            )
+            .status,
+            200
+        );
+        let identity = service.current_state_identity().map_err(|_| "identity")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        for _ in 0..2 {
+            let response = service
+                .record_migration_status()
+                .map_err(|_| "record status")?
+                .ok_or("missing status")?;
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"]["migrated"], false);
+            assert_eq!(response.body["data"]["already_migrated"], true);
+            assert_eq!(response.body["data"]["format"], "HBSM5");
+            assert_eq!(response.body["data"]["digest"], hex(&identity.digest()));
+        }
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        // A local V5 root alone must not turn the actual HA-admin route into
+        // success on a single-node Service without an admitted HA process.
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/storage/raft/migrate-owner-state",
+                &token,
+                json!({})
+            )
+            .status,
+            400
+        );
+        let prior = service.state_digest;
+        service.state_digest = Some([9; 32]);
+        assert!(service.record_migration_status().is_err());
+        service.state_digest = prior;
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "secret/data/record-migration",
+                &token,
+                json!({})
+            )
+            .body["data"]["data"]["value"],
+            "retained"
+        );
+        Ok(())
+    }
+
     fn observation() -> MembershipObservation {
         MembershipObservation {
             local_id: 1,

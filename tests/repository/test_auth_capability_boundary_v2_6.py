@@ -65,7 +65,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         self.assertIn("letmuttransaction=admitted;", compact)
         self.assertIn("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());", compact)
         dispatch_start = compact.index("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());")
-        dispatch_end = compact.index("letmutserialized=", dispatch_start)
+        dispatch_end = compact.index("if admitted.engines.record_root().is_some()".replace(" ", ""), dispatch_start)
         dispatch_block = compact[dispatch_start:dispatch_end]
         self.assertEqual(1, dispatch_block.count("admitted.clone()"))
         self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
@@ -86,6 +86,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
                 "token",
                 "body",
                 "wrap_ttl_seconds",
+                "origin_peer",
             },
         )
         # A verified TLS chain is transport evidence for certificate auth; it

@@ -9,9 +9,11 @@ state-format rules are in [the Service format contract](../architecture/HEPTABAO
 
 ## Responsibility and integration boundary
 
-`EngineState` is the serializable, secret-bearing engine state inside the server's
-authenticated encrypted snapshot. It owns namespace-local mounts and their
-resources. It does not listen on a socket, authenticate a caller, decide whether a
+`EngineState` owns namespace-local mounts and resources inside the Service's
+authenticated publication. Its opaque owner is serializable; after the schema 36
+transition, KV1 payloads instead live in the authenticated immutable record graph.
+Serialized `Kv1Records` mount metadata is unusable without that graph/root.
+KV2 and the other engine payloads remain in the opaque owner. It does not listen on a socket, authenticate a caller, decide whether a
 caller is an administrator, or save an unencrypted file. Those responsibilities
 belong to `Service`, `AuthState`, the TLS listener and the durable storage adapter.
 
@@ -34,11 +36,12 @@ payloads. A response contains `status`, `body` and `mutated`. Its body is alread
 an OpenBao-style `data` envelope, except a no-content response has JSON null and
 HTTP 204. The HTTP server owns outer response fields and request identifiers.
 
-The engine clones the selected namespace, validates and operates on that
-candidate, then replaces live engine state only for `Ok(response)` with
-`response.mutated == true`. The service additionally operates on a candidate of
-the complete server state and commits an encrypted snapshot before exposing the
-result. A failed CAS, invalid metadata field, invalid key configuration or failed
+The engine isolates the affected candidate and replaces it only after a valid
+operation. KV1 record writes replace an immutable index path; namespace/mount
+metadata is reused unless it changed. `Service` compares the canonical legacy
+or typed record identity and publishes the encrypted candidate before exposing
+the result. Mount removal/remount also changes the namespace/mount/incarnation
+record scope, preventing old data from reappearing under a recreated mount. A failed CAS, invalid metadata field, invalid key configuration or failed
 AEAD verification therefore cannot partially alter durable engine state.
 
 **HTTP status alone is not a commit decision.** A Transit batch with both
@@ -70,8 +73,9 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv2 | Transit | Pki | Ssh | Totp}
-  .entries[resource] or .keys[key_name]
+  .backend.{Database | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
+  .entries[resource] or .keys[key_name]  (opaque-owner backends)
+  Kv1Records -> authenticated KV1 graph scoped by namespace/mount/incarnation
 ```
 
 The expression above is a schema path, not a concatenated storage key. Namespace,

@@ -1,9 +1,11 @@
 //! Reuse only HA materialization already bound to this admitted local state.
 use super::*;
-use crate::ha::{CommittedApplicationState, ValidatedReadCursor};
+use crate::ha::{CommittedApplicationState, CommittedRecordState, ValidatedReadCursor};
+use crate::state_record_root::{RecordStateRoot, StateIdentity};
 
 #[derive(Clone, Eq, PartialEq)]
 struct LocalReadIdentity {
+    records_v5: bool,
     digest: [u8; 32],
     replay_epoch: u64,
     durable_generation: u64,
@@ -26,8 +28,15 @@ impl Service {
         {
             return None;
         }
+        let digest = self.state_digest?;
+        if let Some(root) = self.record_root.as_ref()
+            && root.identity().ok()? != StateIdentity::RecordsV5(digest)
+        {
+            return None;
+        }
         Some(LocalReadIdentity {
-            digest: self.state_digest?,
+            records_v5: self.record_root.is_some(),
+            digest,
             replay_epoch: state.replay_epoch,
             durable_generation: durable.generation(),
             activation_nonce: self.unseal_nonce.clone(),
@@ -50,7 +59,7 @@ impl Service {
         let Some(local) = self.local_ha_read_identity() else {
             return Ok(());
         };
-        if local.digest != committed.digest {
+        if local.records_v5 || local.digest != committed.digest {
             return Err(Response::error(
                 503,
                 "HA read verification differs from admitted state",
@@ -91,6 +100,71 @@ impl Service {
                 503,
                 "local and HA owner publication identities diverge",
             ));
+        }
+        self.ha_read_cache = Some(HaReadCache {
+            cursor: cursor.clone(),
+            local,
+        });
+        Ok(())
+    }
+    pub(super) fn cache_verified_ha_records(
+        &mut self,
+        committed: &CommittedRecordState,
+    ) -> Result<(), Response> {
+        self.ha_read_cache = None;
+        let Some(cursor) = committed.read_cursor.as_ref() else {
+            return Ok(());
+        };
+        let Some(local) = self.local_ha_read_identity() else {
+            return Ok(());
+        };
+        if !local.records_v5 || committed.identity != StateIdentity::RecordsV5(local.digest) {
+            return Err(Response::error(
+                503,
+                "HA record identity differs from admitted state",
+            ));
+        }
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let published = durable
+            .get("system", "state")
+            .map_err(|_| Response::error(503, "local record publication is unavailable"))?
+            .ok_or_else(|| Response::error(503, "local record publication is absent"))?;
+        let root = RecordStateRoot::decode(published.expose())
+            .map_err(|_| Response::error(503, "local record publication is invalid"))?;
+        if published.expose() != committed.root_bytes.as_slice()
+            || root
+                .identity()
+                .map_err(|_| Response::error(503, "local root identity is invalid"))?
+                != committed.identity
+            || root.state_schema != state.schema
+            || root.cluster_id != state.cluster_id
+            || root.replay_epoch != local.replay_epoch
+        {
+            return Err(Response::error(
+                503,
+                "local and HA record publications diverge",
+            ));
+        }
+        // Service calls this only after it has authenticated the complete graph
+        // and admitted/persisted that exact root locally. An apply during graph
+        // loading may still yield a valid immutable read, but never a warm cursor.
+        let ha = self
+            .ha
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "HA is unavailable"))?;
+        if !ha
+            .lock()
+            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+            .record_cursor_current(cursor)
+        {
+            return Ok(());
         }
         self.ha_read_cache = Some(HaReadCache {
             cursor: cursor.clone(),

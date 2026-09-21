@@ -4,10 +4,10 @@ use std::fs::OpenOptions;
 use std::io::{BufReader, Read};
 use std::net::{SocketAddr, TcpListener};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
@@ -43,6 +43,10 @@ use crate::{
     },
     service::OwnerPublicationBinding,
 };
+
+#[path = "ha_record_runtime.rs"]
+mod records;
+pub(crate) use records::CommittedRecordState;
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
@@ -87,12 +91,18 @@ pub struct HaProcessConfig {
     pub initial_voters: Option<BTreeSet<u64>>,
     #[serde(default = "default_peer_timeout_ms")]
     pub peer_timeout_ms: u64,
+    #[serde(default = "default_forward_timeout_ms")]
+    pub forward_timeout_ms: u64,
     #[serde(default = "default_max_inflight")]
     pub max_inflight: usize,
 }
 
 fn default_peer_timeout_ms() -> u64 {
     750
+}
+
+fn default_forward_timeout_ms() -> u64 {
+    15_000
 }
 
 fn default_max_inflight() -> usize {
@@ -211,6 +221,7 @@ impl Drop for PeerListener {
 /// It is process-local, contains no plaintext state and is never serialized.
 #[derive(Clone)]
 pub(crate) struct ValidatedReadCursor {
+    records_v5: bool,
     generation: u64,
     envelope_identity: [u8; 32],
 }
@@ -219,6 +230,7 @@ pub(crate) enum CommittedStateRead {
     Absent,
     Unchanged,
     Materialized(CommittedApplicationState),
+    Records(Box<CommittedRecordState>),
 }
 
 pub(crate) struct CommittedApplicationState {
@@ -235,12 +247,14 @@ pub(crate) struct CommittedApplicationState {
 }
 
 pub struct HaProcess {
+    record_commits_since_gc: AtomicU64,
     runtime: Runtime,
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
     cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
     forward_transport: MutualTlsPeerTransport,
+    forward_timeout: Duration,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
     listener: Option<PeerListener>,
 }
@@ -294,6 +308,10 @@ impl HaProcess {
         if local.certificate_sha256 != local_leaf_digest {
             return Err("HA local certificate digest does not match peer registry".into());
         }
+        let forward_timeout = Duration::from_millis(config.forward_timeout_ms);
+        let forward_transport =
+            MutualTlsPeerTransport::new(endpoint_map.clone(), client_tls.clone(), forward_timeout)
+                .map_err(|error| error.to_string())?;
         let transport = MutualTlsPeerTransport::new(endpoint_map, client_tls, timeout)
             .map_err(|error| error.to_string())?;
         let peers = Arc::new(nodes_by_id);
@@ -473,15 +491,21 @@ impl HaProcess {
         }
 
         Ok(Self {
+            record_commits_since_gc: AtomicU64::new(0),
             runtime,
             node: Some(node),
             codec,
             cluster_id: config.cluster_id,
             peers,
-            forward_transport: transport,
+            forward_transport,
+            forward_timeout,
             forward_handler,
             listener: Some(listener_pool),
         })
+    }
+
+    pub(crate) fn forward_timeout(&self) -> Duration {
+        self.forward_timeout
     }
 
     pub(crate) fn register_forward_handler(
@@ -512,7 +536,10 @@ impl HaProcess {
         wrap_ttl_seconds: Option<u64>,
         origin_peer: Option<std::net::IpAddr>,
         client_certificates: Option<&[Vec<u8>]>,
+        caller_deadline: Option<Instant>,
     ) -> Result<Response, String> {
+        let deadline = Instant::now() + self.forward_timeout;
+        let deadline = caller_deadline.map_or(deadline, |caller| caller.min(deadline));
         let local = self.local_id()?;
         let leader = self
             .leader()?
@@ -565,12 +592,15 @@ impl HaProcess {
         });
         let response = zeroize::Zeroizing::new(
             self.forward_transport
-                .exchange(target, &request)
+                .exchange_before(target, &request, deadline)
                 .map_err(|error| error.to_string())?,
         );
         let mut response = decode_forward_response(&response, &self.cluster_id)?;
         if response.source != leader || response.target != local {
             return Err("HA forward response direction is invalid".into());
+        }
+        if Instant::now() >= deadline {
+            return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         Ok(Response {
             status: response.status,
@@ -691,34 +721,51 @@ impl HaProcess {
     }
 
     /// Prove that the local process is observing the committed application
-    /// generation identified by `expected_digest`.
+    /// generation identified by the typed `expected` identity.
     ///
     /// A successful ReadIndex only proves quorum authority; it does not prove
     /// that this process has applied the same application state after a
     /// restart, snapshot install, or leadership transfer.  Health and request
     /// admission use this stronger fence so a node cannot report an active
     /// authority while serving a stale local state image.
-    pub(crate) fn ensure_application_digest(
+    pub(crate) fn ensure_application_identity(
         &self,
-        expected_digest: [u8; 32],
+        expected: crate::state_record_root::StateIdentity,
     ) -> Result<(), String> {
-        if expected_digest == [0; 32] {
-            return Err("HA application digest is not initialized".into());
+        use crate::state_record_root::StateIdentity;
+        if expected.digest() == [0; 32] {
+            return Err("HA application identity is not initialized".into());
         }
-        let node = self
-            .node
-            .as_ref()
-            .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.ensure_linearizable())
-            .map_err(|error| error.to_string())?;
+        // This performs ReadIndex and authenticates the typed root, including
+        // its base and public references. A published V5 root never falls back
+        // to a retired legacy client, even if the raw digest happens to match.
+        if let Some(committed) = self.read_record_root_if_present(None)? {
+            return match committed {
+                CommittedStateRead::Records(record) if record.identity == expected => Ok(()),
+                _ => Err("HA application state is not converged on the committed identity".into()),
+            };
+        }
+        let StateIdentity::Legacy(expected_digest) = expected else {
+            return Err("HA record root has not been committed".into());
+        };
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
         let committed = self
             .runtime
             .block_on(node.latest_envelope())
             .map_err(|error| error.to_string())?
-            .ok_or_else(|| "HA application state has not been committed".to_owned())?;
-        if committed.digest() != expected_digest {
-            return Err("HA application state is not converged on the committed digest".into());
+            .ok_or("HA application state has not been committed")?;
+        let descriptor = self
+            .codec
+            .open_committed_descriptor(
+                committed.operation_id(),
+                committed.digest(),
+                committed.sealed(),
+            )
+            .map_err(|error| error.to_string())?;
+        if committed.digest() != expected_digest
+            || matches!(descriptor, CommittedStateDescriptor::RecordsV5(_))
+        {
+            return Err("HA application state is not converged on the committed identity".into());
         }
         Ok(())
     }
@@ -859,6 +906,9 @@ impl HaProcess {
                         None
                     }
                     CommittedStateDescriptor::Chunked(manifest) => Some(manifest),
+                    CommittedStateDescriptor::RecordsV5(_) => {
+                        return Err("record state cannot use whole-state publication".into());
+                    }
                 }
             }
         };
@@ -978,6 +1028,9 @@ impl HaProcess {
     ) -> Result<Option<CommittedApplicationState>, String> {
         match self.latest_committed_state_if_changed(None)? {
             CommittedStateRead::Absent => Ok(None),
+            CommittedStateRead::Records(_) => {
+                Err("record state requires its typed root and object reader".into())
+            }
             CommittedStateRead::Materialized(state) => Ok(Some(state)),
             CommittedStateRead::Unchanged => {
                 Err("HA read reused an absent verification cursor".into())
@@ -989,6 +1042,9 @@ impl HaProcess {
         &self,
         known: Option<&ValidatedReadCursor>,
     ) -> Result<CommittedStateRead, String> {
+        if let Some(records) = self.read_record_root_if_present(known)? {
+            return Ok(records);
+        }
         let node = self
             .node
             .as_ref()
@@ -1041,6 +1097,9 @@ fn read_committed_application(
     let identity = manifest_envelope_identity(&envelope);
     let (bytes, legacy_whole_state, owner_manifest_digest, changed_owner_mask) = match descriptor {
         CommittedStateDescriptor::Legacy(bytes) => (bytes, true, None, None),
+        CommittedStateDescriptor::RecordsV5(_) => {
+            return Err("record state requires typed application materialization".into());
+        }
         CommittedStateDescriptor::Chunked(manifest) => {
             if manifest.state_digest != envelope.digest() {
                 return Err("HA manifest digest does not match production envelope".into());
@@ -1049,7 +1108,9 @@ fn read_committed_application(
             // that Service can bind to admitted durable state before reusing.
             if manifest.owner_manifest_digest.is_some()
                 && known.is_some_and(|cursor| {
-                    cursor.generation == generation && cursor.envelope_identity == identity
+                    !cursor.records_v5
+                        && cursor.generation == generation
+                        && cursor.envelope_identity == identity
                 })
             {
                 return Ok(CommittedStateRead::Unchanged);
@@ -1103,6 +1164,7 @@ fn read_committed_application(
     // evidence spanning that mutation; the next read can validate it afresh.
     let read_cursor = (owner_manifest_digest.is_some() && current_generation() == generation)
         .then_some(ValidatedReadCursor {
+            records_v5: false,
             generation,
             envelope_identity: identity,
         });
@@ -1163,6 +1225,7 @@ fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
         // `TlsPeerEndpoint::new`.
         || config.listen.port() == 0
         || !(50..=5_000).contains(&config.peer_timeout_ms)
+        || !(1_000..=60_000).contains(&config.forward_timeout_ms)
         || !(4..=256).contains(&config.max_inflight)
         || !config.raft_dir.is_absolute()
         || !config.ca_file.is_absolute()
@@ -1680,6 +1743,48 @@ mod tests {
     use super::*;
 
     #[test]
+    fn forwarding_timeout_defaults_and_validation_do_not_change_peer_timeout()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = serde_json::json!({
+            "node_id":1,"cluster_id":"cluster-a","raft_dir":"/private/raft",
+            "listen":"127.0.0.1:8201","ca_file":"/private/ca",
+            "cert_file":"/private/cert","key_file":"/private/key",
+            "replication_key_file":"/private/replication",
+            "peer_timeout_ms":500,
+            "peers": {
+                "1":{"node_name":"n1","address":"127.0.0.1:8201","server_name":"n1.invalid","certificate_sha256":"11".repeat(32)},
+                "2":{"node_name":"n2","address":"127.0.0.1:8202","server_name":"n2.invalid","certificate_sha256":"22".repeat(32)},
+                "3":{"node_name":"n3","address":"127.0.0.1:8203","server_name":"n3.invalid","certificate_sha256":"33".repeat(32)}
+            }
+        });
+        let mut config: HaProcessConfig = serde_json::from_value(legacy.clone())?;
+        assert_eq!(config.peer_timeout_ms, 500);
+        assert_eq!(config.forward_timeout_ms, 15_000);
+        validate_config(&config)?;
+        for value in [1_000, 15_000, 60_000] {
+            config.forward_timeout_ms = value;
+            validate_config(&config)?;
+            assert_eq!(config.peer_timeout_ms, 500);
+        }
+        for value in [0, 999, 60_001, u64::MAX] {
+            config.forward_timeout_ms = value;
+            assert!(validate_config(&config).is_err());
+        }
+        config.forward_timeout_ms = 15_000;
+        config.peer_timeout_ms = 5_001;
+        assert!(validate_config(&config).is_err());
+        let mut defaults = legacy;
+        defaults
+            .as_object_mut()
+            .ok_or("config object")?
+            .remove("peer_timeout_ms");
+        let config: HaProcessConfig = serde_json::from_value(defaults)?;
+        assert_eq!(config.peer_timeout_ms, 750);
+        assert_eq!(config.forward_timeout_ms, 15_000);
+        Ok(())
+    }
+
+    #[test]
     fn invalid_cluster_identity_is_rejected_before_peer_validation() -> Result<(), String> {
         let config = HaProcessConfig {
             node_id: 0,
@@ -1696,6 +1801,7 @@ mod tests {
             bootstrap: false,
             initial_voters: None,
             peer_timeout_ms: 750,
+            forward_timeout_ms: 15_000,
             max_inflight: 64,
         };
         assert_eq!(
@@ -1750,6 +1856,7 @@ mod tests {
             bootstrap: false,
             initial_voters: None,
             peer_timeout_ms: 750,
+            forward_timeout_ms: 15_000,
             max_inflight: 64,
         };
         assert_eq!(

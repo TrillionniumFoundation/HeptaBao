@@ -38,3 +38,7 @@ pub use service::{Response, Service};
 
 #[cfg(test)]
 mod cubbyhole_service_tests;
+
+mod secret_serde;
+pub(crate) mod state_record_root;
+mod state_records;

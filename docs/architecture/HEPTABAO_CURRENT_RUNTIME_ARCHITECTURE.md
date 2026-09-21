@@ -133,8 +133,13 @@ write copies the affected mount's key index and the target entry's version
 metadata while retaining other mounts, entries and historical payloads. Dropping
 the final payload reference clears its JSON; deleting from a candidate never
 clears a retained transaction snapshot. These wrappers preserve serialized bytes.
-This is in-memory copy-on-write, not a record-oriented durable store. Mutations
-still serialize the complete logical image for current local/HA publication.
+These transparent wrappers remain the legacy/V4 and KV2 representation. After
+the schema 36 transition, KV1 values use `state_records` immutable blocks and
+ordered pages; `engines/kv1_records.rs` keeps the runtime graph outside serialized
+mount metadata. `service_records.rs` publishes the encrypted V5 root and reuses
+unchanged opaque owner descriptors. A KV1 point write encodes its new value and
+changed index path, without serializing all KV1 values or the full State.
+KV2 and provider/authentication owners remain opaque and bounded.
 
 After HA ReadIndex/synchronization and recovery fencing, `immutable_kv_response`
 handles only eligible KV GET/LIST/SCAN requests with unlimited ordinary tokens.
@@ -146,20 +151,23 @@ Finite-use tokens, wrapping requests/tokens and live local lease cleanup retain
 the durable transaction path. Outer request and result audit are unchanged;
 result-audit failure still withholds the secret and fences the Service.
 
-HA synchronization can reuse a previously authenticated HBSM4 publication after
+HA synchronization can reuse a previously authenticated HBSM4 or HBSM5 publication after
 another successful ReadIndex and manifest authentication. The process-local
 cursor binds the complete envelope and the atomically observed state-machine
 generation; every apply and snapshot advances that generation. Reuse also
 requires unchanged local state digest, durable generation, replay epoch and
 unseal activation, with no pending recovery. Initial cache admission verifies
-the complete chunk set and the local canonical owner manifest. Seal, recovery,
+the complete legacy chunk set or V5 record graph and the corresponding canonical
+local publication. The cache distinguishes legacy and record identities. Seal, recovery,
 changed publication or any synchronization failure invalidates reuse. Older
 publication formats continue to take the full verification path. This avoids
 reassembling an unchanged logical image on each eligible read; it does not
-remove ReadIndex, the logical-state size limit or whole-image write costs.
+remove ReadIndex or any local/HA admission bound. HBSM5 typed record commands
+replace whole-image replication only for the explicitly transitioned V5 state.
 
 KV listing seeks its ordered record index from the cursor and skips already
 emitted shallow subtrees rather than collecting every key. Idle lifecycle ticks
 check for relevant work before cloning owners. See the capacity guide for the
-actual process measurement profile; these optimizations are not write-scaling,
-complete migration or production qualification.
+actual process measurement profile. Record-layout implementation, measured growth,
+complete migration and production qualification are separate facts; no new
+performance result is implied by this source description.

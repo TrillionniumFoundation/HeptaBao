@@ -17,6 +17,8 @@ ACCEPTANCE = 'docs/compatibility/HEPTABAO_REPLACEMENT_ACCEPTANCE.md'
 CORPUS = 'qa/openbao-acceptance/complete_surface_corpus_v1.json'
 SERVER_LIB = 'crates/heptabao-server/src/lib.rs'
 STATE_STORE = 'crates/heptabao-server/src/service_owner_store.rs'
+RECORD_ROOT = 'crates/heptabao-server/src/state_record_root.rs'
+RECORD_CORE = 'crates/heptabao-server/src/state_records.rs'
 
 
 def _one(pattern: str, text: str, error: str, errors: list[str]) -> str | None:
@@ -86,6 +88,27 @@ def _without_rust_comments(text: str) -> str:
     return "".join(out)
 
 
+def _capacity_rows(text: str) -> dict[tuple[str, str], list[str]]:
+    """Read the operator-facing source table, retaining duplicates as errors."""
+    rows: dict[tuple[str, str], list[str]] = {}
+    for line in text.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if not line.lstrip().startswith('|') or len(cells) != 4:
+            continue
+        layout, constant, value, _scope = cells
+        if not re.fullmatch(r'`[A-Za-z_]+::[A-Z_]+`', constant):
+            continue
+        rows.setdefault((layout, constant.strip('`')), []).append(
+            re.sub(r'\s+', '', value.replace('**', '').replace('`', '')))
+    return rows
+
+
+def _check_capacity_constant(rows, layout: str, qualified: str, value: str,
+                             errors: list[str]) -> None:
+    if rows.get((layout, qualified)) != [re.sub(r'\s+', '', value)]:
+        errors.append(f'capacity source table differs from {layout} {qualified}')
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     try:
@@ -129,65 +152,60 @@ def validate(root: Path = ROOT) -> list[str]:
         replay_fixture = (root / REPLAY_HA).read_text()
         server_lib = (root / SERVER_LIB).read_text()
         state_store = (root / STATE_STORE).read_text()
-        # Bind semantic constants without coupling CI to visibility, indentation
-        # or rustfmt line layout. Exact Git bytes remain the source authority.
-        state_mib = _one(
-            r'\bMAX_APPLICATION_STATE_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*\*\s*1024\s*;',
-            server_lib,
-            'shared application-state bound is missing or ambiguous',
-            errors,
+        # The V4 bounds remain active for legacy decoding/publication. V5
+        # separates the opaque-owner bound from its immutable KV1 graph; neither
+        # component sum is a usable durable or HA capacity promise.
+        rows = _capacity_rows(capacity_guide)
+        sources = {
+            'server': _without_rust_comments(server_lib),
+            'service_owner_store': _without_rust_comments(state_store),
+            'state_record_root': _without_rust_comments((root / RECORD_ROOT).read_text()),
+            'state_records': _without_rust_comments((root / RECORD_CORE).read_text()),
+        }
+        limits = (
+            ('Shared', 'server', 'MAX_APPLICATION_STATE_BYTES', 'MiB'),
+            ('V4 legacy', 'service_owner_store', 'STATE_CHUNK_BYTES', 'KiB'),
+            ('V4 legacy', 'service_owner_store', 'STATE_CHUNK_MIN_BYTES', 'KiB'),
+            ('V4 legacy', 'service_owner_store', 'STATE_CHUNK_MAX_BYTES', 'KiB'),
+            ('V5 records', 'state_record_root', 'MAX_ROOT_BYTES', 'KiB'),
+            ('V5 records', 'state_record_root', 'OWNER_CHUNK_BYTES', 'KiB'),
+            ('V5 records', 'state_records', 'BLOCK_BYTES', 'KiB'),
+            ('V5 records', 'state_records', 'PAGE_BYTES', 'KiB'),
+            ('V5 records', 'state_records', 'MAX_VALUE_BYTES', 'MiB'),
+            ('V5 records', 'state_records', 'MAX_GRAPH_BYTES', 'MiB'),
         )
-        chunk_kib = _one(
-            r'\bSTATE_CHUNK_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
-            state_store,
-            'state chunk target is missing or ambiguous',
-            errors,
-        )
-        chunk_min_kib = _one(
-            r'\bSTATE_CHUNK_MIN_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
-            state_store,
-            'state chunk minimum is missing or ambiguous',
-            errors,
-        )
-        chunk_max_kib = _one(
-            r'\bSTATE_CHUNK_MAX_BYTES\s*:\s*usize\s*=\s*(\d+)\s*\*\s*1024\s*;',
-            state_store,
-            'state chunk maximum is missing or ambiguous',
-            errors,
-        )
-        storage_format = _one(
-            r'\bSTATE_STORAGE_FORMAT\s*:\s*&str\s*=\s*"([^"]+)"\s*;',
-            state_store,
-            'current state storage format is missing or ambiguous',
-            errors,
-        )
+        for layout, owner, constant, unit in limits:
+            scale = r'\s*\*\s*1024' * (2 if unit == 'MiB' else 1)
+            number = _one(
+                rf'\b{constant}\s*:\s*usize\s*=\s*([\d_]+){scale}\s*;',
+                sources[owner], f'{owner}::{constant} missing or ambiguous', errors)
+            if number is not None:
+                _check_capacity_constant(rows, layout, f'{owner}::{constant}',
+                                         f'{int(number.replace("_", ""))} {unit}', errors)
+        for layout, owner, constant in (
+            ('V4 legacy', 'service_owner_store', 'STATE_STORAGE_FORMAT'),
+            ('V5 records', 'state_record_root', 'STORAGE_FORMAT'),
+        ):
+            storage_format = _one(
+                rf'\b{constant}\s*:\s*&str\s*=\s*"([^\"]+)"\s*;',
+                sources[owner], f'{owner}::{constant} missing or ambiguous', errors)
+            if storage_format is not None:
+                _check_capacity_constant(rows, layout, f'{owner}::{constant}', storage_format, errors)
+                for path, guide in ((SERVER, server_guide), (REPLAY, replay_guide)):
+                    if storage_format not in guide:
+                        errors.append(f'{path}: missing {layout} storage format')
+        for path, guide in ((SERVER, server_guide), (REPLAY, replay_guide)):
+            if Path(CAPACITY).name not in guide:
+                errors.append(f'{path}: missing shared capacity-contract navigation')
+        for stale in (
+            'The serialized logical application state is bounded to **16 MiB**. Local durability uses the current',
+            'The bounded profile limits the serialized logical application state to 16 MiB locally and in HA;',
+        ):
+            if any(stale in re.sub(r'\s+', ' ', guide) for guide in (server_guide, replay_guide)):
+                errors.append('runtime docs describe legacy whole-state ownership as the sole current layout')
         operations_raw = _one(
             r'\bMAX_OPERATIONS\s*:\s*usize\s*=\s*([\d_]+)\s*;',
-            source,
-            'replay operation-identity bound is missing or ambiguous',
-            errors,
-        )
-        if state_mib is not None:
-            if f'**{state_mib} MiB**' not in capacity_guide or f'{state_mib} MiB' not in server_guide:
-                errors.append('current capacity documentation differs from MAX_APPLICATION_STATE_BYTES')
-            if f'**{state_mib} MiB**' not in replay_guide:
-                errors.append('replay protocol differs from MAX_APPLICATION_STATE_BYTES')
-        if chunk_kib is not None:
-            if f'**{chunk_kib} KiB**' not in capacity_guide or f'{chunk_kib} KiB' not in server_guide:
-                errors.append('current capacity documentation differs from STATE_CHUNK_BYTES')
-            if f'**{chunk_kib} KiB**' not in replay_guide:
-                errors.append('replay protocol differs from STATE_CHUNK_BYTES')
-        if chunk_min_kib is not None and f'**{chunk_min_kib} KiB**' not in capacity_guide:
-            errors.append('capacity documentation differs from STATE_CHUNK_MIN_BYTES')
-        if chunk_max_kib is not None and f'**{chunk_max_kib} KiB**' not in capacity_guide:
-            errors.append('capacity documentation differs from STATE_CHUNK_MAX_BYTES')
-        if storage_format is not None:
-            if storage_format not in server_guide:
-                errors.append(f'{SERVER}: missing current chunk-manifest storage format')
-            if storage_format not in capacity_guide:
-                errors.append(f'{CAPACITY}: missing current chunk-manifest storage format')
-            if storage_format not in replay_guide:
-                errors.append(f'{REPLAY}: missing current chunk-manifest storage format')
+            source, 'replay operation-identity bound is missing or ambiguous', errors)
         if operations_raw is not None:
             operations = int(operations_raw.replace('_', ''))
             formatted = f'{operations:,}'

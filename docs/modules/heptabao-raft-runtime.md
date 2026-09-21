@@ -12,6 +12,17 @@ This package implements a durable three-voter OpenRaft consensus core for HeptaB
 
 `replicate` borrows a sealed `ReplicatedEnvelope` and a nonzero client serial; the envelope binds a 1–128-byte ASCII operation ID (alphanumeric plus `-_.:`), a nonzero 32-byte digest and 1 byte–1 MiB of opaque sealed bytes. `next_production_client_serial` obtains serial allocation from durable state rather than process uptime. After a lost response, reconcile the operation binding before retrying. `ensure_linearizable` is an awaited ReadIndex barrier, not a cached leader observation. `applied_state`/`latest_envelope` read local state and require the caller to establish the needed authority barrier first.
 
+The `ApplicationRequest` state machine also accepts typed record Stage/Publish/Prune
+commands. Staging stores bounded sealed objects but does not change the application
+root. Publish validates the expected typed base and complete referenced closure;
+pruning is limited to objects unreachable from the committed root. The same command
+validation applies during live application and journal replay. The server's HBSM5
+codec authenticates object metadata and decrypts values; the Raft runtime does not
+interpret KV plaintext. Record state uses explicit format 3 snapshot/bundle framing
+so an older legacy parser cannot silently discard the object map. Existing object,
+state-machine and 128MiB snapshot budgets remain enforced; this API description is
+not a successful scale, snapshot-transfer or mixed-version test receipt.
+
 `initialize_single`, `add_learner` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
 
 Current API declaration excerpt (illustrative, not a standalone program):

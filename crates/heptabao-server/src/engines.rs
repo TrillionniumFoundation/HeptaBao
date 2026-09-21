@@ -20,6 +20,7 @@ mod identity_projection;
 use identity_projection::IdentityProjection;
 pub(crate) mod kubernetes;
 mod kv;
+mod kv1_records;
 #[path = "engine_leases.rs"]
 mod leases;
 pub(crate) mod openldap;
@@ -30,6 +31,8 @@ mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(skip)]
+    records: Option<kv1_records::Runtime>,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
     namespaces: BTreeMap<String, CowNamespace>,
@@ -201,6 +204,8 @@ enum Backend {
     /// Bounded OpenLDAP dynamic credential state; network effects are Service-owned.
     OpenLdap(openldap::OpenLdap),
     Kv1(BTreeMap<String, SharedJson>),
+    /// V5 data belongs to the separate authenticated record root.
+    Kv1Records,
     Kv2(kv::Kv2),
     Transit(transit::Transit),
     Pki(pki::Pki),
@@ -284,7 +289,7 @@ impl Mount {
             Backend::Kubernetes(_) => ("kubernetes", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::OpenLdap(_) => ("ldap", json!({"schema":"openldap"})),
-            Backend::Kv1(_) => ("kv", json!({"version":"1"})),
+            Backend::Kv1(_) | Backend::Kv1Records => ("kv", json!({"version":"1"})),
             Backend::Kv2(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
             Backend::Pki(_) => ("pki", json!({})),
@@ -784,7 +789,10 @@ impl EngineState {
             .iter()
             .find_map(|(name, mount)| {
                 (name.strip_suffix('/') == Some(path)
-                    && matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)))
+                    && matches!(
+                        mount.backend,
+                        Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                    ))
                 .then(|| name.clone())
             })
     }
@@ -801,7 +809,12 @@ impl EngineState {
                     .iter()
                     .find(|(mount, _)| path.starts_with(mount.as_str()))
             })
-            .is_some_and(|(_, mount)| matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)))
+            .is_some_and(|(_, mount)| {
+                matches!(
+                    mount.backend,
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                )
+            })
     }
 
     /// Requires live Service authorization. The immutable receiver makes this
@@ -837,6 +850,9 @@ impl EngineState {
         let relative = &path[mount_path.len()..];
         match &mount.backend {
             Backend::Kv1(entries) => kv::read_v1(entries, method, relative, &params),
+            Backend::Kv1Records => {
+                self.read_record_kv1(namespace, mount_path, mount.incarnation, method, relative)
+            }
             Backend::Kv2(engine) => engine.handle_read(method, relative, &params, now),
             _ => Err(unsupported()),
         }
@@ -894,6 +910,15 @@ impl EngineState {
         candidate.mount_epochs.insert(from_name, old_next);
         let revision = moved.revision;
         let incarnation = moved.incarnation;
+        if matches!(current.backend, Backend::Kv1Records) {
+            self.remount_record_kv1(
+                namespace,
+                &format!("{from}/"),
+                current.incarnation,
+                &to_name,
+                incarnation,
+            )?;
+        }
         candidate.mounts.insert(to_name, moved);
         self.namespaces.insert(namespace.into(), candidate);
         Ok(ok(
@@ -961,6 +986,9 @@ impl EngineState {
         if write_method(method) {
             let exists = match &mount.backend {
                 Backend::Kv1(entries) => Some(entries.contains_key(relative)),
+                Backend::Kv1Records => {
+                    self.record_kv1_exists(namespace, mount_path, mount.incarnation, relative)
+                }
                 Backend::Kv2(engine) => relative.strip_prefix("data/").map(|p| engine.contains(p)),
                 Backend::Totp(engine) => relative
                     .strip_prefix("keys/")
@@ -1065,6 +1093,7 @@ impl EngineState {
             let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
             let response = handle_mounts(&mut candidate, method, mount_path, &params)?;
             if response.mutated {
+                self.update_record_registry(namespace, &mut candidate)?;
                 self.namespaces.insert(namespace.into(), candidate);
             }
             return Ok(Some(response));
@@ -1086,6 +1115,18 @@ impl EngineState {
             .get(&mount_path)
             .cloned()
             .ok_or_else(not_found)?;
+        if matches!(mount.backend, Backend::Kv1Records) {
+            return self
+                .handle_record_kv1(
+                    namespace,
+                    &mount_path,
+                    mount.incarnation,
+                    method,
+                    relative,
+                    &params,
+                )
+                .map(Some);
+        }
         let response = match &mut mount.backend {
             Backend::Database => {
                 return Err(error(
@@ -1112,6 +1153,7 @@ impl EngineState {
                 ));
             }
             Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
+            Backend::Kv1Records => return Err(error(503, "KV1 record dispatcher mismatch")),
             Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
             Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
             Backend::Transit(engine) => {
@@ -1241,7 +1283,7 @@ fn handle_mounts(
                 .and_then(Value::as_str)
                 .ok_or_else(|| bad("KV version must be a string"))?;
             match (&mount.backend, version) {
-                (Backend::Kv1(_), "1") | (Backend::Kv2(_), "2") => {}
+                (Backend::Kv1(_) | Backend::Kv1Records, "1") | (Backend::Kv2(_), "2") => {}
                 _ => {
                     return Err(error(
                         501,

@@ -7,6 +7,27 @@ use ring::signature::{Ed25519KeyPair, KeyPair};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+// These auth format fixtures have no record-backed KV1 mounts. Decode their
+// unchanged owner bytes as a legacy reader would, without retaining the v5
+// runtime installed by current HTTP writes and masking the auth schema fence.
+fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(
+        !state.engines.has_record_kv1(),
+        "legacy auth fixture cannot discard record-backed KV1 data"
+    );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    state.engines = serde_json::from_slice::<EngineState>(&before)?.into();
+    assert!(state.engines.record_root().is_none());
+    let after = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture reserialization")?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "legacy engine owner bytes changed"
+    );
+    Ok(())
+}
+
 fn keys() -> TestResult<Value> {
     let pair = Ed25519KeyPair::from_seed_unchecked(&[79; 32]).map_err(|_| "test key")?;
     Ok(
@@ -96,6 +117,7 @@ fn jwt_zero_role_limits_require_new_format_but_old_positive_limits_remain_admitt
     let root = Root::new();
     let (mut service, admin) = fixture(&root)?;
     let mut state = service.state.as_ref().ok_or("state")?.clone();
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 31;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -108,6 +130,7 @@ fn jwt_zero_role_limits_require_new_format_but_old_positive_limits_remain_admitt
             204
         );
         let mut state = service.state.as_ref().ok_or("state")?.clone();
+        restore_legacy_engine_owner(&mut state)?;
         state.schema = 31;
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert_eq!(
@@ -133,6 +156,7 @@ fn jwt_zero_role_limits_require_new_format_but_old_positive_limits_remain_admitt
         204
     );
     let mut state = service.state.as_ref().ok_or("state")?.clone();
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 31;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -382,6 +406,7 @@ fn jwt_claim_predicates_reject_old_schema_even_after_explicit_clear() -> TestRes
     let root = Root::new();
     let (mut service, admin) = fixture(&root)?;
     let mut legacy = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut legacy)?;
     legacy.schema = 29;
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_ok());
@@ -394,6 +419,7 @@ fn jwt_claim_predicates_reject_old_schema_even_after_explicit_clear() -> TestRes
             204
         );
         let mut state = service.state.clone().ok_or("state")?;
+        restore_legacy_engine_owner(&mut state)?;
         state.schema = 29;
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err());
@@ -408,6 +434,7 @@ fn native_jwt_https_state_is_schema_fenced_and_config_preflight_is_not_a_login()
     let root = Root::new();
     let (service, _) = fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
+    restore_legacy_engine_owner(&mut state)?;
     state.schema = 27;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
