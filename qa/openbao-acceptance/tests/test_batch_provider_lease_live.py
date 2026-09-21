@@ -1,9 +1,10 @@
 import json
+import io
 import ssl
 import unittest
 
 from batch_provider_lease_live import REQUIRED, Trace, FixtureError, no_secret_failure
-from batch_provider_ldap_gate import fields, is_issue_readback, failure_category
+from batch_provider_ldap_gate import fields, is_issue_readback, failure_category, read_frame, tlv as ber_tlv
 from online_evidence import complete_checks
 
 
@@ -17,6 +18,28 @@ RESULT = tlv(0x0a, b"\0") + tlv(4, b"") + tlv(4, b"")
 
 
 class ProviderLeaseGuards(unittest.TestCase):
+    def test_dynamic_request_ber_leading_zero_length_is_forwarded_byte_exact(self):
+        class Stream(io.BytesIO):
+            recv = io.BytesIO.read
+        # Exact outbound.rs long-length encoding: two octets even below 256.
+        search = b"\x63\x82\x00\x80" + b"x" * 128
+        body = tlv(2, b"\x02") + search
+        frame = b"\x30\x82" + len(body).to_bytes(2, "big") + body
+        following = tlv(0x30, tlv(2, b"\x03") + tlv(0x69, RESULT))
+        stream = Stream(frame + following)
+        self.assertEqual(read_frame(stream), frame)
+        self.assertEqual(fields(frame), (2, 0x63, b"x" * 128))
+        self.assertEqual(read_frame(stream), following)
+        self.assertTrue(is_issue_readback(4,0x65,RESULT,added=True,entries=1))
+        for malformed in (b"\x30\x80", b"\x30\x84", b"\x30\x83\x10\x00\x01",
+                          b"\x30\x82\x00\x7f"):
+            with self.assertRaises(ValueError):
+                read_frame(Stream(malformed))
+        with self.assertRaises(ValueError):
+            ber_tlv(b"\x30\x82\x00")
+        with self.assertRaises(ValueError):
+            ber_tlv(frame[:-1])
+
     def test_gate_error_diagnostic_never_exports_exception_message(self):
         sentinel = "synthetic-secret-host-path-sentinel"
         for error, expected in [(ssl.SSLError(sentinel), "tls_error"),

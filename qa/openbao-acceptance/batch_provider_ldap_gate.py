@@ -6,8 +6,54 @@ import socket
 import ssl
 import time
 
-from ldap_native_renewal_ha import GatedLdap, read_frame, tlv, GATE_BUDGET_SECONDS
+from ldap_native_renewal_ha import GatedLdap, exact, MAX_FRAME, GATE_BUDGET_SECONDS
 from openldap_secret_live import BASE, CREATION, DELETION, entry_marker, read_entry
+
+
+def definite_length(first, encoded):
+    if not first & 0x80:
+        return first
+    count = first & 0x7f
+    if not 1 <= count <= 3 or len(encoded) != count:
+        raise ValueError("invalid_ldap_length")
+    length = int.from_bytes(encoded, "big")
+    # outbound::ber_length uses two octets for every 128..65535 value.
+    # Its 0x82 0x00 0x80 form is BER, although not minimal DER. Preserve
+    # these real request bytes; this relay must not require a different codec.
+    if length < 128 or length > MAX_FRAME:
+        raise ValueError("invalid_ldap_length_bound")
+    return length
+
+
+def read_frame(stream):
+    header = exact(stream, 2)
+    if header[0] != 0x30:
+        raise ValueError("invalid_ldap_envelope")
+    first = header[1]
+    encoded = b""
+    if first & 0x80:
+        count = first & 0x7f
+        if not 1 <= count <= 3:
+            raise ValueError("invalid_ldap_length")
+        encoded = exact(stream, count)
+    length = definite_length(first, encoded)
+    return header + encoded + exact(stream, length)
+
+
+def tlv(data, offset=0):
+    if offset < 0 or offset + 2 > len(data):
+        raise ValueError("truncated_ldap_tlv")
+    tag, first = data[offset:offset + 2]
+    cursor = offset + 2
+    count = first & 0x7f if first & 0x80 else 0
+    if (first & 0x80 and not 1 <= count <= 3) or cursor + count > len(data):
+        raise ValueError("invalid_ldap_tlv_length")
+    length = definite_length(first, data[cursor:cursor + count])
+    cursor += count
+    end = cursor + length
+    if end > len(data):
+        raise ValueError("invalid_ldap_tlv_bound")
+    return tag, data[cursor:end], end
 
 
 def fields(frame):
