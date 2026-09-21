@@ -12,7 +12,7 @@ The repository may have many development branches. They are inputs to engineerin
 
 ## 2. Storage architecture closure
 
-The current server persists the native product state as one serialized `State` value at `system/state`. The service-level preflight currently bounds that whole value at 768 KiB and the replay ledger retains a bounded set of operation identities. Raising those constants is not closure.
+Schema36 publishes KV1 immutable records through a typed root at `system/state`, alongside five bounded opaque owners. Existing legacy layouts remain explicit decoding and migration paths. Local and HA admission account for the physical staging peak and persisted artifact encoding; the sum of component limits is not usable capacity. The current limits, implemented paths and exact measured receipts are maintained in [Capacity observation, admission and growth](../operations/HEPTABAO_CAPACITY_AND_GROWTH.md). Raising constants alone does not qualify capacity.
 
 The storage transition must preserve the existing barrier and crash semantics while moving to record-oriented state. The required order is:
 
@@ -28,9 +28,9 @@ Until all seven properties have executable evidence, `scalable_state_storage` re
 
 ## 3. Replay identity lifecycle closure
 
-Journal compaction is not replay-ledger retirement. The current replay ledger deliberately survives compaction, so its finite retained-identity budget remains a lifetime ceiling.
+Journal compaction is not replay-ledger retirement. The active replay ledger deliberately survives compaction. Explicit `sys/storage/raft/replay-retire` advances a Raft-ordered replay epoch and fences retired identities; its active-epoch budget and long-horizon recovery qualification remain separate concerns.
 
-Retirement therefore needs its own protocol. It must prove that an identity retired from the active exact set can never be replayed as a fresh mutation after process restart, snapshot restore, HA leadership change, or stale client retry. An implementation may use epochs, durable high-water marks, immutable retired digests, or another exact scheme, but probabilistic acceptance is forbidden. False negatives would violate idempotency; silently dropping old identities is not permitted.
+The retirement protocol must prove that an identity retired from the active exact set can never be replayed as a fresh mutation after process restart, snapshot restore, HA leadership change, or stale client retry. An implementation may use epochs, durable high-water marks, immutable retired digests, or another exact scheme, but probabilistic acceptance is forbidden. False negatives would violate idempotency; silently dropping old identities is not permitted.
 
 The admission evidence must include duplicate-before-retirement, duplicate-after-retirement, stale snapshot, restored backup, leader failover, and adversarial boundary tests. Only then may `replay_identity_lifecycle` become ADMITTED.
 
