@@ -119,8 +119,8 @@ fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn
         json!({}),
     );
     assert_eq!(user.status, 200);
-    assert_eq!(user.body["data"]["token_ttl"], 120);
-    assert_eq!(user.body["data"]["token_max_ttl"], 300);
+    assert_eq!(user.body["data"]["token_ttl"], 0);
+    assert_eq!(user.body["data"]["token_max_ttl"], 0);
 
     let first = call(
         &mut service,
@@ -144,7 +144,7 @@ fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn
     );
     assert_eq!(first_info.status, 200);
     assert_eq!(first_info.body["data"]["ttl"], 120);
-    assert_eq!(first_info.body["data"]["explicit_max_ttl"], 300);
+    assert_eq!(first_info.body["data"]["explicit_max_ttl"], 0);
 
     assert_eq!(
         call(
@@ -169,7 +169,7 @@ fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn
         json!({"password":"correct horse battery staple"}),
     );
     assert_eq!(bounded.status, 200);
-    assert_eq!(bounded.body["auth"]["lease_duration"], 90);
+    assert_eq!(bounded.body["auth"]["lease_duration"], 60);
     let bounded_token = bounded.body["auth"]["client_token"]
         .as_str()
         .ok_or("missing bounded login token")?
@@ -182,8 +182,8 @@ fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn
         json!({}),
     );
     assert_eq!(bounded_info.status, 200);
-    assert_eq!(bounded_info.body["data"]["ttl"], 90);
-    assert_eq!(bounded_info.body["data"]["explicit_max_ttl"], 90);
+    assert_eq!(bounded_info.body["data"]["ttl"], 60);
+    assert_eq!(bounded_info.body["data"]["explicit_max_ttl"], 0);
 
     let invalid = call(
         &mut service,
@@ -240,6 +240,6 @@ fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn
         json!({"password":"correct horse battery staple"}),
     );
     assert_eq!(post_restart.status, 200);
-    assert_eq!(post_restart.body["auth"]["lease_duration"], 90);
+    assert_eq!(post_restart.body["auth"]["lease_duration"], 60);
     Ok(())
 }

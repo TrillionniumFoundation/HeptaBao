@@ -213,6 +213,25 @@ of their own token policies. User configuration updates accept explicit
 specifying both aliases is rejected. Password and policies subroutes enforce
 their respective field boundaries.
 
+Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
+configured policy set. Login adds the implicit default policy to the issued token.
+Duration omission or null preserves existing limits; explicit zero restores
+inheritance. Policy null clears the configured set, and use-count null clears the
+count. Positive historical settings and their stored default policies are retained.
+Period and explicit maximum are supported; only the issue-time explicit maximum
+is captured as a fixed deadline. Ordinary renewal uses current account/mount
+limits and equivalent current policies. Password rotation does not revoke an
+already issued token or require its password during renewal.
+
+Direct tokens persist issuing-account provenance and username metadata. Missing
+legacy provenance is not reconstructed from display names: ambiguous old direct
+tokens must log in again to renew. Token API children and orphans retain their own
+renewal rules. Removed accounts produce 204 without auth on bearer renewal and
+500 on accessor renewal; changed policies produce 500. These responses never
+extend the lease. Schema 35 fences the new persisted semantics from old binaries.
+CIDR constraints, `token_no_default_policy`, batch tokens, case normalization and
+complete password/alias error parity remain outside this profile.
+
 ## Userpass TOTP MFA
 
 `auth/userpass/users/:name/mfa` owns a bounded user-specific TOTP enrollment.

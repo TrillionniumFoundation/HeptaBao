@@ -76,6 +76,8 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_ttl.rs"]
 mod token_ttl;
+#[path = "auth_userpass_renewal.rs"]
+mod userpass_renewal;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
@@ -1081,6 +1083,9 @@ struct Token {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
+    Userpass {
+        username: String,
+    },
     AppRole {
         role_name: String,
     },
@@ -1173,6 +1178,10 @@ struct User {
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
     #[serde(default)]
     mfa: Option<TotpEnrollment>,
 }
@@ -4820,6 +4829,11 @@ impl AuthState {
                 };
                 self.active_token(&id, now, false)?;
                 self.require_offline_renewal_origin(&id)?;
+                if let Some(response) =
+                    self.renew_userpass_token(namespace, &id, operation, body, now)?
+                {
+                    return Ok(response);
+                }
                 if let Some(response) = self.renew_jwt_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
@@ -5221,6 +5235,7 @@ impl AuthState {
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
+        let native_userpass = self.online_mount_enabled(namespace, mount, "userpass");
         let suffix = path
             .strip_prefix(&format!("auth/{mount}/users"))
             .ok_or_else(|| bad("invalid user route"))?
@@ -5306,10 +5321,12 @@ impl AuthState {
         }
         if capability == "read" && subpath.is_empty() {
             let user = existing.ok_or_else(|| err(404, "user not found"))?;
-            return Ok(response(
-                json!({"policies": user.policies, "token_policies": user.policies, "token_ttl": user.token_ttl, "token_max_ttl": user.token_max_ttl, "token_num_uses": user.token_num_uses}),
-                false,
-            ));
+            let mut data = json!({"policies": user.policies, "token_policies": user.policies, "token_ttl": user.token_ttl, "token_max_ttl": user.token_max_ttl, "token_num_uses": user.token_num_uses});
+            if native_userpass {
+                data["token_period"] = json!(user.token_period);
+                data["token_explicit_max_ttl"] = json!(user.token_explicit_max_ttl);
+            }
+            return Ok(response(data, false));
         }
         if capability == "delete" && subpath.is_empty() {
             self.users_at_mut(scope).remove(name);
@@ -5329,8 +5346,17 @@ impl AuthState {
                 "token_ttl",
                 "token_max_ttl",
                 "token_num_uses",
+                "token_period",
+                "token_explicit_max_ttl",
             ],
         )?;
+        if !native_userpass
+            && (body.get("token_period").is_some() || body.get("token_explicit_max_ttl").is_some())
+        {
+            return Err(bad(
+                "native userpass token parameters require a userpass mount",
+            ));
+        }
         if subpath == "password"
             && (body.as_object().is_none_or(|o| o.len() != 1) || body.get("password").is_none())
         {
@@ -5348,10 +5374,20 @@ impl AuthState {
             salt: vec![],
             verifier: vec![],
             rounds: PASSWORD_ROUNDS,
-            policies: BTreeSet::from(["default".into()]),
-            token_ttl: mount_default_ttl,
-            token_max_ttl: mount_max_ttl,
+            policies: if native_userpass {
+                BTreeSet::new()
+            } else {
+                BTreeSet::from(["default".into()])
+            },
+            token_ttl: if native_userpass {
+                0
+            } else {
+                mount_default_ttl
+            },
+            token_max_ttl: if native_userpass { 0 } else { mount_max_ttl },
             token_num_uses: 0,
+            token_period: 0,
+            token_explicit_max_ttl: 0,
             mfa: None,
         });
         if let Some(password) = body.get("password") {
@@ -5380,42 +5416,46 @@ impl AuthState {
         reject_alias_pair(body, "policies", "token_policies")?;
         reject_alias_pair(body, "ttl", "token_ttl")?;
         reject_alias_pair(body, "max_ttl", "token_max_ttl")?;
-        user.policies = policies(
-            body,
-            if body.get("token_policies").is_some() {
-                "token_policies"
-            } else {
-                "policies"
-            },
-            &user.policies,
-            true,
-        )?;
+        let policy_field = if body.get("token_policies").is_some() {
+            "token_policies"
+        } else {
+            "policies"
+        };
+        user.policies = if native_userpass && body.get(policy_field).is_some_and(Value::is_null) {
+            BTreeSet::new()
+        } else {
+            policies(body, policy_field, &user.policies, !native_userpass)?
+        };
         self.validate_assignment(actor, &user.policies)?;
-        user.token_ttl = duration(
-            body,
-            if body.get("token_ttl").is_some() {
-                "token_ttl"
-            } else {
-                "ttl"
-            },
-            user.token_ttl,
-        )?;
-        user.token_max_ttl = duration(
-            body,
-            if body.get("token_max_ttl").is_some() {
-                "token_max_ttl"
-            } else {
-                "max_ttl"
-            },
-            user.token_max_ttl,
-        )?;
-        normalize_ttl(
-            &mut user.token_ttl,
-            &mut user.token_max_ttl,
-            mount_default_ttl,
-            mount_max_ttl,
-        )?;
-        user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
+        if native_userpass {
+            userpass_renewal::update_token_limits(&mut user, body)?;
+        } else {
+            user.token_ttl = duration(
+                body,
+                if body.get("token_ttl").is_some() {
+                    "token_ttl"
+                } else {
+                    "ttl"
+                },
+                user.token_ttl,
+            )?;
+            user.token_max_ttl = duration(
+                body,
+                if body.get("token_max_ttl").is_some() {
+                    "token_max_ttl"
+                } else {
+                    "max_ttl"
+                },
+                user.token_max_ttl,
+            )?;
+            normalize_ttl(
+                &mut user.token_ttl,
+                &mut user.token_max_ttl,
+                mount_default_ttl,
+                mount_max_ttl,
+            )?;
+            user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
+        }
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
     }
@@ -5507,9 +5547,11 @@ impl AuthState {
         };
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
+        let mut token_policies = user.policies.clone();
+        token_policies.insert("default".into());
         let mut token = login_token(
             namespace,
-            user.policies.clone(),
+            token_policies,
             token_ttl,
             token_max_ttl,
             user.token_num_uses,
@@ -5517,7 +5559,17 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(mount.into());
+        token.auth_provenance = Some(TokenAuthProvenance::Userpass {
+            username: name.into(),
+        });
+        token.period = user.token_period;
+        token.max_expires_at = (user.token_explicit_max_ttl > 0)
+            .then(|| checked_expiry(now, user.token_explicit_max_ttl))
+            .transpose()?;
+        token.expires_at =
+            Some(self.userpass_token_expiry(scope, &user, now, token.max_expires_at, 0, now)?);
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
             mount: mount.into(),
             alias: name.into(),
@@ -6025,6 +6077,9 @@ fn token_info(token: &Token, now: u64) -> Value {
     }
     if token.period > 0 {
         info["period"] = json!(token.period);
+    }
+    if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance {
+        info["meta"] = json!({"username":username});
     }
     if let Some(TokenAuthProvenance::RadiusNative {
         username,

@@ -3795,3 +3795,6 @@ fn token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal() {
     assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:03:10Z");
     assert_eq!(info.body["data"]["ttl"], 79);
 }
+
+#[path = "auth_userpass_renewal_tests.rs"]
+mod userpass_renewal_tests;

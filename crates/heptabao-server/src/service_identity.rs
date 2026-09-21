@@ -12,6 +12,9 @@ impl State {
         self.auth
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
+        self.auth
+            .validate_userpass_native_tokens()
+            .map_err(|_| Response::error(503, "invalid native userpass state"))?;
         self.engines
             .validate_identity_alias_state()
             .map_err(|e| Response::error(503, &e.message))?;
@@ -251,6 +254,12 @@ impl State {
                 "AppRole TTL inheritance or SecretID issuance metadata requires schema 34",
             ));
         }
+        if self.schema < 35 && self.auth.has_userpass_native_tokens() {
+            return Err(Response::error(
+                503,
+                "userpass native token limits, configured policies or issuer provenance require schema 35",
+            ));
+        }
         self.auth
             .validate_jwt_api_https_state()
             .map_err(|_| Response::error(503, "invalid JWT HTTPS authority"))?;
@@ -275,9 +284,8 @@ impl State {
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | CURRENT_STATE_SCHEMA => {
-                Ok(())
-            }
+            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34
+            | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

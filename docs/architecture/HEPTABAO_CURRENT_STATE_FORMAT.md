@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **34**. Its source constant is
+The current Service state schema is **35**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -73,7 +73,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 31 | Kubernetes role source constraints and their issued-token snapshots; zero JWT role TTL or maximum must be absent. |
 | 32 | JWT role zero-value TTL and maximum inheritance; system default and Token API grant metadata must be absent. |
 | 33 | Persisted system lease defaults and the last granted Token API lease duration; zero AppRole token TTL/max and SecretID issuance metadata must be absent. |
-| 34 | Current format, adding native AppRole token TTL inheritance and SecretID issuance facts. |
+| 34 | Native AppRole token TTL inheritance and SecretID issuance facts; native userpass limits, configured policy semantics and direct issuer provenance must be absent. |
+| 35 | Current format, adding userpass TTL/max inheritance, period/explicit maximum, configured policies without implicit default, and direct issuing-account provenance. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -82,6 +83,13 @@ schemas below 6 reject a nonzero database provider fence. Schemas below 7 reject
 mappings. Schemas below 8 reject Kubernetes secrets-engine mounts/state. Schemas below 10 reject durable authentication-plugin mount bindings. Schema 11 is required when any token carries AppRole renewal provenance. Schema 12 is required when any RADIUS mount state is present. Schema 13 is required when any namespace seal flag is present. Schema 14 is required when any OpenLDAP secrets-engine mount or durable dynamic-secret intent is present. Schema 15 is required when KV v2 has a metadata CAS requirement or a nonzero metadata version. Schema 16 is required for direct RADIUS renewal credentials or explicit token-API provenance. Schema 17 is required for direct LDAP renewal credentials or external identity membership evidence. Fields omitted from
 legacy records are default-empty/zero only for explicitly admitted legacy
 semantics, not evidence of equivalent future state.
+
+Schema 35 keeps old positive userpass settings, configured default policies and
+issued caps unchanged. New direct tokens record the issuing username separately
+from display names, and renew from that account's current limits and policies.
+Old parentless tokens without issuer provenance retain their active permissions
+but require login again to renew; the account is never guessed from display names.
+Read-only reopen does not migrate these fields or rewrite old application bytes.
 
 Schema 18 is required for direct JWT role provenance or nonzero JWT role period
 and explicit maximum fields. JWT time claims are checked at login admission; a new
