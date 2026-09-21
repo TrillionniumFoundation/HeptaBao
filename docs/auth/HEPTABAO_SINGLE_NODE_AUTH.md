@@ -247,8 +247,13 @@ between plaintext enrollment and hash import without changing issued tokens;
 neither credential representation is returned by user readback. Go's salt
 decoder ignores CR/LF in the fixed22-byte field; the adapter preserves its
 padding rules and accepts nonempty decoded salts up to16 bytes. This adds no
-state field and never rewrites stored hashes. Its full candidate live comparison
-is pending; upstream username case folding remains a compatibility gap.
+state field and never rewrites stored hashes. The `0b31fb2` release passes
+[87 variable-salt observations per side](../../qa/openbao-acceptance/evidence/userpass-variable-salt-0b31fb2.json)
+against OpenBao2.6.2, including correct/wrong passwords, malformed padding,
+restart and issued-token continuity. Existing
+[168 imported-hash cases](../../qa/openbao-acceptance/evidence/userpass-hash-0b31fb2.json)
+and [214 password cases](../../qa/openbao-acceptance/evidence/userpass-password-0b31fb2.json)
+also match on this build. Upstream username case folding remains a gap.
 
 Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
 configured policy set. Login adds the implicit default policy unless

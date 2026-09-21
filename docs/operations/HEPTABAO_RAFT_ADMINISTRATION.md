@@ -84,7 +84,12 @@ parsed or staged and no application operation is retried. Download and redirect
 paths do not drain. This addresses complete uploads losing their refusal when
 the connection closes with unread request bytes; incomplete or slow uploads,
 earlier parse/rate-limit failures and expired connection budgets remain outside
-that response-delivery guarantee. Candidate live verification is pending.
+that response-delivery guarantee. The `0b31fb2` release passes the
+[22-check single-node rejection profile](../../qa/openbao-acceptance/evidence/native-snapshot-rejection-0b31fb2.json):
+the official CLI and independent length/chunked uploads each receive a complete403,
+while generation and every stored value hash remain unchanged. The earlier
+`24c2e74` failed receipts are retained on the SSD; server-side403 audit records
+were not accepted in place of a delivered HTTP response.
 
 The pinned OpenBao2.6.2 CLI has an independently reproduced redirect limitation:
 its snapshot client discards the second response, and restore does not rewind
