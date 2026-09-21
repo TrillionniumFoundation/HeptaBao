@@ -22,7 +22,10 @@ KV = 'approle-cidr-kv/item'
 FIELD = 'token_bound_cidrs'
 BOUND = ['127.0.0.1/32']
 SCENARIOS = frozenset({'api.whole', 'api.field', 'api.missing', 'constraints.whole',
-    'constraints.field', 'constraints.delete', 'lifecycle.service', 'lifecycle.batch', 'restart'})
+    'constraints.field', 'constraints.delete', 'lifecycle.service', 'lifecycle.batch', 'restart'}) | frozenset(
+    'constraints.'+phase+'_'+shape for phase, shapes in (
+        ('fresh', ('omitted', 'null', 'empty')),
+        ('existing', ('omitted', 'null', 'empty', 'bound'))) for shape in shapes)
 
 
 def cidr_projection(data, field):
@@ -55,6 +58,7 @@ class Trace:
             row.update(cidr_projection(data, FIELD))
         if type(data.get('secret_id_num_uses')) is int: row['secret_id_num_uses'] = data['secret_id_num_uses']
         if type(data.get('num_uses')) is int: row['num_uses'] = data['num_uses']
+        if type(data.get('bind_secret_id')) is bool: row['bind_secret_id'] = data['bind_secret_id']
         if auth:
             row.update(token_type=auth.get('token_type') if auth.get('token_type') in ('service', 'batch') else 'other',
                        renewable=auth.get('renewable') is True, accessor=bool(auth.get('accessor')),
@@ -73,6 +77,30 @@ class Trace:
 
 
 def role_path(role): return 'auth/'+MOUNT+'/role/'+role
+
+
+def role_constraint_scenarios(t):
+    """Fresh API mutations must not inherit permissive historical-load behavior."""
+    for shape, fields in [('omitted', {}), ('null', {FIELD: None}), ('empty', {FIELD: []})]:
+        name = 'constraints.fresh_'+shape
+        path = role_path('fresh-no-secret-'+shape)
+        t.call(name+'.write', 'POST', path, dict(fields, bind_secret_id=False))
+        # Observe actual absence/status; do not assume an invalid creation left a role.
+        t.call(name+'.whole_read', 'GET', path)
+        t.call(name+'.field_read', 'GET', path+'/token-bound-cidrs')
+        t.finish(name)
+    for shape, fields in [('omitted', {}), ('null', {FIELD: None}),
+                          ('empty', {FIELD: []}), ('bound', {FIELD: BOUND})]:
+        name = 'constraints.existing_'+shape
+        path = role_path('existing-no-secret-'+shape)
+        t.require(name+'.create', 'POST', path, fields, status=204)
+        t.require(name+'.before_whole', 'GET', path)
+        t.require(name+'.before_field', 'GET', path+'/token-bound-cidrs')
+        t.call(name+'.disable_secret', 'POST', path, {'bind_secret_id': False})
+        # Both the binding flag and the exact CIDR representation remain observable.
+        t.require(name+'.after_whole', 'GET', path)
+        t.require(name+'.after_field', 'GET', path+'/token-bound-cidrs')
+        t.finish(name)
 
 
 def api_scenarios(t):
@@ -109,6 +137,7 @@ def api_scenarios(t):
         t.require(name+'.whole_read', 'GET', path)
         t.require(name+'.field_read', 'GET', path+'/token-bound-cidrs')
         t.finish(name)
+    role_constraint_scenarios(t)
 
 
 def lifecycle(t, kind):

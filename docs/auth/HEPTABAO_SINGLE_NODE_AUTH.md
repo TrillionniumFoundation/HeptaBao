@@ -1147,6 +1147,22 @@ deprecated alias only from its separate legacy field. The candidate readback
 now omits it without changing role storage. The failed receipt is retained
 (SHA256 `814cddea607463ec8534d9c6268a9352f4b21aa8d04071262ca4db3d8669e64d`).
 
+The same `cdf3b98` executable passed [79 three-voter TLS observations](../../qa/openbao-acceptance/evidence/approle-batch-ha-cdf3b98.json).
+An Identity-denied login consumes the last SecretID use through a follower;
+restoring the Identity makes the previously issued batch token usable again,
+without reviving the consumed SecretID. All three public endpoints retain that
+result after step-down and full process restart. This covers one-host logical
+failover, not uncertain writes or physical-host failure.
+
+The [198-check real schema41-to-42 upgrade](../../qa/openbao-acceptance/evidence/approle-kubernetes-batch-upgrade-cdf3b98.json)
+uses four stores created by the qualified `eeab30a` executable. AppRole roles,
+SecretIDs, old tokens and application bytes survive read/reopen; independent
+role-type and mount-type writes fence the old executable. Kubernetes retains
+old ownerless lease expiry and unknown intent without retry, and a first typed
+TokenRequest independently fences the old reader. Its provider is an exact TLS
+protocol peer with signed synthetic JWTs, not a real Kubernetes cluster. This
+is HeptaBao format compatibility, not OpenBao-native snapshot interoperability.
+
 ## Kubernetes batch lease ownership in schema42
 
 Kubernetes secrets issued for an existing ServiceAccount now carry typed Bao
@@ -1173,9 +1189,16 @@ contains 66 observations against OpenBao 2.6.2 and actual Kubernetes v1.35.0 in 
 fresh pinned KIND cluster. It checks Bao lease expiry separately from the
 provider JWT expiry and actual TokenReview, parent revocation/expiration, orphan
 expiration, restart and explicit local revocation, while preserving the existing
-ServiceAccount UID. This is official-only calibration; candidate verification
-is pending. The candidate comparison explicitly adapts process CA enrollment
-and manager-token field names. Generated ServiceAccounts/role bindings, full
+ServiceAccount UID. The expanded [dual receipt for `cdf3b98`](../../qa/openbao-acceptance/evidence/kubernetes-batch-lease-live-cdf3b98.json)
+passed 86 observations per endpoint against real Kubernetes, including finite
+service tokens with one and two uses. It verifies the last-use HTTP400 and
+credential-free response, spent-token rejection, retirement of a known earlier
+lease and continued TokenReview success for its existing-ServiceAccount JWT.
+The hidden last-use provider POST count is not measured. Both sides match;
+source, binary and inputs remained unchanged, both secret scans passed and all
+test-owned containers/processes were removed. The candidate comparison
+explicitly adapts process CA enrollment and manager-token field names.
+Generated ServiceAccounts/role bindings, full
 Kubernetes engine API compatibility and physical-host failure remain outside
 this profile.
 

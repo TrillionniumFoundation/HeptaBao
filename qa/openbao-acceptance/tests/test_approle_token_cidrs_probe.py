@@ -27,6 +27,36 @@ class AppRoleTokenCidrsProbeGuards(unittest.TestCase):
         self.assertNotIn('must not copy', json.dumps(t.rows))
         with self.assertRaises(ValueError): t.call('safe.case', 'GET', 'path')
 
+    def test_binding_flag_observations_preserve_false_without_coercing_other_types(self):
+        for value in (True, False, None, 0, 1, 'false'):
+            client = SimpleNamespace(request=lambda *a, **k: SimpleNamespace(
+                status=200, body={'data': {'bind_secret_id': value}}))
+            t = f.Trace(client); t.call('binding.read', 'GET', 'path')
+            self.assertEqual('bind_secret_id' in t.rows[0], type(value) is bool)
+            if type(value) is bool: self.assertIs(t.rows[0]['bind_secret_id'], value)
+
+    def test_actual_constraint_phases_test_new_writes_and_read_back_failed_updates(self):
+        t = OfflineTrace()
+        f.role_constraint_scenarios(t)
+        calls = {name: (method, path, body, kwargs) for name, method, path, body, kwargs in t.calls}
+        self.assertEqual(len(calls), len(t.calls))
+        self.assertEqual(set(t.finished), {name for name in f.SCENARIOS if name.startswith(
+            ('constraints.fresh_', 'constraints.existing_'))})
+        for shape, fields in [('omitted', {}), ('null', {f.FIELD: None}), ('empty', {f.FIELD: []})]:
+            prefix = 'constraints.fresh_'+shape
+            self.assertEqual(calls[prefix+'.write'][2], dict(fields, bind_secret_id=False))
+            self.assertEqual(calls[prefix+'.whole_read'][0], 'GET')
+            self.assertEqual(calls[prefix+'.field_read'][0], 'GET')
+        for shape, fields in [('omitted', {}), ('null', {f.FIELD: None}),
+                              ('empty', {f.FIELD: []}), ('bound', {f.FIELD: f.BOUND})]:
+            prefix = 'constraints.existing_'+shape
+            self.assertEqual(calls[prefix+'.create'][2], fields)
+            self.assertEqual(calls[prefix+'.disable_secret'][2], {'bind_secret_id': False})
+            sequence = [name for name, *_ in t.calls]
+            self.assertLess(sequence.index(prefix+'.before_whole'), sequence.index(prefix+'.disable_secret'))
+            self.assertLess(sequence.index(prefix+'.disable_secret'), sequence.index(prefix+'.after_whole'))
+            self.assertEqual(calls[prefix+'.after_field'][0], 'GET')
+
     def test_actual_phase_functions_preserve_source_and_separate_role_from_token_snapshots(self):
         t = OfflineTrace()
         restarts = []
