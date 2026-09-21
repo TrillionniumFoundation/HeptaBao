@@ -14,6 +14,99 @@ fn parse(method: &str, query: &str, extra: &str, body: &str) -> Result<Request, 
 }
 
 #[test]
+fn legal_extension_methods_reach_the_dedicated_leader_405() -> Result<(), Box<dyn std::error::Error>>
+{
+    struct Directory(PathBuf);
+    impl Drop for Directory {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    let root = Directory(std::env::temp_dir().join(format!(
+        "heptabao-leader-methods-{}-{}",
+        std::process::id(),
+        u64::from_le_bytes(crypto::random::<8>()?),
+    )));
+    std::fs::create_dir(&root.0)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+    }
+    let mut service = Service::new(root.0.join("data"), &root.0.join("audit.jsonl"))?;
+    for method in [
+        "OPTIONS",
+        "TRACE",
+        "CONNECT",
+        "PROPFIND",
+        "get",
+        "GeT",
+        "123",
+        "!#$%&'*+-.^_`|~",
+    ] {
+        let mut request = parse(
+            method,
+            "list=invalid&scan=true",
+            "Content-Type: text/plain\r\nX-Vault-Token: invalid\r\n",
+            "not-json",
+        )
+        .map_err(|_| "valid extension method was rejected by the parser")?;
+        assert_eq!(request.method, method);
+        let response = service.handle_request(ServiceRequest {
+            method: &request.method,
+            path: &request.path,
+            namespace: &request.namespace,
+            token: &request.token,
+            body: std::mem::take(&mut request.body.0),
+            wrap_ttl_seconds: request.wrap_ttl_seconds,
+            origin_peer: None,
+            client_certificates: None,
+        });
+        assert_eq!(response.status, 405, "{method}");
+        assert_eq!(response.body, json!({"errors": []}));
+    }
+    Ok(())
+}
+
+#[test]
+fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries() {
+    for method in [
+        "BAD/METHOD",
+        "BAD:METHOD",
+        "BAD(METHOD)",
+        "G\tET",
+        "BAD\x7f",
+        "BADé",
+        "",
+        "BAD METHOD",
+    ] {
+        let error = parse(method, "", "", "").err().unwrap();
+        assert_eq!(error.status, 400);
+    }
+    for path in [
+        "secret/data/a",
+        "sys/leader/",
+        "sys/leader-other",
+        "sys/lea%64er",
+    ] {
+        for method in ["OPTIONS", "TRACE", "CONNECT", "PROPFIND", "get", "123", "!"] {
+            let wire = format!("{method} /v1/{path} HTTP/1.1\r\nHost: local\r\n\r\n");
+            let error = read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true)
+                .err()
+                .unwrap();
+            assert_eq!(error.status, 400);
+        }
+    }
+    for wire in [
+        "OPTIONS /v1/sys/leader HTTP/1.1\r\nHost: local\r\nContent-Length: 262145\r\n\r\n",
+        "TRACE /v1/sys/leader HTTP/1.1\r\nHost: local\r\nContent-Length: 3\r\n\r\nx",
+        "PROPFIND /v1/sys/leader HTTP/1.0\r\nHost: local\r\n\r\n",
+    ] {
+        assert!(read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true).is_err());
+    }
+}
+
+#[test]
 fn leader_http_uses_first_valid_selector_pair_without_rewriting_the_method()
 -> Result<(), &'static str> {
     for (query, accepted) in [

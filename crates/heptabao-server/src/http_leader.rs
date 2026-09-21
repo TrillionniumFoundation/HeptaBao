@@ -2,6 +2,16 @@
 //! outer OpenBao middleware still validates GET list/scan selectors.
 use super::*;
 
+// Go net/http admits every nonempty HTTP token method. The dedicated leader
+// handler then returns 405 unless it is exactly GET; other APIs keep their
+// narrower method allowlist in read_request_mode.
+pub(super) fn valid_method(method: &str) -> bool {
+    !method.is_empty()
+        && method
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"!#$%&'*+-.^_`|~".contains(&byte))
+}
+
 fn selector_error() -> ParseError {
     ParseError {
         status: 400,

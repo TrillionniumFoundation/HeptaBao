@@ -75,6 +75,25 @@ HTTP_EDGE_CASES = (
     ('both_false','GET','list=FALSE&scan=0',{},None,200),
     ('post_invalid_selector','POST','list=invalid&scan=true',{},None,405),
     ('head_invalid_selector','HEAD','list=invalid&scan=true',{},None,405),
+    ('method_options','OPTIONS','',{},None,405),
+    ('method_trace','TRACE','',{},None,405),
+    ('method_connect','CONNECT','',{},None,405),
+    ('method_propfind','PROPFIND','',{},None,405),
+    ('method_lowercase','get','',{},None,405),
+    ('method_mixedcase','GeT','',{},None,405),
+    ('method_numeric','123','',{},None,405),
+    ('method_punctuation',"!#$%&'*+-.^_`|~",'',{},None,405),
+)
+
+HTTP_INVALID_METHODS = (
+    ('method_slash',b'BAD/METHOD'),
+    ('method_colon',b'BAD:METHOD'),
+    ('method_parentheses',b'BAD(METHOD)'),
+    ('method_tab',b'G\tET'),
+    ('method_delete_control',b'BAD\x7f'),
+    ('method_non_ascii',b'BAD\xc3\xa9'),
+    ('method_empty',b''),
+    ('method_space',b'BAD METHOD'),
 )
 
 
@@ -82,6 +101,7 @@ def complete(rows, *, oracle_only=False):
     prefixes = ('official_file','official_raft') if oracle_only else ('official_file','official_raft','candidate_file')
     required = {'complete'} | {prefix+'_'+name for prefix in prefixes for name in COMMON_PHASES}
     required |= {prefix+'_http_'+case[0] for prefix in prefixes for case in HTTP_EDGE_CASES}
+    required |= {prefix+'_http_'+case[0] for prefix in prefixes for case in HTTP_INVALID_METHODS}
     if not oracle_only:
         required |= { 'candidate_file_'+name for name in COMMON_PHASES } | HA_PHASES
     return (complete_checks(rows, required_cases=frozenset(required)) and rows[-1]['case']=='complete')
@@ -123,6 +143,18 @@ class Endpoint:
             if len(raw)>65536:raise FixtureError('oversize_status_response')
             return response.status,json.loads(raw) if raw else {}
         finally:connection.close()
+    def raw_method_status(self,method):
+        # Bypass http.client's own method validator so malformed cases reach
+        # the server. No credentials, arbitrary response text, or body data is
+        # retained in the evidence; the net/http 400 body is not logical JSON.
+        with socket.create_connection(('127.0.0.1',self.port),timeout=5) as raw:
+            with self.context.wrap_socket(raw,server_hostname='127.0.0.1') as connection:
+                connection.settimeout(5)
+                connection.sendall(method+b' /v1/sys/leader HTTP/1.1\r\nHost: local\r\nConnection: close\r\nContent-Length: 0\r\n\r\n')
+                response=http.client.HTTPResponse(connection)
+                response.begin()
+                if len(response.read(65537))>65536:raise FixtureError('oversize_status_response')
+                return response.status
 
 
 def http_edges(endpoint,prefix,ha,check,observations):
@@ -133,6 +165,10 @@ def http_edges(endpoint,prefix,ha,check,observations):
                else status==expected and body==({} if method=='HEAD' else {'errors':[]}))
         check(prefix+'_http_'+name,valid)
         observations.append({'case':prefix+'_http_'+name,'status':status,'fields':sorted(body)})
+    for name,method in HTTP_INVALID_METHODS:
+        status=endpoint.raw_method_status(method)
+        check(prefix+'_http_'+name,status==400)
+        observations.append({'case':prefix+'_http_'+name,'status':status})
     check(prefix+'_http_edges',True)
 
 

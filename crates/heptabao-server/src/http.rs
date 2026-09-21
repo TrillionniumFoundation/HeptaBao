@@ -700,13 +700,7 @@ fn read_request_mode(
     let mut lines = headers[..headers.len() - 4].split("\r\n");
     let request_line = lines.next().ok_or_else(|| bad("missing request line"))?;
     let parts: Vec<_> = request_line.split(' ').collect();
-    if parts.len() != 3
-        || parts[2] != "HTTP/1.1"
-        || !matches!(
-            parts[0],
-            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
-        )
-    {
+    if parts.len() != 3 || parts[2] != "HTTP/1.1" {
         return Err(bad("unsupported HTTP method or version"));
     }
     let method = parts[0].to_owned();
@@ -715,6 +709,13 @@ fn read_request_mode(
         return Err(bad("request must use /v1/ API"));
     }
     let leader_route = target[4..].split('?').next() == Some("sys/leader");
+    if !matches!(
+        method.as_str(),
+        "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
+    ) && !(leader_route && leader::valid_method(&method))
+    {
+        return Err(bad("unsupported HTTP method or version"));
+    }
     let mut map = BTreeMap::new();
     for (count, line) in lines.enumerate() {
         if count >= 100 || line.starts_with([' ', '\t']) {

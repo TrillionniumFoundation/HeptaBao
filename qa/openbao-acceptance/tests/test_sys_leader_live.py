@@ -13,6 +13,11 @@ class FakeLifecycle:
                 if self.ha and self.sealed:return 503,{'errors':['Vault is sealed']}
                 return 200,{'ha_enabled':False}
         raise AssertionError('unexpected raw leader request')
+    def raw_method_status(self,method):
+        if method not in {case[1] for case in fixture.HTTP_INVALID_METHODS}:
+            raise AssertionError('unexpected malformed method')
+        self.calls.append((method,'sys/leader','',None))
+        return 400
     def call(self,method,path='sys/leader',body=None,*,token='',headers=None):
         self.calls.append((method,path,token,headers))
         if path=='sys/leader':
@@ -83,7 +88,7 @@ class LeaderGuards(unittest.TestCase):
         endpoint=FakeLifecycle(False)
         fixture.http_edges(endpoint,'official_file',False,check,observations)
         self.assertEqual({row['case'] for row in observations},
-            {'official_file_http_'+case[0] for case in fixture.HTTP_EDGE_CASES})
+            {'official_file_http_'+case[0] for case in fixture.HTTP_EDGE_CASES+fixture.HTTP_INVALID_METHODS})
         self.assertEqual(len(rows),len(set(row['case'] for row in rows)))
         self.assertTrue(any(query=='sys/leader?list=%GG&list=true&scan=true' for _,query,_,_ in endpoint.calls))
         class Wrong(FakeLifecycle):
@@ -98,5 +103,34 @@ class LeaderGuards(unittest.TestCase):
         all_rows.append({'case':'complete','passed':True})
         self.assertTrue(fixture.complete(all_rows,oracle_only=True))
         self.assertFalse(fixture.complete([row for row in all_rows if row['case']!='official_raft_http_first_empty'],oracle_only=True))
+
+    def test_actual_method_phase_distinguishes_legal_405_from_malformed_400(self):
+        rows=[];observations=[]
+        def check(name,condition):
+            self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
+        endpoint=FakeLifecycle(False)
+        fixture.http_edges(endpoint,'official_file',False,check,observations)
+        observed={row['case']:row['status'] for row in observations}
+        self.assertEqual(observed['official_file_http_method_options'],405)
+        self.assertEqual(observed['official_file_http_method_punctuation'],405)
+        self.assertEqual(observed['official_file_http_method_tab'],400)
+        self.assertEqual(observed['official_file_http_method_empty'],400)
+        self.assertTrue(any(method==b'BAD\xc3\xa9' for method,_,_,_ in endpoint.calls))
+        class RejectedLegal(FakeLifecycle):
+            def raw_call(self,method,path,body=None,**kwargs):
+                if method=='OPTIONS':return 400,{'errors':[]}
+                return super().raw_call(method,path,body,**kwargs)
+        class AdmittedInvalid(FakeLifecycle):
+            def raw_method_status(self,method):return 405
+        for wrong in (RejectedLegal(False),AdmittedInvalid(False)):
+            with self.assertRaises(AssertionError):
+                fixture.http_edges(wrong,'official_file',False,check,[])
+        all_rows=[]
+        for prefix,ha in [('official_file',False),('official_raft',True)]:
+            fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
+        all_rows.append({'case':'complete','passed':True})
+        self.assertTrue(fixture.complete(all_rows,oracle_only=True))
+        for missing in ('official_raft_http_method_options','official_file_http_method_tab'):
+            self.assertFalse(fixture.complete([row for row in all_rows if row['case']!=missing],oracle_only=True))
 
 if __name__=='__main__':unittest.main()
