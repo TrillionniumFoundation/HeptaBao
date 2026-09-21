@@ -455,8 +455,8 @@ positive `token_explicit_max_ttl` adds a hard lifetime cap from login time for
 both periodic and finite tokens, and periodic renewal is clamped to the
 remaining cap. Zero preserves the uncapped periodic behavior. Both fields are
 bounded by the 32-day service maximum; the role read response exposes
-`token_explicit_max_ttl` and the OpenBao-compatible `period` alias alongside
-`token_period`. Secret IDs can be listed by accessor, looked up, or destroyed
+`token_explicit_max_ttl` and `token_period`. It does not invent the deprecated
+`period` alias, whose separate legacy input is not implemented. Secret IDs can be listed by accessor, looked up, or destroyed
 by bearer or accessor. Role IDs can be changed, but duplicate role IDs within a
 namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
@@ -1134,6 +1134,13 @@ instead. Native role/SecretID CIDRs, arbitrary SecretID/alias metadata, dedicate
 per-field role subroutes and the remaining AppRole configuration surface remain
 open. Existing SecretIDs and roles with absent type metadata retain their old
 serialized shape; explicit type metadata requires schema42.
+
+The first dual run completed all 187 observations on each side, but found 23
+role reads with an invented `period` alias in the candidate. Only canonical
+`token_period` is stored/accepted by this implementation; OpenBao emits the
+deprecated alias only from its separate legacy field. The candidate readback
+now omits it without changing role storage. The failed receipt is retained
+(SHA256 `814cddea607463ec8534d9c6268a9352f4b21aa8d04071262ca4db3d8669e64d`).
 
 ## Kubernetes batch lease ownership in schema42
 

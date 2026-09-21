@@ -1022,7 +1022,8 @@ fn approle_explicit_max_ttl_clamps_periodic_and_finite_tokens() {
         100,
     );
     assert_eq!(role.body["data"]["token_explicit_max_ttl"], 20);
-    assert_eq!(role.body["data"]["period"], 15);
+    assert_eq!(role.body["data"]["token_period"], 15);
+    assert!(role.body["data"].get("period").is_none());
     let role_id = call(
         &mut state,
         &root,

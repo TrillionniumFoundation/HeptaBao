@@ -33,13 +33,21 @@ class Batch42UpgradeGuards(unittest.TestCase):
                     rows[:-1]+[{'case': 'complete', 'passed': True, 'token': 'sensitive-sentinel'}]):
             self.assertFalse(f.complete(bad))
 
-    def test_role_readback_only_accepts_the_new_default_field(self):
+    def test_role_readback_preserves_native_fields_and_only_removes_invented_period_alias(self):
         old = {'token_ttl': 300, 'token_max_ttl': 600, 'secret_id_num_uses': 3}
         self.assertTrue(f.retained_role(old, old))
         self.assertTrue(f.retained_role({**old, 'token_type': 'default'}, old))
         for wrong in ({**old, 'token_type': 'batch'}, {**old, 'token_type': None},
                       {**old, 'token_ttl': 0}, {**old, 'unexplained': True}):
             self.assertFalse(f.retained_role(wrong, old))
+        for period in (0, 30):
+            current = {**old, 'token_period': period, 'token_type': 'default'}
+            legacy = {**old, 'token_period': period, 'period': period}
+            self.assertTrue(f.retained_role(current, legacy))
+            self.assertFalse(f.retained_role({**current, 'token_period': 999}, legacy))
+            self.assertFalse(f.retained_role(current, {**legacy, 'period': period+1}))
+            self.assertFalse(f.retained_role(current, {**legacy, 'period': False}))
+            self.assertFalse(f.retained_role({**current, 'period': period}, legacy))
 
     def test_pending_requires_explicit_nonretryable_outcome_without_credentials(self):
         body = {'lease_id': 'pending-kube/creds/worker/synthetic', 'reconcile_required': True, 'retry_allowed': False}

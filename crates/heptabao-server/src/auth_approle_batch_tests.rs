@@ -38,6 +38,38 @@ fn login(state: &mut AuthState, body: &Value) -> AuthResponse {
         .unwrap()
 }
 #[test]
+fn approle_role_read_does_not_invent_deprecated_period_provenance() {
+    let (mut state, admin, _) = setup("service", 2);
+    for period in [0, 30] {
+        call(
+            &mut state,
+            &admin,
+            "auth/approle/role/example",
+            json!({"token_period":period}),
+        )
+        .unwrap();
+        let stored = serde_json::to_vec(&state).unwrap();
+        let mut reopened: AuthState = serde_json::from_slice(&stored).unwrap();
+        let read = reopened
+            .handle(
+                Some(&admin),
+                "",
+                "GET",
+                "auth/approle/role/example",
+                &json!({}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"]["token_period"], period);
+        assert!(read.body["data"].get("period").is_none());
+        assert!(!read.mutated);
+        assert_eq!(serde_json::to_vec(&reopened).unwrap(), stored);
+    }
+}
+
+#[test]
 fn approle_batch_all_twelve_types_bind_role_id_before_seal_without_backing_token() {
     for (mount, role, batch) in [
         ("default-service", "default", false),

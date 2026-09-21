@@ -88,7 +88,14 @@ def timestamp(value):
 
 def retained_role(current, old):
     if not isinstance(current, dict) or not isinstance(old, dict): return False
-    current = dict(current)
+    current, old = dict(current), dict(old)
+    # Schema41 echoed token_period into a deprecated field despite never
+    # accepting that legacy input. The corrected API removes only that invented
+    # alias; native role values and encrypted application bytes must survive.
+    if 'period' in old:
+        if type(old['period']) is not int or old['period'] != old.get('token_period'):
+            return False
+        del old['period']
     return current.pop('token_type', 'default') == 'default' and current == old
 
 
