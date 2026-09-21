@@ -129,6 +129,7 @@ fn activation_or_durable_frontier_change_rejects_prepared_restore_without_public
         .prepare_snapshot_restore(&backup)
         .map_err(|_| "prepare")?;
     service.rotate_unseal_nonce()?;
+    let activation = service.unseal_nonce.clone();
     let before = state_record(&service)?;
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let body = json!({});
@@ -143,6 +144,7 @@ fn activation_or_durable_frontier_change_rejects_prepared_restore_without_public
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
+    assert_eq!(service.unseal_nonce, activation);
     assert!(!service.recovery_required);
     let prepared = service
         .prepare_snapshot_restore(&backup)
@@ -172,6 +174,7 @@ fn activation_or_durable_frontier_change_rejects_prepared_restore_without_public
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
+    assert_eq!(service.unseal_nonce, activation);
     assert!(!service.recovery_required);
     Ok(())
 }

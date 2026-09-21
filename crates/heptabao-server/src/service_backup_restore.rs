@@ -342,6 +342,14 @@ impl Service {
         let Some(durable) = self.durable.as_mut() else {
             return Response::error(503, "server is sealed");
         };
+        // Restoring identical auth configuration is still a new activation:
+        // provider observations admitted before rollback must not survive it.
+        // Prepare randomness before publication, and change the live nonce
+        // only after the durable restore succeeds.
+        let next_activation = match crypto::random::<16>() {
+            Ok(value) => hex(&value),
+            Err(error) => return Response::error(503, error),
+        };
         let outcome = match durable.restore_prepared(
             prepared.durable,
             request.path == "sys/storage/raft/snapshot-force",
@@ -371,6 +379,7 @@ impl Service {
         self.state = Some(prepared.state);
         self.record_root = prepared.root;
         self.state_digest = Some(prepared.digest);
+        self.unseal_nonce = next_activation;
         self.record_writes_since_gc = 64;
         self.ha_read_cache = None;
         self.recovery_required = false;

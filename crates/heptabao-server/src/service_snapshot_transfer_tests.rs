@@ -442,3 +442,178 @@ fn fractional_admission_clock_preserves_short_lease_until_actual_expiration() ->
     );
     Ok(())
 }
+
+// Real split-phase admission with a substituted successful provider observation;
+// no network is needed to test the restore/activation publication boundary.
+fn pending_radius_login(
+    service: &mut Service,
+    wrap_ttl_seconds: Option<u64>,
+) -> TestResult<Box<PendingExternalRequest>> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/radius/login",
+        namespace: "",
+        token: "",
+        body: json!({"username":"alice","password":"synthetic-snapshot-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(plan) => Ok(plan),
+        RequestExecution::Complete(response) => {
+            Err(format!("radius admission {}", response.status).into())
+        }
+    }
+}
+
+fn complete_radius_login(service: &mut Service, plan: PendingExternalRequest) -> Response {
+    service.finish_external_request(
+        plan,
+        ExternalEffectResult::OnlineAuth(Ok(
+            super::super::online_auth::OnlineAuthObservation::Radius(
+                crate::auth::RadiusLoginObservation,
+            ),
+        )),
+    )
+}
+
+fn configure_radius(service: &mut Service, token: &str) {
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "sys/auth/radius",
+            token,
+            json!({"type":"radius"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "auth/radius/config",
+            token,
+            json!({"host":"localhost","secret":"synthetic-snapshot-shared-secret",
+                "token_ttl":120,"token_max_ttl":600})
+        )
+        .status,
+        204
+    );
+}
+
+#[test]
+fn restored_auth_configuration_cannot_reauthorize_a_pre_restore_provider_observation() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    configure_radius(&mut service, &token);
+    let original_config = call(&mut service, "GET", "auth/radius/config", &token, json!({}));
+    assert_eq!(original_config.status, 200);
+    let archive = download(&mut service, &token)?;
+    let old_login = pending_radius_login(&mut service, Some(60))?;
+    let activation = service.unseal_nonce.clone();
+    // The restore puts exactly the old mount and provider configuration back.
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &token,
+            json!({"token_ttl":90})
+        )
+        .status,
+        204
+    );
+    let mut restore = pending(&mut service, "POST", &token)?;
+    let (result, file) = restore.execute_snapshot_transfer(&mut archive.as_slice());
+    assert!(file.is_none());
+    assert_eq!(
+        service.finish_external_request(*restore, result).status,
+        200
+    );
+    assert_ne!(service.unseal_nonce, activation);
+    assert_eq!(
+        call(&mut service, "GET", "auth/radius/config", &token, json!({})).body,
+        original_config.body
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let restored_root = service
+        .durable
+        .as_ref()
+        .ok_or("durable")?
+        .get("system", "state")?;
+    let rejected = complete_radius_login(&mut service, *old_login);
+    assert_eq!(rejected.status, 503);
+    assert!(rejected.body.get("auth").is_none_or(Value::is_null));
+    assert!(rejected.body.get("wrap_info").is_none_or(Value::is_null));
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        service
+            .durable
+            .as_ref()
+            .ok_or("durable")?
+            .get("system", "state")?,
+        restored_root
+    );
+    assert!(!service.recovery_required);
+    let fresh_login = pending_radius_login(&mut service, None)?;
+    let accepted = complete_radius_login(&mut service, *fresh_login);
+    assert_eq!(accepted.status, 200);
+    assert!(
+        accepted.body["auth"]["client_token"]
+            .as_str()
+            .is_some_and(|s| !s.is_empty())
+    );
+    // Both completions still pass through response auditing; successful restore
+    // must not invalidate its own already-checked transfer result.
+    assert!(!service.audit_failed);
+    Ok(())
+}
+
+#[test]
+fn cancelled_and_rejected_restore_leave_an_existing_provider_plan_usable() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    configure_radius(&mut service, &token);
+    let archive = download(&mut service, &token)?;
+    let login = pending_radius_login(&mut service, None)?;
+    let activation = service.unseal_nonce.clone();
+    drop(pending(&mut service, "POST", &token)?);
+    assert_eq!(service.unseal_nonce, activation);
+    let mut restore = pending(&mut service, "POST", &token)?;
+    let (mut result, _) = restore.execute_snapshot_transfer(&mut archive.as_slice());
+    let ExternalEffectResult::SnapshotTransfer(Ok(Observation::Upload(ref mut imported))) = result
+    else {
+        return Err("upload parse".into());
+    };
+    imported.sealed_sums[0] ^= 1;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    assert_eq!(
+        service.finish_external_request(*restore, result).status,
+        400
+    );
+    assert_eq!(service.unseal_nonce, activation);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let accepted = complete_radius_login(&mut service, *login);
+    assert_eq!(accepted.status, 200);
+    assert!(
+        accepted.body["auth"]["client_token"]
+            .as_str()
+            .is_some_and(|s| !s.is_empty())
+    );
+    assert!(!service.recovery_required);
+    Ok(())
+}
