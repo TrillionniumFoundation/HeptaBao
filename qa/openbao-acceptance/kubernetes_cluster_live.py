@@ -33,6 +33,7 @@ sys.path.insert(0, str(ROOT / 'qa/single-node'))
 from smoke import Instance
 from bao_http import SafeArgumentParser
 from online_evidence import admit_output, source_identity, publish
+from radius_cidrs_live import SourceClient
 
 KIND_VERSION = '0.31.0'
 KIND_SHA256 = 'eb244cbafcc157dff60cf68693c14c9a75c4e6e6fedaf9cd71c58117cb93e3fa'
@@ -54,6 +55,14 @@ REQUIRED_CASES = frozenset({
     'replacement_uid_has_distinct_identity', 'old_jwt_not_revived_by_recreation',
     'real_rbac_denial_releases_no_local_token', 'native_renewal_independent_of_reviewer_rbac',
     'explicit_rbac_restore_allows_new_login', 'unmount_revokes_local_token', 'complete',
+    'actual_cidr_role_configured', 'actual_cidr_role_canonical', 'actual_cidr_allowed_login',
+    'actual_cidr_foreign_login_spoof_denied', 'actual_cidr_foreign_token_spoof_denied',
+    'actual_cidr_issued_snapshot', 'actual_cidr_role_cleared', 'actual_cidr_cleared_role_keeps_snapshot',
+    'actual_cidr_cleared_role_foreign_login', 'actual_cidr_old_token_unconstrained',
+    'actual_cidr_old_token_renews', 'actual_cidr_restart_role_clear',
+    'actual_cidr_restart_foreign_denied', 'actual_cidr_restart_allowed',
+    'actual_cidr_restart_snapshot', 'actual_cidr_restart_old_renews',
+    'actual_cidr_renewal_independent_of_reviewer_rbac', 'actual_runtime_secrets_not_plaintext',
 })
 
 
@@ -253,6 +262,18 @@ class Cluster:
             self.attempted = False
 
 
+def cidr_rejected(response):
+    """An HTTP denial must not accidentally return a token or wrapping authority."""
+    return response.status == 403 and not response.body.get('auth') and not response.body.get('wrap_info')
+
+
+def native_renewed(response, target):
+    auth = response.body.get('auth', {})
+    return (response.status == 200 and auth.get('client_token') == target
+            and auth.get('renewable') is True and type(auth.get('lease_duration')) is int
+            and auth['lease_duration'] > 0)
+
+
 def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
     def check(name, condition):
         checks.append({'case':name,'passed':condition is True})
@@ -353,9 +374,48 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         status, readable = service.call('GET',f'auth/{mount}/config')
         check('reviewer_credential_not_read_back',status == 200 and reviewer_jwt not in json.dumps(readable))
         check('issued_token_usable',service.call('GET','auth/token/lookup-self',token=old_token)[0] == 200)
+        # These requests still reach the actual kube-apiserver configured above.
+        # Only the local TLS socket's source changes; no synthetic reviewer or
+        # asserted peer replaces the real TokenReview control plane.
+        peer_client=SourceClient(service.address,service.root/'ca.crt',service.token)
+        role_path=f'auth/{mount}/role/worker'
+        login_path=f'auth/{mount}/login'
+        check('actual_cidr_role_configured',service.call('POST',role_path,{'token_bound_cidrs':['127.0.0.1/32']})[0] == 204)
+        status,cidr_role=service.call('GET',role_path)
+        check('actual_cidr_role_canonical',status == 200 and cidr_role.get('data',{}).get('token_bound_cidrs') == ['127.0.0.1'])
+        constrained=peer_client.request('POST',login_path,{'role':'worker','jwt':worker_jwt},token='',source='127.0.0.1')
+        check('actual_cidr_allowed_login',constrained.status == 200
+              and bool(constrained.body.get('auth',{}).get('client_token'))
+              and constrained.body['auth'].get('entity_id') == old_entity)
+        cidr_token=constrained.body['auth']['client_token']
+        # Headers forge the allowed .1 while the real bound socket source is .2.
+        denied_peer=peer_client.request('POST',login_path,{'role':'worker','jwt':worker_jwt},token='',source='127.0.0.2',spoof=True,wrap_ttl='60s')
+        check('actual_cidr_foreign_login_spoof_denied',cidr_rejected(denied_peer))
+        denied_peer=peer_client.request('GET','auth/token/lookup-self',token=cidr_token,source='127.0.0.2',spoof=True)
+        check('actual_cidr_foreign_token_spoof_denied',cidr_rejected(denied_peer))
+        snapshot=peer_client.request('POST','auth/token/lookup',{'token':cidr_token},source='127.0.0.2')
+        check('actual_cidr_issued_snapshot',snapshot.status == 200 and snapshot.body.get('data',{}).get('bound_cidrs') == ['127.0.0.1'])
+        check('actual_cidr_role_cleared',service.call('POST',role_path,{'token_bound_cidrs':[]})[0] == 204)
+        snapshot=peer_client.request('POST','auth/token/lookup',{'token':cidr_token},source='127.0.0.2')
+        check('actual_cidr_cleared_role_keeps_snapshot',snapshot.status == 200 and snapshot.body.get('data',{}).get('bound_cidrs') == ['127.0.0.1'])
+        cleared=peer_client.request('POST',login_path,{'role':'worker','jwt':worker_jwt},token='',source='127.0.0.2')
+        check('actual_cidr_cleared_role_foreign_login',cleared.status == 200 and bool(cleared.body.get('auth',{}).get('client_token')))
+        cleared_token=cleared.body['auth']['client_token']
+        check('actual_cidr_old_token_unconstrained',peer_client.request('GET','auth/token/lookup-self',token=old_token,source='127.0.0.2').status == 200)
+        renewed_peer=peer_client.request('POST','auth/token/renew-self',{},token=old_token,source='127.0.0.2')
+        check('actual_cidr_old_token_renews',native_renewed(renewed_peer,old_token))
         service.stop();service.start()
         check('restart_requires_unseal',service.call('GET','sys/seal-status')[1].get('sealed') is True)
         check('restart_unseal',service.call('POST','sys/unseal',{'key':key})[0] == 200)
+        status,cidr_role=service.call('GET',role_path)
+        check('actual_cidr_restart_role_clear',status == 200 and cidr_role.get('data',{}).get('token_bound_cidrs') == [])
+        denied_peer=peer_client.request('GET','auth/token/lookup-self',token=cidr_token,source='127.0.0.2',spoof=True)
+        check('actual_cidr_restart_foreign_denied',cidr_rejected(denied_peer))
+        check('actual_cidr_restart_allowed',peer_client.request('GET','auth/token/lookup-self',token=cidr_token,source='127.0.0.1').status == 200)
+        snapshot=peer_client.request('POST','auth/token/lookup',{'token':cidr_token},source='127.0.0.2')
+        check('actual_cidr_restart_snapshot',snapshot.status == 200 and snapshot.body.get('data',{}).get('bound_cidrs') == ['127.0.0.1'])
+        renewed_peer=peer_client.request('POST','auth/token/renew-self',{},token=old_token,source='127.0.0.2')
+        check('actual_cidr_restart_old_renews',native_renewed(renewed_peer,old_token))
         status, secret_after_restart = service.call(
             'POST',f'{secrets_mount}/creds/worker',{'kubernetes_namespace':'hb-work'})
         restart_secret_token = secret_after_restart.get('data',{}).get('service_account_token')
@@ -393,6 +453,10 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         check('native_renewal_independent_of_reviewer_rbac',renew_status == 200
               and renewed.get('auth',{}).get('client_token') == old_token
               and renewed.get('auth',{}).get('renewable') is True)
+        # Actual reviewer RBAC has been revoked, so a successful renewal proves
+        # this issued constrained token does not need another TokenReview.
+        renewed_peer=peer_client.request('POST','auth/token/renew-self',{},token=cidr_token,source='127.0.0.1')
+        check('actual_cidr_renewal_independent_of_reviewer_rbac',native_renewed(renewed_peer,cidr_token))
         cluster.post('/apis/rbac.authorization.k8s.io/v1/clusterrolebindings',binding)
         cluster.await_review_permission(True)
         status, restored=login(new_jwt)
@@ -400,6 +464,12 @@ def run(binary: Path, kind: Path, root: Path, checks: list[dict]):
         token=restored['auth']['client_token']
         check('auth_unmount',service.call('DELETE','sys/auth/'+mount)[0] == 204)
         check('unmount_revokes_local_token',service.call('GET','auth/token/lookup-self',token=token)[0] == 403)
+        sensitive=[key,service.token,reviewer_jwt,worker_jwt,other_jwt,wrong_aud,new_jwt,
+                   secret_token,restart_secret_token,new_secret_token,old_token,cidr_token,cleared_token,
+                   again['auth']['client_token'],replacement['auth']['client_token'],token]
+        files=[p for p in (service.root/'data').rglob('*') if p.is_file()]+[service.root/'server.log',service.root/'audit.jsonl']
+        check('actual_runtime_secrets_not_plaintext',all(value.encode() not in p.read_bytes() for p in files if p.exists() for value in sensitive)
+              and not any(value in json.dumps(checks) for value in sensitive))
         check('complete',True)
         return {'kubernetes_version':version['gitVersion'],'kind_version':KIND_VERSION,'node_image':NODE_IMAGE,
                 'actual_kube_apiserver':True,'actual_etcd':True,'actual_rbac':True,

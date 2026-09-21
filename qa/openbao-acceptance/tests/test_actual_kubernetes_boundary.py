@@ -163,3 +163,32 @@ class KindSelectedPinAdmissionTests(unittest.TestCase):
                             '--output',str(root/'report.json'),'--allow-disposable-cluster'])
                 admit.assert_called_once_with(binary,expected)
                 daemon.assert_not_called()
+
+
+class ActualKubernetesCidrGuards(unittest.TestCase):
+    def test_cidr_rejection_cannot_release_auth_or_wrapping_authority(self):
+        from types import SimpleNamespace
+        self.assertTrue(k.cidr_rejected(SimpleNamespace(status=403,body={'errors':['denied']})))
+        for status,body in [(200,{}),(503,{}),(403,{'auth':{'client_token':'sentinel'}}),
+                            (403,{'wrap_info':{'token':'sentinel'}})]:
+            self.assertFalse(k.cidr_rejected(SimpleNamespace(status=status,body=body)))
+
+    def test_local_renewal_requires_original_token_and_nonzero_integer_lease(self):
+        from types import SimpleNamespace
+        auth={'client_token':'synthetic-target','renewable':True,'lease_duration':300}
+        self.assertTrue(k.native_renewed(SimpleNamespace(status=200,body={'auth':auth}),'synthetic-target'))
+        for field,value in [('client_token','different'),('renewable',False),('lease_duration',0),
+                            ('lease_duration',True),('lease_duration','300')]:
+            self.assertFalse(k.native_renewed(SimpleNamespace(status=200,body={'auth':auth|{field:value}}),'synthetic-target'))
+        self.assertFalse(k.native_renewed(SimpleNamespace(status=503,body={'auth':auth}),'synthetic-target'))
+
+    def test_completion_requires_real_cluster_and_cidr_evidence_together(self):
+        from online_evidence import complete_checks
+        rows=[{'case':name,'passed':True} for name in sorted(k.REQUIRED_CASES)]
+        for removed in ['actual_apiserver_version','actual_tokenrequests','real_tokenreview_issues_local_token',
+                        'actual_cidr_foreign_login_spoof_denied','actual_cidr_foreign_token_spoof_denied',
+                        'actual_cidr_cleared_role_keeps_snapshot','actual_cidr_restart_foreign_denied',
+                        'actual_cidr_restart_old_renews','actual_cidr_renewal_independent_of_reviewer_rbac',
+                        'actual_runtime_secrets_not_plaintext']:
+            with self.subTest(removed=removed):
+                self.assertFalse(complete_checks([row for row in rows if row['case']!=removed],required_cases=k.REQUIRED_CASES))
