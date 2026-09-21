@@ -276,7 +276,18 @@ the IP; request headers do not. Later user edits do not rebind issued tokens,
 and administrator renewal checks the caller's constraints rather than the
 target token's source. These fields and policy metadata require schema39.
 Batch tokens, case normalization and complete weak scalar/error parity remain
-outside this profile. Schema39 CIDR/default-policy live qualification is pending;
+outside this profile. The schema39 `24c2e74` release passes
+[183 CIDR observations per side](../../qa/openbao-acceptance/evidence/userpass-cidrs-24c2e74.json)
+and [187 default-policy observations per side](../../qa/openbao-acceptance/evidence/userpass-no-default-24c2e74.json)
+against the pinned OpenBao2.6.2 executable. The
+[280-check actual schema38-to-39 upgrade](../../qa/openbao-acceptance/evidence/userpass-params-upgrade-24c2e74.json)
+preserves old policy-list provenance, verifies read-only application bytes,
+issued-token constraints, restart and actual old-binary refusal. The separate
+[238-check three-process TLS profile](../../qa/openbao-acceptance/evidence/userpass-params-ha-24c2e74.json)
+uses real socket sources through a standby, rejects forged proxy headers without
+consuming finite uses, and verifies policy/CIDR snapshots after leadership
+transfer and full restart. Its client timeout remains five seconds. These local
+profiles do not establish separate-host fault or full compatibility coverage;
 the historical receipts below apply only to their pinned builds.
 The qualified `0fc7925` candidate records
 [279 matching observations per side](../../qa/openbao-acceptance/evidence/userpass-native-0fc7925.json)

@@ -82,7 +82,12 @@ Raft indices and leader identity come from one passive metrics observation.
 False/unknown optional fields are omitted. These diagnostics never grant read or
 write authority; protected operations retain their ReadIndex checks. `active_time`
 and `leader_cluster_address` remain unimplemented rather than fabricated. The
-new public/local behavior awaits its own real-process qualification.
+schema39 [78-check live profile](../../qa/openbao-acceptance/evidence/sys-leader-24c2e74.json)
+compares the official file/Raft lifecycle and exercises three TLS candidate
+processes, finite-use preservation, seal/restart, loss of quorum and leadership
+transfer. A diagnostic remains available during a partition while a protected
+read fails. Query/header parsing edge cases and the two omitted fields remain
+separate compatibility work.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
 passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,
 including quorum loss, leadership transfer, HEAD/ACL/finite-use behavior and
