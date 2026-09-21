@@ -35,6 +35,35 @@ class SecretIdOverridesHaGuards(unittest.TestCase):
                     f.Trace(client, [], []).login('bad', kind, 'subset', creds, status=500)
                 self.assertEqual(len(client.calls), 1)
 
+    def test_only_missing_secretid_accessor_accepts_exact_raw_diagnostic(self):
+        accessor = 'synthetic-private-accessor'
+        good = {'data': {'error': 'failed to find accessor entry for secret_id_accessor: '+json.dumps(accessor)}}
+        class Client:
+            last_family = 4
+            def __init__(self, response): self.response, self.calls = response, []
+            def request(self, *args, **kwargs):
+                self.calls.append((args, kwargs)); return SimpleNamespace(status=404, body=self.response)
+        path = f.role_path('service', 'one')+'/secret-id-accessor/lookup'
+        client = Client(good); rows = []
+        f.Trace(client, rows, []).call('missing', 'POST', path, {'secret_id_accessor': accessor}, status=404)
+        self.assertEqual(len(client.calls), 1)
+        self.assertEqual(rows[-1], {'case': 'missing_rejected', 'passed': True})
+        for bad in ({'data': {'error': good['data']['error'].replace(accessor, 'different-accessor')}},
+                    {**good, 'errors': ['not found']}, {**good, 'errors': []},
+                    {**good, 'auth': {'client_token': 'synthetic-bearer'}},
+                    {**good, 'wrap_info': {'token': 'synthetic-wrapper'}},
+                    {'data': {**good['data'], 'secret_id': 'synthetic-secret'}},
+                    {'errors': ['not found']}, {'data': {'error': 'not found'}}):
+            client = Client(bad)
+            with self.assertRaises(f.ScenarioFailure):
+                f.Trace(client, [], []).call('bad', 'POST', path, {'secret_id_accessor': accessor}, status=404)
+            self.assertEqual(len(client.calls), 1)
+        for method, route in (('GET', path), ('POST', f.role_path('service', 'one')+'/secret-id/lookup'),
+                              ('POST', 'auth/token/lookup-accessor')):
+            with self.assertRaises(f.ScenarioFailure):
+                f.Trace(Client(good), [], []).call('ordinary', method, route, {'secret_id_accessor': accessor}, status=404)
+        self.assertFalse(f.rows_secret_free(good, [accessor]))
+
     def test_full_sid_snapshots_detect_repeat_consumption_and_unlimited_changes(self):
         cluster = SimpleNamespace(nodes=[SimpleNamespace(node_id=n) for n in (1, 2, 3)])
         credentials = {k: {label: {} for label in f.SID_LABELS} for k in f.KINDS}

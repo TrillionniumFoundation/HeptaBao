@@ -51,6 +51,23 @@ REQUIRED = frozenset({'three_processes', 'five_second_listeners', 'setup_standby
 
 class Trace(SecretTrace):
     def call(self, name, method, path, body=None, **kwargs):
+        if (method == 'POST' and path.endswith('/secret-id-accessor/lookup')
+                and kwargs.get('status') == 404):
+            # This single upstream endpoint returns raw data.error, not the
+            # ordinary errors envelope. Do not generalize that exception.
+            accessor = body.get('secret_id_accessor') if isinstance(body, dict) else None
+            if not isinstance(accessor, str) or not accessor:
+                raise ScenarioFailure('accessor_diagnostic_requires_requested_accessor')
+            response = self.client.request(method, path, body, token=kwargs.get('token'),
+                source=kwargs.get('source', '127.0.0.1'), spoof=kwargs.get('spoof', False))
+            self.check(name+'_status', response.status == 404)
+            self.check(name+'_ipv4', self.client.last_family == 4)
+            result = response.body
+            data = result.get('data')
+            self.check(name+'_rejected', isinstance(data, dict) and set(data) == {'error'}
+                and data['error'] == 'failed to find accessor entry for secret_id_accessor: '+json.dumps(accessor)
+                and 'errors' not in result and not result.get('auth') and not result.get('wrap_info'))
+            return result
         result = super().call(name, method, path, body, **kwargs)
         if kwargs.get('status') == 500:
             errors = result.get('errors')
