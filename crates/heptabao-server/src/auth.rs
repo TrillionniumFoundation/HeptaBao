@@ -4876,8 +4876,15 @@ impl AuthState {
                     return Ok(response(token.info(now), false));
                 }
                 if operation == "lookup" {
-                    let target =
-                        self.inspect_raw_target(string_field(body, "token")?, namespace, now)?;
+                    let target = self
+                        .inspect_raw_target(string_field(body, "token")?, namespace, now)
+                        .map_err(|error| {
+                            if error.status == 403 {
+                                err(403, "bad token")
+                            } else {
+                                error
+                            }
+                        })?;
                     return Ok(response(target.view(self, now)?.info(now), false));
                 }
                 let id = self.target_token(namespace, body, true, now)?;
@@ -4947,6 +4954,13 @@ impl AuthState {
                         &["accessor"]
                     },
                 )?;
+                if operation == "revoke" {
+                    let raw = string_field(body, "token")?;
+                    if raw.starts_with("hvb.") {
+                        self.inspect_raw_target(raw, namespace, now)?;
+                        return Err(bad("batch tokens cannot be revoked"));
+                    }
+                }
                 let id =
                     self.target_token(namespace, body, operation.ends_with("accessor"), now)?;
                 self.revoke(&id);
@@ -5088,7 +5102,7 @@ impl AuthState {
             let raw = string_field(body, "token")?;
             if raw.starts_with("hvb.") {
                 self.inspect_raw_target(raw, namespace, now)?;
-                return Err(bad("batch tokens cannot be renewed or revoked"));
+                return Err(bad("batch tokens cannot be renewed"));
             }
             hash(raw)
         };

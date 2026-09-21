@@ -110,18 +110,24 @@ fn batch_all_twelve_mount_user_combinations_seal_only_after_identity_without_bac
 fn batch_user_rejects_period_or_uses_atomically_but_forced_mount_discards_service_only_fields() {
     let (mut state, root) = setup();
     let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
-    for body in [
-        json!({"token_type":"batch","token_period":30}),
-        json!({"token_type":"batch","token_num_uses":2}),
-        json!({"token_type":"invalid"}),
+    for (body, message) in [
+        (
+            json!({"token_type":"batch","token_period":30}),
+            "'token_type' cannot be 'batch' or 'default_batch' when set to generate periodic tokens",
+        ),
+        (
+            json!({"token_type":"batch","token_num_uses":2}),
+            "'token_type' cannot be 'batch' or 'default_batch' when set to generate tokens with limited use count",
+        ),
+        (
+            json!({"token_type":"invalid"}),
+            "invalid 'token_type' value",
+        ),
     ] {
-        assert_eq!(
-            call(&mut state, &root, "auth/userpass/users/alice", body)
-                .err()
-                .unwrap()
-                .status,
-            400
-        );
+        let error = call(&mut state, &root, "auth/userpass/users/alice", body)
+            .err()
+            .unwrap();
+        assert_eq!((error.status, error.message.as_str()), (400, message));
         assert_eq!(*before, serde_json::to_vec(&state).unwrap());
     }
     call(

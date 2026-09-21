@@ -32,7 +32,7 @@ impl UserTokenType {
             Some("" | "default") => Ok(Self::Default),
             Some("service") => Ok(Self::Service),
             Some("batch") => Ok(Self::Batch),
-            _ => Err(bad("invalid token_type")),
+            _ => Err(bad("invalid 'token_type' value")),
         }
     }
 }
@@ -105,10 +105,17 @@ pub(super) fn update_user_type(user: &mut User, body: &Value) -> Result<(), Auth
     validate_user_type(user)
 }
 fn validate_user_type(user: &User) -> Result<(), AuthError> {
-    if user.token_type == Some(UserTokenType::Batch)
-        && (user.token_period != 0 || user.token_num_uses != 0)
-    {
-        return Err(bad("batch user tokens cannot have period or num_uses"));
+    if user.token_type == Some(UserTokenType::Batch) {
+        if user.token_period != 0 {
+            return Err(bad(
+                "'token_type' cannot be 'batch' or 'default_batch' when set to generate periodic tokens",
+            ));
+        }
+        if user.token_num_uses != 0 {
+            return Err(bad(
+                "'token_type' cannot be 'batch' or 'default_batch' when set to generate tokens with limited use count",
+            ));
+        }
     }
     Ok(())
 }

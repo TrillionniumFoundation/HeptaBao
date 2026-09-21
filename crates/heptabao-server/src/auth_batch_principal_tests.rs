@@ -231,19 +231,23 @@ fn batch_acl_denial_precedes_kind_errors_and_provider_renewal_is_never_prepared(
             .status,
         400
     );
-    for path in ["auth/token/renew", "auth/token/revoke"] {
+    for (path, message) in [
+        ("auth/token/renew", "batch tokens cannot be renewed"),
+        ("auth/token/revoke", "batch tokens cannot be revoked"),
+    ] {
+        let error = call(
+            &mut state,
+            &root,
+            path,
+            json!({"token":allowed_raw.as_str()}),
+            101,
+        )
+        .err()
+        .unwrap();
         assert_eq!(
-            call(
-                &mut state,
-                &root,
-                path,
-                json!({"token":allowed_raw.as_str()}),
-                101
-            )
-            .err()
-            .unwrap()
-            .status,
-            400
+            (error.status, error.message.as_str()),
+            (400, message),
+            "{path}"
         );
     }
     assert_eq!(
@@ -313,6 +317,19 @@ fn existing_batch_principal_and_lease_projection_recheck_parent_ancestors_and_au
     assert!(state.check_principal(&actor, "", 102).is_err());
     assert!(state.resolve_lease_owner(&owner, "", 102).is_none());
     assert!(state.authenticate_from(raw.as_str(), 102, peer(1)).is_err());
+    let lookup_error = call(
+        &mut state,
+        &root,
+        "auth/token/lookup",
+        json!({"token":raw.as_str()}),
+        102,
+    )
+    .err()
+    .unwrap();
+    assert_eq!(
+        (lookup_error.status, lookup_error.message.as_str()),
+        (403, "bad token")
+    );
     let orphan = seal(&mut state, claims());
     let orphan_actor = state
         .authenticate_from(orphan.as_str(), 102, peer(1))
