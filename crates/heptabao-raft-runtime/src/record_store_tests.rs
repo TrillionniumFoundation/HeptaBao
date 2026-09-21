@@ -268,3 +268,124 @@ async fn malformed_snapshot_or_low_disk_budget_cannot_replace_published_state() 
     drop(store);
     fs::remove_dir_all(path).expect("cleanup");
 }
+
+#[tokio::test]
+async fn legacy_cleanup_journal_replay_snapshot_fence_and_failed_command_are_atomic() {
+    let path = root();
+    let mut store = DurableStateMachine::create(&path).expect("create");
+    let manifest = crate::ReplicatedEnvelope::new("legacy-manifest", [71; 32], vec![71; 100])
+        .expect("manifest");
+    let chunk =
+        crate::ReplicatedEnvelope::new("legacy-chunk", [72; 32], vec![72; 100]).expect("chunk");
+    let expected = crate::LegacyStatusIdentity::inspect(&manifest.encoded_status())
+        .expect("identity")
+        .1;
+    let active = vec![crate::LegacyChunkRef {
+        index: 0,
+        slot: 0,
+        identity: crate::LegacyStatusIdentity::inspect(&chunk.encoded_status())
+            .expect("chunk identity")
+            .1,
+    }];
+    for (client, status) in [
+        (crate::records::PRODUCTION_CLIENT, manifest.encoded_status()),
+        ("heptabao-production-ha-chunk:000:0", chunk.encoded_status()),
+        ("heptabao-production-ha-chunk:000:1", chunk.encoded_status()),
+        ("qualification", "retained".into()),
+    ] {
+        apply(
+            &mut store,
+            openraft_memstore::ClientRequest {
+                client: client.into(),
+                serial: 1,
+                status,
+            }
+            .into(),
+        )
+        .await;
+    }
+    RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("old format2 snapshot");
+    let before = store.get_state_machine().await.client_status;
+    let generation = store.generation().await;
+    let mut wrong = expected;
+    wrong.status_sha256[0] ^= 1;
+    apply(
+        &mut store,
+        request(RecordCommand::RetainLegacyChunks {
+            expected_manifest: wrong,
+            active: active.clone(),
+        }),
+    )
+    .await;
+    assert_eq!(store.get_state_machine().await.client_status, before);
+    assert_eq!(store.generation().await, generation + 1);
+    assert!(store.get_state_machine().await.records_v5.is_none());
+    apply(
+        &mut store,
+        request(RecordCommand::RetainLegacyChunks {
+            expected_manifest: expected,
+            active: active.clone(),
+        }),
+    )
+    .await;
+    let after = store.get_state_machine().await.client_status;
+    assert_eq!(
+        after.get(crate::records::PRODUCTION_CLIENT),
+        before.get(crate::records::PRODUCTION_CLIENT)
+    );
+    assert!(!after.contains_key("heptabao-production-ha-chunk:000:1"));
+    drop(store);
+    let mut store = DurableStateMachine::open_existing(&path).expect("replay cleanup and fence");
+    assert_eq!(store.get_state_machine().await.client_status, after);
+    assert!(store.record_root_at_generation().await.1.is_none());
+    assert_eq!(store.bundle.lock().await.format_version, 3);
+    let snapshot = RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("prepared snapshot3");
+    assert!(
+        serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(
+            snapshot.snapshot.get_ref()
+        )
+        .is_err()
+    );
+    drop(store);
+    let mut store = DurableStateMachine::open_existing(&path).expect("reopen prepared checkpoint");
+    apply(
+        &mut store,
+        openraft_memstore::ClientRequest {
+            client: crate::records::PRODUCTION_CLIENT.into(),
+            serial: 9,
+            status: chunk.encoded_status(),
+        }
+        .into(),
+    )
+    .await;
+    assert_eq!(store.get_state_machine().await.client_status, after);
+    // The unchanged physical snapshot bound remains enforced after cleanup.
+    let saved = fs::read(store.state_path()).expect("bundle before failure");
+    let journal = fs::read(state_journal_path(store.state_path())).expect("journal before failure");
+    let generation = store.generation().await;
+    store.artifact_bound = 128;
+    assert!(
+        RaftSnapshotBuilder::build_snapshot(&mut store)
+            .await
+            .is_err()
+    );
+    assert_eq!(store.generation().await, generation);
+    assert_eq!(
+        fs::read(store.state_path()).expect("bundle unchanged"),
+        saved
+    );
+    assert_eq!(
+        fs::read(state_journal_path(store.state_path())).expect("journal unchanged"),
+        journal
+    );
+    drop(store);
+    let reopened =
+        DurableStateMachine::open_existing(&path).expect("failed snapshot remains reopenable");
+    assert_eq!(reopened.get_state_machine().await.client_status, after);
+    drop(reopened);
+    fs::remove_dir_all(path).expect("cleanup");
+}

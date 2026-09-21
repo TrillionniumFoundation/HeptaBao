@@ -17,8 +17,9 @@ mod records;
 mod state_machine;
 
 pub use records::{
-    PublishedRecordRoot, RecordObjectId, RecordObjectKind, RecordObjectRef, RecordRejection,
-    RecordRootBase, RecordUsage, SealedRecordObject,
+    LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
+    RecordObjectId, RecordObjectKind, RecordObjectRef, RecordRejection, RecordRootBase,
+    RecordUsage, SealedRecordObject,
 };
 pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
 // Historical hostile store tests use `expect` for fixture construction only;

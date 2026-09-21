@@ -2,8 +2,8 @@
 //! typed record commands deliberately have no legacy client/status fields.
 use crate::ReplicatedEnvelope;
 use crate::records::{
-    MAX_RECORD_COMMAND_BYTES, PRODUCTION_CLIENT, RecordCommand, RecordRejection, RecordRootBase,
-    RecordState, status_entry_size,
+    LegacyChunkRef, LegacyStatusIdentity, MAX_RECORD_COMMAND_BYTES, PRODUCTION_CLIENT,
+    RecordCommand, RecordRejection, RecordRootBase, RecordState, status_entry_size,
 };
 use openraft::alias::{LogIdOf, StoredMembershipOf};
 use serde::{Deserialize, Serialize};
@@ -197,13 +197,106 @@ impl StateMachine {
             if metadata.len() > 1024 * 1024 - 1024 {
                 return Err(RecordRejection::Budget);
             }
+            if let Some(expected) = records.prepared_identity() {
+                let status = self
+                    .client_status
+                    .get(PRODUCTION_CLIENT)
+                    .ok_or(RecordRejection::Invalid)?;
+                if LegacyStatusIdentity::inspect(status)?.1 != expected {
+                    return Err(RecordRejection::StaleRoot);
+                }
+            }
             records.validate(self.legacy_size()?)?;
         }
         Ok(())
     }
+    fn retain_legacy_chunks(
+        &mut self,
+        expected: LegacyStatusIdentity,
+        active: &[LegacyChunkRef],
+    ) -> Result<(), RecordRejection> {
+        expected.validate()?;
+        if self
+            .records_v5
+            .as_ref()
+            .and_then(RecordState::published_digest)
+            .is_some()
+        {
+            return Err(RecordRejection::LegacyFenced);
+        }
+        let status = self
+            .client_status
+            .get(PRODUCTION_CLIENT)
+            .ok_or(RecordRejection::StaleRoot)?;
+        if LegacyStatusIdentity::inspect(status)?.1 != expected {
+            return Err(RecordRejection::StaleRoot);
+        }
+        if active.is_empty() || active.len() > 128 {
+            return Err(RecordRejection::Invalid);
+        }
+        let mut indexes = std::collections::BTreeSet::new();
+        let mut retained = std::collections::BTreeSet::new();
+        for reference in active {
+            reference.identity.validate()?;
+            if reference.index > 127 || reference.slot > 1 || !indexes.insert(reference.index) {
+                return Err(RecordRejection::Invalid);
+            }
+            let client = format!(
+                "heptabao-production-ha-chunk:{:03}:{}",
+                reference.index, reference.slot
+            );
+            let status = self
+                .client_status
+                .get(&client)
+                .ok_or(RecordRejection::MissingDependency)?;
+            if LegacyStatusIdentity::inspect(status)?.1 != reference.identity {
+                return Err(RecordRejection::ImmutableConflict);
+            }
+            retained.insert(client);
+        }
+        // The application proposer has authenticated the manifest and complete
+        // reference set under its serialized leader writer. Runtime has no key.
+        // Freeze production legacy writes atomically with cleanup; a later old
+        // writer cannot replace a kept slot or publish now-deleted staged slots.
+        let keep = |client: &String| {
+            client == PRODUCTION_CLIENT
+                || !retired_legacy_client(client)
+                || retained.contains(client)
+        };
+        let remaining = self
+            .client_status
+            .iter()
+            .filter(|(client, _)| keep(client))
+            .try_fold(2_usize, |sum, (client, status)| {
+                sum.checked_add(status_entry_size(client, status)?)
+                    .ok_or(RecordRejection::Budget)
+            })?;
+        if let Some(records) = &mut self.records_v5 {
+            records.prepare_legacy_migration(expected, remaining)?;
+        } else {
+            let mut records = RecordState::default();
+            records.prepare_legacy_migration(expected, remaining)?;
+            self.records_v5 = Some(records);
+        }
+        // No fallible work after mutation. Root and all selected statuses retain
+        // their exact encoded bytes; only recognized unreferenced slots leave.
+        self.client_status.retain(|client, _| keep(client));
+        self.legacy_json_bytes = Some(remaining);
+        Ok(())
+    }
+
     pub(crate) fn apply(&mut self, request: &ApplicationRequest) -> ApplicationResponse {
         let result = match request {
             ApplicationRequest::Legacy(data) => {
+                if retired_legacy_client(&data.client)
+                    && self
+                        .records_v5
+                        .as_ref()
+                        .and_then(RecordState::prepared_identity)
+                        .is_some()
+                {
+                    return ApplicationResponse::rejected(RecordRejection::LegacyFenced);
+                }
                 if self.records_v5.is_some() {
                     let previous = match self.legacy_json_bytes {
                         Some(n) => Ok(n),
@@ -241,6 +334,24 @@ impl StateMachine {
                 return ApplicationResponse::Legacy(openraft_memstore::ClientResponse(previous));
             }
             ApplicationRequest::RecordsV5(data) => {
+                // Must precede build_cache: the old two-slot map can exceed the
+                // typed staging budget and still be a valid legacy artifact.
+                if let RecordCommand::RetainLegacyChunks {
+                    expected_manifest,
+                    active,
+                } = &data.records_v5
+                {
+                    return match request
+                        .validate_size()
+                        .and_then(|()| self.retain_legacy_chunks(*expected_manifest, active))
+                    {
+                        Ok(()) => ApplicationResponse::Records(RecordResponse {
+                            accepted: true,
+                            rejection: None,
+                        }),
+                        Err(reason) => ApplicationResponse::rejected(reason),
+                    };
+                }
                 let operation = || -> Result<(usize, RecordRootBase), RecordRejection> {
                     request.validate_size()?;
                     let base = self.base()?;

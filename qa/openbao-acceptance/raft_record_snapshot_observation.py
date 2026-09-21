@@ -105,6 +105,35 @@ def envelope(value):
             and digest != '0' * 64 and bool(compact_bytes(sealed, MIB)), 'record_invalid_envelope')
 
 
+def legacy_status_digest(status):
+    require(isinstance(status, str) and status.isascii(), 'prepared_invalid_status')
+    if status.startswith(('hbr2:', 'hbr3:')):
+        version = status[:5]
+        length, separator, rest = status[5:].partition(':')
+        require(bool(separator) and re.fullmatch(r'[0-9]+', length) is not None, 'prepared_invalid_status')
+        significant = length.lstrip('0')
+        require(0 < len(significant) <= 3 and 1 <= int(significant) <= 128, 'prepared_invalid_status')
+        size = int(significant); operation, suffix = rest[:size], rest[size:]
+        require(suffix.startswith(':'), 'prepared_invalid_status')
+        digest, separator, sealed = suffix[1:].partition(':')
+        require(bool(separator), 'prepared_invalid_status')
+    elif status.startswith('hbr1:'):
+        version = 'hbr1:'; parts = status[5:].split(':')
+        require(len(parts) == 3, 'prepared_invalid_status')
+        operation, digest, sealed = parts
+    else:
+        raise ValueError('prepared_invalid_status')
+    require(re.fullmatch(r'[a-zA-Z0-9_.:\-]{1,128}', operation) is not None
+            and re.fullmatch(r'[0-9a-fA-F]{64}', digest) is not None and digest != '0'*64,
+            'prepared_invalid_status')
+    if version == 'hbr3:':
+        require(bool(compact_bytes(sealed, MIB)), 'prepared_invalid_status')
+    else:
+        require(0 < len(sealed) <= 2*MIB and len(sealed) % 2 == 0
+                and re.fullmatch(r'[0-9a-fA-F]+', sealed) is not None, 'prepared_invalid_status')
+    return digest.lower()
+
+
 def log_index(log):
     require(isinstance(log, dict) and bounded_int(log.get('index'), 2**64 - 1),
             'snapshot_invalid_log_index')
@@ -122,8 +151,21 @@ def inspect_state(state):
             for k, v in statuses.items()), 'record_invalid_legacy_statuses')
     legacy_bytes = 2 + sum(encoded_size(k) + encoded_size(v) + 2 for k, v in statuses.items())
     record = state['records_v5']
-    require(exact_fields(record, {'objects', 'published'}), 'record_state_invalid_fields')
+    require(isinstance(record, dict) and set(record) in (
+        {'objects', 'published'}, {'objects', 'published', 'legacy_migration_prepared'}),
+        'record_state_invalid_fields')
     objects, published = record['objects'], record['published']
+    prepared = record.get('legacy_migration_prepared')
+    if prepared is not None:
+        require(exact_fields(prepared, {'digest', 'status_sha256'}) and published is None,
+                'prepared_invalid_identity')
+        expected_digest = object_id(prepared['digest'])
+        expected_status = object_id(prepared['status_sha256'])
+        require(expected_digest != '0'*64 and expected_status != '0'*64, 'prepared_zero_identity')
+        legacy_status = statuses.get('heptabao-production-ha')
+        require(legacy_status_digest(legacy_status) == expected_digest
+                and hashlib.sha256(legacy_status.encode()).hexdigest() == expected_status,
+                'prepared_legacy_identity_mismatch')
     require(isinstance(objects, dict) and len(objects) <= MAX_OBJECTS, 'record_object_count_exceeded')
     direct = []
     if published is not None:
@@ -140,7 +182,7 @@ def inspect_state(state):
         for child in direct:
             reference(child)
             require(child['kind'] in ('OwnerChunk', 'Leaf', 'Branch'), 'record_invalid_direct_kind')
-    charged = 128 + encoded_size(published) + legacy_bytes
+    charged = 128 + encoded_size(published) + encoded_size(prepared) + legacy_bytes
     sealed_total = 0
     for key, item in objects.items():
         require(isinstance(key, str) and re.fullmatch(r'[0-9a-f]{64}', key) is not None
@@ -191,14 +233,15 @@ def inspect_state(state):
         active.remove(key); depths[key] = result
         return result
     for key in objects: depth(key)
-    require(charged <= MAX_APPLICATION_BYTES, 'record_application_budget_exceeded')
+    require(charged <= MAX_APPLICATION_BYTES or (prepared is not None and not objects and published is None),
+            'record_application_budget_exceeded')
     reachable, pending = set(), [dependency(child) for child in direct]
     while pending:
         key = pending.pop()
         if key in reachable: continue
         reachable.add(key)
         pending.extend(dependency(child) for child in objects[key]['children'])
-    return {'publication_present': published is not None, 'object_count': len(objects), 'reachable_object_count': len(reachable),
+    return {'publication_present': published is not None, 'legacy_migration_prepared': prepared is not None, 'object_count': len(objects), 'reachable_object_count': len(reachable),
             'staged_unreachable_object_count': len(objects) - len(reachable),
             'maximum_graph_depth': max(depths.values(), default=0), 'ciphertext_bytes': sealed_total,
             'charged_application_bytes': charged, 'application_byte_limit': MAX_APPLICATION_BYTES,

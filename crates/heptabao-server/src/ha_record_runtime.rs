@@ -3,7 +3,10 @@ use super::*;
 use crate::ha_state::runtime_reference;
 use crate::state_record_root::{RecordStateRoot, StateIdentity};
 use crate::state_records::{ObjectRef, StagedObject};
-use heptabao_raft_runtime::{PublishedRecordRoot, RecordRootBase};
+use heptabao_raft_runtime::{
+    LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
+    RecordRootBase,
+};
 
 pub(crate) struct CommittedRecordState {
     pub(crate) root: RecordStateRoot,
@@ -33,6 +36,88 @@ impl HaProcess {
         }
         self.record_commits_since_gc.store(0, Ordering::Relaxed);
         Ok(())
+    }
+
+    fn prepare_legacy_record_migration(
+        &self,
+        expected: &StateIdentity,
+    ) -> Result<Option<RecordRootBase>, String> {
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
+            return Err("legacy record migration requires current leader".into());
+        }
+        self.runtime
+            .block_on(node.ensure_linearizable())
+            .map_err(|error| error.to_string())?;
+        let verified = authenticate_legacy_record_migration(
+            &self.codec,
+            expected,
+            || {
+                self.runtime
+                    .block_on(node.latest_envelope_identity_at_generation())
+                    .map_err(|error| error.to_string())
+            },
+            |index, slot| {
+                self.runtime
+                    .block_on(node.application_chunk_identity(index, slot))
+                    .map_err(|error| error.to_string())
+            },
+            || self.runtime.block_on(node.application_state_generation()),
+        )?;
+        let Some(verified) = verified else {
+            return Ok(None);
+        };
+        complete_legacy_record_preparation(
+            verified,
+            |identity, active| {
+                let serial = self
+                    .runtime
+                    .block_on(node.next_production_client_serial())
+                    .map_err(|error| error.to_string())?;
+                let receipt = self
+                    .runtime
+                    .block_on(node.retain_legacy_application_chunks(serial, identity, active))
+                    .map_err(|error| error.to_string())?;
+                if receipt.leader_id != node.id() || receipt.envelope_digest != identity.digest {
+                    return Err("legacy slot cleanup receipt identity mismatch".into());
+                }
+                Ok(receipt.log_index)
+            },
+            |cleanup_index| {
+                let snapshot = self
+                    .runtime
+                    .block_on(node.snapshot_observed())
+                    .map_err(|error| error.to_string())?;
+                if snapshot.persisted_index < cleanup_index {
+                    return Err("legacy slot cleanup checkpoint is not durable".into());
+                }
+                Ok(())
+            },
+            |identity| {
+                self.runtime
+                    .block_on(node.ensure_linearizable())
+                    .map_err(|error| error.to_string())?;
+                if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
+                    return Err("legacy slot cleanup lost leader authority".into());
+                }
+                let (_, current) = self
+                    .runtime
+                    .block_on(node.latest_envelope_identity_at_generation())
+                    .map_err(|error| error.to_string())?;
+                if current.as_ref().map(|(_, observed)| *observed) != Some(identity)
+                    || self
+                        .runtime
+                        .block_on(node.record_root_at_generation())
+                        .map_err(|error| error.to_string())?
+                        .1
+                        .is_some()
+                {
+                    return Err("legacy slot cleanup base changed before typed staging".into());
+                }
+                Ok(())
+            },
+        )
+        .map(Some)
     }
 
     pub(crate) fn commit_record_state(
@@ -91,33 +176,12 @@ impl HaProcess {
                 return Err("record publication base conflicts with committed root".into());
             }
             RecordRootBase::RecordsV5(observed.digest())
-        } else if let Some(previous) = self
-            .runtime
-            .block_on(node.latest_envelope())
-            .map_err(|error| error.to_string())?
-        {
-            if *expected != StateIdentity::Legacy(previous.digest()) {
-                return Err("record migration base conflicts with legacy state".into());
-            }
-            let descriptor = self
-                .codec
-                .open_committed_descriptor(
-                    previous.operation_id(),
-                    previous.digest(),
-                    previous.sealed(),
-                )
-                .map_err(|error| error.to_string())?;
-            // Preserve the explicit older HBSR1 migration boundary. V4 owner
-            // commits are the supported predecessor for record conversion.
-            if !matches!(descriptor,CommittedStateDescriptor::Chunked(ref manifest) if manifest.owner_manifest_digest.is_some())
-            {
-                return Err("record migration requires an authenticated HBSM4 owner state".into());
-            }
-            RecordRootBase::Legacy(previous.digest())
         } else {
-            // Only Service's authenticated initial-anchor path may call this
-            // while the cluster has no application publication.
-            RecordRootBase::Empty
+            // Cleanup and a completed compact checkpoint precede even the
+            // usage query: the retained legacy double-slot map can exceed the
+            // typed budget before any new object exists.
+            self.prepare_legacy_record_migration(expected)?
+                .unwrap_or(RecordRootBase::Empty)
         };
         let key = root.address_key();
         let mut staged = Vec::new();
@@ -288,6 +352,98 @@ impl HaProcess {
                 && self.runtime.block_on(node.application_state_generation()) == cursor.generation
         })
     }
+}
+
+/// This proof is created only after AEAD verification of HBSM4 and every
+/// active physical chunk. Local generation guards a consistent observation;
+/// the replicated command CAS binds exact manifest/status/reference identities,
+/// not a node-local generation. Callers hold the serialized leader writer.
+struct VerifiedLegacyMigration {
+    identity: LegacyStatusIdentity,
+    active: Vec<LegacyChunkRef>,
+}
+
+fn authenticate_legacy_record_migration(
+    codec: &ClusterStateCodec,
+    expected: &StateIdentity,
+    latest: impl FnOnce() -> Result<(u64, Option<LegacyEnvelopeObservation>), String>,
+    mut chunk: impl FnMut(u16, u8) -> Result<Option<LegacyEnvelopeObservation>, String>,
+    current_generation: impl FnOnce() -> u64,
+) -> Result<Option<VerifiedLegacyMigration>, String> {
+    let (generation, Some((envelope, identity))) = latest()? else {
+        return Ok(None);
+    };
+    if *expected != StateIdentity::Legacy(envelope.digest()) || identity.digest != envelope.digest()
+    {
+        return Err("record migration base conflicts with legacy state".into());
+    }
+    let descriptor = codec
+        .open_committed_descriptor(
+            envelope.operation_id(),
+            envelope.digest(),
+            envelope.sealed(),
+        )
+        .map_err(|error| error.to_string())?;
+    let CommittedStateDescriptor::Chunked(manifest) = descriptor else {
+        return Err("record migration requires an authenticated HBSM4 owner state".into());
+    };
+    if manifest.owner_manifest_digest.is_none() || manifest.state_digest != envelope.digest() {
+        return Err("record migration requires an authenticated HBSM4 owner state".into());
+    }
+    let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
+    let mut bytes = 0_u64;
+    let mut active = Vec::with_capacity(manifest.chunks.len());
+    for reference in &manifest.chunks {
+        let (envelope, identity) = chunk(reference.index, reference.slot)?
+            .ok_or("legacy migration active chunk is absent")?;
+        if envelope.digest() != reference.digest || identity.digest != reference.digest {
+            return Err("legacy migration active chunk digest mismatch".into());
+        }
+        let opened = codec
+            .open_chunk_parts(
+                reference.index,
+                reference.slot,
+                envelope.operation_id(),
+                envelope.digest(),
+                envelope.sealed(),
+            )
+            .map_err(|error| error.to_string())?;
+        if opened.len() != reference.bytes as usize {
+            return Err("legacy migration active chunk length mismatch".into());
+        }
+        bytes = bytes
+            .checked_add(u64::from(reference.bytes))
+            .ok_or("legacy migration size overflow")?;
+        if bytes > manifest.total_bytes {
+            return Err("legacy migration exceeds manifest length".into());
+        }
+        digest.update(&opened);
+        active.push(LegacyChunkRef {
+            index: reference.index,
+            slot: reference.slot,
+            identity,
+        });
+    }
+    if bytes != manifest.total_bytes || digest.finish().as_ref() != manifest.state_digest.as_slice()
+    {
+        return Err("legacy migration chunks do not reconstruct authenticated state".into());
+    }
+    if current_generation() != generation {
+        return Err("legacy migration state changed during authentication".into());
+    }
+    Ok(Some(VerifiedLegacyMigration { identity, active }))
+}
+
+fn complete_legacy_record_preparation(
+    verified: VerifiedLegacyMigration,
+    retain: impl FnOnce(LegacyStatusIdentity, &[LegacyChunkRef]) -> Result<u64, String>,
+    snapshot: impl FnOnce(u64) -> Result<(), String>,
+    revalidate: impl FnOnce(LegacyStatusIdentity) -> Result<(), String>,
+) -> Result<RecordRootBase, String> {
+    let index = retain(verified.identity, &verified.active)?;
+    snapshot(index)?;
+    revalidate(verified.identity)?;
+    Ok(RecordRootBase::Legacy(verified.identity.digest))
 }
 
 // The cursor remains provisional until Service authenticates the complete object
@@ -491,6 +647,274 @@ mod tests {
         fixture.published =
             PublishedRecordRoot::new(original.base(), altered, original.direct_refs().to_vec())?;
         assert!(fixture.read(first.read_cursor.as_ref()).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod legacy_migration_tests {
+    use super::*;
+    use crate::ha_state::ReplicatedStateProposal;
+    use std::cell::RefCell;
+    type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    struct LegacyFixture {
+        codec: ClusterStateCodec,
+        manifest: LegacyEnvelopeObservation,
+        chunks: Vec<LegacyEnvelopeObservation>,
+        refs: Vec<ReplicatedChunkRef>,
+    }
+
+    fn observation(
+        proposal: ReplicatedStateProposal,
+        marker: u8,
+    ) -> TestResult<LegacyEnvelopeObservation> {
+        let envelope = ReplicatedEnvelope::new(
+            proposal.operation_id(),
+            proposal.digest(),
+            proposal.sealed().to_vec(),
+        )?;
+        // The runtime supplies raw-status identities and performs their exact
+        // replicated CAS. This unit fixture supplies distinct synthetic ones.
+        let identity = LegacyStatusIdentity {
+            digest: envelope.digest(),
+            status_sha256: [marker; 32],
+        };
+        Ok((envelope, identity))
+    }
+
+    impl LegacyFixture {
+        fn new() -> TestResult<Self> {
+            let codec = ClusterStateCodec::new("legacy-cleanup-test", [6; 32])?;
+            let chunks = vec![
+                observation(codec.seal_chunk("chunk-first", 3, 1, b"abc")?, 11)?,
+                observation(codec.seal_chunk("chunk-second", 8, 0, b"defg")?, 12)?,
+            ];
+            let refs = vec![
+                ReplicatedChunkRef {
+                    index: 3,
+                    slot: 1,
+                    bytes: 3,
+                    digest: chunks[0].0.digest(),
+                },
+                ReplicatedChunkRef {
+                    index: 8,
+                    slot: 0,
+                    bytes: 4,
+                    digest: chunks[1].0.digest(),
+                },
+            ];
+            let manifest = observation(
+                codec.seal_manifest_with_owner_binding(
+                    "legacy-root",
+                    [1; 32],
+                    b"abcdefg",
+                    refs.clone(),
+                    [9; 32],
+                    0b11111,
+                )?,
+                13,
+            )?;
+            Ok(Self {
+                codec,
+                manifest,
+                chunks,
+                refs,
+            })
+        }
+
+        fn verify(&self, end_generation: u64) -> Result<Option<VerifiedLegacyMigration>, String> {
+            authenticate_legacy_record_migration(
+                &self.codec,
+                &StateIdentity::Legacy(self.manifest.0.digest()),
+                || Ok((41, Some(self.manifest.clone()))),
+                |index, slot| {
+                    Ok(self
+                        .refs
+                        .iter()
+                        .position(|r| r.index == index && r.slot == slot)
+                        .map(|position| self.chunks[position].clone()))
+                },
+                || end_generation,
+            )
+        }
+    }
+
+    #[test]
+    fn migration_authenticates_complete_ordered_chunk_set_and_can_repeat_after_reopen() -> TestResult
+    {
+        let mut fixture = LegacyFixture::new()?;
+        for _ in 0..2 {
+            let verified = fixture.verify(41)?.ok_or("missing legacy proof")?;
+            assert_eq!(verified.identity, fixture.manifest.1);
+            assert_eq!(
+                verified.active,
+                vec![
+                    LegacyChunkRef {
+                        index: 3,
+                        slot: 1,
+                        identity: fixture.chunks[0].1
+                    },
+                    LegacyChunkRef {
+                        index: 8,
+                        slot: 0,
+                        identity: fixture.chunks[1].1
+                    },
+                ]
+            );
+            // Prepared/reopened state retains the same authenticated envelopes.
+            fixture.codec = ClusterStateCodec::new("legacy-cleanup-test", [6; 32])?;
+        }
+        assert!(fixture.verify(42).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn migration_rejects_missing_corrupt_or_mispositioned_active_chunk() -> TestResult {
+        let mut fixture = LegacyFixture::new()?;
+        assert!(
+            authenticate_legacy_record_migration(
+                &fixture.codec,
+                &StateIdentity::Legacy(fixture.manifest.0.digest()),
+                || Ok((41, Some(fixture.manifest.clone()))),
+                |_, _| Ok(None),
+                || 41,
+            )
+            .is_err()
+        );
+        let original = fixture.chunks[0].clone();
+        let mut damaged = original.0.sealed().to_vec();
+        let last = damaged.last_mut().ok_or("empty sealed chunk")?;
+        *last ^= 1;
+        fixture.chunks[0].0 =
+            ReplicatedEnvelope::new(original.0.operation_id(), original.0.digest(), damaged)?;
+        assert!(fixture.verify(41).is_err());
+        // Same plaintext and digest, but AEAD binds another physical slot.
+        fixture.chunks[0] = observation(fixture.codec.seal_chunk("other-slot", 3, 0, b"abc")?, 11)?;
+        assert!(fixture.verify(41).is_err());
+        fixture.chunks[0] = original;
+        fixture.chunks[0].1.digest = [42; 32];
+        assert!(fixture.verify(41).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn migration_rejects_authenticated_but_inconsistent_manifest_and_pre_v4_format() -> TestResult {
+        let mut fixture = LegacyFixture::new()?;
+        // Every individual chunk is genuine; the concatenation must also
+        // reconstruct the authenticated whole-state digest.
+        fixture.manifest = observation(
+            fixture.codec.seal_manifest_with_owner_binding(
+                "wrong-whole",
+                [1; 32],
+                b"xxxxxxx",
+                fixture.refs.clone(),
+                [9; 32],
+                1,
+            )?,
+            13,
+        )?;
+        assert!(fixture.verify(41).is_err());
+        let mut wrong_lengths = fixture.refs.clone();
+        wrong_lengths[0].bytes = 4;
+        wrong_lengths[1].bytes = 3;
+        fixture.manifest = observation(
+            fixture.codec.seal_manifest_with_owner_binding(
+                "wrong-lengths",
+                [1; 32],
+                b"abcdefg",
+                wrong_lengths,
+                [9; 32],
+                1,
+            )?,
+            13,
+        )?;
+        assert!(fixture.verify(41).is_err());
+        fixture.manifest = observation(
+            fixture
+                .codec
+                .seal_manifest("old-v3", [1; 32], b"abcdefg", fixture.refs.clone())?,
+            13,
+        )?;
+        assert!(fixture.verify(41).is_err());
+        fixture.manifest = observation(fixture.codec.seal("old-inline", [1; 32], b"abcdefg")?, 13)?;
+        assert!(fixture.verify(41).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn migration_expected_base_conflict_prevents_even_active_chunk_reads() -> TestResult {
+        let fixture = LegacyFixture::new()?;
+        let reads = std::cell::Cell::new(0);
+        let result = authenticate_legacy_record_migration(
+            &fixture.codec,
+            &StateIdentity::Legacy([99; 32]),
+            || Ok((41, Some(fixture.manifest.clone()))),
+            |_, _| {
+                reads.set(reads.get() + 1);
+                Ok(None)
+            },
+            || 41,
+        );
+        assert!(result.is_err());
+        assert_eq!(reads.get(), 0);
+        Ok(())
+    }
+
+    #[test]
+    fn migration_publishes_no_base_until_retention_checkpoint_and_authority_all_succeed()
+    -> TestResult {
+        let fixture = LegacyFixture::new()?;
+        for failure in [Some("retain"), Some("snapshot"), Some("authority"), None] {
+            let events = RefCell::new(Vec::new());
+            let verified = fixture.verify(41)?.ok_or("missing proof")?;
+            let result = complete_legacy_record_preparation(
+                verified,
+                |identity, active| {
+                    events.borrow_mut().push("retain");
+                    assert_eq!(identity, fixture.manifest.1);
+                    assert_eq!(active.len(), 2);
+                    if failure == Some("retain") {
+                        return Err("CAS rejected".into());
+                    }
+                    Ok(57)
+                },
+                |index| {
+                    events.borrow_mut().push("snapshot");
+                    assert_eq!(index, 57);
+                    if failure == Some("snapshot") {
+                        return Err("checkpoint unavailable".into());
+                    }
+                    Ok(())
+                },
+                |identity| {
+                    events.borrow_mut().push("authority");
+                    assert_eq!(identity, fixture.manifest.1);
+                    if failure == Some("authority") {
+                        return Err("authority changed".into());
+                    }
+                    Ok(())
+                },
+            );
+            match failure {
+                Some("retain") => {
+                    assert!(result.is_err());
+                    assert_eq!(*events.borrow(), ["retain"]);
+                }
+                Some("snapshot") => {
+                    assert!(result.is_err());
+                    assert_eq!(*events.borrow(), ["retain", "snapshot"]);
+                }
+                Some(_) => {
+                    assert!(result.is_err());
+                    assert_eq!(*events.borrow(), ["retain", "snapshot", "authority"]);
+                }
+                None => {
+                    assert_eq!(result?, RecordRootBase::Legacy(fixture.manifest.0.digest()));
+                    assert_eq!(*events.borrow(), ["retain", "snapshot", "authority"]);
+                }
+            }
+        }
         Ok(())
     }
 }

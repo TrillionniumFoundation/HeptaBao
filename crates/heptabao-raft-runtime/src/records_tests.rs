@@ -479,3 +479,286 @@ fn object_shape_and_ciphertext_bounds_keep_real_proposals_within_transport_capac
         "value cannot reference owner chunks"
     );
 }
+
+fn legacy_fixture() -> (StateMachine, LegacyStatusIdentity, Vec<LegacyChunkRef>) {
+    let manifest = ReplicatedEnvelope::new("manifest", [50; 32], vec![50; 100]).expect("manifest");
+    let chunk = ReplicatedEnvelope::new("chunk", [51; 32], vec![51; 100]).expect("chunk");
+    let mut state = StateMachine::default();
+    // hbr2 encodings ensure the identity is the actual stored representation.
+    let old_status = |e: &ReplicatedEnvelope| {
+        format!(
+            "hbr2:{}:{}:{}:{}",
+            e.operation_id().len(),
+            e.operation_id(),
+            e.digest()
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>(),
+            e.sealed()
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>()
+        )
+    };
+    let manifest_status = old_status(&manifest);
+    let chunk_status = old_status(&chunk);
+    let expected = LegacyStatusIdentity::inspect(&manifest_status)
+        .expect("manifest identity")
+        .1;
+    let active = vec![LegacyChunkRef {
+        index: 0,
+        slot: 1,
+        identity: LegacyStatusIdentity::inspect(&chunk_status)
+            .expect("chunk identity")
+            .1,
+    }];
+    state
+        .client_status
+        .insert(crate::records::PRODUCTION_CLIENT.into(), manifest_status);
+    for client in [
+        "heptabao-production-ha-chunk:000:0",
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:127:0",
+        "heptabao-production-ha-chunk:999:0",
+        "heptabao-production-ha-chunk:00:1",
+        "qualification",
+    ] {
+        state
+            .client_status
+            .insert(client.into(), chunk_status.clone());
+    }
+    (state, expected, active)
+}
+fn retain(expected_manifest: LegacyStatusIdentity, active: Vec<LegacyChunkRef>) -> RecordCommand {
+    RecordCommand::RetainLegacyChunks {
+        expected_manifest,
+        active,
+    }
+}
+
+#[test]
+fn legacy_cleanup_checks_all_identities_before_any_change_or_fence() {
+    let (mut state, expected, active) = legacy_fixture();
+    let before = bytes(&state);
+    let mut wrong = expected;
+    wrong.status_sha256[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(wrong, active.clone())),
+        Err(RecordRejection::StaleRoot)
+    );
+    let mut wrong = expected;
+    wrong.digest[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(wrong, active.clone())),
+        Err(RecordRejection::StaleRoot)
+    );
+    let mut refs = active.clone();
+    refs[0].identity.status_sha256[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::ImmutableConflict)
+    );
+    let mut refs = active.clone();
+    refs[0].identity.digest[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::ImmutableConflict)
+    );
+    let mut refs = active.clone();
+    refs[0].index = 126;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::MissingDependency)
+    );
+    assert_eq!(
+        apply(&mut state, retain(expected, vec![])),
+        Err(RecordRejection::Invalid)
+    );
+    let mut refs = active.clone();
+    refs.push(refs[0]);
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::Invalid)
+    );
+    let mut refs = active.clone();
+    refs[0].slot = 2;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::Invalid)
+    );
+    assert_eq!(bytes(&state), before);
+    assert!(state.records_v5.is_none());
+}
+
+#[test]
+fn legacy_cleanup_preserves_exact_active_statuses_and_installs_durable_write_fence() {
+    let (mut state, expected, active) = legacy_fixture();
+    let original = state.client_status.clone();
+    apply(&mut state, retain(expected, active.clone())).expect("cleanup");
+    for name in [
+        crate::records::PRODUCTION_CLIENT,
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:999:0",
+        "heptabao-production-ha-chunk:00:1",
+        "qualification",
+    ] {
+        assert_eq!(state.client_status.get(name), original.get(name));
+    }
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:000:0")
+    );
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:127:0")
+    );
+    assert_eq!(state.base(), Ok(RecordRootBase::Legacy(expected.digest)));
+    assert_eq!(
+        state
+            .records_v5
+            .as_ref()
+            .and_then(crate::records::RecordState::published_digest),
+        None
+    );
+    let once = bytes(&state);
+    apply(&mut state, retain(expected, active.clone())).expect("exact retry");
+    assert_eq!(bytes(&state), once);
+    let snapshot = state.snapshot_bytes().expect("snapshot3");
+    assert!(serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(&snapshot).is_err());
+    state = StateMachine::from_snapshot(&snapshot).expect("prepared reopen");
+    for client in [
+        crate::records::PRODUCTION_CLIENT,
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:126:0",
+    ] {
+        let before = bytes(&state);
+        let response = state.apply(
+            &openraft_memstore::ClientRequest {
+                client: client.into(),
+                serial: 8,
+                status: "late legacy write".into(),
+            }
+            .into(),
+        );
+        assert_eq!(response.result(), Err(RecordRejection::LegacyFenced));
+        assert_eq!(bytes(&state), before);
+    }
+    assert!(
+        state
+            .apply(
+                &openraft_memstore::ClientRequest {
+                    client: "qualification".into(),
+                    serial: 9,
+                    status: "still allowed".into(),
+                }
+                .into()
+            )
+            .result()
+            .is_ok()
+    );
+    let object = owner(4);
+    apply(
+        &mut state,
+        RecordCommand::Stage {
+            object: object.clone(),
+        },
+    )
+    .expect("stage after preparation");
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(
+                RecordRootBase::Legacy(expected.digest),
+                5,
+                vec![object.reference().clone()],
+            ),
+        },
+    )
+    .expect("publish typed root");
+    assert_eq!(
+        state
+            .records_v5
+            .as_ref()
+            .and_then(crate::records::RecordState::prepared_identity),
+        None
+    );
+    let before = bytes(&state);
+    assert_eq!(
+        apply(&mut state, retain(expected, active)),
+        Err(RecordRejection::LegacyFenced)
+    );
+    assert_eq!(bytes(&state), before);
+}
+
+#[test]
+fn oversized_legacy_slots_can_shrink_without_relaxing_typed_stage_budget() {
+    let (mut state, expected, _) = legacy_fixture();
+    state
+        .client_status
+        .retain(|client, _| client == crate::records::PRODUCTION_CLIENT);
+    let mut active = Vec::new();
+    // 32 valid bounded envelopes in each physical slot produce >47MiB of
+    // encoded legacy state. Each individual envelope remains below 1MiB.
+    for index in 0..32_u16 {
+        for slot in 0..2_u8 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("chunk-{index}-{slot}"),
+                [u8::try_from(index).expect("bounded index") + 1; 32],
+                vec![slot + 1; 600 * 1024],
+            )
+            .expect("bounded legacy chunk");
+            let status = envelope.encoded_status();
+            if slot == 0 {
+                active.push(LegacyChunkRef {
+                    index,
+                    slot,
+                    identity: LegacyStatusIdentity::inspect(&status)
+                        .expect("active identity")
+                        .1,
+                });
+            }
+            state.client_status.insert(
+                format!("heptabao-production-ha-chunk:{index:03}:{slot}"),
+                status,
+            );
+        }
+    }
+    assert_eq!(state.record_usage(), Err(RecordRejection::Budget));
+    apply(&mut state, retain(expected, active)).expect("oversized inactive map can shrink");
+    let usage = state.record_usage().expect("new usage");
+    assert!(usage.encoded_bytes < 27 * 1024 * 1024);
+    assert_eq!(state.client_status.len(), 33);
+    state.validate().expect("prepared state valid");
+    apply(&mut state, RecordCommand::Stage { object: owner(1) })
+        .expect("typed staging fits after cleanup");
+
+    let (mut still_large, expected, active) = legacy_fixture();
+    for index in 0..64 {
+        still_large
+            .client_status
+            .insert(format!("qualification-{index}"), "x".repeat(768 * 1024));
+    }
+    apply(&mut still_large, retain(expected, active))
+        .expect("preparation retains existing legacy data");
+    still_large
+        .validate()
+        .expect("empty prepared graph retains legacy-only excess");
+    let usage = still_large
+        .record_usage()
+        .expect("honest over-limit legacy observation");
+    assert!(usage.encoded_bytes > usage.encoded_limit);
+    assert_eq!(usage.object_count, 0);
+    assert_eq!(
+        apply(&mut still_large, RecordCommand::Stage { object: owner(1) }),
+        Err(RecordRejection::Budget)
+    );
+    assert_eq!(
+        still_large
+            .record_usage()
+            .expect("unchanged objects")
+            .object_count,
+        0
+    );
+}

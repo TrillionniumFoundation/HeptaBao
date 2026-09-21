@@ -289,6 +289,64 @@ impl ProcessRaftNode {
             envelope_digest: digest,
         })
     }
+    /// Trusted application maintenance, not a public client operation. Caller
+    /// authenticates the complete HBSM4 manifest/chunks under its leader writer;
+    /// mixed old/new rolling writers are unsupported. Success installs a durable
+    /// legacy-write fence and requires a current binary for retry/recovery.
+    pub async fn retain_legacy_application_chunks(
+        &self,
+        serial: u64,
+        expected_manifest: crate::LegacyStatusIdentity,
+        active: &[crate::LegacyChunkRef],
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        if active.is_empty() || active.len() > 128 {
+            return Err(RaftRuntimeError::RecordRejected(
+                crate::RecordRejection::Invalid,
+            ));
+        }
+        self.replicate_record_command(
+            serial,
+            crate::records::RecordCommand::RetainLegacyChunks {
+                expected_manifest,
+                active: active.to_vec(),
+            },
+            expected_manifest.digest,
+        )
+        .await
+    }
+
+    /// Exact raw-status identity accompanies the envelope that the caller must
+    /// authenticate. No unrelated legacy values are copied.
+    pub async fn latest_envelope_identity_at_generation(
+        &self,
+    ) -> Result<(u64, Option<crate::LegacyEnvelopeObservation>), RemoteRaftError> {
+        let (generation, status) = self
+            .state_machine
+            .client_status_at_generation(PRODUCTION_CLIENT_ID)
+            .await;
+        let observed = status
+            .as_deref()
+            .map(crate::LegacyStatusIdentity::inspect)
+            .transpose()
+            .map_err(|_| RemoteRaftError::Io("invalid committed legacy envelope".into()))?;
+        Ok((generation, observed))
+    }
+    pub async fn application_chunk_identity(
+        &self,
+        index: u16,
+        slot: u8,
+    ) -> Result<Option<crate::LegacyEnvelopeObservation>, RemoteRaftError> {
+        let client = application_chunk_client(index, slot)
+            .map_err(|error| RemoteRaftError::Io(error.to_string()))?;
+        self.state_machine
+            .client_status(&client)
+            .await
+            .as_deref()
+            .map(crate::LegacyStatusIdentity::inspect)
+            .transpose()
+            .map_err(|_| RemoteRaftError::Io("invalid committed legacy chunk".into()))
+    }
+
     /// Staging never changes the published application root. No legacy client
     /// identities are allocated for object IDs.
     pub async fn stage_application_object(

@@ -35,12 +35,19 @@ or incomplete current state never falls back to them. HBSR1 still requires the
 explicit owner migration before a V5 transition.
 
 Migration needs room for the old authoritative state and new immutable objects
-at the same time. The current legacy double-slot HA layout can exhaust the
-47MiB staging budget even when the final V5 graph would fit. Reclaiming verified
-inactive legacy slots and qualifying a near-limit old-binary migration remain
-open; a small upgrade profile cannot qualify that boundary. Dense small-record
-states may need a separately resumable migration protocol even after inactive
-slots are reclaimed. No existing limit is raised to hide this staging peak.
+at the same time. The legacy double-slot HA layout can exhaust the 47MiB staging
+budget even when the final V5 graph would fit. The V5 transition now authenticates
+the complete HBSM4 manifest and active chunks before a Raft-ordered, exact-status
+CAS removes only inactive canonical slots. A persistent preparation marker fences
+all subsequent legacy production writes; a completed compact checkpoint and fresh
+leader/ReadIndex verification precede typed staging. Reads alone do not start
+this transition. Once preparation commits, recovery/retry requires the current
+binary; mixed old/new writers and rollback to schema35 are unsupported.
+
+Real near-limit old-binary migration still requires its dedicated live receipt;
+a small upgrade profile cannot qualify that boundary. Dense small-record states
+can exceed 47MiB even with only the active old slots and need a separate bounded
+migration design. No existing limit is raised to hide this staging peak.
 
 The source-bound limits below distinguish legacy layout constraints from V5
 component constraints. They do not replace the tighter durable/HA admission

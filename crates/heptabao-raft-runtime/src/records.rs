@@ -268,6 +268,52 @@ mod root_envelope {
             .map_err(|_| serde::de::Error::custom("invalid record publication envelope"))
     }
 }
+pub type LegacyEnvelopeObservation = (ReplicatedEnvelope, LegacyStatusIdentity);
+
+/// Identity of the exact persisted legacy status representation, not a
+/// decode/re-encode approximation. This is not an AEAD authentication proof.
+#[derive(Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LegacyStatusIdentity {
+    pub digest: [u8; 32],
+    pub status_sha256: [u8; 32],
+}
+impl fmt::Debug for LegacyStatusIdentity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("LegacyStatusIdentity([REDACTED])")
+    }
+}
+impl LegacyStatusIdentity {
+    pub(crate) fn inspect(status: &str) -> Result<(ReplicatedEnvelope, Self), RecordRejection> {
+        use sha2::{Digest, Sha256};
+        let envelope =
+            ReplicatedEnvelope::decode_status(status).map_err(|_| RecordRejection::Invalid)?;
+        let identity = Self {
+            digest: envelope.digest(),
+            status_sha256: Sha256::digest(status.as_bytes()).into(),
+        };
+        Ok((envelope, identity))
+    }
+    pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
+        if self.digest == [0; 32] || self.status_sha256 == [0; 32] {
+            return Err(RecordRejection::Invalid);
+        }
+        Ok(())
+    }
+}
+#[derive(Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LegacyChunkRef {
+    pub index: u16,
+    pub slot: u8,
+    pub identity: LegacyStatusIdentity,
+}
+impl fmt::Debug for LegacyChunkRef {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("LegacyChunkRef([REDACTED])")
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum RecordRejection {
     Invalid,
@@ -281,6 +327,10 @@ pub enum RecordRejection {
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) enum RecordCommand {
+    RetainLegacyChunks {
+        expected_manifest: LegacyStatusIdentity,
+        active: Vec<LegacyChunkRef>,
+    },
     Stage {
         object: SealedRecordObject,
     },
@@ -295,6 +345,7 @@ pub(crate) enum RecordCommand {
 impl fmt::Debug for RecordCommand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
+            Self::RetainLegacyChunks { .. } => "RetainLegacyChunks([REDACTED])",
             Self::Stage { .. } => "Stage([REDACTED])",
             Self::Publish { .. } => "Publish([REDACTED])",
             Self::Prune { .. } => "Prune([REDACTED])",
@@ -306,6 +357,8 @@ impl fmt::Debug for RecordCommand {
 pub(crate) struct RecordState {
     objects: BTreeMap<String, SealedRecordObject>,
     published: Option<PublishedRecordRoot>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    legacy_migration_prepared: Option<LegacyStatusIdentity>,
     #[serde(skip)]
     cache: Option<RecordCache>,
 }
@@ -319,6 +372,10 @@ impl fmt::Debug for RecordState {
         f.debug_struct("RecordState")
             .field("objects", &self.objects.len())
             .field("published", &self.published.is_some())
+            .field(
+                "legacy_migration_prepared",
+                &self.legacy_migration_prepared.is_some(),
+            )
             .finish()
     }
 }
@@ -475,11 +532,24 @@ impl RecordState {
         Ok(depth)
     }
     fn build_cache(&self, legacy_bytes: usize) -> Result<RecordCache, RecordRejection> {
+        self.build_cache_with_preparation(legacy_bytes, self.legacy_migration_prepared.as_ref())
+    }
+    fn build_cache_with_preparation(
+        &self,
+        legacy_bytes: usize,
+        prepared: Option<&LegacyStatusIdentity>,
+    ) -> Result<RecordCache, RecordRejection> {
+        if let Some(identity) = prepared {
+            identity.validate()?;
+            if self.published.is_some() {
+                return Err(RecordRejection::Invalid);
+            }
+        }
         if self.objects.len() > MAX_OBJECTS {
             return Err(RecordRejection::Budget);
         }
         let mut cache = RecordCache {
-            encoded_bytes: 128 + json_size(&self.published)?,
+            encoded_bytes: 128 + json_size(&self.published)? + json_size(&prepared)?,
             depths: HashMap::new(),
         };
         for (id, object) in &self.objects {
@@ -498,8 +568,29 @@ impl RecordState {
             root.validate()?;
             self.check_refs(&root.direct_refs)?;
         }
-        reject_budget(cache.encoded_bytes, legacy_bytes)?;
+        // Cleanup may start from an oversized legacy map. Only its empty
+        // migration fence is exempt; every Stage and published graph keeps the
+        // unchanged typed budget. Full durable artifact bounds still apply.
+        if prepared.is_none() || !self.objects.is_empty() {
+            reject_budget(cache.encoded_bytes, legacy_bytes)?;
+        }
         Ok(cache)
+    }
+    pub(crate) fn prepared_identity(&self) -> Option<LegacyStatusIdentity> {
+        self.legacy_migration_prepared
+    }
+    pub(crate) fn prepare_legacy_migration(
+        &mut self,
+        identity: LegacyStatusIdentity,
+        legacy_bytes: usize,
+    ) -> Result<(), RecordRejection> {
+        if self.published.is_some() {
+            return Err(RecordRejection::LegacyFenced);
+        }
+        let cache = self.build_cache_with_preparation(legacy_bytes, Some(&identity))?;
+        self.legacy_migration_prepared = Some(identity);
+        self.cache = Some(cache);
+        Ok(())
     }
     pub(crate) fn validate(&self, legacy_bytes: usize) -> Result<(), RecordRejection> {
         self.build_cache(legacy_bytes).map(|_| ())
@@ -564,6 +655,9 @@ impl RecordState {
             self.cache = Some(self.build_cache(legacy_bytes)?);
         }
         match command {
+            // This maintenance command is validated against the legacy map by
+            // StateMachine, before attempting any typed cache admission.
+            RecordCommand::RetainLegacyChunks { .. } => Err(RecordRejection::Invalid),
             RecordCommand::Stage { object } => {
                 object.validate()?;
                 let id = hex(&object.reference.id);
@@ -616,11 +710,16 @@ impl RecordState {
                 let next = cache
                     .encoded_bytes
                     .checked_sub(json_size(&self.published)?)
+                    .and_then(|n| n.checked_sub(json_size(&self.legacy_migration_prepared).ok()?))
+                    .and_then(|n| {
+                        n.checked_add(json_size(&Option::<LegacyStatusIdentity>::None).ok()?)
+                    })
                     .and_then(|n| n.checked_add(json_size(&Some(root)).ok()?))
                     .ok_or(RecordRejection::Budget)?;
                 reject_budget(next, legacy_bytes)?;
                 cache.encoded_bytes = next;
                 self.published = Some(root.clone());
+                self.legacy_migration_prepared = None;
                 Ok(())
             }
             RecordCommand::Prune { expected_root, ids } => {

@@ -1,6 +1,7 @@
 import base64
 from copy import deepcopy
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -147,6 +148,52 @@ class RecordSnapshotGuards(unittest.TestCase):
         self.write(self.bundle(staged))
         with self.assertRaises(ValueError): self.inspect()
         with self.assertRaises(fixture.SnapshotPending): self.inspect(minimum=43)
+
+    def prepared(self):
+        state = deepcopy(self.state)
+        status = 'hbr3:8:old-root:' + '09'*32 + ':' + compact(b'synthetic-encrypted-old-root')
+        state['client_status']['heptabao-production-ha'] = status
+        state['records_v5'] = {'objects': {}, 'published': None, 'legacy_migration_prepared': {
+            'digest': [9]*32, 'status_sha256': list(hashlib.sha256(status.encode()).digest())}}
+        return state
+
+    def test_prepared_marker_matches_exact_old_status_and_cannot_claim_published_snapshot(self):
+        state = self.prepared()
+        report = fixture.inspect_state(state)
+        self.assertTrue(report['legacy_migration_prepared'])
+        self.assertFalse(report['publication_present'])
+        self.write(self.bundle(state))
+        with self.assertRaises(ValueError): self.inspect()
+        with self.assertRaises(fixture.SnapshotPending): self.inspect(minimum=43)
+        for mutation in (
+            lambda s: s['records_v5']['legacy_migration_prepared'].update(digest=[8]*32),
+            lambda s: s['records_v5']['legacy_migration_prepared'].update(status_sha256=[8]*32),
+            lambda s: s['records_v5']['legacy_migration_prepared'].update(digest=[0]*32),
+            lambda s: s['records_v5']['legacy_migration_prepared'].update(unexpected='field'),
+            lambda s: s['records_v5'].update(published=self.state['records_v5']['published']),
+            lambda s: s['client_status'].update({'heptabao-production-ha':'hbr3:8:old-root:'+'09'*32+':YQ'}),
+        ):
+            broken = deepcopy(state); mutation(broken)
+            with self.assertRaises(ValueError): fixture.inspect_state(broken)
+
+    def test_only_empty_prepared_records_allow_oversized_retained_legacy_map(self):
+        state = self.prepared()
+        with patch.object(fixture, 'MAX_APPLICATION_BYTES', 100):
+            self.assertGreater(fixture.inspect_state(state)['charged_application_bytes'], 100)
+            unprepared = deepcopy(state); del unprepared['records_v5']['legacy_migration_prepared']
+            with self.assertRaises(ValueError): fixture.inspect_state(unprepared)
+            state['records_v5']['objects']['06'*32] = deepcopy(self.state['records_v5']['objects']['06'*32])
+            with self.assertRaises(ValueError): fixture.inspect_state(state)
+
+    def test_prepared_status_identity_accepts_old_envelopes_but_not_malformed_aliases(self):
+        for status in ('hbr1:root:'+'09'*32+':abcd', 'hbr2:4:root:'+'09'*32+':abcd'):
+            self.assertEqual(fixture.legacy_status_digest(status), '09'*32)
+        for status in ('hbr1:root:'+'AB'*32+':ABCD', 'hbr2:'+'0'*5000+'4:root:'+'AB'*32+':ABCD',
+                       'hbr3:00004:root:'+'AB'*32+':YQ'):
+            self.assertEqual(fixture.legacy_status_digest(status), 'ab'*32)
+        for status in ('hbr1:root:ambiguous:'+'09'*32+':abcd', 'hbr2:1:root:'+'09'*32+':abcd',
+                       'hbr2:4:root:'+'09'*32+':abc', 'hbr3:4:root:'+'09'*32+':YQ=='):
+            with self.assertRaises(ValueError): fixture.legacy_status_digest(status)
 
     def test_duplicate_json_fields_and_symlinks_are_not_accepted(self):
         self.write(); link = self.path.parent / 'link'; link.symlink_to(self.path)
