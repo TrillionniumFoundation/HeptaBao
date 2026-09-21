@@ -302,6 +302,34 @@ impl DurableBackend for PublicationBackend {
         }
         Ok(())
     }
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        self.inner.restore_profile()
+    }
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        self.inner.publish_restore(expected, replacement, intent)?;
+        if self.lose_ack.swap(false, Ordering::SeqCst) {
+            return Err(BackendError::OutcomeUnknown);
+        }
+        Ok(())
+    }
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError> {
+        self.inner.staged_restore_commitments()
+    }
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError> {
+        self.inner.staged_restore_replacement()
+    }
+    fn finish_restore(
+        &mut self,
+        intent: &[u8],
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError> {
+        self.inner.finish_restore(intent, replacement)
+    }
     fn close(self) -> Result<(), BackendError> {
         self.inner.close()
     }

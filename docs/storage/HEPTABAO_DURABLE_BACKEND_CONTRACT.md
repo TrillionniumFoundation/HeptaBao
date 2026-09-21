@@ -68,6 +68,22 @@ pub trait DurableBackend: Send {
         replacement: &BackendBundle,
     ) -> Result<(), BackendError>;
 
+    /// Restore methods default to Unsupported; checkpoint support is insufficient.
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError>;
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError>;
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError>;
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError>;
+    fn finish_restore(
+        &mut self,
+        intent: &[u8],
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError>;
+
     /// Close the writer fence. This method must not send a best-effort network
     /// rollback: an unfinished database transaction is rolled back by closing
     /// the connection, and an unknown result must remain unknown to the
@@ -110,8 +126,9 @@ pub struct DurableService<B: Barrier, S: DurableBackend = Box<dyn DurableBackend
 `journal.hbj`, and `ledger.hbl` paths; move only the physical helper functions (`atomic_write`,
 `append_journal_frame`, `read_bounded`, and path helpers) behind the trait.
 `create_new` calls `initialize_empty`, `reopen` calls `load`, `append_frame` calls
-`append_journal`, and `compact`, `retire_replay_epoch`, and
-`restore_backup` call `publish_checkpoint`.  No mutation ordering or replay
+`append_journal`, and `compact` and `retire_replay_epoch` call
+`publish_checkpoint`. Restore instead requires the explicit `restore_profile`
+and `publish_restore` protocol below. No replay
 decision should move into a backend.
 
 The backend must be injected at construction, with compatibility constructors
@@ -136,6 +153,58 @@ select `PostgresDurableBackend`; the default path-based constructors still
 select filesystem storage. PostgreSQL initialization uses a
 [recoverable prepared bundle](HEPTABAO_POSTGRES_INITIALIZATION_RECOVERY.md)
 before remote publication.
+
+## Restore publication and interrupted recovery
+
+Ordinary checkpoint publication does not authorize restoration across generations
+or replay epochs. `DurableBackend::restore_profile` defaults to `Unsupported`;
+custom backends must explicitly implement `publish_restore`. PostgreSQL advertises
+`RestoreProfile::Atomic` and uses its existing writer-fenced SQL transaction for
+the complete triple. Its unknown-COMMIT fence is unchanged.
+
+The file backend advertises `FileIntent` bound to the open directory's device and
+inode. `DurableService` seals a versioned intent under the separate barrier context
+`heptabao.durable-service.restore-intent.v1`. It authenticates that directory,
+the old generation, replay epoch, retired frontier, journal sequence and length,
+the new generation and replay frontiers, and the lengths and domain-separated
+SHA-256 commitments of all six old/new sealed artifacts.
+
+Publication persists the complete triples as `restore-old-*` and `restore-new-*`
+files first. These stages carry no authority on their own. The commit point is
+replacing `state.hbs` with the authenticated `HBR1` intent and syncing its
+directory. While that marker remains active, the backend replaces and syncs
+`ledger.hbl`, then `journal.hbj`, and finally the new ordinary `HBS2` snapshot.
+Every replacement uses a component temporary and directory sync. The old snapshot
+decoder rejects `HBR1`; it cannot serve a mixed bundle during restoration.
+
+Reopen authenticates `HBR1` before normal snapshot decoding. It verifies the
+directory identity, hashes all retained components with a 64 KiB buffer, and
+requires the active ledger/journal to match exactly one publication prefix:
+old/old, new/old, or new/new. It then authenticates and validates the complete
+incoming triple with the backup decoder before calling `finish_restore`.
+Missing, changed, oversized, unrelated, or unauthenticated components fail closed.
+After the intent commits, recovery only completes the authenticated replacement;
+it does not fall back to old state. A pending directory copied to a different
+inode is rejected. This is crash consistency, not protection against replay of
+an entire historical filesystem image.
+
+Any error after publication begins fences the live service until reopen.
+Pre-intent interruption reopens the complete old state; post-intent interruption
+finishes the complete new state, including an explicitly allowed epoch rollback.
+After the final snapshot sync, cleanup is best effort. Orphan stages contain
+sealed bytes, are ignored without `HBR1`, and are replaced by the next restore.
+
+The bounds remain 64 MiB per artifact, 130 MiB per incoming backup including its
+60-byte container overhead, and 8 KiB per intent. Disk usage can include the
+active triple, retained old/new triples, and one component temporary. There is
+no free-space reservation; recovery after disk exhaustion may require freeing
+space for that temporary. Component decryption still materializes bounded
+state in memory. All stages stay in the descriptor-bound data directory.
+
+`restore_transaction::tests` exercises every retained-file/intent/publication
+boundary, interruptions during recovery itself, tampering, missing components,
+directory copying, inconsistent epochs, oversized sparse components, and
+checkpoint-only backend rejection. Ordinary compaction creates no restore stages.
 
 ## PostgreSQL mapping
 

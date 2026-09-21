@@ -10,7 +10,7 @@
 
 use crate::postgres_storage::{PgStorageConfig, PostgresStorage, StorageError};
 use crate::postgres_wire::{CommitError, PgSession};
-use heptabao_durable_service::{BackendBundle, BackendError, DurableBackend};
+use heptabao_durable_service::{BackendBundle, BackendError, DurableBackend, RestoreProfile};
 use std::fmt;
 
 const QUALIFIED_MANIFEST: &str = "heptabao_durable_v1.manifest_v1";
@@ -754,6 +754,25 @@ impl DurableBackend for PostgresDurableBackend {
         expected: &BackendBundle,
         replacement: &BackendBundle,
     ) -> Result<(), BackendError> {
+        self.publish(expected, replacement, false, None)
+    }
+
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        self.verify()?;
+        Ok(RestoreProfile::Atomic)
+    }
+
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        if intent.is_some() {
+            return Err(BackendError::Unsupported);
+        }
+        // Existing writer-fenced SQL transaction publishes the complete triple;
+        // unknown COMMIT remains fenced by publish/finish as before.
         self.publish(expected, replacement, false, None)
     }
 

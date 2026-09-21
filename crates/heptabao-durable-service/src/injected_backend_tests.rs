@@ -117,6 +117,23 @@ impl DurableBackend for MemoryBackend {
         Ok(())
     }
 
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        self.verify()?;
+        Ok(RestoreProfile::Atomic)
+    }
+
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        if intent.is_some() {
+            return Err(BackendError::Unsupported);
+        }
+        self.publish_checkpoint(expected, replacement)
+    }
+
     fn close(self) -> Result<(), BackendError> {
         self.0.lock()?.closes += 1;
         Ok(())

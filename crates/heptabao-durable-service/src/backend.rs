@@ -18,6 +18,10 @@ use std::path::{Path, PathBuf};
 /// same limit before sealing; the backend repeats it before any write.
 pub const MAX_BACKEND_ARTIFACT_BYTES: usize = 64 * 1024 * 1024;
 
+mod restore;
+pub use restore::{ArtifactCommitment, BundleCommitment, RestoreProfile, StagedRestoreCommitments};
+pub(crate) use restore::{MAX_RESTORE_INTENT_BYTES, RESTORE_MAGIC};
+
 const SNAPSHOT_LEAF: &str = "state.hbs";
 const JOURNAL_LEAF: &str = "journal.hbj";
 const LEDGER_LEAF: &str = "ledger.hbl";
@@ -138,6 +142,42 @@ pub trait DurableBackend: Send {
         replacement: &BackendBundle,
     ) -> Result<(), BackendError>;
 
+    /// A restore requires either an atomic backend transaction or the explicit
+    /// authenticated file-intent protocol. Ordinary checkpoint support is not
+    /// sufficient: its crash prefixes may be invalid across rollback/epochs.
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+
+    fn publish_restore(
+        &mut self,
+        _expected: &BackendBundle,
+        _replacement: &BackendBundle,
+        _intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        Err(BackendError::Unsupported)
+    }
+
+    /// Hash retained components using bounded buffers, without decoding them.
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+
+    /// Only the service may authorize this after authenticating the intent and
+    /// complete incoming state. Keep the intent as the active snapshot until
+    /// both other components are durable; publish the new snapshot last.
+    fn finish_restore(
+        &mut self,
+        _intent: &[u8],
+        _replacement: &BackendBundle,
+    ) -> Result<(), BackendError> {
+        Err(BackendError::Unsupported)
+    }
+
     /// Release the writer fence.  Implementations must not send a best-effort
     /// remote rollback because an unknown result must remain unknown.
     fn close(self) -> Result<(), BackendError>
@@ -185,6 +225,31 @@ impl DurableBackend for Box<dyn DurableBackend> {
         self.as_mut().publish_checkpoint(expected, replacement)
     }
 
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        self.as_ref().restore_profile()
+    }
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        self.as_mut().publish_restore(expected, replacement, intent)
+    }
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError> {
+        self.as_ref().staged_restore_commitments()
+    }
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError> {
+        self.as_ref().staged_restore_replacement()
+    }
+    fn finish_restore(
+        &mut self,
+        intent: &[u8],
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError> {
+        self.as_mut().finish_restore(intent, replacement)
+    }
+
     fn close(self) -> Result<(), BackendError> {
         drop(self);
         Ok(())
@@ -194,6 +259,10 @@ impl DurableBackend for Box<dyn DurableBackend> {
 /// Descriptor-bound filesystem implementation of [`DurableBackend`].
 pub struct FileBackend {
     directory: ExclusiveDirectory,
+    #[cfg(test)]
+    restore_fail_after: Option<usize>,
+    #[cfg(test)]
+    restore_step: usize,
 }
 
 impl fmt::Debug for FileBackend {
@@ -212,7 +281,13 @@ impl FileBackend {
         let root = validate_root(root.as_ref(), false)?;
         let directory = ExclusiveDirectory::open(&root).map_err(map_guard_error)?;
         cleanup_stale_temps(directory.access_path())?;
-        Ok(Self { directory })
+        Ok(Self {
+            directory,
+            #[cfg(test)]
+            restore_fail_after: None,
+            #[cfg(test)]
+            restore_step: 0,
+        })
     }
 
     /// Create an empty directory and acquire its writer fence.  Artifact
@@ -232,7 +307,13 @@ impl FileBackend {
         {
             return Err(BackendError::RootNotEmpty);
         }
-        Ok(Self { directory })
+        Ok(Self {
+            directory,
+            #[cfg(test)]
+            restore_fail_after: None,
+            #[cfg(test)]
+            restore_step: 0,
+        })
     }
 
     /// Compatibility constructor for callers that already created the root.
@@ -477,6 +558,40 @@ impl DurableBackend for FileBackend {
             return Err(BackendError::StaleWriter);
         }
         self.replace_bundle(replacement, false)
+    }
+
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError> {
+        self.verify()?;
+        let identity = self.directory.identity();
+        let mut target_identity = [0; 16];
+        target_identity[..8].copy_from_slice(&identity.device().to_le_bytes());
+        target_identity[8..].copy_from_slice(&identity.inode().to_le_bytes());
+        Ok(RestoreProfile::FileIntent { target_identity })
+    }
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError> {
+        self.publish_file_restore(
+            expected,
+            replacement,
+            intent.ok_or(BackendError::Unsupported)?,
+        )
+    }
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError> {
+        self.file_restore_commitments()
+    }
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError> {
+        self.file_restore_replacement()
+    }
+    fn finish_restore(
+        &mut self,
+        intent: &[u8],
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError> {
+        self.finish_file_restore(intent, replacement)
     }
 
     fn close(self) -> Result<(), BackendError> {

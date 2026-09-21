@@ -29,13 +29,17 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod prepared_restore;
+mod restore_transaction;
 pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
 pub use capacity::CapacityStatus;
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
 mod backend;
-pub use backend::{BackendBundle, BackendError, DurableBackend, FileBackend};
+pub use backend::{
+    ArtifactCommitment, BackendBundle, BackendError, BundleCommitment, DurableBackend, FileBackend,
+    RestoreProfile, StagedRestoreCommitments,
+};
 
 fn map_backend_error(error: BackendError) -> ServiceError {
     match error {
@@ -607,6 +611,14 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         validate_capacity(max_retained_requests)?;
         backend.verify().map_err(map_backend_error)?;
         let bundle = backend.load().map_err(map_backend_error)?;
+        if bundle.snapshot.starts_with(backend::RESTORE_MAGIC) {
+            return restore_transaction::reopen_pending(
+                backend,
+                barrier,
+                bundle,
+                max_retained_requests,
+            );
+        }
         let snapshot = decode_snapshot_frame(&bundle.snapshot, &barrier)?;
         let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let (journal_sequence, events, journal_bytes, incomplete_tail) =
@@ -2149,7 +2161,39 @@ fn decode_backup<B: Barrier>(
     let journal_bytes = cursor.read_bytes(MAX_FILE_BYTES)?.to_vec();
     let ledger_bytes = cursor.read_bytes(MAX_FILE_BYTES)?.to_vec();
     cursor.finish()?;
+    decode_backup_components(
+        barrier,
+        generation,
+        snapshot_bytes,
+        journal_bytes,
+        ledger_bytes,
+        max_retained_requests,
+    )
+}
 
+// Both incoming backups and authenticated crash-recovery intents use exactly
+// this decoder and cross-artifact validation. No second container is built.
+fn decode_backup_components<B: Barrier>(
+    barrier: &B,
+    generation: u64,
+    snapshot_bytes: Vec<u8>,
+    journal_bytes: Vec<u8>,
+    ledger_bytes: Vec<u8>,
+    max_retained_requests: usize,
+) -> Result<BackupComponents, ServiceError> {
+    let lengths = [
+        snapshot_bytes.len(),
+        journal_bytes.len(),
+        ledger_bytes.len(),
+    ];
+    if lengths.iter().any(|length| *length > MAX_FILE_BYTES)
+        || lengths
+            .into_iter()
+            .try_fold(60_usize, usize::checked_add)
+            .is_none_or(|total| total > MAX_BACKUP_BYTES)
+    {
+        return Err(ServiceError::CorruptState);
+    }
     let snapshot = decode_snapshot_frame(&snapshot_bytes, barrier)?;
     let (ledger_generation, replay_epoch, retired_through_generation, ledger) =
         decode_ledger_frame(&ledger_bytes, barrier)?;

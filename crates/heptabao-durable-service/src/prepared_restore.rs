@@ -153,10 +153,30 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             ledger: std::mem::take(&mut restored.ledger_bytes),
             journal: std::mem::take(&mut restored.journal_bytes),
         };
-        self.unresolved = true;
+        let profile = self.backend.restore_profile().map_err(map_backend_error)?;
         let expected = self.backend.load().map_err(map_backend_error)?;
+        let intent = match profile {
+            RestoreProfile::Atomic => None,
+            RestoreProfile::FileIntent { target_identity } => {
+                Some(restore_transaction::seal_intent(
+                    &self.barrier,
+                    target_identity,
+                    self.restore_authority(),
+                    [
+                        restored.snapshot.generation,
+                        restored.replay_epoch,
+                        restored.retired_through_generation,
+                    ],
+                    &expected,
+                    &replacement,
+                )?)
+            }
+        };
+        // Unsupported profiles and all authentication/bounds checks are read
+        // only. Once publication starts, any failure requires reopen.
+        self.unresolved = true;
         self.backend
-            .publish_checkpoint(&expected, &replacement)
+            .publish_restore(&expected, &replacement, intent.as_deref())
             .map_err(map_backend_error)?;
         self.snapshot = std::mem::replace(
             &mut restored.snapshot,
