@@ -81,6 +81,14 @@ version 2, and tests refused old-binary open without changes anywhere in the Raf
 directory. Candidate recovery, writes on every voter, failover and restart follow.
 These are actual local process checks, not mixed-version rolling qualification.
 
+Candidate `20a3d68c91dad04ce0216ad0c4b8d063ed56a09a` passes the
+[45-check five-process compact snapshot profile](../../qa/openbao-acceptance/evidence/raft-compact-membership-20a3d68.json)
+and [13-check actual old-binary upgrade](../../qa/openbao-acceptance/evidence/raft-compact-upgrade-20a3d68.json).
+Both bind binary SHA-256 `e35755d580eb3cb277a349b399eae26e0b3d116119c3f1f4ac75cc2b75af0c32`
+to the unchanged clean source observed during the run. The old binary pin is
+`d26ed9d5c3bfd1cac6c669f7b767c753adc2f823`; no old snapshot was fabricated by
+editing a new program's output. These runs do not measure large-state capacity.
+
 The existing Service HTTP snapshot body remains the repository's encrypted backup
 format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
 and learner catch-up do not implement cross-product snapshot restore, forced
