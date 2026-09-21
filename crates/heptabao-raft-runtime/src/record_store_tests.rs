@@ -389,3 +389,88 @@ async fn legacy_cleanup_journal_replay_snapshot_fence_and_failed_command_are_ato
     drop(reopened);
     fs::remove_dir_all(path).expect("cleanup");
 }
+
+#[tokio::test]
+async fn replacement_admission_is_read_only_cas_and_capacity_checked_before_stage() {
+    let path = root();
+    let mut store = DurableStateMachine::create(&path).expect("create");
+    let old = owner(31);
+    apply(
+        &mut store,
+        request(RecordCommand::Stage {
+            object: old.clone(),
+        }),
+    )
+    .await;
+    let first = publication(RecordRootBase::Empty, 32, vec![old.reference().clone()]);
+    apply(
+        &mut store,
+        request(RecordCommand::Publish {
+            root: first.clone(),
+        }),
+    )
+    .await;
+    let next = owner(33);
+    let publication = publication(
+        RecordRootBase::RecordsV5(first.envelope().digest()),
+        34,
+        vec![old.reference().clone(), next.reference().clone()],
+    );
+    let generation = store.generation().await;
+    let root_before = store.record_root_at_generation().await;
+    let file = std::fs::read(store.state_path()).expect("bundle");
+    let journal_path = state_journal_path(store.state_path());
+    let journal = std::fs::read(&journal_path).expect("journal");
+    store
+        .preflight_record_publication(&[old.clone(), next.clone()], &publication)
+        .await
+        .expect("admission");
+    assert!(
+        store
+            .record_object(next.reference())
+            .await
+            .expect("object")
+            .is_none()
+    );
+    let conflict = crate::SealedRecordObject::new(old.reference().clone(), vec![], vec![99; 62])
+        .expect("conflict");
+    assert_eq!(
+        store
+            .preflight_record_publication(&[conflict, next.clone()], &publication)
+            .await,
+        Err(RecordRejection::ImmutableConflict)
+    );
+    let stale = crate::records_tests::root(
+        RecordRootBase::RecordsV5([99; 32]),
+        35,
+        vec![next.reference().clone()],
+    );
+    assert_eq!(
+        store
+            .preflight_record_publication(std::slice::from_ref(&next), &stale)
+            .await,
+        Err(RecordRejection::StaleRoot)
+    );
+    store.artifact_bound = 128;
+    assert_eq!(
+        store
+            .preflight_record_publication(&[next], &publication)
+            .await,
+        Err(RecordRejection::Budget)
+    );
+    assert_eq!(store.generation().await, generation);
+    assert_eq!(store.record_root_at_generation().await, root_before);
+    assert_eq!(
+        std::fs::read(store.state_path()).expect("bundle unchanged"),
+        file
+    );
+    assert_eq!(
+        std::fs::read(journal_path).expect("journal unchanged"),
+        journal
+    );
+    drop(store);
+    let reopened = DurableStateMachine::open_existing(&path).expect("unchanged state reopens");
+    assert_eq!(reopened.record_root_at_generation().await, root_before);
+    drop(reopened);
+    std::fs::remove_dir_all(path).expect("cleanup");
+}

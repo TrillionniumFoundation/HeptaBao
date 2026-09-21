@@ -156,3 +156,13 @@ impl Drop for Cluster {
         self.block_quorum(false);
     }
 }
+
+impl HaProcess {
+    pub(crate) fn snapshot_test_record_usage(
+        &self,
+    ) -> Result<(u64, heptabao_raft_runtime::RecordUsage), String> {
+        self.runtime
+            .block_on(self.node.as_ref().ok_or("node")?.application_record_usage())
+            .map_err(|error| error.to_string())
+    }
+}

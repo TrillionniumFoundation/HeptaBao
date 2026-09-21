@@ -46,7 +46,7 @@ use crate::{
 
 #[path = "ha_record_runtime.rs"]
 mod records;
-pub(crate) use records::CommittedRecordState;
+pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
@@ -1783,6 +1783,9 @@ fn sha256(bytes: &[u8]) -> [u8; 32] {
     output.copy_from_slice(value.as_ref());
     output
 }
+
+#[path = "ha_leader_status.rs"]
+mod leader_status;
 
 #[cfg(test)]
 #[path = "ha_read_tests.rs"]

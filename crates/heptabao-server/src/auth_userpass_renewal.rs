@@ -189,7 +189,9 @@ impl AuthState {
                 Ok(Some(empty(false)))
             };
         };
-        if !provider_renewal::same_policies(&user.policies, &token.policies) {
+        if userpass_no_default::nil_policy_mismatch(user, &token.policies)
+            || !provider_renewal::same_policies(&user.policies, &token.policies)
+        {
             return Err(err(500, "userpass policies changed during renewal"));
         }
         let increment = duration(body, "increment", 0)?;
@@ -204,7 +206,7 @@ impl AuthState {
         let username = username.clone();
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
-        Ok(Some(AuthResponse {
+        let mut response = AuthResponse {
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -214,7 +216,9 @@ impl AuthState {
                 "entity_id":token.entity_id.as_deref().unwrap_or(""), "metadata":{"username":username},
                 "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
             }}),
-        }))
+        };
+        userpass_no_default::omit_empty_token_policies(&mut response);
+        Ok(Some(response))
     }
 
     pub(super) fn userpass_token_expiry(

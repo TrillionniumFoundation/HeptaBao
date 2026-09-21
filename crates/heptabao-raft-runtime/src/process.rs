@@ -1,5 +1,7 @@
 mod admin;
 pub use admin::{MembershipObservation, SnapshotObservation};
+mod leader_status;
+pub use leader_status::LocalLeaderObservation;
 mod network;
 mod node;
 mod read_deadline;

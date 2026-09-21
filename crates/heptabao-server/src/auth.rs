@@ -76,6 +76,10 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_ttl.rs"]
 mod token_ttl;
+#[path = "auth_userpass_cidrs.rs"]
+mod userpass_cidrs;
+#[path = "auth_userpass_no_default.rs"]
+mod userpass_no_default;
 #[path = "auth_userpass_renewal.rs"]
 mod userpass_renewal;
 #[path = "auth_wrapping.rs"]
@@ -1186,6 +1190,15 @@ struct User {
     password_semantics: Option<PasswordSemantics>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     imported_bcrypt: Option<userpass_bcrypt::ImportedBcrypt>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    token_bound_cidrs: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    bound_cidrs: Vec<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    token_no_default_policy: bool,
+    // None preserves historical normalized policy lists; never infer nil.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_policies_configured: Option<bool>,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
@@ -2749,6 +2762,32 @@ impl AuthState {
         now: u64,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_connection(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            peer_certificates,
+            None,
+        )
+    }
+
+    // A trusted listener or authenticated HA frame supplies this IP. Anonymous
+    // login must not infer it from a bearer principal or a client header.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_connection(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        peer_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Option<AuthResponse>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
         if path.starts_with("sys/wrapping/") {
@@ -2788,7 +2827,7 @@ impl AuthState {
                     peer_certificates,
                 ),
                 "userpass" if suffix.starts_with("login/") => {
-                    self.login_userpass(scope, method, &suffix[6..], body, now)
+                    self.login_userpass(scope, method, &suffix[6..], body, now, origin_peer)
                 }
                 "ldap" if suffix.starts_with("login/") => {
                     self.login_ldap(scope, method, &suffix[6..], body, now)
@@ -5343,6 +5382,11 @@ impl AuthState {
             let user = existing.ok_or_else(|| err(404, "user not found"))?;
             let mut data = json!({"policies": user.policies, "token_policies": user.policies, "token_ttl": user.token_ttl, "token_max_ttl": user.token_max_ttl, "token_num_uses": user.token_num_uses});
             if native_userpass {
+                data["token_bound_cidrs"] = json!(user.token_bound_cidrs);
+                if !user.bound_cidrs.is_empty() {
+                    data["bound_cidrs"] = json!(user.bound_cidrs);
+                }
+                data["token_no_default_policy"] = json!(user.token_no_default_policy);
                 data["token_period"] = json!(user.token_period);
                 data["token_explicit_max_ttl"] = json!(user.token_explicit_max_ttl);
             }
@@ -5370,8 +5414,19 @@ impl AuthState {
                 "token_num_uses",
                 "token_period",
                 "token_explicit_max_ttl",
+                "token_no_default_policy",
+                "token_bound_cidrs",
+                "bound_cidrs",
             ],
         )?;
+        if !native_userpass && body.get("token_no_default_policy").is_some() {
+            return Err(bad("default policy option requires a userpass mount"));
+        }
+        if !native_userpass
+            && (body.get("token_bound_cidrs").is_some() || body.get("bound_cidrs").is_some())
+        {
+            return Err(bad("user source constraints require a userpass mount"));
+        }
         // The userpass framework captures username from the path before
         // field validation; a body value never redirects the account route.
         if !native_userpass && body.get("password_hash").is_some() {
@@ -5419,6 +5474,10 @@ impl AuthState {
             rounds: PASSWORD_ROUNDS,
             password_semantics: None,
             imported_bcrypt: None,
+            token_bound_cidrs: Vec::new(),
+            bound_cidrs: Vec::new(),
+            token_no_default_policy: false,
+            token_policies_configured: native_userpass.then_some(false),
             policies: if native_userpass {
                 BTreeSet::new()
             } else {
@@ -5520,6 +5579,8 @@ impl AuthState {
         self.validate_assignment(actor, &user.policies)?;
         if native_userpass {
             userpass_renewal::update_token_limits(&mut user, body)?;
+            userpass_cidrs::update(&mut user, body)?;
+            userpass_no_default::update(&mut user, body)?;
         } else {
             user.token_ttl = duration(
                 body,
@@ -5580,6 +5641,7 @@ impl AuthState {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn login_userpass(
         &mut self,
         scope: AuthScope<'_>,
@@ -5587,6 +5649,7 @@ impl AuthState {
         name: &str,
         body: &Value,
         now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
         if !matches!(method, "POST" | "PUT") {
@@ -5637,6 +5700,7 @@ impl AuthState {
         let mut user = user
             .filter(|_| verified)
             .ok_or_else(|| bad("invalid username or password"))?;
+        token_cidrs::check(&user.token_bound_cidrs, origin_peer)?;
         let accepted_counter = match user.mfa.as_ref() {
             Some(enrollment) => Some(verify_totp(
                 enrollment,
@@ -5655,7 +5719,9 @@ impl AuthState {
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, user.token_ttl, user.token_max_ttl)?;
         let mut token_policies = user.policies.clone();
-        token_policies.insert("default".into());
+        if !user.token_no_default_policy {
+            token_policies.insert("default".into());
+        }
         let mut token = login_token(
             namespace,
             token_policies,
@@ -5665,6 +5731,7 @@ impl AuthState {
             format!("userpass-{name}"),
             now,
         )?;
+        token.bound_cidrs = user.token_bound_cidrs.clone();
         token.auth_mount = Some(mount.into());
         token.auth_provenance = Some(TokenAuthProvenance::Userpass {
             username: name.into(),
@@ -5676,6 +5743,7 @@ impl AuthState {
         token.expires_at =
             Some(self.userpass_token_expiry(scope, &user, now, token.max_expires_at, 0, now)?);
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
             mount: mount.into(),

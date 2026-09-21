@@ -406,7 +406,7 @@ impl fmt::Debug for RecordState {
             .finish()
     }
 }
-fn json_size(value: &impl Serialize) -> Result<usize, RecordRejection> {
+pub(crate) fn json_size(value: &impl Serialize) -> Result<usize, RecordRejection> {
     struct Counter(usize);
     impl std::io::Write for Counter {
         fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
@@ -468,6 +468,119 @@ impl RecordState {
             encoded_limit: MAX_APPLICATION_JSON_BYTES,
         })
     }
+    /// Read-only complete publication admission; no object bytes are cloned.
+    /// Existing unreachable objects are charged again because maintenance may
+    /// remove them before staging. Current reachable reuse is byte-identical.
+    pub(crate) fn preflight_publication(
+        &self,
+        objects: &[SealedRecordObject],
+        root: &PublishedRecordRoot,
+        usage: RecordUsage,
+    ) -> Result<usize, RecordRejection> {
+        root.validate()?;
+        let expected = self.published_digest().ok_or(RecordRejection::StaleRoot)?;
+        if root.base != RecordRootBase::RecordsV5(expected) {
+            return Err(RecordRejection::StaleRoot);
+        }
+        let reachable = self.reachable()?;
+        let cache = self.cache.as_ref().ok_or(RecordRejection::Invalid)?;
+        let mut incoming = BTreeMap::<String, (&SealedRecordObject, u8)>::new();
+        let mut growth = json_size(&Some(root))?;
+        let mut count = usage.object_count;
+        for object in objects {
+            object.validate()?;
+            // Serialize the actual command shape with the largest serial. The
+            // borrowing variant avoids cloning sealed buffers just to count.
+            #[derive(Serialize)]
+            struct Request<'a> {
+                serial: u64,
+                records_v5: Command<'a>,
+            }
+            #[derive(Serialize)]
+            enum Command<'a> {
+                Stage { object: &'a SealedRecordObject },
+            }
+            if json_size(&Request {
+                serial: u64::MAX,
+                records_v5: Command::Stage { object },
+            })? > MAX_RECORD_COMMAND_BYTES
+            {
+                return Err(RecordRejection::Budget);
+            }
+            let id = hex(&object.reference.id);
+            if let Some((prior, _)) = incoming.get(&id) {
+                if *prior != object {
+                    return Err(RecordRejection::ImmutableConflict);
+                }
+                continue;
+            }
+            if self.objects.get(&id).is_some_and(|prior| prior != object) {
+                return Err(RecordRejection::ImmutableConflict);
+            }
+            let mut depth = 1_u8;
+            for child in &object.children {
+                let child_id = hex(&child.id);
+                let (found, child_depth) = if let Some((found, depth)) = incoming.get(&child_id) {
+                    (*found, *depth)
+                } else {
+                    (
+                        self.objects
+                            .get(&child_id)
+                            .ok_or(RecordRejection::MissingDependency)?,
+                        *cache
+                            .depths
+                            .get(&child_id)
+                            .ok_or(RecordRejection::MissingDependency)?,
+                    )
+                };
+                if &found.reference != child {
+                    return Err(RecordRejection::ImmutableConflict);
+                }
+                depth = depth.max(child_depth.checked_add(1).ok_or(RecordRejection::Budget)?);
+            }
+            if depth > MAX_DEPTH {
+                return Err(RecordRejection::Budget);
+            }
+            if !reachable.contains(&id) {
+                growth = growth
+                    .checked_add(object_entry_size(&id, object)?)
+                    .ok_or(RecordRejection::Budget)?;
+                count = count.checked_add(1).ok_or(RecordRejection::Budget)?;
+            }
+            incoming.insert(id, (object, depth));
+        }
+        for reference in &root.direct_refs {
+            let id = hex(&reference.id);
+            let object = incoming
+                .get(&id)
+                .map(|(o, _)| *o)
+                .or_else(|| self.objects.get(&id))
+                .ok_or(RecordRejection::MissingDependency)?;
+            if &object.reference != reference {
+                return Err(RecordRejection::ImmutableConflict);
+            }
+        }
+        #[derive(Serialize)]
+        struct Request<'a> {
+            serial: u64,
+            records_v5: Command<'a>,
+        }
+        #[derive(Serialize)]
+        enum Command<'a> {
+            Publish { root: &'a PublishedRecordRoot },
+        }
+        if count > MAX_OBJECTS
+            || json_size(&Request {
+                serial: u64::MAX,
+                records_v5: Command::Publish { root },
+            })? > MAX_RECORD_COMMAND_BYTES
+        {
+            return Err(RecordRejection::Budget);
+        }
+        reject_budget(usage.encoded_bytes, growth)?;
+        Ok(growth)
+    }
+
     pub(crate) fn prunable(&self, limit: usize) -> Result<Vec<RecordObjectId>, RecordRejection> {
         if limit == 0 || limit > 256 {
             return Err(RecordRejection::Invalid);

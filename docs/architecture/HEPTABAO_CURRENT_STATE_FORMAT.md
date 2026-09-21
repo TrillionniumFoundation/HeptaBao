@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **38**. Its source constant is
+The current Service state schema is **39**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -78,6 +78,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 36 | Adds authenticated KV1 record graphs and the V5 publication root. Legacy inline KV1/V4 state remains admitted until its explicit write-side transition. PackedLeaf pages must be absent throughout the graph. |
 | 37 | Adds PackedLeaf object kind6: small KV1 values can reside directly in authenticated leaf pages. Prior kind1–5 encodings remain unchanged. |
 | 38 | Explicit native userpass password input semantics and imported bcrypt credentials. An absent marker retains historical exact-byte PBKDF credentials; newly written plaintext credentials use the first 72 bytes at login. Imported bcrypt uses a mutually exclusive credential representation. |
+| 39 | Native userpass CIDR constraints, default-policy/list-presence semantics, and HA native restore as a new publication. Restore advances the live replay epoch and does not rewind local or Raft durability. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -310,10 +311,18 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 38. An authenticated
+it. Initialization and committed mutations use schema 39. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
+
+Schema39 fences nonempty userpass CIDR configuration and constrained direct-token
+snapshots, default-policy/list-presence metadata and direct userpass tokens
+without `default`. Fresh native accounts record whether a policy list was
+omitted; older absent metadata retains its known normalized list without guessing
+nil versus empty. Explicit policy writes, including null, establish list presence.
+HA native restore always publishes schema39 with the current live epoch plus one,
+even when the archive predates these fields. Old readers reject the new root.
 
 Source tests in `identity_service_tests.rs` cover legacy and contradictory format
 admission. Wrapping/SSH/database tests cover their additional owned state.

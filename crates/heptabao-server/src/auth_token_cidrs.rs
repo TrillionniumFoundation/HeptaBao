@@ -156,6 +156,7 @@ impl AuthState {
             })
             || self.has_ldap_token_bound_cidrs()
             || self.has_kube_role_bound_cidrs()
+            || self.has_userpass_token_bound_cidrs()
     }
     pub(crate) fn has_ldap_token_bound_cidrs(&self) -> bool {
         self.ldap_mounts.values().any(|mounts| {

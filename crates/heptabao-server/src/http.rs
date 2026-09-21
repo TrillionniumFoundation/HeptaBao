@@ -379,7 +379,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         let is_head = request.method == "HEAD";
                         let native_snapshot = request.native_snapshot.take();
                         let service_request = ServiceRequest {
-                            method: if is_head && request.wrap_ttl_seconds.is_none() {
+                            method: if is_head
+                                && request.path != "sys/leader"
+                                && request.wrap_ttl_seconds.is_none()
+                            {
                                 "GET"
                             } else {
                                 &request.method

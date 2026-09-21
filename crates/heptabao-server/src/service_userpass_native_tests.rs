@@ -27,6 +27,12 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
             user.as_object_mut()
                 .ok_or("user")?
                 .remove("password_semantics");
+            user.as_object_mut()
+                .ok_or("user")?
+                .remove("token_policies_configured");
+            user.as_object_mut()
+                .ok_or("user")?
+                .remove("token_no_default_policy");
         }
     }
     for mounts in auth["mounted_users"]
@@ -39,6 +45,12 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
                 user.as_object_mut()
                     .ok_or("user")?
                     .remove("password_semantics");
+                user.as_object_mut()
+                    .ok_or("user")?
+                    .remove("token_policies_configured");
+                user.as_object_mut()
+                    .ok_or("user")?
+                    .remove("token_no_default_policy");
             }
         }
     }

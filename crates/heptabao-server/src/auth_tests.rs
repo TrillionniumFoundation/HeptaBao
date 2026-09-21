@@ -3810,3 +3810,9 @@ mod userpass_compare_tests;
 
 #[path = "auth_userpass_bcrypt_tests.rs"]
 mod userpass_bcrypt_tests;
+
+#[path = "auth_userpass_cidrs_tests.rs"]
+mod userpass_cidrs_tests;
+
+#[path = "auth_userpass_no_default_tests.rs"]
+mod userpass_no_default_tests;

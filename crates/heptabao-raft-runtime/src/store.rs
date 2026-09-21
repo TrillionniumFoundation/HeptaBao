@@ -1667,6 +1667,58 @@ impl DurableStateMachine {
         let usage = bundle.state.record_usage()?;
         Ok((bundle.generation, usage))
     }
+    pub(crate) async fn preflight_record_publication(
+        &self,
+        objects: &[crate::SealedRecordObject],
+        root: &crate::PublishedRecordRoot,
+    ) -> Result<(), crate::RecordRejection> {
+        use crate::RecordRejection as R;
+        let mut bundle = self.bundle.lock().await;
+        let usage = bundle.state.record_usage()?;
+        let growth = bundle
+            .state
+            .records_v5
+            .as_ref()
+            .ok_or(R::StaleRoot)?
+            .preflight_publication(objects, root, usage)?;
+        // State validation independently caps Raft metadata at 1MiB-1024.
+        // Reserve a full MiB for it; do not subtract any old root/objects.
+        let state_bound = usage
+            .encoded_bytes
+            .checked_add(growth)
+            .and_then(|n| n.checked_add(1024 * 1024))
+            .ok_or(R::Budget)?;
+        let future_snapshot = state_bound
+            .checked_add(64)
+            .and_then(|n| n.checked_add(2))
+            .map(|n| n / 3)
+            .and_then(|n| n.checked_mul(4))
+            .and_then(|n| n.checked_add(1024 * 1024))
+            .ok_or(R::Budget)?;
+        let existing_snapshot = if let Some(snapshot) = &bundle.current_snapshot {
+            let data = match snapshot.encoding {
+                SnapshotEncoding::LegacyBytes => crate::records::json_size(&snapshot.data)?,
+                SnapshotEncoding::CompactBase64 => snapshot
+                    .data
+                    .len()
+                    .checked_add(2)
+                    .map(|n| n / 3)
+                    .and_then(|n| n.checked_mul(4))
+                    .ok_or(R::Budget)?,
+            };
+            data.checked_add(crate::records::json_size(&snapshot.meta)?)
+                .and_then(|n| n.checked_add(64))
+                .ok_or(R::Budget)?
+        } else {
+            0
+        };
+        let bundle_bound = state_bound
+            .checked_add(future_snapshot.max(existing_snapshot))
+            .and_then(|n| n.checked_add(4096))
+            .ok_or(R::Budget)?;
+        validate_artifact_payload_len(bundle_bound, self.artifact_bound()).map_err(|_| R::Budget)
+    }
+
     pub(crate) async fn prunable_records(
         &self,
         expected_root: [u8; 32],

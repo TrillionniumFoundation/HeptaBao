@@ -1476,3 +1476,41 @@ mod tests {
         }
     }
 }
+
+impl AuthState {
+    /// An imported code session does not restore the provider's code state.
+    pub(crate) fn discard_restored_oidc_sessions(&mut self) {
+        for mounts in self.oidc_mounts.values_mut() {
+            for mount in mounts.values_mut() {
+                mount.sessions.clear();
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+#[test]
+fn restored_oidc_sessions_are_discarded_without_revoking_issued_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    let (mut state, root, callback) = tests::setup();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "browser",
+    };
+    let clock = state.oidc_mut(scope).clock;
+    assert_eq!(state.oidc_mut(scope).sessions.len(), 1);
+    state.discard_restored_oidc_sessions();
+    let restored = state.oidc_mut(scope);
+    assert!(restored.sessions.is_empty());
+    assert!(restored.config.is_some());
+    assert_eq!(restored.roles.len(), 1);
+    assert_eq!(restored.clock, clock);
+    assert!(state.consume_oidc("", "browser", &callback, 110).is_err());
+    assert!(
+        state
+            .authenticate(&root, 110)
+            .map_err(|_| "root")?
+            .is_root()
+    );
+    Ok(())
+}

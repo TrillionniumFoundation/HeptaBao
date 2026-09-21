@@ -441,8 +441,10 @@ fn wrapping_invalid_ttl_and_nontransactional_effects_never_dispatch() -> TestRes
         },
         100,
     );
-    assert_eq!(leader.status, 501);
-    assert!(leader.body.get("data").is_none());
+    // OpenBao's dedicated public diagnostic ignores response wrapping and
+    // returns its ordinary local shape without creating a wrapper token.
+    assert_eq!(leader.status, 200);
+    assert_eq!(leader.body, json!({"ha_enabled": false}));
     assert_eq!(before, snapshot(&s)?);
     assert_eq!(
         call(&mut s, &root, "sys/wrapping/wrap", json!({})).status,

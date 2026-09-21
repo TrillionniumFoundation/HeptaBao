@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 38;
+const CURRENT_STATE_SCHEMA: u32 = 39;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -51,6 +51,8 @@ mod ha_read;
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
 mod kubernetes_secret;
+#[path = "service_leader.rs"]
+mod leader;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
 #[path = "service_namespaces.rs"]
@@ -1397,6 +1399,13 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
+        // Dedicated public diagnostic, before audit/ACL, finite-use admission,
+        // namespace resolution, HA forwarding or synchronization. In particular,
+        // a standby must report its own observation without contacting a leader.
+        if path == "sys/leader" {
+            erase_json(&mut body);
+            return RequestExecution::Complete(self.leader_response(method));
+        }
         if self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_batch_effect.is_some()
@@ -1678,15 +1687,6 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
-        if self.native_snapshot_transport
-            && self.ha.is_some()
-            && !(path == "sys/storage/raft/snapshot" && matches!(method, "GET" | "HEAD"))
-        {
-            return Response::error(
-                409,
-                "native snapshot restore is not supported while HA is enabled",
-            );
-        }
         if let Some(ha) = self.ha.as_ref().cloned() {
             let (leader, local) = match ha.lock_for_request() {
                 Ok(ha) => {
@@ -1711,7 +1711,7 @@ impl Service {
                     // frame. HTTP snapshot redirects are not implemented yet.
                     return Response::error(
                         503,
-                        "native snapshot save requires the leader; standby streaming is unsupported",
+                        "native snapshot requires the leader; standby streaming is unsupported",
                     );
                 }
                 if !allow_forward {
@@ -1919,18 +1919,6 @@ impl Service {
         if self.plugin_secret_handles(&admitted, namespace, path) {
             return self.plugin_secret_route(admitted, principal.as_ref(), &request);
         }
-        if path == "sys/leader" && method == "GET" {
-            let Some(principal) = principal.as_ref() else {
-                return Response::error(403, "missing client token");
-            };
-            if let Err(error) = admitted
-                .auth
-                .authorize_request(principal, namespace, path, "read", now)
-            {
-                return Response::error(error.status, &error.message);
-            }
-            return self.leader_response();
-        }
         if path == "sys/step-down" {
             if !matches!(method, "POST" | "PUT") {
                 return Response::error(405, "step-down requires POST or PUT");
@@ -2081,6 +2069,7 @@ impl Service {
                 body,
                 now,
                 client_certificates,
+                origin_peer,
             )
         };
         if response.status < 300
@@ -2292,6 +2281,7 @@ impl Service {
         body: &Value,
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Response {
         let principal = principal.as_ref();
         if path == "sys/remount" {
@@ -2389,7 +2379,7 @@ impl Service {
             return Self::capabilities_route(state, principal, namespace, method, path, body, now);
         }
         let mut auth = state.auth.clone();
-        match auth.handle_with_client_certificates(
+        match auth.handle_with_connection(
             principal,
             namespace,
             method,
@@ -2397,6 +2387,7 @@ impl Service {
             body,
             now,
             client_certificates,
+            origin_peer,
         ) {
             Ok(Some(mut response)) => {
                 let mut engines = state.engines.clone();
@@ -5043,38 +5034,6 @@ impl Service {
         (true, standby, active, application_ready, leader, local)
     }
 
-    fn leader_response(&self) -> Response {
-        let (ha_enabled, _, ha_active, application_ready, leader, local) = self.ha_observation();
-        if !ha_enabled {
-            return Response::ok(json!({
-                "ha_enabled": false,
-                "is_self": true,
-                "ha_application_ready": true,
-                "leader_address": "",
-                "leader_cluster_address": "",
-                "performance_standby": false,
-                "performance_standby_last_remote_wal": 0
-            }));
-        }
-        let leader_address = self
-            .ha
-            .as_ref()
-            .and_then(|ha| {
-                let ha = ha.lock_for_request().ok()?;
-                ha.api_address(leader?).map(str::to_owned)
-            })
-            .unwrap_or_default();
-        Response::ok(json!({
-            "ha_enabled": true,
-            "is_self": ha_active && leader.is_some() && leader == local,
-            "ha_application_ready": application_ready,
-            "leader_address": leader_address,
-            "leader_cluster_address": "",
-            "performance_standby": false,
-            "performance_standby_last_remote_wal": 0
-        }))
-    }
-
     /// Inspect deployment-owned audit devices. The standard file-device route
     /// follows the pinned OpenBao declarative-device profile: list the device,
     /// reject duplicate enable and disable, and refuse a per-device GET. The
@@ -6672,3 +6631,11 @@ mod userpass_bcrypt_tests;
 #[cfg(test)]
 #[path = "service_token_lookup_tests.rs"]
 mod token_lookup_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_cidrs_tests.rs"]
+mod userpass_cidrs_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_no_default_tests.rs"]
+mod userpass_no_default_tests;

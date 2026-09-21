@@ -60,12 +60,29 @@ over. A completed transfer still requires a fresh leader/application observation
 Each configured HA peer may include `api_address`, an absolute HTTPS origin for
 that node's HTTP listener, such as `https://bao-1.example:8200`. Paths, query
 strings, credentials and fragments are rejected. `sys/leader.leader_address`
-reports only this explicit address for the observed leader; missing configuration
-or an unknown leader produces an empty string. Raft transport addresses are never
+reports only this explicit address for the locally observed leader; missing
+configuration or an unknown leader omits the field. Raft transport addresses are never
 substituted for HTTP addresses. This metadata does not yet implement snapshot
 redirects: native snapshot GET/HEAD on a standby returns503, while a leader must
-pass ReadIndex again before releasing its staged archive. Native HA restore
-remains409 and JSON backup keeps its separate behavior.
+pass ReadIndex again before releasing its staged archive. Schema39 native HA
+restore publishes a new same-cluster/same-seal record root at the live epoch plus
+one; it does not rewind the local ledger, Raft log or membership. Complete
+closure/capacity preflight precedes Stage, and uncertain publication outcomes
+require recovery. The first profile requires a root actor and unchanged Raft
+administration state, discards imported OIDC pending sessions and rejects external
+database/OpenLDAP secret state. Its separate real-process qualification is pending.
+JSON backup keeps its separate behavior.
+
+`sys/leader` now follows the dedicated public GET diagnostic path. It answers
+locally on a standby without authentication, token-use consumption, wrapping,
+audit writes, HA forwarding or application catch-up. A non-HA server returns only
+`ha_enabled:false`, including before initialization or while sealed; a sealed HA
+node returns503. Other methods return405, including HEAD. Local committed/applied
+Raft indices and leader identity come from one passive metrics observation.
+False/unknown optional fields are omitted. These diagnostics never grant read or
+write authority; protected operations retain their ReadIndex checks. `active_time`
+and `leader_cluster_address` remain unimplemented rather than fabricated. The
+new public/local behavior awaits its own real-process qualification.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
 passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,
 including quorum loss, leadership transfer, HEAD/ACL/finite-use behavior and

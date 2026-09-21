@@ -29,8 +29,12 @@ pub(super) struct SnapshotTransferPlan {
 // live-seal authentication. It contains the exact validated restore candidate.
 pub(super) struct VerifiedNativeRestore {
     prepared: backup_restore::PreparedSnapshotRestore,
+    clock: (Duration, Instant),
 }
 impl VerifiedNativeRestore {
+    pub(super) fn clock(&self) -> (Duration, Instant) {
+        self.clock
+    }
     pub(super) fn into_prepared(self) -> backup_restore::PreparedSnapshotRestore {
         self.prepared
     }
@@ -345,7 +349,7 @@ impl Service {
             (Some(previous), Some(current)) => Arc::ptr_eq(previous, current),
             _ => false,
         };
-        if !same_ha || (self.ha.is_some() && !plan.is_download) {
+        if !same_ha {
             return Response::error(409, "snapshot HA transfer authority changed");
         }
         if self.recovery_required
@@ -468,7 +472,10 @@ impl Service {
                     client_certificates: None,
                 };
                 self.commit_native_snapshot_restore(
-                    VerifiedNativeRestore { prepared },
+                    VerifiedNativeRestore {
+                        prepared,
+                        clock: (plan.now, plan.started),
+                    },
                     &plan.actor,
                     &request,
                 )

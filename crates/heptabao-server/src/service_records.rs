@@ -399,6 +399,24 @@ impl Service {
         state: &State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
+        self.commit_record_plan_checked(state, plan, None::<fn(&AuthState) -> Result<(), Response>>)
+    }
+
+    pub(super) fn commit_record_plan_with_before_publish(
+        &mut self,
+        state: &State,
+        plan: RecordPlan,
+        before_publish: impl FnOnce(&AuthState) -> Result<(), Response>,
+    ) -> Result<(), Response> {
+        self.commit_record_plan_checked(state, plan, Some(before_publish))
+    }
+
+    fn commit_record_plan_checked(
+        &mut self,
+        state: &State,
+        plan: RecordPlan,
+        before_publish: Option<impl FnOnce(&AuthState) -> Result<(), Response>>,
+    ) -> Result<(), Response> {
         state.validate_format()?;
         if state.schema != plan.root.state_schema
             || state.cluster_id != plan.root.cluster_id
@@ -466,10 +484,41 @@ impl Service {
             })
             .map_err(|error| self.record_storage_error(error))?;
         if let Some(ha) = &self.ha {
-            let result = ha
-                .lock_for_request()
-                .map_err(|_| unavailable())?
-                .commit_record_state(&operation, &base, &plan.bytes, &plan.objects);
+            let process = ha.lock_for_request().map_err(|_| unavailable())?;
+            if activation.is_some() {
+                process
+                    .preflight_record_replacement(&operation, &base, &plan.bytes, &plan.objects)
+                    .map_err(|error| match error {
+                        crate::ha::RecordPublicationPreflightError::Capacity => {
+                            Response::error(507, "HA replacement capacity exhausted before staging")
+                        }
+                        crate::ha::RecordPublicationPreflightError::Unavailable => unavailable(),
+                    })?;
+            }
+            let live_auth = &self.state.as_ref().ok_or_else(unavailable)?.auth;
+            let mut authority_rejection = None;
+            let result = if let Some(before_publish) = before_publish {
+                process.commit_record_state_with_before_publish(
+                    &operation,
+                    &base,
+                    &plan.bytes,
+                    &plan.objects,
+                    || {
+                        before_publish(live_auth).map_err(|response| {
+                            authority_rejection = Some(response);
+                            "record publication authority rejected before Publish".to_owned()
+                        })
+                    },
+                )
+            } else {
+                process.commit_record_state(&operation, &base, &plan.bytes, &plan.objects)
+            };
+            if let Some(response) = authority_rejection {
+                // Staging/GC may already be replicated, but the guard proves
+                // Publish was never submitted. Preserve the old root and the
+                // original denial; do not label this a committed outcome.
+                return Err(response);
+            }
             if result.is_err() {
                 // Publication may have committed despite a missing response.
                 if activation.is_some() {
@@ -480,6 +529,8 @@ impl Service {
                     "HA record publication failed; no response released",
                 ));
             }
+        } else if let Some(before_publish) = before_publish {
+            before_publish(&self.state.as_ref().ok_or_else(unavailable)?.auth)?;
         }
         let result = self.persist_record_plan_local(&plan, &operation, false);
         if let Err(error) = result {

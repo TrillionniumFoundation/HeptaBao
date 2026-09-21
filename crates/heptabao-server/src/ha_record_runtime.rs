@@ -15,6 +15,22 @@ pub(crate) struct CommittedRecordState {
     pub(crate) read_cursor: Option<ValidatedReadCursor>,
 }
 
+pub(crate) enum RecordPublicationPreflightError {
+    Capacity,
+    Unavailable,
+}
+
+fn record_publication_deadline() -> Result<(), String> {
+    if crate::request_deadline::current()
+        .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+    {
+        return Err(
+            "record publication deadline elapsed; submitted outcomes require reconciliation".into(),
+        );
+    }
+    Ok(())
+}
+
 impl HaProcess {
     fn collect_record_garbage(&self, expected_root: [u8; 32]) -> Result<(), String> {
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
@@ -117,12 +133,131 @@ impl HaProcess {
         .map(Some)
     }
 
+    /// Whole-closure admission for epoch replacement before any Stage/GC.
+    pub(crate) fn preflight_record_replacement(
+        &self,
+        operation: &str,
+        expected: &StateIdentity,
+        root_bytes: &[u8],
+        objects: &[Arc<StagedObject>],
+    ) -> Result<(), RecordPublicationPreflightError> {
+        use RecordPublicationPreflightError::{Capacity, Unavailable};
+        let node = self.node.as_ref().ok_or(Unavailable)?;
+        if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
+            return Err(Unavailable);
+        }
+        self.block_on_read(node.ensure_linearizable())
+            .map_err(|_| Unavailable)?;
+        let (_, current) = self
+            .runtime
+            .block_on(node.record_root_at_generation())
+            .map_err(|_| Unavailable)?;
+        let current = current.ok_or(Unavailable)?;
+        if *expected != StateIdentity::RecordsV5(current.envelope().digest()) {
+            return Err(Unavailable);
+        }
+        let root = RecordStateRoot::decode(root_bytes).map_err(|_| Unavailable)?;
+        if root.cluster_id != self.cluster_id {
+            return Err(Unavailable);
+        }
+        let key = root.address_key();
+        // Existing ciphertext must be reused exactly: immutable IDs prohibit
+        // replacing it with a second random AEAD encoding of the same value.
+        let mut sealed = Vec::with_capacity(objects.len());
+        for object in objects {
+            record_publication_deadline().map_err(|_| Unavailable)?;
+            let reference = runtime_reference(object.reference());
+            let value = match self
+                .runtime
+                .block_on(node.application_object(&reference))
+                .map_err(|_| Unavailable)?
+            {
+                Some(existing) => {
+                    let plain = self
+                        .codec
+                        .open_record_object(&key, object.reference(), &existing)
+                        .map_err(|_| Unavailable)?;
+                    if plain.as_slice() != object.bytes()
+                        || existing.children()
+                            != object
+                                .children()
+                                .iter()
+                                .map(runtime_reference)
+                                .collect::<Vec<_>>()
+                    {
+                        return Err(Unavailable);
+                    }
+                    existing
+                }
+                None => self
+                    .codec
+                    .seal_record_object(&key, object)
+                    .map_err(|_| Unavailable)?,
+            };
+            sealed.push(value);
+        }
+        let base = RecordRootBase::RecordsV5(expected.digest());
+        let proposal = self
+            .codec
+            .seal_record_root(operation, &base, &root)
+            .map_err(|_| Unavailable)?;
+        let envelope = ReplicatedEnvelope::new(
+            operation.to_owned(),
+            proposal.digest(),
+            proposal.sealed().to_vec(),
+        )
+        .map_err(|_| Unavailable)?;
+        let publication = PublishedRecordRoot::new(
+            base,
+            envelope,
+            root.references().map(runtime_reference).collect(),
+        )
+        .map_err(|_| Unavailable)?;
+        self.runtime
+            .block_on(node.preflight_application_publication(&sealed, &publication))
+            .map_err(|error| {
+                if matches!(
+                    error,
+                    heptabao_raft_runtime::RaftRuntimeError::RecordRejected(
+                        heptabao_raft_runtime::RecordRejection::Budget
+                    )
+                ) {
+                    Capacity
+                } else {
+                    Unavailable
+                }
+            })?;
+        if crate::request_deadline::current()
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
+            return Err(Unavailable);
+        }
+        Ok(())
+    }
+
     pub(crate) fn commit_record_state(
         &self,
         operation: &str,
         expected: &StateIdentity,
         root_bytes: &[u8],
         objects: &[Arc<StagedObject>],
+    ) -> Result<CommitReceipt, String> {
+        self.commit_record_state_with_before_publish(
+            operation,
+            expected,
+            root_bytes,
+            objects,
+            || Ok(()),
+        )
+    }
+
+    pub(crate) fn commit_record_state_with_before_publish(
+        &self,
+        operation: &str,
+        expected: &StateIdentity,
+        root_bytes: &[u8],
+        objects: &[Arc<StagedObject>],
+        before_publish: impl FnOnce() -> Result<(), String>,
     ) -> Result<CommitReceipt, String> {
         let root =
             RecordStateRoot::decode(root_bytes).map_err(|_| "invalid record publication root")?;
@@ -183,6 +318,7 @@ impl HaProcess {
         let mut staged = Vec::new();
         let mut estimated_bytes = 0_usize;
         for object in objects {
+            record_publication_deadline()?;
             let reference = runtime_reference(object.reference());
             if let Some(existing) = self
                 .runtime
@@ -259,6 +395,7 @@ impl HaProcess {
             }
         }
         for object in &staged {
+            record_publication_deadline()?;
             let serial = self
                 .runtime
                 .block_on(node.next_production_client_serial())
@@ -271,6 +408,7 @@ impl HaProcess {
                 return Err("staged application object receipt differs from payload".into());
             }
         }
+        record_publication_deadline()?;
         let proposal = self
             .codec
             .seal_record_root(operation, &base, &root)
@@ -291,6 +429,11 @@ impl HaProcess {
             .runtime
             .block_on(node.next_production_client_serial())
             .map_err(|error| error.to_string())?;
+        // Root sealing and all Stage commands are complete. Recheck the
+        // request capability immediately before the irreversible root CAS.
+        record_publication_deadline()?;
+        before_publish()?;
+        record_publication_deadline()?;
         let receipt = self
             .runtime
             .block_on(node.publish_application_root(serial, &publication))

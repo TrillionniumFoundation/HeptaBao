@@ -3207,12 +3207,10 @@ fn leader_metadata_uses_only_the_explicit_advertised_api_origin()
         assert_eq!(response.body["ha_enabled"], true);
         assert_eq!(response.body["is_self"], true);
         assert_eq!(
-            response.body["leader_address"],
-            advertised
-                .map(|_| "https://public.bao.example:8200")
-                .unwrap_or("")
+            response.body.get("leader_address").and_then(Value::as_str),
+            advertised.map(|_| "https://public.bao.example:8200")
         );
-        assert_eq!(response.body["leader_cluster_address"], "");
+        assert!(response.body.get("leader_cluster_address").is_none());
     }
     Ok(())
 }

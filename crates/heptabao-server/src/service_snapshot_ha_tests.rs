@@ -117,10 +117,10 @@ fn native_ha_save_requires_live_leader_read_authority_and_never_json_forwards() 
         "sys/storage/raft/snapshot",
         "sys/storage/raft/snapshot-force",
     ] {
-        assert!(
-            matches!(stage(&mut service, "POST", path, &token, deadline()),
-            RequestExecution::Complete(ref response) if response.status == 409)
-        );
+        assert!(matches!(
+            stage(&mut service, "POST", path, &token, deadline()),
+            RequestExecution::External(_)
+        ));
     }
 
     // A detached archive remains a valid past read, but this initial profile
@@ -240,7 +240,7 @@ fn native_ha_save_requires_live_leader_read_authority_and_never_json_forwards() 
         assert_eq!(response.status, 503);
         assert_eq!(
             response.body["errors"][0],
-            "native snapshot save requires the leader; standby streaming is unsupported"
+            "native snapshot requires the leader; standby streaming is unsupported"
         );
     }
     // The ordinary JSON standby route keeps its old forwarding behavior. Test
@@ -258,5 +258,349 @@ fn native_ha_save_requires_live_leader_read_authority_and_never_json_forwards() 
         &cluster.processes[usize::try_from(successor - 1)?],
     ));
     assert_export_matches_committed_root(&mut service, &token, "GET")?;
+    Ok(())
+}
+
+fn archive_bytes(service: &mut Service, token: &str) -> TestResult<Zeroizing<Vec<u8>>> {
+    let mut request = pending(
+        service,
+        token,
+        "GET",
+        Instant::now() + Duration::from_secs(15),
+    )?;
+    let (result, file) = request.execute_snapshot_transfer(&mut io::empty());
+    assert_eq!(
+        service.finish_external_request(*request, result).status,
+        200
+    );
+    let mut bytes = Zeroizing::new(Vec::new());
+    file.ok_or("archive")?.read_to_end(&mut bytes)?;
+    Ok(bytes)
+}
+
+#[test]
+fn native_ha_restore_publishes_new_epoch_not_local_rewind_and_fences_old_provider_result()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    write(&mut service, &token, "saved");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/radius",
+            &token,
+            json!({"type":"radius"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/radius/config",
+            &token,
+            json!({"host":"localhost","secret":"synthetic-restore-secret","token_ttl":120})
+        )
+        .status,
+        204
+    );
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let saved = archive_bytes(&mut service, &token)?;
+    let epoch = service.state.as_ref().ok_or("state")?.replay_epoch;
+    write(&mut service, &token, "newer");
+    let old = match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/radius/login",
+        namespace: "",
+        token: "",
+        body: json!({"username":"alice","password":"synthetic-provider-password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(plan) => plan,
+        _ => return Err("provider admission".into()),
+    };
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let activation = service.unseal_nonce.clone();
+    let mut restore = pending(
+        &mut service,
+        &token,
+        "POST",
+        Instant::now() + Duration::from_secs(15),
+    )?;
+    let (result, file) = restore.execute_snapshot_transfer(&mut saved.as_slice());
+    assert!(file.is_none());
+    let response = service.finish_external_request(*restore, result);
+    assert_eq!(response.status, 200);
+    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 39);
+    assert_eq!(
+        service.state.as_ref().ok_or("state")?.replay_epoch,
+        epoch + 1
+    );
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > before);
+    assert_ne!(service.unseal_nonce, activation);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/ha-snapshot",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"]["value"],
+        "saved"
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let rejected = service.finish_external_request(
+        *old,
+        ExternalEffectResult::OnlineAuth(Ok(
+            super::super::online_auth::OnlineAuthObservation::Radius(
+                crate::auth::RadiusLoginObservation,
+            ),
+        )),
+    );
+    assert_eq!(rejected.status, 503);
+    assert!(rejected.body.get("wrap_info").is_none_or(Value::is_null));
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let leader = Arc::clone(&cluster.processes[0]);
+    let successor = leader.lock().map_err(|_| "HA")?.step_down()?;
+    service.ha = Some(Arc::clone(
+        &cluster.processes[usize::try_from(successor - 1)?],
+    ));
+    assert_export_matches_committed_root(&mut service, &token, "GET")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/ha-snapshot",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"]["value"],
+        "saved"
+    );
+    Ok(())
+}
+
+#[test]
+fn native_ha_restore_capacity_refusal_has_no_epoch_or_root_publication() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    write(&mut service, &token, "saved");
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let saved = archive_bytes(&mut service, &token)?;
+    write(&mut service, &token, "live");
+    let raft_before = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .snapshot_test_record_usage()?;
+    let before = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let epoch = service.state.as_ref().ok_or("state")?.replay_epoch;
+    let nonce = service.unseal_nonce.clone();
+    let mut restore = pending(
+        &mut service,
+        &token,
+        "POST",
+        Instant::now() + Duration::from_secs(15),
+    )?;
+    let (result, _) = restore.execute_snapshot_transfer(&mut saved.as_slice());
+    service.state_capacity = 1;
+    assert_eq!(
+        service.finish_external_request(*restore, result).status,
+        507
+    );
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        before
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(service.state.as_ref().ok_or("state")?.replay_epoch, epoch);
+    assert_eq!(service.unseal_nonce, nonce);
+    assert!(!service.recovery_required);
+    assert_eq!(
+        cluster.processes[0]
+            .lock()
+            .map_err(|_| "HA")?
+            .snapshot_test_record_usage()?,
+        raft_before
+    );
+    Ok(())
+}
+
+#[test]
+fn native_ha_restore_stale_base_and_expired_transfer_do_not_publish() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    write(&mut service, &token, "saved");
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let saved = archive_bytes(&mut service, &token)?;
+    for expired in [false, true] {
+        let mut restore = pending(
+            &mut service,
+            &token,
+            "POST",
+            Instant::now() + Duration::from_secs(15),
+        )?;
+        let (result, _) = restore.execute_snapshot_transfer(&mut saved.as_slice());
+        if expired {
+            let ExternalEffectPlan::SnapshotTransfer(plan) = &mut restore.effect else {
+                return Err("transfer kind".into());
+            };
+            plan.deadline = Instant::now() - Duration::from_millis(1);
+        } else {
+            write(&mut service, &token, "concurrent");
+        }
+        let before = cluster.processes[0]
+            .lock()
+            .map_err(|_| "HA")?
+            .snapshot_test_record_usage()?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let identity = service.current_state_identity().map_err(|_| "identity")?;
+        let response = service.finish_external_request(*restore, result);
+        assert_eq!(response.status, if expired { 503 } else { 409 });
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(
+            cluster.processes[0]
+                .lock()
+                .map_err(|_| "HA")?
+                .snapshot_test_record_usage()?,
+            before
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn epoch_publication_expired_actor_after_real_stage_keeps_old_root() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    write(&mut service, &token, "live");
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &token,
+        json!({"policies":["root"],"ttl":1}),
+    );
+    assert_eq!(issued.status, 200);
+    let short = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?;
+    let actor = service
+        .state
+        .as_mut()
+        .ok_or("state")?
+        .auth
+        .authenticate(short, 100)
+        .map_err(|_| "admit actor")?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    // Anchor the actual typed root before attempting the new epoch.
+    let _ = archive_bytes(&mut service, &token)?;
+    let before = service.current_state_identity().map_err(|_| "identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let epoch = service.state.as_ref().ok_or("state")?.replay_epoch;
+    let nonce = service.unseal_nonce.clone();
+    let usage = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .snapshot_test_record_usage()?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    candidate.replay_epoch = epoch + 1;
+    candidate.engines.handle(
+        "",
+        "PUT",
+        "secret/data/ha-snapshot",
+        &json!({"data":{"value":"candidate-not-published"}}),
+        100,
+    )?;
+    let plan = service
+        .prepare_record_plan(&candidate)
+        .map_err(|_| "plan")?;
+    service
+        .state
+        .as_ref()
+        .ok_or("state")?
+        .auth
+        .authorize_request(&actor, "", "sys/storage/raft/snapshot", "update", 100)
+        .map_err(|_| "initial authorization")?;
+    let called = std::cell::Cell::new(false);
+    let response = service
+        .commit_record_plan_with_before_publish(&candidate, plan, |auth| {
+            called.set(true);
+            // Controlled logical time advances only at the final callback, after
+            // actual consensus Stage. No wall-clock sleeps or fake successful writes.
+            auth.authorize_request(&actor, "", "sys/storage/raft/snapshot", "update", 101)
+                .map_err(|error| Response::error(error.status, &error.message))
+        })
+        .err()
+        .ok_or("expired actor unexpectedly published")?;
+    assert!(called.get());
+    assert_eq!(response.status, 403);
+    assert!(!service.recovery_required);
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        before
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(service.state.as_ref().ok_or("state")?.replay_epoch, epoch);
+    assert_eq!(service.unseal_nonce, nonce);
+    let staged = cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA")?
+        .snapshot_test_record_usage()?;
+    assert!(staged.0 > usage.0, "real Stage commands must have applied");
+    assert!(staged.1.object_count > usage.1.object_count);
+    // ReadIndex re-observes Raft authority, proving no new root was published.
+    service.sync_from_ha().map_err(|_| "read current root")?;
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        before
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/ha-snapshot",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"]["value"],
+        "live"
+    );
     Ok(())
 }

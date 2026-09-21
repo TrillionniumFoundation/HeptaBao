@@ -330,7 +330,16 @@ explicitly rejected; the JSON profile keeps its prior generation/force policy.
 This is not OpenBao's state or seal encoding. Native HA GET/HEAD requires the
 current leader and a fresh ReadIndex; finalization repeats both authority checks.
 A standby returns503 without forwarding a large archive through JSON peer RPC.
-HA native restore still returns409. OpenBao archive migration,
+HA native restore now has a schema39 leader-only profile: the same seal and
+cluster, record-v5 roots, a root actor and unchanged Raft administration owner
+are required. The authenticated archive becomes a new CAS publication at the
+live replay epoch plus one; local generations and Raft history move forward.
+Imported OIDC code sessions are discarded. External database/OpenLDAP secret
+state and changed autopilot/promotion configuration return409. Complete local
+and HA closure/capacity admission runs before staging; later append failure can
+still have an uncertain outcome and fences recovery instead of allowing retry.
+This implementation awaits its separate real-process restore qualification.
+OpenBao archive migration,
 cross-seal restore and non-Linux native transfer remain unimplemented.
 Explicit JSON HA export and Raft's internal snapshot replication are separate.
 

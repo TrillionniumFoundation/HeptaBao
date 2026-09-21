@@ -247,7 +247,13 @@ hashes whose salt decodes to a length other than 16 bytes still cannot
 authenticate, and upstream username case folding remains a compatibility gap.
 
 Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
-configured policy set. Login adds the implicit default policy to the issued token.
+configured policy set. Login adds the implicit default policy unless
+`token_no_default_policy=true`; an explicitly configured `default` remains.
+Flag changes affect future issuance while issued-token policies remain fixed.
+Fresh omitted policy lists and explicitly empty/null lists are distinguished:
+an empty token from the omitted-list case fails administrator renewal until a
+policy list is explicitly supplied. Empty tokens have no implicit self-renew ACL.
+Old normalized policy lists retain their unknown historical presence.
 Duration omission or null preserves existing limits; explicit zero restores
 inheritance. Policy null clears the configured set, and use-count null clears the
 count. Positive historical settings and their stored default policies are retained.
@@ -262,8 +268,16 @@ tokens must log in again to renew. Token API children and orphans retain their o
 renewal rules. Removed accounts produce 204 without auth on bearer renewal and
 500 on accessor renewal; changed policies produce 500. These responses never
 extend the lease. Schema 35 fences the new persisted semantics from old binaries.
-CIDR constraints, `token_no_default_policy`, batch tokens, case normalization and
-complete password/alias error parity remain outside this profile.
+Userpass accepts `token_bound_cidrs` and its deprecated `bound_cidrs` alias;
+new-field presence, including null, takes precedence. Password verification
+precedes source rejection, and successful issuance snapshots the constraints.
+Only the actual socket peer or the authenticated HA forwarding origin supplies
+the IP; request headers do not. Later user edits do not rebind issued tokens,
+and administrator renewal checks the caller's constraints rather than the
+target token's source. These fields and policy metadata require schema39.
+Batch tokens, case normalization and complete weak scalar/error parity remain
+outside this profile. Schema39 CIDR/default-policy live qualification is pending;
+the historical receipts below apply only to their pinned builds.
 The qualified `0fc7925` candidate records
 [279 matching observations per side](../../qa/openbao-acceptance/evidence/userpass-native-0fc7925.json)
 and [369 checks using an actual schema-34 binary](../../qa/openbao-acceptance/evidence/userpass-native-upgrade-0fc7925.json).
@@ -275,6 +289,10 @@ and [168 imported-hash observations per side](../../qa/openbao-acceptance/eviden
 These include actual restart and held-token checks; their source/binary identities
 remain unchanged. They do not cover username case folding, weak scalar conversion
 or variable-length decoded bcrypt salts.
+The [78-check real schema37-to-38 upgrade](../../qa/openbao-acceptance/evidence/userpass-password-upgrade-b4942e9.json)
+uses the preserved c3c5d14 executable to create72-byte and900-byte passwords,
+then verifies pure-read byte preservation, legacy exact comparison, explicit
+adoption of the new72-byte input rule, restart and actual old-reader rejection.
 
 ## Userpass TOTP MFA
 

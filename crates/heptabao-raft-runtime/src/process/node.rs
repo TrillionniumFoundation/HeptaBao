@@ -440,6 +440,19 @@ impl ProcessRaftNode {
             .await
             .map_err(RaftRuntimeError::RecordRejected)
     }
+    /// Read-only whole-publication capacity/closure admission. Caller retains
+    /// application writer authority; normal per-command validation still runs.
+    pub async fn preflight_application_publication(
+        &self,
+        objects: &[crate::SealedRecordObject],
+        root: &crate::PublishedRecordRoot,
+    ) -> Result<(), RaftRuntimeError> {
+        self.state_machine
+            .preflight_record_publication(objects, root)
+            .await
+            .map_err(RaftRuntimeError::RecordRejected)
+    }
+
     pub async fn prunable_application_objects(
         &self,
         expected_root: [u8; 32],

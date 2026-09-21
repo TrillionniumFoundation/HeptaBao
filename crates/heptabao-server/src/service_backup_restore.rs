@@ -1,5 +1,7 @@
 //! Validate one authenticated backup before consuming its durable restore plan.
 use super::*;
+#[path = "service_ha_restore.rs"]
+mod ha_restore;
 use heptabao_durable_service::PreparedRestore;
 
 // Live durable reads own Secret; prepared reads borrow the decoded snapshot.
@@ -315,6 +317,15 @@ impl Service {
         principal: &Principal,
         request: &RequestView<'_>,
     ) -> Response {
+        if self.ha.is_some() {
+            let clock = verified.clock();
+            return self.commit_ha_native_snapshot_restore(
+                verified.into_prepared(),
+                principal,
+                request,
+                clock,
+            );
+        }
         // Native ordinary restore, like OpenBao, restores older data after
         // proving the archive belongs to the live seal. JSON retains its
         // explicit legacy generation/force policy above.

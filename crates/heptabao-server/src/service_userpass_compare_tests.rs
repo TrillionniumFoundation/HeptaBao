@@ -42,6 +42,14 @@ fn schema37_credentials_keep_absent_marker_on_read_reopen_and_successful_login()
         .as_object_mut()
         .ok_or("user")?
         .remove("password_semantics");
+    auth["users"][""]["compare"]
+        .as_object_mut()
+        .ok_or("user")?
+        .remove("token_policies_configured");
+    auth["users"][""]["compare"]
+        .as_object_mut()
+        .ok_or("user")?
+        .remove("token_no_default_policy");
     old.auth = serde_json::from_value::<AuthState>(auth)?.into();
     old.schema = 37;
     assert!(!old.auth.has_userpass_password_semantics());
