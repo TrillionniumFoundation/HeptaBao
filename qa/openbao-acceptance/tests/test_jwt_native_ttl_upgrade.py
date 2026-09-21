@@ -5,9 +5,43 @@ import unittest
 from unittest.mock import patch
 
 import jwt_native_ttl_upgrade as upgrade
+from bao_http import Response
 
 
 class JwtNativeTtlUpgradeGuards(unittest.TestCase):
+    def test_actual_reopen_read_phases_generate_distinct_role_and_token_labels(self):
+        class ReachedMigration(Exception):
+            pass
+        saved = {mode:{"role":{"role":"app"}, "periodic_role":{"role":"periodic"},
+                       **{kind:{"client_token":"synthetic-" + mode + "-" + kind}
+                          for kind in ("auth", "child", "periodic")}}
+                 for mode in upgrade.MODES}
+        def request(method, path, _body=None, **_kwargs):
+            if method == "POST" and "/role/" in path:
+                raise ReachedMigration
+            if path == "/v1/" + upgrade.VALUE_PATH:
+                return Response(200, {"data":{"data":{"synthetic":True}}})
+            if "/role/" in path:
+                return Response(200, {"data":{"role":path.rsplit('/', 1)[1]}})
+            return Response(200, {"data":{}})
+        rows = []
+        trace = upgrade.Trace(SimpleNamespace(request=request), SimpleNamespace(calls=[]), rows)
+        with tempfile.TemporaryDirectory() as directory:
+            instance = SimpleNamespace(root=Path(directory), start=lambda:None, stop=lambda:None)
+            with patch.object(upgrade, "prepare_legacy", return_value=(trace, "synthetic-key", saved)), \
+                 patch.object(upgrade, "durable_manifest", return_value="unchanged"):
+                with self.assertRaises(ReachedMigration):
+                    upgrade.run_upgrade(instance, None, None, None, Path("candidate"), Path("legacy"), rows)
+        names = [row["case"] for row in rows]
+        self.assertEqual(len(names), len(set(names)))
+        self.assertTrue(all(row["passed"] is True for row in rows))
+        for phase in ("current", "untouched_restart"):
+            for mode in upgrade.MODES:
+                prefix = "jwt_native_ttl_upgrade." + phase + "." + mode
+                self.assertIn(prefix + ".periodic", names)
+                self.assertIn(prefix + ".token_periodic", names)
+            self.assertIn("jwt_native_ttl_upgrade." + phase + ".reads_preserve_entire_store", names)
+
     def receipt(self):
         return {"status":"passed", "build_source_commit":upgrade.LEGACY_SOURCE,
                 "source_and_binary_unchanged":True, "runner_unchanged":True,

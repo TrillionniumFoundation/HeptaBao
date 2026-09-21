@@ -209,7 +209,7 @@ def run_upgrade(instance, issuer, private, jwk, candidate, legacy, rows):
                 read = t.call(phase + "." + mode + "." + name, paths(mode, name)[1], method="GET").get("data", {})
                 t.check(phase + "." + mode + "." + name + ".exact", read == previous)
             for kind in ("auth", "child", "periodic"):
-                t.lookup(phase + "." + mode + "." + kind, record[kind])
+                t.lookup(phase + "." + mode + ".token_" + kind, record[kind])
         t.check(phase + ".reads_preserve_entire_store", durable_manifest(store) == before)
     new_auth, snapshots = {}, {}
     for mode, record in saved.items():
