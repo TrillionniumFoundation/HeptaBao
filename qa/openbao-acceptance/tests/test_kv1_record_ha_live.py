@@ -2,6 +2,7 @@ from pathlib import Path
 from types import SimpleNamespace
 import raft_record_snapshot_observation as observer
 import unittest
+import tempfile
 from unittest.mock import patch
 import kv1_record_ha_live as fixture
 from kv1_record_scale_live import Dataset
@@ -63,6 +64,30 @@ class Kv1RecordHaGuards(unittest.TestCase):
         for invalid in ([],rows+[rows[0]],rows[:-1]+[dict(rows[-1],passed=1)],
                         rows[:-1]+[dict(rows[-1],raw='sensitive')]):
             self.assertFalse(fixture.complete(invalid))
+
+    def test_failure_preserves_owned_fixture_and_both_source_observations(self):
+        for failed_run,changed in ((False,False),(True,False),(False,True)):
+            with self.subTest(failed_run=failed_run,changed=changed), tempfile.TemporaryDirectory() as folder:
+                root=Path(folder);binary=root/'server';binary.write_bytes(b'synthetic binary')
+                work=root/'work';work.mkdir(mode=0o700)
+                args=SimpleNamespace(binary=binary,output=root/'receipt.json',target_mib=32,
+                                     build_source_commit='a'*40)
+                before={'source_commit':'a'*40,'source_dirty':False}
+                after=dict(before,source_dirty=changed)
+                with patch.object(fixture.SafeArgumentParser,'parse_args',return_value=args), \
+                     patch.object(fixture.tempfile,'mkdtemp',return_value=str(work)), \
+                     patch.object(fixture,'source_identity',side_effect=[before,after]), \
+                     patch.object(fixture,'run',side_effect=ConnectionError() if failed_run else None), \
+                     patch.object(fixture,'complete',return_value=True), \
+                     patch.object(fixture,'private_write') as write,patch('builtins.print'):
+                    result=fixture.main()
+                report=write.call_args.args[1]
+                failed=failed_run or changed
+                self.assertEqual(result,int(failed))
+                self.assertEqual(work.exists(),failed)
+                self.assertEqual(report['retained_failure_work_dir'],str(work) if failed else None)
+                self.assertEqual(report['source_identity_after'],after)
+                self.assertEqual(report['source_changed_fields'],['source_dirty'] if changed else [])
 
 
 if __name__=='__main__':unittest.main()

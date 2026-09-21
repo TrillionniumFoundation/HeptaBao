@@ -290,5 +290,8 @@ and [20-cluster/75-API-check userpass HA profile](../../qa/openbao-acceptance/ev
 These qualify only the named paths. The initial 32MiB local run passed its 618
 business checks but failed the end-of-run source identity check; it is not accepted
 as capacity evidence. A repeat now retains both source observations and their
-exact differing fields. Near-limit HA migration, capacity and performance remain
-unqualified until clean, exact-binary profiles pass.
+exact differing fields. The [clean 618-check repeat](../../qa/openbao-acceptance/evidence/kv1-record-scale32-e554136.json)
+passed on `e554136` with the same binary: 33,722,278 logical payload bytes,
+147 distinct large values, replacement/deletion and full restart hash checks.
+Its three small writes at each size are descriptive observations, not a sustained
+performance result. Near-limit HA migration and HA capacity remain unqualified.

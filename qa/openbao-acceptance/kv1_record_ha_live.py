@@ -99,7 +99,13 @@ def run(binary, root, target_mib, checks, observations, inherited):
         dataset, ordinal = Dataset(), 0
         while dataset.logical_bytes < target_mib * MIB:
             key, value = f'bulk/{ordinal:04d}', dataset.make_value(ordinal)
-            status,_ = leader.call('PUT',MOUNT+'/'+key,value,token=cluster.root_token,timeout=30)
+            observations['pending_growth_ordinal'] = ordinal
+            started = time.monotonic()
+            try:
+                status,_ = leader.call('PUT',MOUNT+'/'+key,value,token=cluster.root_token,timeout=30)
+            finally:
+                observations.setdefault('growth_latency_ms', []).append(round((time.monotonic()-started)*1000, 3))
+            observations['last_growth_status'] = status
             check(f'growth_{ordinal}',status == 204)
             dataset.remember(key,value); ordinal += 1
         check('growth_above_old_limit',dataset.logical_bytes > 16*MIB and dataset.logical_bytes >= target_mib*MIB)
@@ -193,7 +199,10 @@ def run(binary, root, target_mib, checks, observations, inherited):
         check('secrets_absent',safe)
         check('complete',True)
     finally:
-        if cluster is not None:cluster.close()
+        if cluster is not None:
+            observations['process_exit_codes_before_cleanup'] = {str(node.node_id):
+                node.process.poll() if node.process is not None else 'stopped' for node in cluster.nodes}
+            cluster.close()
 
 
 def main():
@@ -211,12 +220,15 @@ def main():
     try:run(binary,root,args.target_mib,checks,observations,inherited)
     except Exception as error:
         failure=next((row['case'] for row in reversed(checks) if row['passed'] is not True),'fixture_'+type(error).__name__)
-    finally:shutil.rmtree(root)
-    unchanged=before==source_identity(ROOT,binary);runner_unchanged=runner_hash==file_hash(Path(__file__))
+    after=source_identity(ROOT,binary)
+    unchanged=before==after;runner_unchanged=runner_hash==file_hash(Path(__file__))
     if not unchanged or not runner_unchanged:failure='source_binary_or_runner_changed'
     if not complete(checks):failure=failure or 'incomplete_observations'
     report={'schema':'heptabao.kv1-record-ha.v1','status':'passed' if failure is None else 'failed','failure':failure,
-        'source_identity':before,'source_and_binary_unchanged':unchanged,'build_source_commit':args.build_source_commit,
+        'source_identity':before,'source_identity_after':after,
+        'source_changed_fields':sorted(key for key in before.keys() | after.keys() if before.get(key)!=after.get(key)),
+        'source_and_binary_unchanged':unchanged,'build_source_commit':args.build_source_commit,
+        'retained_failure_work_dir':str(root) if failure is not None else None,
         'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'target_payload_mib':args.target_mib,
         'checks':checks,'observations':observations,'inherited_bootstrap_scenarios':inherited,
         'snapshot_catchup_proof':'log purge beyond offline frontier followed by recovered voter serving all data as leader',
@@ -228,6 +240,7 @@ def main():
         'synthetic_only':True,'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False}
     if admit_output(output)!=admitted:raise ValueError('report_parent_changed')
     private_write(output,report,replace=False)
+    if failure is None:shutil.rmtree(root)
     print(json.dumps({'status':report['status'],'checks':len(checks),'failure':failure}))
     return 0 if failure is None else 1
 
