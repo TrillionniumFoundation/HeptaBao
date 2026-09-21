@@ -1135,8 +1135,8 @@ observations match the pinned calibration and each other; the three null-input
 observations separately verify the deliberate safe rejection. Source, binary
 and helpers remained unchanged and both secret scans passed. The pinned official handler
 panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
-instead. Native role/SecretID CIDRs, arbitrary SecretID/alias metadata, dedicated
-per-field role subroutes and the remaining AppRole configuration surface remain
+instead. Role SecretID login CIDRs, per-SecretID CIDR overrides, arbitrary
+SecretID/alias metadata, other dedicated role subroutes and remaining configuration remain
 open. Existing SecretIDs and roles with absent type metadata retain their old
 serialized shape; explicit type metadata requires schema42.
 
@@ -1162,6 +1162,33 @@ old ownerless lease expiry and unknown intent without retry, and a first typed
 TokenRequest independently fences the old reader. Its provider is an exact TLS
 protocol peer with signed synthetic JWTs, not a real Kubernetes cluster. This
 is HeptaBao format compatibility, not OpenBao-native snapshot interoperability.
+
+## AppRole token source constraints in schema43
+
+AppRole roles accept numeric `token_bound_cidrs` in full-role updates and through
+the dedicated `token-bound-cidrs` read/update/delete route. These constrain issued
+service and batch bearers, including the authenticated peer forwarded by HA;
+they do not restrict RoleID/SecretID login itself. An otherwise valid login from
+another source still consumes its finite SecretID use. Existing issued bounds
+remain unchanged after role editing, clearing, deletion or token renewal; root
+administrators inspecting or renewing a target do not impersonate its source.
+
+The dedicated read preserves null versus an explicit empty list; full-role
+readback presents either as an empty list. Role creation, ordinary updates,
+RoleID replacement and dedicated-field management enforce at least one final
+constraint. Invalid removal returns HTTP500 and leaves the role unchanged, as
+the official backend does. Historical unconstrained RoleID-only records remain
+readable and usable; an operator can repair them by enabling SecretID binding
+or configuring nonempty token CIDRs. SecretID consumption/storage does not
+accidentally apply this management-only validation.
+
+This increment is calibrated against [16 official scenarios and 194 observations](../../qa/openbao-acceptance/evidence/approle-token-cidrs-official-c2df6af.json).
+All 46 AppRole tests, 38 format-focused tests and strict Clippy passed; candidate
+live qualification is pending. The dedicated POST ignores
+unrelated inputs while updating only its own field, based on official source
+and a behavior regression; that extra-input case was not in the live probe.
+SecretID login CIDRs, SecretID token-CIDR overrides and nonnumeric SockAddr
+variants remain outside this profile.
 
 ## Kubernetes batch lease ownership in schema42
 

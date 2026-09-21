@@ -1404,7 +1404,7 @@ fn approle_destroy_and_policy_assignment_fail_closed() {
         "",
         "POST",
         "auth/approle/role/no-secret",
-        json!({"bind_secret_id": false}),
+        json!({"bind_secret_id": false, "token_bound_cidrs": ["127.0.0.1"]}),
         100,
     );
     let no_secret_role_id = call(

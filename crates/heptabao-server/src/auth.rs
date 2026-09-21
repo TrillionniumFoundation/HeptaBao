@@ -1249,6 +1249,8 @@ impl Drop for User {
 #[derive(Clone, Serialize, Deserialize)]
 struct Role {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_bound_cidrs: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::UserTokenType>,
     role_id: String,
     #[serde(default = "default_bind_secret_id")]
@@ -6007,6 +6009,9 @@ impl AuthState {
             .roles_at(scope)
             .and_then(|roles| roles.get(name))
             .cloned();
+        if operation == "token-bound-cidrs" {
+            return self.approle_token_cidrs_route(scope, name, capability, body, existing);
+        }
         if operation.is_empty() {
             if capability == "read" {
                 let Some(role) = existing else {
@@ -6017,7 +6022,7 @@ impl AuthState {
                     });
                 };
                 return Ok(response(
-                    json!({"token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
@@ -6035,6 +6040,7 @@ impl AuthState {
                 body,
                 &[
                     "token_type",
+                    "token_bound_cidrs",
                     "bind_secret_id",
                     "policies",
                     "token_policies",
@@ -6049,6 +6055,7 @@ impl AuthState {
             )?;
             reject_alias_pair(body, "policies", "token_policies")?;
             let mut role = existing.unwrap_or(Role {
+                token_bound_cidrs: None,
                 token_type: None,
                 role_id: random_id("role.")?,
                 bind_secret_id: true,
@@ -6092,6 +6099,7 @@ impl AuthState {
                 approle_renewal::role_count(body, "secret_id_num_uses", role.secret_id_num_uses)?;
             approle_renewal::validate_role_limits(&role)?;
             let type_warning = approle_batch::update_role_type(&mut role, body)?;
+            approle_cidrs::update(&mut role, body)?;
             self.roles_at_mut(scope).insert(name.into(), role);
             return Ok(match type_warning {
                 Some(warning) => AuthResponse {
@@ -6119,6 +6127,7 @@ impl AuthState {
                     return Err(bad("invalid or duplicate role_id"));
                 }
                 role.role_id = value.into();
+                approle_cidrs::validate_constraints(&role)?;
                 self.roles_at_mut(scope).insert(name.into(), role);
                 Ok(empty(true))
             }
@@ -6321,7 +6330,7 @@ impl AuthState {
                     metadata: BTreeMap::from([("role_name".into(), name.clone())]),
                     display_name: format!("approle-{name}"),
                     path: format!("auth/{mount}/login"),
-                    bound_cidrs: Vec::new(),
+                    bound_cidrs: role.token_bound_cidrs.clone().unwrap_or_default(),
                     issued_at: now,
                     expires_at: expiry,
                     parent: None,
@@ -6339,6 +6348,7 @@ impl AuthState {
                 format!("approle-{name}"),
                 now,
             )?;
+            token.bound_cidrs = role.token_bound_cidrs.clone().unwrap_or_default();
             token.period = role.token_period;
             token.max_expires_at = explicit;
             token.expires_at = Some(expiry);
@@ -6923,3 +6933,9 @@ pub(crate) use approle_batch::AppRoleSecretIdConsumption;
 #[cfg(test)]
 #[path = "auth_approle_batch_tests.rs"]
 mod approle_batch_tests;
+
+#[path = "auth_approle_cidrs.rs"]
+mod approle_cidrs;
+#[cfg(test)]
+#[path = "auth_approle_cidrs_tests.rs"]
+mod approle_cidrs_tests;

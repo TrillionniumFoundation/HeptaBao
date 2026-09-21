@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **42**. Its source constant is
+The current Service state schema is **43**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -82,6 +82,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 40 | Fresh native userpass mounts persist ASCII-lower account-name mode. Absent modes preserve historical exact accounts and issued-token provenance; old mounts and Identity aliases are never silently folded. |
 | 41 | Encrypted batch-token key authority, explicit userpass/mount token-type configuration, and typed batch lease ownership. Historical service owners remain the same JSON strings. |
 | 42 | Explicit AppRole role/mount token-type configuration and Kubernetes typed lease ownership with separate Bao/provider expiry. Absent fields retain historical behavior and serialization. |
+| 43 | AppRole role token CIDR presence, including an explicit empty list, and constrained direct AppRole service-token snapshots. Historical absent role fields remain absent. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -106,6 +107,16 @@ rechecks current parent and Identity authority. Key issue watermarks are
 observations, not revocation cutoffs: a same-key orphan issued after a restored
 snapshot remains cryptographically valid until its own expiry. Key rotation and
 complete OpenBao snapshot interoperability are not established by this format.
+
+AppRole role token CIDRs use an optional field: historical absence stays absent,
+explicit empty input stays an empty list, and dedicated-field deletion removes
+the field. The dedicated read distinguishes null from an explicit empty list;
+the full-role read normalizes either to an empty list. Field presence and direct
+AppRole service tokens with source constraints require schema43, including after
+the role is cleared or removed. Existing batch claims already carry authenticated
+CIDRs. New role-management writes validate the final set of login/token
+constraints; loading, reading or authenticating a historical unconstrained
+RoleID-only record does not itself migrate or invalidate it.
 
 Explicit AppRole role token types or AppRole mount token types require schema42,
 including explicit `default` and `service`. Schema41 remains readable when those
@@ -356,7 +367,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 42. An authenticated
+it. Initialization and committed mutations use schema 43. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
