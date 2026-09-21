@@ -317,7 +317,6 @@ fn authenticated_noncanonical_unknown_or_unsafe_claims_are_rejected() -> TestRes
         "entity",
         "policy",
         "cidr",
-        "metadata",
         "display",
         "path",
     ] {
@@ -330,9 +329,6 @@ fn authenticated_noncanonical_unknown_or_unsafe_claims_are_rejected() -> TestRes
                 candidate.policies.insert("root".into());
             }
             "cidr" => candidate.bound_cidrs = vec!["127.0.0.1/32".into()],
-            "metadata" => {
-                candidate.metadata.insert("bad\nkey".into(), "value".into());
-            }
             "display" => candidate.display_name = "unsafe\nname".into(),
             "path" => candidate.path = "x".repeat(2049),
             _ => return Err("unknown fixture case".into()),
@@ -417,5 +413,31 @@ fn orphan_empty_policy_claims_and_retained_nonactive_keys_reopen() -> TestResult
     assert!(verified.metadata().is_empty());
     assert!(verified.bound_cidrs().is_empty());
     reopened.check_verified(&verified, "", 200)?;
+    Ok(())
+}
+
+#[test]
+fn batch_metadata_uses_full_claim_byte_bound_instead_of_arbitrary_field_limits() -> TestResult {
+    let mut authority = BatchKeyAuthority::new(100)?;
+    let mut value = claims(100, 300);
+    value.metadata = (0..65).map(|i| (format!("key-{i}"), "v".into())).collect();
+    value.metadata.insert("".into(), "".into());
+    value.metadata.insert("k".repeat(129), "v".repeat(1025));
+    value
+        .metadata
+        .insert("control\nkey".into(), "line\n\tvalue".into());
+    let expected = value.metadata.clone();
+    let raw = authority.seal(value.clone(), 100)?;
+    let verified = authority.open(raw.as_str(), "team/one", 100)?;
+    assert!(verified.metadata() == &expected);
+    let before = stored(&authority)?;
+    value
+        .metadata
+        .insert("large".into(), "x".repeat(MAX_BATCH_CLAIMS_BYTES));
+    assert!(matches!(
+        authority.seal(value, 100),
+        Err(BatchError::Capacity)
+    ));
+    assert!(before.as_slice() == stored(&authority)?.as_slice());
     Ok(())
 }

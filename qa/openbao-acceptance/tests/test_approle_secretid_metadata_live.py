@@ -62,8 +62,8 @@ class MetadataComparisonTests(unittest.TestCase):
                 with self.assertRaises(ValueError,msg=key):f.calibrated_rows()
 
 class SupplementaryProfileTests(unittest.TestCase):
-    def test_both_profiles_are_exact_immutable_receipts(self):
-        self.assertEqual(set(f.PROFILES), {'primary','supplementary'})
+    def test_all_profiles_are_exact_immutable_receipts(self):
+        self.assertEqual(set(f.PROFILES), {'primary','supplementary','partial_json','denial'})
         for profile,(module,path,digest,runner_digest,_) in f.PROFILES.items():
             with self.subTest(profile=profile):
                 rows=f.calibrated_rows(profile);phases=json.loads(path.read_text())['completed_scenarios']
@@ -124,12 +124,14 @@ class SupplementaryProfileTests(unittest.TestCase):
                   patch.object(f,'start_oracle',side_effect=oracle),patch.object(f,'stop_oracle'),
                   patch.object(f,'Instance',Instance),patch.object(f,'SourceClient'),patch.object(f,'safe_files',return_value=True),
                   patch.object(f.contract,'run',side_effect=trace_run('primary')),
-                  patch.object(f.supplementary,'run',side_effect=trace_run('supplementary'))):
+                  patch.object(f.supplementary,'run',side_effect=trace_run('supplementary')),
+                  patch.object(f.partial_json,'run',side_effect=trace_run('partial_json')),
+                  patch.object(f.denial,'run',side_effect=trace_run('denial'))):
                 self.assertEqual(f.main(),0)
             report=json.loads(output.read_text())
             self.assertEqual(set(report['cases']),{name+'.'+side for name in f.PROFILES for side in ('oracle','candidate')})
-            self.assertEqual(len(created),4);self.assertEqual(len(set(created)),4)
-            self.assertEqual({p.name for p in created if p.name.endswith('-candidate')},{'primary-candidate','supplementary-candidate'})
+            self.assertEqual(len(created),2*len(f.PROFILES));self.assertEqual(len(set(created)),2*len(f.PROFILES))
+            self.assertEqual({p.name for p in created if p.name.endswith('-candidate')},{name+'-candidate' for name in f.PROFILES})
 
     def test_profiles_cannot_substitute_for_each_other(self):
         primary=f.calibrated_rows('primary');supplement=f.calibrated_rows('supplementary')
@@ -138,5 +140,93 @@ class SupplementaryProfileTests(unittest.TestCase):
         self.assertFalse(f.complete(primary,sphases,primary,'primary'))
         self.assertFalse(f.complete(supplement,pphases,supplement,'supplementary'))
         self.assertFalse(f.complete(primary,pphases,supplement,'primary'))
+
+
+class PartialJsonProfileTests(unittest.TestCase):
+    def test_type_failure_and_fresh_alias_login_failure_are_exact(self):
+        rows=f.calibrated_rows('partial_json')
+        phases=json.loads(f.PROFILES['partial_json'][1].read_text())['completed_scenarios']
+        for case,update in (
+            ('parser.type_number.issue',{'status':200}),
+            ('parser.type_nested.issue',{'status':200}),
+            ('parser.type_array.issue',{'status':200}),
+            ('parser.type_number_first.issue',{'status':200}),
+            ('parser.malformed_json.issue',{'status':400}),
+            ('parser.malformed_json.login',{'status':200,'auth':True}),
+            ('parser.malformed_json.no_issued_bearer',{'credential_issued':True}),
+            ('parser.json_strings_control.bearer',{'status':403})):
+            wrong=copy.deepcopy(rows);next(row for row in wrong if row['case']==case).update(update)
+            self.assertFalse(f.complete(wrong,phases,rows,'partial_json'),case)
+        no_bearer=next(row for row in rows if row['case'].endswith('.no_issued_bearer'))
+        self.assertEqual(no_bearer,{'case':'parser.malformed_json.no_issued_bearer','credential_issued':False})
+        self.assertFalse(any(row['case']=='parser.malformed_json.bearer' for row in rows))
+        login=next(row for row in rows if row['case']=='parser.malformed_json.login')
+        self.assertFalse(login['auth'] or login['data'] or login['wrap'])
+        self.assertEqual(login['status'],500)
+
+    def test_partial_profile_cannot_use_previous_alias_or_drop_rejection(self):
+        rows=f.calibrated_rows('partial_json')
+        phases=json.loads(f.PROFILES['partial_json'][1].read_text())['completed_scenarios']
+        self.assertTrue(f.complete(rows,phases,rows,'partial_json'))
+        for name in ('parser.malformed_json.login','parser.malformed_json.no_issued_bearer'):
+            self.assertFalse(f.complete([row for row in rows if row['case']!=name],phases,rows,'partial_json'))
+        self.assertFalse(f.complete(rows,json.loads(f.PROFILES['supplementary'][1].read_text())['completed_scenarios'],rows,'partial_json'))
+        with patch.object(f,'file_hash',return_value='0'*64):
+            with self.assertRaises(ValueError):f.calibrated_rows('partial_json')
+
+
+
+class DenialProfileTests(unittest.TestCase):
+    def calibration(self):
+        rows=f.calibrated_rows('denial')
+        phases=json.loads(f.PROFILES['denial'][1].read_text())['completed_scenarios']
+        return rows,phases
+
+    def test_denial_retains_native_alias_update_consumption_and_restart(self):
+        rows,phases=self.calibration()
+        self.assertEqual(set(phases), {'denial.service','denial.batch','restart'})
+        for kind in ('service','batch'):
+            prefix='denial.'+kind
+            by_name={row['case']:row for row in rows}
+            rejected=by_name[prefix+'.rejected_login']
+            self.assertEqual(rejected['status'],403)
+            self.assertFalse(rejected['auth'] or rejected['data'] or rejected['wrap'])
+            self.assertEqual(by_name[prefix+'.rejection'], {'case':prefix+'.rejection',
+                'permission_denied':True,'no_credential':True,'no_wrapper':True})
+            for suffix in ('.after_alias',):
+                self.assertEqual(by_name[prefix+suffix]['data_metadata']['value']['env'],'two')
+                self.assertEqual(by_name[prefix+suffix]['custom_metadata']['value']['owner'],'control')
+            self.assertEqual(by_name['restart.'+prefix+'.alias']['data_metadata']['value']['env'],'two')
+            for field in ('raw','accessor'):
+                self.assertEqual(by_name[prefix+'.before_sid.'+field]['secret_id_num_uses'],2)
+                self.assertEqual(by_name[prefix+'.after_sid.'+field]['secret_id_num_uses'],1)
+                self.assertEqual(by_name['restart.'+prefix+'.sid.'+field]['secret_id_num_uses'],1)
+        self.assertTrue(f.complete(rows,phases,rows,'denial'))
+
+    def test_equal_403_is_insufficient_when_native_sideeffects_differ(self):
+        rows,phases=self.calibration()
+        changes=(
+            ('denial.service.after_alias',{'data_metadata':{'shape':'map','value':{'env':'one'}}}),
+            ('denial.batch.after_alias',{'custom_metadata':{'shape':'missing'}}),
+            ('denial.service.after_sid.raw',{'secret_id_num_uses':2}),
+            ('restart.denial.batch.sid.accessor',{'secret_id_num_uses':0}),
+            ('restart.denial.service.alias',{'data_metadata':{'shape':'missing'}}),
+            ('denial.batch.rejection',{'no_credential':False}),
+            ('denial.service.rejected_login',{'status':200,'auth':True}))
+        for case,update in changes:
+            wrong=copy.deepcopy(rows);next(row for row in wrong if row['case']==case).update(update)
+            self.assertFalse(f.complete(wrong,phases,rows,'denial'),case)
+        self.assertFalse(f.complete(rows,[p for p in phases if p!='restart'],rows,'denial'))
+
+    def test_rejection_projection_allows_only_exact_names_and_booleans(self):
+        rows,_=self.calibration()
+        row=next(row for row in rows if row['case']=='denial.service.rejection')
+        self.assertTrue(f.safe_rows([row]))
+        for update in ({'case':'other.rejection'},{'no_credential':1}, {'no_wrapper':'true'},
+                       {'permission_denied':None},{'raw_error':'private'}, {'token':'private'}):
+            self.assertFalse(f.safe_rows([{**row,**update}]),update)
+        for key in ('permission_denied','no_credential','no_wrapper'):
+            missing=dict(row);del missing[key]
+            self.assertFalse(f.safe_rows([missing]),key)
 
 if __name__=='__main__':unittest.main()

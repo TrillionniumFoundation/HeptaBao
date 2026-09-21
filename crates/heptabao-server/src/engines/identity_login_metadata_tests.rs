@@ -124,12 +124,8 @@ fn backend_metadata_rejects_disabled_missing_and_malformed_bindings_without_chan
     assert_eq!(serde_json::to_vec(&state)?, before);
     state.entities.get_mut(&entity).ok_or("entity")?.disabled = false;
     for fields in [
-        BTreeMap::from([("".into(), "bad".into())]),
-        metadata("bad\nvalue"),
-        metadata(&"x".repeat(MAX_METADATA_VALUE_BYTES + 1)),
-        (0..=MAX_METADATA_ENTRIES)
-            .map(|i| (format!("k{i}"), "v".into()))
-            .collect(),
+        metadata(&"x".repeat(crate::login_metadata::MAX_BYTES)),
+        metadata(&"\n".repeat(crate::login_metadata::MAX_BYTES / 2)),
     ] {
         let before = serde_json::to_vec(&state)?;
         assert!(
@@ -212,5 +208,147 @@ fn backend_metadata_is_namespace_scoped_and_independent_of_current_auth_mounts()
         .ok_or("other alias")?;
     assert_eq!(root_alias["login_metadata"], json!({"role":"root-role"}));
     assert_eq!(other_alias["login_metadata"], json!({"role":"other-role"}));
+    Ok(())
+}
+
+#[test]
+fn backend_metadata_extended_values_are_bounded_and_independently_format_detectable() -> TestResult
+{
+    let (mut state, entity, id) = fixture()?;
+    assert!(!state.has_extended_login_metadata());
+    let mut fields: BTreeMap<String, String> =
+        (0..65).map(|i| (format!("key-{i}"), "v".into())).collect();
+    fields.insert("".into(), "".into());
+    fields.insert("k".repeat(129), "v".repeat(1025));
+    fields.insert("unicode".into(), "名字\n\t".into());
+    state.update_login_metadata("auth_jwt", "subject", &fields, 101)?;
+    assert!(state.has_extended_login_metadata());
+    assert!(state.aliases.get(&id).ok_or("alias")?.login_metadata == fields);
+    let wire = serde_json::to_vec(&state)?;
+    let reopened: IdentityState = serde_json::from_slice(&wire)?;
+    reopened.validate_aliases()?;
+    assert!(reopened.has_extended_login_metadata());
+    assert!(serde_json::to_vec(&reopened)? == wire);
+    // Administrator custom metadata retains its own stricter validation.
+    assert!(
+        handle(
+            &mut state,
+            "POST",
+            &format!("identity/entity-alias/id/{id}"),
+            &json!({"canonical_id":entity,"name":"subject","mount_accessor":"auth_jwt","custom_metadata":fields}),
+            102
+        )
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn fresh_backend_metadata_rules_do_not_restrict_existing_empty_alias_updates() -> TestResult {
+    let invalid = [
+        BTreeMap::from([("".into(), "v".into())]),
+        BTreeMap::from([("vault-private".into(), "v".into())]),
+        BTreeMap::from([("not.allowed".into(), "v".into())]),
+        BTreeMap::from([("名字".into(), "v".into())]),
+        BTreeMap::from([("k".repeat(129), "v".into())]),
+        BTreeMap::from([("key".into(), "é".repeat(257))]),
+        (0..65).map(|i| (format!("k{i}"), "v".into())).collect(),
+    ];
+    for metadata in invalid {
+        let fresh = IdentityState::default();
+        let before = serde_json::to_vec(&fresh)?;
+        assert_eq!(
+            fresh
+                .validate_login_metadata_for_alias("auth_a", "subject", &metadata)
+                .err()
+                .ok_or("fresh metadata accepted")?
+                .status,
+            500
+        );
+        assert!(
+            serde_json::to_vec(&fresh)? == before,
+            "fresh rejection changed Identity"
+        );
+        let mut existing = IdentityState::default();
+        existing.bind_login("auth_a", "subject", 100)?;
+        let id = existing
+            .alias_keys
+            .get(&alias_key("auth_a", "subject"))
+            .ok_or("alias")?
+            .clone();
+        // Represents an old alias created with no backend metadata. It must
+        // count as existing despite the skipped/absent durable metadata field.
+        let bytes = serde_json::to_vec(&existing)?;
+        let value: Value = serde_json::from_slice(&bytes)?;
+        assert!(value["aliases"][&id].get("login_metadata").is_none());
+        let mut existing: IdentityState = serde_json::from_slice(&bytes)?;
+        existing
+            .aliases
+            .get_mut(&id)
+            .ok_or("alias")?
+            .custom_metadata = self::metadata("admin");
+        existing.validate_login_metadata_for_alias("auth_a", "subject", &metadata)?;
+        existing.update_login_metadata("auth_a", "subject", &metadata, 101)?;
+        assert_eq!(
+            existing.aliases.get(&id).ok_or("alias")?.login_metadata,
+            metadata
+        );
+        assert_eq!(
+            existing.aliases.get(&id).ok_or("alias")?.custom_metadata,
+            self::metadata("admin")
+        );
+        // Existence is keyed by both accessor and name, never by metadata size.
+        assert_eq!(
+            existing
+                .validate_login_metadata_for_alias("auth_b", "subject", &metadata)
+                .err()
+                .ok_or("other mount treated as existing")?
+                .status,
+            500
+        );
+    }
+    let mut boundary: BTreeMap<String, String> =
+        (0..63).map(|i| (format!("k{i}"), "v".into())).collect();
+    boundary.insert("k".repeat(128), "é".repeat(256));
+    let fresh = IdentityState::default();
+    fresh.validate_login_metadata_for_alias("auth_a", "subject", &boundary)?;
+    fresh.validate_login_metadata_for_alias(
+        "auth_a",
+        "subject",
+        &BTreeMap::from([
+            ("AZaz09=/+_-".into(), "\0\n\t\r".into()),
+            ("Vault-allowed".into(), "".into()),
+        ]),
+    )?;
+    Ok(())
+}
+
+#[test]
+fn fresh_metadata_check_rejects_inconsistent_alias_indexes_without_mutation() -> TestResult {
+    let (mut state, _, id) = fixture()?;
+    state.aliases.remove(&id);
+    let before = serde_json::to_vec(&state)?;
+    assert_eq!(
+        state
+            .validate_login_metadata_for_alias("auth_jwt", "subject", &metadata("safe"))
+            .err()
+            .ok_or("dangling index accepted")?
+            .status,
+        503
+    );
+    assert!(
+        serde_json::to_vec(&state)? == before,
+        "index rejection changed Identity"
+    );
+    let (mut state, _, _) = fixture()?;
+    state.alias_keys.clear();
+    assert_eq!(
+        state
+            .validate_login_metadata_for_alias("auth_jwt", "subject", &metadata("safe"))
+            .err()
+            .ok_or("unindexed alias accepted")?
+            .status,
+        503
+    );
     Ok(())
 }

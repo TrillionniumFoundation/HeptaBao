@@ -316,14 +316,6 @@ impl BatchClaims {
                 .policies
                 .iter()
                 .any(|p| !super::valid_name(p) || p == "root")
-            || self.metadata.len() > 64
-            || self.metadata.iter().any(|(key, value)| {
-                key.is_empty()
-                    || key.len() > 128
-                    || value.len() > 1024
-                    || key.chars().any(char::is_control)
-                    || value.chars().any(char::is_control)
-            })
         {
             return Err(BatchError::InvalidClaims);
         }

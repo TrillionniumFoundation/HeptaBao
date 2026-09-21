@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 46;
+const CURRENT_STATE_SCHEMA: u32 = 47;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2209,9 +2209,10 @@ impl Service {
             admitted = transaction;
         }
         // The AppRole backend authenticates/consumes a finite SecretID before
-        // Core Identity and wrapping. On a denied issuance publish only that
-        // affine, checked credential delta on the original admission state.
-        // Never install the failed auth/Identity/key/wrapper candidate.
+        // Core Identity and wrapping. A denied issuance retains only that
+        // checked credential delta and, for an existing disabled entity, the
+        // native AppRole alias metadata refresh performed by dispatch. The
+        // rejected token/key/wrapper candidate is never installed.
         if response.status >= 400
             && let Some(consumption) = approle_secret_consumption
             && let Err(error) = consumption.apply(&mut admitted.auth)
@@ -2460,6 +2461,44 @@ impl Service {
         ) {
             Ok(Some(mut response)) => {
                 *approle_secret_consumption = response.approle_secret_consumption.take();
+                // Native Core refreshes the existing alias before rejecting a
+                // disabled entity. The backend has already authenticated this
+                // login and passed source constraints. Apply only its trusted
+                // alias metadata to the admitted engine owner, leaving the
+                // issued auth candidate uninstalled. This also covers an
+                // unlimited SID, which has no consumption capsule.
+                if response.status == 200
+                    && let Some(login) = response.login_identity.as_ref()
+                    && auth.online_mount_enabled(namespace, &login.mount, "approle")
+                    && let Some(metadata) = login.metadata.as_ref()
+                {
+                    let result = auth
+                        .mount_accessor(namespace, &login.mount)
+                        .map_err(|error| Response::error(error.status, &error.message))
+                        .and_then(|accessor| {
+                            state
+                                .engines
+                                .refresh_disabled_approle_alias_metadata(
+                                    namespace,
+                                    &accessor,
+                                    &login.alias,
+                                    metadata,
+                                    now,
+                                )
+                                .map_err(|error| Response::error(error.status, &error.message))
+                        });
+                    match result {
+                        Ok(false) => {}
+                        Ok(true) => {
+                            erase_json(&mut response.body);
+                            return Response::error(403, "permission denied");
+                        }
+                        Err(error) => {
+                            erase_json(&mut response.body);
+                            return error;
+                        }
+                    }
+                }
                 let mut engines = state.engines.clone();
                 if response.mutated
                     && method == "DELETE"

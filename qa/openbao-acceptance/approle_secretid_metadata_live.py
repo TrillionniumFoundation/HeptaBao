@@ -18,6 +18,8 @@ from remote_jwks_live import Instance
 from userpass_password_live import free_port, private_parent, safe_files
 import approle_secretid_metadata_probe as contract
 import approle_secretid_metadata_supplement as supplementary
+import approle_metadata_partial_probe as partial_json
+import approle_metadata_denial_probe as denial
 
 CALIBRATION_PATH = Path(__file__).parent/'evidence/approle-secretid-metadata-official-b56954e.json'
 CALIBRATION_SHA256 = '7292a2c8f5ada19543b2536c1cbfc0648f515a2684aa3c12fe8d9145c6942023'
@@ -30,6 +32,16 @@ PROFILES = {
         'd46ee29bff78d8a57d131ad461738ab7b8a9687bd99adadfebe514ec1db82c56',
         '1a956d0783fba09967f072d17b5ba7d245f0febeef446382b025e137c1072f30',
         'heptabao.approle-secretid-metadata-supplement.v1'),
+    'partial_json': (partial_json,
+        Path(__file__).parent/'evidence/approle-metadata-partial-official-b56954e.json',
+        '9f8d574fd8a25b2e7f62c136093db838adf0f86a61b056534d8e771caf36828c',
+        '2055bdaf561b539e82c19bd9c3c21b9ab33afc48c83fc586641d6751e2af6c5a',
+        'heptabao.approle-metadata-partial-probe.v1'),
+    'denial': (denial,
+        Path(__file__).parent/'evidence/approle-metadata-denial-official-fe49395.json',
+        '777a71da5df321e7945ca250ccd09de0021f1ff7b12ff2014853b251b9d36fbc',
+        '1bf4364019c85620ff9c81530af45ec406c5b48750beabf13be225f14f0a4668',
+        'heptabao.approle-metadata-denial-probe.v1'),
 }
 
 
@@ -64,6 +76,11 @@ def safe_rows(rows):
                 fields = {'matches'} if name.startswith('restart.') else {'matches', 'distinct_bearer'}
             elif name.endswith('.accessor_not_applicable') and '.batch.' in name:
                 fields = {'absent_accessor', 'endpoint_not_called'}
+            elif name in ('denial.service.rejection', 'denial.batch.rejection'):
+                fields = {'permission_denied', 'no_credential', 'no_wrapper'}
+            elif name.endswith('.no_issued_bearer'):
+                fields = {'credential_issued'}
+                if row.get('credential_issued') is not False: return False
             else: return False
             if set(row) != {'case'} | fields or any(type(row[k]) is not bool for k in fields): return False
             continue
@@ -206,7 +223,8 @@ def main():
         'SecretID_metadata_covered': passed, 'metadata_issuance_snapshots_covered': passed,
         'HA_covered': False, 'historical_upgrade_covered': False, 'full_openbao_compatibility': False,
         'not_covered': ['local-only SecretIDs', 'MFA', 'HA',
-                        'token child delegation', 'maximum metadata size limits', 'supplementary custom/batch repetition'],
+                        'token child delegation', 'maximum metadata size limits', 'supplementary/partial_json custom/batch repetition',
+                        'fresh-alias boundary permutations beyond malformed JSON fallback'],
         'independent_qualification': False, 'production_authority': False}
     if any(secret in json.dumps(report) for values in all_sensitive for secret in values): raise ValueError('sensitive_report')
     if admit_output(output) != admitted: raise ValueError('output_parent_changed')

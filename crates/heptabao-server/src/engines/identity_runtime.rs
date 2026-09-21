@@ -48,6 +48,72 @@ impl IdentityState {
             .any(|alias| !alias.login_metadata.is_empty())
     }
 
+    pub(crate) fn has_extended_login_metadata(&self) -> bool {
+        self.aliases.values().any(|alias| {
+            let metadata = &alias.login_metadata;
+            metadata.len() > MAX_METADATA_ENTRIES
+                || metadata.iter().any(|(key, value)| {
+                    key.is_empty()
+                        || key.len() > MAX_METADATA_KEY_BYTES
+                        || value.len() > MAX_METADATA_VALUE_BYTES
+                        || value.chars().any(char::is_control)
+                })
+        })
+    }
+
+    pub(crate) fn has_approle_login_metadata(&self) -> bool {
+        // Older producers only emitted JWT backend metadata under "role".
+        // Administrative custom metadata has a separate field. Retain this
+        // gate even after the originating AppRole mount or token is deleted.
+        self.aliases
+            .values()
+            .any(|alias| alias.login_metadata.contains_key("role_name"))
+    }
+
+    pub(crate) fn validate_login_metadata_for_alias(
+        &self,
+        accessor: &str,
+        name: &str,
+        metadata: &BTreeMap<String, String>,
+    ) -> Result<()> {
+        validate_login_metadata(metadata)?;
+        if let Some(id) = self.alias_keys.get(&alias_key(accessor, name)) {
+            let alias = self
+                .aliases
+                .get(id)
+                .ok_or_else(|| error(503, "inconsistent identity alias index"))?;
+            if alias.mount_accessor != accessor || alias.name != name {
+                return Err(error(503, "inconsistent identity alias binding"));
+            }
+            return Ok(());
+        }
+        if self
+            .aliases
+            .values()
+            .any(|alias| alias.mount_accessor == accessor && alias.name == name)
+        {
+            return Err(error(503, "inconsistent identity alias index"));
+        }
+        // OpenBao 2.6.2 SanitizeAlias validates only the fresh alias here.
+        // These byte limits intentionally differ from administrative custom
+        // metadata and from the bounded existing-alias backend update profile.
+        if metadata.len() > 64
+            || metadata.iter().any(|(key, value)| {
+                key.is_empty()
+                    || key.len() > 128
+                    || key.starts_with("vault-")
+                    || !key.bytes().all(|byte| {
+                        byte.is_ascii_alphanumeric()
+                            || matches!(byte, b'=' | b'/' | b'+' | b'_' | b'-')
+                    })
+                    || value.len() > 512
+            })
+        {
+            return Err(error(500, "invalid fresh alias metadata"));
+        }
+        Ok(())
+    }
+
     /// Auth supplies trusted backend metadata after successful login binding.
     /// An administrative alias edit cannot write this field.
     pub(crate) fn update_login_metadata(
@@ -83,6 +149,40 @@ impl IdentityState {
             alias.updated_at = now;
         }
         Ok(())
+    }
+
+    pub(crate) fn refresh_disabled_login_metadata(
+        &mut self,
+        accessor: &str,
+        name: &str,
+        metadata: &BTreeMap<String, String>,
+        now: u64,
+    ) -> Result<bool> {
+        validate_login_metadata(metadata)?;
+        valid_identifier(accessor, "mount accessor")?;
+        valid_alias_name(name, "login alias")?;
+        let Some(id) = self.alias_keys.get(&alias_key(accessor, name)) else {
+            return Ok(false);
+        };
+        let alias = self
+            .aliases
+            .get(id)
+            .ok_or_else(|| error(503, "login identity alias missing"))?;
+        if alias.mount_accessor != accessor || alias.name != name {
+            return Err(error(503, "inconsistent login identity alias binding"));
+        }
+        if !self.project(&alias.canonical_id)?.disabled {
+            return Ok(false);
+        }
+        let alias = self
+            .aliases
+            .get_mut(id)
+            .ok_or_else(|| error(503, "login identity alias missing"))?;
+        if &alias.login_metadata != metadata {
+            alias.login_metadata.clone_from(metadata);
+            alias.updated_at = now;
+        }
+        Ok(true)
     }
 
     pub(crate) fn has_opaque_aliases(&self) -> bool {
@@ -517,17 +617,8 @@ impl<'a> Expansion<'a> {
 }
 
 fn validate_login_metadata(metadata: &BTreeMap<String, String>) -> Result<()> {
-    if metadata.len() > MAX_METADATA_ENTRIES {
-        return Err(bad("login identity metadata exceeds entry bound"));
-    }
-    for (key, value) in metadata {
-        if key.is_empty()
-            || key.len() > MAX_METADATA_KEY_BYTES
-            || value.len() > MAX_METADATA_VALUE_BYTES
-            || value.chars().any(char::is_control)
-        {
-            return Err(bad("invalid login identity metadata"));
-        }
+    if !crate::login_metadata::within_limit(metadata) {
+        return Err(bad("login identity metadata exceeds encoded byte bound"));
     }
     Ok(())
 }

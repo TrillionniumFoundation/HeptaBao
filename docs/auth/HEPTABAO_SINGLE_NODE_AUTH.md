@@ -482,7 +482,8 @@ operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`
 limits. The value is returned only in the successful creation response and is
 stored as a SHA-256 digest; duplicate active values are rejected rather than
 replacing an existing SecretID's uses or expiry. Random and custom issuance also
-accept the per-SecretID CIDR restrictions described under schema46 below. Batch
+accept per-SecretID CIDR restrictions (schema46) and metadata (schema47),
+described below. Batch
 issuance from the remaining authentication methods, cloud IAM, Kerberos auth,
 WebAuthn/push/external MFA,
 complete OpenBao browser/UI semantics, and full
@@ -1221,8 +1222,8 @@ observations separately verify the deliberate safe rejection. Source, binary
 and helpers remained unchanged and both secret scans passed. The pinned official handler
 panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
 instead. Per-SecretID CIDR overrides are implemented separately in schema46 below.
-Arbitrary SecretID/alias metadata, other dedicated role subroutes and remaining
-configuration remain open. Existing SecretIDs and roles with absent type metadata retain their old
+SecretID/backend alias metadata is implemented separately in schema47 below;
+other dedicated role subroutes and remaining configuration remain open. Existing SecretIDs and roles with absent type metadata retain their old
 serialized shape; explicit type metadata requires schema42.
 
 The first dual run completed all 187 observations on each side, but found 23
@@ -1344,8 +1345,8 @@ assertions. `approle_secret_cidrs_live.py` compares the 378 executed observation
 and retains those explicit omissions. The actual schema44-to-45 upgrade runner
 uses two old-binary stores, independent first-write reader gates and a real
 owned-journal permission fault followed by recovery. Per-SecretID overrides are
-a separate schema46 feature below; arbitrary SecretID metadata and other
-dedicated AppRole fields remain open.
+a separate schema46 feature below, and SID metadata is covered by schema47.
+Other dedicated AppRole fields remain open.
 
 The first schema45 `dc259f8` dual run completed all 380 observations on each
 side. Fourteen SecretID reads differed only in `cidr_list`: the official result
@@ -1452,9 +1453,80 @@ passed 1001 server tests and one documentation test before this narrow readback
 fix; its 66 AppRole tests and strict Clippy passed again after the fix.
 These are local process/loopback observations; physical failure and real IPv6
 source sockets are not established by this qualification. The schema45
-role-level receipts above remain a separate feature slice. Arbitrary
-SecretID/alias metadata, local-only SecretIDs, MFA and actual IPv6 source-socket
-coverage remain open for this profile.
+role-level receipts above remain a separate feature slice. SID/backend alias
+metadata is covered separately below. Local-only SecretIDs, MFA and actual IPv6
+source-socket coverage remain open for this profile.
+
+## AppRole SecretID metadata in schema47
+
+Random and custom SecretID issuance accept `metadata` as a JSON-map string,
+CSV key/value string, or standard padded base64 encoding of either. API null,
+empty input and `{}` produce an empty map. Base64 decoding precedes JSON; literal
+`null` therefore fails while base64-encoded JSON null produces an empty map.
+JSON preserves case and uses the final duplicate value. CSV trims, lowercases,
+deduplicates and sorts whole pairs before applying them; its duplicate-key
+result is not input-order last-wins. Non-string API inputs, invalid pairs and
+nonempty keys with empty values return 400 without creating a SID. JSON permits
+empty keys, Unicode and controls. A JSON type error preserves the partial map
+before CSV fallback, matching Go's decoder; a syntax error has no partial map.
+
+SID lookup by credential or accessor returns the original metadata. A supplied
+`role_name` remains unchanged there. Login makes a separate effective map with
+`role_name` forcibly set to the actual role, then uses it for the issued token
+and the RoleID Identity alias. Service-token lookup and all three renewal routes
+retain that issued snapshot after SID destruction, role TTL changes, another
+SID login or restart. Batch claims retain the same snapshot and remain
+nonrenewable. Successful later login refreshes backend alias metadata while
+preserving administrator `custom_metadata`. TokenAPI children do not inherit
+AppRole metadata; their create-request metadata is a separate API contract.
+
+Fresh alias creation applies the native Identity limits to the effective map:
+at most 64 pairs, nonempty ASCII keys of at most 128 bytes using
+`A-Z a-z 0-9 = / + _ -`, no `vault-` key prefix, and values of at most 512 bytes.
+The injected `role_name` entry counts toward the limit. A rejected fresh alias
+returns 500 without publishing the login candidate; finite SID consumption
+retains the existing checked-denial behavior. Updating an existing alias bypasses
+these creation limits, including when its previous backend map was empty.
+
+Absent historical SID/snapshot fields remain absent and reads do not migrate
+them. New service logins capture a snapshot, but renewing an old token only
+projects its historically known role name without guessing SID metadata.
+Explicit SID metadata, issued snapshots, backend AppRole `role_name` metadata
+and extended backend alias shapes have independent schema47 format protection.
+The alias gates remain effective after SID, token and mount cleanup; old JWT
+`role` metadata and administrative `role_name` custom metadata do not trigger
+the AppRole gate. Denied issuance retains checked finite-SID consumption without
+publishing a rejected token, batch-key or wrapper candidate. For an authenticated
+AppRole login whose existing entity is disabled, native Core refreshes that
+alias's backend metadata before returning 403; this narrowly scoped update also
+persists for an unlimited SID. Custom metadata and other Identity state remain
+unchanged. Source rejection occurs earlier and does not refresh the alias.
+
+Raw SID, issued service and backend alias maps are bounded by **256 KiB of
+canonical JSON**, counted without a serialized copy. Administrative custom
+metadata retains its previous limits. The complete batch claims still have an
+**8 KiB** ceiling; large metadata may work with a service token but prevent batch
+issuance. Neither truncation nor larger token/header limits are used. Invalid
+UTF-8 produced by base64 and lone UTF-16 surrogate escapes inside the metadata
+JSON string remain rejected rather than reproducing Go's replacement-character
+behavior. These are remaining compatibility boundaries.
+
+The [primary official exploration](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-official-b56954e.json)
+contains 588 observations across random/custom and service/batch paths. The
+[129-observation supplement](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-supplement-official-b56954e.json)
+confirms base64/CSV details and successful updates of an already-created alias
+with empty keys, controls, 129-byte keys, 1025-byte values and 65-entry maps.
+Fresh alias creation uses a separate native metadata validation path; the
+supplement does not establish unrestricted fresh creation or unbounded batch support.
+The [29-observation JSON fallback exploration](../../qa/openbao-acceptance/evidence/approle-metadata-partial-official-b56954e.json)
+distinguishes decoder type errors from syntax errors and includes an issued SID
+whose first alias login fails with 500. The
+[41-observation disabled-Identity exploration](../../qa/openbao-acceptance/evidence/approle-metadata-denial-official-fe49395.json)
+confirms both token kinds return 403 while updating the existing alias, consuming
+one finite SID use and preserving custom metadata across restart.
+Candidate dual comparison, real schema46-to-47 upgrade
+and HA qualification remain pending. These official explorations alone do not
+qualify the candidate implementation.
 
 ## Kubernetes batch lease ownership in schema42
 

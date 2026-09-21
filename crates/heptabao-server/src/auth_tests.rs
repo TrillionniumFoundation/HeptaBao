@@ -1206,7 +1206,7 @@ fn approle_renewal_reloads_live_role_mount_and_survives_restart() {
     let id = hash(&raw);
     assert!(matches!(
         state.tokens[&id].auth_provenance.as_ref(),
-        Some(TokenAuthProvenance::AppRole { role_name }) if role_name == "service"
+        Some(TokenAuthProvenance::AppRole { role_name, .. }) if role_name == "service"
     ));
 
     // A restart must preserve the issuer binding without ever persisting the

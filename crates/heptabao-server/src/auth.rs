@@ -1106,6 +1106,8 @@ enum TokenAuthProvenance {
     },
     AppRole {
         role_name: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        issued_metadata: Option<BTreeMap<String, String>>,
     },
     Radius {
         username: String,
@@ -1139,6 +1141,13 @@ enum TokenAuthProvenance {
 
 impl Drop for Token {
     fn drop(&mut self) {
+        if let Some(TokenAuthProvenance::AppRole {
+            issued_metadata: Some(metadata),
+            ..
+        }) = &mut self.auth_provenance
+        {
+            approle_metadata::erase(metadata);
+        }
         if let Some(parent) = &mut self.parent {
             parent.zeroize();
         }
@@ -1286,6 +1295,8 @@ impl Drop for Role {
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct SecretId {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    metadata: Option<BTreeMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     cidr_list: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6229,6 +6240,7 @@ impl AuthState {
                         body,
                         &[
                             "secret_id",
+                            "metadata",
                             "ttl",
                             "num_uses",
                             "cidr_list",
@@ -6236,9 +6248,22 @@ impl AuthState {
                         ],
                     )?;
                 } else {
-                    reject_unknown(body, &["ttl", "num_uses", "cidr_list", "token_bound_cidrs"])?;
+                    reject_unknown(
+                        body,
+                        &[
+                            "metadata",
+                            "ttl",
+                            "num_uses",
+                            "cidr_list",
+                            "token_bound_cidrs",
+                        ],
+                    )?;
                 }
                 let constraints = approle_secret_id_cidrs::issue(&role, body)?;
+                let parsed_metadata = approle_metadata::parse(body)?;
+                let metadata_present = parsed_metadata.is_some();
+                let mut metadata =
+                    approle_metadata::Metadata::new(parsed_metadata.unwrap_or_default());
                 let ttl = approle_renewal::role_duration(body, "ttl", role.secret_id_ttl)?;
                 let num_uses =
                     approle_renewal::role_count(body, "num_uses", role.secret_id_num_uses)?;
@@ -6280,6 +6305,7 @@ impl AuthState {
                 role.secret_ids.insert(
                     secret_hash,
                     SecretId {
+                        metadata: metadata_present.then(|| metadata.take()),
                         cidr_list: constraints.source,
                         token_bound_cidrs: constraints.token,
                         issuance: Some(approle_renewal::SecretIdIssuance::new(requested_ttl, now)),
@@ -6380,6 +6406,7 @@ impl AuthState {
             .ok_or_else(|| bad("invalid role or secret ID"))?;
         let mut credential_consumption = None;
         let mut secret_constraints = None;
+        let mut metadata = approle_metadata::Metadata::default();
         if role.bind_secret_id {
             let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let id = hash(secret_id);
@@ -6395,6 +6422,7 @@ impl AuthState {
             if secret.uses_remaining == Some(0) {
                 return Err(bad("invalid role or secret ID"));
             }
+            metadata = approle_metadata::Metadata::new(secret.metadata.clone().unwrap_or_default());
             let previous_secret = secret.clone();
             secret_constraints = Some(approle_secret_id_cidrs::Constraints::from_secret(secret));
             let exhausted = if let Some(remaining) = &mut secret.uses_remaining {
@@ -6441,6 +6469,7 @@ impl AuthState {
                 });
             }
         };
+        metadata.insert("role_name".into(), name.clone());
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
         let explicit = (role.token_explicit_max_ttl > 0)
@@ -6452,7 +6481,7 @@ impl AuthState {
                 batch::BatchClaims {
                     namespace: namespace.into(),
                     policies: role.policies.clone(),
-                    metadata: BTreeMap::from([("role_name".into(), name.clone())]),
+                    metadata: metadata.0.clone(),
                     display_name: format!("approle-{name}"),
                     path: format!("auth/{mount}/login"),
                     bound_cidrs: bound_cidrs.clone(),
@@ -6480,6 +6509,7 @@ impl AuthState {
             token.auth_mount = Some(mount.into());
             token.auth_provenance = Some(TokenAuthProvenance::AppRole {
                 role_name: name.clone(),
+                issued_metadata: Some(metadata.0.clone()),
             });
             self.issue(token, now)?
         };
@@ -6488,10 +6518,10 @@ impl AuthState {
         {
             issued.body["warnings"] = json!([warning]);
         }
-        issued.body["auth"]["metadata"] = json!({"role_name":name});
+        issued.body["auth"]["metadata"] = json!(metadata.0);
         issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {
-            metadata: None,
+            metadata: Some(metadata.take()),
             mount: mount.into(),
             alias: role_id.into(),
         });
@@ -6653,8 +6683,8 @@ fn token_info(token: &Token, now: u64) -> Value {
     if token.period > 0 {
         info["period"] = json!(token.period);
     }
-    if let Some(TokenAuthProvenance::AppRole { role_name }) = &token.auth_provenance {
-        info["meta"] = json!({"role_name":role_name});
+    if let Some(metadata) = approle_metadata::token_metadata(token) {
+        info["meta"] = json!(metadata);
     }
     if let Some(TokenAuthProvenance::Jwt { role_name }) = &token.auth_provenance {
         info["meta"] = json!({"role":role_name});
@@ -7086,3 +7116,9 @@ mod approle_secret_id_cidrs;
 #[cfg(test)]
 #[path = "auth_approle_secret_id_cidrs_tests.rs"]
 mod approle_secret_id_cidrs_tests;
+
+#[path = "auth_approle_metadata.rs"]
+mod approle_metadata;
+#[cfg(test)]
+#[path = "auth_approle_metadata_tests.rs"]
+mod approle_metadata_tests;

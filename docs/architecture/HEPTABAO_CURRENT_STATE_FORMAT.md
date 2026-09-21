@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **46**. Its source constant is
+The current Service state schema is **47**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -85,7 +85,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 43 | AppRole role token CIDR presence, including an explicit empty list, and constrained direct AppRole service-token snapshots. Historical absent role fields remain absent. |
 | 44 | Explicit ordinary JWT role/mount token types and trusted login alias metadata. Historical absent role types and empty backend metadata remain absent in stored bytes; user-maintained alias metadata keeps its own meaning. |
 | 45 | Optional AppRole role-level SecretID login source CIDRs, including an explicit empty list. Per-SecretID source/token CIDR fields must remain absent; existing role constraints and issued tokens retain their meaning. |
-| 46 | Independent optional `cidr_list` and `token_bound_cidrs` fields on each AppRole SecretID. Presence of either field, including an empty list, requires this schema. |
+| 46 | Independent optional `cidr_list` and `token_bound_cidrs` fields on each AppRole SecretID, including explicit empty lists. SID metadata, AppRole issued-metadata snapshots, AppRole backend alias metadata and extended backend alias maps must remain absent. |
+| 47 | Optional raw AppRole SID metadata and service-token issued-metadata snapshots; either field's presence, including an empty map, requires this schema. Backend aliases containing the AppRole `role_name` key, or maps outside the previous metadata shape, independently require schema47 even after credential and mount cleanup. Older producers emitted only JWT `role` backend metadata; administrative custom metadata stays separate. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -155,6 +156,30 @@ not require them to remain subsets of a mutable role: administrators must be
 able to load and repair a changed role. Login rechecks the SID source subset;
 nonempty SID token overrides keep their issuance value and are not revalidated
 against later role token CIDRs.
+
+AppRole `SecretId.metadata` and direct service-token provenance
+`issued_metadata` are independent optional maps. `None` remains omitted;
+explicit SID metadata, including null/empty input, stores `Some({})`. Schema46
+is explicitly admitted when these fields and extended alias metadata are absent.
+Reads do not fill them. A new service login records its effective metadata;
+renewing an old token does not invent its historical SID or populate its missing
+snapshot. `has_approle_metadata()` includes retained SID maps and issued snapshots
+across every namespace/mount, even after the originating SID or role is removed.
+
+SID lookup preserves the raw map, including a supplied `role_name`. Login clones
+that map and overwrites `role_name` with the canonical role name for the issued
+service/batch token and backend Identity alias. Lookup and all service renewal
+routes use the issued snapshot, not the current alias or a surviving SID.
+Admission checks map bounds and issuing mount/provenance consistency without
+requiring the old SID or current role to exist.
+
+Backend login maps use a 256 KiB canonical JSON byte bound measured without a
+serialized copy. Administrative `custom_metadata` keeps its previous rules.
+`has_extended_login_alias_metadata_state()` independently fences maps beyond the
+previous key/count/value/control shape, including aliases surviving removal of
+their SID, token or auth mount. The older schema44 nonempty-map gate remains.
+Batch metadata uses the existing claims map and complete 8 KiB claims bound;
+there is no new per-batch storage record or larger bearer/header allowance.
 
 Ordinary JWT role `token_type` is optional in storage. Absence preserves old
 bytes while API reads report `default`; an explicit value, including `default`,
@@ -415,7 +440,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 46. An authenticated
+it. Initialization and committed mutations use schema 47. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

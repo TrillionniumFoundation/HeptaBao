@@ -9,6 +9,14 @@ pub(crate) struct LoginIdentity {
     pub(crate) metadata: Option<BTreeMap<String, String>>,
 }
 
+impl Drop for LoginIdentity {
+    fn drop(&mut self) {
+        if let Some(metadata) = &mut self.metadata {
+            approle_metadata::erase(metadata);
+        }
+    }
+}
+
 pub(crate) struct ExternalGroups {
     pub(crate) mount: String,
     pub(crate) alias: String,

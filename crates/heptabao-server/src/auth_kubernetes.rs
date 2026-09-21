@@ -430,7 +430,7 @@ impl AuthState {
         }))
     }
 
-    pub(super) fn online_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
+    pub(crate) fn online_mount_enabled(&self, namespace: &str, mount: &str, kind: &str) -> bool {
         self.effective_auth_mounts(namespace)
             .get(mount)
             .is_some_and(|v| v.kind == kind)

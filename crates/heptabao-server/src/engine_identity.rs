@@ -29,6 +29,37 @@ impl EngineState {
             .any(|state| state.identity.has_login_metadata())
     }
 
+    pub(crate) fn has_extended_login_alias_metadata_state(&self) -> bool {
+        self.namespaces
+            .values()
+            .any(|state| state.identity.has_extended_login_metadata())
+    }
+
+    pub(crate) fn has_approle_login_alias_metadata_state(&self) -> bool {
+        self.namespaces
+            .values()
+            .any(|state| state.identity.has_approle_login_metadata())
+    }
+
+    /// Check backend metadata before creating an Identity. Existing aliases,
+    /// including aliases with no prior backend metadata, use the update rules.
+    pub(crate) fn validate_login_alias_metadata(
+        &self,
+        namespace: &str,
+        accessor: &str,
+        alias: &str,
+        metadata: &BTreeMap<String, String>,
+    ) -> Result<()> {
+        if let Some(state) = self.namespaces.get(namespace) {
+            state
+                .identity
+                .validate_login_metadata_for_alias(accessor, alias, metadata)
+        } else {
+            identity::IdentityState::default()
+                .validate_login_metadata_for_alias(accessor, alias, metadata)
+        }
+    }
+
     pub(crate) fn update_login_alias_metadata(
         &mut self,
         namespace: &str,
@@ -56,6 +87,25 @@ impl EngineState {
             .or_default()
             .identity
             .bind_login(accessor, alias, now)
+    }
+
+    /// Only the authenticated AppRole login dispatcher may publish this narrow
+    /// native side effect when an existing entity is disabled. No new binding
+    /// or token authority is created by this operation.
+    pub(crate) fn refresh_disabled_approle_alias_metadata(
+        &mut self,
+        namespace: &str,
+        accessor: &str,
+        alias: &str,
+        metadata: &BTreeMap<String, String>,
+        now: u64,
+    ) -> Result<bool> {
+        let Some(state) = self.namespaces.get_mut(namespace) else {
+            return Ok(false);
+        };
+        state
+            .identity
+            .refresh_disabled_login_metadata(accessor, alias, metadata, now)
     }
 
     pub(crate) fn verify_external_group_identity(

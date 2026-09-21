@@ -47,3 +47,5 @@ mod cubbyhole_service_tests;
 mod secret_serde;
 pub(crate) mod state_record_root;
 mod state_records;
+
+mod login_metadata;

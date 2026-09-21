@@ -44,7 +44,7 @@ pub(super) fn secret_id_info(secret: &SecretId) -> Value {
         "expiration_time_unix": secret.expires_at,
         "expiration_time": secret.expires_at.map(crate::engines::timestamp)
             .unwrap_or_else(|| "0001-01-01T00:00:00Z".into()),
-        "metadata": {}, "cidr_list": secret.cidr_list.as_deref().unwrap_or_default(),
+        "metadata": secret.metadata.clone().unwrap_or_default(), "cidr_list": secret.cidr_list.as_deref().unwrap_or_default(),
         "token_bound_cidrs": secret.token_bound_cidrs.as_deref().unwrap_or_default()
     });
     if let Some(issued) = &secret.issuance {
@@ -141,7 +141,7 @@ impl AuthState {
         now: u64,
     ) -> Result<Option<AuthResponse>, AuthError> {
         let token = self.tokens.get(target).ok_or_else(denied)?;
-        let Some(TokenAuthProvenance::AppRole { role_name }) = token.auth_provenance.as_ref()
+        let Some(TokenAuthProvenance::AppRole { role_name, .. }) = token.auth_provenance.as_ref()
         else {
             return Ok(None);
         };
@@ -169,6 +169,11 @@ impl AuthState {
             increment,
             now,
         )?;
+        let metadata = approle_metadata::Metadata::new(
+            approle_metadata::token_metadata(token)
+                .ok_or_else(denied)?
+                .into_owned(),
+        );
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         Ok(Some(AuthResponse {
@@ -179,7 +184,7 @@ impl AuthState {
             status: 200,
             mutated: true,
             body: json!({"auth": {
-                "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
+                "metadata": metadata.0, "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
                 "entity_id": token.entity_id.as_deref().unwrap_or(""),
                 "lease_duration": expires_at - now, "renewable": true, "token_type": "service",
                 "orphan": token.parent.is_none()
