@@ -716,16 +716,22 @@ publication as Identity binding, batch sealing and response wrapping; denied
 Identity, wrapper exhaustion and failed publication leave that candidate private.
 Existing aliases and tokens are not rewritten by reads.
 
-These explicit JWT types and backend alias metadata require schema44. A remote
-JWT completion samples one time for validation, issuance, Identity and wrapping.
-It counts completed integer seconds without anticipating a future batch issue
-time or advancing the shared batch-key watermark into the next second.
-The existing future-bearer and clock-rollback checks remain strict. This does
-not qualify an operating system's wall clock against rollback. The request
-anchor still contains integer seconds: a concurrent later issuance can advance
-the watermark beyond an earlier remote request's conservative estimate and
-make that remote login fail closed. Precise concurrent wall-clock admission
-remains a separate runtime gap.
+These explicit JWT types and backend alias metadata require schema44. Real
+remote JWT completion now samples the host wall clock once after reacquiring the
+Service writer and rechecking HA/activation authority. It uses that integer
+second for assertion validation, issuance, Identity, batch sealing and wrapping.
+An unavailable wall clock fails closed. Only trusted Service ingress selects
+this transient mode; HTTP parameters, provider responses and HA frames cannot.
+Explicit `handle_at`/`handle_request_at` embedders retain their injected clock
+domain and monotonic elapsed time. No persisted field or schema change is needed.
+
+The earlier integer request anchor could lag behind a later local batch issuance
+while JWKS work was pending, causing a false rollback rejection. Completion-time
+sampling removes that lost-fraction estimate without rounding into the future
+or clamping to a stored watermark. Existing future-bearer and rollback checks
+remain strict. This still relies on the trusted host wall clock; it does not
+qualify cross-host skew or a hardware clock authority. The changed binary
+requires its own concurrency and remote regression evidence.
 
 The official `jwt-batch-official-3588f54.json` calibration records 33 scenarios
 and 204 observations (SHA256
@@ -753,7 +759,8 @@ service tokens retain renewal metadata and orphan status on all three renewal
 routes. HA exercises standby login, Identity disable/restore, assertion reuse,
 role/mount removal, leader change and full restart with reads through every voter.
 The remote immediate issue/use chain stayed within one integer second in this run;
-it does not resolve the separate concurrent-clock gap above. Each receipt binds
+that historical binary predates the concurrent completion-clock correction above.
+Each receipt binds
 clean unchanged source, binary and helper inputs, secret scans and process cleanup.
 OIDC browser roles, arbitrary user-claim/claim mappings, MFA and batch key
 rotation remain outside this ordinary JWT slice.

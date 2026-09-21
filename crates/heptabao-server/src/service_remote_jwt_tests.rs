@@ -512,3 +512,248 @@ fn oidc_config_stages_without_writer_io_and_failed_preflight_preserves_configura
     );
     Ok(())
 }
+
+fn clock_batch_fixture(root: &Root) -> TestResult<(Service, String)> {
+    let (mut service, admin) = fixture(root)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/remote/role/app",
+            &admin,
+            json!({"role_type":"jwt","token_type":"batch","clock_skew_leeway":-1})
+        )
+        .status,
+        204
+    );
+    Ok((service, admin))
+}
+
+fn clock_assertion(nbf: u64, exp: u64) -> TestResult<Value> {
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[79; 32]).map_err(|_| "test key")?;
+    let claims = json!({"iss":"https://synthetic.example:443","aud":"service", "sub":"clock-subject",
+                       "iat":100,"nbf":nbf,"exp":exp});
+    let payload = format!(
+        "{}.{}",
+        URL_SAFE_NO_PAD.encode(br#"{"alg":"EdDSA","kid":"synthetic"}"#),
+        URL_SAFE_NO_PAD.encode(serde_json::to_vec(&claims)?)
+    );
+    Ok(
+        json!({"role":"app","jwt":format!("{payload}.{}",URL_SAFE_NO_PAD.encode(pair.sign(payload.as_bytes()).as_ref()))}),
+    )
+}
+
+fn remote_effect(request: &mut PendingExternalRequest) -> TestResult<&mut RemoteJwtEffect> {
+    let ExternalEffectPlan::OnlineAuth(plan) = &mut request.effect else {
+        return Err("expected online auth".into());
+    };
+    let OnlineAuthEffect::RemoteJwt(effect) = &mut plan.effect else {
+        return Err("expected remote JWT".into());
+    };
+    Ok(effect)
+}
+
+#[test]
+fn trusted_real_entries_mark_remote_clock_but_explicit_clock_keeps_its_domain() -> TestResult {
+    let root = Root::new();
+    let (mut service, _) = clock_batch_fixture(&root)?;
+    let mut explicit = pending(&mut service, "auth/remote/login", "", assertion()?, None)?;
+    assert!(matches!(
+        remote_effect(&mut explicit)?.completion_clock,
+        RemoteJwtCompletionClock::Anchored
+    ));
+    // No network work: real public/forwarded ingress creates a plan, not a
+    // caller-selected clock marker. Both paths select the same completion mode.
+    for forwarded in [false, true] {
+        let request = ServiceRequest::new("POST", "auth/remote/login", "", "", assertion()?);
+        let execution = if forwarded {
+            service.begin_forwarded(request)
+        } else {
+            service.begin_request(request)
+        };
+        let RequestExecution::External(mut request) = execution else {
+            return Err("expected real-clock remote plan".into());
+        };
+        assert!(matches!(
+            remote_effect(&mut request)?.completion_clock,
+            RemoteJwtCompletionClock::Realtime
+        ));
+    }
+    // Finishing the explicit plan in this process's actual contemporary clock
+    // would reject the historical JWT. Its injected clock must remain intact.
+    assert_eq!(observed(&mut service, *explicit, false)?.status, 200);
+    Ok(())
+}
+
+#[test]
+fn remote_completion_after_a_later_local_batch_uses_one_current_wall_second() -> TestResult {
+    let root = Root::new();
+    let (mut service, admin) = clock_batch_fixture(&root)?;
+    // Model ingress at 110.900 and completion at 111.100. Integer+elapsed
+    // flooring would still return110; a later local request already issued111.
+    let mut request = pending(
+        &mut service,
+        "auth/remote/login",
+        "",
+        clock_assertion(111, 112)?,
+        None,
+    )?;
+    let local = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "",
+        &admin,
+        json!({"type":"batch","policies":["default"],"ttl":60}),
+        111,
+    );
+    assert_eq!(local.status, 200);
+    remote_effect(&mut request)?.completion_clock =
+        RemoteJwtCompletionClock::FixedWall(std::time::UNIX_EPOCH + Duration::from_millis(111_100));
+    let response = observed(&mut service, *request, false)?;
+    assert_eq!(response.status, 200);
+    let bearer = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("batch bearer")?;
+    assert_eq!(response.body["auth"]["token_type"], "batch");
+    let lookup = service.handle_at("GET", "auth/token/lookup-self", "", bearer, json!({}), 111);
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["creation_time"], 111);
+    // nbf111 and exp112 were verified at the same111 used for batch issuance,
+    // Identity and sealing; no provider-created timestamp controls that choice.
+    assert_eq!(
+        service
+            .handle_at("GET", "auth/token/lookup-self", "", bearer, json!({}), 110)
+            .status,
+        403
+    );
+    Ok(())
+}
+
+#[test]
+fn rollback_unavailable_or_expired_completion_never_publishes_identity_or_batch() -> TestResult {
+    for (wall, exp, expected) in [
+        (std::time::UNIX_EPOCH + Duration::from_secs(110), 1000, 503),
+        (std::time::UNIX_EPOCH - Duration::from_secs(1), 1000, 503),
+        (std::time::UNIX_EPOCH + Duration::from_secs(111), 110, 400),
+    ] {
+        let root = Root::new();
+        let (mut service, admin) = clock_batch_fixture(&root)?;
+        let mut request = pending(
+            &mut service,
+            "auth/remote/login",
+            "",
+            clock_assertion(100, exp)?,
+            None,
+        )?;
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    "auth/token/create",
+                    "",
+                    &admin,
+                    json!({"type":"batch","policies":["default"],"ttl":60}),
+                    111
+                )
+                .status,
+            200
+        );
+        remote_effect(&mut request)?.completion_clock = RemoteJwtCompletionClock::FixedWall(wall);
+        let state = service.state.as_ref().ok_or("state")?;
+        let auth_before = owner_store::serialize_owner(&state.auth)?;
+        let engines_before = owner_store::serialize_owner(&state.engines)?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let digest = service.state_digest;
+        let response = observed(&mut service, *request, false)?;
+        assert_eq!(response.status, expected);
+        assert!(response.body.get("auth").is_none());
+        let state = service.state.as_ref().ok_or("state")?;
+        assert!(
+            owner_store::serialize_owner(&state.auth)?.as_slice() == auth_before.as_slice(),
+            "auth owner changed"
+        );
+        assert!(
+            owner_store::serialize_owner(&state.engines)?.as_slice() == engines_before.as_slice(),
+            "engine owner changed"
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(service.state_digest, digest);
+    }
+    Ok(())
+}
+
+#[test]
+fn remote_one_second_wrapper_and_inner_batch_share_completed_wall_sample() -> TestResult {
+    for consume_at in [111, 112] {
+        let root = Root::new();
+        let (mut service, admin) = clock_batch_fixture(&root)?;
+        let mut request = pending(
+            &mut service,
+            "auth/remote/login",
+            "",
+            clock_assertion(111, 112)?,
+            Some(1),
+        )?;
+        remote_effect(&mut request)?.completion_clock = RemoteJwtCompletionClock::FixedWall(
+            std::time::UNIX_EPOCH + Duration::from_millis(111_100),
+        );
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let response = observed(&mut service, *request, false)?;
+        assert_eq!(response.status, 200);
+        assert!(response.body["auth"].is_null());
+        assert_eq!(response.body["wrap_info"]["ttl"], 1);
+        assert_eq!(
+            response.body["wrap_info"]["creation_time"],
+            crate::engines::timestamp(111)
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation + 1
+        );
+        let wrapper = response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper")?;
+        let lookup = service.handle_at(
+            "POST",
+            "auth/token/lookup",
+            "",
+            &admin,
+            json!({"token":wrapper}),
+            111,
+        );
+        assert_eq!(lookup.status, 200);
+        assert_eq!(lookup.body["data"]["creation_time"], 111);
+        assert_eq!(lookup.body["data"]["expire_time_unix"], 112);
+        let unwrapped = service.handle_at(
+            "POST",
+            "sys/wrapping/unwrap",
+            "",
+            wrapper,
+            json!({}),
+            consume_at,
+        );
+        if consume_at == 112 {
+            assert_eq!(unwrapped.status, 400);
+            assert!(unwrapped.body.get("auth").is_none());
+            continue;
+        }
+        assert_eq!(unwrapped.status, 200);
+        assert_eq!(unwrapped.body["auth"]["token_type"], "batch");
+        let bearer = unwrapped.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("inner batch")?;
+        let lookup = service.handle_at("GET", "auth/token/lookup-self", "", bearer, json!({}), 111);
+        assert_eq!(lookup.status, 200);
+        assert_eq!(lookup.body["data"]["creation_time"], 111);
+        assert_eq!(
+            service
+                .handle_at("POST", "sys/wrapping/unwrap", "", wrapper, json!({}), 111)
+                .status,
+            400
+        );
+    }
+    Ok(())
+}

@@ -700,6 +700,19 @@ pub(crate) enum RequestExecution {
     External(Box<PendingExternalRequest>),
 }
 
+impl RequestExecution {
+    // Only trusted real-clock Service entrypoints select this mode. It is not
+    // part of ServiceRequest, a client body, an HA frame, or persisted state.
+    fn with_realtime_remote_jwt(mut self) -> Self {
+        if let Self::External(pending) = &mut self
+            && let ExternalEffectPlan::OnlineAuth(plan) = &mut pending.effect
+        {
+            plan.use_realtime_remote_jwt_clock();
+        }
+        self
+    }
+}
+
 enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
     DatabaseConfig(database::DatabaseConfigPlan),
@@ -1135,10 +1148,7 @@ impl Service {
         token: &str,
         body: Value,
     ) -> Response {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| d.as_secs());
-        self.handle_at(method, path, namespace, token, body, now)
+        self.handle_request(ServiceRequest::new(method, path, namespace, token, body))
     }
 
     pub(crate) fn handle_wire_rejection(
@@ -1197,10 +1207,19 @@ impl Service {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_or(0, |d| d.as_secs());
-        self.handle_request_at(request, now)
+        self.handle_request_clock(request, now, true)
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        self.handle_request_clock(request, now, false)
+    }
+
+    fn handle_request_clock(
+        &mut self,
+        request: ServiceRequest<'_>,
+        now: u64,
+        realtime: bool,
+    ) -> Response {
         let ServiceRequest {
             method,
             path,
@@ -1211,7 +1230,7 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.handle_at_mode(RequestDispatch {
+        let dispatch = RequestDispatch {
             method,
             path,
             namespace,
@@ -1223,7 +1242,13 @@ impl Service {
             wrap_ttl_seconds,
             origin_peer,
             client_certificates,
-        })
+        };
+        if realtime {
+            let execution = self.begin_at_mode(dispatch).with_realtime_remote_jwt();
+            self.finish_synchronous_request(execution)
+        } else {
+            self.handle_at_mode(dispatch)
+        }
     }
 
     /// Keep the original HTTP deadline through synchronous forwarding. Restore
@@ -1273,7 +1298,7 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.begin_at_mode(RequestDispatch {
+        let execution = self.begin_at_mode(RequestDispatch {
             method,
             path,
             namespace,
@@ -1285,7 +1310,12 @@ impl Service {
             wrap_ttl_seconds,
             origin_peer,
             client_certificates,
-        })
+        });
+        if self.native_snapshot_clock.is_some() {
+            execution
+        } else {
+            execution.with_realtime_remote_jwt()
+        }
     }
 
     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
@@ -1315,10 +1345,16 @@ impl Service {
             origin_peer,
             client_certificates,
         })
+        .with_realtime_remote_jwt()
     }
 
     fn handle_at_mode(&mut self, request: RequestDispatch<'_>) -> Response {
-        match self.begin_at_mode(request) {
+        let execution = self.begin_at_mode(request);
+        self.finish_synchronous_request(execution)
+    }
+
+    fn finish_synchronous_request(&mut self, execution: RequestExecution) -> Response {
+        match execution {
             RequestExecution::Complete(response) => response,
             RequestExecution::External(pending) => {
                 let provider_result = pending.execute();
@@ -1396,7 +1432,8 @@ impl Service {
     }
 
     // The integer request clock and monotonic anchor enter together, before
-    // audit, HA catch-up or finite-use admission can block. No wall-clock reread.
+    // audit, HA catch-up or finite-use admission can block. Explicit-clock callers
+    // retain this anchor; real remote JWT requests sample wall time at completion.
     fn begin_at_mode_started(
         &mut self,
         request: RequestDispatch<'_>,

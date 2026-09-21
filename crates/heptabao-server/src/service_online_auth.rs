@@ -46,6 +46,39 @@ pub(super) struct RemoteJwtEffect {
     plan: RemoteJwtLoginPlan,
     path: String,
     wrap_ttl_seconds: Option<u64>,
+    completion_clock: RemoteJwtCompletionClock,
+}
+
+// Request-local authority, never serialized or accepted from the provider.
+// Explicit-clock embedders/tests preserve their injected clock domain.
+#[derive(Clone, Copy)]
+enum RemoteJwtCompletionClock {
+    Anchored,
+    Realtime,
+    #[cfg(test)]
+    FixedWall(std::time::SystemTime),
+}
+
+impl RemoteJwtEffect {
+    fn completed_now(&self) -> Result<u64, Response> {
+        let wall = match self.completion_clock {
+            RemoteJwtCompletionClock::Anchored => return Ok(self.plan.observed_now()),
+            RemoteJwtCompletionClock::Realtime => std::time::SystemTime::now(),
+            #[cfg(test)]
+            RemoteJwtCompletionClock::FixedWall(wall) => wall,
+        };
+        wall.duration_since(std::time::UNIX_EPOCH)
+            .map(|duration| duration.as_secs())
+            .map_err(|_| Response::error(503, "JWT completion clock unavailable"))
+    }
+}
+
+impl OnlineAuthEffectPlan {
+    pub(super) fn use_realtime_remote_jwt_clock(&mut self) {
+        if let OnlineAuthEffect::RemoteJwt(effect) = &mut self.effect {
+            effect.completion_clock = RemoteJwtCompletionClock::Realtime;
+        }
+    }
 }
 
 pub(super) struct RemoteJwtConfigEffect {
@@ -441,6 +474,7 @@ impl Service {
                         plan,
                         path: request.path.to_owned(),
                         wrap_ttl_seconds: request.wrap_ttl_seconds,
+                        completion_clock: RemoteJwtCompletionClock::Anchored,
                     })),
                 });
                 return Some(Response::error(
@@ -652,7 +686,10 @@ impl Service {
         // Sample after authority synchronization, not at request entry: a short
         // wrapping lease must not be spent while the provider is still working.
         let request_now = match &plan.effect {
-            OnlineAuthEffect::RemoteJwt(effect) => effect.plan.observed_now(),
+            OnlineAuthEffect::RemoteJwt(effect) => match effect.completed_now() {
+                Ok(now) => now,
+                Err(response) => return response,
+            },
             OnlineAuthEffect::Kubernetes(effect) => effect.observed_now(),
             OnlineAuthEffect::Ldap(effect) => effect.observed_now(),
             OnlineAuthEffect::Radius(effect) => effect.observed_now(),

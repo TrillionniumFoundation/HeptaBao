@@ -125,8 +125,12 @@ passes 110 checks, including unchanged legacy reads, old-token renewal, new
 predicates after restart, downgrade refusal and recovery. These scoped results
 do not cover arbitrary claim mapping or OIDC UserInfo.
 
-After a fetch, login verifies time claims using elapsed request time and the
-configured grace window. The auth mount incarnation and trust configuration must
+After a fetch, real-clock login samples the host wall clock once after writer/HA
+re-admission and verifies time claims with the configured grace window. The same
+sample drives token/Identity publication and wrapping; it is never rounded up or
+clamped to the batch watermark. Explicit-clock embedders keep their supplied
+clock domain plus elapsed time. A client, provider or HA request cannot choose
+that internal clock mode. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.
 
 Remote configuration preflight and both ordinary and wrapped login I/O execute

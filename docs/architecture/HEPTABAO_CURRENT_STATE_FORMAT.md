@@ -143,7 +143,10 @@ bytes while API reads report `default`; an explicit value, including `default`,
 requires schema44. JWT mount token-type presence independently requires schema44.
 Batch issuance shares the existing key authority and Identity/wrapping publication.
 Remote JWT completion uses one Service-sampled timestamp for assertion validation,
-claims issuance, Identity binding, sealing and wrapping.
+claims issuance, Identity binding, sealing and wrapping. Real-clock ingress
+samples the host wall clock after writer/HA re-admission; explicit-clock embedders
+keep their injected domain. This request-local clock choice is neither serialized
+nor accepted from clients or providers, and never clamps to a stored watermark.
 
 Identity aliases retain backend `login_metadata` separately from
 `custom_metadata`. Empty backend maps are omitted. Historical serialized
