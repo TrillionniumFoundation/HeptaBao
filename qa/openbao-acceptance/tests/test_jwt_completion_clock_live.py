@@ -1,4 +1,12 @@
 import unittest
+from contextlib import ExitStack
+import hashlib
+import json
+from pathlib import Path
+import tempfile
+import threading
+from types import SimpleNamespace
+from unittest.mock import patch
 import jwt_completion_clock_live as f
 
 class ClockWindowGuards(unittest.TestCase):
@@ -71,5 +79,93 @@ class ClockWindowGuards(unittest.TestCase):
         self.assertNotIn('send_wall',report)
         self.assertFalse(report['window_satisfied'])
         self.assertTrue(all(type(x) in (bool,int) for x in report.values()))
+
+    def test_actual_run_postcheck_failures_keep_window_rows_and_private_work(self):
+        # Exercise run -> main -> receipt, not a hand-made complete-check list.
+        # Only the TLS/process edges and clock observations are synthetic.
+        for fault in ('scan', 'cleanup'):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as directory:
+                parent=Path(directory); parent.chmod(0o700)
+                binary=parent/'binary'; binary.write_bytes(b'fixture-only-no-executable')
+                output=parent/'receipt.json'
+                issuer=SimpleNamespace(calls=[], block_entered=threading.Event(), block_release=threading.Event())
+                issuer.origin='https://localhost:443'
+                issuer.documents={}
+                issuer.thread=SimpleNamespace(is_alive=lambda:False)
+                issuer.block_next=lambda path:None
+                issuer.release_block=issuer.block_release.set
+                issuer.close=lambda:None
+                value={}
+                class Instance:
+                    def __init__(self, binary, root):
+                        self.root=root; root.mkdir(mode=0o700)
+                        (root/'data').mkdir()
+                        for name,content in [('server.json','{}'),('ca.crt','fixture-ca'),('audit.jsonl',''),('server.log','')]:
+                            (root/name).write_text(content); (root/name).chmod(0o600)
+                        (root/'data'/'fixture').write_bytes(b'fixture-data')
+                        self.address='https://127.0.0.1:443'; self.process=object()
+                    def start(self): pass
+                    def stop(self):
+                        self.process=None
+                        if fault=='cleanup': raise OSError('fixed synthetic cleanup failure')
+                    def call(self, method, path, body):
+                        if path=='sys/init':
+                            return 200,{'keys_base64':['eA=='],'root_token':'fixture-root'}
+                        return 200,{}
+                class Client:
+                    def __init__(self,*args,**kwargs): pass
+                    def request(self,method,path,payload=None,**kwargs):
+                        if path=='/v1/auth/clock/login':
+                            issuer.calls.append('/keys'); issuer.block_entered.set()
+                            if not issuer.block_release.wait(2): raise RuntimeError('offline gate not released')
+                            return SimpleNamespace(status=503,body={'errors':['batch sealing unavailable']})
+                        if path=='/v1/auth/token/create-orphan':
+                            return SimpleNamespace(status=200,body={'auth':{'client_token':'fixture-local'}})
+                        if path=='/v1/auth/token/lookup-self':
+                            return SimpleNamespace(status=200,body={'data':{'creation_time':111}})
+                        if path=='/v1/clock-values/value':
+                            if method=='GET': return SimpleNamespace(status=200,body={'data':value.copy()})
+                            value.update(payload)
+                        if path=='/v1/identity/entity/id':
+                            return SimpleNamespace(status=404,body={})
+                        return SimpleNamespace(status=204,body={})
+                stamps=iter([(110_650_000_000,20_000_000_000),
+                             (110_670_000_000,20_020_000_000),
+                             (111_040_000_000,20_390_000_000),
+                             (111_060_000_000,20_410_000_000)])
+                digest=hashlib.sha256(binary.read_bytes()).hexdigest()
+                argv=['clock-fixture','--binary',str(binary),'--expected-binary-sha256',digest,
+                      '--build-source-commit','a'*40,'--baseline-binary',str(binary),
+                      '--expected-baseline-sha256',digest,'--baseline-build-source-commit','b'*40,
+                      '--work-parent',str(parent),'--output',str(output)]
+                with ExitStack() as stack:
+                    for name,replacement in [('Instance',Instance),('Client',Client),
+                            ('bounded_issuer',lambda *args:issuer),('wait_launch_phase',lambda:None),
+                            ('stamp',lambda:next(stamps)),('helpers',lambda:{'fixture':'a'*64}),
+                            ('source_identity',lambda *args:{'source_dirty':False}),
+                            ('contains_any',lambda *args:fault=='scan')]:
+                        stack.enter_context(patch.object(f,name,replacement))
+                    stack.enter_context(patch.object(f.time,'time_ns',return_value=111_010_000_000))
+                    stack.enter_context(patch('sys.argv',argv))
+                    stack.enter_context(patch('builtins.print'))
+                    self.assertEqual(f.main(),1)
+                report=json.loads(output.read_text())
+                self.assertEqual(report['status'],'failed')
+                profile=report['profiles']['baseline']
+                self.assertEqual(profile['status'],'failed')
+                self.assertIn('window',profile,profile)
+                self.assertTrue(profile['window']['window_satisfied'])
+                rows={row['case']:row['passed'] for row in profile['checks']}
+                for name in ('gate_order','old_clock_gap_denied','old_no_identity','local_bearer_usable'):
+                    self.assertIs(rows[name],True)
+                self.assertNotIn('complete',rows)
+                if fault=='scan':
+                    self.assertIs(rows['plaintext_absent'],False)
+                    self.assertEqual(profile['failure'],'plaintext_absent')
+                else:
+                    self.assertEqual(profile['failure'],'fixture_OSError')
+                retained=Path(report['retained_work_dir'])
+                self.assertTrue(retained.is_relative_to(parent))
+                self.assertTrue((retained/'baseline'/'candidate'/'data'/'fixture').is_file())
 
 if __name__=='__main__': unittest.main()

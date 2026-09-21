@@ -105,6 +105,9 @@ def run(binary, work, baseline):
         if not passed: raise Failure(name)
     def remember(v):
         samples.append(v.encode() if isinstance(v,str) else v); return v
+    def failed(error):
+        result['status']='failed'
+        result['failure']=next((r['case'] for r in reversed(rows) if not r['passed']), 'fixture_'+type(error).__name__)
     try:
         instance = Instance(binary, work/'candidate')
         path = instance.root/'server.json'; config=json.loads(path.read_text())
@@ -199,22 +202,29 @@ def run(binary, work, baseline):
             check('inner_bearer_usable',r.status==200 and r.body.get('data')==value)
             result['status']='passed'
     except Exception as error:
-        result['status']='failed'
-        result['failure']=next((r['case'] for r in reversed(rows) if not r['passed']), 'fixture_'+type(error).__name__)
+        failed(error)
     finally:
         try:
-            if issuer is not None: issuer.release_block()
-            if worker is not None:
-                worker.thread.join(timeout=6)
-                if worker.thread.is_alive(): raise Failure('worker_cleanup')
-        finally:
             try:
-                if instance is not None: instance.stop()
+                if issuer is not None: issuer.release_block()
+                if worker is not None:
+                    worker.thread.join(timeout=6)
+                    if worker.thread.is_alive(): raise Failure('worker_cleanup')
             finally:
-                if issuer is not None: issuer.close()
-    check('processes_stopped', instance is not None and instance.process is None and issuer is not None and not issuer.thread.is_alive())
-    paths=list((instance.root/'data').rglob('*'))+[instance.root/'audit.jsonl',instance.root/'server.log']
-    check('plaintext_absent',bool(samples) and all(not contains_any(p,samples) for p in paths if p.is_file()))
+                try:
+                    if instance is not None: instance.stop()
+                finally:
+                    if issuer is not None: issuer.close()
+        except Exception as error:
+            failed(error)
+    # Late cleanup/scanning failures must preserve this profile's completed
+    # event window and observations in the receipt, just like business failures.
+    try:
+        check('processes_stopped', instance is not None and instance.process is None and issuer is not None and not issuer.thread.is_alive())
+        paths=list((instance.root/'data').rglob('*'))+[instance.root/'audit.jsonl',instance.root/'server.log']
+        check('plaintext_absent',bool(samples) and all(not contains_any(p,samples) for p in paths if p.is_file()))
+    except Exception as error:
+        failed(error)
     if result['status']=='passed': check('complete',True)
     return result
 
