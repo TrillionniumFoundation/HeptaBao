@@ -84,6 +84,16 @@ administration state, discards imported OIDC pending sessions and rejects extern
 database/OpenLDAP secret state. Its separate real-process qualification is pending.
 JSON backup keeps its separate behavior.
 
+The [68-check restore fault profile](../../qa/openbao-acceptance/evidence/native-ha-fault-0b31fb2.json)
+uses the unchanged `0b31fb2` release and three TLS voters. Killing the serving
+leader with one archive byte withheld preserves live KV values and the ACL owner.
+A separate complete upload deliberately reads no response; authenticated reads
+through a survivor must first prove the archived values and ACL restored before
+the serving leader is killed. Both phases verify every voter, a complete restart
+and a new write/save, without retrying a mutation. These are incomplete-upload
+and client-uncertainty tests, not exact post-Stage or commit-before-local-persist
+crash windows, physical power loss or separate hosts.
+
 A terminal native-upload admission rejection now drains valid remaining body
 framing outside the Service writer before sending its response. The decoder's
 size/chunk limits and original connection deadline still apply; no archive is

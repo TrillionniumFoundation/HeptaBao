@@ -8,6 +8,14 @@ import native_snapshot_ha_restore_live as f
 
 
 class HaRestoreGuards(unittest.TestCase):
+    def test_registry_absence_requires_successful_real_mount_list(self):
+        self.assertTrue(f.registered_mount((200,{'data':{'empty-db/':{'type':'database'}}}),'empty-db','database'))
+        self.assertTrue(f.registered_mount((200,{'data':{}}),'empty-db',None))
+        self.assertTrue(f.registered_mount((200,{'data':{'external-ldap/':{'type':'ldap'}}}),'external-ldap','ldap'))
+        for response in ((503,{}),(200,{}),(200,{'data':None}),(200,{'data':{'empty-db/':{'type':'database'}}})):
+            self.assertFalse(f.registered_mount(response,'empty-db',None))
+        self.assertFalse(f.registered_mount((200,{'data':{'external-ldap/':{'type':'database'}}}),'external-ldap','ldap'))
+
     def test_provider_request_is_real_json_and_retains_synthetic_credentials(self):
         import json
         value=f.radius_credentials()

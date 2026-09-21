@@ -46,7 +46,11 @@ REQUIRED = frozenset({'three_processes', 'listener_deadlines', 'payload_ready', 
     'fresh_auth_succeeds', 'all_epoch_restored', 'restart_all_hashes', 'step_down',
     'successor_changed', 'successor_all_hashes', 'successor_save', 'successor_archive_complete',
     'admin_policy_changed', 'admin_restore_denied', 'admin_rejection_unchanged',
-    'external_mount', 'external_restore_denied', 'external_rejection_unchanged',
+    'admin_consistent_save', 'admin_consistent_archive', 'admin_consistent_save_unchanged',
+    'empty_database_mount', 'empty_database_registered', 'empty_database_restore',
+    'empty_database_new_publication', 'all_empty_database_restored', 'empty_database_registry_rolled_back',
+    'openldap_mount', 'openldap_registered', 'openldap_restore_denied', 'openldap_rejection_unchanged',
+    'all_openldap_rejection_retained', 'openldap_registry_retained',
     'final_all_hashes', 'processes_stopped', 'plaintext_absent', 'complete'})
 
 
@@ -85,6 +89,16 @@ def publication(response, previous, imported, *, previous_epoch=None):
             or (previous_epoch is not None and data['replay_epoch'] != previous_epoch + 1)):
         return None
     return {k: data[k] for k in fields}
+
+
+def registered_mount(response, name, expected_kind):
+    status,body=response
+    mounts=body.get('data')
+    if status!=200 or not isinstance(mounts,dict):return False
+    key=name.rstrip('/')+'/'
+    if expected_kind is None:return key not in mounts
+    value=mounts.get(key)
+    return isinstance(value,dict) and value.get('type')==expected_kind
 
 
 def radius_credentials():
@@ -277,11 +291,40 @@ def run(binary, legacy, bao, work, checks, observations):
         check('admin_restore_denied',cli(bao,client_view(cluster,leader),work,'restore',successor,expected_error=409,
               expected_message=b'native HA restore cannot change autopilot or promotion state'))
         check('admin_rejection_unchanged',capacity_data(leader,token)['generation'] == before)
-        check('external_mount',call('POST','sys/mounts/external-db',{'type':'database'})[0] == 204)
+        # A fresh save keeps the deliberate admin-policy change, so the next
+        # cases isolate registry rollback and the actual OpenLDAP guard.
+        consistent = work/'admin-consistent.snap'; before = capacity_data(leader,token)['generation']
+        check('admin_consistent_save',cli(bao,client_view(cluster,leader),work,'save',consistent) == 0)
+        consistent_meta = strict_archive(consistent); observations['admin_consistent_archive'] = consistent_meta
+        check('admin_consistent_archive',True)
+        check('admin_consistent_save_unchanged',capacity_data(leader,token)['generation'] == before)
+        check('empty_database_mount',call('POST','sys/mounts/empty-db',{'type':'database'})[0] == 204)
+        check('empty_database_registered',registered_mount(call('GET','sys/mounts'),'empty-db','database'))
         before = capacity_data(leader,token)['generation']
-        check('external_restore_denied',cli(bao,client_view(cluster,leader),work,'restore',successor,expected_error=409,
-              expected_message=b'external provider state'))
-        check('external_rejection_unchanged',capacity_data(leader,token)['generation'] == before)
+        empty_restore = publication(restore_http(leader,token,consistent),before,consistent_meta['generation'],
+                                    previous_epoch=latest['replay_epoch'])
+        check('empty_database_restore',empty_restore is not None)
+        observations['empty_database_publication'] = empty_restore
+        check('empty_database_new_publication',capacity_data(leader,token)['generation'] == empty_restore['published_local_generation'])
+        verify('all_empty_database_restored')
+        for node in cluster.nodes:
+            check('empty_database_absent_node_'+str(node.node_id),registered_mount(
+                node.call('GET','sys/mounts',token=token),'empty-db',None))
+        check('empty_database_registry_rolled_back',True)
+        # No external database is configured here. This tests the existing
+        # OpenLDAP engine mount refusal, without claiming provider rollback.
+        check('openldap_mount',call('POST','sys/mounts/external-ldap',{'type':'ldap'})[0] == 204)
+        check('openldap_registered',registered_mount(call('GET','sys/mounts'),'external-ldap','ldap'))
+        before = capacity_data(leader,token)['generation']
+        observations['openldap_rejection_cli'] = {}
+        check('openldap_restore_denied',cli(bao,client_view(cluster,leader),work,'restore',consistent,expected_error=409,
+              expected_message=b'external provider state',diagnostics=observations['openldap_rejection_cli']))
+        check('openldap_rejection_unchanged',capacity_data(leader,token)['generation'] == before)
+        verify('all_openldap_rejection_retained')
+        for node in cluster.nodes:
+            check('openldap_present_node_'+str(node.node_id),registered_mount(
+                node.call('GET','sys/mounts',token=token),'external-ldap','ldap'))
+        check('openldap_registry_retained',True)
         verify('final_all_hashes')
         samples += [token.encode(),cluster.unseal_key.encode(),SECRET,PASSWORD]
         cluster.close(); provider.close()
@@ -333,6 +376,8 @@ def main():
         'retained_failure_work_dir':str(work) if failure else None,'mutation_retry':False,
         'same_cluster_same_seal_restore':failure is None,'real_schema38_refusal':failure is None,
         'late_provider_accept_fenced':failure is None,'mixed_version_ha':False,'physical_hosts':False,
+        'empty_database_registry_rollback_covered':failure is None,
+        'openldap_engine_mount_guard_covered':failure is None,'configured_database_guard_covered':False,
         'external_provider_rollback':False,'cross_seal_force':False,'openbao_state_interoperability':False,
         'independent_qualification':False,'production_authority':False,'full_openbao_compatibility':False}
     if admit_output(output) != admitted: raise ValueError('report_parent_changed')
