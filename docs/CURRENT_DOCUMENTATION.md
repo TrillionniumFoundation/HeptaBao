@@ -134,6 +134,13 @@ lifecycle checks. A fabricated list with the former expected row count cannot
 qualify; their request, TTL, revocation, wrapping and restart assertions remain.
 Their first runs under these gates pass [154 AppRole observations per side](../qa/openbao-acceptance/evidence/approle-renewal-d2c669d.json)
 and [202 child-token observations per side](../qa/openbao-acceptance/evidence/token-child-lifetime-d2c669d.json).
+JWT role TTL inheritance, null updates, issued caps and local renewal pass
+[345 observations per side](../qa/openbao-acceptance/evidence/jwt-native-ttl-4d5b6b8.json)
+against the pinned OpenBao 2.6.2 binary. The comparison exposed a one-second
+renewal overrun after rounded remote issuance. Native expiry now bounds both
+the granted duration and the absolute issue-time deadline; the conservative
+post-I/O authorization clock is unchanged. This profile tunes its mounts and
+does not establish untuned system-default parity.
 The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
 and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
 the forged headers now carry the allowed address while the actual socket uses a
