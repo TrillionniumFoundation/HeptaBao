@@ -130,7 +130,7 @@ re-admission and verifies time claims with the configured grace window. The same
 sample drives token/Identity publication and wrapping; it is never rounded up or
 clamped to the batch watermark. Explicit-clock embedders keep their supplied
 clock domain plus elapsed time. A client, provider or HA request cannot choose
-that internal clock mode. The auth mount incarnation and trust configuration must
+that internal clock mode. The [single-run concurrency receipt](../../qa/openbao-acceptance/evidence/jwt-completion-clock-live-b56954e.json) reproduces the old false-rollback rejection and verifies corrected wrapper/batch creation and use; [44 remote JWKS regression checks](../../qa/openbao-acceptance/evidence/jwt-remote-batch-live-b56954e.json) also pass. These fixtures do not establish cross-host clock authority. The auth mount incarnation and trust configuration must
 still match; a same-path disable/recreate cannot reuse an earlier observation.
 
 Remote configuration preflight and both ordinary and wrapped login I/O execute

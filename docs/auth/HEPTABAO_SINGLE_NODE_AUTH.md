@@ -730,8 +730,24 @@ while JWKS work was pending, causing a false rollback rejection. Completion-time
 sampling removes that lost-fraction estimate without rounding into the future
 or clamping to a stored watermark. Existing future-bearer and rollback checks
 remain strict. This still relies on the trusted host wall clock; it does not
-qualify cross-host skew or a hardware clock authority. The changed binary
-requires its own concurrency and remote regression evidence.
+qualify cross-host skew or a hardware clock authority.
+
+The corrected `b56954e` binary (SHA256
+`f947e88a61b97a609e108bd1661a83240c14350077e072c30861aa940362b5d0`)
+passes a [single-run real concurrency comparison](../../qa/openbao-acceptance/evidence/jwt-completion-clock-live-b56954e.json).
+With JWKS held, a local batch grant advances to the next integer second; remote
+completion still takes less than one elapsed second. The qualified `e39fe66`
+baseline returns the exact false-rollback 503, while the corrected binary returns
+200 and its wrapper/inner batch creation, expiry and actual use agree. Both
+profiles satisfy the ordering window; no clock change or timing retry occurred.
+The same binary passes [44 remote JWKS checks](../../qa/openbao-acceptance/evidence/jwt-remote-batch-live-b56954e.json),
+[204 observations per side](../../qa/openbao-acceptance/evidence/jwt-batch-live-b56954e.json)
+and [149 checks across three TLS voters](../../qa/openbao-acceptance/evidence/jwt-batch-ha-b56954e.json).
+These are bounded local fixtures with clean unchanged source/binary inputs,
+secret scans and owned-process cleanup; the concurrency comparison itself is
+single-node, and the HA regression does not prove cross-host clock behavior.
+The implementation also passed 989 server tests, one compile-fail documentation
+test and strict Clippy; the then-current Python acceptance catalog passed 803 tests.
 
 The official `jwt-batch-official-3588f54.json` calibration records 33 scenarios
 and 204 observations (SHA256
