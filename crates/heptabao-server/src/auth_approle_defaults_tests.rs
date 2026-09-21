@@ -618,9 +618,85 @@ fn approle_secret_lookup_preserves_requested_ttl_and_tracks_only_finite_successf
         if operation == "secret-id/lookup" {
             assert_eq!(result.unwrap().unwrap().status, 204);
         } else {
-            assert_eq!(result.err().unwrap().status, 404);
+            let response = result.unwrap().unwrap();
+            assert_eq!(response.status, 404);
+            assert!(response.body.get("errors").is_none());
+            assert!(
+                response.body["data"]["error"]
+                    .as_str()
+                    .unwrap()
+                    .contains("secret_id_accessor")
+            );
+            assert!(!response.mutated);
+            assert!(response.login_identity.is_none());
+            assert!(response.pending_batch.is_none());
         }
     }
+    let before_missing = serde_json::to_vec(&state).unwrap();
+    let lookup_path = "auth/build/role/app/secret-id-accessor/lookup";
+    let missing = state
+        .handle(
+            Some(&root),
+            "team",
+            "POST",
+            lookup_path,
+            &json!({"secret_id_accessor":"synthetic-missing-accessor"}),
+            102,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(missing.status, 404);
+    assert_eq!(
+        missing.body,
+        json!({"data":{"error":
+        "failed to find accessor entry for secret_id_accessor: \"synthetic-missing-accessor\""}})
+    );
+    assert_eq!(
+        state
+            .handle(
+                Some(&root),
+                "team",
+                "POST",
+                lookup_path,
+                &json!({"secret_id_accessor":""}),
+                102
+            )
+            .err()
+            .unwrap()
+            .status,
+        400
+    );
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                lookup_path,
+                &json!({"secret_id_accessor":"synthetic-missing-accessor"}),
+                102
+            )
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    assert_eq!(
+        state
+            .handle(
+                Some(&root),
+                "team",
+                "POST",
+                "auth/build/role/app/secret-id-accessor/destroy",
+                &json!({"secret_id_accessor":"synthetic-missing-accessor"}),
+                102
+            )
+            .err()
+            .unwrap()
+            .status,
+        404
+    );
+    assert!(before_missing.as_slice() == serde_json::to_vec(&state).unwrap().as_slice());
     let (_, unlimited, _) = credentials(&mut state, &root, "build", json!({}));
     login(&mut state, "build", &role_id, &unlimited, 4000).unwrap();
     let data = call(

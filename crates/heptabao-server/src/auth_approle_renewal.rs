@@ -3,6 +3,18 @@
 //! conservative because finite legacy state cannot distinguish cap sources.
 use super::*;
 
+pub(super) fn missing_secret_id_accessor(accessor: &str) -> AuthResponse {
+    // OpenBao's accessor lookup uses a raw 404 response with data.error;
+    // it does not pass this particular error through the normal errors list.
+    AuthResponse {
+        status: 404,
+        body: json!({"data":{"error":format!(
+            "failed to find accessor entry for secret_id_accessor: {accessor:?}"
+        )}}),
+        ..empty(false)
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct SecretIdIssuance {

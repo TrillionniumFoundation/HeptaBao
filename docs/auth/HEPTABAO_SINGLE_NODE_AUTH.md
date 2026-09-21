@@ -1417,8 +1417,16 @@ after consuming a one-use SID; these are not successful bearer requests.
 `approle_secretid_overrides_live.py` requires both endpoints to match that exact
 calibration. The true schema45-to-46 upgrader uses four independent old stores
 to separate source-empty/source-bound/token-empty/token-bound first-write gates.
-Candidate dual, real upgrade and per-SID HA acceptance are still pending; the
-schema45 role-level receipts above do not qualify this new slice. Arbitrary
+The first `16d18bc` binary completed 812 observations per endpoint, but 24
+exhausted-SID accessor reads differed: OpenBao returns 404 with `data.error`,
+where the candidate returned top-level `errors`. The failure receipt remains
+on the external SSD (SHA256
+`7751fb8bfa57f3a1420ef90843040290dda34c67f2a61666eaa084de63959734`).
+The lookup projection is corrected without changing permissions, consumption
+or stored credentials. That initial binary separately passed 1078 three-voter
+HA checks, but the corrected binary still requires fresh dual/upgrade/HA
+qualification. The schema45 role-level receipts above do not qualify this
+new slice. Arbitrary
 SecretID/alias metadata, local-only SecretIDs, MFA and actual IPv6 source-socket
 coverage remain open for this profile.
 

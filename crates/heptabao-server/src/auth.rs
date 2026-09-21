@@ -6309,11 +6309,21 @@ impl AuthState {
                 )?;
                 let id = if by_accessor {
                     let wanted = string_field(body, "secret_id_accessor")?;
-                    role.secret_ids
+                    if wanted.is_empty() {
+                        return Err(bad("missing secret_id_accessor"));
+                    }
+                    let found = role
+                        .secret_ids
                         .iter()
                         .find(|(_, secret)| secret.accessor == wanted)
-                        .map(|(id, _)| id.clone())
-                        .ok_or_else(|| err(404, "secret_id not found"))?
+                        .map(|(id, _)| id.clone());
+                    match found {
+                        Some(id) => id,
+                        None if operation == "secret-id-accessor/lookup" => {
+                            return Ok(approle_renewal::missing_secret_id_accessor(wanted));
+                        }
+                        None => return Err(err(404, "secret_id not found")),
+                    }
                 } else {
                     hash(string_field(body, "secret_id")?)
                 };
@@ -6325,7 +6335,10 @@ impl AuthState {
                 if operation.ends_with("/lookup") {
                     if secret.uses_remaining == Some(0) {
                         return if by_accessor {
-                            Err(err(404, "secret_id not found"))
+                            Ok(approle_renewal::missing_secret_id_accessor(string_field(
+                                body,
+                                "secret_id_accessor",
+                            )?))
                         } else {
                             Ok(empty(false))
                         };
