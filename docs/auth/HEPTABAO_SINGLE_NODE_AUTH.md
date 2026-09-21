@@ -194,13 +194,19 @@ HCL attributes. These unsupported inputs fail closed. There is no silently ignor
 
 ## Userpass
 
-User records contain a random 32-byte salt, a 32-byte PBKDF2-HMAC-SHA256 verifier,
-the KDF iteration count (600,000 for new passwords), token policies, TTL/use
-limits and an optional persistent TOTP MFA enrollment. Native userpass accepts
+Plaintext-enrolled user records contain a random 32-byte salt, a 32-byte
+PBKDF2-HMAC-SHA256 verifier and the KDF iteration count (600,000 for new passwords).
+Imported bcrypt records instead contain one encrypted, zeroizing bcrypt string;
+the two credential representations are mutually exclusive. Both retain token
+policies, TTL/use limits and an optional persistent TOTP MFA enrollment. Native userpass accepts
 new passwords of 1–72 UTF-8 bytes; an oversized replacement returns 500, matching
 the OpenBao 2.6.2 bcrypt write boundary. Existing long PBKDF credentials retain
-their exact-byte verification. The bounded local LDAP profile retains its
-12–1024-byte write rule. Login uses `ring::pbkdf2::verify`;
+their exact-byte verification. Newly created or explicitly replaced native
+credentials persist a schema38 `bcrypt_72` input marker: login compares the first
+72 raw bytes, including when a supplied suffix exceeds 1024 bytes. Short passwords
+are not padded; appending to a password shorter than 72 bytes changes it. An absent
+marker keeps the old full-byte rule and 1024-byte login bound. The bounded local LDAP profile retains its
+12–1024-byte write rule. PBKDF login uses `ring::pbkdf2::verify`;
 the unknown-user path performs an equivalent dummy KDF. Error messages never
 contain the password, verifier, bearer token or secret ID. Password rotation
 replaces salt and verifier. The plaintext password is never serialized into
@@ -220,12 +226,20 @@ policies. Bounded LDAP still rejects both aliases. A native body `username` is
 ignored in favor of the path account, including on password/policy subroutes;
 other unrelated fields remain rejected. This does not merge mixed-case accounts.
 
-A general update with an absent, null or empty password preserves its verifier.
-New accounts and the password-reset subroute require a nonempty password. Reset
+A general update with absent, null or empty credential fields preserves its verifier.
+New accounts and the password-reset subroute require a nonempty `password` or
+`password_hash`; supplying both nonempty returns 400. Reset
 of an unknown account returns 500; missing/empty login passwords return 500,
 and wrong passwords or unknown login accounts return 400. These input and status
-rules have dedicated tests; bcrypt hash import, bcrypt's 72-byte login truncation
-and upstream username case folding remain separate compatibility gaps.
+rules have dedicated tests. Hash import accepts Go-compatible cost admission
+from 5 through 12 and verifies through rust-bcrypt 0.19.3. Version-label and
+separator normalization, ignored suffixes and noncanonical salt padding bits
+match the independently observed OpenBao cases. As in Go, a cost-valid malformed
+hash can be stored but cannot authenticate. Explicit password reset can switch
+between plaintext enrollment and hash import without changing issued tokens;
+neither credential representation is returned by user readback. Nonstandard Go
+hashes whose salt decodes to a length other than 16 bytes still cannot
+authenticate, and upstream username case folding remains a compatibility gap.
 
 Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
 configured policy set. Login adds the implicit default policy to the issued token.

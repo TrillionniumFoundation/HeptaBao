@@ -236,6 +236,7 @@ fn userpass_old_long_credentials_survive_restart_and_bounded_ldap_policy_is_unch
         })
         .get_mut("alice")
         .unwrap();
+    user.password_semantics = None; // Historical records had no comparison marker.
     pbkdf2::derive(
         pbkdf2::PBKDF2_HMAC_SHA256,
         NonZeroU32::new(user.rounds).unwrap(),

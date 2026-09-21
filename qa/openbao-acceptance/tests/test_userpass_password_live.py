@@ -64,6 +64,17 @@ class UserpassPasswordGuards(unittest.TestCase):
         with self.assertRaises(fixture.ScenarioFailure):trace.login('empty','alice',{},status=500)
         self.assertFalse(trace.rows[-1]['passed']);self.assertEqual(trace.rows[-1]['status'],400)
 
+    def test_login_comparison_requires_long_suffix_success_and_prefix_failure_after_restart(self):
+        for label,password in fixture.COMPARE:
+            self.assertEqual(len(password.encode()),72)
+            for length in (73,80,1025):
+                self.assertEqual(len((password+'x'*(length-72)).encode()),length)
+                self.assertIn(f'compare.{label}.suffix{length}.credentials',fixture.REQUIRED)
+            self.assertIn(f'compare.{label}.wrong_prefix.no_credentials',fixture.REQUIRED)
+            self.assertIn(f'compare.{label}.restart_suffix1025.credentials',fixture.REQUIRED)
+        split=('a'*71+'é').encode()[:72]
+        with self.assertRaises(UnicodeDecodeError):split.decode()
+
     def test_short_literal_is_not_impossible_ciphertext_scan_but_structured_password_is_rejected(self):
         with tempfile.TemporaryDirectory(prefix='guard-',dir=Path(fixture.__file__).parent) as directory:
             root=Path(directory);(root/'data').mkdir();(root/'data'/'sealed').write_bytes(b'ciphertext including x')

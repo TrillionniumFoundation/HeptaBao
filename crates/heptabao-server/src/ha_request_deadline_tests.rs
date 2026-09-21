@@ -21,6 +21,13 @@ impl RaftPeerRpc for UnusedPeers {
 // Real single-voter OpenRaft/durable state through a real HaProcess. There is
 // no listening socket and no TLS claim: peers are unused by single-voter reads.
 pub(crate) fn process(path: &Path) -> Result<HaProcess, Box<dyn std::error::Error>> {
+    process_with_api(path, None)
+}
+
+pub(crate) fn process_with_api(
+    path: &Path,
+    api: Option<&str>,
+) -> Result<HaProcess, Box<dyn std::error::Error>> {
     let runtime = RuntimeBuilder::new_multi_thread()
         .worker_threads(2)
         .enable_time()
@@ -61,6 +68,12 @@ pub(crate) fn process(path: &Path) -> Result<HaProcess, Box<dyn std::error::Erro
         codec: ClusterStateCodec::new("request-deadline", [9; 32])?,
         cluster_id: "request-deadline".into(),
         peers: Arc::new(BTreeMap::from([(1, peer)])),
+        api_addresses: api
+            .map(parse_api_address)
+            .transpose()?
+            .into_iter()
+            .map(|address| (1, address))
+            .collect(),
         forward_transport,
         forward_timeout: Duration::from_secs(1),
         forward_handler: Arc::new(Mutex::new(None)),

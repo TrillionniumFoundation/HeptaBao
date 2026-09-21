@@ -22,14 +22,17 @@ class NativeSnapshotCliGuards(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.addCleanup(self.directory.cleanup)
 
-    def archive(self, name='input.snap', *, state=b'HBB2'+b'encrypted-placeholder'*20, extra=False):
-        metadata = json.dumps({'format':'heptabao-native-snapshot-v1',
-            'state_format':'heptabao-encrypted-backup-v1/HBB2','generation':7,'state_bytes':len(state)}).encode()
+    def archive(self, name='input.snap', *, state=b'HBB2'+b'encrypted-placeholder'*20, extra=False, binding=True, version=2):
+        meta={'format':'heptabao-native-snapshot-v'+str(version),
+            'state_format':'heptabao-encrypted-backup-v1/HBB2','generation':7,'state_bytes':len(state)}
+        if binding is True:meta['seal_identity']={'format':'heptabao-seal-metadata-digest-v1','sha256':'a'*64}
+        elif binding is not None:meta['seal_identity']=binding
+        metadata=json.dumps(meta).encode()
         sums = (hashlib.sha256(metadata).hexdigest()+'  meta.json\n'+hashlib.sha256(state).hexdigest()+'  state.bin\n').encode()
         path = self.root/name
         with tarfile.open(path,'w:gz',format=tarfile.USTAR_FORMAT) as archive:
             for name,data in [('meta.json',metadata),('state.bin',state),('SHA256SUMS',sums),('SHA256SUMS.sealed',b'authenticated-placeholder')]:
-                member=tarfile.TarInfo(name);member.size=len(data);archive.addfile(member,io.BytesIO(data))
+                member=tarfile.TarInfo(name);member.mode=0o600;member.size=len(data);archive.addfile(member,io.BytesIO(data))
             if extra:
                 member=tarfile.TarInfo('foreign');archive.addfile(member,io.BytesIO())
         return path
@@ -217,5 +220,60 @@ class NativeSnapshotCliGuards(unittest.TestCase):
         self.assertFalse(observed['plaintext_absent'])
         self.assertNotIn(secret.decode(),json.dumps(observed))
         with self.assertRaises(ValueError):fixture.inspect_postgres_artifacts(self.pg_reader(artifacts,revision=1),[secret])
+
+    def test_v2_requires_exact_seal_identity_and_v1_is_explicitly_unbound(self):
+        for number,binding in enumerate((None,{}, {'format':'foreign','sha256':'a'*64},
+                {'format':'heptabao-seal-metadata-digest-v1','sha256':'A'*64},
+                {'format':'heptabao-seal-metadata-digest-v1','sha256':'a'*63},
+                {'format':'heptabao-seal-metadata-digest-v1','sha256':'a'*64,'extra':True})):
+            with self.subTest(binding=number),self.assertRaises(ValueError):
+                fixture.inspect_archive(self.archive('bad-'+str(number)+'.snap',binding=binding))
+        legacy=self.archive('legacy.snap',binding=None,version=1)
+        with self.assertRaises(ValueError):fixture.inspect_archive(legacy)
+        self.assertIsNone(fixture.inspect_archive(legacy,legacy_unbound=True)['seal_identity'])
+        with self.assertRaises(ValueError):fixture.inspect_archive(self.archive('v2.snap'),legacy_unbound=True)
+
+    def test_reframed_v1_has_valid_plain_checksums_but_no_claim_of_v1_aead(self):
+        original=self.archive();legacy=self.root/'legacy-reframed.snap'
+        fixture.legacy_unbound_archive(original,legacy)
+        before=fixture.inspect_archive(original);after=fixture.inspect_archive(legacy,legacy_unbound=True)
+        self.assertEqual(before['state_sha256'],after['state_sha256'])
+        self.assertEqual(before['state_bytes'],after['state_bytes'])
+        self.assertIsNone(after['seal_identity'])
+        with tarfile.open(original,'r:gz') as a,tarfile.open(legacy,'r:gz') as b:
+            self.assertEqual(a.extractfile('state.bin').read(),b.extractfile('state.bin').read())
+            self.assertEqual(a.extractfile('SHA256SUMS.sealed').read(),b.extractfile('SHA256SUMS.sealed').read())
+            self.assertNotIn('seal_identity',json.load(b.extractfile('meta.json')))
+        self.assertEqual(legacy.stat().st_mode & 0o777,0o600)
+        with tarfile.open(legacy,'r:gz') as archive:
+            exact_size=sum(512+((m.size+511)//512)*512 for m in archive)+1024
+        self.assertEqual(len(gzip.decompress(legacy.read_bytes())),exact_size)
+
+    def test_generic_400_cannot_qualify_the_missing_binding_branch(self):
+        instance=SimpleNamespace(address='https://127.0.0.1:1234',root=self.root,token='synthetic-token')
+        expected=b'native snapshot v1 has no seal binding; restore is unsupported'
+        for message,wanted in ((b'authentication failed',False),(expected,True)):
+            with mock.patch.object(subprocess,'run',return_value=SimpleNamespace(returncode=2,stderr=b'Code: 400. Errors:\n'+message)):
+                self.assertEqual(fixture.cli(Path('/fixed/bao'),instance,self.root,'restore',self.root/'input.snap',
+                    expected_error=400,expected_message=expected),wanted)
+
+    def test_rekey_uses_actual_request_field_and_never_publishes_shares_to_checks(self):
+        results=[(200,{'nonce':'synthetic-rekey-nonce'}),
+                 (200,{'complete':True,'verification_required':False,'keys_base64':['synthetic-new-share']})]
+        call=mock.Mock(side_effect=results);checks=[]
+        new_share=fixture.rekey_share(call,'synthetic-old-share',lambda n,c:checks.append({'case':n,'passed':c}))
+        self.assertEqual(new_share,'synthetic-new-share')
+        self.assertEqual(call.call_args_list[0].args,('POST','sys/rekey/init',
+            {'secret_shares':1,'secret_threshold':1,'require_verification':False}))
+        self.assertEqual(call.call_args_list[1].args,('POST','sys/rekey/update',
+            {'nonce':'synthetic-rekey-nonce','key':'synthetic-old-share'}))
+        self.assertTrue(all(r['passed'] is True for r in checks))
+        self.assertNotIn('synthetic',json.dumps(checks))
+        def require(name,passed):
+            if not passed:raise ValueError(name)
+        failed=mock.Mock(side_effect=[(200,{'nonce':'synthetic'}),
+            (200,{'complete':True,'verification_required':True,'keys_base64':['wrong']})])
+        with self.assertRaises(ValueError):fixture.rekey_share(failed,'synthetic-old-share',require)
+        self.assertEqual(failed.call_count,2)
 
 if __name__=='__main__':unittest.main()

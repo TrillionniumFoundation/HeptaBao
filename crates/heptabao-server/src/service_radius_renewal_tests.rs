@@ -737,3 +737,145 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     assert!(state.validate_format().is_ok());
     Ok(())
 }
+
+// These tests exercise the actual durable epoch publication/install code. The
+// received-state test supplies an already authenticated plan at the same point
+// where HaProcess materialization hands it to Service; it is not a Raft test.
+#[test]
+fn epoch_retirement_rejects_pending_login_and_renewal_without_changing_auth_config() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, root_token, token, _) = fixture(&root)?;
+    let old_nonce = service.unseal_nonce.clone();
+    let renewal = pending(
+        &mut service,
+        "auth/token/renew-self",
+        &token,
+        json!({}),
+        100,
+    )?;
+    let login = pending_with_wrapping(
+        &mut service,
+        "auth/radius/login",
+        "",
+        json!({"username":"alice","password":"synthetic-radius-password"}),
+        100,
+        Some(60),
+    )?;
+    let old_config = call(
+        &mut service,
+        "GET",
+        "auth/radius/config",
+        &root_token,
+        json!({}),
+    );
+    let response = call(
+        &mut service,
+        "POST",
+        "sys/storage/raft/replay-retire",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(response.status, 200);
+    assert_ne!(service.unseal_nonce, old_nonce);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/radius/config",
+            &root_token,
+            json!({})
+        )
+        .body,
+        old_config.body
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    assert_eq!(accepted(&mut service, *renewal).status, 503);
+    let rejected = service.finish_external_request(
+        *login,
+        ExternalEffectResult::OnlineAuth(Ok(OnlineAuthObservation::Radius(RadiusLoginObservation))),
+    );
+    assert_eq!(rejected.status, 503);
+    assert!(rejected.body.get("auth").is_none_or(Value::is_null));
+    assert!(rejected.body.get("wrap_info").is_none_or(Value::is_null));
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let fresh = pending(
+        &mut service,
+        "auth/token/renew-self",
+        &token,
+        json!({}),
+        100,
+    )?;
+    assert_eq!(accepted(&mut service, *fresh).status, 200);
+    Ok(())
+}
+
+#[test]
+fn received_epoch_during_authority_sync_rejects_old_observation_and_accepts_fresh() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, _, token, _) = fixture(&root)?;
+    let pending_old = pending(
+        &mut service,
+        "auth/token/renew-self",
+        &token,
+        json!({}),
+        100,
+    )?;
+    let old_nonce = service.unseal_nonce.clone();
+    let mut received = service.state.clone().ok_or("state")?;
+    received.replay_epoch += 3; // A follower may miss multiple committed epochs.
+    let plan = service
+        .prepare_record_plan(&received)
+        .map_err(|_| "record plan")?;
+    let result = service.revalidate_online_authority_with_sync("", &old_nonce, move |service| {
+        service.install_received_record_state(received, plan)
+    });
+    assert!(matches!(result, Err(error) if error.status == 503));
+    assert_ne!(service.unseal_nonce, old_nonce);
+    assert_eq!(service.state.as_ref().ok_or("state")?.replay_epoch, 3);
+    assert_eq!(service.durable.as_ref().ok_or("durable")?.replay_epoch(), 3);
+    assert!(service.ha_read_cache.is_none());
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    assert_eq!(accepted(&mut service, *pending_old).status, 503);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let fresh = pending(
+        &mut service,
+        "auth/token/renew-self",
+        &token,
+        json!({}),
+        100,
+    )?;
+    assert_eq!(accepted(&mut service, *fresh).status, 200);
+    Ok(())
+}
+
+#[test]
+fn same_epoch_received_state_preserves_pending_observation() -> TestResult {
+    let root = Root::new();
+    let (mut service, _, _, token, _) = fixture(&root)?;
+    let pending_old = pending(
+        &mut service,
+        "auth/token/renew-self",
+        &token,
+        json!({}),
+        100,
+    )?;
+    let old_nonce = service.unseal_nonce.clone();
+    let received = service.state.clone().ok_or("state")?;
+    let plan = service
+        .prepare_record_plan(&received)
+        .map_err(|_| "record plan")?;
+    service
+        .revalidate_online_authority_with_sync("", &old_nonce, move |service| {
+            service.install_received_record_state(received, plan)
+        })
+        .map_err(|_| "same epoch sync")?;
+    assert_eq!(service.unseal_nonce, old_nonce);
+    assert_eq!(accepted(&mut service, *pending_old).status, 200);
+    Ok(())
+}

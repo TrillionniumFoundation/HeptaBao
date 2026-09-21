@@ -301,6 +301,38 @@ impl Service {
         principal: &Principal,
         request: &RequestView<'_>,
     ) -> Response {
+        self.commit_snapshot_restore_with_rollback(
+            prepared,
+            principal,
+            request,
+            request.path == "sys/storage/raft/snapshot-force",
+        )
+    }
+
+    pub(super) fn commit_native_snapshot_restore(
+        &mut self,
+        verified: snapshot_transfer::VerifiedNativeRestore,
+        principal: &Principal,
+        request: &RequestView<'_>,
+    ) -> Response {
+        // Native ordinary restore, like OpenBao, restores older data after
+        // proving the archive belongs to the live seal. JSON retains its
+        // explicit legacy generation/force policy above.
+        self.commit_snapshot_restore_with_rollback(
+            verified.into_prepared(),
+            principal,
+            request,
+            true,
+        )
+    }
+
+    fn commit_snapshot_restore_with_rollback(
+        &mut self,
+        prepared: PreparedSnapshotRestore,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        allow_rollback: bool,
+    ) -> Response {
         // This route is synchronous under the Service writer. Keep the
         // authority checks explicit before consuming the plan; future callers
         // must not turn this into an unfenced split-phase commit.
@@ -350,10 +382,7 @@ impl Service {
             Ok(value) => hex(&value),
             Err(error) => return Response::error(503, error),
         };
-        let outcome = match durable.restore_prepared(
-            prepared.durable,
-            request.path == "sys/storage/raft/snapshot-force",
-        ) {
+        let outcome = match durable.restore_prepared(prepared.durable, allow_rollback) {
             Ok(outcome) => outcome,
             Err(ServiceError::BackupRollbackRejected) => {
                 return Response::error(

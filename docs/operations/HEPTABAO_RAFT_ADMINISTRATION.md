@@ -57,6 +57,16 @@ Without this RPC, the upstream network trait's default only reports unreachable;
 waiting for a subsequent election is not evidence that the requested target took
 over. A completed transfer still requires a fresh leader/application observation.
 
+Each configured HA peer may include `api_address`, an absolute HTTPS origin for
+that node's HTTP listener, such as `https://bao-1.example:8200`. Paths, query
+strings, credentials and fragments are rejected. `sys/leader.leader_address`
+reports only this explicit address for the observed leader; missing configuration
+or an unknown leader produces an empty string. Raft transport addresses are never
+substituted for HTTP addresses. This metadata does not yet implement snapshot
+redirects: native snapshot GET/HEAD on a standby returns503, while a leader must
+pass ReadIndex again before releasing its staged archive. Native HA restore
+remains409 and JSON backup keeps its separate behavior.
+
 Replication batches are bounded by encoded bytes as well as entry count.
 `DurableLogStore::limited_get_log_entries` returns a contiguous prefix that fits
 the unchanged 768 KiB complete RPC limit, reserving the maximum serialized vote

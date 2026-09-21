@@ -68,6 +68,9 @@ pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send +
 pub struct HaPeerConfig {
     pub node_name: String,
     pub address: SocketAddr,
+    /// Deployment-advertised HTTPS API origin; never inferred from the Raft socket.
+    #[serde(default)]
+    pub api_address: Option<String>,
     pub server_name: String,
     pub certificate_sha256: String,
 }
@@ -114,6 +117,7 @@ struct ParsedPeer {
     node: NodeId,
     endpoint: TlsPeerEndpoint,
     certificate_sha256: [u8; 32],
+    api_address: Option<String>,
 }
 
 #[derive(Clone)]
@@ -253,6 +257,7 @@ pub struct HaProcess {
     codec: ClusterStateCodec,
     cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
+    api_addresses: BTreeMap<u64, String>,
     forward_transport: MutualTlsPeerTransport,
     forward_timeout: Duration,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
@@ -277,6 +282,14 @@ impl HaProcess {
         let codec = ClusterStateCodec::new(config.cluster_id.clone(), replication_key)
             .map_err(|error| error.to_string())?;
         let parsed_peers = parse_peers(&config)?;
+        let api_addresses = parsed_peers
+            .iter()
+            .filter_map(|peer| {
+                peer.api_address
+                    .as_ref()
+                    .map(|address| (peer.id, address.clone()))
+            })
+            .collect();
         let peer_ids = parsed_peers
             .iter()
             .map(|peer| peer.id)
@@ -497,6 +510,7 @@ impl HaProcess {
             codec,
             cluster_id: config.cluster_id,
             peers,
+            api_addresses,
             forward_transport,
             forward_timeout,
             forward_handler,
@@ -617,6 +631,10 @@ impl HaProcess {
 
     pub fn cluster_id(&self) -> &str {
         &self.cluster_id
+    }
+
+    pub(crate) fn api_address(&self, node_id: u64) -> Option<&str> {
+        self.api_addresses.get(&node_id).map(String::as_str)
     }
 
     pub fn leader(&self) -> Result<Option<u64>, String> {
@@ -1263,6 +1281,11 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
         let endpoint = TlsPeerEndpoint::new(peer.address, peer.server_name.clone())
             .map_err(|error| error.to_string())?;
         let certificate_sha256 = decode_hex_32(&peer.certificate_sha256)?;
+        let api_address = peer
+            .api_address
+            .as_deref()
+            .map(parse_api_address)
+            .transpose()?;
         if !names.insert(node.clone()) || !digests.insert(certificate_sha256) {
             return Err("HA peer identities and certificate digests must be unique".into());
         }
@@ -1271,9 +1294,25 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
             node,
             endpoint,
             certificate_sha256,
+            api_address,
         });
     }
     Ok(peers)
+}
+
+fn parse_api_address(address: &str) -> Result<String, String> {
+    // Reuse the side-effect-free HTTPS authority parser, including IPv6 and
+    // default port handling. An API base must not contain a query or path;
+    // request paths must never be interpreted as part of an authority.
+    let target = crate::outbound::parse_auth_https_target(
+        address,
+        Some(&crate::outbound::AuthHttpsTransport::default()),
+    )
+    .map_err(|_| "invalid HA peer API address".to_owned())?;
+    if target.path != "/" {
+        return Err("HA peer API address must be an HTTPS origin".into());
+    }
+    Ok(target.origin)
 }
 
 fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String> {
@@ -1754,6 +1793,39 @@ mod tests {
     use super::*;
 
     #[test]
+    fn advertised_api_addresses_are_https_origins_with_no_request_or_header_input()
+    -> Result<(), String> {
+        for (input, expected) in [
+            ("https://Bao.Example", "https://bao.example:443"),
+            ("https://127.0.0.1:8200/", "https://127.0.0.1:8200"),
+            ("https://[::1]:8200", "https://[::1]:8200"),
+        ] {
+            assert_eq!(parse_api_address(input)?, expected);
+        }
+        for input in [
+            "http://bao.example:8200",
+            "https://bao.example:0",
+            "https://user@bao.example",
+            "https://bao.example?token=secret",
+            "https://bao.example/#fragment",
+            "https://bao.example/v1/sys/health",
+            "https://bao.example/../",
+            "https://bao.example/%0d%0aLocation:x",
+            "https://bao.example\r\nLocation: x",
+            "https://bao.example\\@other.example",
+        ] {
+            assert!(parse_api_address(input).is_err());
+        }
+        let old: HaPeerConfig = serde_json::from_value(serde_json::json!({
+            "node_name":"node-1", "address":"127.0.0.1:8201",
+            "server_name":"node-1.example", "certificate_sha256":"11".repeat(32),
+        }))
+        .map_err(|_| "old peer configuration")?;
+        assert!(old.api_address.is_none());
+        Ok(())
+    }
+
+    #[test]
     fn forwarding_timeout_defaults_and_validation_do_not_change_peer_timeout()
     -> Result<(), Box<dyn std::error::Error>> {
         let legacy = serde_json::json!({
@@ -1840,6 +1912,7 @@ mod tests {
                     1,
                     HaPeerConfig {
                         node_name: "node-1".into(),
+                        api_address: None,
                         address: "127.0.0.1:8201".parse().map_err(|_| "peer address")?,
                         server_name: "node-1.example.internal".into(),
                         certificate_sha256: "11".repeat(32),
@@ -1849,6 +1922,7 @@ mod tests {
                     2,
                     HaPeerConfig {
                         node_name: "node-2".into(),
+                        api_address: None,
                         address: "127.0.0.1:8202".parse().map_err(|_| "peer address")?,
                         server_name: "node-2.example.internal".into(),
                         certificate_sha256: "22".repeat(32),
@@ -1858,6 +1932,7 @@ mod tests {
                     3,
                     HaPeerConfig {
                         node_name: "node-3".into(),
+                        api_address: None,
                         address: "127.0.0.1:8203".parse().map_err(|_| "peer address")?,
                         server_name: "node-3.example.internal".into(),
                         certificate_sha256: "33".repeat(32),
@@ -2101,3 +2176,7 @@ mod tests {
 #[cfg(test)]
 #[path = "ha_request_deadline_tests.rs"]
 pub(crate) mod request_deadline_tests;
+
+#[cfg(test)]
+#[path = "ha_snapshot_test_support.rs"]
+pub(crate) mod snapshot_test_support;

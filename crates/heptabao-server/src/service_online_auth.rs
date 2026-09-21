@@ -586,6 +586,15 @@ impl Service {
         namespace: &str,
         activation_nonce: &str,
     ) -> Result<(), Response> {
+        self.revalidate_online_authority_with_sync(namespace, activation_nonce, Self::sync_from_ha)
+    }
+
+    pub(super) fn revalidate_online_authority_with_sync(
+        &mut self,
+        namespace: &str,
+        activation_nonce: &str,
+        sync: impl FnOnce(&mut Self) -> Result<(), Response>,
+    ) -> Result<(), Response> {
         if self.recovery_required || self.state.is_none() || self.unseal_nonce != activation_nonce {
             return Err(Response::error(
                 503,
@@ -598,7 +607,15 @@ impl Service {
                 _ => return Err(Response::error(503, "online authentication leader changed")),
             }
         }
-        self.sync_from_ha()?;
+        sync(self)?;
+        // Catch-up can install a new replay epoch while preserving identical
+        // provider configuration. Admission before sync is not sufficient.
+        if self.recovery_required || self.state.is_none() || self.unseal_nonce != activation_nonce {
+            return Err(Response::error(
+                503,
+                "online authentication authority changed",
+            ));
+        }
         let state = self
             .state
             .as_ref()

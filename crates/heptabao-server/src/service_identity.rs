@@ -24,6 +24,15 @@ impl State {
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
         self.auth
+            .validate_userpass_password_semantics()
+            .map_err(|_| Response::error(503, "invalid userpass password comparison semantics"))?;
+        if self.schema < 38 && self.auth.has_userpass_password_semantics() {
+            return Err(Response::error(
+                503,
+                "userpass password comparison semantics require schema 38",
+            ));
+        }
+        self.auth
             .validate_userpass_native_tokens()
             .map_err(|_| Response::error(503, "invalid native userpass state"))?;
         self.engines
@@ -295,7 +304,7 @@ impl State {
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36
+            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
             | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,

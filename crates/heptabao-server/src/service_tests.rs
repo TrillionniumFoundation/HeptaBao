@@ -3188,3 +3188,31 @@ fn original_http_deadline_bounds_a_contended_ha_lock_without_poisoning_next_requ
     assert!(crate::request_deadline::current().is_none());
     Ok(())
 }
+
+#[test]
+fn leader_metadata_uses_only_the_explicit_advertised_api_origin()
+-> Result<(), Box<dyn std::error::Error>> {
+    for advertised in [None, Some("https://Public.Bao.Example:8200/")] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        let process = crate::ha::request_deadline_tests::process_with_api(
+            &root.path.join("raft"),
+            advertised,
+        )?;
+        let ha = Arc::new(Mutex::new(process));
+        service.ha = Some(ha);
+        let response = call(&mut service, "GET", "sys/leader", &token, json!({}));
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["ha_enabled"], true);
+        assert_eq!(response.body["is_self"], true);
+        assert_eq!(
+            response.body["leader_address"],
+            advertised
+                .map(|_| "https://public.bao.example:8200")
+                .unwrap_or("")
+        );
+        assert_eq!(response.body["leader_cluster_address"], "");
+    }
+    Ok(())
+}

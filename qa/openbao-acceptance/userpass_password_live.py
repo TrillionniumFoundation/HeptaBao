@@ -26,6 +26,7 @@ SHORT = [('ascii','x'),('unicode','短'),('emoji','🔐'),('space',' '),('decomp
 EMPTY = [('missing',{}),('empty',{'password':''}),('null',{'password':None})]
 BOUNDARIES = [('ascii71','a'*71),('ascii72','a'*72),('ascii73','a'*73),
               ('unicode71','短'*23+'ab'),('unicode72','短'*24),('unicode73','短'*24+'x')]
+COMPARE = [('ascii','a'*72),('unicode','短'*24)]
 REQUIRED = frozenset({'mounted.status','composed_mismatch.status','composed_mismatch.no_credentials',
     'reset.short.status','reset.new.credentials','reset.old.status','reset.old.no_credentials',
     'reset.old_token.valid','restart.old_token.valid','restart.reset.credentials','secrets_absent','complete'}) \
@@ -42,6 +43,11 @@ REQUIRED |= frozenset({'bounds.old_token.valid','bounds.restart_token.valid',
     'bounds.ascii73.create.absent.status','bounds.unicode73.create.absent.status',
     'bounds.ascii73.update.preserved.credentials','bounds.unicode73.update.preserved.credentials',
     'bounds.ascii73.reset.preserved.credentials','bounds.unicode73.reset.preserved.credentials'})
+REQUIRED |= frozenset(f'compare.{label}.{phase}' for label,_ in COMPARE for phase in (
+    'write.status','exact.credentials','suffix73.credentials','suffix80.credentials',
+    'suffix1025.credentials','wrong_prefix.status','wrong_prefix.no_credentials',
+    'restart_suffix1025.credentials'))
+REQUIRED |= frozenset({'compare.split_utf8.status','compare.split_utf8.no_credentials'})
 
 class Trace:
     def __init__(self, client, rows):
@@ -146,6 +152,19 @@ def run_scenarios(client,restart,rows):
         t.write('bounds.'+label+'.reset','bounds-current/password',{'password':password},status=expected)
         t.login('bounds.'+label+'.reset.preserved','bounds-current',{'password':previous})
     t.valid_token('bounds.old_token',boundary_token)
+    # OpenBao's bcrypt creation rejects >72 bytes, but comparison uses the
+    # first 72 bytes. These are new credentials on each server; legacy HeptaBao
+    # long-password preservation is independently tested with an old binary.
+    for label,password in COMPARE:
+        user='compare-'+label
+        t.write('compare.'+label+'.write',user,{'password':password})
+        t.login('compare.'+label+'.exact',user,{'password':password})
+        for length in (73,80,1025):
+            t.login(f'compare.{label}.suffix{length}',user,{'password':password+'x'*(length-72)})
+        t.login('compare.'+label+'.wrong_prefix',user,{'password':'b'+password[1:]+'suffix'},status=400)
+    # Truncating byte 72 may split a UTF-8 scalar. It is a mismatch, not an
+    # invalid-string panic, replacement character or successful suffix match.
+    t.login('compare.split_utf8','compare-ascii',{'password':'a'*71+'é'},status=400)
     restart()
     t.valid_token('bounds.restart_token',boundary_token)
     t.login('bounds.restart_password','bounds-current',{'password':previous})
@@ -153,6 +172,8 @@ def run_scenarios(client,restart,rows):
         t.login('short.'+label+'.restart',label,{'password':password})
     t.login('restart.reset','reset-user',{'password':'新'})
     t.valid_token('restart.old_token',held)
+    for label,password in COMPARE:
+        t.login(f'compare.{label}.restart_suffix1025','compare-'+label,{'password':password+'x'*953})
     return t.sensitive
 
 
@@ -269,7 +290,8 @@ def main():
         'oracle_binary_sha256':bao_hash,'oracle_binary_unchanged':oracle_unchanged,'target_version':'2.6.2',
         'oracle_only':args.oracle_only,'cases':cases,'cases_match':equal,'failures':failures,
         'retained_failure_work_dir':str(work) if not passed else None,'password_hash_import_covered':False,
-        'password_over_72_bytes_covered':True,'prior_binary_long_credential_upgrade_covered':False,'username_case_covered':False,'weak_scalar_conversion_covered':False,
+        'password_over_72_bytes_covered':True,'new_credential_72_byte_comparison_covered':passed,
+        'prior_binary_long_credential_upgrade_covered':False,'username_case_covered':False,'weak_scalar_conversion_covered':False,
         'synthetic_only':True,'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False}
     if admit_output(output)!=admitted:raise ValueError('report_parent_changed')
     private_write(output,report,replace=False)

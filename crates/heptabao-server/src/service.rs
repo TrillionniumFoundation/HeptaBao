@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 37;
+const CURRENT_STATE_SCHEMA: u32 = 38;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -43,6 +43,8 @@ mod backup_restore;
 mod capabilities;
 #[path = "service_database.rs"]
 mod database;
+#[path = "service_epoch_activation.rs"]
+mod epoch_activation;
 #[path = "service_ha_read.rs"]
 mod ha_read;
 #[path = "service_identity.rs"]
@@ -1676,10 +1678,13 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
-        if self.native_snapshot_transport && self.ha.is_some() {
+        if self.native_snapshot_transport
+            && self.ha.is_some()
+            && !(path == "sys/storage/raft/snapshot" && matches!(method, "GET" | "HEAD"))
+        {
             return Response::error(
                 409,
-                "native snapshot transfer requires the local storage profile",
+                "native snapshot restore is not supported while HA is enabled",
             );
         }
         if let Some(ha) = self.ha.as_ref().cloned() {
@@ -1701,6 +1706,14 @@ impl Service {
                 let Some(_) = leader else {
                     return Response::error(503, "HA cluster has no elected leader");
                 };
+                if self.native_snapshot_transport {
+                    // Native files cannot be carried by the bounded JSON peer
+                    // frame. HTTP snapshot redirects are not implemented yet.
+                    return Response::error(
+                        503,
+                        "native snapshot save requires the leader; standby streaming is unsupported",
+                    );
+                }
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
@@ -2751,6 +2764,7 @@ impl Service {
         if bytes.len() > capacity {
             return Err(Response::error(507, "state capacity exhausted"));
         }
+        let activation = self.prepare_epoch_activation(target_replay_epoch, false)?;
         let base_digest = self.current_state_digest()?;
         if allow_legacy_migration {
             self.persist_with_mode(
@@ -2765,6 +2779,7 @@ impl Service {
             self.persist(state, bytes, base_digest, state_schema, target_replay_epoch)?;
         }
         self.state_digest = Some(next_digest);
+        self.install_epoch_activation(activation);
         Ok(())
     }
 
@@ -4648,6 +4663,11 @@ impl Service {
                 ha.commit_state_with_owner_binding(&operation_id, base_digest, bytes, owner_binding)
             };
             if let Err(error) = commit {
+                // An error after proposal may hide a committed epoch change.
+                // Never continue admitting observations from the old epoch.
+                if epoch_transition {
+                    self.recovery_required = true;
+                }
                 return Err(Response::error(503, &error));
             }
         }
@@ -4885,6 +4905,9 @@ impl Service {
                 "HA committed state belongs to a different cluster",
             ));
         }
+        // This epoch is already authoritative in Raft. RNG failure must fence
+        // this node before any local publication or old observation release.
+        let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
         let operation_id = format!("hasync-{}", hex(&committed.digest));
         // HBSM4 carries the canonical owner-plan identity from the leader.
         // Rebuild the follower's local plan before publication and compare the
@@ -4965,6 +4988,7 @@ impl Service {
         }
         self.state = Some(state);
         self.state_digest = Some(committed.digest);
+        self.install_epoch_activation(activation);
         self.recovery_required = false;
         if let Err(error) = self.cache_verified_ha_state(&committed) {
             self.recovery_required = true;
@@ -5010,11 +5034,19 @@ impl Service {
                 "performance_standby_last_remote_wal": 0
             }));
         }
+        let leader_address = self
+            .ha
+            .as_ref()
+            .and_then(|ha| {
+                let ha = ha.lock_for_request().ok()?;
+                ha.api_address(leader?).map(str::to_owned)
+            })
+            .unwrap_or_default();
         Response::ok(json!({
             "ha_enabled": true,
             "is_self": ha_active && leader.is_some() && leader == local,
             "ha_application_ready": application_ready,
-            "leader_address": "",
+            "leader_address": leader_address,
             "leader_cluster_address": "",
             "performance_standby": false,
             "performance_standby_last_remote_wal": 0
@@ -6606,3 +6638,11 @@ mod capacity_tests;
 #[cfg(test)]
 #[path = "service_immutable_read_tests.rs"]
 mod immutable_read_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_compare_tests.rs"]
+mod userpass_compare_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_bcrypt_tests.rs"]
+mod userpass_bcrypt_tests;

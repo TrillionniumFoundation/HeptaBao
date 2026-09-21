@@ -15,6 +15,8 @@ pub(super) struct SnapshotTransferPlan {
     path: String,
     namespace: String,
     activation: String,
+    seal_identity: [u8; 32],
+    ha: Option<Arc<Mutex<HaProcess>>>,
     base: StateIdentity,
     deadline: Instant,
     started: Instant,
@@ -23,6 +25,34 @@ pub(super) struct SnapshotTransferPlan {
     download: Option<DownloadSource>,
     is_download: bool,
 }
+// Only this module can construct the capability, after native archive and
+// live-seal authentication. It contains the exact validated restore candidate.
+pub(super) struct VerifiedNativeRestore {
+    prepared: backup_restore::PreparedSnapshotRestore,
+}
+impl VerifiedNativeRestore {
+    pub(super) fn into_prepared(self) -> backup_restore::PreparedSnapshotRestore {
+        self.prepared
+    }
+}
+
+fn canonical_seal_identity(seal: &SealMetadata) -> Result<[u8; 32], &'static str> {
+    seal.validate()?;
+    let associated = seal.associated_data();
+    let wrapped = Zeroizing::new(
+        STANDARD
+            .decode(&seal.wrapped_barrier_key)
+            .map_err(|_| "invalid seal envelope")?,
+    );
+    let mut hash = Sha256::new();
+    hash.update(b"heptabao.native-snapshot.seal-metadata.v1\0");
+    hash.update((associated.len() as u64).to_le_bytes());
+    hash.update(&associated);
+    hash.update((wrapped.len() as u64).to_le_bytes());
+    hash.update(wrapped.as_slice());
+    Ok(hash.finalize().into())
+}
+
 pub(crate) enum Observation {
     Download,
     Upload(Import),
@@ -95,6 +125,23 @@ impl PendingExternalRequest {
 }
 
 impl Service {
+    fn current_snapshot_seal_identity(
+        &self,
+        lease: &SnapshotLease,
+        deadline: Instant,
+    ) -> Result<[u8; 32], Response> {
+        let bytes = lease
+            .read_seal_metadata(deadline)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is unavailable"))?;
+        let seal: SealMetadata = serde_json::from_slice(&bytes)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))?;
+        if self.seal.as_ref() != Some(&seal) {
+            return Err(Response::error(409, "snapshot seal metadata changed"));
+        }
+        canonical_seal_identity(&seal)
+            .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))
+    }
+
     pub(crate) fn begin_native_snapshot_before(
         &mut self,
         request: ServiceRequest<'_>,
@@ -146,7 +193,8 @@ impl Service {
         if now.as_secs() != request.now {
             return Response::error(503, "snapshot admission clock differs");
         }
-        let download = request.path == "sys/storage/raft/snapshot" && request.method == "GET";
+        let download =
+            request.path == "sys/storage/raft/snapshot" && matches!(request.method, "GET" | "HEAD");
         if !download && !matches!(request.method, "POST" | "PUT") {
             return Response::error(405, "snapshot restore requires POST or PUT");
         }
@@ -185,6 +233,10 @@ impl Service {
             }
             Err(_) => return Response::error(503, "snapshot staging is unavailable"),
         };
+        let seal_identity = match self.current_snapshot_seal_identity(&lease, deadline) {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
         let source = if download {
             let result = (|| -> Result<DownloadSource, Response> {
                 let durable = self
@@ -202,8 +254,12 @@ impl Service {
                     .export_backup_to(&mut output)
                     .map_err(|_| Response::error(503, "cannot export durable snapshot"))?;
                 let digest: [u8; 32] = output.hash.finalize().into();
-                let metadata = serde_json::to_vec(&Metadata::new(durable.generation(), length))
-                    .map_err(|_| Response::error(503, "snapshot metadata unavailable"))?;
+                let metadata = serde_json::to_vec(&Metadata::new(
+                    durable.generation(),
+                    length,
+                    &seal_identity,
+                ))
+                .map_err(|_| Response::error(503, "snapshot metadata unavailable"))?;
                 let sums = snapshot_archive::sums(&metadata, &digest);
                 let key = self
                     .barrier_key
@@ -236,6 +292,8 @@ impl Service {
             path: request.path.to_owned(),
             namespace: request.namespace.to_owned(),
             activation: self.unseal_nonce.clone(),
+            seal_identity,
+            ha: self.ha.clone(),
             base,
             deadline,
             started,
@@ -247,17 +305,66 @@ impl Service {
         Response::ok(Value::Null)
     }
 
+    fn revalidate_native_snapshot_ha_leader(&mut self) -> Result<(), Response> {
+        let Some(ha) = self.ha.clone() else {
+            return Ok(());
+        };
+        // Drop each HA guard before synchronization: that path takes the same
+        // control lock and performs an authenticated, deadline-bound ReadIndex.
+        if !ha
+            .lock_for_request()
+            .map_err(|_| Response::error(503, "snapshot HA authority unavailable"))?
+            .is_leader()
+            .unwrap_or(false)
+        {
+            return Err(Response::error(503, "snapshot HA leader changed"));
+        }
+        self.sync_from_ha_with_anchor(false)?;
+        if !ha
+            .lock_for_request()
+            .map_err(|_| Response::error(503, "snapshot HA authority unavailable"))?
+            .is_leader()
+            .unwrap_or(false)
+        {
+            return Err(Response::error(503, "snapshot HA leader changed"));
+        }
+        Ok(())
+    }
+
     pub(super) fn finalize_snapshot_transfer(
         &mut self,
         plan: SnapshotTransferPlan,
         result: Result<Observation, Response>,
     ) -> Response {
-        let now = snapshot_observed_time(plan.now, plan.started.elapsed());
+        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
         if Instant::now() >= plan.deadline {
             return Response::error(503, "snapshot transfer deadline elapsed");
         }
-        if self.ha.is_some()
-            || self.recovery_required
+        let same_ha = match (&plan.ha, &self.ha) {
+            (None, None) => true,
+            (Some(previous), Some(current)) => Arc::ptr_eq(previous, current),
+            _ => false,
+        };
+        if !same_ha || (self.ha.is_some() && !plan.is_download) {
+            return Response::error(409, "snapshot HA transfer authority changed");
+        }
+        if self.recovery_required
+            || self.audit_failed
+            || self.barrier_key.is_none()
+            || self.unseal_nonce != plan.activation
+        {
+            return Response::error(409, "snapshot transfer authority changed");
+        }
+        if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
+            return response;
+        }
+        if Instant::now() >= plan.deadline {
+            return Response::error(503, "snapshot transfer deadline elapsed");
+        }
+        // ReadIndex can spend the remaining request budget. Revalidate actor
+        // expiry using the clock after that wait, never its admission time.
+        let now = snapshot_observed_time(plan.now, plan.started.elapsed());
+        if self.recovery_required
             || self.audit_failed
             || self.barrier_key.is_none()
             || self.unseal_nonce != plan.activation
@@ -277,6 +384,13 @@ impl Service {
         ) {
             return Response::error(error.status, &error.message);
         }
+        let live_seal = match self.current_snapshot_seal_identity(&plan.lease, plan.deadline) {
+            Ok(value) => value,
+            Err(response) => return response,
+        };
+        if live_seal != plan.seal_identity {
+            return Response::error(409, "snapshot transfer seal identity changed");
+        }
         let observation = match result {
             Ok(value) => value,
             Err(error) => return error,
@@ -285,6 +399,12 @@ impl Service {
             Observation::Download if plan.is_download => Response::ok(Value::Null),
             Observation::Upload(mut imported) if !plan.is_download => {
                 let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
+                    let binding = imported.metadata.seal_identity().ok_or_else(|| {
+                        Response::error(
+                            400,
+                            "native snapshot v1 has no seal binding; restore is unsupported",
+                        )
+                    })?;
                     let key = self
                         .barrier_key
                         .as_ref()
@@ -304,10 +424,20 @@ impl Service {
                             "snapshot authenticated checksums differ",
                         ));
                     }
+                    if !binding.matches(&live_seal) {
+                        return Err(Response::error(
+                            400,
+                            if plan.path == "sys/storage/raft/snapshot-force" {
+                                "cross-seal native snapshot force restore is unsupported"
+                            } else {
+                                "native snapshot seal identity differs"
+                            },
+                        ));
+                    }
                     let length = imported.state.len();
                     let prepared =
                         self.prepare_snapshot_restore_from_reader(&mut imported.state, length)?;
-                    if prepared.generation() != imported.metadata.generation {
+                    if prepared.generation() != imported.metadata.generation() {
                         return Err(Response::error(400, "snapshot metadata generation differs"));
                     }
                     if Instant::now() >= plan.deadline {
@@ -337,7 +467,11 @@ impl Service {
                     origin_peer: None,
                     client_certificates: None,
                 };
-                self.commit_snapshot_restore(prepared, &plan.actor, &request)
+                self.commit_native_snapshot_restore(
+                    VerifiedNativeRestore { prepared },
+                    &plan.actor,
+                    &request,
+                )
             }
             _ => Response::error(503, "snapshot transfer observation mismatch"),
         }
@@ -347,3 +481,7 @@ impl Service {
 #[cfg(test)]
 #[path = "service_snapshot_transfer_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "service_snapshot_ha_tests.rs"]
+mod ha_tests;

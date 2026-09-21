@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Pinned OpenBao CLI transports candidate-native snapshots on a local TLS server.
 
-Native HBB2 state is deliberately not an OpenBao state.bin. Force is tested only
-with this instance's barrier. No HA restore or cross-seal compatibility claim.
+Native HBB2 state is deliberately not an OpenBao state.bin. Native v2 binds the
+seal: ordinary rollback succeeds within that seal, and rekey rejects old archives
+on both restore paths. No HA restore or cross-seal force compatibility claim.
 All temporary files require an explicit private SSD/guest work parent. Optional
 PostgreSQL 17 uses a fresh private TLS/SCRAM cluster and a nonprivileged storage
 owner; native file transfer and restore share the same scenarios for both stores.
@@ -34,7 +35,8 @@ BLOCK = 64 * 1024
 ARCHIVE_LIMIT = 131 * MIB
 NAMES = ['meta.json', 'state.bin', 'SHA256SUMS', 'SHA256SUMS.sealed']
 REQUIRED = frozenset({'record_format', 'all_before_save', 'cli_save', 'archive_above_20mib',
-    'archive_contract', 'rollback_rejected', 'rollback_unchanged', 'sealed_tamper_rejected',
+    'archive_contract', 'ordinary_rollback_restored', 'all_ordinary_restored',
+    'ordinary_other_owner_restored', 'ordinary_later_absent', 'sealed_tamper_rejected',
     'sealed_tamper_unchanged', 'truncation_rejected', 'truncation_unchanged',
     'oversize_rejected', 'oversize_unchanged', 'unauthorized_before_body',
     'upload_interrupted', 'upload_slot_released', 'upload_unchanged',
@@ -42,7 +44,12 @@ REQUIRED = frozenset({'record_format', 'all_before_save', 'cli_save', 'archive_a
     'all_changed_retained', 'cli_force_restore', 'all_restored', 'other_owner_restored',
     'later_absent', 'chunked_restore', 'all_chunked_restored', 'restart_unsealed',
     'all_reopened', 'reopened_other_owner', 'reopened_later_absent', 'spool_clean',
-    'plaintext_absent', 'complete'})
+    'plaintext_absent', 'legacy_v1_outer_contract', 'legacy_v1_ordinary_rejected',
+    'legacy_v1_ordinary_unchanged', 'legacy_v1_force_rejected', 'legacy_v1_force_unchanged',
+    'rekey_initialized', 'rekey_completed', 'rekey_old_ordinary_rejected',
+    'rekey_old_ordinary_unchanged', 'rekey_old_force_rejected', 'rekey_old_force_unchanged',
+    'all_rekey_rejected_retained', 'rekey_new_save', 'rekey_new_binding', 'rekey_changed',
+    'rekey_new_restore', 'all_rekey_restored', 'old_share_rejected', 'complete'})
 
 
 PG_SCOPE = 'native-snapshot-cli-fixture'
@@ -82,7 +89,7 @@ def new_file(path):
     return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'wb')
 
 
-def inspect_archive(path):
+def inspect_archive(path, *, legacy_unbound=False):
     """Stream the large member; retain only the three bounded metadata members."""
     hashes, small, names, state_size, magic = {}, {}, [], 0, b''
     with tarfile.open(path, 'r|gz') as archive:
@@ -106,12 +113,61 @@ def inspect_archive(path):
     if names != NAMES: raise ValueError('archive_order')
     meta = json.loads(small['meta.json'])
     expected = f"{hashes['meta.json']}  meta.json\n{hashes['state.bin']}  state.bin\n".encode()
-    if (meta.get('format') != 'heptabao-native-snapshot-v1'
+    expected_format = 'heptabao-native-snapshot-v1' if legacy_unbound else 'heptabao-native-snapshot-v2'
+    expected_fields = {'format','state_format','generation','state_bytes'}
+    binding = meta.get('seal_identity')
+    if legacy_unbound:
+        valid_binding = binding is None
+    else:
+        expected_fields.add('seal_identity')
+        valid_binding = (isinstance(binding,dict) and set(binding) == {'format','sha256'}
+            and binding['format'] == 'heptabao-seal-metadata-digest-v1'
+            and isinstance(binding['sha256'],str)
+            and re.fullmatch(r'[0-9a-f]{64}',binding['sha256']) is not None)
+    if (set(meta) != expected_fields or not valid_binding or meta.get('format') != expected_format
             or meta.get('state_format') != 'heptabao-encrypted-backup-v1/HBB2'
             or meta.get('state_bytes') != state_size or magic != b'HBB2'
             or small['SHA256SUMS'] != expected or not small['SHA256SUMS.sealed']):
         raise ValueError('archive_contract')
-    return {'state_bytes':state_size, 'generation':meta['generation'], 'members':names}
+    return {'state_bytes':state_size, 'generation':meta['generation'], 'members':names,
+            'seal_identity':binding, 'state_sha256':hashes['state.bin']}
+
+
+
+def legacy_unbound_archive(source, destination):
+    """Build the old four-field envelope, not a claimed historical AEAD archive.
+
+    Recompute plaintext checksums but retain v2 sealed bytes. Restore must reject
+    the missing binding explicitly before authentication; a generic 400 is not
+    accepted as evidence for that branch.
+    """
+    summary = inspect_archive(source)
+    metadata = json.dumps({'format':'heptabao-native-snapshot-v1',
+        'state_format':'heptabao-encrypted-backup-v1/HBB2',
+        'generation':summary['generation'], 'state_bytes':summary['state_bytes']},
+        separators=(',',':')).encode()
+    sums = (hashlib.sha256(metadata).hexdigest()+'  meta.json\n'+
+            summary['state_sha256']+'  state.bin\n').encode()
+    with tarfile.open(source,'r|gz') as reader, new_file(destination) as output:
+        # The native reader requires exactly two terminal tar blocks; Python's
+        # tarfile writer adds record-sized padding and is not suitable here.
+        with gzip.GzipFile(filename='',mode='wb',fileobj=output,mtime=0) as writer:
+            for member in reader:
+                if member.name in ('meta.json','SHA256SUMS'):
+                    data = metadata if member.name == 'meta.json' else sums
+                    replacement = tarfile.TarInfo(member.name); replacement.size = len(data)
+                    replacement.mode = 0o600
+                    writer.write(replacement.tobuf(format=tarfile.USTAR_FORMAT))
+                    writer.write(data); writer.write(b'\0'*((-len(data))%512))
+                else:
+                    writer.write(member.tobuf(format=tarfile.USTAR_FORMAT))
+                    payload = reader.extractfile(member); remaining = member.size
+                    while remaining:
+                        chunk = payload.read(min(BLOCK,remaining))
+                        if not chunk:raise ValueError('legacy_reframe_truncated')
+                        writer.write(chunk);remaining -= len(chunk)
+                    writer.write(b'\0'*((-member.size)%512))
+            writer.write(b'\0'*1024)
 
 
 def tamper_sealed(source, destination):
@@ -146,7 +202,7 @@ def cli_environment(instance, work):
     return env
 
 
-def cli(binary, instance, work, command, path, force=False, expected_error=None):
+def cli(binary, instance, work, command, path, force=False, expected_error=None, expected_message=None):
     args = [str(binary), 'operator', 'raft', 'snapshot', command]
     if force: args.append('-force')
     args.append(str(path))
@@ -156,7 +212,9 @@ def cli(binary, instance, work, command, path, force=False, expected_error=None)
     if expected_error is not None:
         # Inspect only the CLI's HTTP status diagnostic; never publish stderr.
         statuses = re.findall(rb'Code: ([0-9]{3})(?:[.\s]|$)', result.stderr)
-        return result.returncode != 0 and len(result.stderr) <= 65536 and statuses == [str(expected_error).encode()]
+        return (result.returncode != 0 and len(result.stderr) <= 65536
+                and statuses == [str(expected_error).encode()]
+                and (expected_message is None or expected_message in result.stderr))
     return result.returncode
 
 
@@ -223,6 +281,16 @@ def contains_any(path, samples):
     return False
 
 
+
+
+def rekey_share(call, old_share, check):
+    status, begin = call('POST','sys/rekey/init',
+        {'secret_shares':1,'secret_threshold':1,'require_verification':False})
+    check('rekey_initialized',status == 200 and bool(begin.get('nonce')))
+    status, rekeyed = call('POST','sys/rekey/update',{'nonce':begin['nonce'],'key':old_share})
+    check('rekey_completed',status == 200 and rekeyed.get('complete') is True
+          and rekeyed.get('verification_required') is False and len(rekeyed.get('keys_base64',[])) == 1)
+    return rekeyed['keys_base64'][0]
 
 def postgres_identity(bin_dir):
     names = ('postgres', 'initdb', 'psql')
@@ -387,8 +455,16 @@ def run(binary, bao, work, checks, observations, postgres_bin=None):
         check('later_written',call('PUT',MOUNT+'/later',{'value':'later'})[0] == 204)
         check('owner_changed',call('PUT','secret/data/native-control',{'data':{'value':'after'}})[0] == 200)
         generation=capacity()['generation'];check('newer_generation',generation > meta['generation'])
-        check('rollback_rejected',cli(bao,instance,work,'restore',archive,expected_error=400))
-        check('rollback_unchanged',capacity()['generation'] == generation)
+        legacy = work/'legacy-unbound.snap';legacy_unbound_archive(archive,legacy)
+        legacy_meta = inspect_archive(legacy,legacy_unbound=True)
+        check('legacy_v1_outer_contract', legacy_meta['seal_identity'] is None
+              and legacy_meta['state_sha256'] == meta['state_sha256'])
+        check('legacy_v1_ordinary_rejected',cli(bao,instance,work,'restore',legacy,
+              expected_error=400,expected_message=b'native snapshot v1 has no seal binding; restore is unsupported'))
+        check('legacy_v1_ordinary_unchanged',capacity()['generation'] == generation)
+        check('legacy_v1_force_rejected',cli(bao,instance,work,'restore',legacy,True,
+              expected_error=400,expected_message=b'native snapshot v1 has no seal binding; restore is unsupported'))
+        check('legacy_v1_force_unchanged',capacity()['generation'] == generation)
         tampered=work/'tampered.snap';tamper_sealed(archive,tampered)
         # This remains a valid gzip/tar/checksum archive; only AEAD sealed sums differ.
         check('tamper_outer_contract_valid',inspect_archive(tampered) == meta)
@@ -422,14 +498,37 @@ def run(binary, bao, work, checks, observations, postgres_bin=None):
         check('download_unchanged',capacity()['generation'] == generation)
         check('save_after_interrupted_download',cli(bao,instance,work,'save',work/'after-download.snap') == 0)
         verify(changed,'changed_retained')
+        check('ordinary_rollback_restored',cli(bao,instance,work,'restore',archive) == 0)
+        verify(original,'ordinary_restored')
+        check('ordinary_other_owner_restored',call('GET','secret/data/native-control')[1].get('data',{}).get('data') == {'value':'before'})
+        check('ordinary_later_absent',call('GET',MOUNT+'/later')[0] == 404)
         check('cli_force_restore',cli(bao,instance,work,'restore',archive,True) == 0)
         verify(original,'restored')
         check('other_owner_restored',call('GET','secret/data/native-control')[1].get('data',{}).get('data') == {'value':'before'})
         check('later_absent',call('GET',MOUNT+'/later')[0] == 404)
         check('chunked_restore',chunked_restore(instance,archive) == 200)
         verify(original,'chunked_restored')
+        old_unseal, unseal = unseal, rekey_share(call, unseal, check)
+        generation = capacity()['generation']; seal_hash = file_hash(instance.root/'data'/'seal.json')
+        check('rekey_old_ordinary_rejected',cli(bao,instance,work,'restore',archive,expected_error=400,
+              expected_message=b'native snapshot seal identity differs'))
+        check('rekey_old_ordinary_unchanged',capacity()['generation'] == generation
+              and file_hash(instance.root/'data'/'seal.json') == seal_hash)
+        check('rekey_old_force_rejected',cli(bao,instance,work,'restore',archive,True,expected_error=400,
+              expected_message=b'cross-seal native snapshot force restore is unsupported'))
+        check('rekey_old_force_unchanged',capacity()['generation'] == generation
+              and file_hash(instance.root/'data'/'seal.json') == seal_hash)
+        verify(original,'rekey_rejected_retained')
+        rekey_archive = work/'rekey.snap'
+        check('rekey_new_save',cli(bao,instance,work,'save',rekey_archive) == 0)
+        rekey_meta = inspect_archive(rekey_archive)
+        check('rekey_new_binding',rekey_meta['seal_identity'] != meta['seal_identity'])
+        check('rekey_changed',call('PUT',MOUNT+'/bulk/0000',{'value':'after-rekey'})[0] == 204)
+        check('rekey_new_restore',cli(bao,instance,work,'restore',rekey_archive) == 0)
+        verify(original,'rekey_restored')
         check('spool_clean',wait_idle(instance))
         instance.stop();instance.start()
+        check('old_share_rejected',instance.call('POST','sys/unseal',{'key':old_unseal})[0] == 400)
         check('restart_unsealed',instance.call('POST','sys/unseal',{'key':unseal})[0] == 200)
         verify(original,'reopened')
         check('reopened_other_owner',call('GET','secret/data/native-control')[1].get('data',{}).get('data') == {'value':'before'})
@@ -443,10 +542,10 @@ def run(binary, bao, work, checks, observations, postgres_bin=None):
             check('postgres_recovered_unseal', instance.call('POST','sys/unseal',{'key':unseal})[0] == 200)
             verify(original,'postgres_recovered')
         instance.stop()
-        samples=[instance.token.encode(),unseal.encode(),*[s.encode() for s in original.sample_prefixes+changed.sample_prefixes]]
+        samples=[instance.token.encode(),unseal.encode(),old_unseal.encode(),*[s.encode() for s in original.sample_prefixes+changed.sample_prefixes]]
         if pg is not None: samples += [pg.manager_password.encode(), recovery_nonce.encode()]
         files=[p for p in (instance.root/'data').rglob('*') if p.is_file() and not p.is_symlink()]
-        files += [instance.root/'audit.jsonl',instance.root/'server.log',archive]
+        files += [instance.root/'audit.jsonl',instance.root/'server.log',*work.glob('*.snap')]
         check('plaintext_absent',all(not contains_any(p,samples) for p in files if p.exists()))
         if pg is not None:
             remote = inspect_postgres_artifacts(pg, samples)
@@ -497,7 +596,11 @@ def main():
         'source_and_binary_unchanged':before==after,'build_source_commit':args.build_source_commit,
         'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_cli_version':'2.6.2',
         'official_cli_sha256':bao_hash,'official_cli_unchanged':cli_unchanged,
-        'retained_failure_work_dir':str(work) if failure else None,'native_archive_only':True,
+        'retained_failure_work_dir':str(work) if failure else None,'native_archive_only':True,'native_archive_version':2,
+        'same_seal_ordinary_rollback_covered':failure is None,
+        'rekey_seal_mismatch_rejection_covered':failure is None,
+        'legacy_v1_missing_binding_rejection_covered':failure is None,
+        'historical_v1_aead_archive_covered':False,
         'official_cli_transport_covered':failure is None,'transfer_above_20mib_covered':failure is None,
         'ha_restore_covered':False,'cross_seal_force_covered':False,'openbao_state_interoperability':False,
         'physical_restore_crash_covered':False,'full_openbao_compatibility':False,

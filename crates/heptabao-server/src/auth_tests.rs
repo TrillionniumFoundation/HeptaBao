@@ -3804,3 +3804,9 @@ mod userpass_password_tests;
 
 #[path = "auth_userpass_alias_tests.rs"]
 mod userpass_alias_tests;
+
+#[path = "auth_userpass_compare_tests.rs"]
+mod userpass_compare_tests;
+
+#[path = "auth_userpass_bcrypt_tests.rs"]
+mod userpass_bcrypt_tests;

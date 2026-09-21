@@ -11,31 +11,87 @@ use std::{
 };
 use zeroize::Zeroizing;
 
-pub(crate) const CHECKSUM_CONTEXT: &[u8] = b"heptabao.native-snapshot.checksums.v1";
+pub(crate) const CHECKSUM_CONTEXT: &[u8] = b"heptabao.native-snapshot.checksums.v2";
 const NAMES: [&str; 4] = ["meta.json", "state.bin", "SHA256SUMS", "SHA256SUMS.sealed"];
 const MAX_SMALL: u64 = 8192;
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(crate) struct Metadata {
-    pub format: String,
-    pub state_format: String,
-    pub generation: u64,
-    pub state_bytes: u64,
+pub(crate) struct SealIdentity {
+    format: String,
+    sha256: String,
+}
+impl SealIdentity {
+    fn new(digest: &[u8; 32]) -> Self {
+        Self {
+            format: "heptabao-seal-metadata-digest-v1".into(),
+            sha256: hex(digest),
+        }
+    }
+    fn valid(&self) -> bool {
+        self.format == "heptabao-seal-metadata-digest-v1"
+            && self.sha256.len() == 64
+            && self
+                .sha256
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    }
+    pub(crate) fn matches(&self, digest: &[u8; 32]) -> bool {
+        self.valid() && self.sha256 == hex(digest)
+    }
+}
+
+// V1 is recognized to return a precise missing-binding error. It cannot
+// manufacture V2 authority through a missing/default/null seal field.
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "format", deny_unknown_fields)]
+pub(crate) enum Metadata {
+    #[serde(rename = "heptabao-native-snapshot-v1")]
+    V1 {
+        state_format: String,
+        generation: u64,
+        state_bytes: u64,
+    },
+    #[serde(rename = "heptabao-native-snapshot-v2")]
+    V2 {
+        state_format: String,
+        generation: u64,
+        state_bytes: u64,
+        seal_identity: SealIdentity,
+    },
 }
 impl Metadata {
-    pub(crate) fn new(generation: u64, state_bytes: u64) -> Self {
-        Self {
-            format: "heptabao-native-snapshot-v1".into(),
+    pub(crate) fn new(generation: u64, state_bytes: u64, seal_digest: &[u8; 32]) -> Self {
+        Self::V2 {
             state_format: "heptabao-encrypted-backup-v1/HBB2".into(),
             generation,
             state_bytes,
+            seal_identity: SealIdentity::new(seal_digest),
+        }
+    }
+    pub(crate) fn generation(&self) -> u64 {
+        match self {
+            Self::V1 { generation, .. } | Self::V2 { generation, .. } => *generation,
+        }
+    }
+    pub(crate) fn state_bytes(&self) -> u64 {
+        match self {
+            Self::V1 { state_bytes, .. } | Self::V2 { state_bytes, .. } => *state_bytes,
+        }
+    }
+    pub(crate) fn seal_identity(&self) -> Option<&SealIdentity> {
+        match self {
+            Self::V1 { .. } => None,
+            Self::V2 { seal_identity, .. } => Some(seal_identity),
         }
     }
     pub(crate) fn valid(&self) -> bool {
-        self.format == "heptabao-native-snapshot-v1"
-            && self.state_format == "heptabao-encrypted-backup-v1/HBB2"
-            && (60..=MAX_NATIVE_STATE).contains(&self.state_bytes)
+        let state_format = match self {
+            Self::V1 { state_format, .. } | Self::V2 { state_format, .. } => state_format,
+        };
+        state_format == "heptabao-encrypted-backup-v1/HBB2"
+            && (60..=MAX_NATIVE_STATE).contains(&self.state_bytes())
+            && self.seal_identity().is_none_or(SealIdentity::valid)
     }
 }
 
@@ -202,7 +258,7 @@ pub(crate) fn import(
         return Err(bad());
     }
     let length = read_header(&mut gzip, NAMES[1], MAX_NATIVE_STATE)?;
-    if length != metadata.state_bytes {
+    if length != metadata.state_bytes() {
         return Err(bad());
     }
     let state = lease.file(MAX_NATIVE_STATE, deadline)?;
@@ -246,3 +302,7 @@ pub(crate) fn import(
         sealed_sums,
     })
 }
+
+#[cfg(test)]
+#[path = "snapshot_archive_tests.rs"]
+mod tests;

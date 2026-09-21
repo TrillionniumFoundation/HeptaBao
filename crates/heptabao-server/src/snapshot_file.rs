@@ -148,6 +148,58 @@ impl Drop for SnapshotLease {
     }
 }
 impl SnapshotLease {
+    /// Read only the committed seal metadata, through the already-held parent
+    /// capability. Never resolve an archive-supplied path or a replaced parent.
+    pub(crate) fn read_seal_metadata(
+        &self,
+        deadline: Instant,
+    ) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = deadline;
+            Err(invalid())
+        }
+        #[cfg(target_os = "linux")]
+        {
+            const LIMIT: usize = 64 * 1024;
+            self.spool.verify()?;
+            if Instant::now() >= deadline {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "snapshot transfer deadline exceeded",
+                ));
+            }
+            let path = PathBuf::from(format!("/proc/self/fd/{}", self.spool.parent.as_raw_fd()))
+                .join("seal.json");
+            let file = OpenOptions::new()
+                .read(true)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
+                .open(path)?;
+            let metadata = file.metadata()?;
+            if !metadata.is_file()
+                || metadata.nlink() != 1
+                || metadata.mode() & 0o077 != 0
+                || metadata.uid() != self.spool.parent.metadata()?.uid()
+                || metadata.len() > LIMIT as u64
+            {
+                return Err(invalid());
+            }
+            let mut bytes = zeroize::Zeroizing::new(Vec::with_capacity(LIMIT + 1));
+            file.take((LIMIT + 1) as u64).read_to_end(&mut bytes)?;
+            if bytes.len() > LIMIT {
+                return Err(invalid());
+            }
+            self.spool.verify()?;
+            if Instant::now() >= deadline {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "snapshot transfer deadline exceeded",
+                ));
+            }
+            Ok(bytes)
+        }
+    }
+
     pub(crate) fn file(
         self: &Arc<Self>,
         maximum: u64,

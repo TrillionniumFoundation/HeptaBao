@@ -1169,11 +1169,23 @@ struct Rule {
     capabilities: BTreeSet<String>,
 }
 
+/// Input comparison semantics only; both variants still use the stored strong
+/// PBKDF2 verifier. Absence preserves historical exact-byte credentials.
+#[derive(Clone, Copy, Serialize, Deserialize)]
+enum PasswordSemantics {
+    #[serde(rename = "bcrypt_72")]
+    Bcrypt72,
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct User {
     salt: Vec<u8>,
     verifier: Vec<u8>,
     rounds: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    password_semantics: Option<PasswordSemantics>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    imported_bcrypt: Option<userpass_bcrypt::ImportedBcrypt>,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
@@ -5339,6 +5351,7 @@ impl AuthState {
             body,
             &[
                 "password",
+                "password_hash",
                 "username",
                 "policies",
                 "token_policies",
@@ -5353,6 +5366,9 @@ impl AuthState {
         )?;
         // The userpass framework captures username from the path before
         // field validation; a body value never redirects the account route.
+        if !native_userpass && body.get("password_hash").is_some() {
+            return Err(bad("password_hash requires a userpass mount"));
+        }
         if !native_userpass && body.get("username").is_some() {
             return Err(bad("username body field requires a userpass mount"));
         }
@@ -5368,9 +5384,12 @@ impl AuthState {
         }
         if subpath == "password"
             && (body.as_object().is_none_or(|o| {
-                o.keys()
-                    .any(|k| k != "password" && !(native_userpass && k == "username"))
-            }) || body.get("password").is_none())
+                o.keys().any(|k| {
+                    k != "password"
+                        && !(native_userpass && matches!(k.as_str(), "username" | "password_hash"))
+                })
+            }) || (body.get("password").is_none()
+                && (!native_userpass || body.get("password_hash").is_none())))
         {
             return Err(bad("password endpoint accepts only password"));
         }
@@ -5390,6 +5409,8 @@ impl AuthState {
             salt: vec![],
             verifier: vec![],
             rounds: PASSWORD_ROUNDS,
+            password_semantics: None,
+            imported_bcrypt: None,
             policies: if native_userpass {
                 BTreeSet::new()
             } else {
@@ -5419,7 +5440,32 @@ impl AuthState {
             ),
         };
         let password = password.filter(|value| !native_userpass || !value.is_empty());
-        if let Some(password) = password {
+        let password_hash = if native_userpass {
+            match body.get("password_hash") {
+                None | Some(Value::Null) => None,
+                Some(value) => Some(
+                    value
+                        .as_str()
+                        .ok_or_else(|| bad("password_hash must be a string"))?,
+                ),
+            }
+            .filter(|value| !value.is_empty())
+        } else {
+            None
+        };
+        if password.is_some() && password_hash.is_some() {
+            return Err(bad("only one of password or password_hash may be provided"));
+        }
+        if let Some(hash) = password_hash {
+            let imported = userpass_bcrypt::ImportedBcrypt::new(hash)?;
+            user.salt.zeroize();
+            user.salt.clear();
+            user.verifier.zeroize();
+            user.verifier.clear();
+            user.rounds = 0;
+            user.password_semantics = None;
+            user.imported_bcrypt = Some(imported);
+        } else if let Some(password) = password {
             if native_userpass && password.len() > 72 {
                 // Match the upstream bcrypt write boundary without changing
                 // our KDF or invalidating previously issued long credentials.
@@ -5441,6 +5487,10 @@ impl AuthState {
                 password.as_bytes(),
                 &mut user.verifier,
             );
+            if native_userpass {
+                user.imported_bcrypt = None;
+                user.password_semantics = Some(PasswordSemantics::Bcrypt72);
+            }
         } else if existing.is_none() || (native_userpass && subpath == "password") {
             return Err(bad("a nonempty password is required"));
         }
@@ -5547,29 +5597,35 @@ impl AuthState {
         if password.is_empty() {
             return Err(err(500, "missing password"));
         }
-        if password.len() > 1024 {
-            return Err(bad("invalid username or password"));
-        }
         let user = self
             .users_at(scope)
             .and_then(|users| users.get(name))
             .cloned();
-        // A nonexistent account still performs the same password KDF.
-        let dummy_salt = [0u8; 32];
-        let dummy_verifier = [0u8; 32];
-        let (rounds, salt, verifier) = user
-            .as_ref()
-            .map(|u| (u.rounds, u.salt.as_slice(), u.verifier.as_slice()))
-            .unwrap_or((PASSWORD_ROUNDS, &dummy_salt, &dummy_verifier));
-        let rounds = NonZeroU32::new(rounds).ok_or_else(denied)?;
-        let verified = pbkdf2::verify(
-            pbkdf2::PBKDF2_HMAC_SHA256,
-            rounds,
-            salt,
-            password.as_bytes(),
-            verifier,
-        )
-        .is_ok();
+        let password_bytes = userpass_password_semantics::password_bytes(user.as_ref(), password)?;
+        let verified =
+            if let Some(user) = user.as_ref().filter(|user| user.imported_bcrypt.is_some()) {
+                userpass_bcrypt::validate_user(user)?;
+                user.imported_bcrypt
+                    .as_ref()
+                    .is_some_and(|imported| imported.verify(password_bytes))
+            } else {
+                // A nonexistent account still performs the same password KDF.
+                let dummy_salt = [0u8; 32];
+                let dummy_verifier = [0u8; 32];
+                let (rounds, salt, verifier) = user
+                    .as_ref()
+                    .map(|u| (u.rounds, u.salt.as_slice(), u.verifier.as_slice()))
+                    .unwrap_or((PASSWORD_ROUNDS, &dummy_salt, &dummy_verifier));
+                let rounds = NonZeroU32::new(rounds).ok_or_else(denied)?;
+                pbkdf2::verify(
+                    pbkdf2::PBKDF2_HMAC_SHA256,
+                    rounds,
+                    salt,
+                    password_bytes,
+                    verifier,
+                )
+                .is_ok()
+            };
         let mut user = user
             .filter(|_| verified)
             .ok_or_else(|| bad("invalid username or password"))?;
@@ -6505,3 +6561,9 @@ impl AuthState {
         })
     }
 }
+
+#[path = "auth_userpass_password_semantics.rs"]
+mod userpass_password_semantics;
+
+#[path = "auth_userpass_bcrypt.rs"]
+mod userpass_bcrypt;

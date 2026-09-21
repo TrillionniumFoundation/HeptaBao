@@ -617,3 +617,346 @@ fn cancelled_and_rejected_restore_leave_an_existing_provider_plan_usable() -> Te
     assert!(!service.recovery_required);
     Ok(())
 }
+
+fn upload_native_path(
+    service: &mut Service,
+    token: &str,
+    path: &str,
+    bytes: &[u8],
+) -> TestResult<Response> {
+    let mut plan = match stage(service, "POST", path, token) {
+        RequestExecution::External(plan) => plan,
+        RequestExecution::Complete(response) => return Ok(response),
+    };
+    let mut reader = bytes;
+    let (result, file) = plan.execute_snapshot_transfer(&mut reader);
+    assert!(file.is_none());
+    Ok(service.finish_external_request(*plan, result))
+}
+
+fn rekey_once(service: &mut Service, token: &str, old_key: &str) -> TestResult<String> {
+    let start = call(
+        service,
+        "POST",
+        "sys/rekey/init",
+        token,
+        json!({"secret_shares":1,"secret_threshold":1,"require_verification":false}),
+    );
+    assert_eq!(start.status, 200);
+    let nonce = start.body["nonce"].as_str().ok_or("rekey nonce")?;
+    let completed = call(
+        service,
+        "POST",
+        "sys/rekey/update",
+        token,
+        json!({"nonce":nonce,"key":old_key}),
+    );
+    assert_eq!(completed.status, 200);
+    assert_eq!(completed.body["complete"], true);
+    assert_eq!(completed.body["verification_required"], false);
+    Ok(completed.body["keys_base64"][0]
+        .as_str()
+        .ok_or("new share")?
+        .to_owned())
+}
+
+#[test]
+fn native_same_seal_ordinary_restore_rolls_back_without_changing_json_policy() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "before");
+    let archive = download(&mut service, &token)?;
+    let json_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let seal = fs::read(service.data_dir.join("seal.json"))?;
+    put(&mut service, &token, "after");
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let rejected = call(
+        &mut service,
+        "POST",
+        "sys/storage/raft/snapshot",
+        &token,
+        json!({"snapshot":STANDARD.encode(json_backup)}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(get(&mut service, &token), "after");
+    let restored = upload_native_path(&mut service, &token, "sys/storage/raft/snapshot", &archive)?;
+    assert_eq!(restored.status, 200);
+    assert_eq!(restored.body["data"]["rollback"], true);
+    assert_eq!(get(&mut service, &token), "before");
+    assert_eq!(fs::read(service.data_dir.join("seal.json"))?, seal);
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(get(&mut service, &token), "before");
+    Ok(())
+}
+
+#[test]
+fn rekeyed_native_restore_rejects_old_seal_and_accepts_new_seal_after_reopen() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (old_key, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "original");
+    let old_archive = download(&mut service, &token)?;
+    let new_key = rekey_once(&mut service, &token, &old_key)?;
+    put(&mut service, &token, "rekeyed");
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let seal = fs::read(service.data_dir.join("seal.json"))?;
+    let activation = service.unseal_nonce.clone();
+    for (path, text) in [
+        (
+            "sys/storage/raft/snapshot",
+            "native snapshot seal identity differs",
+        ),
+        (
+            "sys/storage/raft/snapshot-force",
+            "cross-seal native snapshot force restore is unsupported",
+        ),
+    ] {
+        let rejected = upload_native_path(&mut service, &token, path, &old_archive)?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(rejected.body["errors"][0], text);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(service.unseal_nonce, activation);
+        assert_eq!(fs::read(service.data_dir.join("seal.json"))?, seal);
+        assert_eq!(get(&mut service, &token), "rekeyed");
+    }
+    let new_archive = download(&mut service, &token)?;
+    put(&mut service, &token, "newer");
+    assert_eq!(
+        upload_native_path(
+            &mut service,
+            &token,
+            "sys/storage/raft/snapshot",
+            &new_archive
+        )?
+        .status,
+        200
+    );
+    assert_eq!(get(&mut service, &token), "rekeyed");
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":old_key})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":new_key})
+        )
+        .status,
+        200
+    );
+    assert_eq!(get(&mut service, &token), "rekeyed");
+    Ok(())
+}
+
+#[test]
+fn completed_rekey_fences_pending_native_upload_and_download() -> TestResult {
+    for method in ["GET", "POST"] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (key, token) = bootstrap(&mut service)?;
+        put(&mut service, &token, "keep");
+        let archive = download(&mut service, &token)?;
+        let mut plan = pending(&mut service, method, &token)?;
+        let (result, file) = plan.execute_snapshot_transfer(&mut archive.as_slice());
+        let before = service
+            .current_state_identity()
+            .map_err(|_| "state identity")?;
+        let activation = service.unseal_nonce.clone();
+        rekey_once(&mut service, &token, &key)?;
+        // Rekey changes seal authority while retaining the same barrier and
+        // application: the native seal fence must carry this distinction.
+        assert_eq!(
+            service
+                .current_state_identity()
+                .map_err(|_| "state identity")?,
+            before
+        );
+        assert_eq!(service.unseal_nonce, activation);
+        let rejected = service.finish_external_request(*plan, result);
+        assert_eq!(rejected.status, 409);
+        assert_eq!(
+            rejected.body["errors"][0],
+            "snapshot transfer seal identity changed"
+        );
+        drop(file);
+        assert_eq!(get(&mut service, &token), "keep");
+        assert!(!download(&mut service, &token)?.is_empty());
+    }
+    Ok(())
+}
+
+#[test]
+fn seal_json_reencoding_preserves_the_canonical_native_seal_identity() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "before");
+    let archive = download(&mut service, &token)?;
+    let path = service.data_dir.join("seal.json");
+    let original = fs::read(&path)?;
+    let value: Value = serde_json::from_slice(&original)?;
+    let reencoded = serde_json::to_vec_pretty(&value)?;
+    assert_ne!(original, reencoded);
+    fs::write(&path, reencoded)?;
+    put(&mut service, &token, "after");
+    assert_eq!(
+        upload_native_path(&mut service, &token, "sys/storage/raft/snapshot", &archive)?.status,
+        200
+    );
+    assert_eq!(get(&mut service, &token), "before");
+    Ok(())
+}
+
+fn authenticated_v1_archive(service: &Service) -> TestResult<Vec<u8>> {
+    let lease = service.snapshot_spool.as_ref().ok_or("spool")?.lease()?;
+    let deadline = Instant::now() + Duration::from_secs(30);
+    let mut state = lease.file(MAX_NATIVE_STATE, deadline)?;
+    let mut writer = snapshot_archive::HashWriter {
+        writer: &mut state,
+        hash: Sha256::new(),
+    };
+    let durable = service.durable.as_ref().ok_or("durable")?;
+    let length = durable.export_backup_to(&mut writer)?;
+    let digest = writer.hash.finalize().into();
+    let metadata = serde_json::to_vec(&json!({"format":"heptabao-native-snapshot-v1",
+        "state_format":"heptabao-encrypted-backup-v1/HBB2", "generation":durable.generation(),"state_bytes":length}))?;
+    let sums = snapshot_archive::sums(&metadata, &digest);
+    let barrier = AeadBarrier::new(**service.barrier_key.as_ref().ok_or("barrier")?)?;
+    let sealed_sums = barrier.seal(b"heptabao.native-snapshot.checksums.v1", &sums)?;
+    let mut file = snapshot_archive::export(
+        DownloadSource {
+            state,
+            metadata,
+            sums,
+            sealed_sums,
+        },
+        &lease,
+        deadline,
+    )?;
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)?;
+    Ok(bytes)
+}
+
+#[test]
+fn authenticated_historical_v1_is_explicitly_refused_by_both_native_restore_paths() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "before");
+    drop(pending(&mut service, "GET", &token)?);
+    let archive = authenticated_v1_archive(&service)?;
+    put(&mut service, &token, "keep");
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let activation = service.unseal_nonce.clone();
+    for path in [
+        "sys/storage/raft/snapshot",
+        "sys/storage/raft/snapshot-force",
+    ] {
+        let rejected = upload_native_path(&mut service, &token, path, &archive)?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(
+            rejected.body["errors"][0],
+            "native snapshot v1 has no seal binding; restore is unsupported"
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(service.unseal_nonce, activation);
+        assert_eq!(get(&mut service, &token), "keep");
+    }
+    Ok(())
+}
+
+#[test]
+fn canonical_seal_digest_matches_its_fixed_versioned_wire_vector() -> TestResult {
+    let seal = SealMetadata {
+        schema: 1,
+        generation: 7,
+        share_format: "shamir-v1".into(),
+        secret_shares: 3,
+        secret_threshold: 2,
+        wrapped_barrier_key: STANDARD.encode((0u8..64).collect::<Vec<_>>()),
+    };
+    assert_eq!(
+        hex(&canonical_seal_identity(&seal)?),
+        "f58c3b3767e14344112ac338bd2d3eee531195b3dbaf9958cd58dc927648ee84"
+    );
+    let expected = canonical_seal_identity(&seal)?;
+    for mode in 0..4 {
+        let mut changed = seal.clone();
+        match mode {
+            0 => changed.generation += 1,
+            1 => changed.secret_shares = 4,
+            2 => changed.secret_threshold = 1,
+            _ => changed.wrapped_barrier_key = STANDARD.encode([5; 64]),
+        }
+        assert_ne!(canonical_seal_identity(&changed)?, expected);
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn native_seal_reader_rejects_linked_nonprivate_and_oversized_metadata() -> TestResult {
+    use std::os::unix::{fs::PermissionsExt, fs::symlink};
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let path = service.data_dir.join("seal.json");
+    let saved = service.data_dir.join("saved-seal-for-test");
+    let original = fs::read(&path)?;
+    for mode in 0..4 {
+        match mode {
+            0 => {
+                fs::rename(&path, &saved)?;
+                symlink(&saved, &path)?;
+            }
+            1 => fs::set_permissions(&path, fs::Permissions::from_mode(0o644))?,
+            2 => fs::hard_link(&path, &saved)?,
+            _ => fs::write(&path, vec![b' '; 64 * 1024 + 1])?,
+        }
+        let denied = stage(&mut service, "GET", "sys/storage/raft/snapshot", &token);
+        assert!(
+            matches!(denied, RequestExecution::Complete(ref response) if response.status == 503)
+        );
+        match mode {
+            0 => {
+                fs::remove_file(&path)?;
+                fs::rename(&saved, &path)?;
+            }
+            1 => fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?,
+            2 => fs::remove_file(&saved)?,
+            _ => fs::write(&path, &original)?,
+        }
+        assert!(!service.recovery_required);
+    }
+    assert!(!download(&mut service, &token)?.is_empty());
+    Ok(())
+}

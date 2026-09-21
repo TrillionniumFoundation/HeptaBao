@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **37**. Its source constant is
+The current Service state schema is **38**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -77,6 +77,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 35 | Userpass TTL/max inheritance, period/explicit maximum, configured policies without implicit default, and direct issuing-account provenance; KV1 record roots must be absent. |
 | 36 | Adds authenticated KV1 record graphs and the V5 publication root. Legacy inline KV1/V4 state remains admitted until its explicit write-side transition. PackedLeaf pages must be absent throughout the graph. |
 | 37 | Adds PackedLeaf object kind6: small KV1 values can reside directly in authenticated leaf pages. Prior kind1–5 encodings remain unchanged. |
+| 38 | Explicit native userpass password input semantics and imported bcrypt credentials. An absent marker retains historical exact-byte PBKDF credentials; newly written plaintext credentials use the first 72 bytes at login. Imported bcrypt uses a mutually exclusive credential representation. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -291,8 +292,25 @@ expiry. Old records with missing facts retain their known expiry and remaining
 uses without fabricated timestamps or TTL. Finite successful uses update the
 record, and exhaustion removes it atomically with token issuance.
 
+Schema38 requires an explicit `bcrypt_72` comparison marker for newly created or
+replaced native userpass passwords. It describes input equivalence, while the
+verifier remains PBKDF2-HMAC-SHA256 with 600,000 rounds. Older absent markers retain
+complete-byte comparison and their 1024-byte login bound. Pure reads, empty/null
+password updates and logins do not invent a credential marker. A successful login
+still commits a token and can promote the application schema. The marker is
+rejected under earlier schemas or outside a live userpass mount; unknown values
+fail decoding. Startup, HA materialization, publication and prepared restore share
+this validation.
+
+An `imported_bcrypt` credential also requires schema38 and a live userpass mount.
+Its presence requires empty PBKDF salt/verifier, zero PBKDF rounds and no input
+marker. Admission revalidates the bounded Go-compatible cost header; malformed
+salt/hash data never enables fallback to a second credential. The imported string
+is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
+password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 37. An authenticated
+it. Initialization and committed mutations use schema 38. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -306,7 +324,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. Schema36 pure reads, exact no-op writes and rejected writes retain
-their existing references and schema. The first successful mutation promotes37;
+their existing references and schema. A successful mutation promotes to the current schema;
 schema36 binaries reject it. PackedLeaf detection includes every descendant,
 so a Branch root cannot conceal a packed page under an older discriminator.
 Local reopen, HA materialization, JSON/native prepared restore and publication

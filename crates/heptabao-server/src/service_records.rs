@@ -430,6 +430,7 @@ impl Service {
                 return Err(Response::error(507, "state capacity exhausted"));
             }
         }
+        let activation = self.prepare_epoch_activation(state.replay_epoch, false)?;
         let base = self.current_state_identity()?;
         let operation = format!(
             "record-{}",
@@ -465,12 +466,20 @@ impl Service {
             })
             .map_err(|error| self.record_storage_error(error))?;
         if let Some(ha) = &self.ha {
-            ha.lock_for_request()
+            let result = ha
+                .lock_for_request()
                 .map_err(|_| unavailable())?
-                .commit_record_state(&operation, &base, &plan.bytes, &plan.objects)
-                .map_err(|_| {
-                    Response::error(503, "HA record publication failed; no response released")
-                })?;
+                .commit_record_state(&operation, &base, &plan.bytes, &plan.objects);
+            if result.is_err() {
+                // Publication may have committed despite a missing response.
+                if activation.is_some() {
+                    self.recovery_required = true;
+                }
+                return Err(Response::error(
+                    503,
+                    "HA record publication failed; no response released",
+                ));
+            }
         }
         let result = self.persist_record_plan_local(&plan, &operation, false);
         if let Err(error) = result {
@@ -482,6 +491,7 @@ impl Service {
         }
         self.record_root = Some(plan.root.clone());
         self.state_digest = Some(plan.identity.digest());
+        self.install_epoch_activation(activation);
         // A poisoned bookkeeping lock cannot make the just-published state
         // appear rolled back. Fence and require reload instead.
         if let Err(error) = state.engines.clear_published_record_objects(&plan.root.kv1) {
@@ -680,23 +690,40 @@ impl Service {
             identity: committed.identity,
             objects,
         };
-        let operation = format!(
-            "hasync-record-{}",
-            hex(&crypto::random::<16>().map_err(|e| Response::error(503, e))?)
-        );
-        if let Err(error) = self.persist_record_plan_local(&plan, &operation, true) {
-            self.recovery_required = true;
-            return Err(Self::ha_committed_local_failure(error));
-        }
-        self.record_root = Some(plan.root);
-        self.state_digest = Some(committed.identity.digest());
-        self.state = Some(state);
-        self.record_writes_since_gc = 64;
+        self.install_received_record_state(state, plan)?;
         if let Err(error) = self.cache_verified_ha_records(&committed) {
             self.recovery_required = true;
             return Err(error);
         }
         self.recovery_required = false;
+        Ok(())
+    }
+
+    // The caller has authenticated the complete committed graph. Keep local
+    // publication and activation installation together, including HA catch-up
+    // across more than one missed epoch.
+    pub(super) fn install_received_record_state(
+        &mut self,
+        state: State,
+        plan: RecordPlan,
+    ) -> Result<(), Response> {
+        let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
+        let operation = match crypto::random::<16>() {
+            Ok(value) => format!("hasync-record-{}", hex(&value)),
+            Err(error) => {
+                self.recovery_required = true;
+                return Err(Response::error(503, error));
+            }
+        };
+        if let Err(error) = self.persist_record_plan_local(&plan, &operation, true) {
+            self.recovery_required = true;
+            return Err(Self::ha_committed_local_failure(error));
+        }
+        self.record_root = Some(plan.root);
+        self.state_digest = Some(plan.identity.digest());
+        self.state = Some(state);
+        self.install_epoch_activation(activation);
+        self.record_writes_since_gc = 64;
         Ok(())
     }
 

@@ -19,6 +19,30 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
         before.as_slice() == after.as_slice(),
         "legacy engine owner bytes changed"
     );
+    // This format fixture models schema34 credentials, predating the
+    // comparison-semantics marker. Do not let schema38 mask the schema35 gate.
+    let mut auth = serde_json::to_value(&state.auth)?;
+    for users in auth["users"].as_object_mut().ok_or("users")?.values_mut() {
+        for user in users.as_object_mut().ok_or("user map")?.values_mut() {
+            user.as_object_mut()
+                .ok_or("user")?
+                .remove("password_semantics");
+        }
+    }
+    for mounts in auth["mounted_users"]
+        .as_object_mut()
+        .ok_or("mounts")?
+        .values_mut()
+    {
+        for users in mounts.as_object_mut().ok_or("mount map")?.values_mut() {
+            for user in users.as_object_mut().ok_or("user map")?.values_mut() {
+                user.as_object_mut()
+                    .ok_or("user")?
+                    .remove("password_semantics");
+            }
+        }
+    }
+    state.auth = serde_json::from_value::<AuthState>(auth)?.into();
     Ok(())
 }
 

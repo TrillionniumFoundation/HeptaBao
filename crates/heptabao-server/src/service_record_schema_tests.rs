@@ -97,7 +97,7 @@ fn schema36_read_reopen_noop_and_rejection_do_not_upgrade_but_mutation_does() ->
         204
     );
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, 37);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_packed_kv1_records());
     let identity = service
         .current_state_identity()

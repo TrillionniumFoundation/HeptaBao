@@ -304,31 +304,58 @@ Owner-level sharing and immutable reads are distinct from the V5 KV1 write path.
 Neither removes component/local/HA admission bounds, opaque-owner write costs,
 or the remaining long-horizon HA/fault exits.
 
+The [local packed-record receipt](../../qa/openbao-acceptance/evidence/kv1-packed-dense20000-c3c5d14.json)
+pins c3c5d14's binary and records 20,000 separate 600-byte canonical values,
+all hashes before and after restart, a point update, and an actual schema36
+reader's refusal after upgrade. The historical seed is 256 records. Workload
+requests were paced at 100/s under unchanged production limits; elapsed times
+include pacing and do not measure maximum throughput. It does not qualify
+schema35 dense HA migration or large opaque owners.
+
 The explicit JSON/base64 manual backup profile retains its 20MiB decoded limit.
-Local Linux servers also support native gzip/tar transfer: GET/HEAD defaults to
+Linux servers also support native gzip/tar transfer: GET/HEAD defaults to
 `application/gzip`; `Accept: application/json` selects the JSON profile. POST/PUT
 with a JSON content type retain JSON restore; other snapshot uploads accept the
 native archive with a fixed length or strictly bounded chunked framing. Native
 archives are limited to 131MiB compressed, containing at most 130MiB of HBB2
 state. Authentication and finite-use admission precede reading the large body.
 
-The archive explicitly identifies HeptaBao's encrypted HBB2 state. Its four
-canonical tar members include independently authenticated sealed checksums;
-this is not OpenBao's state or seal encoding. Native HA transfer returns409,
-and force restore still requires the same barrier. OpenBao archive migration,
+The v2 archive explicitly identifies HeptaBao's encrypted HBB2 state. Its four
+canonical tar members include authenticated sealed checksums and a canonical
+digest of all six live seal-metadata fields. Both native restore routes permit
+older generations after proving the same seal. Actual rekey changes that binding;
+ordinary restore then rejects the old archive, and force explicitly reports
+unsupported cross-seal restore. Native v1 archives lack this binding and are
+explicitly rejected; the JSON profile keeps its prior generation/force policy.
+This is not OpenBao's state or seal encoding. Native HA GET/HEAD requires the
+current leader and a fresh ReadIndex; finalization repeats both authority checks.
+A standby returns503 without forwarding a large archive through JSON peer RPC.
+HA native restore still returns409. OpenBao archive migration,
 cross-seal restore and non-Linux native transfer remain unimplemented.
 Explicit JSON HA export and Raft's internal snapshot replication are separate.
 
 Each Service admits one native transfer. Upload and gzip construction run outside
 the Service writer, using immediately unlinked descriptor-backed files below
 the configured data directory. Finalization rechecks the original deadline,
-live actor, activation and exact state identity before publishing or releasing a
+live actor, activation, live seal identity and exact state identity before publishing or releasing a
 download. The staged archive and extracted state can use up to261MiB of disk,
 plus the existing restore transaction's old/new copies. There is no disk-space
 reservation; whole-component authentication still needs bounded component memory.
+Concurrent application publication invalidates a staged download with409, and
+whole-state export still holds the Service writer before gzip construction. These
+are availability constraints; the implementation does not promise large exports
+under sustained writes or a five-second large-transfer guarantee. HA leader-save
+code has a separate three-process official-CLI qualification target; the local
+historical receipts below do not qualify it.
 The real official-CLI qualification command is
 `native_snapshot_cli_live.py --binary <server> --build-source-commit <commit> --work-parent <private-SSD-directory> --output <new-private-json>`;
 the source/binary-bound receipt, not these limits, determines measured capacity.
+The [PostgreSQL native CLI baseline](../../qa/openbao-acceptance/evidence/native-snapshot-cli-pg-c3c5d14.json)
+records 833 checks on c3c5d14, PostgreSQL17.11 and the official OpenBao2.6.2 CLI:
+110 values, complete readback/restart, bounded remote chunks, interrupted-init
+nonce recovery and provider-down rejection without local fallback. This and the
+following file baseline use the earlier native v1 archive contract; they do not
+qualify v2's new seal binding or ordinary rollback behavior.
 The [707-check official CLI receipt](../../qa/openbao-acceptance/evidence/native-snapshot-cli-248e9bd.json)
 pins candidate248e9bd and OpenBao2.6.2. It saves a25,685,734-byte native archive
 containing110 distinct values, restores every value and the KV2 owner, and checks
